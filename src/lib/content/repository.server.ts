@@ -35,6 +35,11 @@ import type {
 } from "./types";
 
 type ContentRow = {
+  content_class?: "unreviewed" | "verified" | "demo";
+  effective_from?: string | null;
+  effective_until?: string | null;
+  source_reference?: string | null;
+  content_owner?: string | null;
   version?: number;
   draft_revision_id?: string | null;
   id: string;
@@ -262,6 +267,11 @@ function latestPublicUpdate(updates: StoryUpdate[]) {
 
 export function toContentSummary(row: ContentRow): ContentSummary {
   return {
+    contentClass: row.content_class ?? "unreviewed",
+    effectiveFrom: row.effective_from ?? null,
+    effectiveUntil: row.effective_until ?? null,
+    sourceReference: row.source_reference ?? null,
+    contentOwner: row.content_owner ?? null,
     id: row.id,
     slug: row.slug,
     type: row.type,
@@ -782,6 +792,9 @@ const publishedEnvelopeSchema = z.object({
 });
 function snapshotSummary(item: ContentDetail): ContentSummary {
   return {
+    contentClass: item.contentClass,
+    effectiveFrom: item.effectiveFrom,
+    effectiveUntil: item.effectiveUntil,
     id: item.id,
     slug: item.slug,
     type: item.type,

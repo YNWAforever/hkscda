@@ -123,6 +123,8 @@ export type PledgeSummary = {
   currency: string;
   language: z.infer<typeof sponsorshipLanguageSchema>;
   status: PledgeStatus;
+  followupAssigneeUserId?: string | null;
+  followupVersion?: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -154,6 +156,7 @@ export type PledgeDetail = PledgeSummary & {
 
 export type PledgeListSearch = {
   status?: PledgeStatus;
+  proof?: "pending";
   q?: string;
   page: number;
   pageSize: number;

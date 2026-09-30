@@ -4,7 +4,7 @@ import { renderPledgeConfirmationEmail } from "../sponsorship/emailTemplates.ser
 import type { PaymentInstructionSnapshot } from "./types";
 
 const url = process.env.CHECKOUT_POLICY_TEST_DATABASE_URL;
-if (url && !/^postgresql:\/\/postgres:postgres@127\.0\.0\.1:57322\/postgres$/.test(url)) {
+if (url && !/^postgresql:\/\/postgres:postgres@127\.0\.0\.1:(?:55322|57322)\/postgres$/.test(url)) {
   throw new Error("Payment instruction DB tests require the dedicated loopback rehearsal database");
 }
 
@@ -46,7 +46,9 @@ describe.skipIf(!url)("payment instruction snapshots on isolated database", () =
       await db`insert into public.sponsorship_pledge
         (id,supporter_id,monthly_tier,amount_cents,language,status)
         values (${pledgeId}::uuid,${supporterId}::uuid,'300',30000,'zh-HK','pending_payment')`;
-      await db`update public.payment_public_config set published_by = ${actorId}::uuid where id = ${configId}::uuid`;
+      // Establish invalid instructions explicitly; a prior sandbox run may have valid details.
+      await db`update public.payment_public_config set details = '{}'::jsonb,
+        published_by = ${actorId}::uuid where id = ${configId}::uuid`;
       await expectSqlState(
         db`select public.set_checkout_method_approval_with_audit(
         ${actorAuthId}::uuid,'fps','donation',${configId}::uuid,${original.version},true)`,
@@ -62,8 +64,11 @@ describe.skipIf(!url)("payment instruction snapshots on isolated database", () =
       const [policy] = await db`select version from public.checkout_policy where singleton = true`;
       await db`select public.set_checkout_policy_with_audit(${actorAuthId}::uuid,${policy.version},true)`;
 
-      const [admission] = await db`select public.admit_new_checkout(
-        ${intentKey}::uuid,${fingerprint},'fps','donation',${original.version}) as value`;
+      const [admission] = await db.begin(async (tx) => {
+        await tx`set local role service_role`;
+        return tx`select public.admit_new_checkout(
+            ${intentKey}::uuid,${fingerprint},'fps','donation',${original!.version}) as value`;
+      });
       expect(admission.value.instructions_active).toBe(true);
       expect(admission.value.instruction_snapshot.details).toEqual(details);
       const [capture] =
@@ -85,8 +90,11 @@ describe.skipIf(!url)("payment instruction snapshots on isolated database", () =
 
       await db`update public.payment_public_config set details = ${JSON.stringify({ payableTo: "Changed account", identifier: "FPS NEW" })}::jsonb,
         version = version + 1 where id = ${configId}::uuid`;
-      const [replay] = await db`select public.admit_new_checkout(
-        ${intentKey}::uuid,${fingerprint},'fps','donation',${original.version}) as value`;
+      const [replay] = await db.begin(async (tx) => {
+        await tx`set local role service_role`;
+        return tx`select public.admit_new_checkout(
+            ${intentKey}::uuid,${fingerprint},'fps','donation',${original!.version}) as value`;
+      });
       expect(replay.value.existing).toBe(true);
       expect(replay.value.instructions_active).toBe(false);
       expect(replay.value.instruction_snapshot.details).toEqual(details);

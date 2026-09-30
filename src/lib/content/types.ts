@@ -135,6 +135,11 @@ export type RecipientNotificationDraft = {
 };
 
 export type ContentSummary = {
+  contentClass?: "unreviewed" | "verified" | "demo";
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  sourceReference?: string | null;
+  contentOwner?: string | null;
   id: string;
   slug: string;
   type: ContentType;

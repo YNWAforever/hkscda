@@ -1,3 +1,4 @@
+import { useLiveAdminActor } from "../../../lib/admin/useLiveAdminActor";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Download, FileCheck, FileX } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -15,6 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
+import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
+import { DonationDeliveryWorklist } from "./DonationDeliveryWorklist";
 import { ReconcileDialog } from "./ReconcileDialog";
 import {
   buildPaymentExportSearchParams,
@@ -64,6 +67,7 @@ function formatActivityTime(value: string) {
 }
 
 export function PaymentsReconcile() {
+  const liveActor = useLiveAdminActor();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<PaymentFilters>({
     status: "all",
@@ -101,7 +105,7 @@ export function PaymentsReconcile() {
   // outage -- figures a treasurer would reasonably read as "nothing to do".
   const paymentsFailed = paymentsQuery.isError;
 
-  const { data: identityData } = useQuery(adminIdentityQueryOptions());
+  const { data: identityData, isError: identityError } = useQuery(adminIdentityQueryOptions());
 
   const { data: activityData } = useQuery({
     queryKey: ["admin-finance-activity"],
@@ -347,6 +351,17 @@ export function PaymentsReconcile() {
           </div>
         ))}
       </section>
+
+      {!identityError &&
+        identityData?.admin.status === "active" &&
+        liveActor === identityData.admin.authUserId &&
+        (adminRole === "treasurer" || adminRole === "admin") && (
+          <BankStatementDryRunPanel
+            key={`${identityData.admin.authUserId}:${adminRole}`}
+            actorUserId={identityData.admin.authUserId}
+          />
+        )}
+      {(adminRole === "treasurer" || adminRole === "admin") && <DonationDeliveryWorklist />}
 
       <section className="flex flex-wrap items-center gap-2">
         <Input

@@ -1,7 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import {
+  addAnimalReviewSelection,
+  collectAnimalReviewIds,
+} from "../../../lib/contentReview/animalBulkSelection";
+import { AnimalReviewBulkPanel } from "./AnimalReviewBulkPanel";
+import {
+  addCmsReviewSelection,
+  collectCmsReviewIds,
+} from "../../../lib/contentReview/cmsBulkSelection";
+import { CmsReviewBulkPanel } from "./CmsReviewBulkPanel";
 import type { ReviewInput, ReviewQueueRow } from "../../../lib/contentReview/service";
 import { TablePager } from "../TablePager";
 const labels = { approved: "已核實可發布", demo: "示範資料（不可發布）", needs_review: "待核實" };
@@ -82,16 +93,85 @@ export function ContentReviewPanel({
     </fieldset>
   );
 }
-export function ContentReviewQueue() {
+export function ContentReviewQueue({
+  initialKind = "content",
+  initialQuality = "all",
+}: {
+  initialKind?: "animal" | "content";
+  initialQuality?: "all" | "demo" | "expired" | "missing_source";
+} = {}) {
   const [page, setPage] = useState(1);
-  const [kind, setKind] = useState<"animal" | "content">("content");
+  const [kind, setKind] = useState<"animal" | "content">(initialKind);
+  const [quality, setQuality] = useState<"all" | "demo" | "expired" | "missing_source">(
+    initialKind === "content" ? initialQuality : "all",
+  );
+  const identity = useQuery(adminIdentityQueryOptions());
+  const isAdmin = identity.data?.admin.role === "admin";
+  const canBulk = isAdmin && quality === "all";
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectionBusy, setSelectionBusy] = useState(false);
+  const [selectionError, setSelectionError] = useState("");
+  const selectionGeneration = useRef(0);
   const query = useQuery({
-    queryKey: ["editorial-review", kind, page],
+    queryKey: ["editorial-review", kind, quality, page],
     queryFn: () =>
       fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
-        `/api/admin/content-review?kind=${kind}&page=${page}`,
+        `/api/admin/content-review?kind=${kind}&quality=${quality}&page=${page}`,
       ),
   });
+  const selectionDisabled =
+    selectionBusy || query.isFetching || !query.data || Boolean(query.error);
+  function toggleSelected(id: string) {
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        selectedIds.includes(id)
+          ? selectedIds.filter((item) => item !== id)
+          : kind === "animal"
+            ? addAnimalReviewSelection(selectedIds, [id])
+            : addCmsReviewSelection(selectedIds, [id]),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  function selectVisible() {
+    if (selectionDisabled || !query.data) return;
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        (kind === "animal" ? addAnimalReviewSelection : addCmsReviewSelection)(
+          selectedIds,
+          query.data.items.map((item) => item.entity_id),
+        ),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  async function selectAllMatching() {
+    if (selectionDisabled || !query.data) return;
+    setSelectionBusy(true);
+    setSelectionError("");
+    try {
+      const generation = selectionGeneration.current;
+      const selectedKind = kind;
+      const selectedQuality = quality;
+      const ids = await (selectedKind === "animal" ? collectAnimalReviewIds : collectCmsReviewIds)(
+        query.data.total,
+        async (nextPage) =>
+          fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
+            `/api/admin/content-review?kind=${selectedKind}&quality=${selectedQuality}&page=${nextPage}`,
+          ),
+      );
+      if (selectionGeneration.current !== generation) throw new Error("篩選已變更；請重新選取");
+      setSelectedIds(ids);
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+    } finally {
+      setSelectionBusy(false);
+    }
+  }
   return (
     <details className="m-6 space-y-3 rounded-lg border p-4">
       <summary className="cursor-pointer font-semibold">內容來源審核佇列</summary>
@@ -104,27 +184,105 @@ export function ContentReviewQueue() {
           className="ml-2 border p-2"
           value={kind}
           onChange={(event) => {
+            selectionGeneration.current++;
             setKind(event.target.value as "animal" | "content");
+            setQuality("all");
             setPage(1);
+            setSelectedIds([]);
+            setSelectionError("");
           }}
         >
           <option value="content">宣傳內容</option>
           <option value="animal">動物資料</option>
         </select>
       </label>
+      {kind === "content" && (
+        <label className="ml-3">
+          品質隊列
+          <select
+            className="ml-2 border p-2"
+            value={quality}
+            onChange={(event) => {
+              selectionGeneration.current++;
+              setQuality(event.target.value as typeof quality);
+              setPage(1);
+              setSelectedIds([]);
+              setSelectionError("");
+            }}
+          >
+            <option value="all">全部內容</option>
+            <option value="demo">示範內容</option>
+            <option value="expired">已過期內容</option>
+            <option value="missing_source">缺來源內容</option>
+          </select>
+        </label>
+      )}
+      {kind === "content" && quality !== "all" && (
+        <p>品質隊列供逐項核實；批量草稿送審請返回「全部內容」。</p>
+      )}
       {query.error && (
         <p role="alert">
           未能載入審核佇列。<button onClick={() => void query.refetch()}>重試</button>
         </p>
       )}
+      {canBulk && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="min-h-11 rounded border px-4"
+            disabled={selectionDisabled || !query.data || query.data.items.length === 0}
+            onClick={selectVisible}
+          >
+            選取本頁
+          </button>
+          <button
+            type="button"
+            className="min-h-11 rounded border px-4"
+            disabled={
+              selectionDisabled || !query.data || query.data.total < 1 || query.data.total > 1000
+            }
+            onClick={selectAllMatching}
+          >
+            選取全部符合篩選的{kind === "animal" ? "動物資料" : "宣傳內容"}（最多 1000 筆）
+          </button>
+          <button
+            type="button"
+            className="min-h-11 rounded border px-4"
+            disabled={selectionBusy || selectedIds.length === 0}
+            onClick={() => setSelectedIds([])}
+          >
+            清除選取
+          </button>
+        </div>
+      )}
+      {selectionBusy && <p role="status">正在固定選取範圍…</p>}
+      {selectionError && (
+        <p role="alert" className="text-[var(--color-error)]">
+          {selectionError}
+        </p>
+      )}
       <ul>
         {query.data?.items.map((row) => (
           <li key={row.entity_id} className="border-b py-3">
+            {canBulk && (
+              <label className="inline-flex min-h-11 items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(row.entity_id)}
+                  disabled={selectionDisabled}
+                  onChange={() => toggleSelected(row.entity_id)}
+                />
+                選取此{kind === "animal" ? "動物" : "CMS"}草稿
+              </label>
+            )}
             <p>
               {row.title} · {labels[row.classification]}
               {row.classification === "demo" && row.publication_state === "published"
                 ? " · 建議暫停公開（待授權）"
                 : ""}
+              {row.quality_reason === "demo" ? " · 示範內容待處理" : ""}
+              {row.quality_reason === "expired" ? " · 有效期已過" : ""}
+              {row.quality_reason === "missing_source" ? " · 來源未記錄" : ""}
             </p>
             {row.entity_kind === "content" ? (
               <Link
@@ -146,6 +304,20 @@ export function ContentReviewQueue() {
           </li>
         ))}
       </ul>
+      {canBulk && kind === "animal" && (
+        <AnimalReviewBulkPanel
+          selectedIds={selectedIds}
+          filterKey={kind}
+          selectionDisabled={selectionDisabled}
+        />
+      )}
+      {canBulk && kind === "content" && (
+        <CmsReviewBulkPanel
+          selectedIds={selectedIds}
+          filterKey={kind}
+          selectionDisabled={selectionDisabled}
+        />
+      )}
       {query.data && (
         <TablePager
           page={page}

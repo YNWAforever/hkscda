@@ -18,6 +18,8 @@ type FunctionRow = {
   arguments: string;
   returns: string;
   service_execute: boolean;
+  anon_execute: boolean;
+  authenticated_execute: boolean;
 };
 
 async function main(): Promise<void> {
@@ -41,7 +43,9 @@ async function main(): Promise<void> {
       select n.nspname as schema, p.proname as name,
         pg_get_function_identity_arguments(p.oid) as arguments,
         pg_get_function_result(p.oid) as returns,
-        has_function_privilege('service_role', p.oid, 'EXECUTE') as service_execute
+        has_function_privilege('service_role', p.oid, 'EXECUTE') as service_execute,
+        has_function_privilege('anon', p.oid, 'EXECUTE') as anon_execute,
+        has_function_privilege('authenticated', p.oid, 'EXECUTE') as authenticated_execute
       from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public'
     `) as FunctionRow[];
@@ -68,7 +72,11 @@ async function main(): Promise<void> {
         name: fn.name,
         arguments: fn.arguments,
         returns: fn.returns,
-        executeRoles: fn.service_execute ? ["service_role"] : [],
+        executeRoles: [
+          fn.anon_execute && "anon",
+          fn.authenticated_execute && "authenticated",
+          fn.service_execute && "service_role",
+        ].filter((role): role is string => Boolean(role)),
       })),
       migrationVersions: versions.map((row) => row.version),
     };

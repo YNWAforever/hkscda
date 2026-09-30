@@ -1,23 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import {
-  ADOPTION_DRAFT_STORAGE_KEY,
-  pickAdoptionDraftData,
-  parseDraft,
-  serializeDraft,
-} from "./draft";
+import { ADOPTION_DRAFT_STORAGE_KEY, pickAdoptionDraftData } from "./draft";
 
 describe("adoption draft storage", () => {
   test("uses a stable storage key", () => {
     expect(ADOPTION_DRAFT_STORAGE_KEY).toBe("hkscda-adoption-application-draft-v1");
-  });
-
-  test("retains the legacy parser only for the unchanged sponsorship wizard in this stacked PR", () => {
-    expect(
-      parseDraft(
-        serializeDraft({ supporterName: "Ada", photos: [new File(["x"], "private.jpg")] }),
-      ),
-    ).toEqual({ supporterName: "Ada" });
   });
 
   test("persists only approved fields and excludes consent, photos, tokens, and documents", () => {
@@ -33,7 +20,7 @@ describe("adoption draft storage", () => {
         home: { housingType: "flat", accessToken: "secret" },
         readiness: { reason: "adopt", consent: true },
         visit: { notes: "weekends", proof: "secret" },
-        terms: { agreed: true },
+        terms: { agreed: true, version: "a".repeat(64) },
         photos: [{ name: "private.jpg" }],
         statusToken: "secret",
       }),

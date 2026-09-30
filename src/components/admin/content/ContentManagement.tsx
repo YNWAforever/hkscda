@@ -1,8 +1,8 @@
 import { ContentReviewQueue } from "./ContentReview";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type InputHTMLAttributes } from "react";
 import { Edit3, Filter, RefreshCw, Search } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
   ContentStatus,
@@ -11,6 +11,11 @@ import type {
   NotificationDraftStatus,
 } from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
@@ -67,6 +72,67 @@ const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
   muted: "neutral",
 };
 
+type ContentFilters = {
+  type: ContentType | "all";
+  status: ContentStatus | "all";
+  rescueRegion: string;
+  publishedFrom: string;
+  publishedTo: string;
+  mapVisibility: "all" | "on" | "off";
+  hasUpdate: "all" | "yes" | "no";
+  draftState: "all" | NotificationDraftStatus;
+};
+const CONTENT_ROUTE: ListRouteState<ContentFilters> = {
+  key: "admin-content",
+  read(params, defaults) {
+    const type = params.get("type");
+    const status = params.get("status");
+    const map = params.get("map");
+    const update = params.get("hasUpdate");
+    const draft = params.get("draftState");
+    const date = (value: string | null) =>
+      value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+    return {
+      filters: {
+        ...defaults,
+        type: contentTypeOptions.includes(type as ContentType) ? (type as ContentType) : "all",
+        status: contentStatusOptions.includes(status as ContentStatus)
+          ? (status as ContentStatus)
+          : "all",
+        publishedFrom: date(params.get("publishedFrom")),
+        publishedTo: date(params.get("publishedTo")),
+        mapVisibility: map === "on" || map === "off" ? map : "all",
+        hasUpdate: update === "yes" || update === "no" ? update : "all",
+        draftState:
+          draft === "draft" ||
+          draft === "copied" ||
+          draft === "sent_manually" ||
+          draft === "dismissed"
+            ? draft
+            : "all",
+      },
+      page: parseListPage(params.get("page")),
+    };
+  },
+  write(params, filters, page) {
+    for (const [key, value] of [
+      ["type", filters.type],
+      ["status", filters.status],
+      ["publishedFrom", filters.publishedFrom],
+      ["publishedTo", filters.publishedTo],
+      ["map", filters.mapVisibility],
+      ["hasUpdate", filters.hasUpdate],
+      ["draftState", filters.draftState],
+    ] as const) {
+      if (!value || value === "all") params.delete(key);
+      else params.set(key, value);
+    }
+    if (page === 1) params.delete("page");
+    else params.set("page", String(page));
+    params.delete("rescueRegion");
+  },
+};
+
 export function ContentManagement({ initialData }: ContentManagementProps) {
   if (initialData) {
     return <ContentManagementView data={initialData} loading={false} />;
@@ -76,6 +142,13 @@ export function ContentManagement({ initialData }: ContentManagementProps) {
 }
 
 function ContentManagementRuntime() {
+  const qualityParam = new URLSearchParams(
+    typeof window === "undefined" ? "" : window.location.search,
+  ).get("quality");
+  const initialQuality =
+    qualityParam === "demo" || qualityParam === "expired" || qualityParam === "missing_source"
+      ? qualityParam
+      : "all";
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [createError, setCreateError] = useState("");
@@ -99,26 +172,31 @@ function ContentManagementRuntime() {
       setCreating(false);
     }
   }
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState<ContentType | "all">("all");
-  const [status, setStatus] = useState<ContentStatus | "all">("all");
-  const [rescueRegion, setRescueRegion] = useState("");
-  const [publishedFrom, setPublishedFrom] = useState("");
-  const [publishedTo, setPublishedTo] = useState("");
-  const [mapVisibility, setMapVisibility] = useState<"all" | "on" | "off">("all");
-  const [hasUpdate, setHasUpdate] = useState<"all" | "yes" | "no">("all");
-  const [draftState, setDraftState] = useState<"all" | NotificationDraftStatus>("all");
-  const [page, setPage] = useState(1);
-
-  // Narrowing the result set invalidates the page number — page 3 of a smaller
-  // set renders empty and reads as "no matches".
-  function withPageReset<T>(setter: (value: T) => void) {
-    return (value: T) => {
-      setter(value);
-      setPage(1);
-    };
-  }
-
+  const listState = useListQueryState({
+    key: "admin-content",
+    initialFilters: {
+      type: "all" as ContentFilters["type"],
+      status: "all" as ContentFilters["status"],
+      rescueRegion: "",
+      publishedFrom: "",
+      publishedTo: "",
+      mapVisibility: "all" as ContentFilters["mapVisibility"],
+      hasUpdate: "all" as ContentFilters["hasUpdate"],
+      draftState: "all" as ContentFilters["draftState"],
+    },
+    routeState: CONTENT_ROUTE,
+  });
+  const { query, page, setPage, filters, changeFilter } = listState;
+  const {
+    type,
+    status,
+    rescueRegion,
+    publishedFrom,
+    publishedTo,
+    mapVisibility,
+    hasUpdate,
+    draftState,
+  } = filters;
   const search = useMemo(
     () =>
       buildContentSearchParams({
@@ -149,22 +227,26 @@ function ContentManagementRuntime() {
 
   const contentQuery = useQuery({
     queryKey: ["admin-content", search],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const response = await fetchAdminJson<AdminContentListApiResponse>(
-        `/api/admin/content?${search}`,
+        "/api/admin/content?" + search,
+        { signal },
       );
       return normalizeListResponse(response, search);
     },
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
   });
 
   return (
     <>
-      <ContentReviewQueue />
+      <ContentReviewQueue key={initialQuality} initialQuality={initialQuality} />
       <CreateContentDraft onCreate={createDraft} busy={creating} error={createError} />
       <ContentManagementView
         data={contentQuery.data}
-        loading={contentQuery.isLoading}
-        query={query}
+        loading={contentQuery.isLoading || !listState.hydrated}
+        query={listState.draftQuery}
+        queryInput={listState.queryInput}
         type={type}
         status={status}
         rescueRegion={rescueRegion}
@@ -174,17 +256,17 @@ function ContentManagementRuntime() {
         hasUpdate={hasUpdate}
         draftState={draftState}
         error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
-        onQueryChange={withPageReset(setQuery)}
-        onTypeChange={withPageReset(setType)}
-        onStatusChange={withPageReset(setStatus)}
-        onRescueRegionChange={withPageReset(setRescueRegion)}
-        onPublishedFromChange={withPageReset(setPublishedFrom)}
-        onPublishedToChange={withPageReset(setPublishedTo)}
-        onMapVisibilityChange={withPageReset(setMapVisibility)}
-        onHasUpdateChange={withPageReset(setHasUpdate)}
-        onDraftStateChange={withPageReset(setDraftState)}
+        onQueryChange={undefined}
+        onTypeChange={(value) => changeFilter({ type: value })}
+        onStatusChange={(value) => changeFilter({ status: value })}
+        onRescueRegionChange={(value) => changeFilter({ rescueRegion: value })}
+        onPublishedFromChange={(value) => changeFilter({ publishedFrom: value })}
+        onPublishedToChange={(value) => changeFilter({ publishedTo: value })}
+        onMapVisibilityChange={(value) => changeFilter({ mapVisibility: value })}
+        onHasUpdateChange={(value) => changeFilter({ hasUpdate: value })}
+        onDraftStateChange={(value) => changeFilter({ draftState: value })}
         onPageChange={setPage}
-        fetching={contentQuery.isFetching}
+        fetching={contentQuery.isFetching || listState.isDebouncing}
         onRefresh={() => void queryClient.invalidateQueries({ queryKey: ["admin-content"] })}
       />
     </>
@@ -195,6 +277,7 @@ type ContentManagementViewProps = {
   data?: ContentListResponse;
   loading: boolean;
   query?: string;
+  queryInput?: InputHTMLAttributes<HTMLInputElement>;
   type?: ContentType | "all";
   status?: ContentStatus | "all";
   rescueRegion?: string;
@@ -222,6 +305,7 @@ function ContentManagementView({
   data,
   loading,
   query = "",
+  queryInput,
   type = "all",
   status = "all",
   rescueRegion = "",
@@ -367,6 +451,66 @@ function ContentManagementView({
         <SummaryCard label="本頁救援故事" value={summary.rescueStories} failed={failed} />
       </div>
 
+      <section
+        className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+        aria-labelledby="content-eligibility-queue"
+      >
+        <h2 id="content-eligibility-queue" className="font-semibold text-[var(--color-panel)]">
+          本頁內容資格待核對
+        </h2>
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+          只讀清單；未分類內容保持現有公開狀態。正式下架或補上文案前，請逐項取得內容批准。
+        </p>
+        {failed ? (
+          <p role="alert" className="mt-3 text-sm">
+            無法載入待核對清單。
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {rows
+              .filter(
+                (item) =>
+                  item.contentClass === "demo" ||
+                  (item.status === "published" && item.contentClass !== "verified"),
+              )
+              .map((item) => (
+                <li
+                  key={item.id}
+                  className="flex flex-wrap items-start justify-between gap-2 rounded-md border border-[var(--color-border)] p-3 text-sm"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold">
+                      {item.title} · {item.contentClass === "demo" ? "示範" : "待核實"}
+                    </p>
+                    <p className="break-all text-xs text-[var(--color-text-muted)]">
+                      ID {item.id} · 公開位置 /stories/{item.slug}
+                      {item.storyProfile?.isFeatured ? " · 精選候選" : ""}
+                      {item.storyProfile?.showOnMap ? " · 地圖候選" : ""}
+                    </p>
+                    <p className="text-xs text-[var(--color-text-muted)]">
+                      建議：核對資料來源、負責人與生效日期，記錄批准後再更改分類。
+                    </p>
+                  </div>
+                  <Link
+                    to="/admin/content/$id"
+                    params={{ id: item.id }}
+                    className="shrink-0 font-semibold text-[var(--color-primary)] underline"
+                  >
+                    檢視
+                  </Link>
+                </li>
+              ))}
+            {rows.every(
+              (item) =>
+                item.contentClass !== "demo" &&
+                (item.status !== "published" || item.contentClass === "verified"),
+            ) ? (
+              <li className="text-sm text-[var(--color-text-muted)]">本頁沒有待核對內容。</li>
+            ) : null}
+          </ul>
+        )}
+      </section>
+
       <section className="space-y-3">
         <div className="grid gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
@@ -375,8 +519,11 @@ function ContentManagementView({
               搜尋
             </span>
             <input
-              value={query}
-              onChange={(event) => onQueryChange?.(event.target.value)}
+              {...(queryInput ?? {
+                value: query,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                  onQueryChange?.(event.target.value),
+              })}
               placeholder="標題、摘要或 slug"
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm font-normal"
             />
@@ -493,7 +640,7 @@ function ContentManagementView({
           error={error}
           onRetry={onRefresh}
         />
-        {data?.pagination && onPageChange ? (
+        {!failed && data?.pagination && onPageChange ? (
           <TablePager
             page={data.pagination.page}
             pageSize={data.pagination.pageSize}

@@ -118,3 +118,17 @@ describe("writer and reader agree", () => {
     expect(toPublicProfileFields(parsePublicAnimalProfile(built.profile))).toEqual(original);
   });
 });
+
+test("sponsor facts round-trip through the approved profile writer", () => {
+  const input = fields({ sponsorUse: "糧食及覆診", recentProgress: "已完成術後檢查" });
+  const result = buildPublicProfile(input);
+  expect(result.ok).toBe(true);
+  if (!result.ok) return;
+  expect(parsePublicAnimalProfile(result.profile).sponsorUse).toBe("糧食及覆診");
+  expect(toPublicProfileFields(parsePublicAnimalProfile(result.profile))).toEqual(input);
+});
+
+test("sponsor text with a bare at-sign is rejected before the database constraint", () => {
+  const result = buildPublicProfile(fields({ sponsorUse: "use @ vet" }));
+  expect(result.ok).toBe(false);
+});

@@ -239,7 +239,16 @@ max_frequency = "1s"
 # Number of characters used in the email OTP.
 otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
-otp_expiry = 3600
+otp_expiry = 900
+
+# Local review only. Hosted templates/settings require separate activation approval.
+[auth.email.template.magic_link]
+subject = "HKSCDA 電郵驗證碼"
+content_path = "./supabase/templates/login-otp.html"
+
+[auth.email.template.confirmation]
+subject = "HKSCDA 電郵驗證碼"
+content_path = "./supabase/templates/login-otp.html"
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]

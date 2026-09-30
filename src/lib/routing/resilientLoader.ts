@@ -10,26 +10,36 @@
  * The loader keeps its own name and inputs; only the return shape gains the
  * wrapper, so the contract rule in the plan holds.
  */
-export type PublicLoaderResult<T> = { status: "ok"; data: T } | { status: "error" };
+export type PublicLoaderResult<T> =
+  | { status: "ok"; data: T }
+  | { status: "error"; referenceId: string };
 
 export function resilientPublicLoader<T>(
   load: () => Promise<T> | T,
+  deps: { createReferenceId?: () => string } = {},
 ): () => Promise<PublicLoaderResult<T>> {
   return async () => {
     try {
       return { status: "ok", data: await load() };
     } catch (error) {
-      // Database messages can contain private content. Log only a safe error code.
-      const candidate =
-        error instanceof Error || (typeof error === "object" && error !== null)
-          ? (error as { code?: unknown }).code
-          : undefined;
-      const code =
-        typeof candidate === "string" && /^[A-Z0-9_]{2,16}$/.test(candidate)
-          ? candidate
-          : "UNKNOWN";
-      console.error("Public loader failed; rendering the unavailable state.", { code });
-      return { status: "error" };
+      // Keep provider messages private. The reference lets support find this safe log.
+      let code = "UNKNOWN";
+      let current: unknown = error;
+      for (let depth = 0; depth < 3; depth++) {
+        if (typeof current !== "object" || current === null) break;
+        const candidate = (current as { code?: unknown }).code;
+        if (typeof candidate === "string" && /^[A-Z0-9_]{2,16}$/.test(candidate)) {
+          code = candidate;
+          break;
+        }
+        current = (current as { cause?: unknown }).cause;
+      }
+      const referenceId = deps.createReferenceId?.() ?? globalThis.crypto.randomUUID();
+      console.error("Public loader failed; rendering the unavailable state.", {
+        code,
+        referenceId,
+      });
+      return { status: "error", referenceId };
     }
   };
 }

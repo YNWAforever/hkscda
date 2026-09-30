@@ -82,7 +82,7 @@ export function VolunteerPage() {
 function VolunteerDirectoryPage() {
   return (
     <>
-      <section className="section-container py-10 space-y-5">
+      <section className="public-container py-10 space-y-5">
         <p className="eyebrow">一起照顧貓狗</p>
         <h1>加入義工團隊</h1>
         <p>選擇合適的服務時間，一起為等待家的貓狗出一分力。</p>
@@ -104,7 +104,7 @@ function VolunteerDirectoryPage() {
         </div>
       </section>
       <PolicySignup />
-      <details className="section-container py-8">
+      <details className="public-container py-8">
         <summary>了解義工服務類別</summary>
         <div className="grid gap-4 md:grid-cols-3">
           {volunteerRoles.map(({ Icon, title, desc }) => (

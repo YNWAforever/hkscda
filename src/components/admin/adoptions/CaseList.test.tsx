@@ -40,10 +40,17 @@ mock.module("@tanstack/react-router", () => ({
 }));
 
 let casesError: Error | null = null;
+let currentRole: "staff" | "admin" = "staff";
 
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
   useQuery: ({ queryKey }: { queryKey: unknown[] }) => {
+    if (String(queryKey[0]) === "admin-me") {
+      return { data: { admin: { role: currentRole } }, isLoading: false, isFetching: false };
+    }
+    if (String(queryKey[0]) === "admin-access-users") {
+      return { data: { users: [] }, isLoading: false, isFetching: false };
+    }
     if (String(queryKey[0]) === "coordinator-statuses") {
       return {
         data: { statuses: [] },
@@ -70,6 +77,15 @@ const render = () => renderToStaticMarkup(<CaseList />);
 describe("CaseList", () => {
   test("renders the case queue", () => {
     expect(render()).toContain("領養個案");
+  });
+
+  test("only admins see bounded bulk assignment controls", () => {
+    currentRole = "staff";
+    expect(render()).not.toContain("批量分派領養個案負責職員");
+    currentRole = "admin";
+    expect(render()).toContain("批量分派領養個案負責職員");
+    expect(render()).toContain("選取全部符合條件（最多 1000 筆）");
+    currentRole = "staff";
   });
 
   test("shows a retry instead of a raw English message and a false empty state on failure", () => {

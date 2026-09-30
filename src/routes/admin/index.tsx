@@ -11,6 +11,7 @@ import {
 
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
+import { MediaRepairQueue } from "../../components/admin/MediaRepairQueue";
 import { LoadFailure } from "../../components/admin/LoadFailure";
 import { fetchAdminJson } from "../../lib/admin/http";
 import type { Animal } from "../../types/animal";
@@ -22,7 +23,7 @@ import { canRoleAccessAdminArea, getAdminAreaForLocation } from "../../lib/admin
 import { adminIdentityQueryOptions } from "../../lib/admin/identity";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
-type DashboardSection = Exclude<AdminSection, "supporters" | "access">;
+type DashboardSection = Exclude<AdminSection, "supporters" | "access" | "tasks">;
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: adminListSearchSchema,
@@ -248,6 +249,15 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
             />{" "}
             待補相片
           </label>
+          {missingPhoto ? (
+            <p
+              role="status"
+              className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-[var(--color-panel)]"
+            >
+              待補相片：{animalsQuery.data?.total ?? 0}{" "}
+              筆。按編號核對動物，再進入「編輯」上載到草稿；儲存、預覽及批准發布前，原公開相片不會被替換。
+            </p>
+          ) : null}
           <AnimalsTable
             key={section}
             animals={animals}
@@ -260,6 +270,11 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
           />
         </>
       )}
+      {isAnimalSection &&
+      identity != null &&
+      canRoleAccessAdminArea(identity.admin.role, "animals") ? (
+        <MediaRepairQueue />
+      ) : null}
     </div>
   );
 }

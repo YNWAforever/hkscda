@@ -5,7 +5,10 @@ export type PublicRescueStoryProfile = Omit<
   "internalAddress" | "internalLocationNotes"
 >;
 
-export type PublicStorySummary = Omit<ContentSummary, "storyProfile"> & {
+export type PublicStorySummary = Omit<
+  ContentSummary,
+  "storyProfile" | "sourceReference" | "contentOwner"
+> & {
   storyProfile: PublicRescueStoryProfile | null;
 };
 

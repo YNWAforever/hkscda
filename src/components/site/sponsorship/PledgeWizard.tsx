@@ -4,14 +4,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { centsToHkd } from "../../../lib/donations/domain";
 import {
+  clearDraft,
+  readDraft,
+  writeDraft,
+  type DraftReadResult,
+} from "../../../lib/forms/localDraft";
+import {
   SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
-  parseDraft,
-  serializeDraft,
+  pickSponsorshipDraftData,
 } from "../../../lib/sponsorship/draft";
-import { SPONSORSHIP_TIER_AMOUNTS_CENTS } from "../../../lib/sponsorship/schemas";
+import {
+  SPONSORSHIP_TIER_AMOUNTS_CENTS,
+  MAX_PROOF_BYTES,
+  PROOF_MIME_TYPES,
+  isIsoDate,
+} from "../../../lib/sponsorship/schemas";
+import type { SponsorshipTerms } from "../../../lib/sponsorship/terms.server";
 import { TurnstileWidget, turnstileEnabled } from "../TurnstileWidget";
 import { useShortlist } from "../ShortlistContext";
-import { createPledgeSubmissionAttempt } from "./pledgeProofUpload";
+import { createPledgeSubmissionAttempt, ProofUploadRequestError } from "./pledgeProofUpload";
 
 type Language = "zh-HK" | "en";
 type MonthlyTier = "100" | "300" | "500" | "custom";
@@ -30,7 +41,15 @@ const copy = {
     email: "電郵",
     phone: "電話（選填）",
     proofTitle: "付款證明（選填，可稍後補交）",
-    proofSkip: "我將稍後透過電郵中的付款方式完成付款",
+    proofSkip: "稍後按核實安排付款",
+    proofUploaded: "已付款，上載證明",
+    termsUnavailable: "助養條款尚未發佈或暫時無法讀取，現時不能提交承諾。請稍後再試。",
+    termsChanged: "條款已有更新。請閱讀最新版本並重新確認；您的表格資料已保留。",
+    proofRequired: "請提供付款金額、有效日期及付款證明檔案。",
+    invalidInput: "請檢查表格資料並修正標示的欄位。",
+    tooLarge: "請縮小檔案或聯絡職員；表格資料已保留。",
+    rateLimited: "提交次數過多。請稍後再試，表格資料已保留。",
+    networkError: "連線中斷。請檢查網絡後重試，毋須重新填寫。",
     method: "付款方式",
     reference: "付款參考",
     amount: "付款金額",
@@ -60,7 +79,17 @@ const copy = {
     email: "Email",
     phone: "Phone (optional)",
     proofTitle: "Payment proof (optional, can be provided later)",
-    proofSkip: "I will pay later using the methods in the confirmation email",
+    proofSkip: "Pay later after confirming arrangements",
+    proofUploaded: "Already paid; upload proof",
+    termsUnavailable:
+      "Approved sponsorship terms are not published or cannot be loaded. Submission is unavailable.",
+    termsChanged:
+      "The terms have changed. Please read and agree to the current version; your form is preserved.",
+    proofRequired: "Provide the payment amount, valid date, and proof file.",
+    invalidInput: "Please correct the highlighted form fields.",
+    tooLarge: "Reduce the file size or contact staff; your form is preserved.",
+    rateLimited: "Too many attempts. Please wait and retry; your form is preserved.",
+    networkError: "Connection lost. Check your network and retry without re-entering your details.",
     method: "Payment method",
     reference: "Payment reference",
     amount: "Payment amount",
@@ -111,44 +140,126 @@ export function PledgeWizard() {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
 
+  const [saveOnDevice, setSaveOnDevice] = useState(false);
+  const [draftOffer, setDraftOffer] = useState<DraftReadResult<Record<string, unknown>> | null>(
+    null,
+  );
+
   useEffect(() => {
     try {
-      const draft = parseDraft(window.localStorage.getItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY));
-      setMonthlyTier((draft.monthlyTier as MonthlyTier) ?? "300");
-      setCustomAmount((draft.customAmount as string) ?? "");
-      setSupporterName((draft.supporterName as string) ?? "");
-      setEmail((draft.email as string) ?? "");
-      setPhone((draft.phone as string) ?? "");
-      setNotes((draft.notes as string) ?? "");
+      const found = readDraft<Record<string, unknown>>(
+        window.localStorage,
+        SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
+      );
+      setDraftOffer(found.state === "none" ? null : found);
     } catch {
-      // Keep the server-rendered defaults when storage is unavailable or invalid.
+      setDraftOffer({ state: "invalid" });
     }
   }, []);
+
   const [emailConsent, setEmailConsent] = useState(true);
   const [whatsappConsent, setWhatsappConsent] = useState(false);
-  const [includeProof, setIncludeProof] = useState(false);
+  const [paymentChoice, setPaymentChoice] = useState<"later" | "proof_uploaded">("later");
+  const includeProof = paymentChoice === "proof_uploaded";
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofMethod, setProofMethod] = useState<PaymentMethod>("fps");
   const [proofReference, setProofReference] = useState("");
   const [proofAmount, setProofAmount] = useState("");
   const [proofDate, setProofDate] = useState("");
   const [termsAgreed, setTermsAgreed] = useState(false);
+  const [terms, setTerms] = useState<SponsorshipTerms | null>(null);
+  const [termsLoading, setTermsLoading] = useState(true);
+  const [proofErrors, setProofErrors] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<Array<{ field: string; reason: string }>>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setTermsLoading(true);
+    setTerms(null);
+    setTermsAgreed(false);
+    void fetch(`/api/sponsorships/terms?language=${encodeURIComponent(language)}`, {
+      headers: { accept: "application/json" },
+    })
+      .then(async (response) => (response.ok ? response.json() : { available: false }))
+      .then((data: { available?: boolean; terms?: SponsorshipTerms }) => {
+        if (!cancelled) setTerms(data.available ? (data.terms ?? null) : null);
+      })
+      .catch(() => {
+        if (!cancelled) setTerms(null);
+      })
+      .finally(() => {
+        if (!cancelled) setTermsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [language]);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const errorSummaryRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (error) errorSummaryRef.current?.focus();
+  }, [error]);
   const [result, setResult] = useState<SubmitResult | null>(null);
   const submissionAttempt = useRef(createPledgeSubmissionAttempt());
 
-  function saveDraft() {
+  useEffect(() => {
+    if (!saveOnDevice || result || draftOffer) return;
+    const timer = window.setTimeout(() => {
+      try {
+        writeDraft(
+          window.localStorage,
+          SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
+          pickSponsorshipDraftData({
+            monthlyTier,
+            customAmount,
+            supporterName,
+            email,
+            phone,
+            notes,
+          }),
+          0,
+        );
+      } catch {
+        // Storage access is optional; the form remains usable.
+      }
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [
+    saveOnDevice,
+    draftOffer,
+    result,
+    monthlyTier,
+    customAmount,
+    supporterName,
+    email,
+    phone,
+    notes,
+  ]);
+
+  function clearSavedDraft() {
     try {
-      window.localStorage.setItem(
-        SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
-        serializeDraft({ monthlyTier, customAmount, supporterName, email, phone, notes }),
-      );
+      clearDraft(window.localStorage, SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY);
     } catch {
-      // Draft persistence is best-effort; submission still proceeds.
+      /* Storage unavailable. */
     }
+    setDraftOffer(null);
+    setSaveOnDevice(false);
+  }
+
+  function restoreSavedDraft() {
+    if (draftOffer?.state !== "available") return;
+    const draft = pickSponsorshipDraftData(draftOffer.draft.data);
+    if (typeof draft.monthlyTier === "string") setMonthlyTier(draft.monthlyTier as MonthlyTier);
+    if (typeof draft.customAmount === "string") setCustomAmount(draft.customAmount);
+    if (typeof draft.supporterName === "string") setSupporterName(draft.supporterName);
+    if (typeof draft.email === "string") setEmail(draft.email);
+    if (typeof draft.phone === "string") setPhone(draft.phone);
+    if (typeof draft.notes === "string") setNotes(draft.notes);
+    setDraftOffer(null);
+    setSaveOnDevice(true);
   }
 
   const amountCents =
@@ -159,8 +270,30 @@ export function PledgeWizard() {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    saveDraft();
-
+    setProofErrors({});
+    setFieldErrors([]);
+    if (!terms || !termsAgreed) {
+      setError(t.termsUnavailable);
+      return;
+    }
+    if (includeProof) {
+      const invalid: Record<string, string> = {};
+      const cents = Math.round(Number(proofAmount) * 100);
+      if (!Number.isFinite(cents) || cents <= 0) invalid.amount = t.proofRequired;
+      if (!isIsoDate(proofDate)) invalid.date = t.proofRequired;
+      if (
+        !proofFile ||
+        proofFile.size <= 0 ||
+        proofFile.size > MAX_PROOF_BYTES ||
+        !PROOF_MIME_TYPES.some((mime) => mime === proofFile.type)
+      )
+        invalid.file = t.proofRequired;
+      if (Object.keys(invalid).length) {
+        setProofErrors(invalid);
+        setError(t.proofRequired);
+        return;
+      }
+    }
     if (turnstileEnabled && !turnstileToken) {
       setError(t.verifyRequired);
       return;
@@ -181,7 +314,7 @@ export function PledgeWizard() {
         contact: { supporterName, email, phone: phone || undefined },
         consents: { email: emailConsent, whatsapp: whatsappConsent },
         notes: notes || undefined,
-        terms: { agreed: true },
+        terms: { agreed: termsAgreed, version: terms.version },
       };
       if (monthlyTier === "custom") payload.customAmountCents = amountCents;
       if (includeProof && proofFile) {
@@ -211,14 +344,43 @@ export function PledgeWizard() {
         }),
       });
       if (response.status === 409) {
-        setError(t.retryConflict);
+        const details = (await response.json().catch(() => ({}))) as { code?: string };
+        if (details.code === "TERMS_CHANGED") {
+          setTermsAgreed(false);
+          setTerms(null);
+          setTermsLoading(true);
+          void fetch(`/api/sponsorships/terms?language=${encodeURIComponent(language)}`)
+            .then((updated) => (updated.ok ? updated.json() : { available: false }))
+            .then((data: { available?: boolean; terms?: SponsorshipTerms }) =>
+              setTerms(data.available ? (data.terms ?? null) : null),
+            )
+            .catch(() => setTerms(null))
+            .finally(() => setTermsLoading(false));
+          setError(t.termsChanged);
+        } else setError(t.retryConflict);
+        return;
+      }
+      if (response.status === 400) {
+        const details = (await response.json().catch(() => ({}))) as {
+          fields?: Array<{ field: string; reason: string }>;
+        };
+        setFieldErrors(Array.isArray(details.fields) ? details.fields : []);
+        setError(t.invalidInput);
+        return;
+      }
+      if (response.status === 413) {
+        setError(t.tooLarge);
+        return;
+      }
+      if (response.status === 429) {
+        setError(t.rateLimited);
         return;
       }
       if (!response.ok) throw new Error("Sponsorship pledge request failed");
       const data = (await response.json()) as SubmitResult;
 
       try {
-        window.localStorage.removeItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY);
+        clearDraft(window.localStorage, SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY);
       } catch {
         // Ignore draft cleanup failure; the pledge already succeeded.
       }
@@ -228,7 +390,15 @@ export function PledgeWizard() {
     } catch (submitError) {
       if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
       console.error(submitError);
-      setError(t.submitError);
+      setError(
+        submitError instanceof ProofUploadRequestError && submitError.status === 413
+          ? t.tooLarge
+          : submitError instanceof ProofUploadRequestError && submitError.status === 429
+            ? t.rateLimited
+            : submitError instanceof TypeError
+              ? t.networkError
+              : t.submitError,
+      );
     } finally {
       setLoading(false);
     }
@@ -253,6 +423,16 @@ export function PledgeWizard() {
         <p className="text-sm text-[var(--color-text-muted)]">
           {t.successRef}: <strong>{result.reference}</strong>
         </p>
+        <p className="text-sm">
+          {language === "zh-HK"
+            ? `整份承諾每月總額：${centsToHkd(amountCents)}；偏好須由職員確認。`
+            : `Total monthly pledge: ${centsToHkd(amountCents)}; staff will confirm preferences.`}
+        </p>
+        <p className="text-sm">
+          {language === "zh-HK"
+            ? "首月及其後每月支持按職員核實安排處理，不會自動扣款。更改或停止請附參考編號電郵 info@hkscda.com。"
+            : "Staff will confirm first and later monthly payments; no automatic charge. Email info@hkscda.com with your reference to change or stop."}
+        </p>
         <a href={result.statusUrl} className="text-[var(--color-primary)] underline">
           {t.viewStatus}
         </a>
@@ -269,6 +449,32 @@ export function PledgeWizard() {
         <p className="text-sm font-semibold text-[var(--color-primary)]">{t.pledgeEyebrow}</p>
         <h1 className="text-3xl font-bold text-[var(--color-panel)]">{t.pledgeTitle}</h1>
       </div>
+      {error && (
+        <div
+          ref={errorSummaryRef}
+          role="alert"
+          className="mb-5 rounded-md border border-[var(--color-error)] p-4 text-sm font-bold text-[var(--color-error)]"
+          tabIndex={-1}
+        >
+          <p>{error}</p>
+          {(Object.keys(proofErrors).length > 0 || fieldErrors.length > 0) && (
+            <ul className="mt-2 list-disc pl-5">
+              {Object.keys(proofErrors).map((field) => (
+                <li key={field}>
+                  <a className="underline" href={`#pledge-proof-${field}`}>
+                    {field}
+                  </a>
+                </li>
+              ))}
+              {fieldErrors.map(({ field, reason }, index) => (
+                <li key={`${field}-${index}`}>
+                  {field}: {reason}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="space-y-6 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-soft"
@@ -292,6 +498,43 @@ export function PledgeWizard() {
             ))}
           </div>
         </div>
+
+        <section className="space-y-2 rounded-md border border-[var(--color-border)] p-3 text-sm">
+          {draftOffer && (
+            <div role="status" className="space-y-2">
+              <p>
+                {draftOffer.state === "available"
+                  ? "此裝置有未完成草稿；恢復前請先確認。相片、同意及付款證明須重新提供。"
+                  : "舊草稿已過期、格式不符或本機儲存不可用；請清除後重新開始。"}
+              </p>
+              {draftOffer.state === "available" && (
+                <button type="button" className="btn-secondary" onClick={restoreSavedDraft}>
+                  恢復草稿並繼續儲存
+                </button>
+              )}
+              <button type="button" className="underline" onClick={clearSavedDraft}>
+                清除草稿並重新開始
+              </button>
+            </div>
+          )}
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              aria-label="在此裝置保存草稿"
+              checked={saveOnDevice}
+              disabled={Boolean(draftOffer)}
+              onChange={(event) => {
+                if (event.target.checked) setSaveOnDevice(true);
+                else clearSavedDraft();
+              }}
+            />
+            <span>
+              {language === "zh-HK"
+                ? "在此裝置保存草稿（7 日後自動清除）"
+                : "Save a draft on this device (expires after 7 days)"}
+            </span>
+          </label>
+        </section>
 
         <ul className="space-y-2">
           {sponsorshipItems.map((item) => (
@@ -323,7 +566,7 @@ export function PledgeWizard() {
           {monthlyTier === "custom" && (
             <input
               id="pledge-custom-amount"
-              aria-invalid={false}
+              aria-invalid={fieldErrors.some((error) => error.field === "customAmountCents")}
               aria-describedby={undefined}
               aria-label={t.customAmount}
               type="number"
@@ -345,7 +588,7 @@ export function PledgeWizard() {
             </span>
             <input
               id="pledge-supporter-name"
-              aria-invalid={false}
+              aria-invalid={fieldErrors.some((error) => error.field === "contact.supporterName")}
               aria-describedby={undefined}
               required
               value={supporterName}
@@ -359,7 +602,7 @@ export function PledgeWizard() {
             </span>
             <input
               id="pledge-email"
-              aria-invalid={false}
+              aria-invalid={fieldErrors.some((error) => error.field === "contact.email")}
               aria-describedby={undefined}
               required
               type="email"
@@ -374,7 +617,7 @@ export function PledgeWizard() {
             </span>
             <input
               id="pledge-phone"
-              aria-invalid={false}
+              aria-invalid={fieldErrors.some((error) => error.field === "contact.phone")}
               aria-describedby={undefined}
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
@@ -384,18 +627,31 @@ export function PledgeWizard() {
         </fieldset>
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-bold">{t.proofTitle}</legend>
+          <legend className="text-sm font-bold">
+            {language === "zh-HK" ? "付款安排" : "Payment choice"}
+          </legend>
           <label className="flex items-center gap-2 text-sm">
             <input
-              id="pledge-include-proof"
-              aria-invalid={false}
-              aria-describedby={undefined}
-              type="checkbox"
-              checked={includeProof}
-              onChange={(event) => setIncludeProof(event.target.checked)}
-              className="h-4 w-4 accent-[var(--color-primary)]"
+              id="pledge-payment-later"
+              type="radio"
+              name="pledge-payment-choice"
+              checked={paymentChoice === "later"}
+              onChange={() => {
+                setPaymentChoice("later");
+                setProofErrors({});
+              }}
             />
-            {includeProof ? t.proofTitle : t.proofSkip}
+            {t.proofSkip}
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              id="pledge-payment-proof"
+              type="radio"
+              name="pledge-payment-choice"
+              checked={includeProof}
+              onChange={() => setPaymentChoice("proof_uploaded")}
+            />
+            {t.proofUploaded}
           </label>
           {includeProof && (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -437,8 +693,8 @@ export function PledgeWizard() {
                 </span>
                 <input
                   id="pledge-proof-amount"
-                  aria-invalid={false}
-                  aria-describedby={undefined}
+                  aria-invalid={Boolean(proofErrors.amount)}
+                  aria-describedby={proofErrors.amount ? "pledge-proof-amount-error" : undefined}
                   type="number"
                   min="1"
                   value={proofAmount}
@@ -452,28 +708,43 @@ export function PledgeWizard() {
                 </span>
                 <input
                   id="pledge-proof-date"
-                  aria-invalid={false}
-                  aria-describedby={undefined}
+                  aria-invalid={Boolean(proofErrors.date)}
+                  aria-describedby={proofErrors.date ? "pledge-proof-date-error" : undefined}
                   type="date"
                   value={proofDate}
                   onChange={(event) => setProofDate(event.target.value)}
                   className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
                 />
               </label>
+              {proofErrors.amount && (
+                <p id="pledge-proof-amount-error" className="text-sm text-[var(--color-error)]">
+                  {proofErrors.amount}
+                </p>
+              )}
+              {proofErrors.date && (
+                <p id="pledge-proof-date-error" className="text-sm text-[var(--color-error)]">
+                  {proofErrors.date}
+                </p>
+              )}
               <label className="block sm:col-span-2">
                 <span className="mb-1 block text-xs font-bold text-[var(--color-text-muted)]">
                   Proof image / PDF
                 </span>
                 <input
                   id="pledge-proof-file"
-                  aria-invalid={false}
-                  aria-describedby={undefined}
+                  aria-invalid={Boolean(proofErrors.file)}
+                  aria-describedby={proofErrors.file ? "pledge-proof-file-error" : undefined}
                   type="file"
                   accept="image/jpeg,image/png,image/webp,application/pdf"
                   onChange={(event) => setProofFile(event.target.files?.[0] ?? null)}
                   className="w-full text-sm"
                 />
               </label>
+              {proofErrors.file && (
+                <p id="pledge-proof-file-error" className="text-sm text-[var(--color-error)]">
+                  {proofErrors.file}
+                </p>
+              )}
             </div>
           )}
         </fieldset>
@@ -519,12 +790,39 @@ export function PledgeWizard() {
             />
             <span>{t.whatsappConsent}</span>
           </label>
+          {terms ? (
+            <p className="text-sm">
+              <a
+                href={terms.documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {language === "zh-HK" ? "閱讀已發佈助養條款" : "Read published sponsorship terms"}:{" "}
+                {terms.title}
+              </a>{" "}
+              · {language === "zh-HK" ? "版本" : "Version"}{" "}
+              <span title={terms.version}>{terms.version.slice(0, 12)}…</span> ·{" "}
+              {new Date(terms.documentDate).toLocaleDateString(language, {
+                timeZone: "Asia/Hong_Kong",
+              })}
+            </p>
+          ) : (
+            <p role="status" className="text-sm">
+              {termsLoading
+                ? language === "zh-HK"
+                  ? "載入條款中…"
+                  : "Loading terms…"
+                : t.termsUnavailable}
+            </p>
+          )}
           <label className="flex items-start gap-3 text-sm">
             <input
               id="pledge-terms"
               aria-invalid={false}
               aria-describedby={undefined}
               required
+              disabled={!terms}
               type="checkbox"
               checked={termsAgreed}
               onChange={(event) => setTermsAgreed(event.target.checked)}
@@ -534,6 +832,34 @@ export function PledgeWizard() {
           </label>
         </fieldset>
 
+        <section
+          aria-label={language === "zh-HK" ? "助養承諾摘要" : "Sponsorship commitment summary"}
+          className="space-y-2 rounded-md border border-[var(--color-border)] p-4 text-sm"
+        >
+          <h2 className="font-bold">{language === "zh-HK" ? "提交前確認" : "Before you submit"}</h2>
+          <p>
+            {language === "zh-HK"
+              ? "整份助養承諾每月總額："
+              : "Total monthly pledge for all preferences: "}
+            <strong>{centsToHkd(amountCents)}</strong>
+          </p>
+          <p>
+            {language === "zh-HK"
+              ? `已選 ${sponsorshipItems.length} 隻動物作偏好；排序只供職員參考，並非保證配對。`
+              : `${sponsorshipItems.length} animal preference(s); staff will confirm the match. Ranking does not guarantee a match.`}
+          </p>
+          <p>
+            {language === "zh-HK"
+              ? "首月及其後每月支持均須按職員核實安排處理，本站不會自動扣款。"
+              : "The first and following monthly payments require arrangements confirmed by staff. This site does not charge automatically."}
+          </p>
+          <p>
+            {language === "zh-HK"
+              ? "如要更改或停止承諾，請以參考編號電郵 info@hkscda.com 聯絡職員。"
+              : "To change or stop a pledge, email info@hkscda.com with your reference."}
+          </p>
+        </section>
+
         <TurnstileWidget
           resetKey={turnstileResetKey}
           onVerify={setTurnstileToken}
@@ -541,15 +867,9 @@ export function PledgeWizard() {
           language={language === "en" ? "en" : "zh-tw"}
         />
 
-        {error && (
-          <p role="alert" className="text-sm font-bold text-[var(--color-error)]">
-            {error}
-          </p>
-        )}
-
         <button
           type="submit"
-          disabled={loading || !termsAgreed || (turnstileEnabled && !turnstileToken)}
+          disabled={loading || !terms || !termsAgreed || (turnstileEnabled && !turnstileToken)}
           className="btn-primary w-full disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}

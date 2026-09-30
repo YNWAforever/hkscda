@@ -33,6 +33,13 @@ describe("admin role access mapping", () => {
     expect(canRoleAccessAdminArea("admin", "accessManagement")).toBe(true);
   });
 
+  test("allows all active staff roles into the read-only task overview", () => {
+    for (const role of ["staff", "treasurer", "admin"] as const) {
+      expect(canRoleAccessAdminArea(role, "taskOverview")).toBe(true);
+    }
+    expect(getAdminAreaForLocation({ pathname: "/admin/tasks" })).toBe("taskOverview");
+  });
+
   test("selects the first useful landing route for each role", () => {
     expect(getFirstAllowedAdminRoute("staff")).toBe("/admin?section=cat");
     expect(getFirstAllowedAdminRoute("treasurer")).toBe("/admin?section=payments");

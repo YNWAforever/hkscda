@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 export type AdminSection =
+  | "tasks"
   | "cat"
   | "dog"
   | "sponsor"

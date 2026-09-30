@@ -38,6 +38,8 @@ test("public profile excludes private keys and rejects invalid fields independen
     suitability: "newbie",
     personality: null,
     health: null,
+    sponsorUse: null,
+    recentProgress: null,
     story: "A verified rescue story",
     recordDate: "2026-09-07",
   });
@@ -85,4 +87,21 @@ test("contact identifiers and oversized text never leave the public projection",
     parsePublicAnimalProfile({ health: "Call 9123 4567", story: "x".repeat(8001) }).health,
   ).toBeNull();
   expect(parsePublicAnimalProfile({ story: "x".repeat(8001) }).story).toBeNull();
+});
+
+test("optional sponsor use and recent progress survive only when public-safe", () => {
+  const profile = parsePublicAnimalProfile({
+    sponsorUse: "獸醫檢查及糧食",
+    recentProgress: "本月體重穩定",
+    health: "需要定期覆診",
+  });
+  expect(profile.sponsorUse).toBe("獸醫檢查及糧食");
+  expect(profile.recentProgress).toBe("本月體重穩定");
+  expect(
+    parsePublicAnimalProfile({
+      sponsorUse: "聯絡 test@example.com",
+      recentProgress: "x".repeat(2001),
+    }).sponsorUse,
+  ).toBeNull();
+  expect(parsePublicAnimalProfile({ recentProgress: "x".repeat(2001) }).recentProgress).toBeNull();
 });

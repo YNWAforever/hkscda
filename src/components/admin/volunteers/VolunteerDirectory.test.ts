@@ -33,6 +33,23 @@ describe("volunteer directory", () => {
     expect(html).toContain("/admin/volunteers/people/profile-1?");
     expect(html).toContain("page=2");
   });
+  test("admin selection is explicit and unavailable without selection context", () => {
+    const props = {
+      data: { profiles: [profile], total: 1, page: 1, limit: 25 },
+      search: { page: 1 },
+    };
+    expect(renderToStaticMarkup(createElement(DirectoryResults, props))).not.toContain(
+      'type="checkbox"',
+    );
+    const html = renderToStaticMarkup(
+      createElement(DirectoryResults, {
+        ...props,
+        selection: { ids: [profile.id], disabled: false, toggle: () => {} },
+      }),
+    );
+    expect(html).toContain('aria-label="選取 同名義工"');
+    expect(html).toContain('checked=""');
+  });
   test("distinguishes no search results from empty directory", () => {
     const data = { profiles: [], total: 0, page: 1, limit: 25 };
     expect(

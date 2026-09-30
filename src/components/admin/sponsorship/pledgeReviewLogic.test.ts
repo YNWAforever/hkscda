@@ -42,6 +42,12 @@ describe("buildPledgeListSearchParams", () => {
     expect(params.get("pageSize")).toBe("10");
   });
 
+  test("serializes the pending-proof queue for direct task-card navigation", () => {
+    const params = buildPledgeListSearchParams({ proof: "pending", page: 2, pageSize: 25 });
+    expect(params.get("proof")).toBe("pending");
+    expect(params.get("page")).toBe("2");
+  });
+
   test("falls back to page 1 / pageSize 25 for invalid numbers", () => {
     const params = buildPledgeListSearchParams({ page: 0, pageSize: -5 });
     expect(params.get("page")).toBe("1");

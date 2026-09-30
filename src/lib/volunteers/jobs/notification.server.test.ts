@@ -64,3 +64,27 @@ test("auth fallback accepts only confirmed email", () => {
     }),
   ).toBe("verified@example.invalid");
 });
+test("bulk operation follow-up payload cannot send without separate delivery approval", async () => {
+  let sent = 0;
+  let deferred = "";
+  const result = await createVolunteerNotificationDispatcher({
+    resolve: async () => ({
+      to: "synthetic@example.invalid",
+      name: "Synthetic",
+      subject: "Test",
+      body: "Test",
+    }),
+    send: async () => {
+      sent++;
+      return { kind: "accepted", providerMessageId: "synthetic" };
+    },
+    accepted: async () => {},
+    reject: async () => {},
+    defer: async (_job, reason) => {
+      deferred = reason;
+    },
+  })({ ...job, payload: { type: "session_cancel" } });
+  expect(result).toBe("queued");
+  expect(sent).toBe(0);
+  expect(deferred).toBe("dry_run_no_provider_delivery");
+});
