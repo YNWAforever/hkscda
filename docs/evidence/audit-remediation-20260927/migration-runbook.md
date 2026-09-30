@@ -236,3 +236,8 @@ See [sequential-merge-173-20260930.md](sequential-merge-173-20260930.md): app `4
 ## PR175 current preparation — 2026-09-30
 
 See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `04d673b8ef64d690ed75bf47cdc0175aefed5b02`, serialized/actor-scoped snapshotrecovery andpaginationfixes. Full3125pass145skip9862assertions;19focused86assertions;type/lint/build0withexplicitfinal-counterclarificationboundary;1000syntheticresult897success100skip3conflict/auditrollback;12browsercases/Axe0.59-fileinventory;local-schema-ready,notdeployed/notenabled. #172–#174fivegreen;#156releaseblockretained.
+
+
+## PR177 current preparation — 2026-09-30
+
+See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9`. Production version fence is already provided by149; duplicate177DDL reproduced42701 and replaced with narrow direct-EXECUTE revoke.15-row preservation/grant/trigger rehearsal0;5focused101assertions;full3140pass141skip;type/lint/build0.60-file manifest. Grant change not applied in production. #161 single migration approval received; ordered release remains blocked at156.
