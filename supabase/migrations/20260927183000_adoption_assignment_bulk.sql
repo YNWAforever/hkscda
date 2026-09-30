@@ -151,7 +151,7 @@ begin
   where id=p_operation and actor_user_id=p_actor for update;
   if not found then raise exception 'Adoption assignment operation unavailable' using errcode='42501';end if;
   perform private.require_adoption_assignment_bulk_assignee(v_op.assignee_user_id);
-  if v_op.expires_at<=now() then raise exception 'Adoption assignment preview expired' using errcode='P0001';end if;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Adoption assignment preview expired' using errcode='P0001';end if;
   select * into v_item from public.adoption_assignment_bulk_item
   where operation_id=p_operation and case_id=p_case for update;
   if not found then raise exception 'Adoption assignment item unavailable' using errcode='42501';end if;
@@ -163,6 +163,8 @@ begin
     for share;
   v_stage_open := found;
   select * into v_case from public.adoption_case where id=p_case for update;
+  -- Lock waits can outlive the snapshot; reject before any assignment/result/audit write.
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Adoption assignment preview expired' using errcode='P0001';end if;
   if v_case.id is null or v_case.closed_at is not null or v_case.processed then
     v_status:='skipped';v_reason:='unavailable';
   elsif v_case.status_id<>v_op.status_id then v_status:='conflict';v_reason:='stage_changed';

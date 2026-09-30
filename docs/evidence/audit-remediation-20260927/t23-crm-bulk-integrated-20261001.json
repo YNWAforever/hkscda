@@ -1,0 +1,35 @@
+[
+  {
+    "recoveryBlocksPreview": true,
+    "width": 390,
+    "recoveryPreserved": true,
+    "recoveryRetry": true,
+    "partialRetryWrites": 25,
+    "preview1000PageRows": 25,
+    "noOverflow": true,
+    "axeViolations": [],
+    "pageErrors": []
+  },
+  {
+    "recoveryBlocksPreview": true,
+    "width": 768,
+    "recoveryPreserved": true,
+    "recoveryRetry": true,
+    "partialRetryWrites": 25,
+    "preview1000PageRows": 25,
+    "noOverflow": true,
+    "axeViolations": [],
+    "pageErrors": []
+  },
+  {
+    "recoveryBlocksPreview": true,
+    "width": 1366,
+    "recoveryPreserved": true,
+    "recoveryRetry": true,
+    "partialRetryWrites": 25,
+    "preview1000PageRows": 25,
+    "noOverflow": true,
+    "axeViolations": [],
+    "pageErrors": []
+  }
+]
