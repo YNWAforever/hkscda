@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": null,
-  "appShaNote": "Combined PR165 integration pending localgates; reviewed parentsde88d883 andbc4b5a6f; later166-179excluded.",
+  "appSha": "7901dd1f203fa9b75469570d300810865411b480",
+  "appShaNote": "PR165 combined runtime source 7901dd1f203fa9b75469570d300810865411b480 passed recorded local gates; later166-179excluded. Following manifest-binding commit changes documentation only; fresh exact-head CI remains required.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "f660721de0e97bab66b0002e376d3eab05d0c955643ef0693c28a53a9cfac368",
   "configVersions": {
@@ -285,9 +285,7 @@
     }
   ],
   "ciRun": {
-    "id": null,
-    "sha": null,
-    "status": "Combined PR165 localgates pending"
+    "status": "fresh exact-head CI pending; local full/type/lint/build passed"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
