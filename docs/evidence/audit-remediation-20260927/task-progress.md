@@ -46,3 +46,8 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - T22 sequential #156: activation gate, challenge reset, pending verification lock and local OTP templates repaired. Full 2964 pass/96 skip/0 fail; typecheck/lint/build 0. Actual isolated Auth sink concurrent OTP check fails (two sessions). Recovery remains disabled and not merge-ready under all-tests-green. See sequential-merge-156-20260930.md.
 
 - T22 sequential #157: identity/unmount fencing, preference error statuses and withdrawal ordering repaired at 09a2d1c. Full 2975 pass/100 skip/0 fail; typecheck/lint 0; isolated service-role/atomic-audit/concurrency 5 tests pass; three-width UI/Axe pass. Production RPC absent and exact approval pending; #156 Auth concurrency remains blocked. See sequential-merge-157-20260930.md.
+
+
+## T22 recovery broker continuation, 2026-09-30
+
+Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).

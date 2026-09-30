@@ -117,3 +117,8 @@ The schema must be applied before the #149 app code. Rehearse locks and triggers
 ## T22 sequential release checkpoint — 2026-09-30
 
 The exact unchanged 20260927163302 supporter preference RPC was rehearsed on the production-schema-only isolated clone, then checked as service_role with denied-role, audit rollback and concurrent idempotency fixtures. Production read-only inventory confirms the RPC is absent; no production DDL has occurred. Exact hash, catalog, commands, rollback and remaining approval are in [PR157 sequential evidence](sequential-merge-157-20260930.md). Recovery activation remains blocked by the separate #156 local Auth concurrent OTP failure.
+
+
+## T22 single-use recovery candidate, 2026-09-30
+
+The manifest now has 47 candidate entries in this #156 worktree. New exact file: `20260930120000_supporter_recovery_single_use.sql`, committed-byte SHA-256 `a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e`. Adds one private RLS challenge table, expiry index and three service-only RPCs; no backfill, Auth-schema patch, cron, supporter linking or fake ledger. Whole-file rollback rehearsal plus catalog/signature/grant/RLS and real isolated Auth20-way single-use tests exit 0. Production read-only catalog still lacks these objects (ledger95/supporters15); production application is not approved yet. Full backup restore remains not-run. Disable recovery and retain additive schema for app rollback; consumed codes and external sessions cannot be undone by dropping schema. Exact preflight, backup freshness, server-only key, supported-browser requirements and no-real-sending activation boundaries: [T22 release evidence](sequential-merge-156-broker-20260930.md).
