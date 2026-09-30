@@ -52,3 +52,12 @@ test("role guidance names the action and keeps proof separate from confirmed pay
   expect(admin.find((card) => card.key === "content_expired")?.guidance).toContain("公開影響");
   expect([...staff, ...treasurer, ...admin].every((card) => card.guidance.length > 0)).toBe(true);
 });
+
+test("treasurer sponsorship guidance stays within financial review and hands assignment to staff", () => {
+  const card = selectTaskDefinitions("treasurer").find(
+    (card) => card.key === "sponsorship_followup",
+  )!;
+  expect(card.guidance).toContain("核對付款");
+  expect(card.guidance).toContain("職員／管理員");
+  expect(card.guidance).not.toContain("指派負責人");
+});
