@@ -149,7 +149,7 @@ begin
   where id=p_operation and actor_user_id=p_actor for update;
   if not found then raise exception 'Volunteer review operation unavailable' using errcode='42501';end if;
   perform private.require_volunteer_review_reviewer(v_op.reviewer_user_id);
-  if v_op.expires_at<=now() then raise exception 'Volunteer review preview expired' using errcode='P0001';end if;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Volunteer review preview expired' using errcode='P0001';end if;
   select * into v_item from public.volunteer_review_bulk_item
   where operation_id=p_operation and profile_id=p_profile for update;
   if not found then raise exception 'Volunteer review item unavailable' using errcode='42501';end if;
@@ -158,6 +158,8 @@ begin
   end if;
   select * into v_profile from public.volunteer_profile where id=p_profile for update;
   select * into v_assignment from public.volunteer_profile_review_assignment where profile_id=p_profile for update;
+  -- Locks may outlive the snapshot; reject before assignment, result or audit writes.
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Volunteer review preview expired' using errcode='P0001';end if;
   if v_profile.id is null or v_profile.status='suspended' then
     v_status:='skipped';v_reason:='unavailable';
   elsif v_profile.revision<>v_item.expected_profile_revision

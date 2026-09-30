@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "ea7541079ca3cd3c0390f9f3bef1a8665b4746f2",
-  "appShaNote": "PR174 role-accurate task guidance plus verified predecessors; PR175-179 excluded.",
-  "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "4cec1cbade404ce3aebcd55ff8b8a49ae3696f05a57109b59fe927511511ea59",
+  "appSha": null,
+  "appShaNote": "PR174 combined candidate; reviewed own head0e7e4e75f134c40a99b8842d962ce39b0a9d5ff5 and predecessorda2d9b85a239ba41f3590f653a9df490aedfc8a7; later candidates excluded.",
+  "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
+  "schemaManifestHash": "2e3edff4e20ece6673181ce6e6421054374931e34e91f4b7f898c4841d075af5",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -251,27 +251,27 @@
     {
       "version": "20260927172030",
       "file": "20260927172030_crm_tag_bulk.sql",
-      "sha256": "d4a1a51db9b25feae7e440609ce5cfbb410e9e25e2f870f96df26618151489a6"
+      "sha256": "15ca57d14f074a933bdba9001ad3758fe1f6340765321fa0054d032428611522"
     },
     {
       "version": "20260927181701",
       "file": "20260927181701_volunteer_review_bulk.sql",
-      "sha256": "f1f908e3193bcbdab4472ac0681c72351121230083d72fba841a209fe22ae5cc"
+      "sha256": "96149a16e41cdf9fdf2e246b700033877fc91c3c00403a2b2efcd39d12cb3164"
     },
     {
       "version": "20260927183000",
       "file": "20260927183000_adoption_assignment_bulk.sql",
-      "sha256": "300e48d272ca1256bd2081e185c64adc29688a2dcc23641e5266c5baa76e62f1"
+      "sha256": "cd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238"
     },
     {
       "version": "20260927184500",
       "file": "20260927184500_animal_review_bulk.sql",
-      "sha256": "a2b689369ccb803e65d94e75db1f669dec6b9cf43f0132853c22b612b58db40f"
+      "sha256": "8f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41"
     },
     {
       "version": "20260927190000",
       "file": "20260927190000_cms_review_bulk.sql",
-      "sha256": "79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5"
+      "sha256": "b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb"
     },
     {
       "version": "20260927201916",
@@ -291,7 +291,7 @@
     {
       "version": "20260928080000",
       "file": "20260928080000_sponsorship_followup_bulk.sql",
-      "sha256": "d70e5fc37a71a34a7513ee27b435e0f38585bf4ed314626212bb3f3032c2ffec"
+      "sha256": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800"
     },
     {
       "version": "20260928090000",
@@ -302,12 +302,15 @@
       "version": "20260928100000",
       "file": "20260928100000_finance_delivery_retry_guard.sql",
       "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a"
+    },
+    {
+      "version": "20260930120000",
+      "file": "20260930120000_supporter_recovery_single_use.sql",
+      "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
     }
   ],
   "ciRun": {
-    "id": null,
-    "sha": "7136ad049c536fe27fcc4823066d762c618b2c9b",
-    "status": "local full tests/typecheck/lint/build and real 15-case browser suite passed; remote CI pending"
+    "status": "fresh combined exact-head CI pending; scoped integration checks in progress"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -319,6 +322,9 @@
     "docs/evidence/audit-remediation-20260927/pr-status-20260930.json",
     "docs/evidence/audit-remediation-20260927/sequential-merge-162-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-execution-20261001.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-161-20260930.md",
+    "docs/evidence/audit-remediation-20260927/pr-status-20261001.json",
     "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
@@ -333,7 +339,7 @@
     "appSha": null,
     "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
   },
-  "releaseDecision": "NO-GO for next sequential merge; PR156 actual Auth concurrency failure",
+  "releaseDecision": "NO-GO for next sequential release pending #160 named migration approval and latest reviewed-head CI; continue independent preparation.",
   "productionActionsPerformed": [
     {
       "action": "sequential approved merge and automatic deployment",
@@ -620,37 +626,120 @@
         "url": "https://github.com/YNWAforever/hkscda/actions/runs/36624781016",
         "workflowName": "CI"
       }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 156,
+      "effectiveMainPr": 156,
+      "mergeSha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36744827478,
+        "headSha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36744827478",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 157,
+      "effectiveMainPr": 181,
+      "mergeSha": "da3d06b1d462fb6c86d800c4825edeba9823092d",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36750331821,
+        "headSha": "da3d06b1d462fb6c86d800c4825edeba9823092d",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36750331821",
+        "workflowName": "CI"
+      },
+      "correction": "Original #157 targeted its dependency branch. Corrective #181 released identical reviewed code to main without migration replay."
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 158,
+      "effectiveMainPr": 158,
+      "mergeSha": "d507340491dc50a780c7031dbcd459b85ebfff38",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36753543456,
+        "headSha": "d507340491dc50a780c7031dbcd459b85ebfff38",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36753543456",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 159,
+      "effectiveMainPr": 159,
+      "mergeSha": "07e4c881863b715342ed0757aad7bd691a272738",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36758558621,
+        "headSha": "07e4c881863b715342ed0757aad7bd691a272738",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36758558621",
+        "workflowName": "CI"
+      }
     }
   ],
-  "capturedAt": "2026-09-30T00:33:30.021484+00:00",
-  "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
+  "capturedAt": "2026-09-30T19:55:37.086189+00:00",
+  "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
-  "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "58 source inventory entries; apply only specifically approved files after catalog checks, never rewrite historical ledger.",
+  "productionSchemaLedgerCountObserved": 98,
+  "migrationManifestNote": "59 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
   "productionCiRun": {
-    "id": 36624781016,
-    "sha": "24196faf027998388eff3196a6979e23566e2443",
+    "id": 36758558621,
+    "sha": "07e4c881863b715342ed0757aad7bd691a272738",
     "status": "success; all five gates"
   },
   "remainingApprovals": {
-    "migration157": "approved; waits for predecessors",
-    "migration159": "exact approval requested; pending",
-    "migration160": "exact approval requested; pending",
-    "migration161": "exact approval requested; pending",
-    "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
-    "migration164": "exact approval requested; pending",
-    "migration165": "exact approval requested after five current-head CI gates succeeded; pending",
-    "migration166": "exact approval requested after five current-head CI gates succeeded; pending",
-    "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained",
-    "migration169": "exact approval requested after latest five CI gates succeeded; pending",
-    "migration170": "exact approval requested after five CI gates green; pending",
-    "migration172": "exact approval requested after five CI gates green; pending",
-    "migration173": "not yet requested; isolated exact SQL/1000job/concurrentoneaudit rehearsal passed"
+    "migration160": "named single migration approval requested; pending",
+    "migration161": "explicit filename/schema/backfill approval already received; operative after stricter guards, per recorded ruling; waits for predecessor and fresh preflight",
+    "migration162": "new exact named migration approval pending",
+    "laterActivation": "approved terms/methods/provider sandbox/hosted identities/content and schedules remain separately gated",
+    "migration164": "named exact migration approval pending; updated b564a09a expiry guards disclosed",
+    "migration165": "named exact d4f68382 manual-payment RPC/reference index approval pending; no production financial operation",
+    "migration166": "named exact 8c1b4550 quality read RPC/index approval pending; no content mutation"
   },
   "blockedGate": {
-    "pr": 156,
-    "environment": "isolated Supabase Auth v2.197.0 and Mailpit",
-    "result": "one OTP redeemed concurrently issued two sessions; expected one; exit1",
+    "pr": 160,
+    "environment": "production release authorization",
+    "result": "PR160 named production migration approval pending; test-proof follow-up and fresh exact-head CI in progress",
     "enabled": false
+  },
+  "sequentialProgress": {
+    "requestedPrRange": [
+      134,
+      179
+    ],
+    "requestedCount": 46,
+    "actualMainReleasedCount": 26,
+    "throughPr": 159,
+    "note": "#157 actual main release is corrective #181; #180 remains explicitly do-not-merge evidence branch."
+  },
+  "approvedMigrationReceipts": [
+    {
+      "sourceFile": "20260930120000_supporter_recovery_single_use.sql",
+      "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e",
+      "providerVersion": "20260930163010"
+    },
+    {
+      "sourceFile": "20260927163302_supporter_marketing_preference.sql",
+      "sha256": "3c945333e0ee484d61fcfca2c2e29e4dfef9805945d993b2409306eefdf2df89",
+      "providerVersion": "20260930165057"
+    },
+    {
+      "sourceFile": "20260927172030_crm_tag_bulk.sql",
+      "sha256": "15ca57d14f074a933bdba9001ad3758fe1f6340765321fa0054d032428611522",
+      "providerVersion": "20260930180311"
+    }
+  ],
+  "previousSourceFreeze": {
+    "appSha": "026caeca9c1ff3cf799b2dfe0baf4654990832e1",
+    "schemaManifestHash": "2e3edff4e20ece6673181ce6e6421054374931e34e91f4b7f898c4841d075af5",
+    "migrationCount": 59
   }
 }

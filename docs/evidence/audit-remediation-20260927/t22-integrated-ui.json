@@ -1,0 +1,50 @@
+{
+  "environment": "actual SupporterPage / loopback Vite / synthetic HTTP, Auth and Turnstile boundaries",
+  "results": [
+    {
+      "width": 390,
+      "keyboard": true,
+      "expiredThenValid": true,
+      "freshChallenges": true,
+      "providerOtpCalls": 0,
+      "sessionInstallation": true,
+      "lateActorChangeRefused": true,
+      "logout": true,
+      "axeViolations": 0,
+      "overflow": false,
+      "pageErrors": 0,
+      "syntheticOnly": true,
+      "portal": true
+    },
+    {
+      "width": 768,
+      "keyboard": true,
+      "expiredThenValid": true,
+      "freshChallenges": true,
+      "providerOtpCalls": 0,
+      "sessionInstallation": true,
+      "lateActorChangeRefused": true,
+      "logout": true,
+      "axeViolations": 0,
+      "overflow": false,
+      "pageErrors": 0,
+      "syntheticOnly": true,
+      "portal": true
+    },
+    {
+      "width": 1366,
+      "keyboard": true,
+      "expiredThenValid": true,
+      "freshChallenges": true,
+      "providerOtpCalls": 0,
+      "sessionInstallation": true,
+      "lateActorChangeRefused": true,
+      "logout": true,
+      "axeViolations": 0,
+      "overflow": false,
+      "pageErrors": 0,
+      "syntheticOnly": true,
+      "portal": true
+    }
+  ]
+}
