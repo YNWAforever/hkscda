@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "appSha": "a3dc126024267015a17939d6c5cd3715bbcce1f0",
-  "appShaNote": "T23 guarded CRM assignment source freeze a3dc126 stacked on #177; following evidence commit has no runtime changes",
-  "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "148405b49c2f978b3580fe42add27cc729c106ed4380a58d05baf3435c013fde",
+  "appSha": "c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9",
+  "appShaNote": "PR177 existing version fence compatibility and restricted trigger execution plus predecessors; PR178-179 excluded.",
+  "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
+  "schemaManifestHash": "697d0f55bc97e05ef35441a3ac356e8d5b135447e4588c319e96e59387a71b3d",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
     "sponsorshipTermsPdfSha256": null,
     "volunteerPolicy": null,
     "publishedContentRevision": null,
-    "reason": "Production-approved versions and private candidate config not supplied; do not enable writes"
+    "reason": "Operational activation versions not certified in this package; payment admission disabled. Separate method/content/terms/provider approvals remain required; null is not a default."
   },
   "migrationChecksums": [
     {
@@ -189,13 +189,53 @@
       "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
     },
     {
-      "version": "20260927130000",
-      "file": "20260927130000_sponsor_public_profile_fields.sql",
+      "version": "20260927130600",
+      "file": "20260927130600_sponsor_public_profile_fields.sql",
       "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
     },
     {
+      "version": "20260927090000",
+      "file": "20260927090000_crm_private_export_jobs.sql",
+      "sha256": "6665fcf0ef6ec9d783bca79ad7cd9769110a8a5c9a04f15c3a7a8463d4ade162"
+    },
+    {
+      "version": "20260927110000",
+      "file": "20260927110000_crm_supporter_edit_version.sql",
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+    },
+    {
+      "version": "20260927120000",
+      "file": "20260927120000_checkout_policy_gate.sql",
+      "sha256": "eddfba73603c199811c628584f4b0f30347ced0e18916b04c70bc69d4fb7d22c"
+    },
+    {
+      "version": "20260927120500",
+      "file": "20260927120500_estate_versioned_commands.sql",
+      "sha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "version": "20260927130000",
+      "file": "20260927130000_payment_instruction_snapshots.sql",
+      "sha256": "aceef86734c3616688fcdb7da6cf27e7fef31ffd0bd46524d896fb05b87e2758"
+    },
+    {
+      "version": "20260927130500",
+      "file": "20260927130500_atomic_adoption_fee_reorder.sql",
+      "sha256": "dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23"
+    },
+    {
       "version": "20260927140000",
-      "file": "20260927140000_media_repair_retry_schedule.sql",
+      "file": "20260927140000_donation_delivery_recovery.sql",
+      "sha256": "7368ea1052220be96c71b26f9003f26e259ea51a69f83dca031a79152d8913d3"
+    },
+    {
+      "version": "20260927150000",
+      "file": "20260927150000_sponsorship_terms_document_kind.sql",
+      "sha256": "1f32b4531134e117baf8ff236f2250ca839b2da27ce8560c08498db576b754b3"
+    },
+    {
+      "version": "20260927140500",
+      "file": "20260927140500_media_repair_retry_schedule.sql",
       "sha256": "dfe96f1a4f8d73a0e8f606e14fb2854d8c91c2b6818cc2917c279a0d85e1e429"
     },
     {
@@ -211,32 +251,32 @@
     {
       "version": "20260927172030",
       "file": "20260927172030_crm_tag_bulk.sql",
-      "sha256": "f106bf021bcc557acf18300bc8a02ec102fb03f6ef677c4d00703cae3dc8fd00"
+      "sha256": "d4a1a51db9b25feae7e440609ce5cfbb410e9e25e2f870f96df26618151489a6"
     },
     {
       "version": "20260927181701",
       "file": "20260927181701_volunteer_review_bulk.sql",
-      "sha256": "ab281bdd9c94b184772d4a59418f6563cb2b3f56fca53016a9d62fc8a9b3e3b0"
+      "sha256": "f1f908e3193bcbdab4472ac0681c72351121230083d72fba841a209fe22ae5cc"
     },
     {
       "version": "20260927183000",
       "file": "20260927183000_adoption_assignment_bulk.sql",
-      "sha256": "575ffb9b9b60f59c3c02d0866bf666d28365d0d8eaff98f792a19bc30801f682"
+      "sha256": "300e48d272ca1256bd2081e185c64adc29688a2dcc23641e5266c5baa76e62f1"
     },
     {
       "version": "20260927184500",
       "file": "20260927184500_animal_review_bulk.sql",
-      "sha256": "cfbabd9a6bb393ec90200bdb05c2ff6314c035e7839661e99365872362a69e52"
+      "sha256": "a2b689369ccb803e65d94e75db1f669dec6b9cf43f0132853c22b612b58db40f"
     },
     {
       "version": "20260927190000",
       "file": "20260927190000_cms_review_bulk.sql",
-      "sha256": "ffbce79aa8220b3aa1105c84f81c6b1184986902b8a5a34b1189b1cd5b4a1764"
+      "sha256": "79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5"
     },
     {
       "version": "20260927201916",
       "file": "20260927201916_manual_payment_atomic_reference.sql",
-      "sha256": "febcce8174711520ac3006f3462647a8448c10dddc14c694eba389aca3fd9537"
+      "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86"
     },
     {
       "version": "20260927211801",
@@ -246,7 +286,7 @@
     {
       "version": "20260928073000",
       "file": "20260928073000_sponsorship_followup_assignment.sql",
-      "sha256": "c14423a65c843c99fe0b76b3c12ec2de7bb6891188f701eac9d86a1fe1a551ef"
+      "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2"
     },
     {
       "version": "20260928080000",
@@ -271,50 +311,357 @@
     {
       "version": "20260928113000",
       "file": "20260928113000_crm_supporter_version_fence.sql",
-      "sha256": "53e0875e30732534e795b94dde24b1e0c9442e4e3f93dbdd4b4b334a5b339a42"
-    },
-    {
-      "version": "20260928120000",
-      "file": "20260928120000_crm_assignment_bulk.sql",
-      "sha256": "07799b13c740c998b31b9e864c921771eb66044c58f0644f50a6a696813a4e34"
+      "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62"
     }
   ],
   "ciRun": {
-    "id": 36394352630,
-    "sha": "a3dc126024267015a17939d6c5cd3715bbcce1f0",
-    "status": "#178 source CI 36394352630 passed verify, RLS, brand, a11y and performance; evidence-head pending. #177 source CI 36388704067 and evidence-head CI 36389895803 passed five jobs each"
+    "id": null,
+    "sha": "7136ad049c536fe27fcc4823066d762c618b2c9b",
+    "status": "local full tests/typecheck/lint/build and real 15-case browser suite passed; remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
-    "docs/evidence/audit-remediation-20260927/release-checklist.md",
-    "docs/evidence/audit-remediation-20260927/operations-handoff.md",
-    "docs/evidence/audit-remediation-20260927/task-progress.md",
     "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
     "docs/evidence/audit-remediation-20260927/migration-runbook.md",
     "docs/evidence/audit-remediation-20260927/verification.md",
     "docs/evidence/audit-remediation-20260927/ui-performance.md",
     "docs/evidence/audit-remediation-20260927/uat-results.md",
-    "docs/evidence/audit-remediation-20260927/t23-cms-review-bulk.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-atomic.md",
-    "docs/evidence/audit-remediation-20260927/t23-cms-quality-queue.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-proof-queue.md",
-    "docs/evidence/audit-remediation-20260927/t02-readiness.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-followup.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-bulk.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-bank-dryrun.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-delivery-worklist.md",
-    "docs/evidence/audit-remediation-20260927/t23-role-guidance.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-bank-confirmation.md",
-    "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md",
-    "docs/evidence/audit-remediation-20260927/t23-crm-contact-format-preview.md",
-    "docs/evidence/audit-remediation-20260927/t23-crm-version-fence.md",
-    "docs/evidence/audit-remediation-20260927/t23-crm-assignment-bulk.md"
+    "docs/evidence/audit-remediation-20260927/pr-status-20260930.json",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-162-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
     "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
   },
-  "releaseDecision": "NO-GO",
-  "productionActionsPerformed": []
+  "releaseDecision": "NO-GO for next sequential merge; PR156 actual Auth concurrency failure",
+  "productionActionsPerformed": [
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 134,
+      "mergeSha": "f61276f7a7560035ef7da8259eabb9149c82edca",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36502210175,
+        "headSha": "f61276f7a7560035ef7da8259eabb9149c82edca",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36502210175",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 135,
+      "mergeSha": "9609756e69743163e46f9bfde57a5c0cad684255",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36504234340,
+        "headSha": "9609756e69743163e46f9bfde57a5c0cad684255",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36504234340",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 136,
+      "mergeSha": "eea15f0ce71c09067ed590eb70c8b41e67497952",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36505530161,
+        "headSha": "eea15f0ce71c09067ed590eb70c8b41e67497952",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36505530161",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 137,
+      "mergeSha": "6e745fad991d91289e5c33557e33e42d6d731735",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36506914766,
+        "headSha": "6e745fad991d91289e5c33557e33e42d6d731735",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36506914766",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 138,
+      "mergeSha": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36507756796,
+        "headSha": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36507756796",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 139,
+      "mergeSha": "379fa0e128a136b9a4877c49b518b620007a55e0",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36508642202,
+        "headSha": "379fa0e128a136b9a4877c49b518b620007a55e0",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36508642202",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 140,
+      "mergeSha": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36509476864,
+        "headSha": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36509476864",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 141,
+      "mergeSha": "890e84fae048364cbad9a50a3d7785fc7b97c861",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36510299370,
+        "headSha": "890e84fae048364cbad9a50a3d7785fc7b97c861",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36510299370",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 142,
+      "mergeSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36571024953,
+        "headSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36571024953",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 143,
+      "mergeSha": "fa42610f9dfc66284c0b51d005f7c622b82fd28f",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36587348342,
+        "headSha": "fa42610f9dfc66284c0b51d005f7c622b82fd28f",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36587348342",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 144,
+      "mergeSha": "37f7abddfb9caea673b9f07e9b1ba352084cb395",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36588856862,
+        "headSha": "37f7abddfb9caea673b9f07e9b1ba352084cb395",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36588856862",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 145,
+      "mergeSha": "591b8aae10a22d31aa94f08eb3c0652ccf53b19b",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36590275015,
+        "headSha": "591b8aae10a22d31aa94f08eb3c0652ccf53b19b",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36590275015",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 146,
+      "mergeSha": "87e4aa1acfab082bba1a6c97260d74ca5ebd96b5",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36591612497,
+        "headSha": "87e4aa1acfab082bba1a6c97260d74ca5ebd96b5",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36591612497",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 147,
+      "mergeSha": "82c9247f28b4d1dcbd73261c33f2233143540340",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36593182986,
+        "headSha": "82c9247f28b4d1dcbd73261c33f2233143540340",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36593182986",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 148,
+      "mergeSha": "10db7f36315f780eed743b3182a60f1c3ae9c177",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36596400446,
+        "headSha": "10db7f36315f780eed743b3182a60f1c3ae9c177",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36596400446",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 149,
+      "mergeSha": "020e03eeb1b7a54cce908babc5ec3bd271d370a5",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36598019572,
+        "headSha": "020e03eeb1b7a54cce908babc5ec3bd271d370a5",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36598019572",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 150,
+      "mergeSha": "be4fcb642750e5a45839ce90ead6af1747a821f2",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36599383783,
+        "headSha": "be4fcb642750e5a45839ce90ead6af1747a821f2",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36599383783",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 151,
+      "mergeSha": "419f4e0ea597dfa07a8ac265b0744a03fe67f563",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36600633838,
+        "headSha": "419f4e0ea597dfa07a8ac265b0744a03fe67f563",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36600633838",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 152,
+      "mergeSha": "2b718dc8adcc123707885d1827071448ae4cdc6e",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36601994914,
+        "headSha": "2b718dc8adcc123707885d1827071448ae4cdc6e",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36601994914",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 153,
+      "mergeSha": "4304127a030f7e6b49926f0759a655b0a60aaa59",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36620897215,
+        "headSha": "4304127a030f7e6b49926f0759a655b0a60aaa59",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36620897215",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 154,
+      "mergeSha": "68352546b61c1a61b79fad4638640b2dddd30ac9",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36623173950,
+        "headSha": "68352546b61c1a61b79fad4638640b2dddd30ac9",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36623173950",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved merge and automatic deployment",
+      "pr": 155,
+      "mergeSha": "24196faf027998388eff3196a6979e23566e2443",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36624781016,
+        "headSha": "24196faf027998388eff3196a6979e23566e2443",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36624781016",
+        "workflowName": "CI"
+      }
+    }
+  ],
+  "capturedAt": "2026-09-30T00:53:48.625730+00:00",
+  "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
+  "productionDeploymentState": "READY",
+  "productionSchemaLedgerCountObserved": 95,
+  "migrationManifestNote": "59 source inventory entries; apply only specifically approved files after catalog checks, never rewrite historical ledger.",
+  "productionCiRun": {
+    "id": 36624781016,
+    "sha": "24196faf027998388eff3196a6979e23566e2443",
+    "status": "success; all five gates"
+  },
+  "remainingApprovals": {
+    "migration157": "approved; waits for predecessors",
+    "migration159": "exact approval requested; pending",
+    "migration160": "exact approval requested; pending",
+    "migration161": "exact approval requested; pending",
+    "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
+    "migration164": "exact approval requested; pending",
+    "migration165": "exact approval requested after five current-head CI gates succeeded; pending",
+    "migration166": "exact approval requested after five current-head CI gates succeeded; pending",
+    "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained",
+    "migration169": "exact approval requested after latest five CI gates succeeded; pending",
+    "migration170": "exact approval requested after five CI gates green; pending",
+    "migration172": "exact approval requested after five CI gates green; pending",
+    "migration173": "exact approval requested after five CI gates green; pending",
+    "migration175": "not yet requested; isolated fullSQL/1000item/concurrency/auditrollback passed"
+  },
+  "blockedGate": {
+    "pr": 156,
+    "environment": "isolated Supabase Auth v2.197.0 and Mailpit",
+    "result": "one OTP redeemed concurrently issued two sessions; expected one; exit1",
+    "enabled": false
+  }
 }

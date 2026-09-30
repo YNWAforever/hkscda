@@ -19,7 +19,11 @@ export function CrmContactFormatPreviewPanel({
 }) {
   const selectionKey = JSON.stringify([query, roleFilter, selectedIds]);
   const selectionKeyRef = useRef(selectionKey);
-  selectionKeyRef.current = selectionKey;
+  const requestGeneration = useRef(0);
+  if (selectionKeyRef.current !== selectionKey) {
+    selectionKeyRef.current = selectionKey;
+    requestGeneration.current += 1;
+  }
   const [result, setResult] = useState<{
     selectionKey: string;
     value: ContactFormatPreviewResponse;
@@ -33,11 +37,18 @@ export function CrmContactFormatPreviewPanel({
     setError("");
     setBusy(false);
     setPage(1);
-  }, [selectionKey]);
+    const generation = requestGeneration;
+    return () => {
+      generation.current += 1;
+    };
+  }, [selectionKey, selectionDisabled]);
 
   async function preview() {
     if (busy || selectionDisabled || selectedIds.length < 1 || selectedIds.length > 1000) return;
     const scope = selectionKey;
+    const generation = ++requestGeneration.current;
+    const isCurrent = () =>
+      requestGeneration.current === generation && selectionKeyRef.current === scope;
     setBusy(true);
     setError("");
     try {
@@ -45,19 +56,20 @@ export function CrmContactFormatPreviewPanel({
       const filterHash = Array.from(new Uint8Array(digest), (byte) =>
         byte.toString(16).padStart(2, "0"),
       ).join("");
+      if (!isCurrent()) return;
       const value = await fetchAdminJson<ContactFormatPreviewResponse>(endpoint, {
         method: "POST",
         body: JSON.stringify({ ids: selectedIds, filterHash }),
       });
-      if (selectionKeyRef.current !== scope || value.filterHash !== filterHash) return;
+      if (!isCurrent() || value.filterHash !== filterHash) return;
       setResult({ selectionKey: scope, value });
       setPage(1);
     } catch (cause) {
-      if (selectionKeyRef.current === scope) {
+      if (isCurrent()) {
         setError(cause instanceof Error ? cause.message : "無法預覽資料格式");
       }
     } finally {
-      if (selectionKeyRef.current === scope) setBusy(false);
+      if (isCurrent()) setBusy(false);
     }
   }
 
@@ -105,7 +117,7 @@ export function CrmContactFormatPreviewPanel({
             {previewResult.counts.manual_review} · 無需整理 {previewResult.counts.unchanged} ·
             已移除或找不到 {previewResult.counts.skipped}
           </p>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" role="region" aria-label="聯絡資料格式比較" tabIndex={0}>
             <table className="w-full min-w-[42rem] text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--color-border)]">

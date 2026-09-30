@@ -295,15 +295,20 @@ function PledgeStatusContent({ status }: { status: PublicPledgeStatusSummary }) 
                 {centsToHkd(status.amountCents)}
                 <span className="text-sm font-normal text-[var(--color-text-muted)]">/月</span>
               </p>
+              <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+                這是整份助養承諾的每月總額，動物排序只屬偏好，須待職員確認。首月及續期付款按核實安排處理，不會自動扣款。
+              </p>
               {status.hasPaymentProof && (
-                <p className="mt-2 text-xs text-[var(--color-text-muted)]">已收到付款證明</p>
+                <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+                  已收到付款證明，尚待核實
+                </p>
               )}
             </article>
 
             <article className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-soft">
               <h2 className="text-lg font-bold text-[var(--color-panel)]">需要協助？</h2>
               <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                如資料有誤，請以參考編號聯絡 HKSCDA。
+                如需更改或停止承諾，或資料有誤，請以參考編號聯絡 HKSCDA。
               </p>
               <a
                 href={`mailto:info@hkscda.com?subject=Sponsorship%20pledge%20${encodeURIComponent(

@@ -2,13 +2,20 @@ import { SQL } from "bun";
 import { expect, test } from "bun:test";
 
 const url = process.env.BANK_MATCH_CONFIRM_TEST_DATABASE_URL;
-if (
-  url &&
-  (new URL(url).hostname !== "127.0.0.1" ||
-    new URL(url).port !== "57322" ||
-    new URL(url).pathname !== "/postgres")
-)
-  throw new Error("Dedicated local bank match database required");
+if (url) {
+  const target = new URL(url);
+  if (
+    target.protocol !== "postgresql:" ||
+    target.hostname !== "127.0.0.1" ||
+    target.search ||
+    target.hash ||
+    !(
+      (target.port === "57322" && target.pathname === "/postgres") ||
+      (target.port === "52322" && target.pathname === "/audit_pr135_20260929")
+    )
+  )
+    throw new Error("Dedicated local bank match database required");
+}
 
 // All synthetic money, jobs and audit facts roll back together.
 test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
@@ -24,6 +31,14 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
     const fileSha = "a".repeat(64);
     try {
       await db.begin(async (tx) => {
+        const rpc = async (query: string, args: (string | number | null)[]) => {
+          await tx.unsafe("set local role service_role");
+          try {
+            return await tx.unsafe(query, args);
+          } finally {
+            await tx.unsafe("reset role").catch(() => {});
+          }
+        };
         await tx.unsafe(
           "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
           [actor, `${actor}@example.invalid`],
@@ -57,10 +72,11 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           })),
         );
         const create = () =>
-          tx.unsafe(
-            "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result",
-            [actor, fileSha, selected],
-          );
+          rpc("select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result", [
+            actor,
+            fileSha,
+            selected,
+          ]);
         await tx.unsafe(
           "update auth.users set banned_until=now()+interval '1 hour' where id=$1::uuid",
           [actor],
@@ -73,6 +89,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           denied = (error as { errno?: string }).errno;
         }
         await tx.unsafe("rollback to savepoint denied_preview");
+        await tx.unsafe("reset role");
         expect(denied).toBe("42501");
         await tx.unsafe("update auth.users set banned_until=null where id=$1::uuid", [actor]);
 
@@ -92,7 +109,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
             paymentHint: "OTHER-HINT",
           },
         ]);
-        const wrong = await tx.unsafe(
+        const wrong = await rpc(
           "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result",
           [actor, fileSha, wrongHint],
         );
@@ -111,7 +128,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         await tx.unsafe("savepoint expired_apply");
         let expired: string | undefined;
         try {
-          await tx.unsafe("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2)", [
+          await rpc("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2)", [
             actor,
             expiredPreview.operationId,
           ]);
@@ -119,6 +136,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           expired = (error as { errno?: string }).errno;
         }
         await tx.unsafe("rollback to savepoint expired_apply");
+        await tx.unsafe("reset role");
         expect(expired).toBe("P0001");
         const duplicates = JSON.stringify([
           {
@@ -139,14 +157,16 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         await tx.unsafe("savepoint duplicate_reference");
         let duplicate: string | undefined;
         try {
-          await tx.unsafe(
-            "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb)",
-            [actor, fileSha, duplicates],
-          );
+          await rpc("select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb)", [
+            actor,
+            fileSha,
+            duplicates,
+          ]);
         } catch (error) {
           duplicate = (error as { errno?: string }).errno;
         }
         await tx.unsafe("rollback to savepoint duplicate_reference");
+        await tx.unsafe("reset role");
         expect(duplicate).toBe("23505");
         const grants = await tx.unsafe(
           "select has_function_privilege('anon','public.create_finance_bank_match_preview(uuid,text,jsonb)','EXECUTE') anon_allowed,has_function_privilege('authenticated','public.apply_finance_bank_match_item(uuid,uuid,integer)','EXECUTE') auth_allowed,has_function_privilege('service_role','public.apply_finance_bank_match_item(uuid,uuid,integer)','EXECUTE') service_allowed,(select relrowsecurity from pg_class where oid='public.finance_bank_match_item'::regclass) rls",
@@ -159,13 +179,13 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         });
 
         const apply = (ordinal: number) =>
-          tx.unsafe("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,$3) result", [
+          rpc("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,$3) result", [
             actor,
             operationId,
             ordinal,
           ]);
         expect((await apply(1))[0]?.result?.status).toBe("succeeded");
-        const staleCompeting = await tx.unsafe(
+        const staleCompeting = await rpc(
           "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result",
           [actor, competing.operationId],
         );
@@ -180,7 +200,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           payments[1],
         ]);
         await tx.unsafe("set local session_replication_role=origin");
-        const changed = await tx.unsafe(
+        const changed = await rpc(
           "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2) result",
           [actor, changedHint.operationId],
         );
@@ -201,7 +221,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           [payments[1]],
         );
         await tx.unsafe("set local session_replication_role=origin");
-        const versioned = await tx.unsafe(
+        const versioned = await rpc(
           "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2) result",
           [actor, competing.operationId],
         );
@@ -217,10 +237,10 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           reasonCode: "status_changed",
         });
         const operation = (
-          await tx.unsafe(
-            "select public.get_finance_bank_match_operation($1::uuid,$2::uuid) result",
-            [actor, operationId],
-          )
+          await rpc("select public.get_finance_bank_match_operation($1::uuid,$2::uuid) result", [
+            actor,
+            operationId,
+          ])
         )[0]!.result as { state: string; items: Array<{ status: string }> };
         expect(operation.state).toBe("done");
         expect(operation.items.map((item) => item.status)).toEqual(["succeeded", "conflict"]);
@@ -253,7 +273,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         await tx.unsafe("savepoint downgraded_read");
         let readDenied: string | undefined;
         try {
-          await tx.unsafe("select public.get_finance_bank_match_operation($1::uuid,$2::uuid)", [
+          await rpc("select public.get_finance_bank_match_operation($1::uuid,$2::uuid)", [
             actor,
             operationId,
           ]);
@@ -261,11 +281,12 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           readDenied = (error as { errno?: string }).errno;
         }
         await tx.unsafe("rollback to savepoint downgraded_read");
+        await tx.unsafe("reset role");
         expect(readDenied).toBe("42501");
         await tx.unsafe("savepoint downgraded_apply");
         let applyDenied: string | undefined;
         try {
-          await tx.unsafe("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2)", [
+          await rpc("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2)", [
             actor,
             expiredPreview.operationId,
           ]);
@@ -273,6 +294,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           applyDenied = (error as { errno?: string }).errno;
         }
         await tx.unsafe("rollback to savepoint downgraded_apply");
+        await tx.unsafe("reset role");
         expect(applyDenied).toBe("42501");
         throw rollback;
       });
@@ -295,6 +317,11 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
     const payment = crypto.randomUUID();
     const reference = "SYNTH-175-RACE-" + crypto.randomUUID();
     const operationIds: string[] = [];
+    const serviceRpc = (query: string, args: (string | number | null | undefined)[]) =>
+      db.begin(async (tx) => {
+        await tx.unsafe("set local role service_role");
+        return tx.unsafe(query, args);
+      });
     try {
       await db.begin(async (tx) => {
         await tx.unsafe(
@@ -328,7 +355,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         },
       ]);
       for (let n = 0; n < 2; n++) {
-        const created = await db.unsafe(
+        const created = await serviceRpc(
           "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result",
           [actor, "b".repeat(64), selected],
         );
@@ -336,7 +363,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
       }
       const results = await Promise.all(
         operationIds.map((operationId) =>
-          db.unsafe("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result", [
+          serviceRpc("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result", [
             actor,
             operationId,
           ]),
@@ -348,7 +375,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         [payment],
       );
       expect(facts[0]).toMatchObject({ status: "succeeded", audits: 1, jobs: 1 });
-      const replay = await db.unsafe(
+      const replay = await serviceRpc(
         "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result",
         [actor, operationIds[0]],
       );

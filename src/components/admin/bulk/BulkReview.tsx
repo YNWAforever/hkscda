@@ -32,7 +32,7 @@ export function BulkReview({
         {expired ? " · 已過期，請重新預覽" : ""}
       </p>
       <BulkResults items={items} />
-      <div className="max-h-96 overflow-auto">
+      <div className="max-h-96 overflow-auto" role="region" aria-label="逐筆套用差異" tabIndex={0}>
         <table className="w-full min-w-[34rem] text-left text-sm">
           <thead>
             <tr>

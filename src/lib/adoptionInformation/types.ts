@@ -6,6 +6,7 @@ export type BilingualText = Record<AdoptionLanguage, string>;
 
 export type AdoptionFee = {
   id: string;
+  version: number;
   animalType: AdoptionAnimalType;
   itemName: string;
   priceHkd: string;
@@ -15,6 +16,7 @@ export type AdoptionFee = {
 
 export type DogFriendlyEstate = {
   id: string;
+  version: number;
   estateName: string;
   district: string;
   notes: string | null;

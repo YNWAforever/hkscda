@@ -132,3 +132,24 @@ test("CRM format preview accepts the full 1000-row snapshot without truncation",
   expect(result.items).toHaveLength(1000);
   expect(result.counts.skipped).toBe(1000);
 });
+
+test("malformed JSON is a bounded client error before any contact read", async () => {
+  let reads = 0;
+  const handle = createCrmContactFormatPreviewHandler({
+    authorize: async () => undefined,
+    loadRows: async () => {
+      reads++;
+      return [];
+    },
+    now: () => new Date("2026-09-30T00:00:00Z"),
+  });
+  for (const [body, status] of [
+    ["{", 400],
+    ["x".repeat(65537), 413],
+  ] as const) {
+    const response = await handle(new Request(url, { method: "POST", body }));
+    expect(response.status).toBe(status);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  }
+  expect(reads).toBe(0);
+});

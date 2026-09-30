@@ -103,7 +103,7 @@ export function PaymentsReconcile() {
   // outage -- figures a treasurer would reasonably read as "nothing to do".
   const paymentsFailed = paymentsQuery.isError;
 
-  const { data: identityData } = useQuery(adminIdentityQueryOptions());
+  const { data: identityData, isError: identityError } = useQuery(adminIdentityQueryOptions());
 
   const { data: activityData } = useQuery({
     queryKey: ["admin-finance-activity"],
@@ -350,7 +350,14 @@ export function PaymentsReconcile() {
         ))}
       </section>
 
-      {(adminRole === "treasurer" || adminRole === "admin") && <BankStatementDryRunPanel />}
+      {!identityError &&
+        identityData?.admin.status === "active" &&
+        (adminRole === "treasurer" || adminRole === "admin") && (
+          <BankStatementDryRunPanel
+            key={`${identityData.admin.authUserId}:${adminRole}`}
+            actorUserId={identityData.admin.authUserId}
+          />
+        )}
       {(adminRole === "treasurer" || adminRole === "admin") && <DonationDeliveryWorklist />}
 
       <section className="flex flex-wrap items-center gap-2">

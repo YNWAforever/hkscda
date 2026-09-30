@@ -5,9 +5,14 @@ const url = process.env.SPONSORSHIP_FOLLOWUP_BULK_TEST_DATABASE_URL;
 if (url) {
   const parsed = new URL(url);
   if (
+    parsed.protocol !== "postgresql:" ||
     parsed.hostname !== "127.0.0.1" ||
-    parsed.port !== "57322" ||
-    parsed.pathname !== "/postgres"
+    !(
+      (parsed.port === "57322" && parsed.pathname === "/postgres") ||
+      (parsed.port === "52322" && parsed.pathname === "/audit_pr135_20260929")
+    ) ||
+    parsed.search ||
+    parsed.hash
   ) {
     throw new Error("Dedicated local sponsorship bulk database required");
   }
@@ -45,6 +50,12 @@ test.skipIf(!enabled)(
     const ids = Array.from({ length: 4 }, () => crypto.randomUUID());
     try {
       await db.begin(async (tx) => {
+        const rpc = async (query: string, values: string[]) => {
+          await tx.unsafe("set local role service_role");
+          const result = await tx.unsafe(query, values);
+          await tx.unsafe("reset role");
+          return result;
+        };
         for (const id of [actor, assignee]) {
           await tx.unsafe(
             "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
@@ -65,7 +76,7 @@ test.skipIf(!enabled)(
             [id, supporter],
           );
         }
-        const preview = (await tx.unsafe(
+        const preview = (await rpc(
           "select public.create_sponsorship_followup_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
           [actor, "{" + ids.join(",") + "}", assignee, "a".repeat(64)],
         )) as Array<{
@@ -75,7 +86,7 @@ test.skipIf(!enabled)(
           };
         }>;
         const op = preview[0]!.result.operationId;
-        const competing = await tx.unsafe(
+        const competing = await rpc(
           "select public.create_sponsorship_followup_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
           [actor, "{" + ids[0] + "}", assignee, "b".repeat(64)],
         );
@@ -88,14 +99,14 @@ test.skipIf(!enabled)(
         ]);
         const apply = async (id: string) =>
           (
-            await tx.unsafe(
+            await rpc(
               "select public.apply_sponsorship_followup_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
               [actor, op, id],
             )
           )[0].result as { status: string; reasonCode: string | null };
         expect((await apply(ids[0]!)).status).toBe("succeeded");
         expect((await apply(ids[0]!)).status).toBe("succeeded");
-        const competingResult = await tx.unsafe(
+        const competingResult = await rpc(
           "select public.apply_sponsorship_followup_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, competingOp, ids[0]],
         );
@@ -119,7 +130,7 @@ test.skipIf(!enabled)(
           reasonCode: "status_changed",
         });
         const result = (
-          await tx.unsafe(
+          await rpc(
             "select public.get_sponsorship_followup_bulk_operation($1::uuid,$2::uuid) result",
             [actor, op],
           )
@@ -167,6 +178,12 @@ test.skipIf(!enabled)(
       pledge = crypto.randomUUID();
     try {
       await db.begin(async (tx) => {
+        const rpc = async (query: string, values: string[]) => {
+          await tx.unsafe("set local role service_role");
+          const result = await tx.unsafe(query, values);
+          await tx.unsafe("reset role");
+          return result;
+        };
         for (const id of [actor, assignee]) {
           await tx.unsafe(
             "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
@@ -198,7 +215,7 @@ test.skipIf(!enabled)(
         };
         await fail(
           () =>
-            tx.unsafe(
+            rpc(
               "select public.create_sponsorship_followup_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4)",
               [
                 actor,
@@ -209,16 +226,17 @@ test.skipIf(!enabled)(
             ),
           "22023",
         );
-        const preview = await tx.unsafe(
+        const preview = await rpc(
           "select public.create_sponsorship_followup_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
           [actor, "{" + pledge + "}", assignee, "a".repeat(64)],
         );
         const op = preview[0].result.operationId as string;
         const apply = () =>
-          tx.unsafe(
-            "select public.apply_sponsorship_followup_bulk_item($1::uuid,$2::uuid,$3::uuid)",
-            [actor, op, pledge],
-          );
+          rpc("select public.apply_sponsorship_followup_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+            actor,
+            op,
+            pledge,
+          ]);
         await tx.unsafe(
           "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
           [actor],
@@ -277,6 +295,67 @@ test.skipIf(!enabled)(
     } catch (error) {
       if (error !== rollback) throw error;
     } finally {
+      await db.close();
+    }
+  },
+  30000,
+);
+
+test.skipIf(!enabled)(
+  "concurrent operation retries commit one assignment and one item audit",
+  async () => {
+    const db = new SQL(url!, { max: 4, prepare: false }),
+      actor = crypto.randomUUID(),
+      assignee = crypto.randomUUID(),
+      supporter = crypto.randomUUID(),
+      pledge = crypto.randomUUID();
+    let op: string | undefined;
+    try {
+      await db.begin(async (tx) => {
+        for (const id of [actor, assignee]) {
+          await tx`insert into auth.users(id,email,email_confirmed_at) values(${id},${id + "@example.invalid"},now())`;
+          await tx`insert into admin_user(auth_user_id,email,role,status) values(${id},${id + "@example.invalid"},'staff','active')`;
+        }
+        await tx`insert into supporter(id,name,email) values(${supporter},'Synthetic concurrency supporter',${supporter + "@example.invalid"})`;
+        await tx`insert into sponsorship_pledge(id,supporter_id,monthly_tier,amount_cents,language,status) values(${pledge},${supporter},'100',10000,'zh-HK','needs_followup')`;
+        await tx`set local role service_role`;
+        op = (
+          await tx`select create_sponsorship_followup_bulk_preview(${actor}::uuid,${"{" + pledge + "}"}::uuid[],${assignee}::uuid,${"c".repeat(64)}) result`
+        )[0].result.operationId;
+      });
+      const apply = () =>
+        db.begin(async (tx) => {
+          await tx`set local role service_role`;
+          return (
+            await tx`select apply_sponsorship_followup_bulk_item(${actor}::uuid,${op}::uuid,${pledge}::uuid) result`
+          )[0].result;
+        });
+      const results = await Promise.all([apply(), apply()]);
+      expect(results.map((r) => r.status)).toEqual(["succeeded", "succeeded"]);
+      const audits =
+        await db`select action,count(*)::int n from audit_log where actor_user_id=${actor} group by action order by action`;
+      expect([...audits]).toEqual([
+        { action: "sponsorship_followup_bulk.item_result", n: 1 },
+        { action: "sponsorship_followup_bulk.preview", n: 1 },
+        { action: "sponsorship_pledge.assign_followup", n: 1 },
+      ]);
+      expect(
+        (await db`select followup_version::int v from sponsorship_pledge where id=${pledge}`)[0].v,
+      ).toBe(2);
+    } finally {
+      await db.begin(async (tx) => {
+        if (op) {
+          await tx`delete from sponsorship_followup_bulk_item where operation_id=${op}`;
+          await tx`delete from sponsorship_followup_bulk_operation where id=${op}`;
+        }
+        await tx`delete from audit_log where actor_user_id=${actor}`;
+        await tx`delete from sponsorship_pledge where id=${pledge}`;
+        await tx`delete from supporter where id=${supporter}`;
+        for (const id of [actor, assignee]) {
+          await tx`delete from admin_user where auth_user_id=${id}`;
+          await tx`delete from auth.users where id=${id}`;
+        }
+      });
       await db.close();
     }
   },

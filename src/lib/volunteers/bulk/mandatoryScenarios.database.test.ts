@@ -3,14 +3,15 @@ import { expect, test } from "bun:test";
 import { initialPolicyCatalogue } from "../policy/catalogue";
 import { addHkDays } from "./service";
 const url = process.env.VOLUNTEER_TEST_DATABASE_URL;
-if (
-  url &&
-  ![
-    "postgresql://postgres:postgres@127.0.0.1:56322/postgres",
-    "postgres://postgres:postgres@127.0.0.1:56322/postgres",
-  ].includes(url)
-)
-  throw new Error("Dedicated isolated56322 database required");
+const localUrls = [
+  "postgresql://postgres:postgres@127.0.0.1:56322/postgres",
+  "postgres://postgres:postgres@127.0.0.1:56322/postgres",
+];
+// The GitHub job starts its own disposable Supabase stack on 55322.
+if (process.env.CI === "true")
+  localUrls.push("postgresql://postgres:postgres@127.0.0.1:55322/postgres");
+if (url && !localUrls.includes(url))
+  throw new Error("Dedicated isolated volunteer database required");
 const enabled = Boolean(url) && process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES === "1";
 const uuid = () => crypto.randomUUID();
 type Result = {

@@ -93,3 +93,24 @@ test("hint and amount produce candidates only; no row selects or credits a payme
   expect(preview[1]?.candidates.map((payment) => payment.id)).toEqual(["a", "b"]);
   expect(preview.every((row) => !("selectedPaymentId" in row))).toBe(true);
 });
+
+test("invalid duplicate occurrences still exclude a valid reference from candidates", () => {
+  const rows = parseBankStatementCsv(
+    `${header}\nREF-1,2026-09-27,HKD,100.00,\n ref-1 ,2026-09-27,USD,100.00,`,
+  );
+  const result = previewBankStatement(rows, {
+    creditedReferences: [],
+    pendingPayments: [
+      {
+        id: "candidate",
+        provider: "manual",
+        providerRef: null,
+        amountCents: 10000,
+        paymentStatus: "pending",
+        donationStatus: "pending",
+      },
+    ],
+  });
+  expect(result.map((r) => r.status)).toEqual(["duplicate_file", "invalid"]);
+  expect(result.every((r) => r.candidateCount === 0)).toBe(true);
+});

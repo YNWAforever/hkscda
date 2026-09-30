@@ -1,0 +1,7 @@
+# PR163 release-package verification — 2026-09-30
+
+Documentation-only head3db48a5e7a202a5896d5bffe3a15208c135e416b. Inline Python JSON/CSV/Git-byte assertions validated51unique source-file checksums,34matching current tracker states retaining original baseline labels,46PR entries/22merged and22matching successful mainCI runs, and all evidence paths; exit0. Initial validation caught stale plan tracker rows and they were synchronized. Independent review caught undated R01missing-object counts; both copies now label Sep27baseline and retain fresh full-catalog gate. Review closed; git diff --check0.
+
+Production alias metadata re-read:24196faf027998388eff3196a6979e23566e2443 READY/dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk; mainCI36624781016fivegreen. Exact#163CI36632165725 is pending at this record. No runtime changes; inherited #162 tests are labelled with their actual source, not rerun claims. No formal release at#163: #156providerAuth race still blocks next sequential merge, recovery disabled. Exact migration/activation approvals and hostedUAT/fullrestore remain separate. Later#162queue fix requires predecessor integration and refreshed sourcefreeze before final#163release.
+
+Follow-up: reviewed #162 unmount repair integrated; #163 sourcefreeze updated at64297087 to f330d1f2. All51 committed SQL hashes and manifest hash revalidated exit0. Current #163 CI pending, superseding the older documentation run.

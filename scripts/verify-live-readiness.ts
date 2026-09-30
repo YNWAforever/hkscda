@@ -40,11 +40,20 @@ export async function verifyLiveReadiness(input: {
     signal: AbortSignal.timeout(10_000),
   });
   if (!page.ok) throw new Error("PUBLIC_PAGE_FAILED");
-  const html = await page.text();
-  const requiredContent = ["領養費用", "領養規則", "養貓需知", "養狗需知", "領養後指南"];
+  // Stable rendered headings remain valid when staff edit CMS copy. Ignore script
+  // payloads/comments: serialized content alone does not prove the page rendered.
+  const html = (await page.text())
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "");
+  const requiredSections = [
+    "adoption-fees-title",
+    "adoption-rules-title",
+    "adoption-cat-care-title",
+    "adoption-dog-care-title",
+    "post-adoption-guides-title",
+  ];
   if (
-    html.includes("暫時未能載入領養資訊") ||
-    requiredContent.some((marker) => !html.includes(marker))
+    requiredSections.some((id) => !new RegExp(`<h2\\b[^>]*\\bid=["']${id}["']`, "i").test(html))
   ) {
     throw new Error("PUBLIC_CONTENT_MISSING");
   }

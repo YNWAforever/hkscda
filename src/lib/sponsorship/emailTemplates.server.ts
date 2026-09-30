@@ -1,4 +1,6 @@
 import { centsToHkd } from "../donations/domain";
+import { resolvePaymentInstructions } from "../paymentPublicConfig/instructions";
+import type { CheckoutInstructionAdmission } from "../paymentPublicConfig/types";
 
 type PledgeConfirmationEmailInput = {
   language: "zh-HK" | "en";
@@ -7,6 +9,7 @@ type PledgeConfirmationEmailInput = {
   amountCents: number;
   status: "pending_payment" | "provisional";
   statusUrl: string;
+  paymentInstructions?: CheckoutInstructionAdmission[];
 };
 
 function escapeHtml(value: string) {
@@ -42,21 +45,25 @@ function wrapEmailEnvelope(
   };
 }
 
-const PAYMENT_METHODS_ZH = [
-  ["轉數快 FPS", "FPS ID 8727588（登記電話 9864 1089）"],
-  ["銀行轉帳", "匯豐銀行 124-511320-838"],
-  ["PayMe", "WhatsApp 9864 1089 索取 PayMe QR Code"],
-  ["PayPal", "https://goo.gl/X2XsY1"],
-  ["Give.asia", "https://hkscda.give.asia"],
-] as const;
+const PAYMENT_SUPPORT_EMAIL = "info@hkscda.com";
 
-const PAYMENT_METHODS_EN = [
-  ["FPS", "FPS ID 8727588 (registered phone 9864 1089)"],
-  ["Bank Transfer", "HSBC 124-511320-838"],
-  ["PayMe", "Request the PayMe QR code via WhatsApp 9864 1089"],
-  ["PayPal", "https://goo.gl/X2XsY1"],
-  ["Give.asia", "https://hkscda.give.asia"],
-] as const;
+function approvedInstructionRows(input: PledgeConfirmationEmailInput) {
+  return (input.paymentInstructions ?? []).flatMap((admission) => {
+    if (!admission.snapshot) return [];
+    const instruction = resolvePaymentInstructions(admission, {
+      method: admission.snapshot.method,
+      purpose: "sponsorship",
+    });
+    if (!instruction) return [];
+    const label =
+      input.language === "en"
+        ? admission.snapshot.displayLabelEn
+        : admission.snapshot.displayLabelZh;
+    return [
+      `<li>${escapeHtml(label)}: ${escapeHtml(instruction.payableTo)} — ${escapeHtml(instruction.identifier)}</li>`,
+    ];
+  });
+}
 
 export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInput) {
   const supporterName = escapeHtml(input.supporterName);
@@ -67,16 +74,12 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
   }</a></p>`;
 
   if (input.language === "en") {
+    const rows = approvedInstructionRows(input);
     const paymentBlock =
       input.status === "pending_payment"
-        ? [
-            "<p>Please complete your first monthly payment using one of the following methods, and quote your reference:</p>",
-            "<ul>",
-            ...PAYMENT_METHODS_EN.map(
-              ([label, value]) => `<li>${escapeHtml(label)}: ${escapeHtml(value)}</li>`,
-            ),
-            "</ul>",
-          ].join("")
+        ? rows.length
+          ? `<p>Please complete your first monthly payment and quote your reference:</p><ul>${rows.join("")}</ul>`
+          : `<p>Please contact <a href="mailto:${PAYMENT_SUPPORT_EMAIL}">${PAYMENT_SUPPORT_EMAIL}</a> with your reference to verify current payment arrangements. Do not reuse earlier payment details.</p>`
         : "<p>We have received your payment proof and will confirm your sponsorship shortly.</p>";
 
     return wrapEmailEnvelope(
@@ -91,16 +94,12 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
     );
   }
 
+  const rows = approvedInstructionRows(input);
   const paymentBlockZh =
     input.status === "pending_payment"
-      ? [
-          "<p>請使用以下其中一種方式完成首月付款，並註明您的參考編號：</p>",
-          "<ul>",
-          ...PAYMENT_METHODS_ZH.map(
-            ([label, value]) => `<li>${escapeHtml(label)}：${escapeHtml(value)}</li>`,
-          ),
-          "</ul>",
-        ].join("")
+      ? rows.length
+        ? `<p>請使用以下已核准方式完成首月付款，並註明參考編號：</p><ul>${rows.join("")}</ul>`
+        : `<p>請聯絡 <a href="mailto:${PAYMENT_SUPPORT_EMAIL}">${PAYMENT_SUPPORT_EMAIL}</a> 並提供參考編號，以核實目前付款安排；請勿沿用舊付款資料。</p>`
       : "<p>我們已收到您的付款證明，將盡快為您確認助養資格。</p>";
 
   return wrapEmailEnvelope(
