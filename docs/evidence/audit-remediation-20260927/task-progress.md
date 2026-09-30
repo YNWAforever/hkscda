@@ -223,3 +223,7 @@ Task179 root combinedcheckpoint2026-10-01: reviewedown991dcca4,predecessor4ac62d
 ## Current final checkpoint — 2026-10-01 HKT
 
 See [actual release checkpoint](release-checkpoint-20261001.md): source290abb19 full3195pass168skip0fail/type0/lint0(52warnings)/build0;26actualmainreleases through159/main07e4c881/ledger98; current146-object production check exit1/92gaps. Historical observations above retain their SHA/environment and do not override this current status. Independent final review and documentation-head exact CI remain pending; no production action.
+
+## R01 readonly default-grant repair — 2026-10-01 HKT
+
+Actual source aca5822a124521d9e6acc94b171600ac344e9b97 adds a forward-only three-table privilege clamp and real opt-in role regression. Matched RED3pass17fail/exit1; GREEN20pass110assert/exit0; whole-file rollback/catalog idempotence/later owner archive compatibility and original9audit preservation passed. Full3027pass127skip0fail, strictTS0, corrected full lint0errors52warnings, serial placeholder build0. Independent spec/quality review approved. Exact e002 migration has no production approval/application; overall production146/92/ledger98 remains NO-GO. [Scope, commands, failure history, rollback and staff handoff](sequential-fix-r01-readonly-20261001.md).
