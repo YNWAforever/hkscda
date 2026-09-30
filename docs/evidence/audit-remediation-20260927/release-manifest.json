@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": null,
-  "appShaNote": "PR178 combined candidate; reviewed own head2028bfbd50d44aca07647f0f05e17255f46ecdd5 and predecessor3571eb554fde1fa3f94dffdc1c2da000b17c9468; later candidates excluded.",
+  "appSha": "641f10abbc9ead69c1bd61b45b6439f2b099a28c",
+  "appShaNote": "PR178 combined review source641f10abbc9ead69c1bd61b45b6439f2b099a28c; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
   "configVersions": {
