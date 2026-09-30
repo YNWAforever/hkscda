@@ -5,6 +5,7 @@ const state: unknown[] = [];
 let index = 0;
 mock.module("react", () => ({
   ...React,
+  useEffect: () => {},
   useRef: <T,>(initial: T) => {
     const i = index++;
     if (!(i in state)) state[i] = { current: initial };
@@ -44,7 +45,7 @@ function walk(n: ReactNode, out: ReactElement<Props>[] = []): ReactElement<Props
 }
 function render() {
   index = 0;
-  return BankStatementDryRunPanel();
+  return BankStatementDryRunPanel({ actorUserId: "synthetic-finance" });
 }
 function select(file: File) {
   walk(render()).find((n) => n.props.id === "bank-statement-csv")!.props.onChange!({

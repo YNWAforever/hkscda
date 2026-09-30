@@ -126,10 +126,11 @@ export function BankStatementDryRunPreview({
   );
 }
 
-const operationStorageKey = "hkscda-finance-bank-match-operation";
+const operationStoragePrefix = "hkscda-finance-bank-match-operation";
 const operationUrl = "/api/admin/finance/bank-match-operations";
 
-export function BankStatementDryRunPanel() {
+export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string }) {
+  const operationStorageKey = `${operationStoragePrefix}:${actorUserId}`;
   const [file, setFile] = useState<File | null>(null);
   const [csvText, setCsvText] = useState<string | null>(null);
   const [result, setResult] = useState<BankStatementDryRunResult | null>(null);
@@ -141,25 +142,51 @@ export function BankStatementDryRunPanel() {
   const [applyingOrdinal, setApplyingOrdinal] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [operationError, setOperationError] = useState("");
+  const [recoveryId, setRecoveryId] = useState<string | null>(null);
+  const [operationReadFailed, setOperationReadFailed] = useState(false);
+  const requestGeneration = useRef(0);
+  const operationGeneration = useRef(0);
+  const operationBusy = useRef(false);
+  const mounted = useRef(true);
 
   useEffect(() => {
+    mounted.current = true;
+    const counters = [operationGeneration, requestGeneration];
+    const generation = ++operationGeneration.current;
     const operationId = sessionStorage.getItem(operationStorageKey);
-    if (!operationId) return;
-    let active = true;
-    void fetchAdminJson<BankMatchOperation>(
-      `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
-    )
-      .then((saved) => {
-        if (active) setOperation(saved);
-      })
-      .catch(() => {
-        if (active) setOperationError("未能恢復上次確認快照；請核對權限或重新預覽。");
-      });
+    if (operationId) {
+      setRecoveryId(operationId);
+      operationBusy.current = true;
+      setOperationPending(true);
+      void fetchAdminJson<BankMatchOperation>(
+        `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
+      )
+        .then((saved) => {
+          if (mounted.current && operationGeneration.current === generation) {
+            setOperation(saved);
+            setOperationReadFailed(false);
+          }
+        })
+        .catch(() => {
+          if (mounted.current && operationGeneration.current === generation) {
+            setOperationReadFailed(true);
+            setOperationError("未能恢復上次確認快照；請先重新讀取確認結果。");
+          }
+        })
+        .finally(() => {
+          if (mounted.current && operationGeneration.current === generation) {
+            operationBusy.current = false;
+            setOperationPending(false);
+          }
+        });
+    }
     return () => {
-      active = false;
+      mounted.current = false;
+      // These refs are request counters; invalidate their latest values on cleanup.
+      for (const counter of counters) counter.current++;
+      operationBusy.current = false;
     };
-  }, []);
-  const requestGeneration = useRef(0);
+  }, [operationStorageKey]);
 
   async function preview() {
     if (!file || pending) return;
@@ -205,7 +232,11 @@ export function BankStatementDryRunPanel() {
   }
 
   async function createOperation() {
-    if (!csvText || selectedOrdinals.length === 0 || operationPending) return;
+    if (!csvText || selectedOrdinals.length === 0 || operationBusy.current || operationReadFailed)
+      return;
+    const generation = ++operationGeneration.current;
+    const current = () => mounted.current && operationGeneration.current === generation;
+    operationBusy.current = true;
     setOperationPending(true);
     setOperationError("");
     try {
@@ -213,32 +244,66 @@ export function BankStatementDryRunPanel() {
         method: "POST",
         body: JSON.stringify({ csvText, selectedOrdinals }),
       });
+      if (!current()) return;
       setOperation(saved);
+      setRecoveryId(saved.operationId);
       sessionStorage.setItem(operationStorageKey, saved.operationId);
     } catch {
-      setOperationError("無法建立確認預覽；請檢查所選項目、權限及目前付款狀態。");
+      if (current()) setOperationError("無法建立確認預覽；請檢查所選項目、權限及目前付款狀態。");
     } finally {
-      setOperationPending(false);
+      if (current()) {
+        operationBusy.current = false;
+        setOperationPending(false);
+      }
     }
   }
 
   async function refreshOperation(operationId: string) {
-    const saved = await fetchAdminJson<BankMatchOperation>(
-      `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
-    );
-    setOperation(saved);
-    return saved;
+    if (operationBusy.current) return;
+    const generation = ++operationGeneration.current;
+    const current = () => mounted.current && operationGeneration.current === generation;
+    operationBusy.current = true;
+    setOperationPending(true);
+    setOperationError("");
+    try {
+      const saved = await fetchAdminJson<BankMatchOperation>(
+        `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
+      );
+      if (!current()) return;
+      setOperation(saved);
+      setOperationReadFailed(false);
+    } catch {
+      if (current()) {
+        setOperationReadFailed(true);
+        setOperationError("未能重新讀取快照；請稍後再試。");
+      }
+    } finally {
+      if (current()) {
+        operationBusy.current = false;
+        setOperationPending(false);
+      }
+    }
   }
 
   async function applyOne(ordinal: number) {
     const item = operation?.items.find((entry) => entry.ordinal === ordinal);
-    if (!operation || !item || item.status !== "pending" || applyingOrdinal !== null) return;
+    if (
+      !operation ||
+      !item ||
+      item.status !== "pending" ||
+      operationBusy.current ||
+      operationReadFailed
+    )
+      return;
     if (
       !window.confirm(
         `請核對銀行參考 ${item.bankReference}、付款 ${item.paymentId}、付款參考 ${item.paymentHint} 及 ${centsToHkd(item.amountCents)}，確定只確認此筆入帳？`,
       )
     )
       return;
+    const generation = ++operationGeneration.current;
+    const current = () => mounted.current && operationGeneration.current === generation;
+    operationBusy.current = true;
     setApplyingOrdinal(ordinal);
     setOperationError("");
     try {
@@ -246,11 +311,24 @@ export function BankStatementDryRunPanel() {
         method: "PATCH",
         body: JSON.stringify({ operationId: operation.operationId, ordinal }),
       });
-      await refreshOperation(operation.operationId);
+      if (!current()) return;
+      const saved = await fetchAdminJson<BankMatchOperation>(
+        `${operationUrl}?operationId=${encodeURIComponent(operation.operationId)}`,
+      );
+      if (current()) {
+        setOperation(saved);
+        setOperationReadFailed(false);
+      }
     } catch {
-      setOperationError("未能確認或更新此筆結果；請先重新讀取快照，勿重複使用另一銀行參考入帳。");
+      if (current()) {
+        setOperationReadFailed(true);
+        setOperationError("未能確認或更新此筆結果；請先重新讀取快照，勿重複使用另一銀行參考入帳。");
+      }
     } finally {
-      setApplyingOrdinal(null);
+      if (current()) {
+        operationBusy.current = false;
+        setApplyingOrdinal(null);
+      }
     }
   }
 
@@ -305,10 +383,15 @@ export function BankStatementDryRunPanel() {
           <Button
             type="button"
             variant="outline"
-            disabled={selectedOrdinals.length === 0 || operationPending}
+            disabled={
+              selectedOrdinals.length === 0 ||
+              operationPending ||
+              applyingOrdinal !== null ||
+              operationReadFailed
+            }
             onClick={() => void createOperation()}
           >
-            {operationPending ? "正在建立…" : "建立逐組確認預覽"}
+            {operationPending ? "正在處理快照…" : "建立逐組確認預覽"}
           </Button>
           {result.rows.length > PAGE_SIZE ? (
             <nav aria-label="銀行預覽分頁" className="flex items-center gap-2">
@@ -340,25 +423,24 @@ export function BankStatementDryRunPanel() {
           {operationError}
         </p>
       ) : null}
+      {recoveryId ? (
+        <Button
+          type="button"
+          variant="outline"
+          disabled={operationPending || applyingOrdinal !== null}
+          onClick={() => void refreshOperation(recoveryId)}
+        >
+          重新讀取確認結果
+        </Button>
+      ) : null}
       {operation ? (
-        <>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              void refreshOperation(operation.operationId).catch(() =>
-                setOperationError("未能重新讀取快照。"),
-              )
-            }
-          >
-            重新讀取確認結果
-          </Button>
-          <BankMatchOperationReview
-            operation={operation}
-            onApply={(ordinal) => void applyOne(ordinal)}
-            pendingOrdinal={applyingOrdinal}
-          />
-        </>
+        <BankMatchOperationReview
+          key={operation.operationId}
+          operation={operation}
+          onApply={(ordinal) => void applyOne(ordinal)}
+          pendingOrdinal={applyingOrdinal}
+          disabled={operationPending || operationReadFailed}
+        />
       ) : null}
     </section>
   );

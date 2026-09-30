@@ -5,6 +5,8 @@ createRoot(document.getElementById("root")!).render(
   <main className="p-4">
     <h1>合成財務驗收</h1>
     <h2>對帳檔</h2>
-    <BankStatementDryRunPanel actorUserId="synthetic-finance" />
+    <BankStatementDryRunPanel
+      actorUserId={new URL(location.href).searchParams.get("actor") ?? "synthetic-finance"}
+    />
   </main>,
 );
