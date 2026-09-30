@@ -26,6 +26,22 @@ function clientWith(
 }
 
 describe("staff volunteer coverage read", () => {
+  test.each(["policies", "activities"])(
+    "rejects a server row cap below the requested limit for %s",
+    async (target) => {
+      const { client } = clientWith(
+        { data: [], count: target === "policies" ? 1 : 0, error: null },
+        { data: [], count: target === "activities" ? 1 : 0, error: null },
+      );
+      await expect(
+        readVolunteerCoverage(client, {
+          from: "2026-09-27",
+          centre: "all",
+          now: new Date("2026-09-27T01:00:00Z"),
+        }),
+      ).rejects.toThrow("coverage_read_truncated");
+    },
+  );
   test("maps approved policy and actual activities with bounded reads", async () => {
     const body = structuredClone(initialPolicyCatalogue[0]);
     body.template_key = "audit_coverage_cat";

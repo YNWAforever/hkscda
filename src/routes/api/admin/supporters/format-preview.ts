@@ -5,7 +5,11 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../lib/donations/supabase.server";
-import { readBoundedJson, RequestBodyTooLargeError } from "../../../../lib/http/publicJson.server";
+import {
+  readBoundedJson,
+  RequestBodyTooLargeError,
+  InvalidRequestJsonError,
+} from "../../../../lib/http/publicJson.server";
 import {
   buildContactFormatPreview,
   type ContactFormatSourceRow,
@@ -50,7 +54,7 @@ export function createCrmContactFormatPreviewHandler(deps: Dependencies) {
       if (error instanceof RequestBodyTooLargeError) {
         return Response.json({ error: "Request too large" }, { status: 413, headers });
       }
-      if (error instanceof z.ZodError) {
+      if (error instanceof z.ZodError || error instanceof InvalidRequestJsonError) {
         return Response.json({ error: "Invalid preview request" }, { status: 400, headers });
       }
       console.error("CRM contact format preview failed");

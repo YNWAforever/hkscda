@@ -91,3 +91,36 @@ test("oversized manual gift JSON is rejected before committing", async () => {
   expect(response.status).toBe(413);
   expect(calls).toEqual(["auth"]);
 });
+
+test("refused retry never invokes delivery and reconciles concurrent status", async () => {
+  for (const latest of [
+    "retryable",
+    "attention_required",
+    "pending",
+    "processing",
+    "complete",
+    null,
+  ] as const) {
+    let reads = 0;
+    const { deps, calls } = fixture({
+      status: async () => (++reads === 1 ? "retryable" : latest),
+      retryJob: async () => false,
+    });
+    const response = await createManualGiftDeliveryHandlers(deps).retry(request(), jobId);
+    expect(response.status).toBe(
+      latest === null ? 404 : latest === "retryable" || latest === "attention_required" ? 409 : 200,
+    );
+    expect(calls).toEqual(["auth"]);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  }
+});
+test("retry role withdrawal in SQL returns forbidden without a worker call", async () => {
+  const { deps, calls } = fixture({
+    status: async () => "retryable",
+    retryJob: async () => {
+      throw { code: "42501" };
+    },
+  });
+  expect((await createManualGiftDeliveryHandlers(deps).retry(request(), jobId)).status).toBe(403);
+  expect(calls).toEqual(["auth"]);
+});

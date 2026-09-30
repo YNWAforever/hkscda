@@ -20,7 +20,7 @@ export function createDeliveryWorklistHandler(deps: Dependencies) {
     try {
       const actor = await deps.authorize(request);
       const rawPage = new URL(request.url).searchParams.get("page") ?? "1";
-      if (!/^[1-9]\d{0,2}$/.test(rawPage) || Number(rawPage) > 1000)
+      if (!/^[1-9]\d{0,3}$/.test(rawPage) || Number(rawPage) > 1000)
         return Response.json({ error: "Invalid page" }, { status: 400, headers });
       return Response.json(await deps.list(actor, Number(rawPage)), { headers });
     } catch (error) {

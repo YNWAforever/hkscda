@@ -18,7 +18,12 @@ export function DonationDeliveryWorklistView({
   return (
     <div className="space-y-3 text-sm text-[var(--color-panel)]">
       <p role="status">需處理工作 {result.total} 項；每頁最多 25 項。</p>
-      <div className="overflow-auto rounded-md border border-[var(--color-border)]">
+      <div
+        role="region"
+        aria-label="收條及通知工作表格"
+        tabIndex={0}
+        className="overflow-auto rounded-md border border-[var(--color-border)]"
+      >
         <table className="w-full min-w-[44rem] text-left">
           <caption className="sr-only">收條及通知工作第 {result.page} 頁</caption>
           <thead className="bg-[var(--color-surface)]">
@@ -98,9 +103,12 @@ export function DonationDeliveryWorklist() {
       }),
     onSuccess: (result) => {
       setNotice(`工作最新狀態：${result.deliveryStatus}。付款記錄不會重複入帳。`);
-      void queryClient.invalidateQueries({ queryKey: ["finance-delivery-worklist"] });
-      void queryClient.invalidateQueries({ queryKey: ["admin-task-overview"] });
     },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["finance-delivery-worklist"] }),
+        queryClient.invalidateQueries({ queryKey: ["admin-task-overview"] }),
+      ]),
   });
   const totalPages = Math.max(1, Math.ceil((query.data?.total ?? 0) / 25));
   useEffect(() => {
@@ -127,7 +135,13 @@ export function DonationDeliveryWorklist() {
         <>
           <DonationDeliveryWorklistView
             result={query.data}
-            retryingId={retry.isPending ? (retry.variables ?? null) : null}
+            retryingId={
+              query.isFetching || query.isError
+                ? "refreshing"
+                : retry.isPending
+                  ? (retry.variables ?? null)
+                  : null
+            }
             onRetry={(jobId) => {
               if (!window.confirm("確認重試這一筆既有收條及確認電郵工作？請先核對付款及收件資料。"))
                 return;
@@ -161,7 +175,7 @@ export function DonationDeliveryWorklist() {
         </>
       )}
       {notice && <p role="status">{notice}</p>}
-      {retry.error && <p role="alert">重試失敗；請檢查工作狀態後再處理。</p>}
+      {retry.error && <p role="alert">未能確認重試結果；請按最新清單核對，勿假定工作未執行。</p>}
     </section>
   );
 }

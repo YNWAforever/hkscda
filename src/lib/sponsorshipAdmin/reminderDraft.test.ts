@@ -1,6 +1,10 @@
 import { expect, test } from "bun:test";
 
-import { buildSponsorshipReminderDraft, type ReminderPledge } from "./reminderDraft";
+import {
+  buildSponsorshipReminderDraft,
+  sponsorshipReminderFactsKey,
+  type ReminderPledge,
+} from "./reminderDraft";
 
 const month = (periodMonth: string, outstandingCents: number, reversed = false) => ({
   id: `period-${periodMonth}`,
@@ -92,4 +96,20 @@ test("English preference produces a neutral English draft", () => {
   expect(draft.subject).toContain("Sponsorship record");
   expect(draft.body).toContain("Alex");
   expect(draft.body.toLowerCase()).not.toContain("debt");
+});
+
+test("ephemeral draft identity changes with every relevant current fact", () => {
+  const original = pledge(),
+    key = sponsorshipReminderFactsKey(original);
+  expect(sponsorshipReminderFactsKey(pledge())).toBe(key);
+  for (const changed of [
+    pledge({ status: "cancelled" }),
+    pledge({ supporterName: "Changed" }),
+    pledge({ supporterEmail: "changed@example.invalid" }),
+    pledge({ language: "en" }),
+    pledge({ proofHistory: [{ reviewStatus: "pending" }] }),
+    pledge({ periods: [month("2026-08-01", 0)] }),
+    pledge({ periods: [month("2026-08-01", 12345, true)] }),
+  ])
+    expect(sponsorshipReminderFactsKey(changed)).not.toBe(key);
 });

@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import {
   createFollowupAssignmentHandler,
   createFollowupAssigneesHandler,
+  createSupabaseFollowupAssigneesPort,
 } from "./followupAssignment.server";
 
 const actor = "11111111-1111-4111-8111-111111111111";
@@ -120,4 +121,60 @@ test("follow-up assignee list returns only validated staff choices", async () =>
   expect(await response.json()).toEqual({
     assignees: [{ authUserId: assignee, email: "staff@example.invalid", role: "staff" }],
   });
+});
+
+test("missing pledge is 404 while unrelated audit P0002 remains unavailable", async () => {
+  for (const [message, status] of [
+    ["Pledge unavailable", 404],
+    ["synthetic audit failure", 503],
+  ] as const) {
+    const handler = createFollowupAssignmentHandler({
+      authorize: async () => actor,
+      assign: async () => {
+        throw { code: "P0002", message };
+      },
+    });
+    const response = await handler(
+      request({ assigneeUserId: assignee, expectedVersion: 1 }),
+      pledge,
+    );
+    expect(response.status).toBe(status);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  }
+});
+
+test("assignee query uses Auth eligibility and revalidates the requesting actor", async () => {
+  const allowed = { authUserId: assignee, email: "eligible@example.invalid", role: "staff" };
+  const banned = { auth_user_id: pledge, email: "banned@example.invalid", role: "staff" };
+  const calls: unknown[] = [];
+  const query = {
+    select: () => query,
+    eq: () => query,
+    in: () => query,
+    order: () => query,
+    limit: async () => ({ data: [banned], error: null }),
+  };
+  const port = createSupabaseFollowupAssigneesPort({
+    from: () => query,
+    rpc: async (name: string, args: unknown) => {
+      calls.push([name, args]);
+      return { data: [allowed], error: null };
+    },
+  } as never);
+  const handler = createFollowupAssigneesHandler({ authorize: async () => actor, list: port });
+  const response = await handler(
+    new Request("https://example.invalid/api/admin/sponsorships/followup-assignees"),
+  );
+  expect(await response.json()).toEqual({ assignees: [allowed] });
+  expect(calls).toEqual([["list_sponsorship_followup_assignees", { p_actor: actor }]]);
+});
+
+test("picker actor withdrawn at database boundary gets 403", async () => {
+  const handler = createFollowupAssigneesHandler({
+    authorize: async () => actor,
+    list: async () => {
+      throw { code: "42501", message: "private" };
+    },
+  });
+  expect((await handler(new Request("https://example.invalid"))).status).toBe(403);
 });
