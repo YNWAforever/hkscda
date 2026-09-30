@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { BulkReview } from "../bulk/BulkReview";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -29,10 +29,20 @@ export function SponsorshipFollowupBulkPanel({
   const [operation, setOperation] = useState<SponsorshipFollowupBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [recoveryId, setRecoveryId] = useState<string | null>(null);
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
+    setRecoveryId(saved);
+    setBusy(true);
     let active = true;
     fetchAdminJson<SponsorshipFollowupBulkOperation>(
       endpoint + "?operationId=" + encodeURIComponent(saved),
@@ -41,12 +51,31 @@ export function SponsorshipFollowupBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) sessionStorage.removeItem(savedOperationKey);
+        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  async function reloadOperation() {
+    if (!recoveryId || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const result = await fetchAdminJson<SponsorshipFollowupBulkOperation>(
+        endpoint + "?operationId=" + encodeURIComponent(recoveryId),
+      );
+      if (mounted.current) setOperation(result);
+    } catch {
+      if (mounted.current) setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+    } finally {
+      if (mounted.current) setBusy(false);
+    }
+  }
 
   async function preview() {
     if (
@@ -69,7 +98,9 @@ export function SponsorshipFollowupBulkPanel({
         method: "POST",
         body: JSON.stringify({ action: "preview", ids: selectedIds, assigneeUserId, filterHash }),
       });
+      if (!mounted.current) return;
       sessionStorage.setItem(savedOperationKey, result.operationId);
+      setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法建立預覽");
@@ -124,6 +155,7 @@ export function SponsorshipFollowupBulkPanel({
       <label className="block max-w-sm text-sm">
         負責職員
         <select
+          disabled={busy}
           aria-label="批量分派負責職員"
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           value={assigneeUserId}
@@ -158,6 +190,16 @@ export function SponsorshipFollowupBulkPanel({
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {error}
         </p>
+      )}
+      {recoveryId && (
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={busy}
+          onClick={reloadOperation}
+        >
+          重新讀取結果
+        </button>
       )}
       {operation && (
         <BulkReview

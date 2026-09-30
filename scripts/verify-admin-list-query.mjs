@@ -184,8 +184,34 @@ try {
     path: resolve("docs/evidence/audit-remediation-20260927/ui/t15-list-query-synthetic-390.png"),
     fullPage: true,
   });
+  const blocked = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  blocked.setDefaultTimeout(5000);
+  await blocked.addInitScript(() => {
+    Storage.prototype.getItem = () => {
+      throw new DOMException("Blocked", "SecurityError");
+    };
+    Storage.prototype.setItem = () => {
+      throw new DOMException("Quota", "QuotaExceededError");
+    };
+  });
+  let blockedQuery = "";
+  await blocked.route("**/api/admin/supporters?*", async (route) => {
+    blockedQuery = new URL(route.request().url()).searchParams.get("q") ?? "";
+    await route.fulfill({ json: { supporters: [], total: 7 } });
+  });
+  await blocked.goto("http://127.0.0.1:" + server.address().port);
+  await blocked.getByText("合共7").waitFor();
+  await blocked.getByRole("textbox", { name: "搜尋支持者" }).fill("storage-unavailable");
+  await blocked.waitForTimeout(500);
+  assert.equal(
+    blockedQuery,
+    "storage-unavailable",
+    "Storage denial must not break in-memory searching",
+  );
+  await blocked.close();
   console.log(
     JSON.stringify({
+      unavailableStorageWorks: true,
       rapidTypingCollapsed: true,
       imeCommittedOnce: true,
       slowResponseIgnored: true,

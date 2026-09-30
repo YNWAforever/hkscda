@@ -66,7 +66,7 @@ const definitions: Record<TaskKey, TaskDefinition> = {
   sponsorship_followup: {
     key: "sponsorship_followup",
     label: "助養待跟進",
-    guidance: "檢查待跟進承諾並指派負責人，付款另行核實。",
+    guidance: "核對付款及待跟進承諾，交由職員／管理員安排跟進。",
     href: "/admin/sponsorships?status=needs_followup",
   },
   payment_pending: {

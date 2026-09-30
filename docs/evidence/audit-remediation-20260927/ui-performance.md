@@ -25,6 +25,32 @@ The verifier exited 0 on both builds: 4 routes × 2 viewports × 3 cold runs. Ra
 
 No production deploy, payment enablement, content publication or email send occurred.
 
-## T23 bank match confirmation #175
 
-Before: #172 finance CSV generated a read-only candidate preview and could not settle. After: exact one-to-one rows expose selection; a persisted 15-minute operation shows 25 rows per page, per-item confirmation, partial results and CSV recovery. Static DOM/API/DB evidence is in t23-finance-bank-confirmation.md. Authenticated before/after screenshots and same-environment interaction or transfer measurements are not-run without private candidate/test identities; no performance improvement is claimed.
+## PR169 preparation — 2026-09-30
+
+PR169 before/after screenshot pairs t23-followup-{before,after}-{390,768,1366}.png: actual response-loss UI; fixed shows saved.12isolated browser cases,Axe0. No before/after performance improvement claimed; one local DDL rehearsal8.59ms only.
+
+
+## PR170 preparation — 2026-09-30
+
+PR1703widthbefore/afterrecovery screenshots and390mobilecheckbox pair;Axe0/errors0.1000snapshot localpreview51.41ms/apply900948.87ms currentonly;no same-environmentbefore/after improvementclaim.
+
+
+## PR171 preparation — 2026-09-30
+
+PR1713widthbefore/after t23-reminder screenshots;knowneligibilitychange now removesstaledraft.15caseactualbrowser,Axe0. Same-environmentperformancecomparisonnot-run;nospeedimprovementclaim.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.
+
+
+## PR173 current preparation — 2026-09-30
+
+See [sequential-merge-173-20260930.md](sequential-merge-173-20260930.md): app `40a8765beaa04613fae1f9cc77e74a11d34810f1`, rejected-retry/lost-response/page1000/keyboard fixes;17focused/88assertions,3110fullpasses143skips,type/lint/build0; real concurrent one-audit retry and1000job pagination;3width UI/Axe0.58-fileinventory,local-schema-ready,notdeployed/notenabled;#156releaseblock retained.
+
+
+## PR174 current preparation — 2026-09-30
+
+See [sequential-merge-174-20260930.md](sequential-merge-174-20260930.md): app `ea7541079ca3cd3c0390f9f3bef1a8665b4746f2`, treasury guidance corrected without permission expansion. Full3113pass143skip9802assertions;type/lint/build0;actualisolatedAuth/API3roles;9browsercases/Axe0,12screenshots.58inheritedSQLfiles,no newmigration. Codecomplete slice,notdeployed/notenabled;#156remains releaseblock. #172fivegreen andexactapprovalrequested;#173CIpending.

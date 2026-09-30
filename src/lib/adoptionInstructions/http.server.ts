@@ -110,6 +110,25 @@ export function createAdoptionInstructionHandlers({
       });
     },
 
+    history(request: Request) {
+      return withHttpErrors(async () => {
+        const actor = await requireActor(request);
+        const url = new URL(request.url);
+        const cursor = url.searchParams.get("cursor");
+        const rawLimit = url.searchParams.get("limit");
+        const limit =
+          rawLimit === null ? 25 : z.coerce.number().int().min(1).max(100).parse(rawLimit);
+        return jsonNoStore(await service.listHistory({ actor, cursor, limit }));
+      });
+    },
+
+    revision(request: Request, revisionId: string) {
+      return withHttpErrors(async () => {
+        const actor = await requireActor(request);
+        return jsonNoStore(await service.getRevision({ actor, revisionId }));
+      });
+    },
+
     ensureDraft(request: Request) {
       return withHttpErrors(async () => {
         const actor = await requireActor(request);

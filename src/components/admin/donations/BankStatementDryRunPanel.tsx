@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { BankMatchOperation } from "../../../lib/donations/bankMatchConfirmation";
@@ -50,7 +50,12 @@ export function BankStatementDryRunPreview({
         檔案 SHA-256：{result.fileSha256} · 預覽時間：{result.generatedAt}
         。結果不會儲存；付款事實改變後須重新上載並核對。
       </p>
-      <div className="max-h-[32rem] overflow-auto rounded-md border border-[var(--color-border)]">
+      <div
+        role="region"
+        aria-label="銀行候選預覽表格"
+        tabIndex={0}
+        className="max-h-[32rem] overflow-auto rounded-md border border-[var(--color-border)]"
+      >
         <table className="w-full min-w-[44rem] text-left">
           <caption className="sr-only">銀行對帳檔第 {page} 頁候選預覽</caption>
           <thead className="bg-[var(--color-surface)]">
@@ -154,9 +159,11 @@ export function BankStatementDryRunPanel() {
       active = false;
     };
   }, []);
+  const requestGeneration = useRef(0);
 
   async function preview() {
-    if (!file) return;
+    if (!file || pending) return;
+    const generation = ++requestGeneration.current;
     setResult(null);
     setCsvText(null);
     setSelectedOrdinals([]);
@@ -167,18 +174,25 @@ export function BankStatementDryRunPanel() {
     }
     setPending(true);
     try {
-      const text = await file.text();
+      // Preserve the BOM and reject malformed UTF-8 so the server's UTF-8
+      // checksum identifies exactly the selected file bytes.
+      const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(
+        await file.arrayBuffer(),
+      );
+      if (requestGeneration.current !== generation) return;
       const response = await fetchAdminJson<BankStatementDryRunResult>(
         "/api/admin/finance/bank-statement-preview",
         { method: "POST", body: JSON.stringify({ csvText: text }) },
       );
+      if (requestGeneration.current !== generation) return;
       setCsvText(text);
       setResult(response);
       setPage(1);
     } catch {
-      setError("無法預覽對帳檔；請檢查格式或聯絡財務管理員。");
+      if (requestGeneration.current === generation)
+        setError("無法預覽對帳檔；請檢查 UTF-8 格式或聯絡財務管理員。");
     } finally {
-      setPending(false);
+      if (requestGeneration.current === generation) setPending(false);
     }
   }
 
@@ -258,6 +272,9 @@ export function BankStatementDryRunPanel() {
           type="file"
           accept=".csv,text/csv"
           onChange={(event) => {
+            requestGeneration.current++;
+            setPending(false);
+            setPage(1);
             setFile(event.target.files?.[0] ?? null);
             setCsvText(null);
             setResult(null);
