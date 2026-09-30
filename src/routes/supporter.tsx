@@ -5,8 +5,12 @@ import {
   getSupabaseClient,
   installRecoverySession,
   captureRecoverySessionAttempt,
+  signOutCurrentSession,
 } from "../lib/supabase";
-import { RecoverySessionUnavailableError } from "../lib/supporters/recoverySession";
+import {
+  RecoverySessionUnavailableError,
+  sameBrowserSession,
+} from "../lib/supporters/recoverySession";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 
 export const Route = createFileRoute("/supporter")({
@@ -23,6 +27,9 @@ export function SupporterPage() {
   const [stage, setStage] = useState<"request" | "code" | "verified">("request");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [accessToken, setAccessToken] = useState("");
+  const currentAccessToken = useRef(accessToken);
+  currentAccessToken.current = accessToken;
   const mounted = useRef(false);
   const authGeneration = useRef(0);
 
@@ -32,10 +39,17 @@ export function SupporterPage() {
     const client = getSupabaseClient();
     void client.auth.getSession().then(({ data }) => {
       if (!mounted.current || initialGeneration !== authGeneration.current) return;
+      currentAccessToken.current = data.session?.access_token ?? "";
+      setAccessToken(currentAccessToken.current);
       if (data.session) setStage("verified");
     });
     const { data } = client.auth.onAuthStateChange((_event, session) => {
+      if (!mounted.current) return;
       authGeneration.current++;
+      const token = session?.access_token ?? "";
+      if (!sameBrowserSession(currentAccessToken.current, token)) setError("");
+      currentAccessToken.current = token;
+      setAccessToken(token);
       setStage(session ? "verified" : "request");
       if (!session) {
         setCode("");
@@ -149,12 +163,17 @@ export function SupporterPage() {
             className="btn-secondary mt-4 min-h-11"
             type="button"
             onClick={() => {
-              void getSupabaseClient()
-                .auth.signOut()
+              void signOutCurrentSession(accessToken)
                 .then(({ error: signOutError }) => {
-                  if (signOutError) setError("暫時未能退出，請稍後再試。");
+                  if (signOutError) throw signOutError;
                 })
-                .catch(() => setError("暫時未能退出，請稍後再試。"));
+                .catch(() => {
+                  if (
+                    mounted.current &&
+                    sameBrowserSession(accessToken, currentAccessToken.current)
+                  )
+                    setError("暫時未能退出，請稍後再試。");
+                });
             }}
           >
             退出

@@ -42,15 +42,30 @@ export function getSupabaseClient() {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 5000);
           try {
-            return await navigator.locks.request(_name, { signal: controller.signal }, fn);
+            return await navigator.locks.request(_name, { signal: controller.signal }, async () => {
+              clearTimeout(timeout);
+              return fn();
+            });
           } finally {
             clearTimeout(timeout);
           }
         },
       });
-      browserSupabase = createClient(url, key, {
-        auth: { storageKey, storage: sessionStorage.adapter },
+      const client = createClient(url, key, {
+        auth: {
+          storageKey,
+          storage: sessionStorage.adapter,
+          ...(coordinated ? { lock: sessionStorage.authLock } : {}),
+        },
         global: { fetch: sessionStorage.guardFetch(fetch.bind(globalThis)) },
+      });
+      const auth = coordinated ? sessionStorage.coordinateAuth(client.auth) : client.auth;
+      browserSupabase = new Proxy(client, {
+        get(target, name) {
+          if (name === "auth") return auth;
+          const value: unknown = Reflect.get(target, name, target);
+          return typeof value === "function" ? value.bind(target) : value;
+        },
       });
     } else {
       browserSupabase = createClient(url, key);
@@ -78,6 +93,16 @@ export async function installRecoverySession(
   } finally {
     finish();
   }
+}
+
+export async function signOutCurrentSession(expectedToken: string) {
+  const client = getSupabaseClient();
+  if (sessionStorage)
+    return sessionStorage.protectLogout(expectedToken, () => client.auth.signOut());
+  // Preserve ordinary SDK memory fallback; recovery cannot install sessions in this mode.
+  const { data } = await client.auth.getSession();
+  if (data.session?.access_token !== expectedToken) throw new RecoverySessionUnavailableError();
+  return client.auth.signOut();
 }
 
 export const supabase = new Proxy({} as SupabaseClient, {

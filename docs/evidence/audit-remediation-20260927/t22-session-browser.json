@@ -3,9 +3,12 @@
   "environment": "Chromium / actual installed Supabase SDK / same-origin localStorage and Web Locks / synthetic Auth transport",
   "providerRequests": 0,
   "crossTabNewActorPreserved": true,
-  "noStaleSignedInEvent": true,
+  "sessionInstallationOperationsSerialized": true,
   "existingSdkStorageKeyCompatible": true,
   "actorChangeDuringHttpWaitRefused": true,
+  "lateOldActorLogoutPreservesNewActor": true,
+  "passwordLoginWaitsForLogoutNotification": true,
+  "sameSessionRefreshLogout": true,
   "runtimeQuotaLogoutRemovesCredentials": true,
   "missingWebLocksFailsClosed": true,
   "unwritableStorageKeepsOrdinaryAuthFallback": true
