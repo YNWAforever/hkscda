@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "environment": "isolated Postgres 52322 / exact empty task-owned candidate / no production data",
+  "migrationSha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e",
+  "wholeFileTransactionRollback": true,
+  "signatureGrantsRls": true,
+  "authSupporterLedgerCatalogUnchanged": true,
+  "backfillRows": 0,
+  "productionRequests": 0
+}
