@@ -153,6 +153,7 @@ import { Route as ApiAdminVolunteersGroupEnquiriesRouteImport } from './routes/a
 import { Route as ApiAdminVolunteersCalendarRouteImport } from './routes/api/admin/volunteers/calendar'
 import { Route as ApiAdminVolunteersBulkRouteImport } from './routes/api/admin/volunteers/bulk'
 import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
+import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
 import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
@@ -1024,6 +1025,12 @@ const ApiAdminVolunteersActivitiesRoute =
     path: '/api/admin/volunteers/activities',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminSupportersTagBulkRoute =
+  ApiAdminSupportersTagBulkRouteImport.update({
+    id: '/tag-bulk',
+    path: '/tag-bulk',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
 const ApiAdminSupportersIdRoute = ApiAdminSupportersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -1876,6 +1883,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/bulk': typeof ApiAdminVolunteersBulkRoute
   '/api/admin/volunteers/calendar': typeof ApiAdminVolunteersCalendarRoute
@@ -2139,6 +2147,7 @@ export interface FileRoutesByTo {
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/bulk': typeof ApiAdminVolunteersBulkRoute
   '/api/admin/volunteers/calendar': typeof ApiAdminVolunteersCalendarRoute
@@ -2404,6 +2413,7 @@ export interface FileRoutesById {
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/bulk': typeof ApiAdminVolunteersBulkRoute
   '/api/admin/volunteers/calendar': typeof ApiAdminVolunteersCalendarRoute
@@ -2670,6 +2680,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/bulk'
     | '/api/admin/volunteers/calendar'
@@ -2933,6 +2944,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/bulk'
     | '/api/admin/volunteers/calendar'
@@ -3197,6 +3209,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/bulk'
     | '/api/admin/volunteers/calendar'
@@ -4467,6 +4480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminVolunteersActivitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/supporters/tag-bulk': {
+      id: '/api/admin/supporters/tag-bulk'
+      path: '/tag-bulk'
+      fullPath: '/api/admin/supporters/tag-bulk'
+      preLoaderRoute: typeof ApiAdminSupportersTagBulkRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
     '/api/admin/supporters/$id': {
       id: '/api/admin/supporters/$id'
       path: '/$id'
@@ -5731,10 +5751,12 @@ const ApiAdminSupportersIdRouteWithChildren =
 
 interface ApiAdminSupportersRouteChildren {
   ApiAdminSupportersIdRoute: typeof ApiAdminSupportersIdRouteWithChildren
+  ApiAdminSupportersTagBulkRoute: typeof ApiAdminSupportersTagBulkRoute
 }
 
 const ApiAdminSupportersRouteChildren: ApiAdminSupportersRouteChildren = {
   ApiAdminSupportersIdRoute: ApiAdminSupportersIdRouteWithChildren,
+  ApiAdminSupportersTagBulkRoute: ApiAdminSupportersTagBulkRoute,
 }
 
 const ApiAdminSupportersRouteWithChildren =

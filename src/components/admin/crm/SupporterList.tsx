@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from "react";
 import { TablePager } from "../TablePager";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 
 import { supporterRoles, type SupporterRole, type SupporterSummary } from "../../../lib/crm/types";
+import { collectMatchingSupporterIds } from "../../../lib/crm/tagBulkSelection";
 import {
   parseListPage,
   useListQueryState,
@@ -16,6 +18,7 @@ import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchAdminJson } from "./api";
 import { ExportBar } from "./ExportBar";
 import { SupporterFormDialog } from "./SupporterFormDialog";
+import { CrmTagBulkPanel } from "./CrmTagBulkPanel";
 
 type SupporterListResponse = {
   supporters: SupporterSummary[];
@@ -67,6 +70,19 @@ export function SupporterList() {
   });
   const { page, setPage, query, filters, changeFilter } = listState;
   const roleFilter = filters.roleFilter;
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedScope, setSelectedScope] = useState("");
+  const [selectionBusy, setSelectionBusy] = useState(false);
+  const [selectionError, setSelectionError] = useState("");
+  const selectionScope = JSON.stringify([query, roleFilter]);
+  const effectiveSelectedIds = selectedScope === selectionScope ? selectedIds : [];
+  const selectionScopeRef = useRef(selectionScope);
+  selectionScopeRef.current = selectionScope;
+  useEffect(() => {
+    setSelectedIds([]);
+    setSelectedScope(selectionScope);
+    setSelectionError("");
+  }, [selectionScope]);
   const search = new URLSearchParams({ page: String(page), pageSize: "25" });
   if (query) search.set("q", query);
   if (roleFilter !== "all") search.set("role", roleFilter);
@@ -98,8 +114,63 @@ export function SupporterList() {
   });
 
   const visibleData = error ? undefined : data;
+  const selectionDisabled =
+    selectionBusy || isFetching || listState.isDebouncing || !listState.hydrated;
+  function toggleSelected(id: string) {
+    setSelectedScope(selectionScope);
+    setSelectedIds((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+    );
+  }
+  function selectVisible() {
+    if (!visibleData || selectionDisabled) return;
+    setSelectedScope(selectionScope);
+    setSelectedIds((current) => [
+      ...new Set([...current, ...visibleData.supporters.map((item) => item.id)]),
+    ]);
+  }
+  async function selectAllMatching() {
+    if (!visibleData || selectionDisabled) return;
+    const scope = selectionScope;
+    setSelectionBusy(true);
+    setSelectionError("");
+    try {
+      const ids = await collectMatchingSupporterIds(
+        visibleData.total,
+        async (nextPage, pageSize) => {
+          const params = new URLSearchParams({
+            page: String(nextPage),
+            pageSize: String(pageSize),
+          });
+          if (query) params.set("q", query);
+          if (roleFilter !== "all") params.set("role", roleFilter);
+          return fetchAdminJson<SupporterListResponse>("/api/admin/supporters?" + params);
+        },
+      );
+      if (selectionScopeRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      setSelectedScope(scope);
+      setSelectedIds(ids);
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+    } finally {
+      setSelectionBusy(false);
+    }
+  }
 
   const supporterColumns: DataTableColumn<SupporterSummary>[] = [
+    {
+      id: "select",
+      header: "選取",
+      cell: (supporter) => (
+        <input
+          type="checkbox"
+          aria-label={"選取 " + supporter.name}
+          checked={effectiveSelectedIds.includes(supporter.id)}
+          disabled={selectionDisabled}
+          onChange={() => toggleSelected(supporter.id)}
+        />
+      ),
+    },
     {
       id: "supporter",
       header: copy.columns.supporter,
@@ -164,6 +235,13 @@ export function SupporterList() {
     return (
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
+          <input
+            type="checkbox"
+            aria-label={"選取 " + s.name}
+            checked={effectiveSelectedIds.includes(s.id)}
+            disabled={selectionDisabled}
+            onChange={() => toggleSelected(s.id)}
+          />
           <div>
             <Link
               to="/admin/supporters/$id"
@@ -256,6 +334,46 @@ export function SupporterList() {
         </div>
       )}
 
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={selectionDisabled || !visibleData?.supporters.length}
+          onClick={selectVisible}
+        >
+          選取本頁
+        </button>
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={
+            selectionDisabled || !visibleData || visibleData.total < 1 || visibleData.total > 1000
+          }
+          onClick={selectAllMatching}
+        >
+          選取全部符合條件（最多 1000 筆）
+        </button>
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={selectionBusy || effectiveSelectedIds.length === 0}
+          onClick={() => setSelectedIds([])}
+        >
+          清除選取
+        </button>
+        {selectionBusy && <span role="status">正在固定選取範圍…</span>}
+        {selectionError && (
+          <span role="alert" className="text-[var(--color-error)]">
+            {selectionError}
+          </span>
+        )}
+      </div>
+      <CrmTagBulkPanel
+        selectedIds={effectiveSelectedIds}
+        query={query}
+        roleFilter={roleFilter}
+        selectionDisabled={selectionDisabled}
+      />
       <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
         <DataTable<SupporterSummary>
           columns={supporterColumns}

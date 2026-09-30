@@ -316,6 +316,12 @@ jobs:
           SUPPORTER_PORTAL_TEST_ALLOW_LOCAL_FIXTURES: "1"
           SUPPORTER_PORTAL_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
+      - name: Run CRM tag bulk database scenarios
+        run: bun test src/lib/crm/tagBulk.database.test.ts
+        env:
+          CRM_TAG_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          CRM_TAG_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop

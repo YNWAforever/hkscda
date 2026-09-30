@@ -51,6 +51,9 @@ Apply only this reviewed file after the earlier releases, a fresh catalog/hash/b
 
 Application rollback retains the additive function and all consent/audit history; do not restore an old full DB snapshot over newer events. Recovery remains absent/false until #156's concurrent OTP failure is resolved and hosted configuration and sending are separately approved. Staff should review only their verified-email records, explicitly choose marketing preference, and log out before sharing a device. Ambiguous historical identity linking or record corrections require the existing staff process, not automatic merges.
 
+## Approval checkpoint — 2026-09-30
+
+User explicitly approved this single unchanged migration after the five CI jobs succeeded at 023795dc (run 36617364577). Approval is conditional on earlier PRs completing; payment and recovery delivery remain disabled. No production application has occurred.
 ## Combined broker/portal checkpoint, 2026-09-30
 
 Application code SHA `9d829324fe639dda8c832c279deac5feee16c5d5` includes #156 final reviewed head `edd13112c66bf83c2b840b8d93441e0c3b9c838e` as an ancestor. Both local dependency merges are resolved and committed; no unrelated work was altered. #156 exact-head CI36738002794 completed success for verify/brand/RLS/performance/a11y. #134–#155 remain22/46 merged; main/production alias remains `24196faf027998388eff3196a6979e23566e2443`. The newer checkpoint supersedes the historical predecessor/blocker state above without rewriting its audit record.
