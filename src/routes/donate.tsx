@@ -24,7 +24,9 @@ import {
 import { loadDonationDocumentSlots } from "../lib/documents/donation.server";
 import { asContextFreeRouteLoader } from "../lib/documents/routeLoaders.server";
 import type { DocumentSlot } from "../lib/documents/types";
-import { getPublicPaymentMethods } from "../lib/paymentPublicConfig/public.functions";
+import { getPublicCheckoutState } from "../lib/donations/checkoutPolicy.functions";
+import { checkoutPurpose } from "../lib/donations/checkoutPolicy";
+import type { PublicCheckoutState } from "../lib/donations/checkoutPolicy.server";
 import type { PublicPaymentMethod } from "../lib/paymentPublicConfig/types";
 import {
   markDonationEventOnce,
@@ -47,11 +49,11 @@ import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileW
 export const Route = createFileRoute("/donate")({
   validateSearch: donateSearchSchema,
   loader: asContextFreeRouteLoader(async () => {
-    const [slots, paymentMethods] = await Promise.all([
+    const [slots, checkoutState] = await Promise.all([
       loadDonationDocumentSlots(),
-      getPublicPaymentMethods().catch(() => []),
+      getPublicCheckoutState().catch(() => ({ state: "unavailable" as const, methods: [] as [] })),
     ]);
-    return { slots, paymentMethods };
+    return { slots, checkoutState };
   }),
   head: () => ({
     meta: [
@@ -84,7 +86,7 @@ type ManualResult = {
     payableTo: string;
     identifier: string;
     amountCents: number;
-  };
+  } | null;
 };
 
 type RedirectResult = {
@@ -103,6 +105,7 @@ export type DonationRequestPayload = {
   purpose: DonationPurpose;
   customPurpose: string;
   method: DonationMethod;
+  expectedConfigVersion: number;
   checkoutExperience: CheckoutExperience;
   receiptRequested: boolean;
   donor: { name: string; email: string; phone: string; language: Language };
@@ -130,11 +133,13 @@ const copy = {
     processing: "處理中",
     success: "多謝您的支持。付款確認後，系統會發出確認電郵及合資格收條。",
     paymentWaiting: "正在等待付款確認。付款狀態以本會系統為準，請勿重複付款。",
-    paymentConfirmed: "付款已確認。多謝您的支持。",
+    paymentConfirmed: "付款已確認。合資格收條及電郵會分開處理；尚未收到不代表付款失敗。",
     paymentUnavailable: "暫時未能確認付款狀態。請稍後再試或聯絡我們，請勿重複付款。",
     cancelled: "付款尚未完成，您可以重新選擇付款方式。",
     paypalApproved: "PayPal 已授權，確認完成後會發出收據通知。",
     manualTitle: "請使用以下資料完成付款",
+    manualVerification:
+      "原付款指示已撤回或暫時未能核實。請聯絡職員，並提供以下參考編號；請勿沿用舊付款資料。",
     reference: "付款參考編號",
     submitError: "暫時未能建立捐款，請稍後再試。",
     checkoutRecoveryRequired: "付款建立結果未能確認。請聯絡職員核實，暫時不要重複付款。",
@@ -146,6 +151,8 @@ const copy = {
     checkoutUnavailable:
       "網上捐款尚未完成正式啟用審批。現時請先聯絡職員核實可用捐款安排；請勿使用測試或未經確認的付款資料。",
     checkoutUnavailableButton: "網上捐款尚未啟用",
+    checkoutTemporarilyUnavailable: "付款資料暫時未能確認，請稍後再試或聯絡職員。",
+    checkoutNotConfigured: "目前沒有已核准的付款方式，請聯絡職員核實安排。",
     methodNotice: "付款服務完成正式審批後，系統才會在這裡顯示可用方式。",
   },
   en: {
@@ -169,12 +176,15 @@ const copy = {
       "Thank you for your support. A confirmation email and eligible receipt will be sent after payment is confirmed.",
     paymentWaiting:
       "Waiting for payment confirmation. Our donation system is the source of truth; please do not pay again.",
-    paymentConfirmed: "Payment confirmed. Thank you for your support.",
+    paymentConfirmed:
+      "Payment confirmed. Eligible receipts and email updates are processed separately; a delay does not mean payment failed.",
     paymentUnavailable:
       "We cannot confirm the payment status yet. Please try again later or contact us; do not pay again.",
     cancelled: "Payment is not complete. You can choose a payment method again.",
     paypalApproved: "PayPal approval received. We will notify you after confirmation.",
     manualTitle: "Complete payment with these details",
+    manualVerification:
+      "The payment instructions were withdrawn or cannot be verified. Contact our team with the reference below; do not reuse old payment details.",
     reference: "Payment reference",
     submitError: "Donation could not be created. Please try again later.",
     checkoutRecoveryRequired:
@@ -187,6 +197,10 @@ const copy = {
     checkoutUnavailable:
       "Online donations have not completed production activation approval. Please contact staff to verify an approved donation arrangement; do not use test or unconfirmed payment details.",
     checkoutUnavailableButton: "Online donations are not active",
+    checkoutTemporarilyUnavailable:
+      "Payment details cannot be verified right now. Please try later or contact our team.",
+    checkoutNotConfigured:
+      "No payment method is approved yet. Please contact our team to verify arrangements.",
     methodNotice: "Approved payment methods will appear here only after production activation.",
   },
 } satisfies Record<Language, Record<string, string>>;
@@ -230,9 +244,6 @@ function methodsFromConfig(configured: PublicPaymentMethod[]) {
     Icon: METHOD_ICONS[entry.method],
   }));
 }
-
-export const publicDonationCheckoutEnabled =
-  import.meta.env.VITE_PUBLIC_DONATION_CHECKOUT_ENABLED === "true";
 
 export function createDonationRequest(
   input: Omit<DonationRequestPayload, "currency">,
@@ -288,7 +299,8 @@ function DonateRoute() {
   return (
     <DonatePage
       initialSlots={loaderData.slots}
-      initialMethods={loaderData.paymentMethods}
+      initialMethods={loaderData.checkoutState.methods}
+      checkoutState={loaderData.checkoutState}
       initialSearch={Route.useSearch()}
     />
   );
@@ -298,11 +310,13 @@ export function DonatePage({
   initialSlots,
   initialMethods,
   initialSearch,
-  checkoutEnabled = publicDonationCheckoutEnabled,
+  checkoutState,
+  checkoutEnabled = checkoutState?.state === "ready",
 }: {
   initialSlots: DocumentSlot[];
   initialMethods: PublicPaymentMethod[];
   initialSearch: DonateSearch;
+  checkoutState?: PublicCheckoutState;
   checkoutEnabled?: boolean;
 }) {
   const search = initialSearch;
@@ -328,11 +342,18 @@ export function DonatePage({
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [returnState, setReturnState] = useState<DonationReturnState | null>(null);
   const checkoutIntentRef = useRef<{ fingerprint: string; key: string } | null>(null);
-  const methods = useMemo(() => methodsFromConfig(initialMethods), [initialMethods]);
+  const availableMethods = useMemo(
+    () =>
+      initialMethods.filter(
+        (entry) => !entry.purposes || entry.purposes.includes(checkoutPurpose(purpose)),
+      ),
+    [initialMethods, purpose],
+  );
+  const methods = useMemo(() => methodsFromConfig(availableMethods), [availableMethods]);
 
   useEffect(() => {
-    setMethod((selected) => reconcileDonationMethod(selected, initialMethods));
-  }, [initialMethods]);
+    setMethod((selected) => reconcileDonationMethod(selected, availableMethods));
+  }, [availableMethods]);
 
   useEffect(() => {
     if (!attribution) return;
@@ -390,7 +411,7 @@ export function DonatePage({
       return;
     }
 
-    if (!isDonationMethodAvailable(method, initialMethods)) {
+    if (!isDonationMethodAvailable(method, availableMethods)) {
       setError(t.methodNotice);
       return;
     }
@@ -405,7 +426,9 @@ export function DonatePage({
 
     try {
       const checkoutExperience = checkoutExperienceFromViewport(window.innerWidth);
+      const selectedConfig = availableMethods.find((entry) => entry.method === method);
       const intentDetails = {
+        expectedConfigVersion: selectedConfig?.configVersion ?? 0,
         amountCents: Math.round(amountHkd * 100),
         purpose,
         customPurpose,
@@ -601,7 +624,11 @@ export function DonatePage({
             {!checkoutEnabled && (
               <div className="mb-5 rounded-md border border-[var(--color-secondary)] bg-[var(--color-secondary-highlight)] p-4">
                 <p className="text-sm font-semibold leading-6 text-[var(--color-panel)]">
-                  {t.checkoutUnavailable}
+                  {checkoutState?.state === "unavailable"
+                    ? t.checkoutTemporarilyUnavailable
+                    : checkoutState?.state === "not_configured"
+                      ? t.checkoutNotConfigured
+                      : t.checkoutUnavailable}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a href={`mailto:${brand.org.donationEmail}`} className="btn-secondary min-h-11">
@@ -845,17 +872,30 @@ export function DonatePage({
             {manualResult && (
               <div className="mt-6 rounded-2xl border border-dashed border-[var(--color-primary)] bg-[var(--color-primary-highlight)] p-4 text-sm">
                 <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-bold text-[var(--color-panel)]">
-                  <ReceiptText className="h-5 w-5 text-[var(--color-primary)]" /> {t.manualTitle}
+                  <ReceiptText className="h-5 w-5 text-[var(--color-primary)]" />{" "}
+                  {manualResult.instructions ? t.manualTitle : t.manualVerification}
                 </h2>
                 <div className="space-y-2 text-[var(--color-text)]">
-                  <div className="flex items-center gap-2">
-                    <Building className="h-4 w-4 text-[var(--color-primary)]" />
-                    {manualResult.instructions.payableTo}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-[var(--color-primary)]" />
-                    {manualResult.instructions.identifier}
-                  </div>
+                  {manualResult.instructions && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4 text-[var(--color-primary)]" />
+                        {manualResult.instructions.payableTo}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-[var(--color-primary)]" />
+                        {manualResult.instructions.identifier}
+                      </div>
+                    </>
+                  )}
+                  {!manualResult.instructions && (
+                    <a
+                      href={`mailto:${brand.org.donationEmail}`}
+                      className="font-semibold underline"
+                    >
+                      {brand.org.donationEmail}
+                    </a>
+                  )}
                   <div className="flex items-center gap-2 font-bold">
                     <Check className="h-4 w-4 text-[var(--color-success)]" />
                     {t.reference}: {manualResult.reference}

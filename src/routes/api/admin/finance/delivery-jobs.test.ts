@@ -63,3 +63,18 @@ test("current SQL actor revocation returns forbidden without a job list", async 
   expect(response.headers.get("cache-control")).toBe("no-store");
   expect(await response.json()).toEqual({ error: "Access denied" });
 });
+
+test("delivery worklist accepts page1000 and rejects larger/noncanonical pages", async () => {
+  const calls: number[] = [];
+  const handler = createDeliveryWorklistHandler({
+    authorize: async () => "actor",
+    list: async (_, page) => {
+      calls.push(page);
+      return { jobs: [], total: 25000, page, pageSize: 25 };
+    },
+  });
+  expect((await handler(request("GET", "1000"))).status).toBe(200);
+  for (const page of ["1001", "10000", "01", "1e3", "-1"])
+    expect((await handler(request("GET", page))).status).toBe(400);
+  expect(calls).toEqual([1000]);
+});

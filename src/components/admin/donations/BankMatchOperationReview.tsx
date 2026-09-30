@@ -18,10 +18,12 @@ export function BankMatchOperationReview({
   operation,
   onApply,
   pendingOrdinal,
+  disabled = false,
 }: {
   operation: BankMatchOperation;
   onApply: (ordinal: number) => void;
   pendingOrdinal: number | null;
+  disabled?: boolean;
 }) {
   const [page, setPage] = useState(1);
   const visible = operation.items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -46,7 +48,12 @@ export function BankMatchOperationReview({
         {operation.expiresAt}
       </p>
       <BulkResults items={results} />
-      <div className="max-h-[32rem] overflow-auto rounded-md border border-[var(--color-border)]">
+      <div
+        role="region"
+        aria-label="銀行逐筆確認表格"
+        tabIndex={0}
+        className="max-h-[32rem] overflow-auto rounded-md border border-[var(--color-border)]"
+      >
         <table className="w-full min-w-[44rem] text-left text-sm">
           <caption className="sr-only">銀行匹配第 {page} 頁逐筆確認</caption>
           <thead className="bg-[var(--color-surface)]">
@@ -83,7 +90,7 @@ export function BankMatchOperationReview({
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={pendingOrdinal !== null}
+                      disabled={disabled || pendingOrdinal !== null}
                       onClick={() => onApply(item.ordinal)}
                     >
                       {pendingOrdinal === item.ordinal ? "正在核對…" : "確認此筆入帳"}

@@ -54,7 +54,7 @@ test("bank preview shows 25 rows per page, candidate evidence and no credit acti
 });
 
 test("finance panel labels its strict template and dry-run boundary", () => {
-  const html = renderToStaticMarkup(<BankStatementDryRunPanel />);
+  const html = renderToStaticMarkup(<BankStatementDryRunPanel actorUserId="synthetic-finance" />);
   expect(html).toContain("bank_reference,received_on,currency,amount_hkd,payment_hint");
   expect(html).toContain("只作預覽");
   expect(html).not.toContain(">確認入帳</button>");

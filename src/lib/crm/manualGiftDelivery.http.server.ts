@@ -32,6 +32,8 @@ async function guarded(operation: () => Promise<Response>) {
       error instanceof InvalidRequestJsonError
     )
       return json({ error: "Invalid manual gift request" }, 400);
+    if (error && typeof error === "object" && "code" in error && error.code === "42501")
+      return json({ error: "Access denied" }, 403);
     return json({ error: "Could not process manual gift request" }, 500);
   }
 }
@@ -67,8 +69,18 @@ export function createManualGiftDeliveryHandlers(deps: Dependencies) {
         const current = await deps.status(jobId);
         if (!current) return json({ error: "Delivery job not found" }, 404);
         if (current === "complete") return json({ deliveryStatus: current });
-        if (current === "retryable" || current === "attention_required")
-          await deps.retryJob(jobId, actor.authUserId);
+        if (current === "retryable" || current === "attention_required") {
+          const accepted = await deps.retryJob(jobId, actor.authUserId);
+          if (!accepted) {
+            const latest = await deps.status(jobId);
+            if (!latest) return json({ error: "Delivery job not found" }, 404);
+            if (latest === "retryable" || latest === "attention_required")
+              return json({ error: "Delivery retry unavailable", deliveryStatus: latest }, 409);
+            // Another caller may have requeued or completed this job. This
+            // refused request must not claim it or change its attempt count.
+            return json({ deliveryStatus: latest });
+          }
+        }
         return json({ deliveryStatus: await attempt(jobId) });
       });
     },
