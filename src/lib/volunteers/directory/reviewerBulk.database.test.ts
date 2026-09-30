@@ -95,11 +95,12 @@ for (const lockedRow of ["operation", "profile", "assignment"] as const) {
             "select profile_id from public.volunteer_profile_review_assignment where profile_id=$1::uuid for update",
         }[lockedRow];
         // Start apply only after the unchanged row is locked by a separate backend.
-        const locked = Promise.withResolvers<void>();
+        const locked = Promise.withResolvers<number>();
         heldLock = locker
           .begin(async (tx) => {
             await tx.unsafe(lockSql, [lockedRow === "operation" ? operation! : profile]);
-            locked.resolve();
+            const [{ pid: lockerPid }] = await tx.unsafe("select pg_backend_pid() pid");
+            locked.resolve(lockerPid);
             await released;
           })
           .then(
@@ -109,7 +110,7 @@ for (const lockedRow of ["operation", "profile", "assignment"] as const) {
               throw error;
             },
           );
-        await locked.promise;
+        const lockerPid = await locked.promise;
         applying = applier
           .begin(async (tx) => {
             await tx.unsafe("set local statement_timeout='10s'");
@@ -126,8 +127,8 @@ for (const lockedRow of ["operation", "profile", "assignment"] as const) {
         let blockedLive = false;
         for (let attempt = 0; attempt < 100; attempt++) {
           const [state] = await db.unsafe(
-            "select cardinality(pg_blocking_pids($1::int))>0 blocked, expires_at>pg_catalog.clock_timestamp() live from public.volunteer_review_bulk_operation where id=$2::uuid",
-            [pid, operation!],
+            "select $3::int=any(pg_blocking_pids($1::int)) blocked, expires_at>pg_catalog.clock_timestamp() live from public.volunteer_review_bulk_operation where id=$2::uuid",
+            [pid, operation!, lockerPid],
           );
           if (state.blocked) {
             blockedLive = state.live;
@@ -136,19 +137,19 @@ for (const lockedRow of ["operation", "profile", "assignment"] as const) {
           await Bun.sleep(10);
         }
         expect(blockedLive).toBe(true);
-        let expired = false;
+        let expiredBlocked = false;
         for (let attempt = 0; attempt < 400; attempt++) {
           const [state] = await db.unsafe(
-            "select expires_at<=pg_catalog.clock_timestamp() expired from public.volunteer_review_bulk_operation where id=$1::uuid",
-            [operation!],
+            "select $3::int=any(pg_blocking_pids($1::int)) blocked, expires_at<=pg_catalog.clock_timestamp() expired from public.volunteer_review_bulk_operation where id=$2::uuid",
+            [pid, operation!, lockerPid],
           );
-          if (state.expired) {
-            expired = true;
+          if (state.expired && state.blocked) {
+            expiredBlocked = true;
             break;
           }
           await Bun.sleep(10);
         }
-        expect(expired).toBe(true);
+        expect(expiredBlocked).toBe(true);
         releaseLock!();
         await heldLock;
         const outcome = await applying;
