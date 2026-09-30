@@ -71,3 +71,23 @@ Whole candidate rehearsal locks candidate tables before confirming emptiness, ex
 The full rehearsal also locks adoption_case, seeds1000 old-shape cases after removing only candidate column/trigger in the transaction, proves every old-field hash unchanged after exact migration, version1/NOT NULL/default1 on1000 rows, then999 version1/one version2 after one update. Rollback restores prior column/trigger/index/data/catalog.
 
 Self-review: minimal two-check SQL diff contains no SELECT/PERFORM in either new guard; FOUND semantics preserved. Existing auth/version/eligible-stage/idempotency/audit/1000-item tests retained and passing. Both trackers remain34rows with only ADMIN-04 changed for local code-complete/schema-ready slice. Prior UI evidence retained; new browser/provider/production measurements not-run. No production reads/writes/DDL, external provider, real notifications/payments/refunds, public preview, predecessor propagation, remote push/merge or subagents. Independent review, root integration/current remote CI and exact new production approval pending. Full-suite skips are not passes; existing lint warnings are not regressions.
+
+
+## Root combined-source verification and independent review — 2026-10-01 HKT
+
+Independent task-scoped review approved Task161, Task162 and Task164: spec compliant, quality approved, no Critical/Important findings. The exact Task161 package was BASE a29d657c54e717243d909d49cfefb02b02343f9c through96d4926b2b5ed1155fca89ecae85460ac669b9f7; its source repair0883d3ac0255164feba416503c43fe5099ed2c77 remains byte-identical after merging reviewed predecessor #160 head9d1feed9e560bb89e0d066b761558cb6864a55fc. Seven documentation conflicts were resolved by preserving historical blocks and merging unique CSV rows; no code conflict. Both trackers retain34unique rows; manifest51rows. #159/#160 exact new hashes15ca57d1/96149a16 and #161 cd143432 remain verified.
+
+Root ran the final combined source once with CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:57322/postgres, SUPABASE_LOCAL_URL=http://127.0.0.1:52321, and SUPPORTER_PORTAL/CRM_TAG_BULK/VOLUNTEER_REVIEW_BULK/ADOPTION_ASSIGNMENT_BULK test database flags set to the disposable schema-only clone127.0.0.1:52322/audit_pr135_20260929 with all four ALLOW_LOCAL_FIXTURES=1. No production fixtures/provider calls. Source inherited role/shared-lock/version/server-only/snapshot contracts and their existing tests remain intact; the bounded review does not independently certify all unchanged global behavior.
+
+| Command | Environment / actual result | Exit |
+| --- | --- | --- |
+| bun test --isolate --timeout30000 (actual argument --timeout 30000) | Combined source:3065pass97skip0fail9648assertions539files92.45s | 0 |
+| bun run typecheck | Strict tsc --noEmit | 0 |
+| bun run lint | 0errors;52existing warnings | 0 |
+| bun run build | Exclusive serial build; loopback54329 and CI placeholder keys; generated route map unchanged | 0 |
+| git diff --check / own SQL+test diff against96d4926b | No whitespace/unresolved/source-repair change | 0 |
+| bun private census-pr161-combined.ts | Auth/admin/supporter/volunteer/CRM/adoption12scoped table counts all0 | 0 final |
+
+Raw logs are retained beside the scoped task report as task-161-root-integration-{full-test,typecheck,lint,build,census-final}.log. The first read-only census mistakenly assumed this clone also contained private.supporter_recovery_challenge and exited1/42P01. The exact migration confirms that table name, but this clone lacks the separate recovery-broker schema. The final census explicitly records to_regclass=NULL; this is **not** a passing recovery DB test. No schema mutation/cleanup was performed. Historical recovery-broker isolated evidence remains separate; skipped suites remain skipped. New live PostgREST, hosted staff/mobile/private-file UAT, UI screenshots, production timing/provider/sandbox measurements and notifications are **not-run** for this SQL-only repair. Prior UI evidence is retained.
+
+Current predecessor releases: #159 actual main07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, Vercel READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #160 exact head9d1feed9 has all5 PR gatesSUCCESS in36757267257 and waits for its named single production migration approval. #161 remains code-complete and locally schema-ready; new exact changed-byte production approval, fresh catalog/backup, exact remote PR CI, predecessor main gates and deployed verification are separate pending gates. Payments/new delivery schedules remain off. Existing backup/restore/Storage limitations and additive rollback boundaries remain as recorded. This appendix is a checkpoint, not a new deployment claim.

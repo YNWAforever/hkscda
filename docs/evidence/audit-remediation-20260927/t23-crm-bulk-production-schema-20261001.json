@@ -1,0 +1,126 @@
+{
+  "capturedUtc": "2026-09-30T18:03Z",
+  "environment": "production schema metadata only; no production bulk RPC called",
+  "approvedFile": "20260927172030_crm_tag_bulk.sql",
+  "canonicalLfSha256": "15ca57d14f074a933bdba9001ad3758fe1f6340765321fa0054d032428611522",
+  "predecessorMainSha": "d507340491dc50a780c7031dbcd459b85ebfff38",
+  "predecessorMainCi": 36753543456,
+  "predecessorAliasDeployment": "dpl_VZuwYqmufqEKZTkvPBCPqoxxNppo",
+  "restrictedBackupCipherSha256": "ae4c855334e4685cfc10c289c0be50ae960dc047934128eb8b98da209afb755d",
+  "before": {
+    "ledger_count": 97,
+    "supporter_count": 15,
+    "supporter_row_hash": "6f5f3522488e8d084d7a97eb2670a549",
+    "audit_count": 600
+  },
+  "after": {
+    "tables": [
+      {
+        "rls": true,
+        "name": "crm_tag_bulk_item",
+        "policies": 0,
+        "anon_select": false,
+        "auth_select": false,
+        "public_grants": 0,
+        "service_delete": false,
+        "service_insert": false,
+        "service_select": true,
+        "service_update": false
+      },
+      {
+        "rls": true,
+        "name": "crm_tag_bulk_operation",
+        "policies": 0,
+        "anon_select": false,
+        "auth_select": false,
+        "public_grants": 0,
+        "service_delete": false,
+        "service_insert": false,
+        "service_select": true,
+        "service_update": false
+      }
+    ],
+    "indexes": [
+      "crm_tag_bulk_item_pending_idx",
+      "crm_tag_bulk_operation_actor_created_idx"
+    ],
+    "functions": [
+      {
+        "args": "p_actor uuid",
+        "name": "require_crm_tag_bulk_actor",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "private",
+        "definer": true,
+        "anon_execute": false,
+        "auth_execute": false,
+        "public_grants": 0,
+        "service_execute": true
+      },
+      {
+        "args": "p_actor uuid, p_operation uuid, p_supporter uuid",
+        "name": "apply_crm_tag_bulk_item",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "public",
+        "definer": true,
+        "anon_execute": false,
+        "auth_execute": false,
+        "public_grants": 0,
+        "service_execute": true
+      },
+      {
+        "args": "p_actor uuid, p_ids uuid[], p_tag text, p_filter_hash text",
+        "name": "create_crm_tag_bulk_preview",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "public",
+        "definer": true,
+        "anon_execute": false,
+        "auth_execute": false,
+        "public_grants": 0,
+        "service_execute": true
+      },
+      {
+        "args": "p_actor uuid, p_operation uuid",
+        "name": "get_crm_tag_bulk_operation",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "public",
+        "definer": true,
+        "anon_execute": false,
+        "auth_execute": false,
+        "public_grants": 0,
+        "service_execute": true
+      }
+    ],
+    "migration": {
+      "name": "crm_tag_bulk",
+      "version": "20260930180311"
+    },
+    "item_count": 0,
+    "audit_count": 600,
+    "ledger_count": 98,
+    "delivery_jobs": 0,
+    "operation_count": 0,
+    "supporter_count": 15,
+    "supporter_row_hash": "6f5f3522488e8d084d7a97eb2670a549",
+    "recovery_challenges": 0
+  },
+  "warnAdvisorCountsUnchanged": true,
+  "intentionalRlsNoPolicyInfo": {
+    "before": 85,
+    "after": 87
+  },
+  "notRun": [
+    "production bulk mutation",
+    "hosted staff role/private-file UAT",
+    "full backup restore",
+    "Storage object-byte restore"
+  ],
+  "operationallyEnabled": false
+}

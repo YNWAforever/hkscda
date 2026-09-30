@@ -137,6 +137,7 @@ import { Route as AdminContentIdRouteImport } from './routes/admin/content/$id'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiVolunteerStatusTokenRouteImport } from './routes/api/volunteer/status/$token'
+import { Route as ApiSupporterRecoveryVerifyRouteImport } from './routes/api/supporter/recovery/verify'
 import { Route as ApiSupporterReceiptsReceiptIdRouteImport } from './routes/api/supporter/receipts/$receiptId'
 import { Route as ApiSponsorshipsStatusTokenRouteImport } from './routes/api/sponsorships/status/$token'
 import { Route as ApiSponsorshipsPledgesProofUploadUrlRouteImport } from './routes/api/sponsorships/pledges/proof-upload-url'
@@ -933,6 +934,12 @@ const ApiVolunteerStatusTokenRoute = ApiVolunteerStatusTokenRouteImport.update({
   path: '/api/volunteer/status/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSupporterRecoveryVerifyRoute =
+  ApiSupporterRecoveryVerifyRouteImport.update({
+    id: '/verify',
+    path: '/verify',
+    getParentRoute: () => ApiSupporterRecoveryRoute,
+  } as any)
 const ApiSupporterReceiptsReceiptIdRoute =
   ApiSupporterReceiptsReceiptIdRouteImport.update({
     id: '/api/supporter/receipts/$receiptId',
@@ -1841,7 +1848,7 @@ export interface FileRoutesByFullPath {
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/supporter/preferences': typeof ApiSupporterPreferencesRoute
   '/api/supporter/records': typeof ApiSupporterRecordsRoute
-  '/api/supporter/recovery': typeof ApiSupporterRecoveryRoute
+  '/api/supporter/recovery': typeof ApiSupporterRecoveryRouteWithChildren
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
   '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
@@ -1908,6 +1915,7 @@ export interface FileRoutesByFullPath {
   '/api/sponsorships/pledges/proof-upload-url': typeof ApiSponsorshipsPledgesProofUploadUrlRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/supporter/receipts/$receiptId': typeof ApiSupporterReceiptsReceiptIdRoute
+  '/api/supporter/recovery/verify': typeof ApiSupporterRecoveryVerifyRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoption-guide-releases/$id/preview': typeof ApiAdminAdoptionGuideReleasesIdPreviewRoute
@@ -2106,7 +2114,7 @@ export interface FileRoutesByTo {
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/supporter/preferences': typeof ApiSupporterPreferencesRoute
   '/api/supporter/records': typeof ApiSupporterRecordsRoute
-  '/api/supporter/recovery': typeof ApiSupporterRecoveryRoute
+  '/api/supporter/recovery': typeof ApiSupporterRecoveryRouteWithChildren
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
   '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
@@ -2173,6 +2181,7 @@ export interface FileRoutesByTo {
   '/api/sponsorships/pledges/proof-upload-url': typeof ApiSponsorshipsPledgesProofUploadUrlRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/supporter/receipts/$receiptId': typeof ApiSupporterReceiptsReceiptIdRoute
+  '/api/supporter/recovery/verify': typeof ApiSupporterRecoveryVerifyRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoption-guide-releases/$id/preview': typeof ApiAdminAdoptionGuideReleasesIdPreviewRoute
@@ -2373,7 +2382,7 @@ export interface FileRoutesById {
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/supporter/preferences': typeof ApiSupporterPreferencesRoute
   '/api/supporter/records': typeof ApiSupporterRecordsRoute
-  '/api/supporter/recovery': typeof ApiSupporterRecoveryRoute
+  '/api/supporter/recovery': typeof ApiSupporterRecoveryRouteWithChildren
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
   '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
@@ -2440,6 +2449,7 @@ export interface FileRoutesById {
   '/api/sponsorships/pledges/proof-upload-url': typeof ApiSponsorshipsPledgesProofUploadUrlRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/supporter/receipts/$receiptId': typeof ApiSupporterReceiptsReceiptIdRoute
+  '/api/supporter/recovery/verify': typeof ApiSupporterRecoveryVerifyRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoption-guide-releases/$id/preview': typeof ApiAdminAdoptionGuideReleasesIdPreviewRoute
@@ -2708,6 +2718,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges/proof-upload-url'
     | '/api/sponsorships/status/$token'
     | '/api/supporter/receipts/$receiptId'
+    | '/api/supporter/recovery/verify'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoption-guide-releases/$id/preview'
@@ -2973,6 +2984,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges/proof-upload-url'
     | '/api/sponsorships/status/$token'
     | '/api/supporter/receipts/$receiptId'
+    | '/api/supporter/recovery/verify'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoption-guide-releases/$id/preview'
@@ -3239,6 +3251,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges/proof-upload-url'
     | '/api/sponsorships/status/$token'
     | '/api/supporter/receipts/$receiptId'
+    | '/api/supporter/recovery/verify'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoption-guide-releases/$id/preview'
@@ -3411,7 +3424,7 @@ export interface RootRouteChildren {
   ApiSponsorshipsTermsRoute: typeof ApiSponsorshipsTermsRoute
   ApiSupporterPreferencesRoute: typeof ApiSupporterPreferencesRoute
   ApiSupporterRecordsRoute: typeof ApiSupporterRecordsRoute
-  ApiSupporterRecoveryRoute: typeof ApiSupporterRecoveryRoute
+  ApiSupporterRecoveryRoute: typeof ApiSupporterRecoveryRouteWithChildren
   ApiVolunteerActivitiesRoute: typeof ApiVolunteerActivitiesRoute
   ApiVolunteerGroupEnquiriesRoute: typeof ApiVolunteerGroupEnquiriesRoute
   ApiVolunteerOperationsRoute: typeof ApiVolunteerOperationsRoute
@@ -4382,6 +4395,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/volunteer/status/$token'
       preLoaderRoute: typeof ApiVolunteerStatusTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/supporter/recovery/verify': {
+      id: '/api/supporter/recovery/verify'
+      path: '/verify'
+      fullPath: '/api/supporter/recovery/verify'
+      preLoaderRoute: typeof ApiSupporterRecoveryVerifyRouteImport
+      parentRoute: typeof ApiSupporterRecoveryRoute
     }
     '/api/supporter/receipts/$receiptId': {
       id: '/api/supporter/receipts/$receiptId'
@@ -5814,6 +5834,17 @@ const ApiSponsorshipsPledgesRouteWithChildren =
     ApiSponsorshipsPledgesRouteChildren,
   )
 
+interface ApiSupporterRecoveryRouteChildren {
+  ApiSupporterRecoveryVerifyRoute: typeof ApiSupporterRecoveryVerifyRoute
+}
+
+const ApiSupporterRecoveryRouteChildren: ApiSupporterRecoveryRouteChildren = {
+  ApiSupporterRecoveryVerifyRoute: ApiSupporterRecoveryVerifyRoute,
+}
+
+const ApiSupporterRecoveryRouteWithChildren =
+  ApiSupporterRecoveryRoute._addFileChildren(ApiSupporterRecoveryRouteChildren)
+
 interface ApiAdminAccessInvitesRouteChildren {
   ApiAdminAccessInvitesIdResendRoute: typeof ApiAdminAccessInvitesIdResendRoute
 }
@@ -6166,7 +6197,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSponsorshipsTermsRoute: ApiSponsorshipsTermsRoute,
   ApiSupporterPreferencesRoute: ApiSupporterPreferencesRoute,
   ApiSupporterRecordsRoute: ApiSupporterRecordsRoute,
-  ApiSupporterRecoveryRoute: ApiSupporterRecoveryRoute,
+  ApiSupporterRecoveryRoute: ApiSupporterRecoveryRouteWithChildren,
   ApiVolunteerActivitiesRoute: ApiVolunteerActivitiesRoute,
   ApiVolunteerGroupEnquiriesRoute: ApiVolunteerGroupEnquiriesRoute,
   ApiVolunteerOperationsRoute: ApiVolunteerOperationsRoute,
