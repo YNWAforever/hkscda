@@ -352,7 +352,8 @@
     "docs/evidence/audit-remediation-20260927/final-local-gates-20261001.json",
     "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
     "docs/evidence/audit-remediation-20260927/release-checkpoint-20261001.md",
-    "docs/evidence/audit-remediation-20260927/migration-approval-packet-20261001.md"
+    "docs/evidence/audit-remediation-20260927/migration-approval-packet-20261001.md",
+    "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -859,5 +860,14 @@
     "ledger": 98,
     "report": "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
     "limitation": "Implemented public table/column/RLS/service grants and RPC signatures/execute-role checks only; not full constraints/indexes/private/storage policies or behavioral UAT"
+  },
+  "isolatedStructuralVerification": {
+    "requirements": 146,
+    "candidateIssues": 0,
+    "exit": 0,
+    "baselineIssues": 1,
+    "scope": "temporary exact reviewed169picker/grant declaration on existing dedicated57322 in rollback transaction; structural checks only",
+    "receipt": "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json",
+    "restored": true
   }
 }

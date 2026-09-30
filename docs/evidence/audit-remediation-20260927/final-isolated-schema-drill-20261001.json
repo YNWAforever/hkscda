@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-09-30T22:23:03.101Z",
+  "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+  "environment": "existing dedicated loopback57322; no production connection",
+  "requirements": 146,
+  "baselineIssues": 1,
+  "baselineMissing": "list_sponsorship_followup_assignees",
+  "reviewedFile": "20260928073000_sponsorship_followup_assignment.sql",
+  "canonicalSha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2",
+  "temporaryScope": "only exact reviewed missing picker function/grants inside transaction; existing feature DDL unchanged",
+  "candidateState": "compatible",
+  "candidateIssues": 0,
+  "rollback": "exact baseline checker report/function catalog/ACL/OIDs/owners/config/ledger restored",
+  "productionActions": "none",
+  "limitations": "146 implemented public schema checks only; body/grants/RLS/behavior per-feature evidence retained, full storage/index/private certification not implied",
+  "exit": 0,
+  "readOnlyBaselines": [
+    {
+      "environment": "dedicated57322",
+      "requirements": 146,
+      "exit": 1,
+      "issues": 1,
+      "missing": "list_sponsorship_followup_assignees"
+    },
+    {
+      "environment": "clone52322",
+      "requirements": 146,
+      "exit": 1,
+      "issues": 45,
+      "note": "legacy core dependencies absent in this schema-only per-feature clone; separate from dedicated full-schema stack"
+    }
+  ],
+  "priorHarnessAttempts": [
+    {
+      "command": "bun final-isolated-schema-drill-20261001.ts",
+      "exit": 1,
+      "error": "42809 pg_get_functiondef: min is an aggregate function",
+      "phase": "before BEGIN/DDL; excluded aggregate definitions in introspection"
+    },
+    {
+      "command": "bun final-isolated-schema-drill-20261001.ts",
+      "exit": 1,
+      "error": "ERR_POSTGRES_UNSAFE_TRANSACTION: Only use sql.begin, sql.reserved or max: 1",
+      "phase": "client rejected BEGIN before DB transaction/DDL; configured max1 connection"
+    }
+  ]
+}

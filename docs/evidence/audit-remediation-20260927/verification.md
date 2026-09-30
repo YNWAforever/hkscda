@@ -196,3 +196,9 @@ Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery a
 ## Current final checkpoint — 2026-10-01 HKT
 
 See [actual release checkpoint](release-checkpoint-20261001.md): source290abb19 full3195pass168skip0fail/type0/lint0(52warnings)/build0;26actualmainreleases through159/main07e4c881/ledger98; current146-object production check exit1/92gaps. Historical observations above retain their SHA/environment and do not override this current status. Independent final review and documentation-head exact CI remain pending; no production action.
+
+## Final isolated schema contract drill — 2026-10-01 HKT
+
+Current146-object checker on the existing dedicated loopback57322 baseline: exit1 with one missing `list_sponsorship_followup_assignees` RPC. The schema-only per-feature clone52322 separately reports45legacy gaps (exit1); its focused rehearsal evidence is not a full-schema certification. In a single-connection transaction on57322, only the exact reviewed169 picker declaration/service-role grants from canonical c1eb28ad were temporarily created; all146 implemented public schema checks then reported compatible/0issues/exit0. Rollback restored the exact original checker report, function definitions/OIDs/owners/ACL/config and migration ledger. No application data DML or production connection. This certifies the implemented structural checks, not current function-body hashes, all private/storage/index constraints, provider behavior or hosted UAT.
+
+Two harness attempts actually failed before BEGIN/DDL: aggregate `pg_get_functiondef`42809 and Bun's explicit transaction client guard. Both are recorded alongside the successful correction. [Actual sanitized receipt](final-isolated-schema-drill-20261001.json). Source/SQL/UI bytes and the prior3195pass168skip/type/lint/build results are unchanged. Production remains146requirements/92gaps/ledger98.
