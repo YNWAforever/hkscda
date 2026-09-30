@@ -5,6 +5,7 @@ import AxeBuilder from "@axe-core/playwright";
 
 const browser = await chromium.launch();
 const results = [];
+const portal = process.argv.includes("--portal");
 try {
   for (const width of [390, 768, 1366]) {
     const context = await browser.newContext({ viewport: { width, height: 1000 } });
@@ -13,6 +14,18 @@ try {
     const requests = [];
     const verifies = [];
     let release;
+    if (portal)
+      await page.route("**/api/supporter/records", (route) =>
+        route.fulfill({
+          json: {
+            adoption: [],
+            sponsorship: [],
+            donations: [],
+            receipts: [],
+            marketingEmail: null,
+          },
+        }),
+      );
     page.on("pageerror", (e) => errors.push(e.message));
     await page.route("**/api/supporter/recovery", async (route) => {
       requests.push(route.request().postDataJSON());
@@ -70,7 +83,7 @@ try {
       json: { access_token: "synthetic-a-access", refresh_token: "synthetic-a-refresh" },
     });
     release = undefined;
-    await page.getByRole("heading", { name: "電郵已驗證" }).waitFor();
+    await page.getByRole("heading", { name: portal ? "我的紀錄" : "電郵已驗證" }).waitFor();
     assert.equal(await page.evaluate(() => window.recoveryFixture.sessions.length), 1);
     assert.equal(verifies.length, 2);
     assert.equal(verifies[0].challengeId, "12345678-1234-4234-8234-123456789012");
@@ -118,7 +131,7 @@ try {
     );
     assert.equal(overflow, false);
     await page.screenshot({
-      path: `docs/evidence/audit-remediation-20260927/ui/t22-broker-after-${width}.png`,
+      path: `docs/evidence/audit-remediation-20260927/ui/t22-${portal ? "integrated" : "broker"}-after-${width}.png`,
       fullPage: true,
     });
     assert.deepEqual(errors, []);
@@ -135,11 +148,12 @@ try {
       overflow: false,
       pageErrors: 0,
       syntheticOnly: true,
+      portal,
     });
     await context.close();
   }
   await writeFile(
-    "docs/evidence/audit-remediation-20260927/t22-broker-ui.json",
+    `docs/evidence/audit-remediation-20260927/t22-${portal ? "integrated" : "broker"}-ui.json`,
     JSON.stringify(
       {
         environment:

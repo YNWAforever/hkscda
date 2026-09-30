@@ -36,6 +36,7 @@ test("release manifest covers every new public table, RPC, and additive column a
     "get_media_repair_backlog",
     "retry_failed_media_repair",
     "public_animal_listing_page",
+    "set_supporter_marketing_email",
   ]) {
     expect(functions).toContain(name);
   }
