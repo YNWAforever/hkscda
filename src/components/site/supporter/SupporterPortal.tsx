@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 
-import { getSupabaseClient } from "../../../lib/supabase";
+import { signOutCurrentSession } from "../../../lib/supabase";
+import { sameBrowserSession } from "../../../lib/supporters/recoverySession";
 import type { PortalRecords } from "../../../lib/supporters/portal.server";
 
 function money(cents: number) {
@@ -153,6 +154,20 @@ export function SupporterPortal({ accessToken }: { accessToken: string }) {
   }
   const [loaded, setLoaded] = useState<{ token: string; records: PortalRecords } | null>(null);
   const [error, setError] = useState("");
+  const [logoutFailure, setLogoutFailure] = useState<{ token: string; message: string } | null>(
+    null,
+  );
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const visibleError =
+    logoutFailure && sameBrowserSession(logoutFailure.token, accessToken)
+      ? logoutFailure.message
+      : error;
   const [preferenceSaving, setPreferenceSaving] = useState(false);
   const records = loaded?.token === accessToken ? loaded.records : null;
 
@@ -249,26 +264,37 @@ export function SupporterPortal({ accessToken }: { accessToken: string }) {
   }
 
   async function signOut() {
+    setLogoutFailure(null);
     currentToken.current = "";
     setLoaded(null);
     queryClient.clear();
-    await getSupabaseClient().auth.signOut();
+    try {
+      const { error: signOutError } = await signOutCurrentSession(accessToken);
+      if (signOutError) throw signOutError;
+      if (mounted.current) setLogoutFailure(null);
+    } catch {
+      if (mounted.current)
+        setLogoutFailure({
+          token: accessToken,
+          message: "暫時未能退出，登入仍然有效。請重試或聯絡職員協助。",
+        });
+    }
   }
 
   return (
-    <section className="mt-8" aria-busy={!records && !error}>
+    <section className="mt-8" aria-busy={!records && !visibleError}>
       <h2 className="text-2xl font-semibold">我的紀錄</h2>
       <button type="button" className="btn-secondary mt-4 min-h-11" onClick={() => void signOut()}>
         退出
       </button>
-      {!records && !error && (
+      {!records && !visibleError && (
         <p role="status" className="mt-4">
           載入中…
         </p>
       )}
-      {error && (
+      {visibleError && (
         <p role="alert" className="mt-4 text-[var(--color-error)]">
-          {error}
+          {visibleError}
         </p>
       )}
       {records && (

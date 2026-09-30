@@ -71,3 +71,26 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - T23 animal editorial review bulk in progress on isolated branch: missing-RPC red/green; dedicated DB 3 pass/18 assertions including role downgrade and audit rollback; focused UI/selection/API 5 pass/22 assertions; catalog 109 compatible. Full isolated suite 2870 pass/100 skip/0 fail across 513 files before final test-only assertion; typecheck/lint/build exit 0. Draft PR and remote CI pending. Parent adoption #161 CI run 36343892629 passed verify, RLS, performance, brand and a11y.
 
 - PR162 sequential repair 1fec4ea6: actor lock, JSON400 and durable read recovery. Full3006pass121skip/9383assert; clone6tests39assertions; 1000-item partial results preserve animal fields; full SQL rollback253ms; 3-width UI/Axe0. Independent review closed. Current CI/production approval and #156 provider gate remain open.
+## T22 recovery broker continuation, 2026-09-30
+
+Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
+
+## T22 session review completion, 2026-09-30
+
+Code `ccfca5444dead96d94195e346c15fdfcf2751a7e`: full3004 pass/96 skip/0 fail; typecheck/lint/build exit0; SDK22/66; real two-tab factory,3 recovery logout same-task cases and3width keyboard/Axe0 journey pass. Independent review has no remaining findings. Exact SQL unchanged and re-rehearsed with catalog equality. #156 production DDL remains unapproved; #157 integration code/schema locally verified separately. Still22/46 merged; production main/alias24196faf and recovery/payment/new schedules remain disabled. [Final checkpoint](sequential-merge-156-broker-20260930.md).
+
+## T22 broker/portal final integration, 2026-09-30
+
+Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.
+
+## T23 dependency continuation, 2026-10-01 HKT
+
+Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery and portal. T23 source unchanged; routes preserved. Full3024 pass/97 skip/0 fail/9384 assertions; typecheck/lint/build exit0; actual local Auth three-role/API/status checks and3width keyboard/Axe0 task overview pass. Independent review clear. New integrated captures preserve older before/after images. No T23 migration; combined manifest48. Still22/46 merged; exact #156 production schema approval pending; #157 migration already approved. #158 code-complete for overview only, ADMIN-04 partial for later bulk/filter slices; deployed=no, operationally-enabled=no. See sequential-merge-158-20260930.md for exact commands/environments/rollback and not-run gates.
+
+
+## 2026-10-01 HKT Task161 integration / #159 release checkpoint
+
+Task161 independently approved and final combined source gates passed:3065pass97skip0fail; strict typecheck/lint/serialbuild0,52existing warnings; scope census0. Repaired SQL hashcd143432 preserved. Source predecessor#1609d1feed9 integrated; manifest51/trackers34unique. #159 actual main07e4c881/mainCI36758558621 all5SUCCESS/aliasREADY;26of46released. #160 and changed-byte#161 production approval/deployment remain pending; Task162/164 independently approved before integration. See sequential-merge-161-20260930.md and sequential-execution-20261001.md for actual environment/limits.
+
+
+Task162 root integration verified2026-10-01HKT: independent review approved; 3079pass97skip0fail9739assertions543files113.24s; strictType/lint/serialBuild0;52oldwarnings;fixture0; hash8f5eceb8 preserved. Source/deployment/enablement separate; remoteCI/schemaapproval/sequence pending.

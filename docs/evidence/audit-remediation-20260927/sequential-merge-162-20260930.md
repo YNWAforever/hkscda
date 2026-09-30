@@ -84,3 +84,22 @@ Self-review: minimal two-check SQL diff contains no SELECT/PERFORM in either new
 ## Task162 rehearsal evidence refinement — 2026-10-01 HKT
 
 The first helper catalog compared functions/tables/ledger and counted created indexes. Added exact index-definition rollback comparison plus empty animals/drafts/editorial/Auth fixture guards to local task-162-rehearsal.ts; reran the identical whole candidate command serially, exit0. Both actual runs retained in task-162-rehearsal.log. Source SQL bytes unchanged; no source gate rerun needed. Final batch scoped census exit0: all three domains entity/revision/classification/operation/item/Auth fixtures0 and batch audit actions0. Five unrelated donation.delivery_queued audits from September29–30 were preserved.
+
+
+## Root Task162 final combined-source gates — 2026-10-01 HKT
+
+Independent Task162 spec/quality review approved the exact repair package throughc9b486b154f91747a876483b170a1bf3d968e8b1, with no Critical/Important findings. Sourcea1d0f95215982efccf80b90cbc2b7c2e09174ebd and its SQL/test remain byte-identical after inheriting reviewed predecessorf0ad57ea30f9a93a1d78bf8092f33116d2243c2c. Documentation-only conflicts preserve historical evidence and unique CSV rows; no code conflict. Candidate20260927184500_animal_review_bulk.sql canonical LF SHA2568f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41; manifest52unique rows and both trackers34unique rows. Earlier package statements remain historical. #161's filename/schema/backfill approval-scope ruling is inherited; #160 remains pending single-migration approval.
+
+| Actual command | Actual environment/result | Exit |
+| --- | --- | --- |
+| bun test --isolate --timeout 30000 | Final combined source: 3079pass97skip0fail9739assertions543files113.24s | 0 |
+| bun run typecheck | Strict tsc --noEmit | 0 |
+| bun run lint | 0errors /52existing warnings | 0 |
+| bun run build | Exclusive serial, loopback54329/CIplaceholderkeys; route map unchanged | 0 |
+| read-only combined fixture census / git diff --check | Scoped generated rows0 / no whitespace or unresolved conflicts | 0 |
+
+Full suite uses CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:57322/postgres, SUPABASE_LOCAL_URL=http://127.0.0.1:52321, and SUPPORTER_PORTAL/CRM_TAG_BULK/VOLUNTEER_REVIEW_BULK/ADOPTION_ASSIGNMENT_BULK/ANIMAL_REVIEW_BULK test databases all set to disposable schema-only clone127.0.0.1:52322/audit_pr135_20260929, each ALLOW_LOCAL_FIXTURES=1. No production data/provider call. The clone lacks the separate private recovery-broker table; that absence and97skips are not passing recovery DB evidence. Root retained prior isolated broker evidence separately. Logs task-162-root-integration-{full-test,typecheck,lint,build,census}.log remain in this plan workspace.
+
+The review's unchanged-contract limits are resolved by retaining source and tests for frozen snapshot/15-minute default, authoritative actor/assignee Auth/admin shared locks, per-item versions, transaction audit, stored partial results/idempotent retry and server-only boundaries; this integration run exercises all enabled inherited bulk fixtures. The two new time guards preserve FOUND and pre-existing classification/revision/status branches. Prior UI/keyboard/a11y/performance captures retained. No new browser/livePostgREST/hosted staff/private-export/provider/production measurements; these are not-run. Lint warnings/skips remain visible.
+
+Main/production remains actual#15907e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS/aliasREADY. #161 exact f0ad57ea CI36764490686 also all5SUCCESS. Task162 code-complete and local schema-ready only; no production migration/feature mutation/deployment/operational activation. Fresh exact-head remote CI, prior sequential release/main gates, named production schema approval, catalog/backup/postflight and hosted identities remain external gates. Existing additive rollback/payment/webhook/delivery boundaries unchanged. No paid branch, blinddbpush, fakeledger or global audit deletion.

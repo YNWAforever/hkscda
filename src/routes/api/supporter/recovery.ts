@@ -1,7 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { getAppUrl } from "../../../lib/appUrl.server";
+import { createLiveRecoveryBroker } from "../../../lib/supporters/recoveryRepository.server";
 import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 import {
   RecoveryError,
@@ -49,11 +48,11 @@ export function createRecoveryRouteHandler(
       return reply({ error: "Invalid request" }, 400);
     }
     try {
-      await requestRecovery(
+      const result = await requestRecovery(
         { email: input.email, challengeToken: input.challengeToken as string | undefined },
         dependencies(request),
       );
-      return reply({ accepted: true }, 202);
+      return reply(result, 202);
     } catch (error) {
       if (!(error instanceof RecoveryError)) {
         console.error("Supporter recovery request failed");
@@ -72,12 +71,7 @@ export function createRecoveryRouteHandler(
 }
 
 function createLiveDependencies(request: Request): RecoveryDependencies {
-  const url = process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) throw new Error("Public Supabase auth configuration is missing");
-  const auth = createClient(url, anonKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  const broker = createLiveRecoveryBroker();
   return {
     ip: getClientIp(request),
     rate: (key) =>
@@ -88,16 +82,7 @@ function createLiveDependencies(request: Request): RecoveryDependencies {
         requireAvailability: true,
       }),
     challenge: (token, ip) => verifyTurnstile(token, ip),
-    sendOtp: async (email) => {
-      const { error } = await auth.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: new URL("/supporter", getAppUrl()).toString(),
-        },
-      });
-      if (error) throw error;
-    },
+    sendOtp: (email, challengeId) => broker.issue(email, challengeId),
   };
 }
 
