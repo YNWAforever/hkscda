@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "04d673b8ef64d690ed75bf47cdc0175aefed5b02",
-  "appShaNote": "PR175 guarded bank confirmation and actor recovery plus verified predecessors; PR176-179 excluded.",
+  "appSha": "82c62c7a46994f12f413b946d099a6e7a8bc263b",
+  "appShaNote": "PR176 read-only CRM formatting fixes plus verified predecessors; PR177-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "2f4340872f7d1b9ea61dd15d0996c0c97b69b06c98e93e8ad247a20e0d31ec56",
   "configVersions": {
