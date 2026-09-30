@@ -812,6 +812,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "set_supporter_marketing_email",
+    feature: "supporter-portal",
+    required: true,
+    arguments: "p_auth_user_id uuid, p_verified_email text, p_status text",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "public_animal_listing_page",
     feature: "public-animals",
     required: true,
