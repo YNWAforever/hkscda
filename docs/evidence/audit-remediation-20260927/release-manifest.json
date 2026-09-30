@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "40a8765beaa04613fae1f9cc77e74a11d34810f1",
-  "appShaNote": "PR173 guarded delivery worklist plus verified predecessors; PR174-179 excluded.",
+  "appSha": "ea7541079ca3cd3c0390f9f3bef1a8665b4746f2",
+  "appShaNote": "PR174 role-accurate task guidance plus verified predecessors; PR175-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "4cec1cbade404ce3aebcd55ff8b8a49ae3696f05a57109b59fe927511511ea59",
   "configVersions": {
@@ -622,7 +622,7 @@
       }
     }
   ],
-  "capturedAt": "2026-09-30T00:25:23.288122+00:00",
+  "capturedAt": "2026-09-30T00:33:30.021484+00:00",
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
@@ -644,7 +644,7 @@
     "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained",
     "migration169": "exact approval requested after latest five CI gates succeeded; pending",
     "migration170": "exact approval requested after five CI gates green; pending",
-    "migration172": "not yet requested; isolated exact SQL/6oldrows/1000candidate rehearsal passed",
+    "migration172": "exact approval requested after five CI gates green; pending",
     "migration173": "not yet requested; isolated exact SQL/1000job/concurrentoneaudit rehearsal passed"
   },
   "blockedGate": {

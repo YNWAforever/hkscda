@@ -72,3 +72,8 @@ PR170 code/local gates complete;schema approved/applied=no,deployed=no,operation
 ## PR171 preparation — 2026-09-30
 
 PR171 no new SQL;56inheritedmigrationinventory. Full3084pass141skip9676assert;typecheck/lint/build0;15browsercases/Axe0. Codecomplete slice only;deploy/enable=no. #169dd17c5fbfivegreen36646284540 andexactmigrationapprovalrequested;#170/#171CIpending;#156OTPgate blocksorderedmerge.
+
+
+## PR174 current preparation — 2026-09-30
+
+See [sequential-merge-174-20260930.md](sequential-merge-174-20260930.md): app `ea7541079ca3cd3c0390f9f3bef1a8665b4746f2`, treasury guidance corrected without permission expansion. Full3113pass143skip9802assertions;type/lint/build0;actualisolatedAuth/API3roles;9browsercases/Axe0,12screenshots.58inheritedSQLfiles,no newmigration. Codecomplete slice,notdeployed/notenabled;#156remains releaseblock. #172fivegreen andexactapprovalrequested;#173CIpending.
