@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "environment": "actual SupporterPage / synthetic refreshed and switched sessions / local Chromium",
+  "providerRequests": 0,
+  "cases": [
+    {
+      "variant": "same-session-refresh",
+      "passed": true
+    },
+    {
+      "variant": "new-actor",
+      "passed": true
+    },
+    {
+      "variant": "new-session",
+      "passed": true
+    }
+  ]
+}

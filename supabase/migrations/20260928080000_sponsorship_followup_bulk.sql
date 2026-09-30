@@ -110,7 +110,7 @@ begin
   where id=p_operation and actor_user_id=p_actor for update;
   if not found then raise exception 'Follow-up bulk operation unavailable' using errcode='42501'; end if;
   perform private.require_sponsorship_followup_bulk_user(v_op.assignee_user_id);
-  if v_op.expires_at<=now() then raise exception 'Follow-up bulk preview expired' using errcode='P0001'; end if;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Follow-up bulk preview expired' using errcode='P0001'; end if;
   select * into v_item from public.sponsorship_followup_bulk_item
   where operation_id=p_operation and pledge_id=p_pledge for update;
   if not found then raise exception 'Follow-up bulk item unavailable' using errcode='42501'; end if;
@@ -118,6 +118,7 @@ begin
     return jsonb_build_object('entityId',p_pledge,'status',v_item.status,'reasonCode',v_item.reason_code);
   end if;
   select * into v_pledge from public.sponsorship_pledge where id=p_pledge for update;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Follow-up bulk preview expired' using errcode='P0001'; end if;
   if v_pledge.id is null then v_status:='skipped';v_reason:='not_found';
   elsif v_pledge.status<>'needs_followup' then v_status:='conflict';v_reason:='status_changed';
   elsif v_pledge.followup_version is distinct from v_item.expected_version
