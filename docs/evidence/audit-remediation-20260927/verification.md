@@ -128,3 +128,15 @@ Source `05bb6f1b64fbf39c8f40944b27f446a38751e809`: `SUPABASE_LOCAL_URL=http://12
 ## PR169 preparation — 2026-09-30
 
 PR169 current application b918ff918c98a2188335465237a6add66abfd0c7:3065pass137skip0fail9587assert552files32.75s;typecheck0/lint0(52warnings)/build0;isolated service_role4tests24assert0;exact fullmigration2row8.59ms rollback0;three-width12casebrowser0. RemoteCI pending. See sequential-merge-169-20260930.md.
+
+## T22 broker repair verification, 2026-09-30
+
+Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`: full suite2991 pass/96 skip/0 fail/9255 assertions, typecheck/lint/build exit0 (52 existing lint warnings). Actual local Auth20 concurrent broker attempts yield1session/1carrier exchange; real SDK9tests/23assertions, Chromium cross-tab/HTTP-wait/quota fallback/logout and actual page3widths pass. Exact SQL whole-file rollback/grants/RLS pass. Historical direct-provider concurrent OTP diagnostic remains failed and preserved; it is no longer the public application redemption path. Hosted redemption/configuration, real Turnstile/SMTP, full backup restore and actual staff UAT remain not-run. New production migration, key provision and activation remain gated. [Commands, exits, environments and rollback](sequential-merge-156-broker-20260930.md).
+
+## T22 broker/portal final integration, 2026-09-30
+
+Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.
+
+## T23 dependency continuation, 2026-10-01 HKT
+
+Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery and portal. T23 source unchanged; routes preserved. Full3024 pass/97 skip/0 fail/9384 assertions; typecheck/lint/build exit0; actual local Auth three-role/API/status checks and3width keyboard/Axe0 task overview pass. Independent review clear. New integrated captures preserve older before/after images. No T23 migration; combined manifest48. Still22/46 merged; exact #156 production schema approval pending; #157 migration already approved. #158 code-complete for overview only, ADMIN-04 partial for later bulk/filter slices; deployed=no, operationally-enabled=no. See sequential-merge-158-20260930.md for exact commands/environments/rollback and not-run gates.

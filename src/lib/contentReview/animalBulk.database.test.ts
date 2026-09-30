@@ -1,5 +1,9 @@
 import { SQL } from "bun";
 import { expect, test } from "bun:test";
+import {
+  createAnimalReviewBulkHandler,
+  type AnimalReviewBulkOperation,
+} from "../../routes/api/admin/animals/review-bulk";
 
 const url = process.env.ANIMAL_REVIEW_BULK_TEST_DATABASE_URL;
 if (url) {
@@ -17,6 +21,204 @@ if (url) {
   )
     throw new Error("Dedicated disposable animal review bulk database required");
 }
+
+for (const heldRow of ["operation", "animal_draft"] as const)
+  test.skipIf(!url || process.env.ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
+    "animal bulk rejects expiry while blocked on " + heldRow,
+    async () => {
+      const db = new SQL(url!, { max: 1, prepare: false });
+      const locker = new SQL(url!, { max: 1, prepare: false });
+      const applier = new SQL(url!, { max: 1, prepare: false });
+      const actor = crypto.randomUUID(),
+        admin = crypto.randomUUID();
+      const caseId = crypto.randomUUID();
+      let operation: string | undefined;
+      let applying: Promise<{ error?: unknown }> | undefined;
+      try {
+        await db.unsafe(
+          "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+          [actor, actor + "@example.invalid"],
+        );
+        await db.unsafe(
+          "insert into public.admin_user(id,auth_user_id,email,role,status) values($1::uuid,$2::uuid,$3,'admin','active')",
+          [admin, actor, actor + "@example.invalid"],
+        );
+        await db.unsafe(
+          "insert into public.animals(id,type,name,gender,age,status,publication_state) values($1::uuid,'cat','Synthetic expiry cat','female','adult','available','draft')",
+          [caseId],
+        );
+        await db.unsafe(
+          "insert into public.animal_draft(id,body,revision,updated_by) values($1::uuid,'{}'::jsonb,1,$2::uuid)",
+          [caseId, actor],
+        );
+        await db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          operation = (
+            await tx.unsafe(
+              "select public.create_animal_review_bulk_preview($1::uuid,$2::uuid[],$3,$4) result",
+              [actor, "{" + caseId + "}", "Synthetic expiry evidence", "e".repeat(64)],
+            )
+          )[0].result.operationId;
+        });
+        await db.unsafe(
+          "update public.animal_review_bulk_operation set expires_at=pg_catalog.clock_timestamp()+interval '2 seconds' where id=$1::uuid",
+          [operation!],
+        );
+        const state = async () => ({
+          entity: [
+            ...(await db.unsafe("select * from public.animals where id=$1::uuid", [caseId])),
+          ],
+          draft: [
+            ...(await db.unsafe("select * from public.animal_draft where id=$1::uuid", [caseId])),
+          ],
+          review: [
+            ...(await db.unsafe(
+              "select * from public.editorial_content_review where entity_kind='animal' and entity_id=$1::uuid",
+              [caseId],
+            )),
+          ],
+          item: [
+            ...(await db.unsafe(
+              "select * from public.animal_review_bulk_item where operation_id=$1::uuid",
+              [operation!],
+            )),
+          ],
+          audits: [
+            ...(await db.unsafe(
+              "select * from public.audit_log where actor_user_id=$1::uuid order by id",
+              [actor],
+            )),
+          ],
+        });
+        const before = await state();
+        const pid = (await applier.unsafe("select pg_backend_pid() pid"))[0].pid as number;
+        await locker.begin(async (tx) => {
+          const lockPid = (await tx.unsafe("select pg_backend_pid() pid"))[0].pid as number;
+          await tx.unsafe(
+            heldRow === "operation"
+              ? "select id from public.animal_review_bulk_operation where id=$1::uuid for update"
+              : "select id from public.animal_draft where id=$1::uuid for update",
+            [heldRow === "operation" ? operation! : caseId],
+          );
+          expect(
+            (
+              await db.unsafe(
+                "select expires_at>pg_catalog.clock_timestamp() live from public.animal_review_bulk_operation where id=$1::uuid",
+                [operation!],
+              )
+            )[0].live,
+          ).toBe(true);
+          applying = applier
+            .begin(async (apply) => {
+              await apply.unsafe("set local role service_role");
+              await apply.unsafe("set local statement_timeout='10s'");
+              await apply.unsafe(
+                "select public.apply_animal_review_bulk_item($1::uuid,$2::uuid,$3::uuid)",
+                [actor, operation!, caseId],
+              );
+            })
+            .then(
+              () => ({}),
+              (error: unknown) => ({ error }),
+            );
+          const deadline = Date.now() + 8000;
+          while (
+            !(
+              await db.unsafe("select $2::int=any(pg_catalog.pg_blocking_pids($1::int)) blocked", [
+                pid,
+                lockPid,
+              ])
+            )[0].blocked
+          ) {
+            if (Date.now() > deadline) throw new Error("Apply backend did not block on held row");
+            await Bun.sleep(20);
+          }
+          expect(
+            (
+              await db.unsafe(
+                "select expires_at>pg_catalog.clock_timestamp() live from public.animal_review_bulk_operation where id=$1::uuid",
+                [operation!],
+              )
+            )[0].live,
+          ).toBe(true);
+          while (
+            !(
+              await db.unsafe(
+                "select expires_at<=pg_catalog.clock_timestamp() expired from public.animal_review_bulk_operation where id=$1::uuid",
+                [operation!],
+              )
+            )[0].expired
+          ) {
+            if (Date.now() > deadline) throw new Error("Database clock did not reach expiry");
+            await Bun.sleep(20);
+          }
+          expect(
+            (
+              await db.unsafe("select $2::int=any(pg_catalog.pg_blocking_pids($1::int)) blocked", [
+                pid,
+                lockPid,
+              ])
+            )[0].blocked,
+          ).toBe(true);
+        });
+        const result = await applying!;
+        expect((result.error as { errno?: string } | undefined)?.errno).toBe("P0001");
+        const handler = createAnimalReviewBulkHandler({
+          authorize: async () => actor,
+          preview: async () => {
+            throw new Error("Unexpected preview");
+          },
+          read: async () =>
+            await db.begin(async (tx) => {
+              await tx.unsafe("set local role service_role");
+              return (
+                await tx.unsafe(
+                  "select public.get_animal_review_bulk_operation($1::uuid,$2::uuid) result",
+                  [actor, operation!],
+                )
+              )[0].result as AnimalReviewBulkOperation;
+            }),
+          applyItem: async () => {
+            throw { code: (result.error as { errno: string }).errno };
+          },
+        });
+        const response = await handler(
+          new Request("https://example.invalid/api/admin/animals/review-bulk", {
+            method: "POST",
+            body: JSON.stringify({ action: "apply", operationId: operation }),
+          }),
+        );
+        expect(response.status).toBe(409);
+        expect(response.headers.get("cache-control")).toBe("no-store");
+        expect(await response.json()).toEqual({ error: "Preview expired" });
+        expect(await state()).toEqual(before);
+      } finally {
+        if (applying) await applying;
+        await db.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+        if (operation) {
+          await db.unsafe(
+            "delete from public.animal_review_bulk_item where operation_id=$1::uuid",
+            [operation],
+          );
+          await db.unsafe("delete from public.animal_review_bulk_operation where id=$1::uuid", [
+            operation,
+          ]);
+        }
+        await db.unsafe(
+          "delete from public.editorial_content_review where entity_kind='animal' and entity_id=$1::uuid",
+          [caseId],
+        );
+        await db.unsafe("delete from public.animal_draft where id=$1::uuid", [caseId]);
+        await db.unsafe("delete from public.animals where id=$1::uuid", [caseId]);
+        await db.unsafe("delete from public.admin_user where auth_user_id=$1::uuid", [actor]);
+        await db.unsafe("delete from auth.users where id=$1::uuid", [actor]);
+        await applier.close();
+        await locker.close();
+        await db.close();
+      }
+    },
+    30000,
+  );
 
 test.skipIf(!url || process.env.ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
   "animal editorial bulk RPC is installed",
