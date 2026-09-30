@@ -1,0 +1,218 @@
+{
+  "sourceSha": "aca5822a124521d9e6acc94b171600ac344e9b97",
+  "sourceBase": "07e4c881863b715342ed0757aad7bd691a272738",
+  "migration": "20261001080000_service_readonly_evidence_privileges.sql",
+  "canonicalLfSha256": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808",
+  "environment": "Windows/Bun1.3.14/PostgreSQL17.6; dedicated synthetic loopback copy; production-equivalent owners/default table grants",
+  "productionActions": [],
+  "lifecycle": {
+    "codeComplete": true,
+    "isolatedSchemaReady": true,
+    "deployed": false,
+    "operationallyEnabled": false
+  },
+  "roleRegression": {
+    "command": "bun test src/lib/operations/readOnlyEvidence.database.test.ts",
+    "red": {
+      "exit": 1,
+      "pass": 3,
+      "fail": 17,
+      "assertions": 86
+    },
+    "green": {
+      "exit": 0,
+      "pass": 20,
+      "fail": 0,
+      "assertions": 110
+    }
+  },
+  "probeSemantics": {
+    "insertUpdateDelete": "WHERE false authorization probes",
+    "truncate": "real statement with savepoint rollback",
+    "referencesTriggerMaintain": "metadata privilege checks",
+    "columnUpdate": "two separately exercised service column UPDATE authorization probes"
+  },
+  "wholeFileRollback": {
+    "expected": "801841bf0be306f0ede8d2cada6df52c71b84c606970253997113c96c76ab199",
+    "actual": "801841bf0be306f0ede8d2cada6df52c71b84c606970253997113c96c76ab199",
+    "exact": true,
+    "intentionalRollback": true
+  },
+  "idempotency": {
+    "first": "214b336f41bde332a6434cfffbcd6f6ca010a233e894600fcba8692885533be5",
+    "repeated": "214b336f41bde332a6434cfffbcd6f6ca010a233e894600fcba8692885533be5",
+    "exact": true
+  },
+  "invariantChecks": "harness asserts unchanged function/OID/owner/ACL/config, default grants, roles and ledger; full original schema/data/sequence hashes restored",
+  "syntheticBeforeHistoricalDedupe": [
+    {
+      "schema": "public",
+      "table": "audit_log",
+      "row_count": "9",
+      "row_hash": "fb036f9e5a0c61fb7075ee4635e6d03f"
+    },
+    {
+      "schema": "public",
+      "table": "recipient_notification_draft",
+      "row_count": "3",
+      "row_hash": "159adf524e27a2923a0778dc447fda1f"
+    },
+    {
+      "schema": "public",
+      "table": "sponsorship_payment_instruction_snapshot",
+      "row_count": "0",
+      "row_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "schema": "public",
+      "table": "crm_export_job",
+      "row_count": "0",
+      "row_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "schema": "public",
+      "table": "recipient_notification_draft_duplicate_archive",
+      "row_count": "0",
+      "row_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+  ],
+  "syntheticAfterHistoricalDedupe": [
+    {
+      "schema": "public",
+      "table": "audit_log",
+      "row_count": "9",
+      "row_hash": "fb036f9e5a0c61fb7075ee4635e6d03f"
+    },
+    {
+      "schema": "public",
+      "table": "recipient_notification_draft",
+      "row_count": "1",
+      "row_hash": "2990a5cdcfb126ecbd7046fd70604065"
+    },
+    {
+      "schema": "public",
+      "table": "sponsorship_payment_instruction_snapshot",
+      "row_count": "0",
+      "row_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "schema": "public",
+      "table": "crm_export_job",
+      "row_count": "0",
+      "row_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "schema": "public",
+      "table": "recipient_notification_draft_duplicate_archive",
+      "row_count": "2",
+      "row_hash": "d2e61b48d7ae8277be7f5b61919c29ce"
+    }
+  ],
+  "restoration": {
+    "originalClone": {
+      "before": "96379458830fa9f8bd2e4dae283dced3f57f26313dabbfdf2ce7835e0242a7e4",
+      "after": "96379458830fa9f8bd2e4dae283dced3f57f26313dabbfdf2ce7835e0242a7e4",
+      "exact": true
+    },
+    "originalDedicatedStack": {
+      "before": "563122cc633da61f519909ba77cb6af26f651aca52649bcf00f325eff1b17058",
+      "after": "563122cc633da61f519909ba77cb6af26f651aca52649bcf00f325eff1b17058",
+      "exact": true
+    }
+  },
+  "cleanup": "Only exact newly created copy dropped, no FORCE or session termination",
+  "localGates": [
+    {
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "pass": 3027,
+      "skip": 127,
+      "fail": 0,
+      "assertions": 9415,
+      "files": 534,
+      "seconds": 83.65,
+      "newDbCases": "20 skipped here, separately passed above"
+    },
+    {
+      "command": "bun run typecheck",
+      "exit": 0
+    },
+    {
+      "command": "bun run lint",
+      "initialExit": 1,
+      "initialOwnedFormattingErrors": 115,
+      "finalExit": 0,
+      "errors": 0,
+      "existingWarnings": 52
+    },
+    {
+      "command": "bun run build",
+      "exit": 0,
+      "environment": "serial loopback placeholder configuration",
+      "generatedFileDrift": false
+    },
+    {
+      "command": "bun test src/lib/operations/migrationManifest.test.ts src/lib/operations/releaseManifest.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "assertions": 39
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  ],
+  "retainedHarnessAttempts": [
+    {
+      "stage": "Windows absolute import",
+      "exit": 1,
+      "sqlRan": false,
+      "corrected": "explicit sibling import"
+    },
+    {
+      "stage": "initial owner-mismatch RED",
+      "exit": 1,
+      "totals": {
+        "pass": 9,
+        "fail": 11,
+        "assertions": 94
+      },
+      "receipt": "private first receipt",
+      "pairedLog": "r01-readonly-red-first-tests.log"
+    },
+    {
+      "stage": "separate GRANT statements, same owner mismatch",
+      "exit": 1,
+      "totals": {
+        "pass": 9,
+        "fail": 11,
+        "assertions": 94
+      },
+      "receipt": "private second receipt",
+      "pairedLog": "r01-readonly-red-second-tests.log"
+    }
+  ],
+  "review": {
+    "source": "aca5822a124521d9e6acc94b171600ac344e9b97",
+    "specCompliance": "approved",
+    "quality": "approved",
+    "actionableCriticalImportant": 0
+  },
+  "notRun": [
+    "hosted real-role/API/private-file/export journeys",
+    "provider sandbox",
+    "new UI/performance",
+    "production migration",
+    "full backup restore/off-machine/Storage recovery"
+  ],
+  "productionStateObserved": {
+    "mainSha": "07e4c881863b715342ed0757aad7bd691a272738",
+    "ledgerEntries": 98,
+    "requiredSchemaObjects": 146,
+    "checkerIssues": 92,
+    "checkoutEnabled": false,
+    "checkoutObservedAt": "2026-09-30T22:54:38.035871+00:00",
+    "checkoutProvenance": "read-only PR160 production prerequisite preflight; no production DDL"
+  },
+  "approval": "new exact named production migration approval required; overall R01 NO-GO"
+}

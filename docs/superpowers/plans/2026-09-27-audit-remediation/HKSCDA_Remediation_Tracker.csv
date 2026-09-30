@@ -22,7 +22,7 @@ ADMIN-04,跨模組批量工作台,T17、T23,partial; overview #158 deployed; CRM
 PERF-01,待 DB 篩選與分頁,T21,code and schema deployed; broader UAT pending,yes,yes (#155),yes (#155),yes (bounded listing); paid transforms disabled,24196faf027998388eff3196a6979e23566e2443,PR #155 merged,PR CI 36623433675 five green; migration 20260929201203; unchanged 292-row hash; anon read; Vercel READY; main CI 36624781016 pending; local p50 221.73->17.56ms,Real-role UAT; approved photos/facts; paid transforms remain disabled
 OPS-01,再審核版本已關閉；保留 release gate,T00、T24,verified-fixed-at-reaudit,,,,,,,,
 SEC-01,條件風險；未證實正式 secret 缺失,T02、T07,open,,,,,,,,
-R01,公開需知已修；其餘相容性待查／修,T01、T02,partial,,,,,,,,
+R01,公開需知已修；其餘相容性待查／修,T01、T02,partial; three-table readonly grant repair code-complete and independently reviewed,partial overall; focused readonly repair yes,"focused repair isolated-ready; production146requirements/92issues, full rollout NO-GO",partial (#134-#159 dependency slices); focused readonly repair not deployed,no,aca5822a124521d9e6acc94b171600ac344e9b97,; aca5822a124521d9e6acc94b171600ac344e9b97,; 2026-10-01 catalog146/92 ledger98; 62wholefiles36success26collisions; qualified mapping92/92; inherited service grants RED3pass17fail then GREEN20pass110assert; exact whole-file rollback/idempotency/all9audits/original stack hashes; full3027pass127skip/type/lint/build0; sequential-fix-r01-readonly-20261001.md,Exact e002 forward production migration approval/application pending. Earlier legacy dependency approvals remain separate; #160 named question unanswered; #161 prior approval retained. Hosted/provider/full recovery UAT not-run.
 R02,待保留 error cause 與內容監控,T02,open,,,,,,,,
 R03,待防 CMS tab 切換丟草稿,T10,open,,,,,,,,
 R04,待 CMS history 分頁及直接查版本,T11,open,,,,,,,,
