@@ -19,6 +19,141 @@ if (databaseUrl) {
 }
 const enabled = Boolean(databaseUrl) && process.env.CRM_TAG_BULK_TEST_ALLOW_LOCAL_FIXTURES === "1";
 
+for (const heldRow of ["operation", "supporter"] as const) {
+  test.skipIf(!enabled)(
+    `CRM bulk rejects expiry while waiting for the ${heldRow} lock`,
+    async () => {
+      const db = new SQL(databaseUrl!, { max: 1, prepare: false });
+      const blocker = new SQL(databaseUrl!, { max: 1, prepare: false });
+      const applier = new SQL(databaseUrl!, { max: 1, prepare: false });
+      const actor = crypto.randomUUID();
+      const supporter = crypto.randomUUID();
+      let operation: string | undefined;
+      let releaseLock = () => {};
+      let held: Promise<unknown> | undefined;
+      let applying: Promise<{ error?: unknown; result?: unknown }> | undefined;
+      try {
+        await db.unsafe(
+          "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+          [actor, `crm-expiry-${actor}@example.invalid`],
+        );
+        await db.unsafe(
+          "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,'treasurer','active')",
+          [actor, `crm-expiry-${actor}@example.invalid`],
+        );
+        await db.unsafe(
+          "insert into public.supporter(id,name,email,tags) values($1::uuid,'Synthetic expiry fixture',$2,array['old'])",
+          [supporter, `${supporter}@example.invalid`],
+        );
+        const preview = await db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          return tx.unsafe(
+            "select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],'reviewed',$3) result",
+            [actor, `{${supporter}}`, "e".repeat(64)],
+          );
+        });
+        operation = preview[0].result.operationId as string;
+        await db.unsafe(
+          "update public.crm_tag_bulk_operation set expires_at=clock_timestamp()+interval '2 seconds' where id=$1::uuid",
+          [operation],
+        );
+        let lockReady = () => {};
+        const ready = new Promise<void>((resolve) => {
+          lockReady = resolve;
+        });
+        const release = new Promise<void>((resolve) => {
+          releaseLock = resolve;
+        });
+        held = blocker.begin(async (tx) => {
+          const table =
+            heldRow === "operation" ? "public.crm_tag_bulk_operation" : "public.supporter";
+          await tx.unsafe(`select id from ${table} where id=$1::uuid for update`, [
+            heldRow === "operation" ? operation! : supporter,
+          ]);
+          lockReady();
+          await release;
+        });
+        await ready;
+        let markPidReady = (value: number) => {
+          void value;
+        };
+        const pidReady = new Promise<number>((resolve) => {
+          markPidReady = resolve;
+        });
+        applying = applier
+          .begin(async (tx) => {
+            await tx.unsafe("set local statement_timeout='8s'");
+            const pid = await tx.unsafe("select pg_backend_pid() as pid");
+            markPidReady(pid[0].pid as number);
+            await tx.unsafe("set local role service_role");
+            return tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+              actor,
+              operation!,
+              supporter,
+            ]);
+          })
+          .then(
+            (result) => ({ result }),
+            (error: unknown) => ({ error }),
+          );
+        const pid = await pidReady;
+        let waiting = false;
+        for (let attempt = 0; attempt < 100; attempt++) {
+          const state = await db.unsafe(
+            "select cardinality(pg_blocking_pids($1::int))>0 blocked,expires_at>clock_timestamp() live from public.crm_tag_bulk_operation where id=$2::uuid",
+            [pid, operation],
+          );
+          if (state[0].blocked) {
+            expect(state[0].live).toBe(true);
+            waiting = true;
+            break;
+          }
+          await Bun.sleep(10);
+        }
+        expect(waiting).toBe(true);
+        await db.unsafe(
+          "select pg_sleep(greatest(0,extract(epoch from(expires_at-clock_timestamp())))+0.02) from public.crm_tag_bulk_operation where id=$1::uuid",
+          [operation],
+        );
+        releaseLock();
+        await held;
+        const outcome = await applying;
+        expect(outcome).toMatchObject({ error: { errno: "P0001" } });
+        const unchanged = await db.unsafe(
+          "select s.tags,s.edit_version,i.status from public.supporter s join public.crm_tag_bulk_item i on i.supporter_id=s.id where s.id=$1::uuid and i.operation_id=$2::uuid",
+          [supporter, operation],
+        );
+        expect(unchanged[0].tags).toEqual(["old"]);
+        expect(String(unchanged[0].edit_version)).toBe("1");
+        expect(unchanged[0].status).toBe("pending");
+        const audit = await db.unsafe(
+          "select count(*)::int n from public.audit_log where actor_user_id=$1::uuid and action='supporter.bulk_tag_add'",
+          [actor],
+        );
+        expect(audit[0].n).toBe(0);
+      } finally {
+        releaseLock();
+        await held?.catch(() => {});
+        await applying;
+        await db.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+        if (operation) {
+          await db.unsafe("delete from public.crm_tag_bulk_item where operation_id=$1::uuid", [
+            operation,
+          ]);
+          await db.unsafe("delete from public.crm_tag_bulk_operation where id=$1::uuid", [
+            operation,
+          ]);
+        }
+        await db.unsafe("delete from public.supporter where id=$1::uuid", [supporter]);
+        await db.unsafe("delete from public.admin_user where auth_user_id=$1::uuid", [actor]);
+        await db.unsafe("delete from auth.users where id=$1::uuid", [actor]);
+        await Promise.all([blocker.close(), applier.close(), db.close()]);
+      }
+    },
+    15000,
+  );
+}
+
 test.skipIf(!enabled)(
   "CRM tag preview and per-item apply fence stale versions and double submit",
   async () => {

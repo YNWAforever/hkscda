@@ -1,5 +1,9 @@
 import { SQL } from "bun";
 import { expect, test } from "bun:test";
+import {
+  createAdoptionAssignmentBulkHandler,
+  type AdoptionAssignmentBulkOperation,
+} from "../../routes/api/admin/adoptions/assignment-bulk";
 
 const url = process.env.ADOPTION_ASSIGNMENT_BULK_TEST_DATABASE_URL;
 if (url) {
@@ -17,6 +21,205 @@ if (url) {
   )
     throw new Error("Dedicated disposable adoption bulk database required");
 }
+
+for (const heldRow of ["operation", "adoption_case"] as const)
+  test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
+    "adoption bulk rejects expiry while blocked on " + heldRow,
+    async () => {
+      const db = new SQL(url!, { max: 1, prepare: false });
+      const locker = new SQL(url!, { max: 1, prepare: false });
+      const applier = new SQL(url!, { max: 1, prepare: false });
+      const actor = crypto.randomUUID(),
+        assignee = crypto.randomUUID();
+      const stage = crypto.randomUUID(),
+        caseId = crypto.randomUUID();
+      let operation: string | undefined;
+      let applying: Promise<{ error?: unknown }> | undefined;
+      try {
+        for (const [id, role] of [
+          [actor, "admin"],
+          [assignee, "staff"],
+        ]) {
+          await db.unsafe(
+            "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+            [id, id + "@example.invalid"],
+          );
+          await db.unsafe(
+            "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,$3,'active')",
+            [id, id + "@example.invalid", role],
+          );
+        }
+        await db.unsafe(
+          "insert into public.coordinator_status(id,category,key,label_zh,label_en) values($1::uuid,'adoption_case',$2,'Synthetic expiry','Synthetic expiry')",
+          [stage, "bulk_" + stage.replaceAll("-", "")],
+        );
+        await db.unsafe(
+          "insert into public.adoption_case(id,status_id,applicant_name,applicant_phone,created_at) values($1::uuid,$2::uuid,'Synthetic expiry adopter','90000000',now()-interval '10 days')",
+          [caseId, stage],
+        );
+        await db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          operation = (
+            await tx.unsafe(
+              "select public.create_adoption_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4::uuid,7,$5) result",
+              [actor, "{" + caseId + "}", assignee, stage, "e".repeat(64)],
+            )
+          )[0].result.operationId;
+        });
+        await db.unsafe(
+          "update public.adoption_assignment_bulk_operation set expires_at=pg_catalog.clock_timestamp()+interval '2 seconds' where id=$1::uuid",
+          [operation!],
+        );
+        const state = async () => ({
+          entity: [
+            ...(await db.unsafe(
+              "select assigned_to,bulk_row_version,updated_at from public.adoption_case where id=$1::uuid",
+              [caseId],
+            )),
+          ],
+          item: [
+            ...(await db.unsafe(
+              "select * from public.adoption_assignment_bulk_item where operation_id=$1::uuid",
+              [operation!],
+            )),
+          ],
+          audits: [
+            ...(await db.unsafe(
+              "select * from public.audit_log where actor_user_id=$1::uuid order by id",
+              [actor],
+            )),
+          ],
+        });
+        const before = await state();
+        const pid = (await applier.unsafe("select pg_backend_pid() pid"))[0].pid as number;
+        await locker.begin(async (tx) => {
+          const lockPid = (await tx.unsafe("select pg_backend_pid() pid"))[0].pid as number;
+          await tx.unsafe(
+            heldRow === "operation"
+              ? "select id from public.adoption_assignment_bulk_operation where id=$1::uuid for update"
+              : "select id from public.adoption_case where id=$1::uuid for update",
+            [heldRow === "operation" ? operation! : caseId],
+          );
+          expect(
+            (
+              await db.unsafe(
+                "select expires_at>pg_catalog.clock_timestamp() live from public.adoption_assignment_bulk_operation where id=$1::uuid",
+                [operation!],
+              )
+            )[0].live,
+          ).toBe(true);
+          applying = applier
+            .begin(async (apply) => {
+              await apply.unsafe("set local role service_role");
+              await apply.unsafe("set local statement_timeout='10s'");
+              await apply.unsafe(
+                "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid)",
+                [actor, operation!, caseId],
+              );
+            })
+            .then(
+              () => ({}),
+              (error: unknown) => ({ error }),
+            );
+          const deadline = Date.now() + 8000;
+          while (
+            !(
+              await db.unsafe("select $2::int=any(pg_catalog.pg_blocking_pids($1::int)) blocked", [
+                pid,
+                lockPid,
+              ])
+            )[0].blocked
+          ) {
+            if (Date.now() > deadline) throw new Error("Apply backend did not block on held row");
+            await Bun.sleep(20);
+          }
+          expect(
+            (
+              await db.unsafe(
+                "select expires_at>pg_catalog.clock_timestamp() live from public.adoption_assignment_bulk_operation where id=$1::uuid",
+                [operation!],
+              )
+            )[0].live,
+          ).toBe(true);
+          while (
+            !(
+              await db.unsafe(
+                "select expires_at<=pg_catalog.clock_timestamp() expired from public.adoption_assignment_bulk_operation where id=$1::uuid",
+                [operation!],
+              )
+            )[0].expired
+          ) {
+            if (Date.now() > deadline) throw new Error("Database clock did not reach expiry");
+            await Bun.sleep(20);
+          }
+          expect(
+            (
+              await db.unsafe("select $2::int=any(pg_catalog.pg_blocking_pids($1::int)) blocked", [
+                pid,
+                lockPid,
+              ])
+            )[0].blocked,
+          ).toBe(true);
+        });
+        const result = await applying!;
+        expect((result.error as { errno?: string } | undefined)?.errno).toBe("P0001");
+        const handler = createAdoptionAssignmentBulkHandler({
+          authorize: async () => actor,
+          preview: async () => {
+            throw new Error("Unexpected preview");
+          },
+          read: async () =>
+            await db.begin(async (tx) => {
+              await tx.unsafe("set local role service_role");
+              return (
+                await tx.unsafe(
+                  "select public.get_adoption_assignment_bulk_operation($1::uuid,$2::uuid) result",
+                  [actor, operation!],
+                )
+              )[0].result as AdoptionAssignmentBulkOperation;
+            }),
+          applyItem: async () => {
+            throw { code: (result.error as { errno: string }).errno };
+          },
+        });
+        const response = await handler(
+          new Request("https://example.invalid/api/admin/adoptions/assignment-bulk", {
+            method: "POST",
+            body: JSON.stringify({ action: "apply", operationId: operation }),
+          }),
+        );
+        expect(response.status).toBe(409);
+        expect(response.headers.get("cache-control")).toBe("no-store");
+        expect(await response.json()).toEqual({ error: "Preview expired" });
+        expect(await state()).toEqual(before);
+      } finally {
+        if (applying) await applying;
+        await db.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+        if (operation) {
+          await db.unsafe(
+            "delete from public.adoption_assignment_bulk_item where operation_id=$1::uuid",
+            [operation],
+          );
+          await db.unsafe(
+            "delete from public.adoption_assignment_bulk_operation where id=$1::uuid",
+            [operation],
+          );
+        }
+        await db.unsafe("delete from public.adoption_case where id=$1::uuid", [caseId]);
+        await db.unsafe("delete from public.coordinator_status where id=$1::uuid", [stage]);
+        await db.unsafe("delete from public.admin_user where auth_user_id=any($1::uuid[])", [
+          "{" + [actor, assignee].join(",") + "}",
+        ]);
+        await db.unsafe("delete from auth.users where id=any($1::uuid[])", [
+          "{" + [actor, assignee].join(",") + "}",
+        ]);
+        await applier.close();
+        await locker.close();
+        await db.close();
+      }
+    },
+    30000,
+  );
 
 test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
   "adoption assignment bulk RPC is installed",

@@ -183,6 +183,9 @@ begin
   if v_payment.id is null then v_status:='conflict';v_reason:='not_found';
   else
     select * into v_donation from public.donation where id=v_payment.donation_id for update;
+    -- Entity locks can outlive the preview even when neither row changed.
+    if v_op.expires_at<=clock_timestamp() then
+      raise exception 'finance_bank_match_preview_expired' using errcode='P0001'; end if;
     if v_donation.id is null then v_status:='conflict';v_reason:='donation_missing';
     elsif v_payment.status<>'pending' or v_donation.status<>'pending'
     then v_status:='conflict';v_reason:='status_changed';
@@ -213,6 +216,11 @@ begin
       end;
     end if;
   end if;
+  -- Reconciliation can wait on the normalized-reference unique index. Keep
+  -- expiry outside its exception block so all money/job/audit writes roll back,
+  -- including a handled unique_violation, before recording a durable result.
+  if v_op.expires_at<=clock_timestamp() then
+    raise exception 'finance_bank_match_preview_expired' using errcode='P0001'; end if;
   update public.finance_bank_match_item set status=v_status,reason_code=v_reason,
     delivery_job_id=v_job,applied_at=clock_timestamp()
   where operation_id=p_operation and ordinal=p_ordinal;
