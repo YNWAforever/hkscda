@@ -29,7 +29,7 @@ export default defineConfig({
           signOut: async () => { listener('SIGNED_OUT', null); return { error: null }; },
         } });
         export const captureRecoverySessionAttempt = async () => ({});
-        export const signOutCurrentSession = async () => getSupabaseClient().auth.signOut();
+        export const signOutCurrentSession = async () => window.recoveryFixture.holdLogout ? new Promise(resolve => { window.recoveryFixture.finishLogout = resolve; }) : getSupabaseClient().auth.signOut();
         export const installRecoverySession = async (tokens, current) => {
           if (!current()) throw new Error('Stale recovery session');
           return getSupabaseClient().auth.setSession(tokens);

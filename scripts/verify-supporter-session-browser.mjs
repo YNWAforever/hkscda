@@ -2,10 +2,32 @@ import assert from "node:assert/strict";
 import { writeFile } from "node:fs/promises";
 import { chromium } from "playwright";
 const syntheticTokens = (sub, expires = 3600) => {
-  const encode = value => Buffer.from(JSON.stringify(value)).toString("base64url");
-  return { access_token: encode({alg:"HS256"}) + "." + encode({sub,session_id:"session-"+sub,exp:Math.floor(Date.now()/1000)+expires,aud:"authenticated",role:"authenticated"}) + ".synthetic-signature", refresh_token:"synthetic-"+sub };
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  return {
+    access_token:
+      encode({ alg: "HS256" }) +
+      "." +
+      encode({
+        sub,
+        session_id: "session-" + sub,
+        exp: Math.floor(Date.now() / 1000) + expires,
+        aud: "authenticated",
+        role: "authenticated",
+      }) +
+      ".synthetic-signature",
+    refresh_token: "synthetic-" + sub,
+  };
 };
-const syntheticUser = sub => ({id:sub,aud:"authenticated",role:"authenticated",email:sub+"@example.invalid",email_confirmed_at:"2026-01-01T00:00:00Z",user_metadata:{},app_metadata:{},created_at:"2026-01-01T00:00:00Z"});
+const syntheticUser = (sub) => ({
+  id: sub,
+  aud: "authenticated",
+  role: "authenticated",
+  email: sub + "@example.invalid",
+  email_confirmed_at: "2026-01-01T00:00:00Z",
+  user_metadata: {},
+  app_metadata: {},
+  created_at: "2026-01-01T00:00:00Z",
+});
 
 // Actual browser SDK + application factory, synthetic transport only. No provider request.
 const browser = await chromium.launch();
@@ -39,8 +61,17 @@ try {
     await page.route("**/auth/v1/**", async (route) => {
       if (route.request().url().includes("/auth/v1/token")) {
         const body = route.request().postDataJSON();
-        const sub = route.request().url().includes("grant_type=password") ? "b" : body.refresh_token.replace("synthetic-", "");
-        await route.fulfill({json:{...syntheticTokens(sub),token_type:"bearer",expires_in:3600,user:syntheticUser(sub)}});
+        const sub = route.request().url().includes("grant_type=password")
+          ? "b"
+          : body.refresh_token.replace("synthetic-", "");
+        await route.fulfill({
+          json: {
+            ...syntheticTokens(sub),
+            token_type: "bearer",
+            expires_in: 3600,
+            user: syntheticUser(sub),
+          },
+        });
         return;
       }
       if (route.request().url().includes("/auth/v1/logout")) {
@@ -130,7 +161,11 @@ try {
   await b.evaluate(() => {
     window.pendingLogin = window.actualClient.auth.setSession(window.syntheticTokens("b"));
   });
-  await b.waitForFunction(async () => (await navigator.locks.query()).pending.some(lock => lock.name.startsWith("hkscda-auth-operation:")));
+  await b.waitForFunction(async () =>
+    (await navigator.locks.query()).pending.some((lock) =>
+      lock.name.startsWith("hkscda-auth-operation:"),
+    ),
+  );
   releaseA();
   assert.equal(await a.evaluate(() => window.pendingRecovery), "success");
   assert.equal(await b.evaluate(async () => (await window.pendingLogin).error), null);
@@ -200,15 +235,22 @@ try {
     await window.actualClient.auth.setSession(tokens);
     window.actualEventKinds = [];
     window.pendingLogout = window.actualRecovery.signOutCurrentSession(tokens.access_token).then(
-      result => result.error ? "failed" : "success",
+      (result) => (result.error ? "failed" : "success"),
       (error) => error.constructor.name,
     );
   });
   await logoutStarted;
   await b.evaluate(() => {
-    window.pendingLogin = window.actualClient.auth.signInWithPassword({ email:"b@example.invalid", password:"synthetic-only" });
+    window.pendingLogin = window.actualClient.auth.signInWithPassword({
+      email: "b@example.invalid",
+      password: "synthetic-only",
+    });
   });
-  await b.waitForFunction(async () => (await navigator.locks.query()).pending.some(lock => lock.name.startsWith("hkscda-auth-operation:")));
+  await b.waitForFunction(async () =>
+    (await navigator.locks.query()).pending.some((lock) =>
+      lock.name.startsWith("hkscda-auth-operation:"),
+    ),
+  );
   releaseLogout();
   assert.equal(await a.evaluate(() => window.pendingLogout), "success");
   assert.equal(await b.evaluate(async () => (await window.pendingLogin).error), null);
@@ -226,9 +268,12 @@ try {
     const tokens = window.syntheticTokens("refresh-a", 30);
     await window.actualClient.auth.setSession(tokens);
     const result = await window.actualRecovery.signOutCurrentSession(tokens.access_token);
-    return {error:result.error,session:(await window.actualClient.auth.getSession()).data.session};
+    return {
+      error: result.error,
+      session: (await window.actualClient.auth.getSession()).data.session,
+    };
   });
-  assert.deepEqual(refreshedLogout, {error:null,session:null});
+  assert.deepEqual(refreshedLogout, { error: null, session: null });
   result.sameSessionRefreshLogout = true;
   await a.evaluate(() => window.actualClient.auth.setSession(window.syntheticTokens("b")));
   const runtimeQuota = await a.evaluate(async () => {

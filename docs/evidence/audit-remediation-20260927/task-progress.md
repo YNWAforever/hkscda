@@ -51,3 +51,7 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
+
+## T22 session review completion, 2026-09-30
+
+Code `ccfca5444dead96d94195e346c15fdfcf2751a7e`: full3004 pass/96 skip/0 fail; typecheck/lint/build exit0; SDK22/66; real two-tab factory,3 recovery logout same-task cases and3width keyboard/Axe0 journey pass. Independent review has no remaining findings. Exact SQL unchanged and re-rehearsed with catalog equality. #156 production DDL remains unapproved; #157 integration code/schema locally verified separately. Still22/46 merged; production main/alias24196faf and recovery/payment/new schedules remain disabled. [Final checkpoint](sequential-merge-156-broker-20260930.md).

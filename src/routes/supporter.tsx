@@ -6,7 +6,10 @@ import {
   installRecoverySession,
   captureRecoverySessionAttempt,
 } from "../lib/supabase";
-import { RecoverySessionUnavailableError } from "../lib/supporters/recoverySession";
+import {
+  RecoverySessionUnavailableError,
+  sameBrowserSession,
+} from "../lib/supporters/recoverySession";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 import { SupporterPortal } from "../components/site/supporter/SupporterPortal";
 
@@ -25,6 +28,8 @@ export function SupporterPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  const currentAccessToken = useRef(accessToken);
+  currentAccessToken.current = accessToken;
   const mounted = useRef(false);
   const authGeneration = useRef(0);
 
@@ -34,12 +39,17 @@ export function SupporterPage() {
     const client = getSupabaseClient();
     void client.auth.getSession().then(({ data }) => {
       if (!mounted.current || initialGeneration !== authGeneration.current) return;
-      setAccessToken(data.session?.access_token ?? "");
+      currentAccessToken.current = data.session?.access_token ?? "";
+      setAccessToken(currentAccessToken.current);
       if (data.session) setStage("verified");
     });
     const { data } = client.auth.onAuthStateChange((_event, session) => {
+      if (!mounted.current) return;
       authGeneration.current++;
-      setAccessToken(session?.access_token ?? "");
+      const token = session?.access_token ?? "";
+      if (!sameBrowserSession(currentAccessToken.current, token)) setError("");
+      currentAccessToken.current = token;
+      setAccessToken(token);
       setStage(session ? "verified" : "request");
       if (!session) {
         setCode("");
