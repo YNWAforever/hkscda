@@ -3,10 +3,20 @@ import { expect, test } from "bun:test";
 
 const databaseUrl = process.env.CRM_ASSIGNMENT_BULK_TEST_DATABASE_URL;
 if (databaseUrl) {
-  const parsed = new URL(databaseUrl);
-  if (parsed.hostname !== "127.0.0.1" || parsed.port !== "57322" || parsed.pathname !== "/postgres")
-    throw new Error("CRM assignment concurrency fixture requires the named loopback database");
+  const url = new URL(databaseUrl);
+  const target =
+    (url.port === "57322" && url.pathname === "/postgres") ||
+    (url.port === "52322" && url.pathname === "/audit_pr135_20260929");
+  if (
+    url.protocol !== "postgresql:" ||
+    url.hostname !== "127.0.0.1" ||
+    !target ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("CRM assignment fixture requires the dedicated loopback database");
 }
+
 const enabled =
   Boolean(databaseUrl) && process.env.CRM_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES === "1";
 
@@ -19,6 +29,11 @@ test.skipIf(!enabled)(
     const assignee = crypto.randomUUID();
     const supporter = crypto.randomUUID();
     const operations: string[] = [];
+    const serviceCall = (db: SQL, query: string, values: unknown[]) =>
+      db.begin(async (tx) => {
+        await tx.unsafe("set local role service_role");
+        return tx.unsafe(query, values);
+      });
     try {
       for (const user of [actor, assignee]) {
         const email = user + "@example.invalid";
@@ -36,14 +51,16 @@ test.skipIf(!enabled)(
         [supporter, supporter + "@example.invalid"],
       );
       for (const digest of ["a", "b"]) {
-        const result = (await first.unsafe(
+        const result = (await serviceCall(
+          first,
           "select public.create_crm_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
           [actor, "{" + supporter + "}", assignee, digest.repeat(64)],
         )) as Array<{ result: { operationId: string } }>;
         operations.push(result[0]!.result.operationId);
       }
       const apply = (db: SQL, operation: string) =>
-        db.unsafe(
+        serviceCall(
+          db,
           "select public.apply_crm_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, operation, supporter],
         ) as Promise<Array<{ result: { status: string } }>>;

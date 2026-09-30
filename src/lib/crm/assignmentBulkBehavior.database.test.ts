@@ -4,10 +4,19 @@ import { expect, test } from "bun:test";
 const databaseUrl = process.env.CRM_ASSIGNMENT_BULK_TEST_DATABASE_URL;
 if (databaseUrl) {
   const url = new URL(databaseUrl);
-  if (url.hostname !== "127.0.0.1" || url.port !== "57322" || url.pathname !== "/postgres") {
-    throw new Error("CRM assignment fixture requires the named loopback database");
-  }
+  const target =
+    (url.port === "57322" && url.pathname === "/postgres") ||
+    (url.port === "52322" && url.pathname === "/audit_pr135_20260929");
+  if (
+    url.protocol !== "postgresql:" ||
+    url.hostname !== "127.0.0.1" ||
+    !target ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("CRM assignment fixture requires the dedicated loopback database");
 }
+
 const enabled =
   Boolean(databaseUrl) && process.env.CRM_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES === "1";
 
@@ -36,6 +45,20 @@ test.skipIf(!enabled)(
     const ids = Array.from({ length: 5 }, () => crypto.randomUUID());
     try {
       await db.begin(async (tx) => {
+        const serviceCall = async (query: string, values: unknown[] = []) => {
+          await tx.unsafe("savepoint service_rpc");
+          await tx.unsafe("set local role service_role");
+          try {
+            return await tx.unsafe(query, values);
+          } catch (error) {
+            await tx.unsafe("rollback to savepoint service_rpc");
+            throw error;
+          } finally {
+            await tx.unsafe("reset role");
+            await tx.unsafe("release savepoint service_rpc");
+          }
+        };
+
         await addUser(tx, actor);
         await addUser(tx, assignee);
         for (const id of [ids[0], ids[1], ids[2], ids[4]]) {
@@ -49,7 +72,7 @@ test.skipIf(!enabled)(
           [ids[1], assignee],
         );
         await tx.unsafe("update public.supporter set deleted_at=now() where id=$1::uuid", [ids[2]]);
-        const preview = (await tx.unsafe(
+        const preview = (await serviceCall(
           "select public.create_crm_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
           [actor, "{" + ids.join(",") + "}", assignee, "a".repeat(64)],
         )) as Array<{ result: { operationId: string; items: Array<{ status: string }> } }>;
@@ -61,12 +84,12 @@ test.skipIf(!enabled)(
           "pending",
         ]);
         const operation = preview[0]!.result.operationId;
-        const competing = (await tx.unsafe(
+        const competing = (await serviceCall(
           "select public.create_crm_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
           [actor, "{" + ids[0] + "}", assignee, "b".repeat(64)],
         )) as Array<{ result: { operationId: string } }>;
         const apply = async (op: string, id: string) =>
-          (await tx.unsafe(
+          (await serviceCall(
             "select public.apply_crm_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
             [actor, op, id],
           )) as Array<{ result: { status: string; reasonCode: string | null } }>;
@@ -84,7 +107,7 @@ test.skipIf(!enabled)(
           status: "conflict",
           reasonCode: "version_changed",
         });
-        const result = (await tx.unsafe(
+        const result = (await serviceCall(
           "select public.get_crm_assignment_bulk_operation($1::uuid,$2::uuid) result",
           [actor, operation],
         )) as Array<{ result: { state: string; items: Array<{ status: string }> } }>;
@@ -128,6 +151,20 @@ test.skipIf(!enabled)(
     const supporter = crypto.randomUUID();
     try {
       await db.begin(async (tx) => {
+        const serviceCall = async (query: string, values: unknown[] = []) => {
+          await tx.unsafe("savepoint service_rpc");
+          await tx.unsafe("set local role service_role");
+          try {
+            return await tx.unsafe(query, values);
+          } catch (error) {
+            await tx.unsafe("rollback to savepoint service_rpc");
+            throw error;
+          } finally {
+            await tx.unsafe("reset role");
+            await tx.unsafe("release savepoint service_rpc");
+          }
+        };
+
         await addUser(tx, actor);
         await addUser(tx, assignee);
         await tx.unsafe(
@@ -146,13 +183,13 @@ test.skipIf(!enabled)(
           expect((actual as { errno?: string } | undefined)?.errno).toBe(code);
         };
         const preview = () =>
-          tx.unsafe(
+          serviceCall(
             "select public.create_crm_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
             [actor, "{" + supporter + "}", assignee, "a".repeat(64)],
           );
         await fail(
           () =>
-            tx.unsafe(
+            serviceCall(
               "select public.create_crm_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4)",
               [
                 actor,
@@ -164,13 +201,13 @@ test.skipIf(!enabled)(
           "22023",
         );
         const operation = (await preview())[0].result.operationId as string;
-        const listed = (await tx.unsafe(
+        const listed = (await serviceCall(
           "select public.list_crm_assignment_assignees($1::uuid) result",
           [actor],
         )) as Array<{ result: Array<{ authUserId: string }> }>;
         expect(listed[0]!.result.some((person) => person.authUserId === assignee)).toBe(true);
         const apply = () =>
-          tx.unsafe(
+          serviceCall(
             "select public.apply_crm_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
             [actor, operation, supporter],
           );
@@ -187,7 +224,7 @@ test.skipIf(!enabled)(
           "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
           [assignee],
         );
-        const afterDisable = (await tx.unsafe(
+        const afterDisable = (await serviceCall(
           "select public.list_crm_assignment_assignees($1::uuid) result",
           [actor],
         )) as Array<{ result: Array<{ authUserId: string }> }>;

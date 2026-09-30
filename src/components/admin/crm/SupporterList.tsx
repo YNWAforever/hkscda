@@ -1,3 +1,4 @@
+import { useLiveAdminActor } from "../../../lib/admin/useLiveAdminActor";
 import { useEffect, useRef, useState } from "react";
 import { TablePager } from "../TablePager";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -5,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 
 import { supporterRoles, type SupporterRole, type SupporterSummary } from "../../../lib/crm/types";
+import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { collectMatchingSupporterIds } from "../../../lib/crm/tagBulkSelection";
 import {
   parseListPage,
@@ -63,6 +65,8 @@ const SUPPORTER_ROUTE: ListRouteState<SupporterFilters> = {
 };
 
 export function SupporterList() {
+  const liveActor = useLiveAdminActor();
+  const { data: identity, isError: identityError } = useQuery(adminIdentityQueryOptions());
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.supporters;
   const listState = useListQueryState({
@@ -376,12 +380,19 @@ export function SupporterList() {
         roleFilter={roleFilter}
         selectionDisabled={selectionDisabled}
       />
-      <CrmAssignmentBulkPanel
-        selectedIds={effectiveSelectedIds}
-        query={query}
-        roleFilter={roleFilter}
-        selectionDisabled={selectionDisabled}
-      />
+      {!identityError &&
+        identity?.admin.status === "active" &&
+        liveActor === identity.admin.authUserId &&
+        ["treasurer", "admin"].includes(identity.admin.role) && (
+          <CrmAssignmentBulkPanel
+            key={`${identity.admin.authUserId}:${identity.admin.role}`}
+            actorUserId={identity.admin.authUserId}
+            selectedIds={effectiveSelectedIds}
+            query={query}
+            roleFilter={roleFilter}
+            selectionDisabled={selectionDisabled}
+          />
+        )}
       <CrmContactFormatPreviewPanel
         selectedIds={effectiveSelectedIds}
         query={query}
