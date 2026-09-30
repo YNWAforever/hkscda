@@ -36,6 +36,7 @@ export type SupporterDetail = SupporterSummary & {
   source: string;
   createdAt: string;
   updatedAt: string;
+  editVersion: number;
   donations: DonationHistoryRow[];
   payments: PaymentHistoryRow[];
   receipts: ReceiptHistoryRow[];

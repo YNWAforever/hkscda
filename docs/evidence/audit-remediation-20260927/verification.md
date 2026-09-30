@@ -123,32 +123,28 @@ Environment: isolated worktree codex/audit-supporter-recovery-20260927; dedicate
 ## T23 sponsorship follow-up source #169
 
 Source `05bb6f1b64fbf39c8f40944b27f446a38751e809`: `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2910 pass/109 skip/0 fail/9057 assertions across 523 files. The first concurrent gate run had one 5-second RLS setup timeout; the same RLS file passed 39/39 alone, then the sequential full suite passed. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0. Dedicated 127.0.0.1:57322 sponsorship database tests exited 0, 3 pass/20 assertions including direct authenticated UPDATE denial and two-connection one-winner/one-audit; final exact migration file BEGIN/ROLLBACK succeeded. Local release catalog check exited 0 with 119 compatible requirements and no issues, with no forged ledger row. Remote source CI `36360874161` passed all five jobs. See `t23-sponsorship-followup.md`. Hosted staff browser, same-SHA private preview, 47-file fresh/data-bearing rehearsal and release approval remain not-run.
-## T23 sponsorship follow-up bulk source #170
 
-Source `74669a48a7786f93cde5ebb4dd0118490f24a095`: `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` with dedicated bulk DB fixture enabled exited 0 (2918 pass/109 skip/0 fail/9109 assertions across 526 files), before a final test-only competing-preview assertion. That DB file then passed 3/19 focused. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0. Catalog checker on 57322 exited 0 with 124 compatible/zero issues; ledger unchanged. API checkpoint 2/13, selection 2/6 and role UI 5/10 focused passed. Exact SQL BEGIN/ROLLBACK passed. See `t23-sponsorship-bulk.md`. Hosted identity/browser, 48-file fresh/data-bearing upgrade, same-environment performance and production approval are not-run.
 
-Remote source CI run `36364156675` at `74669a4` passed all five jobs (verify, RLS matrix, brand, a11y, performance). This fixture CI does not substitute for hosted staff-session UAT.
+## PR169 preparation — 2026-09-30
 
-## T23 sponsorship reminder draft source #171
+PR169 current application b918ff918c98a2188335465237a6add66abfd0c7:3065pass137skip0fail9587assert552files32.75s;typecheck0/lint0(52warnings)/build0;isolated service_role4tests24assert0;exact fullmigration2row8.59ms rollback0;three-width12casebrowser0. RemoteCI pending. See sequential-merge-169-20260930.md.
 
-Source `c683532b9f8539836f032a31fa17aa8c2a8494a8`: red absent-module/route/UI tests preceded the minimal read-only draft implementation. Focused 9 pass/38 assertions. `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` with existing loopback bulk DB fixture enabled exited 0: 2927 pass/109 skip/0 fail/9149 assertions across 529 files. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0 after route generation. No new SQL; the prior 48-file schema manifest is unchanged. Direct route factory tests deny unauthenticated/treasurer requests before private reads, and assert no-store, invalid ID, missing row and POST refusal. See `t23-sponsorship-reminder.md`. Hosted real-role API/browser, same-environment before/after UI/performance, approved wording and send sandbox are not-run.
 
-Remote source CI run `36367078505` at `c683532` passed all five jobs (verify, RLS matrix, brand, a11y, performance). This fixture CI does not replace hosted staff-session UAT.
+## PR170 preparation — 2026-09-30
 
-## T23 bank statement dry-run source #172
+PR170 a50a09f581f7862ebf9ba2fdde53d58cdf65a307:full3074pass141skip0fail9628assert556files19.97s;typecheck/build0;lint52warnings0beforecatalog-onlyintegration;DB4tests22assert275ms;fullSQL2oldrows12.19ms/1000preview51.41ms/900apply948.87ms;rollback0. See sequential-merge-170-20260930.md.
 
-Source `620790d8ffb50618f15911c23bd4bf803247c4c7`: parser/service/API/UI focused tests 11 pass/42 assertions; rollback-only synthetic DB test on 127.0.0.1:57322 1 pass/8. `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` with local sponsorship bulk and bank dry-run DB fixture flags: 2939 pass/109 skip/0 fail/9202 assertions across 534 files, exit 0. `npm.cmd run build`, `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`: exit 0 each. Exact SQL BEGIN/ROLLBACK exit 0; local catalog 125 compatible/zero issues, active local ledger still 20260927150000. See `t23-finance-bank-dryrun.md`. Hosted finance roles/private browser, bank-specific adapter, group confirmation, provider sandbox, 49-file sanitized data-bearing upgrade and release approval remain not-run.
-Remote source CI run 36369763776 at 620790d passed all five jobs (verify, RLS matrix, brand, a11y, performance).
 
-#172 fresh disposable stack on unique 5832x ports: `bunx supabase start --workdir node_modules/.audit-fresh-172 --exclude realtime,storage-api,imgproxy,mailpit,studio,edge-runtime,logflare,vector,supavisor` exit 0, all 158 repository migrations applied through 20260928090000 with 158 real local ledger entries. `CHECK_RELEASE_SCHEMA_DATABASE_URL` on 127.0.0.1:58322: exit 0, 125 compatible/zero issues. Sanitized data-bearing upgrade and production comparison remain not-run.
-#172 separate synthetic 109-to-158 ledger upgrade on 127.0.0.1:59322: baseline `supabase start` exit 0, two synthetic payments committed, `supabase migration up --local` for 49 later files exit 0; final real ledger 158/`20260928090000`, catalog 125 compatible/zero issues and synthetic facts 2 total/1 credited/1 pending preserved. Sanitized production-like clone timing and backup/restore remain not-run.
+## PR171 preparation — 2026-09-30
 
-## T23 failed finance delivery jobs source #173
+PR171 7136ad049c536fe27fcc4823066d762c618b2c9b:10focused46assert;full3084pass141skip0fail9676assert559files33.49s;typecheck/lint0(52warnings)/build0;3width15casebrowser0. Originalcancelstaledraft1ateachwidthred1;fixedstale0. See sequential-merge-171-20260930.md.
 
-Source `732fd5cdc0175de5c6623d1b836b07f560efc348`: red rollback-only DB tests reproduced banned treasurer retry and missing DB-guarded worklist; red repository and task tests caught direct service-table read and omitted retryable metric. Focused repository/API/UI/task/DB 10 pass/60 assertions, exit 0. `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` with dedicated loopback DB flags: 2947 pass/109 skip/0 fail/9250 assertions across 540 files, exit 0. `npm.cmd run build`, `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet` each exit 0. Exact SQL BEGIN/ROLLBACK and manual application only on 57322, no ledger edit; local catalog 127 compatible/zero issues. See `t23-finance-delivery-worklist.md`. Source CI run 36373635875 at 732fd5c passed verify, RLS matrix, brand, a11y and performance, exit 0. Hosted finance roles/private API, mobile/keyboard, email sink, concurrent worker, sanitized data-bearing clone and release approval remain not-run.
 
-#173 final fresh 159-file rebuild on unique 6032x stack exited 0; real ledger 159/`20260928100000`, checker 127 compatible/zero issues. Separate 6232x stack applied the 109-file observed baseline, inserted two synthetic payments (one credited) and one failed delivery job, then applied all 50 later final files through 159, exit 0. Payments and failed job survived; checker 127 compatible/zero issues. Sanitized production-like clone, lock timing and backup/restore remain not-run.
+## PR172 current preparation — 2026-09-30
 
-## T23 role-guided task entry #174
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.
 
-Source `8f62d8a4ccd52803ebb8aea6929b8e9e7ee901ab`: red tests confirmed absent guidance and ordered list; focused API/server/UI 6 pass/34 assertions, exit 0. Final full isolated local 57321/57322 suite 2949 pass/109 skip/0 fail/9259 assertions across 540 files, exit 0. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build`: exit 0 each. No migration or DB write. CI run 36375345907 passed all five jobs. Hosted staff/treasurer/admin identities, mobile/keyboard screenshot UAT and release approval remain not-run. See `t23-role-guidance.md`.
+
+## PR173 current preparation — 2026-09-30
+
+See [sequential-merge-173-20260930.md](sequential-merge-173-20260930.md): app `40a8765beaa04613fae1f9cc77e74a11d34810f1`, rejected-retry/lost-response/page1000/keyboard fixes;17focused/88assertions,3110fullpasses143skips,type/lint/build0; real concurrent one-audit retry and1000job pagination;3width UI/Axe0.58-fileinventory,local-schema-ready,notdeployed/notenabled;#156releaseblock retained.

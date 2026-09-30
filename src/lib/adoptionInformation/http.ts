@@ -2,7 +2,12 @@ import { z } from "zod";
 import { readAdminJson } from "../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
-import { adoptionInformationMutationSchema, deleteEstateRequestSchema } from "./schemas";
+import {
+  adoptionInformationMutationSchema,
+  deleteEstateRequestSchema,
+  estateCommandRequestSchema,
+  feeCommandRequestSchema,
+} from "./schemas";
 import { AdoptionInformationConflictError } from "./service";
 
 type HandlerContext = { request: Request };
@@ -10,7 +15,11 @@ type AdminIdentity = { authUserId: string };
 type HandlerService = {
   listAdmin(input: unknown): Promise<unknown>;
   upsertFee(input: { actorUserId: string; input: unknown }): Promise<unknown>;
-  upsertEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  updateFeeContent(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  reorderFees(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  createEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  updateEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  setEstatePublication(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   deleteEstate(input: { actorUserId: string; estateId: string }): Promise<void>;
   upsertRule(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   upsertCareTopic(input: { actorUserId: string; input: unknown }): Promise<unknown>;
@@ -106,23 +115,56 @@ export function createAdoptionInformationHandlers({
     upsert({ request }: HandlerContext) {
       return withErrors(request, async (id) => {
         const admin = await requireAdoptionInformationAdmin(request);
-        const mutation = adoptionInformationMutationSchema.parse(await jsonBody(request, id));
+        const body = await jsonBody(request, id);
+        if (
+          body &&
+          typeof body === "object" &&
+          "resource" in body &&
+          body.resource === "fee" &&
+          "command" in body
+        ) {
+          const command = feeCommandRequestSchema.parse(body);
+          if (command.command === "content")
+            return jsonResponse(
+              {
+                fee: await service.updateFeeContent({
+                  actorUserId: admin.authUserId,
+                  input: command.input,
+                }),
+              },
+              id,
+            );
+          return jsonResponse(
+            {
+              fees: await service.reorderFees({
+                actorUserId: admin.authUserId,
+                input: command.input,
+              }),
+            },
+            id,
+          );
+        }
+        if (body && typeof body === "object" && "resource" in body && body.resource === "estate") {
+          const command = estateCommandRequestSchema.parse(body);
+          const estate =
+            command.command === "create"
+              ? await service.createEstate({ actorUserId: admin.authUserId, input: command.input })
+              : command.command === "update"
+                ? await service.updateEstate({
+                    actorUserId: admin.authUserId,
+                    input: command.input,
+                  })
+                : await service.setEstatePublication({
+                    actorUserId: admin.authUserId,
+                    input: command.input,
+                  });
+          return jsonResponse({ estate }, id, { status: command.command === "create" ? 201 : 200 });
+        }
+        const mutation = adoptionInformationMutationSchema.parse(body);
         if (mutation.resource === "fee") {
           return jsonResponse(
             {
               fee: await service.upsertFee({
-                actorUserId: admin.authUserId,
-                input: mutation.input,
-              }),
-            },
-            id,
-            { status: 201 },
-          );
-        }
-        if (mutation.resource === "estate") {
-          return jsonResponse(
-            {
-              estate: await service.upsertEstate({
                 actorUserId: admin.authUserId,
                 input: mutation.input,
               }),

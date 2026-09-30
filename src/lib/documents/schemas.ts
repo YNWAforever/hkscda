@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const documentKinds = ["annual_report", "wedding_form", "adoption_guide"] as const;
+export const documentKinds = [
+  "annual_report",
+  "wedding_form",
+  "adoption_guide",
+  "sponsorship_terms",
+] as const;
 export const documentLanguages = ["zh-HK", "en", "bilingual"] as const;
 
 const MAX_DOCUMENT_BYTES = 50 * 1024 * 1024;

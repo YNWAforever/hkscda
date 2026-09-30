@@ -33,14 +33,14 @@ grant select on public.crm_tag_bulk_operation, public.crm_tag_bulk_item to servi
 create function private.require_crm_tag_bulk_actor(p_actor uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 begin
-  if not exists (
-    select 1 from public.admin_user a
+  perform 1 from public.admin_user a
     join auth.users u on u.id=a.auth_user_id
     where a.auth_user_id=p_actor and a.status='active'
       and a.role in ('treasurer','admin')
       and u.email_confirmed_at is not null
       and (u.banned_until is null or u.banned_until <= now())
-  ) then
+    for share of a,u;
+  if not found then
     raise exception 'CRM bulk actor unavailable' using errcode='42501';
   end if;
 end $$;

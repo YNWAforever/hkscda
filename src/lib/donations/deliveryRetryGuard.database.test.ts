@@ -2,13 +2,20 @@ import { SQL } from "bun";
 import { expect, test } from "bun:test";
 
 const url = process.env.DELIVERY_RETRY_TEST_DATABASE_URL;
-if (
-  url &&
-  (new URL(url).hostname !== "127.0.0.1" ||
-    new URL(url).port !== "57322" ||
-    new URL(url).pathname !== "/postgres")
-)
-  throw new Error("Dedicated local delivery retry database required");
+if (url) {
+  const target = new URL(url);
+  if (
+    target.protocol !== "postgresql:" ||
+    target.hostname !== "127.0.0.1" ||
+    target.search ||
+    target.hash ||
+    !(
+      (target.port === "57322" && target.pathname === "/postgres") ||
+      (target.port === "52322" && target.pathname === "/audit_pr135_20260929")
+    )
+  )
+    throw new Error("Dedicated local delivery retry database required");
+}
 
 test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
   "retry rechecks Auth ban, preserves one audit and refuses already-complete jobs",
@@ -47,10 +54,21 @@ test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1"
           [job, donation, payment],
         );
 
+        async function service<T>(operation: () => Promise<T>): Promise<T> {
+          await tx.unsafe("set local role service_role");
+          try {
+            return await operation();
+          } finally {
+            await tx.unsafe("reset role").catch(() => {});
+          }
+        }
         const list = () =>
-          tx.unsafe("select public.list_failed_donation_delivery_jobs($1::uuid,1) result", [
-            actor,
-          ]) as Promise<Array<{ result: { total: number; jobs: Array<{ id: string }> } }>>;
+          service(
+            () =>
+              tx.unsafe("select public.list_failed_donation_delivery_jobs($1::uuid,1) result", [
+                actor,
+              ]) as Promise<Array<{ result: { total: number; jobs: Array<{ id: string }> } }>>,
+          );
         await tx.unsafe("savepoint banned_list");
         let listDenied: string | undefined;
         try {
@@ -59,13 +77,17 @@ test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1"
           listDenied = (error as { errno?: string }).errno;
         }
         await tx.unsafe("rollback to savepoint banned_list");
+        await tx.unsafe("reset role");
         expect(listDenied).toBe("42501");
 
         const call = () =>
-          tx.unsafe(
-            "select public.retry_donation_delivery_job_with_audit($1::uuid,$2::uuid) retried",
-            [job, actor],
-          ) as Promise<Array<{ retried: boolean }>>;
+          service(
+            () =>
+              tx.unsafe(
+                "select public.retry_donation_delivery_job_with_audit($1::uuid,$2::uuid) retried",
+                [job, actor],
+              ) as Promise<Array<{ retried: boolean }>>,
+          );
         const expectForbidden = async () => {
           await tx.unsafe("savepoint guarded_retry");
           let deniedCode: string | undefined;
@@ -75,6 +97,7 @@ test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1"
             deniedCode = (error as { errno?: string }).errno;
           }
           await tx.unsafe("rollback to savepoint guarded_retry");
+          await tx.unsafe("reset role");
           expect(deniedCode).toBe("42501");
         };
         await expectForbidden(); // Banned Auth user must not use an active admin row.
@@ -124,6 +147,28 @@ test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1"
           [job],
         );
         expect((await call())[0]?.retried).toBe(false);
+        await tx.unsafe(
+          "update public.donation_delivery_job set status='attention_required' where id=$1::uuid",
+          [job],
+        );
+        await tx.unsafe(
+          "create function pg_temp.reject_delivery_audit() returns trigger language plpgsql as $$begin raise exception 'synthetic audit failure';end$$;create trigger reject_delivery_audit before insert on public.audit_log for each row execute function pg_temp.reject_delivery_audit()",
+        );
+        await tx.unsafe("savepoint audit_refused");
+        let auditError: string | undefined;
+        try {
+          await call();
+        } catch (error) {
+          auditError = (error as { errno?: string }).errno;
+        }
+        await tx.unsafe("rollback to savepoint audit_refused");
+        await tx.unsafe("reset role");
+        expect(auditError).toBe("P0001");
+        const unchanged = await tx.unsafe(
+          "select status,attempts from donation_delivery_job where id=$1::uuid",
+          [job],
+        );
+        expect(unchanged[0]).toEqual({ status: "attention_required", attempts: 2 });
         throw rollback;
       });
     } catch (error) {
