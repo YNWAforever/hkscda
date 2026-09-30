@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "28be99e1da1ffb9ca27887b2607c5d2e2c9ac4b4",
-  "appShaNote": "PR179 combined review source28be99e1da1ffb9ca27887b2607c5d2e2c9ac4b4; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
+  "appSha": "290abb19a781ce41efc7ad62410a0a278113bf36",
+  "appShaNote": "Final combined source tested at290abb19; this checkpoint changes documentation/evidence only. Fresh exact-head CI is still mandatory before its release.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
   "configVersions": {
@@ -325,7 +325,7 @@
     }
   ],
   "ciRun": {
-    "status": "fresh combined exact-head CI pending; scoped integration checks in progress"
+    "status": "final documentation-head fresh CI pending; recorded per-candidate snapshot is not deployment evidence"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -348,13 +348,17 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md",
+    "docs/evidence/audit-remediation-20260927/final-local-gates-20261001.json",
+    "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
+    "docs/evidence/audit-remediation-20260927/release-checkpoint-20261001.md",
+    "docs/evidence/audit-remediation-20260927/migration-approval-packet-20261001.md"
   ],
   "rollbackTarget": {
     "appSha": null,
     "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
   },
-  "releaseDecision": "NO-GO for next sequential release pending #160 named migration approval and latest reviewed-head CI; continue independent preparation.",
+  "releaseDecision": "NO-GO for complete remediation deployment/enablement: source-wide catalog incompatible. Next sequential160 waits existing named approval, fresh candidate-specific catalog/backup/preflight and exact green CI;161 prior scope approval operative. Continue independent releases only within separately validated/approved scope.",
   "productionActionsPerformed": [
     {
       "action": "sequential approved merge and automatic deployment",
@@ -700,7 +704,7 @@
       }
     }
   ],
-  "capturedAt": "2026-09-30T19:55:37.086189+00:00",
+  "capturedAt": "2026-09-30T22:15:00.772301+00:00",
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
@@ -711,18 +715,91 @@
     "status": "success; all five gates"
   },
   "remainingApprovals": {
-    "migration160": "named single migration approval requested; pending",
-    "migration161": "explicit filename/schema/backfill approval already received; operative after stricter guards, per recorded ruling; waits for predecessor and fresh preflight",
-    "migration162": "new exact named migration approval pending",
-    "laterActivation": "approved terms/methods/provider sandbox/hosted identities/content and schedules remain separately gated",
-    "migration164": "named exact migration approval pending; updated b564a09a expiry guards disclosed",
-    "migration165": "named exact d4f68382 manual-payment RPC/reference index approval pending; no production financial operation",
-    "migration166": "named exact 8c1b4550 quality read RPC/index approval pending; no content mutation"
+    "migration160": {
+      "file": "20260927181701_volunteer_review_bulk.sql",
+      "sha256": "96149a16e41cdf9fdf2e246b700033877fc91c3c00403a2b2efcd39d12cb3164",
+      "status": "existing named question pending",
+      "scope": "reviewer assignment/operation/result tables and restricted RPCs; no profile/status backfill"
+    },
+    "migration161": {
+      "file": "20260927183000_adoption_assignment_bulk.sql",
+      "sha256": "cd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238",
+      "status": "prior named schema/backfill approval operative",
+      "scope": "six production cases gain version1; no assignee change or adoption approval; stricter expiry guards"
+    },
+    "migration162": {
+      "file": "20260927184500_animal_review_bulk.sql",
+      "sha256": "8f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41",
+      "status": "named production approval pending",
+      "scope": "versioned per-item animal review; no automatic publishing"
+    },
+    "migration164": {
+      "file": "20260927190000_cms_review_bulk.sql",
+      "sha256": "b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb",
+      "status": "named production approval pending",
+      "scope": "versioned per-item CMS review; no content publish/unpublish"
+    },
+    "migration165": {
+      "file": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86",
+      "status": "named production approval pending",
+      "scope": "atomic manual-payment RPC and reference uniqueness; no real reconcile/refund; never deduplicate history blindly"
+    },
+    "migration166": {
+      "file": "20260927211801_editorial_quality_queue.sql",
+      "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642",
+      "status": "named production approval pending",
+      "scope": "quality read RPC and index; no content mutation"
+    },
+    "migration169": {
+      "file": "20260928073000_sponsorship_followup_assignment.sql",
+      "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2",
+      "status": "named production approval pending",
+      "scope": "assignment version/RPC; no notifications"
+    },
+    "migration170": {
+      "file": "20260928080000_sponsorship_followup_bulk.sql",
+      "sha256": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800",
+      "status": "named production approval pending",
+      "scope": "snapshot/result RPCs; per-item role/version and post-lock expiry checks"
+    },
+    "migration172": {
+      "file": "20260928090000_finance_bank_dryrun.sql",
+      "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0",
+      "status": "named production approval pending",
+      "scope": "bounded read-only bank preview RPC/index; no financial write"
+    },
+    "migration173": {
+      "file": "20260928100000_finance_delivery_retry_guard.sql",
+      "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a",
+      "status": "named production approval pending",
+      "scope": "failed delivery read/index and guarded retry; schedule/sending stays disabled"
+    },
+    "migration175": {
+      "file": "20260928110000_finance_bank_match_confirmation.sql",
+      "sha256": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3",
+      "status": "new exact e8588464 production approval pending",
+      "scope": "reviewed snapshot bank-match RPC; final expiry guard outside handled23505; no real confirmation performed"
+    },
+    "migration177": {
+      "file": "20260928113000_crm_supporter_version_fence.sql",
+      "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62",
+      "status": "named grant-only production approval pending",
+      "scope": "revoke private bump trigger function EXECUTE only; preserve existing columns/rows/triggers"
+    },
+    "migration178": {
+      "file": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "status": "named production approval pending",
+      "scope": "assignment version/RPC/result schema; preserve ordinary legacy column privileges; no identity merge"
+    },
+    "legacyDependencies": "Current R01 report also identifies earlier upload/atomic/fingerprint dependencies. Review exact legacy slices, isolated data-bearing rehearsal and named authorization before DDL; the62-file manifest is not apply-all authority.",
+    "activation": "approved terms/content/retention/method versions; scoped hosted identities; provider sandbox; payment/sending/media schedule and region rollout approvals remain separate"
   },
   "blockedGate": {
     "pr": 160,
-    "environment": "production release authorization",
-    "result": "PR160 named production migration approval pending; test-proof follow-up and fresh exact-head CI in progress",
+    "environment": "production authorization and candidate-specific schema preflight",
+    "result": "existing named migration question pending; source-wide R01 report has92 current gaps",
     "enabled": false
   },
   "sequentialProgress": {
@@ -756,5 +833,31 @@
     "appSha": "641f10abbc9ead69c1bd61b45b6439f2b099a28c",
     "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
     "migrationCount": 62
+  },
+  "localVerification": {
+    "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+    "receipt": "docs/evidence/audit-remediation-20260927/final-local-gates-20261001.json",
+    "allFourExit": 0,
+    "pass": 3195,
+    "skip": 168,
+    "fail": 0,
+    "lintWarnings": 52
+  },
+  "productionCompatibility": {
+    "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+    "requirements": 146,
+    "issues": 92,
+    "kinds": {
+      "missing-table": 21,
+      "missing-function": 61,
+      "missing-column": 10
+    },
+    "state": "incompatible",
+    "checkerExit": 1,
+    "catalogTables": 138,
+    "catalogFunctions": 276,
+    "ledger": 98,
+    "report": "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
+    "limitation": "Implemented public table/column/RLS/service grants and RPC signatures/execute-role checks only; not full constraints/indexes/private/storage policies or behavioral UAT"
   }
 }

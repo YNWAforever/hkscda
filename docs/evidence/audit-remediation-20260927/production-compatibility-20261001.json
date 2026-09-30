@@ -1,0 +1,563 @@
+{
+  "checkedAt": "2026-09-30T22:07:25.395Z",
+  "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+  "environment": "production read-only MCP catalog; no DDL or data mutation",
+  "requirements": 146,
+  "ledger": 98,
+  "limitations": "Implemented public table/column/RLS/service grants and RPC signatures/execute-role checks only; not full constraints/indexes/private/storage policies or behavioral UAT",
+  "state": "incompatible",
+  "issues": [
+    {
+      "kind": "missing-table",
+      "name": "finance_bank_match_operation",
+      "feature": "finance-bank-match-confirmation",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "finance_bank_match_item",
+      "feature": "finance-bank-match-confirmation",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_finance_bank_match_operation",
+      "feature": "finance-bank-match-confirmation",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_finance_bank_match_preview",
+      "feature": "finance-bank-match-confirmation",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_finance_bank_match_item",
+      "feature": "finance-bank-match-confirmation",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "list_failed_donation_delivery_jobs",
+      "feature": "finance-delivery-worklist",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "preview_manual_bank_matches",
+      "feature": "finance-bank-dryrun",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "editorial_quality_queue",
+      "feature": "cms-quality-queue",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "reconcile_manual_payment_atomic",
+      "feature": "manual-payment-atomic",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "animal_review_bulk_operation",
+      "feature": "animal-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "animal_review_bulk_item",
+      "feature": "animal-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_animal_review_bulk_operation",
+      "feature": "animal-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_animal_review_bulk_preview",
+      "feature": "animal-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_animal_review_bulk_item",
+      "feature": "animal-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "cms_review_bulk_operation",
+      "feature": "cms-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "cms_review_bulk_item",
+      "feature": "cms-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_cms_review_bulk_operation",
+      "feature": "cms-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_cms_review_bulk_preview",
+      "feature": "cms-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_cms_review_bulk_item",
+      "feature": "cms-review-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "adoption_case.bulk_row_version",
+      "feature": "adoption-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "adoption_assignment_bulk_operation",
+      "feature": "adoption-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "adoption_assignment_bulk_item",
+      "feature": "adoption-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_adoption_assignment_bulk_operation",
+      "feature": "adoption-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_adoption_assignment_bulk_preview",
+      "feature": "adoption-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_adoption_assignment_bulk_item",
+      "feature": "adoption-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "volunteer_profile_review_assignment",
+      "feature": "volunteer-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "volunteer_review_bulk_operation",
+      "feature": "volunteer-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "volunteer_review_bulk_item",
+      "feature": "volunteer-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_volunteer_review_bulk_operation",
+      "feature": "volunteer-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_volunteer_review_bulk_preview",
+      "feature": "volunteer-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_volunteer_review_bulk_item",
+      "feature": "volunteer-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "recipient_notification_draft_duplicate_archive",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "adoption_upload_intent",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "sponsorship_proof_upload_intent",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "internship_attachment_upload_intent",
+      "feature": "internships",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "sponsorship_staff_proof_upload_intent",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "animal_draft_image_upload_intent",
+      "feature": "animal-media",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "cms_promotion_command",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mutate_admin_content_with_audit",
+      "feature": "content",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mutate_crm_supporter_with_audit",
+      "feature": "crm",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "replace_supporter_roles_atomic",
+      "feature": "crm",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "append_crm_consents_with_audit",
+      "feature": "crm",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_volunteer_registration_idempotent",
+      "feature": "volunteer",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "clone_volunteer_activity_with_audit",
+      "feature": "volunteer",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mutate_adoption_coordinator_with_audit",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "update_admin_user_with_audit",
+      "feature": "admin",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "invite_admin_user_with_audit",
+      "feature": "admin",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "resend_admin_invite_with_audit",
+      "feature": "admin",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "activate_admin_invite_with_audit",
+      "feature": "admin",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "set_animal_archived_with_audit",
+      "feature": "animal-media",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "fail_pending_provider_payment",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "refund_provider_payment_atomically",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "update_group_enquiry_with_audit",
+      "feature": "group-enquiries",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mark_sponsorship_proof_upload_submitted",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "claim_expired_sponsorship_proof_uploads",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mark_internship_attachment_uploaded",
+      "feature": "internships",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "claim_expired_internship_attachment_uploads",
+      "feature": "internships",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "void_receipt_with_audit",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "void_donation_receipts_with_audit",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "issue_receipt_with_audit",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "reserve_staff_sponsorship_proof_upload",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mark_staff_sponsorship_proof_attached",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "claim_expired_staff_sponsorship_proof_uploads",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "search_manual_case_identity",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_manual_adoption_case",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "cleanup_expired_adoption_application",
+      "feature": "release",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_public_sponsorship_pledge",
+      "feature": "sponsorship",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "reserve_animal_draft_image_upload",
+      "feature": "animal-media",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "mark_animal_draft_image_attached",
+      "feature": "animal-media",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "claim_expired_animal_draft_image_uploads",
+      "feature": "animal-media",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "donation.idempotency_key",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "donation.idempotency_fingerprint",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "payment.idempotency_key",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "payment.checkout_url",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "payment.checkout_attempted_at",
+      "feature": "finance",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "public_status_token.submission_fingerprint",
+      "feature": "submissions",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "list_sponsorship_followup_assignees",
+      "feature": "sponsorship-followup",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "assign_sponsorship_followup",
+      "feature": "sponsorship-followup",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "sponsorship_pledge.followup_assignee_user_id",
+      "feature": "sponsorship-followup",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "sponsorship_pledge.followup_version",
+      "feature": "sponsorship-followup",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "sponsorship_followup_bulk_operation",
+      "feature": "sponsorship-followup-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "sponsorship_followup_bulk_item",
+      "feature": "sponsorship-followup-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_sponsorship_followup_bulk_operation",
+      "feature": "sponsorship-followup-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_sponsorship_followup_bulk_preview",
+      "feature": "sponsorship-followup-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_sponsorship_followup_bulk_item",
+      "feature": "sponsorship-followup-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-column",
+      "name": "supporter.crm_assignee_user_id",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "crm_assignment_bulk_operation",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-table",
+      "name": "crm_assignment_bulk_item",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "get_crm_assignment_bulk_operation",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "create_crm_assignment_bulk_preview",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "apply_crm_assignment_bulk_item",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    },
+    {
+      "kind": "missing-function",
+      "name": "list_crm_assignment_assignees",
+      "feature": "crm-assignment-bulk",
+      "required": true
+    }
+  ]
+}

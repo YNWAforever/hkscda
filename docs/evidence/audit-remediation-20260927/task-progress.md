@@ -219,3 +219,7 @@ Task177 root combinedcheckpoint2026-10-01: reviewedownbf1c6779,predecessor1e21f9
 Task178 root combinedcheckpoint2026-10-01: reviewedown2028bfbd,predecessor3571eb55;sourceconflicts0;canonicalSQL62;focused2pass74assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
 
 Task179 root combinedcheckpoint2026-10-01: reviewedown991dcca4,predecessor4ac62d8e;sourceconflicts0;canonicalSQL62;focused2pass74assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+## Current final checkpoint — 2026-10-01 HKT
+
+See [actual release checkpoint](release-checkpoint-20261001.md): source290abb19 full3195pass168skip0fail/type0/lint0(52warnings)/build0;26actualmainreleases through159/main07e4c881/ledger98; current146-object production check exit1/92gaps. Historical observations above retain their SHA/environment and do not override this current status. Independent final review and documentation-head exact CI remain pending; no production action.
