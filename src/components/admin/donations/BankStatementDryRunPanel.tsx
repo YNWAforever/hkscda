@@ -130,6 +130,8 @@ const operationStoragePrefix = "hkscda-finance-bank-match-operation";
 const operationUrl = "/api/admin/finance/bank-match-operations";
 
 export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string }) {
+  const fetchForActor = <T,>(path: string, init?: RequestInit) =>
+    fetchAdminJson<T>(path, init, actorUserId);
   const operationStorageKey = `${operationStoragePrefix}:${actorUserId}`;
   const [file, setFile] = useState<File | null>(null);
   const [csvText, setCsvText] = useState<string | null>(null);
@@ -160,6 +162,8 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       setOperationPending(true);
       void fetchAdminJson<BankMatchOperation>(
         `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
+        undefined,
+        actorUserId,
       )
         .then((saved) => {
           if (mounted.current && operationGeneration.current === generation) {
@@ -186,7 +190,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       for (const counter of counters) counter.current++;
       operationBusy.current = false;
     };
-  }, [operationStorageKey]);
+  }, [operationStorageKey, actorUserId]);
 
   async function preview() {
     if (!file || pending) return;
@@ -207,7 +211,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
         await file.arrayBuffer(),
       );
       if (requestGeneration.current !== generation) return;
-      const response = await fetchAdminJson<BankStatementDryRunResult>(
+      const response = await fetchForActor<BankStatementDryRunResult>(
         "/api/admin/finance/bank-statement-preview",
         { method: "POST", body: JSON.stringify({ csvText: text }) },
       );
@@ -240,7 +244,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     setOperationPending(true);
     setOperationError("");
     try {
-      const saved = await fetchAdminJson<BankMatchOperation>(operationUrl, {
+      const saved = await fetchForActor<BankMatchOperation>(operationUrl, {
         method: "POST",
         body: JSON.stringify({ csvText, selectedOrdinals }),
       });
@@ -266,7 +270,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     setOperationPending(true);
     setOperationError("");
     try {
-      const saved = await fetchAdminJson<BankMatchOperation>(
+      const saved = await fetchForActor<BankMatchOperation>(
         `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
       );
       if (!current()) return;
@@ -307,12 +311,12 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     setApplyingOrdinal(ordinal);
     setOperationError("");
     try {
-      await fetchAdminJson(operationUrl, {
+      await fetchForActor(operationUrl, {
         method: "PATCH",
         body: JSON.stringify({ operationId: operation.operationId, ordinal }),
       });
       if (!current()) return;
-      const saved = await fetchAdminJson<BankMatchOperation>(
+      const saved = await fetchForActor<BankMatchOperation>(
         `${operationUrl}?operationId=${encodeURIComponent(operation.operationId)}`,
       );
       if (current()) {

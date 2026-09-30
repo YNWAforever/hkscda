@@ -32,8 +32,14 @@ mock.module("react", () => ({
 }));
 let fetcher: (url: string, options?: { method?: string; body?: string }) => Promise<unknown>;
 mock.module("../../../lib/admin/http", () => ({
-  fetchAdminJson: (url: string, options?: { method?: string; body?: string }) =>
-    fetcher(url, options),
+  fetchAdminJson: (
+    url: string,
+    options?: { method?: string; body?: string },
+    expectedActor?: string,
+  ) => {
+    expect(expectedActor).toBe(actorUserId);
+    return fetcher(url, options);
+  },
 }));
 const { BankStatementDryRunPanel, BankStatementDryRunPreview } =
   await import("./BankStatementDryRunPanel");

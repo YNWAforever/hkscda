@@ -40,16 +40,22 @@ export class AdminApiError extends Error {
   readonly code?: string;
   readonly fields?: AdminApiErrorFields;
 }
-export async function getAdminAccessToken() {
+export async function getAdminAccessToken(expectedActorUserId?: string) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session?.access_token) throw new Error("未登入");
+  if (expectedActorUserId && session.user?.id !== expectedActorUserId)
+    throw new Error("登入身份已變更，請重新載入頁面。");
   return session.access_token;
 }
 
-export async function fetchAdminJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = await getAdminAccessToken();
+export async function fetchAdminJson<T>(
+  path: string,
+  init?: RequestInit,
+  expectedActorUserId?: string,
+): Promise<T> {
+  const token = await getAdminAccessToken(expectedActorUserId);
   const isFormData = init?.body instanceof FormData;
   const response = await fetch(path, {
     ...init,
@@ -77,7 +83,9 @@ export async function fetchAdminJson<T>(path: string, init?: RequestInit): Promi
     );
   }
 
-  return response.json() as Promise<T>;
+  const result = (await response.json()) as T;
+  if (expectedActorUserId) await getAdminAccessToken(expectedActorUserId);
+  return result;
 }
 
 export async function fetchAdminIdentity() {

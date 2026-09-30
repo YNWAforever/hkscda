@@ -1,3 +1,4 @@
+import { useLiveAdminActor } from "../../../lib/admin/useLiveAdminActor";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Download, FileCheck, FileX } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -66,6 +67,7 @@ function formatActivityTime(value: string) {
 }
 
 export function PaymentsReconcile() {
+  const liveActor = useLiveAdminActor();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<PaymentFilters>({
     status: "all",
@@ -352,6 +354,7 @@ export function PaymentsReconcile() {
 
       {!identityError &&
         identityData?.admin.status === "active" &&
+        liveActor === identityData.admin.authUserId &&
         (adminRole === "treasurer" || adminRole === "admin") && (
           <BankStatementDryRunPanel
             key={`${identityData.admin.authUserId}:${adminRole}`}
