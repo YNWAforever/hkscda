@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": null,
-  "appShaNote": "PR171 inherits reviewed PR170 test-only repair ea5eb539; combined source binding follows.",
+  "appSha": "ff0d8d964be6ab605baff343a56ac11c5dfdf194",
+  "appShaNote": "PR171 source ff0d8d964be6ab605baff343a56ac11c5dfdf194; subsequent binding commit is documentation only; new exact-head CI required.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "66f3b7ca1d71a0d1542f3d0b0925583c215a2e81835bebf988977c77521d43b3",
   "configVersions": {
