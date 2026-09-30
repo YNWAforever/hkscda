@@ -29,3 +29,20 @@ No migration is added. The count sources depend on previously reviewed schemas, 
 Roll back this application slice to remove the overview link and page while preserving all records and predecessor schemas. No data rollback is needed. Staff should open the indicated workspace and confirm its filters before acting; exact filter-preserving destinations and cross-domain snapshot/preview/apply/result workflows are subsequent slices.
 
 Sequential release remains blocked at #153's exact two-file approval and later at #156's local Auth concurrent OTP failure. #154 and #155 approvals are recorded but depend on predecessor completion. #157 migration approval remains separate. Nothing in this evidence enables payment, recovery email or new repair schedules.
+
+## Dependency continuation, 2026-10-01 HKT
+
+Code SHA `7b426c61ab9bfb1085fe5cfad02b83b709d880a5` incorporates final #157 `381e6ad409d7dce6b717feff3d77250e1cfd200f` and #156 `edd13112c66bf83c2b840b8d93441e0c3b9c838e`. T23 application source matches original reviewed `ad640d1d`; inherited recovery/portal source matches #157. The framework-generated tree retains both task-overview endpoints and recovery verification. Four documentation conflicts were resolved by preserving both historical evidence sections and a field-wise three-way tracker merge:34 rows each, zero conflicting/unexpected cells. Independent integration review found no actionable findings and reran12 focused tests/73 assertions.
+
+| Command | Exit | Environment and actual result |
+| --- | --- | --- |
+| `bun test` | 0 | Bun1.3.14; local checkout Postgres57322/Auth52321 and preference schema clone52322;3024 pass,97 skip,0 fail,9384 assertions,528 files,101.56s |
+| `bun run typecheck` | 0 | Strict TypeScript on combined candidate |
+| `bun run lint` | 0 | 0 errors;52 existing warnings |
+| `bun run build` | 0 | Synthetic loopback54329/ci-placeholder; serial Vercel build; generated routes current |
+| `node scripts/verify-task-overview-review.mjs` | 0 | Actual component at loopback56557;390/768/1366px; keyboard role changes, suspended identity hides cards and makes no request, zero/unavailable distinction, Axe0/page errors0/no overflow including200% zoom |
+| `bun scripts/verify-task-overview-local.mjs` | 0 | Real isolated Auth/PostgREST57321; generated identity only; staff5/treasurer4/admin5 cards; all metrics ready;401/403/405 paths, pending/disabled identity, same-token role recheck, caller role ignored; no email sent; synthetic identity cleaned |
+
+New captures `ui/t23-overview-integrated-after-{390,768,1366}.png` preserve the earlier before/after files. No new migration is introduced by T23; the combined manifest has48 entries because it includes the new #156 challenge schema. Code-complete=yes for the overview slice; ADMIN-04 remains partial for later bulk/filter slices. Deployed=no for #158; operationally-enabled=no. #134–#155 remain22/46 merged and main/production alias remains24196faf. #156 latest five CI gates are green; #157 latest gates and this newly published #158 head must be checked before release. Exact #156 new-migration approval is pending; #157 preference migration is already specifically approved. No production DDL, data mutation, real email, payment or new schedule occurred in this checkpoint.
+
+The97 skipped scenarios, production metric query plans/live staff identities, hosted-provider recovery parity, full backup restore and same-environment production before/after performance remain not-run. Disable recovery/payment/new schedules and preserve all predecessor data/schema on rollback. This newer checkpoint supersedes the historical predecessor blocker state above while retaining the original audit record.
