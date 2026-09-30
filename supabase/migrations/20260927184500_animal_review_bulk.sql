@@ -114,7 +114,7 @@ begin
   select * into v_op from public.animal_review_bulk_operation
   where id=p_operation and actor_user_id=p_actor for update;
   if not found then raise exception 'Animal review operation unavailable' using errcode='42501';end if;
-  if v_op.expires_at<=now() then raise exception 'Animal review preview expired' using errcode='P0001';end if;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Animal review preview expired' using errcode='P0001';end if;
   select * into v_item from public.animal_review_bulk_item
   where operation_id=p_operation and animal_id=p_animal for update;
   if not found then raise exception 'Animal review item unavailable' using errcode='42501';end if;
@@ -122,6 +122,8 @@ begin
     return jsonb_build_object('entityId',p_animal,'status',v_item.status,'reasonCode',v_item.reason_code);
   end if;
   select revision into v_revision from public.animal_draft where id=p_animal for update;
+  -- Lock waits can outlive the snapshot; reject before any classification/result/audit write.
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Animal review preview expired' using errcode='P0001';end if;
   select publication_state into v_publication from public.animals where id=p_animal;
   select * into v_review from public.editorial_content_review
   where entity_kind='animal' and entity_id=p_animal and revision_key=v_revision::text;

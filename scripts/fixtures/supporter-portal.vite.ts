@@ -5,6 +5,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 export default defineConfig({
   root: path.resolve(import.meta.dirname, "../.."),
+  cacheDir: "node_modules/.cache/hkscda-supporter-portal",
   plugins: [
     {
       name: "isolated-portal",
@@ -12,7 +13,7 @@ export default defineConfig({
       load(id) {
         const file = id.replaceAll("\\", "/");
         if (file.endsWith("/src/lib/supabase.ts"))
-          return `export const getSupabaseClient=()=>({auth:{signOut:()=>new Promise(resolve=>{window.finishSignOut=resolve;})}});`;
+          return `export const signOutCurrentSession=()=>new Promise(resolve=>{window.finishSignOut=resolve;});`;
         if (
           process.env.PORTAL_FIXTURE_BASELINE === "1" &&
           file.endsWith("/src/components/site/supporter/SupporterPortal.tsx")

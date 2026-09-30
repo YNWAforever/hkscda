@@ -43,3 +43,23 @@ Restricted CurrentUser-DPAPI backup previously verified at .hkscda-private-backu
 Staff validate the bank reference and one payment, confirm receipt, and inspect the separate delivery result. After an uncertain response, retry the same payment and original reference; the existing job is recovered without another credit. A different reference or changed terminal state is a conflict needing review. Retry receipts from the durable job, never create another gift to fix delivery. Permanent duplicate reference means investigate the prior credit; no bulk refund, approval or identity merge is introduced. Fresh CI pending at this record.
 
 Parent selection generation integration at959b91b7d3bb2395f62f53ac13512149652133ec: finance code/SQL unchanged. Earlier exact a9c0a3ff CI36636521158 passed all five jobs. Inherited #162 backport61e8952f passed full/type/lint/build; #164 integration both actual animal/CMS kind-cycle UI and strict typecheck passed. No local full rerun of this metadata-only resolution; fresh combined-head CI required. Exact finance SQL remains d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86.
+
+
+## Root Task165 final combined-source gates — 2026-10-01 HKT
+
+Reviewed finance source421bf7f and its SQL/API/service/tests remain byte-identical to candidate de88d883 after integrating predecessorbc4b5a6fd753c2a1e4008f7c6bff486106f0575d. Documentation conflicts preserve historical reports and unique rows. Manifest54 canonical LF entries all match; both trackers34 unique issues. Exact SQL SHA256d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86, grants/signatures/RLS and index semantics unchanged. The earlier six-row full-file/duplicate-history rehearsal and three-width UI captures are retained evidence, not newly rerun.
+
+| Actual command | Actual environment/result | Exit |
+| --- | --- | --- |
+| bun test --isolate --timeout 30000 | Final combined source: 3102pass97skip0fail9885assertions547files106.06s | 0 |
+| bun test src/lib/crm/manualGift.database.test.ts | Separately opted-in local CRM fixture; 17 pass /  90 expect() calls | 0 |
+| bun run typecheck | Strict tsc --noEmit | 0 |
+| bun run lint | 0errors /52existing warnings | 0 |
+| bun run build | Exclusive serial build, loopback54329 and CIplaceholderkeys; generated route map unchanged | 0 |
+| read-only fixture census / git diff --check | 24 scoped fixture tables0 / no unresolved or whitespace errors | 0 |
+
+Full suite uses checkout DB127.0.0.1:57322/postgres, local Auth52321, and SUPPORTER_PORTAL/CRM_TAG_BULK/VOLUNTEER_REVIEW_BULK/ADOPTION_ASSIGNMENT_BULK/ANIMAL_REVIEW_BULK/CMS_REVIEW_BULK/MANUAL_FINANCE fixtures on disposable schema-only clone127.0.0.1:52322/audit_pr135_20260929 with each explicit opt-in. CRM manual-gift runs separately against that clone. The first root wrapper stopped before tests because its ignored log directory was absent; that was not a passing test run. Initial full attempt with shared CRM opt-in was rejected by the identity fixture's exact DB allowlist:3124pass67skip1fail1error/exit1. Its log is preserved; the guard and product source were not weakened. Corrected full configuration omits shared CRM opt-in; the targeted CRM fixture then ran separately. Skips and the clone's absent private recovery-broker relation are not passing recovery/identity DB evidence. Separate retained broker evidence remains labelled.
+
+Root raw logs task-165-root-integration-{full-test,full-test-invalid-crm-target,crm-test,typecheck,lint,build,census}.log remain ignored in the plan workspace. Role denial, authority shared locks, same-payment retry, distinct-payment normalized-reference contention, audit rollback and delivery-failure success preservation run in the enabled finance fixture. No true provider sandbox, hosted staff/private-export/private-file UAT, real payments/emails/refunds, full backup restore or new production performance was run.
+
+Current actual main/alias remains#15907e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS/READY and26/46 actual main releases. #162CI36768709335, #163CI36769099661 and #164CI36771448101 are all five SUCCESS at their exact recorded heads. Task165 is code-complete and local schema-ready only: no production migration, merge/deployment or operational enablement. #160 named production approval remains pending; #161 previously approved named schema/backfill scope remains operative after stricter expiry denial; #165 named d4f68382 schema approval, fresh exact-head CI, preflight/backup/postflight and sequential predecessors remain gates. Payment/new sending schedules stay disabled; existing webhooks/reconciliation and additive rollback boundaries remain preserved.

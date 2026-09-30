@@ -47,3 +47,50 @@ Final queue fix04f8ad07 typecheck/lint exit0 (52warnings), serial synthetic buil
 Selection-generation backport integrated at168cca319ef7c4c7931d3adcd024f176b3e95e56. Both actual animal and CMS kind-cycle regressions on56562 retain0 selected checkboxes/no page errors, exit0; server/browser stopped. Inherited #16261e8952f full3006pass121skip/typecheck/lint/build0; this integration local full/lint/build not rerun, fresh CI will gate the exact combined head. Earlier full3012 and other evidence remain labelled by source. SQL/hash unchanged; exact approval question remains pending.
 
 Strict typecheck after selection merge168cca31:exit0. Prior #164 head da0c1126 CI36634733139 five green; new head CI required.
+
+
+## Task164 held-lock expiry repair — 2026-10-01 HKT
+
+Independent base `314783b853b12495b35934aa49bf9b64e4d9d245`; verified source commit `f1d6686945d11941c0fb04b3c64356926b285301`. The original candidate used transaction-start now() across locks. Two parameterized real-lock regressions (operation and content_item) started apply while live, proved backend blocking via pg_blocking_pids, retained the unchanged blocker until database clock_timestamp proved expiry, then released it. RED received no P0001 because both applies wrongly succeeded. The repaired apply uses pg_catalog.clock_timestamp() after operation/actor-assignee locks and immediately after final entity locks, before any assignment/classification/result/audit write. FOUND, authoritative Auth/admin FOR SHARE, eligible-stage locks where applicable, durable idempotency, partial results and atomic editorial command/audit are preserved. No API/UI behavior change except rejection of expired work.
+
+| Actual command | Actual result / exit | Raw local log |
+| --- | --- | --- |
+| `bun test src/lib/contentReview/cmsBulk.database.test.ts` before SQL edits | RED 6 pass / 2 fail / 47 assertions / 5.60s; exit1 | task-164-red.log |
+| `bun .superpowers/sdd/HKSCDA_Codex_GPT6_Sol_Implementation_Plan_2026-09-27_zhHK/task-164-rehearsal.ts` | Whole exact SQL BEGIN/ROLLBACK then clone-only apply replacement; exit0 | task-164-rehearsal.log |
+| `bun test src/lib/contentReview/cmsBulk.database.test.ts src/routes/api/admin/content/review-bulk.test.ts src/lib/operations/migrationManifest.test.ts src/lib/supabaseMigrations.test.ts` | GREEN 59 pass / 0 fail / 762 assertions / 4 files / 6.92s; exit0 | task-164-green.log |
+| `bun test --isolate --timeout 30000` final source | 3020 pass / 121 skip / 0 fail / 9474 assertions / 543 files / 92.91s; exit0 | task-164-full-test.log |
+| `npm.cmd run typecheck` | strict TS exit0 | task-164-typecheck.log |
+| `npm.cmd run lint` | exit0; 52 existing warnings; 0 errors | task-164-lint.log |
+| `npm.cmd run build` exclusive serial placeholder build | exit0 | task-164-build.log |
+| `git diff --check` and exact fixture census | exit0; all scoped fixtures0 | task-164-census.log |
+
+All raw logs/helpers/full report live in this worktree's `.superpowers/sdd/HKSCDA_Codex_GPT6_Sol_Implementation_Plan_2026-09-27_zhHK/`; ignored local evidence is retained for root review. RED/GREEN uses only `CMS_REVIEW_BULK_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929` with `CMS_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1`. Full suite adds CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:57322/postgres and SUPABASE_LOCAL_URL=http://127.0.0.1:52321. Build uses VITE_SUPABASE_URL/SUPABASE_URL=http://127.0.0.1:54329, ci-placeholder-anon-key and ci-placeholder-service-role-key. Root explicitly released exclusive DB/build slot before execution.
+
+The new checks raise P0001. Exact unchanged entity/revision/publication/assignment and pending item/applied_at/audit comparisons pass; each captured real SQL errno is adapted to the existing PostgREST code shape and fed through the actual handler, which returns HTTP409 with no-store/Preview expired. This handler verification does not claim a live PostgREST request. Fixtures are synthetic UUIDs/example.invalid and exact cleanup or rollback; no reset/db push/CASCADE or fabricated ledger.
+
+Whole candidate rehearsal locks candidate tables before confirming emptiness, executes all exact SQL and verifies exact signatures, pinned empty search_path, grants, RLS and indexes. Rollback restores definitions/catalog/grants/RLS and **all ledger rows**, then only the apply RPC is replaced in the disposable clone. Historical approved/deployed migrations untouched. Canonical LF SHA256 for `20260927190000_cms_review_bulk.sql` is **b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb**; only this candidate's manifest entry changed. Any old exact approval covers old bytes only; exact new approval remains root-owned.
+
+Self-review: minimal two-check SQL diff contains no SELECT/PERFORM in either new guard; FOUND semantics preserved. Existing auth/version/eligible-stage/idempotency/audit/1000-item tests retained and passing. Both trackers remain34rows with only ADMIN-04 changed for local code-complete/schema-ready slice. Prior UI evidence retained; new browser/provider/production measurements not-run. No production reads/writes/DDL, external provider, real notifications/payments/refunds, public preview, predecessor propagation, remote push/merge or subagents. Independent review, root integration/current remote CI and exact new production approval pending. Full-suite skips are not passes; existing lint warnings are not regressions.
+
+Rehearsal evidence refinement: the first helper catalog compared functions/tables/ledger and counted created indexes. Added exact index-definition rollback comparison plus pre-existing entity/revision/editorial/Auth fixture guards; reran the same whole candidate command serially, exit0 (both runs retained in task-164-rehearsal.log). Source SQL unchanged. Final broad census initially asserted all audit rows0 and exited1: metadata inspection (exit0) identified five donation.delivery_queued rows dated September29–30 with null actors, predating this batch. Those unrelated rows were preserved. Correctly scoped census repeated exit0: all14 scoped entity/Auth/operation/item/review tables0, all batch audit actions0, historical donation audits5. Both census runs retained; metadata in task-164-audit-residue.log.
+
+
+## Root Task164 final combined-source gates — 2026-10-01 HKT
+
+Independent Task164 spec/quality review approved the exact repair package through599a4da87c2abc2cf9b637b1adee1f24454e6528, with no Critical/Important findings. Sourcef1d6686945d11941c0fb04b3c64356926b285301 and its SQL/test remain byte-identical after inheriting reviewed predecessor6ca3e3380a4bc23ea7c372907b40a2851e0f5568. Documentation-only conflicts preserve historical evidence and unique CSV rows; no code conflict. Candidate20260927190000_cms_review_bulk.sql canonical LF SHA256b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb; manifest53unique rows and both trackers34unique rows. Earlier package statements remain historical. #161's filename/schema/backfill approval-scope ruling is inherited; #160 remains pending single-migration approval.
+
+| Actual command | Actual environment/result | Exit |
+| --- | --- | --- |
+| bun test --isolate --timeout 30000 | Final combined source: 3093pass97skip0fail9830assertions546files115.91s | 0 |
+| bun run typecheck | Strict tsc --noEmit | 0 |
+| bun run lint | 0errors /52existing warnings | 0 |
+| bun run build | Exclusive serial, loopback54329/CIplaceholderkeys; route map unchanged | 0 |
+| read-only combined fixture census / git diff --check | Scoped generated rows0 / no whitespace or unresolved conflicts | 0 |
+
+Full suite uses CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:57322/postgres, SUPABASE_LOCAL_URL=http://127.0.0.1:52321, and SUPPORTER_PORTAL/CRM_TAG_BULK/VOLUNTEER_REVIEW_BULK/ADOPTION_ASSIGNMENT_BULK/ANIMAL_REVIEW_BULK/CMS_REVIEW_BULK test databases all set to disposable schema-only clone127.0.0.1:52322/audit_pr135_20260929, each ALLOW_LOCAL_FIXTURES=1. No production data/provider call. The clone lacks the separate private recovery-broker table; that absence and97skips are not passing recovery DB evidence. Root retained prior isolated broker evidence separately. Logs task-164-root-integration-{full-test,typecheck,lint,build,census}.log remain in this plan workspace.
+
+The review's unchanged-contract limits are resolved by retaining source and tests for frozen snapshot/15-minute default, authoritative actor/assignee Auth/admin shared locks, per-item versions, transaction audit, stored partial results/idempotent retry and server-only boundaries; this integration run exercises all enabled inherited bulk fixtures. The two new time guards preserve FOUND and pre-existing classification/revision/status branches. Prior UI/keyboard/a11y/performance captures retained. No new browser/livePostgREST/hosted staff/private-export/provider/production measurements; these are not-run. Lint warnings/skips remain visible.
+
+Main/production remains actual#15907e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS/aliasREADY. #161 exact f0ad57ea CI36764490686 also all5SUCCESS. Task164 code-complete and local schema-ready only; no production migration/feature mutation/deployment/operational activation. Fresh exact-head remote CI, prior sequential release/main gates, named production schema approval, catalog/backup/postflight and hosted identities remain external gates. Existing additive rollback/payment/webhook/delivery boundaries unchanged. No paid branch, blinddbpush, fakeledger or global audit deletion.
+
+Verified combined-source freeze4fe3668a0f54fe9a71f68d8ccbff7f27e1b1024c binds all53canonical migration entries; following metadata commit changes documentation only. Production remains07e4c881; no operational activation.
