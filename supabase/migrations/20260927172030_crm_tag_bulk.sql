@@ -149,7 +149,7 @@ begin
   select * into v_op from public.crm_tag_bulk_operation
   where id=p_operation and actor_user_id=p_actor for update;
   if not found then raise exception 'Bulk operation unavailable' using errcode='42501';end if;
-  if v_op.expires_at <= now() then
+  if v_op.expires_at <= pg_catalog.clock_timestamp() then
     raise exception 'Bulk snapshot expired' using errcode='P0001';
   end if;
   select * into v_item from public.crm_tag_bulk_item
@@ -159,6 +159,10 @@ begin
     return jsonb_build_object('entityId',p_supporter,'status',v_item.status,'reasonCode',v_item.reason_code);
   end if;
   select * into v_row from public.supporter where id=p_supporter for update;
+  -- A live preview can expire while any preceding row lock is pending.
+  if v_op.expires_at <= pg_catalog.clock_timestamp() then
+    raise exception 'Bulk snapshot expired' using errcode='P0001';
+  end if;
   if not found or v_row.deleted_at is not null then
     v_status:='skipped';v_reason:='unavailable';
   elsif v_row.edit_version <> v_item.expected_version

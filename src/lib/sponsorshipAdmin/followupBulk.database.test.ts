@@ -1,5 +1,6 @@
 import { SQL } from "bun";
 import { expect, test } from "bun:test";
+import { createSponsorshipFollowupBulkHandler } from "../../routes/api/admin/sponsorships/followup-bulk";
 
 const url = process.env.SPONSORSHIP_FOLLOWUP_BULK_TEST_DATABASE_URL;
 if (url) {
@@ -361,3 +362,216 @@ test.skipIf(!enabled)(
   },
   30000,
 );
+
+for (const heldRow of ["operation", "sponsorship_pledge"] as const) {
+  test.skipIf(!enabled)(
+    `Sponsorship bulk rejects expiry while waiting for the ${heldRow} lock`,
+    async () => {
+      const db = new SQL(url!, { max: 1, prepare: false });
+      const blocker = new SQL(url!, { max: 1, prepare: false });
+      const applier = new SQL(url!, { max: 1, prepare: false });
+      const actor = crypto.randomUUID(),
+        assignee = crypto.randomUUID();
+      const supporter = crypto.randomUUID(),
+        entity = crypto.randomUUID();
+      let operation: string | undefined;
+      let releaseLock = () => {};
+      let held: Promise<unknown> | undefined;
+      let applying: Promise<{ error?: unknown; result?: unknown }> | undefined;
+      try {
+        await db.begin(async (tx) => {
+          for (const id of [actor, assignee]) {
+            await tx.unsafe(
+              "insert into auth.users(id,email,email_confirmed_at) values($1::uuid,$2,now())",
+              [id, `${id}@example.invalid`],
+            );
+            await tx.unsafe(
+              "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,'staff','active')",
+              [id, `${id}@example.invalid`],
+            );
+          }
+          await tx.unsafe(
+            "insert into public.supporter(id,name,email) values($1::uuid,'Synthetic assignment expiry',$2)",
+            [supporter, `${supporter}@example.invalid`],
+          );
+          await tx.unsafe(
+            "insert into public.sponsorship_pledge(id,supporter_id,monthly_tier,amount_cents,language,status) values($1::uuid,$2::uuid,'100',10000,'zh-HK','needs_followup')",
+            [entity, supporter],
+          );
+          await tx.unsafe("set local role service_role");
+          const preview = await tx.unsafe(
+            "select public.create_sponsorship_followup_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4) result",
+            [actor, `{${entity}}`, assignee, "e".repeat(64)],
+          );
+          operation = preview[0].result.operationId as string;
+        });
+        await db.unsafe(
+          "update public.sponsorship_followup_bulk_operation set expires_at=clock_timestamp()+interval '2 seconds' where id=$1::uuid",
+          [operation],
+        );
+        const state = () =>
+          db.unsafe(
+            "select e.followup_assignee_user_id as assignee,e.followup_version::text as version,to_jsonb(i) as item from public.sponsorship_pledge e join public.sponsorship_followup_bulk_item i on i.pledge_id=e.id where e.id=$1::uuid and i.operation_id=$2::uuid",
+            [entity, operation],
+          );
+        const before = [...(await state())];
+        const audits = () =>
+          db.unsafe(
+            "select id,action,entity,entity_id,detail from public.audit_log where actor_user_id=$1::uuid order by id",
+            [actor],
+          );
+        const beforeAudits = [...(await audits())];
+        expect(before[0]).toMatchObject({
+          assignee: null,
+          version: "1",
+          item: {
+            operation_id: operation,
+            pledge_id: entity,
+            ordinal: 1,
+            expected_version: 1,
+            before_assignee: null,
+            after_assignee: assignee,
+            status: "pending",
+            reason_code: null,
+            applied_at: null,
+          },
+        });
+        let lockReady = (value: number) => {
+          void value;
+        };
+        const ready = new Promise<number>((resolve) => {
+          lockReady = resolve;
+        });
+        const release = new Promise<void>((resolve) => {
+          releaseLock = resolve;
+        });
+        held = blocker.begin(async (tx) => {
+          const table =
+            heldRow === "operation"
+              ? "public.sponsorship_followup_bulk_operation"
+              : "public.sponsorship_pledge";
+          await tx.unsafe(`select id from ${table} where id=$1::uuid for update`, [
+            heldRow === "operation" ? operation! : entity,
+          ]);
+          lockReady((await tx.unsafe("select pg_backend_pid() pid"))[0].pid as number);
+          await release;
+        });
+        const blockerPid = await ready;
+        let pidReady = (value: number) => {
+          void value;
+        };
+        const pidPromise = new Promise<number>((resolve) => {
+          pidReady = resolve;
+        });
+        applying = applier
+          .begin(async (tx) => {
+            await tx.unsafe("set local statement_timeout='8s'");
+            pidReady((await tx.unsafe("select pg_backend_pid() pid"))[0].pid as number);
+            await tx.unsafe("set local role service_role");
+            return tx.unsafe(
+              "select public.apply_sponsorship_followup_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
+              [actor, operation!, entity],
+            );
+          })
+          .then(
+            (result) => ({ result }),
+            (error: unknown) => ({ error }),
+          );
+        const pid = await pidPromise;
+        let blocked = false;
+        for (let attempt = 0; attempt < 100; attempt++) {
+          const [row] = await db.unsafe(
+            "select pg_blocking_pids($1::int) blockers,expires_at>clock_timestamp() live from public.sponsorship_followup_bulk_operation where id=$2::uuid",
+            [pid, operation],
+          );
+          if ((row.blockers as number[]).includes(blockerPid)) {
+            expect(row.blockers).toContain(blockerPid);
+            expect(row.live).toBe(true);
+            blocked = true;
+            break;
+          }
+          await Bun.sleep(10);
+        }
+        expect(blocked).toBe(true);
+        await db.unsafe(
+          "select pg_sleep(greatest(0,extract(epoch from(expires_at-clock_timestamp())))+0.02) from public.sponsorship_followup_bulk_operation where id=$1::uuid",
+          [operation],
+        );
+        const [expired] = await db.unsafe(
+          "select expires_at<=clock_timestamp() expired,pg_blocking_pids($1::int) blockers from public.sponsorship_followup_bulk_operation where id=$2::uuid",
+          [pid, operation],
+        );
+        expect(expired.expired).toBe(true);
+        expect(expired.blockers).toContain(blockerPid);
+        releaseLock();
+        await held;
+        const outcome = await applying;
+        expect(outcome).toMatchObject({ error: { errno: "P0001" } });
+        expect([...(await state())]).toEqual(before);
+        expect([...(await audits())]).toEqual(beforeAudits);
+        const error = outcome.error as { errno: string };
+        const handler = createSponsorshipFollowupBulkHandler({
+          authorize: async () => actor,
+          preview: async () => {
+            throw new Error("Unexpected preview");
+          },
+          read: async () => ({
+            operationId: operation!,
+            assigneeUserId: assignee,
+            filterHash: "e".repeat(64),
+            createdAt: "2026-01-01T00:00:00Z",
+            expiresAt: "2026-01-01T00:15:00Z",
+            state: "queued",
+            items: [
+              {
+                entityId: entity,
+                status: "pending",
+                reasonCode: null,
+                expectedVersion: 1,
+                beforeAssignee: null,
+                afterAssignee: assignee,
+              },
+            ],
+          }),
+          applyItem: async () => {
+            throw { code: error.errno };
+          },
+        });
+        const response = await handler(
+          new Request("http://localhost/api/admin/sponsorships/followup-bulk", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ action: "apply", operationId: operation }),
+          }),
+        );
+        expect(response.status).toBe(409);
+        expect(response.headers.get("cache-control")).toBe("no-store");
+      } finally {
+        releaseLock();
+        await held?.catch(() => {});
+        await applying;
+        await db.begin(async (tx) => {
+          if (operation) {
+            await tx.unsafe(
+              "delete from public.sponsorship_followup_bulk_item where operation_id=$1::uuid",
+              [operation],
+            );
+            await tx.unsafe(
+              "delete from public.sponsorship_followup_bulk_operation where id=$1::uuid",
+              [operation],
+            );
+          }
+          await tx.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+          await tx.unsafe("delete from public.sponsorship_pledge where id=$1::uuid", [entity]);
+          await tx.unsafe("delete from public.supporter where id=$1::uuid", [supporter]);
+          for (const id of [actor, assignee]) {
+            await tx.unsafe("delete from public.admin_user where auth_user_id=$1::uuid", [id]);
+            await tx.unsafe("delete from auth.users where id=$1::uuid", [id]);
+          }
+        });
+        await Promise.all([db.close(), blocker.close(), applier.close()]);
+      }
+    },
+    15000,
+  );
+}

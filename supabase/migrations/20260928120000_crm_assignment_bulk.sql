@@ -174,7 +174,7 @@ begin
     raise exception 'CRM assignment operation unavailable' using errcode='42501';
   end if;
   perform private.require_crm_assignment_user(v_op.assignee_user_id);
-  if v_op.expires_at<=now() then
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then
     raise exception 'CRM assignment snapshot expired' using errcode='P0001';
   end if;
   select * into v_item from public.crm_assignment_bulk_item
@@ -187,6 +187,9 @@ begin
                               'reasonCode',v_item.reason_code);
   end if;
   select * into v_row from public.supporter where id=p_supporter for update;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then
+    raise exception 'CRM assignment snapshot expired' using errcode='P0001';
+  end if;
   if not found or v_row.deleted_at is not null then
     v_status:='skipped';v_reason:='unavailable';
   elsif v_row.edit_version is distinct from v_item.expected_version
