@@ -68,3 +68,8 @@ PR170 recovery GET failure retains operationID; reload results before resuming p
 ## PR171 preparation — 2026-09-30
 
 PR171 draft is ephemeral: current status,recipient,proof or month/allocation changes clear it; regenerate after reviewing facts. Pending proof/adjustment requiresfinance review. No send action or approved payment instructions. Sending requires separate authorization.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.

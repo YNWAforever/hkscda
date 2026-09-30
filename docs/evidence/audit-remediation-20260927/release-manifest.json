@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "7136ad049c536fe27fcc4823066d762c618b2c9b",
-  "appShaNote": "PR171 repaired ephemeral reminder preview plus verified predecessors; PR172-179 excluded.",
+  "appSha": "0af5599648949238d1244a7625b22d0f50baa35f",
+  "appShaNote": "PR172 repaired ephemeral bank preview plus verified predecessors; PR173-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "b24e8e7bd60f7aa0a0daf08955771f9a2fce8286582222e0477fe8f2fcae00dd",
+  "schemaManifestHash": "08b21272288f88b8b09582fe20939fb26f3c35be17aa210557c15fc8edeed82f",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -292,6 +292,11 @@
       "version": "20260928080000",
       "file": "20260928080000_sponsorship_followup_bulk.sql",
       "sha256": "d70e5fc37a71a34a7513ee27b435e0f38585bf4ed314626212bb3f3032c2ffec"
+    },
+    {
+      "version": "20260928090000",
+      "file": "20260928090000_finance_bank_dryrun.sql",
+      "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0"
     }
   ],
   "ciRun": {
@@ -612,11 +617,11 @@
       }
     }
   ],
-  "capturedAt": "2026-09-29T23:53:36.562357+00:00",
+  "capturedAt": "2026-09-30T00:13:28.940689+00:00",
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "56 source inventory entries; apply only specifically approved files after catalog checks, never rewrite historical ledger.",
+  "migrationManifestNote": "57 source inventory entries; apply only specifically approved files after catalog checks, never rewrite historical ledger.",
   "productionCiRun": {
     "id": 36624781016,
     "sha": "24196faf027998388eff3196a6979e23566e2443",
@@ -633,7 +638,8 @@
     "migration166": "exact approval requested after five current-head CI gates succeeded; pending",
     "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained",
     "migration169": "exact approval requested after latest five CI gates succeeded; pending",
-    "migration170": "exact approval not yet requested; isolated full SQL/1000item rehearsal passed"
+    "migration170": "exact approval requested after five CI gates green; pending",
+    "migration172": "not yet requested; isolated exact SQL/6oldrows/1000candidate rehearsal passed"
   },
   "blockedGate": {
     "pr": 156,

@@ -79,3 +79,8 @@ PR170390/768/1366actualpanel: recovery preservation/busy fence,keyboard,25writes
 ## PR171 preparation — 2026-09-30
 
 PR171390/768/1366actualdrawer: cancel,recipientchange,pendingproof,settledledger andlateoldresponse eachclearcopyabledraft;15cases/Axe0/errors0/nooverflow. Synthetic GETs andsimulatedcancelonly;no provider/DBwrite. Hostedstaff/privatejourneysnot-run.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.

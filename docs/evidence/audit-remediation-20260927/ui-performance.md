@@ -39,3 +39,8 @@ PR1703widthbefore/afterrecovery screenshots and390mobilecheckbox pair;Axe0/error
 ## PR171 preparation — 2026-09-30
 
 PR1713widthbefore/after t23-reminder screenshots;knowneligibilitychange now removesstaledraft.15caseactualbrowser,Axe0. Same-environmentperformancecomparisonnot-run;nospeedimprovementclaim.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.

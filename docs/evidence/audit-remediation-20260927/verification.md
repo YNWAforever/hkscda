@@ -138,3 +138,8 @@ PR170 a50a09f581f7862ebf9ba2fdde53d58cdf65a307:full3074pass141skip0fail9628asser
 ## PR171 preparation — 2026-09-30
 
 PR171 7136ad049c536fe27fcc4823066d762c618b2c9b:10focused46assert;full3084pass141skip0fail9676assert559files33.49s;typecheck/lint0(52warnings)/build0;3width15casebrowser0. Originalcancelstaledraft1ateachwidthred1;fixedstale0. See sequential-merge-171-20260930.md.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.

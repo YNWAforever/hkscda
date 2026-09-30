@@ -120,3 +120,8 @@ PR170six concretebugsred-to-green;reviewclosed.Individual+bulk sponsorshipfollow
 ## PR171 preparation — 2026-09-30
 
 PR171 read-only reminder preview repaired,reviewed andlocallyaccepted. No migration. ADMIN-04partial;codecomplete slice,not deployed/enabled. Continue172–179 while#156orderedmergegate remains.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.

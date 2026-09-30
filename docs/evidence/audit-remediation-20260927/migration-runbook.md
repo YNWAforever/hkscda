@@ -221,3 +221,8 @@ PR169 exact candidate20260928073000 SHA256 c1eb28ad0953d0ae3f9d85c574c363ee2fe34
 ## PR170 preparation — 2026-09-30
 
 PR170 candidate20260928080000 SHA256 d70e5fc37a71a34a7513ee27b435e0f38585bf4ed314626212bb3f3032c2ffec unchanged.2private snapshot tables,3publicserviceRPCs. Requires169 schema. Full2oldrow SQL rehearsal12.19ms,1000item897success101skip2conflict,allrollback. Productioncandidateabsent/2pledges/ledger95;exact approval pending;retain durable results on rollback.
+
+
+## PR172 current preparation — 2026-09-30
+
+See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.
