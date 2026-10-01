@@ -346,6 +346,12 @@ jobs:
           MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES: "1"
           MANUAL_FINANCE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
+      - name: Run CMS quality queue database scenarios
+        run: bun test src/lib/contentReview/qualityQueue.database.test.ts
+        env:
+          CMS_QUALITY_ALLOW_LOCAL_FIXTURES: "1"
+          CMS_QUALITY_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Run CMS review bulk database scenarios
         run: bun test src/lib/contentReview/cmsBulk.database.test.ts
         env:

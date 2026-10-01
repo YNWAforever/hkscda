@@ -142,6 +142,13 @@ export function ContentManagement({ initialData }: ContentManagementProps) {
 }
 
 function ContentManagementRuntime() {
+  const qualityParam = new URLSearchParams(
+    typeof window === "undefined" ? "" : window.location.search,
+  ).get("quality");
+  const initialQuality =
+    qualityParam === "demo" || qualityParam === "expired" || qualityParam === "missing_source"
+      ? qualityParam
+      : "all";
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [createError, setCreateError] = useState("");
@@ -233,7 +240,7 @@ function ContentManagementRuntime() {
 
   return (
     <>
-      <ContentReviewQueue />
+      <ContentReviewQueue key={initialQuality} initialQuality={initialQuality} />
       <CreateContentDraft onCreate={createDraft} busy={creating} error={createError} />
       <ContentManagementView
         data={contentQuery.data}

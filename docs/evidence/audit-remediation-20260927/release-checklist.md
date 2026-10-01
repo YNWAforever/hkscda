@@ -44,6 +44,9 @@ Freeze 421bf7f790dd595fbc0161ea885605dde617f3f4;53 source SQL checksums and upda
 
 PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
 
+## PR166 current source update
+
+Freeze 4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee;54 committed SQL hashes verified. Runtime identical to tested e229f46d:3022pass133skip9462assertions/40.72s;typecheck/lint/build0,52warnings;DB2tests122assertions;UI3widths/Axe0;SQL7rowsrollback253ms. Fresh remote CI pending. #156 remains blocked; requested disabled-feature exception unanswered, not an approval.
 
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 

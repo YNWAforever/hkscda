@@ -51,6 +51,9 @@ Actual commands/source/exit codes,4DBtests29assertions plusCRM17tests90assertion
 
 PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
 
+## PR166 isolated acceptance
+
+See sequential-merge-166-20260930.md for exact source/commands/exit codes, actual-role DB/pagination/unchanged-data proof,3-width before-after and current query timings. Hosted/provider/fullrestore remain not-run.
 
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 

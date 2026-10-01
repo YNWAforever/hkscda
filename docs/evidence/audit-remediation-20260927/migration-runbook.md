@@ -197,6 +197,20 @@ The named unlinked loopback database at 127.0.0.1:57322 returned no duplicate gr
 ## PR165 reviewed candidate
 
 Exact SQL/hash and6-row unchanged-data/duplicate rejection drills: sequential-merge-165-20260930.md. The old finance hash in historical sections is superseded by d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86. No production application. Fresh catalog/duplicate/lock/grant/RLS/backup checks and exact approval precede DDL; retain reference index and all audit/payment/job facts on rollback.
+
+## Historical PR166 quality queue rehearsal
+
+## T23 CMS quality queue migration addendum
+
+Version 20260927211801, SHA-256 8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. The service-role-only, read-only `editorial_quality_queue(uuid,integer,text)` requires current active staff/admin, confirmed Auth identity and no suspension. It reads non-archived content by demo classification, expired effective_until or blank source_reference, with 25-row server paging. Two nonunique partial indexes support the classification and expiry paths; no publication, review classification, audit, notification or payment write occurs. The existing all-items review RPC stays available.
+
+The exact file completed BEGIN/ROLLBACK rehearsal and was manually applied only on the named unlinked 127.0.0.1:57322 DB; the migration ledger remained at 20260927150000. A rollback-only synthetic fixture checked filter behavior, service-only grants and suspended-actor denial. Local checker reports 116 compatible requirements and the security advisor returned no error-level findings. Before release, rehearse the complete 46-file ordered sequence on fresh and sanitized data-bearing clones, inspect index locks and query plans, check signature/search path/forbidden grants/RLS, and verify backup/restore. On app rollback keep the additive objects until a compatible older app has been tested. No production DDL was authorized.
+
+Checksum correction at #166 package refresh: the earlier #165 packet used a Windows CRLF working-tree SHA for the manual finance SQL and CSV. This packet hashes committed Git blob bytes (LF) because those are the bytes checked out by CI/deployment. The #165 SQL blob SHA is febcce8174711520ac3006f3462647a8448c10dddc14c694eba389aca3fd9537; the #166 CMS quality SQL blob SHA is 8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. No SQL statement changed in this checksum correction. The 46-row CSV itself is committed with LF; its SHA-256 is 2a30158023f0945a096b01697c870f5c74abf53f2a217e14101a10bd24ad62e2.
+
+## PR166 reviewed candidate
+
+Exact unchanged SQL8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. One stable read RPC/two partial indexes; no mutation/backfill.7-row full-file rollback253ms,1000-row read/grant fixtures. Production7rows,candidate absent; exact DDL approval and fresh preflight required. See sequential-merge-166-20260930.md.
 ## T22 single-use recovery candidate, 2026-09-30
 
 The manifest now has 47 candidate entries in this #156 worktree. New exact file: `20260930120000_supporter_recovery_single_use.sql`, committed-byte SHA-256 `a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e`. Adds one private RLS challenge table, expiry index and three service-only RPCs; no backfill, Auth-schema patch, cron, supporter linking or fake ledger. Whole-file rollback rehearsal plus catalog/signature/grant/RLS and real isolated Auth20-way single-use tests exit 0. Production read-only catalog still lacks these objects (ledger95/supporters15); production application is not approved yet. Full backup restore remains not-run. Disable recovery and retain additive schema for app rollback; consumed codes and external sessions cannot be undone by dropping schema. Exact preflight, backup freshness, server-only key, supported-browser requirements and no-real-sending activation boundaries: [T22 release evidence](sequential-merge-156-broker-20260930.md).

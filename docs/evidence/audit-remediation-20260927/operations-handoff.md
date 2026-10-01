@@ -40,6 +40,9 @@
 
 After a lost response retry the same payment and exact original reference. Only an identical committed request recovers its existing delivery job; a different reference is a conflict. Delivery busy reads its durable status, including complete/attention_required; retry from the job without another credit. Duplicate reference409 needs finance investigation. Keep new schedules disabled pending separate approval.
 
+## CMS quality queues
+
+Demo/expired/missing-source queues are read-only and overlap. Review each source; changing filters clears selected draft IDs and invalidates unfinished selection. Quality errors allow return to all-items. No automatic classification/unpublication. Apply no production migration until exact approved dependency preflight.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.
