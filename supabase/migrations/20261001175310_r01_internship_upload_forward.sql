@@ -47,6 +47,31 @@ begin
     or exists(select 1 from pg_catalog.pg_constraint where conrelid=v_table and (condeferrable or condeferred)) then
     raise exception 'R01 internship intent definition differs: internship_attachment_upload_intent' using errcode='55000';
   end if;
+  -- Each reviewed FK owns four ordinary origin-enabled RI triggers, including
+  -- DELETE/UPDATE actions on its referenced table. Constraint validity alone
+  -- does not prove that these enforcement triggers are enabled or intact.
+  if exists(select 1 from pg_catalog.pg_constraint c where c.conrelid=v_table and c.contype='f' and (
+    (select count(*) from pg_catalog.pg_trigger t where t.tgconstraint=c.oid)<>4
+    or exists(select 1 from (values
+      ('pg_catalog."RI_FKey_check_ins"()'::pg_catalog.regprocedure,5,true),
+      ('pg_catalog."RI_FKey_check_upd"()'::pg_catalog.regprocedure,17,true),
+      ('pg_catalog."RI_FKey_noaction_del"()'::pg_catalog.regprocedure,9,false),
+      ('pg_catalog."RI_FKey_noaction_upd"()'::pg_catalog.regprocedure,17,false)
+    ) expected(function_oid,event_type,intent_side) where (
+      select count(*) from pg_catalog.pg_trigger t where t.tgconstraint=c.oid
+        and t.tgrelid=case when expected.intent_side then c.conrelid else c.confrelid end
+        and t.tgconstrrelid=case when expected.intent_side then c.confrelid else c.conrelid end
+        and t.tgconstrindid=c.conindid and t.tgfoid=expected.function_oid
+        and t.tgtype=expected.event_type and t.tgenabled='O' and t.tgisinternal
+        and t.tgparentid=0 and not t.tgdeferrable and not t.tginitdeferred
+        and t.tgnargs=0 and t.tgattr::text='' and t.tgargs=''::bytea
+        and t.tgqual is null and t.tgoldtable is null and t.tgnewtable is null
+        and (select count(*) from pg_catalog.pg_depend d where d.classid='pg_catalog.pg_trigger'::pg_catalog.regclass and d.objid=t.oid)=1
+        and exists(select 1 from pg_catalog.pg_depend d where d.classid='pg_catalog.pg_trigger'::pg_catalog.regclass and d.objid=t.oid and d.objsubid=0 and d.refclassid='pg_catalog.pg_constraint'::pg_catalog.regclass and d.refobjid=c.oid and d.refobjsubid=0 and d.deptype='i')
+    )<>1)
+  )) then
+    raise exception 'R01 internship intent FK trigger enforcement differs' using errcode='55000';
+  end if;
   select pg_catalog.array_agg(a.privilege_type order by a.privilege_type) filter(where a.grantee='service_role'::pg_catalog.regrole) into v_acl
     from pg_catalog.pg_class t,lateral pg_catalog.aclexplode(coalesce(t.relacl,pg_catalog.acldefault('r',t.relowner))) a where t.oid=v_table;
   -- Existing modern tables inherited eight nongrantable service privileges.

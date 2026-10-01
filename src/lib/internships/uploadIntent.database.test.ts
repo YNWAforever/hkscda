@@ -87,6 +87,13 @@ describe.skipIf(!url)("R01 internship upload intent compatibility", () => {
     const [trigger] =
       await db`select count(*)::int count from pg_catalog.pg_trigger where tgrelid='public.internship_attachment'::regclass and tgname='internship_attachment_uploaded' and not tgisinternal and tgenabled='O'`;
     expect(trigger.count).toBe(1);
+    const foreignKeys =
+      await db`select c.conname,count(*)::int count,bool_and(t.tgisinternal and t.tgenabled='O' and not t.tgdeferrable and not t.tginitdeferred) enforced from pg_constraint c join pg_trigger t on t.tgconstraint=c.oid where c.conrelid='public.internship_attachment_upload_intent'::regclass and c.contype='f' group by c.conname order by c.conname`;
+    expect(foreignKeys).toHaveLength(2);
+    for (const foreignKey of foreignKeys) {
+      expect(foreignKey.count).toBe(4);
+      expect(foreignKey.enforced).toBe(true);
+    }
   });
   test("direct clients cannot read/write intents or execute either service function", async () => {
     for (const role of ["anon", "authenticated"])
@@ -132,16 +139,32 @@ describe.skipIf(!url)("R01 internship upload intent compatibility", () => {
       const absent = randomUUID();
       await state(
         tx,
-        (s) =>
-          s`insert into public.internship_attachment_upload_intent(storage_path,application_id,actor,expires_at) values(${f.actor + "/" + absent + "/key"},${absent}::uuid,${f.actor}::uuid,clock_timestamp()+interval '1 day')`,
+        async (s) => {
+          await s`set local role service_role`;
+          await s`insert into public.internship_attachment_upload_intent(storage_path,application_id,actor,expires_at) values(${f.actor + "/" + absent + "/key"},${absent}::uuid,${f.actor}::uuid,clock_timestamp()+interval '1 day')`;
+        },
         "23503",
       );
       await state(
         tx,
-        (s) =>
-          s`insert into public.internship_attachment_upload_intent(storage_path,application_id,actor,expires_at) values(${absent + "/" + f.application + "/key"},${f.application}::uuid,${absent}::uuid,clock_timestamp()+interval '1 day')`,
+        async (s) => {
+          await s`set local role service_role`;
+          await s`insert into public.internship_attachment_upload_intent(storage_path,application_id,actor,expires_at) values(${absent + "/" + f.application + "/key"},${f.application}::uuid,${absent}::uuid,clock_timestamp()+interval '1 day')`;
+        },
         "23503",
       );
+      for (const column of ["actor", "application_id"]) {
+        await state(
+          tx,
+          async (s) => {
+            await s`set local role service_role`;
+            const nextActor = column === "actor" ? absent : f.actor;
+            const nextApplication = column === "application_id" ? absent : f.application;
+            await s`update public.internship_attachment_upload_intent set actor=${nextActor}::uuid,application_id=${nextApplication}::uuid,storage_path=${nextActor + "/" + nextApplication + "/updated"} where storage_path=${path}`;
+          },
+          "23503",
+        );
+      }
       await state(
         tx,
         (s) =>

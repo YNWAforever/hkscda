@@ -180,8 +180,9 @@ async function runGreen() {
   if (process.env.R01_INTERNSHIP_ALLOW_LOCAL_FIXTURES !== "1")
     throw new Error("Explicit Task4 fixture opt-in required");
   const mode = process.argv[2];
-  if (!["green", "green-modern"].includes(mode)) throw new Error("Task4 GREEN mode required");
-  const modern = mode.endsWith("modern"),
+  if (!["green", "green-modern", "green-fix-1", "green-modern-fix-1"].includes(mode))
+    throw new Error("Task4 GREEN mode required");
+  const modern = mode.includes("modern"),
     file = basename(process.argv[3] ?? "");
   if (!/^\d{14}_r01_internship_upload_forward\.sql$/.test(file))
     throw new Error("Only Task4 migration allowed");
@@ -200,7 +201,9 @@ async function runGreen() {
     "src/lib/operations/releaseSchema.ts",
     "src/lib/operations/releaseManifest.ts",
     "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
-    ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-gates.py",
+    mode.endsWith("fix-1")
+      ? ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-fix-1-gates.py"
+      : ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-gates.py",
     "package.json",
     "bun.lock",
     "supabase/rls-tests/helpers/runR01InternshipForward.ts",
@@ -320,8 +323,17 @@ async function runGreen() {
         await tx`set local role postgres`;
         await tx.unsafe(text);
       });
+    // Direct pg_trigger/pg_depend rows are needed: the shared public snapshot
+    // intentionally omits internal RI enforcement and referenced-side actions.
+    const foreignKeyProfile = async () =>
+      db`select c.conname,to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_constraint c join pg_trigger t on t.tgconstraint=c.oid where c.conrelid='public.internship_attachment_upload_intent'::regclass and c.contype='f' order by c.conname,t.tgname`;
+    const beforeForeignKeys = modern ? hash(await foreignKeyProfile()) : null;
     await apply();
     const first = await snapshot(db);
+    const firstForeignKeys = await foreignKeyProfile();
+    if (firstForeignKeys.length !== 8 || (modern && hash(firstForeignKeys) !== beforeForeignKeys))
+      throw new Error("Target FK trigger profile changed");
+    receipt.foreignKeyTriggers = firstForeignKeys;
     if (hash(unaffected(before)) !== hash(unaffected(first)))
       throw new Error("Unrelated catalog changed");
     if (modern && hash(before) !== hash(first))
@@ -338,9 +350,27 @@ async function runGreen() {
     )
       throw new Error("Temp shadow changed");
     await db.unsafe("drop table pg_temp.internship_attachment_upload_intent;set search_path=''");
-    const profile = async () =>
-      db`select relkind,relpersistence,relhasrules,(select count(*)::int from pg_rewrite where ev_class=c.oid) rules from pg_class c where oid='public.internship_attachment_upload_intent'::regclass`;
+    const profile = async () => ({
+      relation:
+        await db`select relkind,relpersistence,relhasrules,(select count(*)::int from pg_rewrite where ev_class=c.oid) rules from pg_class c where oid='public.internship_attachment_upload_intent'::regclass`,
+      foreignKeyTriggers: await foreignKeyProfile(),
+      intentRows:
+        await db`select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),'')) hash from public.internship_attachment_upload_intent t`,
+    });
     const firstProfile = hash(await profile());
+    if (hash(await foreignKeyProfile()) !== hash(firstForeignKeys))
+      throw new Error("Replay changed target FK triggers");
+    const disabledForeignKeys = firstForeignKeys
+      .filter((row: { trigger: { tgtype: number } }) => [5, 9].includes(row.trigger.tgtype))
+      .map(
+        (row: {
+          conname: string;
+          trigger: { tgname: string; tgtype: number; tgrelid: number };
+        }) => [
+          `disabled ${row.conname} ${row.trigger.tgtype === 5 ? "intent check" : "referenced action"}`,
+          `do $drift$ declare t record; begin select tgrelid,tgname into strict t from pg_catalog.pg_trigger where tgconstraint=(select oid from pg_catalog.pg_constraint where conrelid='public.internship_attachment_upload_intent'::regclass and conname='${row.conname}') and tgtype=${row.trigger.tgtype}; execute pg_catalog.format('alter table %s disable trigger %I',t.tgrelid::regclass,t.tgname); end $drift$`,
+        ],
+      );
     const rejected = [];
     const accepted = new Error("unexpected acceptance rollback");
     for (const [label, mutation] of [
@@ -410,6 +440,7 @@ async function runGreen() {
         "create rule r01_suppress_intent as on insert to public.internship_attachment_upload_intent do instead nothing",
       ],
       ["unlogged relation", "alter table public.internship_attachment_upload_intent set unlogged"],
+      ...disabledForeignKeys,
     ]) {
       let code = "success";
       try {
