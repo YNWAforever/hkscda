@@ -46,6 +46,7 @@ Read-only reviewer examined full SQL/HTTP/UI around cf09870b and found one P2: m
 
 Final review follow-up: reviewer closed P2 at a05d7e64; no remaining actionable findings. Integrated repeat: 2993 pass / 109 skip / 0 fail, 9309 assertions, 533 files, 27.84s / exit 0. Typecheck/lint/build repeated after both recovery fixes, all exit 0; lint still 52 warnings. SQL unchanged. New current-head CI pending.
 
+Exact-head remote follow-up: 39a2efc0d265ece0f8224fe9469be951696e41a7, CI 36627282399, verify/rls-matrix/brand-verify/a11y-verify/performance-verify all SUCCESS. Production migration approval still pending; sequential release waits for #156.
 ## Lock-expiry follow-up — 2026-10-01 HKT
 
 Base `39a2efc0d265ece0f8224fe9469be951696e41a7`; repair `8642518e3372e4a31d86dec7fd5077c05af82473`. The transaction-start `now()` expiry guard accepted a snapshot that expired while apply waited for operation/profile/assignment row locks. Real regressions now hold each unchanged row in a separate backend, observe the apply backend blocked while the snapshot is live via `pg_blocking_pids`, keep the lock until database `clock_timestamp()` passes expiry, and then release. Baseline RED: all three applies incorrectly succeeded, returning no P0001; 4 existing tests passed / 3 new tests failed / 39 assertions / exit 1. No SQL was edited before this RED run.

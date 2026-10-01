@@ -1,8 +1,13 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ListChecks, Search } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import {
+  addCaseSelection,
+  collectMatchingCaseIds,
+} from "../../../lib/adoptions/assignmentBulkSelection";
 import type { AdoptionCaseSummary, CoordinatorStatus } from "../../../lib/adoptions/types";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
@@ -22,6 +27,7 @@ import {
   formatFallback,
 } from "./caseWorkflowLogic";
 import { ExportButton } from "./ExportButton";
+import { AdoptionAssignmentBulkPanel } from "./AdoptionAssignmentBulkPanel";
 import {
   parseListPage,
   useListQueryState,
@@ -108,6 +114,22 @@ export function CaseList() {
   });
   const { query, page, setPage, filters, changeFilter } = listState;
   const { statusId, animalType, openOnly, pageSize } = filters;
+  const identity = useQuery(adminIdentityQueryOptions());
+  const isAdmin = identity.data?.admin.role === "admin";
+  const [minAgeDays, setMinAgeDays] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedScope, setSelectedScope] = useState("");
+  const [selectionBusy, setSelectionBusy] = useState(false);
+  const [selectionError, setSelectionError] = useState("");
+  const filterKey = JSON.stringify([query, statusId, animalType, openOnly, minAgeDays]);
+  const effectiveSelectedIds = selectedScope === filterKey ? selectedIds : [];
+  const filterKeyRef = useRef(filterKey);
+  filterKeyRef.current = filterKey;
+  useEffect(() => {
+    setSelectedIds([]);
+    setSelectedScope(filterKey);
+    setSelectionError("");
+  }, [filterKey]);
 
   const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
@@ -117,6 +139,10 @@ export function CaseList() {
   const caseStatuses = useMemo(
     () => filterStatusesByCategory(statusesData?.statuses ?? [], "adoption_case"),
     [statusesData?.statuses],
+  );
+  const selectedStage = caseStatuses.find((item) => item.id === statusId);
+  const statusEligible = Boolean(
+    selectedStage?.isActive && !selectedStage.isClosing && !selectedStage.isFinal,
   );
 
   const searchParams = useMemo(
@@ -144,6 +170,62 @@ export function CaseList() {
 
   const cases = data?.cases ?? [];
   const total = data?.total ?? 0;
+  const selectionDisabled =
+    selectionBusy || isFetching || listState.isDebouncing || !data || Boolean(error);
+  function toggleSelected(id: string) {
+    setSelectedScope(filterKey);
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        effectiveSelectedIds.includes(id)
+          ? effectiveSelectedIds.filter((item) => item !== id)
+          : addCaseSelection(effectiveSelectedIds, [id]),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  function selectVisible() {
+    if (selectionDisabled || !statusEligible) return;
+    setSelectedScope(filterKey);
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        addCaseSelection(
+          effectiveSelectedIds,
+          cases.map((item) => item.id),
+        ),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  async function selectAllMatching() {
+    if (selectionDisabled || !statusEligible) return;
+    const scope = filterKey;
+    setSelectionBusy(true);
+    setSelectionError("");
+    try {
+      const ids = await collectMatchingCaseIds(total, async (nextPage, limit) => {
+        const params = buildCaseListSearchParams({
+          q: query,
+          statusId,
+          animalType,
+          openOnly,
+          page: nextPage,
+          pageSize: limit,
+        });
+        return fetchCoordinatorJson<CaseListResponse>("/api/admin/adoptions/cases?" + params);
+      });
+      if (filterKeyRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      setSelectedScope(scope);
+      setSelectedIds(ids);
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+    } finally {
+      setSelectionBusy(false);
+    }
+  }
 
   function animalTypeLabel(value: string | null | undefined) {
     const key =
@@ -153,7 +235,23 @@ export function CaseList() {
     return pageCopy.animalTypes[key];
   }
 
+  const selectionColumn: DataTableColumn<AdoptionCaseSummary> = {
+    id: "bulk-select",
+    header: "選取",
+    cell: (item) => (
+      <label className="inline-flex min-h-11 min-w-11 items-center justify-center">
+        <input
+          type="checkbox"
+          aria-label={"選取 " + item.applicantName}
+          checked={effectiveSelectedIds.includes(item.id)}
+          disabled={selectionDisabled || !statusEligible}
+          onChange={() => toggleSelected(item.id)}
+        />
+      </label>
+    ),
+  };
   const caseColumns: DataTableColumn<AdoptionCaseSummary>[] = [
+    ...(isAdmin ? [selectionColumn] : []),
     {
       id: "applicant",
       header: copy.columns.applicant,
@@ -211,6 +309,17 @@ export function CaseList() {
   function renderCaseCard(c: AdoptionCaseSummary) {
     return (
       <div className="space-y-2">
+        {isAdmin && (
+          <label className="inline-flex min-h-11 items-center gap-2">
+            <input
+              type="checkbox"
+              checked={effectiveSelectedIds.includes(c.id)}
+              disabled={selectionDisabled || !statusEligible}
+              onChange={() => toggleSelected(c.id)}
+            />
+            選取此個案
+          </label>
+        )}
         <div className="flex items-start justify-between gap-2">
           <div>
             <Link
@@ -322,6 +431,51 @@ export function CaseList() {
         )}
       </section>
 
+      {isAdmin && (
+        <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={selectVisible}
+              disabled={selectionDisabled || !statusEligible || cases.length === 0}
+            >
+              選取本頁
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={selectAllMatching}
+              disabled={selectionDisabled || !statusEligible || total < 1 || total > 1000}
+            >
+              選取全部符合條件（最多 1000 筆）
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSelectedIds([])}
+              disabled={selectionBusy || effectiveSelectedIds.length === 0}
+            >
+              清除選取
+            </Button>
+          </div>
+          {selectionBusy && <p role="status">正在固定選取範圍…</p>}
+          {selectionError && (
+            <p role="alert" className="text-[var(--color-error)]">
+              {selectionError}
+            </p>
+          )}
+          <AdoptionAssignmentBulkPanel
+            selectedIds={effectiveSelectedIds}
+            filterKey={filterKey}
+            selectionDisabled={selectionDisabled || !statusEligible}
+            statusId={statusId}
+            statusEligible={statusEligible}
+            minAgeDays={minAgeDays}
+            onMinAgeDaysChange={setMinAgeDays}
+          />
+        </section>
+      )}
       <section
         aria-busy={isLoading || isFetching || listState.isDebouncing}
         className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
