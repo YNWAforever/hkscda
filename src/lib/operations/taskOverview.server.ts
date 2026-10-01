@@ -70,7 +70,7 @@ const definitions: Record<TaskKey, TaskDefinition> = {
   delivery_attention: {
     key: "delivery_attention",
     label: "收條／通知需處理",
-    href: "/admin?section=payments",
+    href: "/admin?section=payments#delivery-jobs",
   },
   content_drafts: {
     key: "content_drafts",
@@ -193,7 +193,9 @@ function specFor(key: Exclude<TaskKey, "media_failed">, now: string): CountSpec 
       return {
         table: "donation_delivery_job",
         oldest: "created_at",
-        filters: [{ op: "eq", column: "status", value: "attention_required" }],
+        filters: [
+          { op: "or", column: "", value: "status.eq.retryable,status.eq.attention_required" },
+        ],
       };
     case "content_drafts":
       return {

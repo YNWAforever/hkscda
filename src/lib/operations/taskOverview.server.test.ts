@@ -19,6 +19,9 @@ test("each role receives only its own actionable 3-5 task destinations", () => {
   expect(staff.find((card) => card.key === "sponsorship_proof_pending")?.href).toBe(
     "/admin/sponsorships?proof=pending",
   );
+  expect(treasurer.find((card) => card.key === "delivery_attention")?.href).toBe(
+    "/admin?section=payments#delivery-jobs",
+  );
   expect(treasurer.find((card) => card.key === "sponsorship_followup")?.href).toBe(
     "/admin/sponsorships?status=needs_followup",
   );

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "ada348459bcfc5e7cf3704763ffaf21036eb69da",
-  "appShaNote": "PR172 source ada348459bcfc5e7cf3704763ffaf21036eb69da; subsequent binding commit is documentation only; new exact-head CI required.",
+  "appSha": "026caeca9c1ff3cf799b2dfe0baf4654990832e1",
+  "appShaNote": "PR173 combined review source026caeca9c1ff3cf799b2dfe0baf4654990832e1; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "81c521535ceeb2246fa6a968693aae8bd20267d9a2bfaf9a83b16081e6640edd",
+  "schemaManifestHash": "2e3edff4e20ece6673181ce6e6421054374931e34e91f4b7f898c4841d075af5",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -299,13 +299,18 @@
       "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0"
     },
     {
+      "version": "20260928100000",
+      "file": "20260928100000_finance_delivery_retry_guard.sql",
+      "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a"
+    },
+    {
       "version": "20260930120000",
       "file": "20260930120000_supporter_recovery_single_use.sql",
       "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
     }
   ],
   "ciRun": {
-    "status": "fresh exact-head CI pending after reviewed test timing repair"
+    "status": "fresh combined exact-head CI pending; scoped integration checks in progress"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -684,7 +689,7 @@
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "58 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
+  "migrationManifestNote": "59 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
   "productionCiRun": {
     "id": 36758558621,
     "sha": "07e4c881863b715342ed0757aad7bd691a272738",
@@ -733,7 +738,7 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "be1c5478a6970eabd8089ff2aa427f914db98f00",
+    "appSha": "ada348459bcfc5e7cf3704763ffaf21036eb69da",
     "schemaManifestHash": "81c521535ceeb2246fa6a968693aae8bd20267d9a2bfaf9a83b16081e6640edd",
     "migrationCount": 58
   }

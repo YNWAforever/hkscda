@@ -143,6 +143,11 @@ PR171 7136ad049c536fe27fcc4823066d762c618b2c9b:10focused46assert;full3084pass141
 ## PR172 current preparation — 2026-09-30
 
 See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for finalapp `0af5599648949238d1244a7625b22d0f50baa35f`, four reproduced fixes,16focused/56assertions,3099full passes/142skips, type/lint/build0, service_role/fullSQL rehearsal,3width before/after UI and exact release boundaries.57-file inventory; codecomplete/local-schema-ready,notdeployed/notenabled. Sequential release remains blocked at#156.
+
+
+## PR173 current preparation — 2026-09-30
+
+See [sequential-merge-173-20260930.md](sequential-merge-173-20260930.md): app `40a8765beaa04613fae1f9cc77e74a11d34810f1`, rejected-retry/lost-response/page1000/keyboard fixes;17focused/88assertions,3110fullpasses143skips,type/lint/build0; real concurrent one-audit retry and1000job pagination;3width UI/Axe0.58-fileinventory,local-schema-ready,notdeployed/notenabled;#156releaseblock retained.
 ## T22 broker repair verification, 2026-09-30
 
 Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`: full suite2991 pass/96 skip/0 fail/9255 assertions, typecheck/lint/build exit0 (52 existing lint warnings). Actual local Auth20 concurrent broker attempts yield1session/1carrier exchange; real SDK9tests/23assertions, Chromium cross-tab/HTTP-wait/quota fallback/logout and actual page3widths pass. Exact SQL whole-file rollback/grants/RLS pass. Historical direct-provider concurrent OTP diagnostic remains failed and preserved; it is no longer the public application redemption path. Hosted redemption/configuration, real Turnstile/SMTP, full backup restore and actual staff UAT remain not-run. New production migration, key provision and activation remain gated. [Commands, exits, environments and rollback](sequential-merge-156-broker-20260930.md).
