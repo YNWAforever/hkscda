@@ -22,11 +22,12 @@ export type TaskMetric =
 export type TaskCard = {
   key: TaskKey;
   label: string;
+  guidance: string;
   href: string;
   metric: TaskMetric;
 };
 
-type TaskDefinition = Pick<TaskCard, "key" | "label" | "href">;
+type TaskDefinition = Pick<TaskCard, "key" | "label" | "guidance" | "href">;
 export type TaskRepository = {
   count(key: TaskKey): Promise<{ count: number; oldestAt: string | null }>;
 };
@@ -35,56 +36,67 @@ const definitions: Record<TaskKey, TaskDefinition> = {
   adoption_unassigned: {
     key: "adoption_unassigned",
     label: "待分派領養個案",
+    guidance: "按等候時間檢查未分派個案，先指派跟進人。",
     href: "/admin/coordinator/inbox",
   },
   followup_overdue: {
     key: "followup_overdue",
     label: "逾期待跟進",
+    guidance: "檢查到期任務，記錄下一步及跟進日期。",
     href: "/admin/coordinator/tasks",
   },
   volunteer_pending: {
     key: "volunteer_pending",
     label: "待核實義工登記",
+    guidance: "核對身份、政策同意及資格，再安排審核。",
     href: "/admin/volunteers",
   },
   animal_missing_photo: {
     key: "animal_missing_photo",
     label: "待補相片動物",
+    guidance: "補上已核實的動物相片及資料，再交內容審核。",
     href: "/admin?section=cat",
   },
   sponsorship_proof_pending: {
     key: "sponsorship_proof_pending",
     label: "待核實助養憑證",
+    guidance: "檢查憑證與承諾；上載憑證不等於已收款。",
     href: "/admin/sponsorships?proof=pending",
   },
   sponsorship_followup: {
     key: "sponsorship_followup",
     label: "助養待跟進",
+    guidance: "核對付款及待跟進承諾，交由職員／管理員安排跟進。",
     href: "/admin/sponsorships?status=needs_followup",
   },
   payment_pending: {
     key: "payment_pending",
     label: "待對帳款項",
+    guidance: "核對付款證據及對帳資料，再逐筆確認款項。",
     href: "/admin?section=payments",
   },
   delivery_attention: {
     key: "delivery_attention",
     label: "收條／通知需處理",
+    guidance: "核對已收款及收件資料，再逐筆處理失敗工作。",
     href: "/admin?section=payments#delivery-jobs",
   },
   content_drafts: {
     key: "content_drafts",
     label: "待審內容草稿",
+    guidance: "核對資料來源及內容預覽，再安排送審。",
     href: "/admin/content",
   },
   content_expired: {
     key: "content_expired",
     label: "已過期內容",
+    guidance: "檢查過期內容及公開影響，再安排更新。",
     href: "/admin/content?quality=expired",
   },
   media_failed: {
     key: "media_failed",
     label: "公開媒體修復失敗",
+    guidance: "查看失敗媒體，修復後再核對公開相片。",
     href: "/admin?section=cat",
   },
 };
