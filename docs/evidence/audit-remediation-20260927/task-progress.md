@@ -115,3 +115,23 @@ Next sequential release holds only at #160's pending single production migration
 Restricted backup refreshed2026-09-30T16:29:12Z: encrypted1,913,782bytes, SHAae4c855334e4685cfc10c289c0be50ae960dc047934128eb8b98da209afb755d. Schema/data/roles were separate in-memory dump processes, not one cross-dump snapshot; CurrentUser DPAPI roundtrip and restricted ACL checked. Full restore, off-machine copy and Storage object bytes remain not-run. Backup precedes156/157/159additive changes; replay exact approved empty-object migrations if recovery requires those objects. Preserve later financial/audit facts and additive history on app rollback; no older snapshot restore over new facts.
 
 Staff: existing deployed overview/CRMtag bulk use stored snapshot→preview→per-item permission/version checks→apply→result/recovery. Expired/stale items require new preview; retry unknown outcomes from the saved operation. Reviewer/adoption/animal/CMS controls remain release-gated in later candidates. No blind refunds/adoption approvals/identity merge. Payments/new recovery/delivery/media schedules remain disabled; existing signed webhook/reconciliation remains compatible. Hosted staff-role API/export/private-file journeys, approved terms/content, provider sandbox/full journeys and same-region hosted T20 are not-run/unverified; null configuration versions remain null.
+
+## Prepared integration for PR#163 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
+
+## Prepared integration for PR#162 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
+
+## Actual main #182 integration — 2026-10-01 HKT
+
+Predecessor-main evidence additions are preserved below. #160 main af786636/all five CI gates and same-SHA READY accepted. #182 exact e002 DDL applied20261001014620 after explicit single-file approval; source main124148ac gates still running at capture. Existing app/SQL source is retained; new readonly regression/forward SQL and latest160 test proof are integrated.
+
+
+
+## R01 readonly default-grant repair — 2026-10-01 HKT
+
+Actual source aca5822a124521d9e6acc94b171600ac344e9b97 adds a forward-only three-table privilege clamp and real opt-in role regression. Matched RED3pass17fail/exit1; GREEN20pass110assert/exit0; whole-file rollback/catalog idempotence/later owner archive compatibility and original9audit preservation passed. Full3027pass127skip0fail, strictTS0, corrected full lint0errors52warnings, serial placeholder build0. Independent spec/quality review approved. Exact e002 migration has no production approval/application; overall production146/92/ledger98 remains NO-GO. [Scope, commands, failure history, rollback and staff handoff](sequential-fix-r01-readonly-20261001.md).
