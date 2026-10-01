@@ -619,7 +619,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
   // Read definitions across schemas: a public trigger may call an external helper.
   // No definition is invoked; bodies remain in memory and never enter receipts.
   const rows = (await sql.unsafe(
-    "select p.oid,n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(p.proowner) owner,p.pronargs arguments,array(select tn.nspname||'.'||t.typname from unnest(p.proargtypes) with ordinality a(type_oid,position) join pg_type t on t.oid=a.type_oid join pg_namespace tn on tn.oid=t.typnamespace order by a.position) \"argumentTypes\",format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
+    "select p.oid,n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.proconfig config,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(p.proowner) owner,p.pronargs arguments,array(select tn.nspname||'.'||t.typname from unnest(p.proargtypes) with ordinality a(type_oid,position) join pg_type t on t.oid=a.type_oid join pg_namespace tn on tn.oid=t.typnamespace order by a.position) \"argumentTypes\",format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
   )) as {
     schema: string;
     name: string;
@@ -627,6 +627,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
     language: string;
     system: boolean;
     source: string;
+    config: string[] | null;
     library: string | null;
     extension: string | null;
     extensionVersion: string | null;
@@ -737,7 +738,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
     );
   };
   const customSymbols = new Set(operators.filter((o) => !reviewedOperator(o)).map((o) => o.name));
-  const unsafeOperator = (body: string, resolved?: number[]) => {
+  const unsafeOperator = (body: string, resolved?: number[], ownCoreScope = false) => {
     // Stored defaults/checks are deparsed under pg_catalog-only search_path.
     // User operators are qualified, and actual non-pinned dependency OIDs are
     // checked. This proves core resolution without trusting a same-symbol user
@@ -775,11 +776,27 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       tokens.some(
         (token) =>
           customSymbols.has(token) &&
-          !(resolved && operators.some((o) => o.name === token && o.system)),
+          !(resolved && operators.some((o) => o.name === token && o.system)) &&
+          !(
+            ownCoreScope &&
+            operators.some((o) => o.schema === "pg_catalog" && o.name === token) &&
+            operators
+              .filter((o) => o.schema === "pg_catalog" && o.name === token)
+              .every((o) => o.system && o.oid < 16384 && reviewedOperator(o))
+          ),
       )
     );
   };
   const network = (body: string) => networkPrimitive.test(body) || /\bexecute\s/i.test(body);
+  // This is each function's OWN stored scope. pg_temp is never searched for
+  // functions/operators. Do not propagate a caller's scope to its callees.
+  // Any SET/RESET token conservatively disables the exception; inspecting
+  // prosrc avoids mistaking pg_get_functiondef's SET declaration for SQL inside.
+  const ownCoreScope = (r: (typeof rows)[number]) =>
+    JSON.stringify(r.config) === JSON.stringify(["search_path=pg_catalog, pg_temp"]) &&
+    typeof r.source === "string" &&
+    !/\b(?:set|reset)\b/i.test(r.source) &&
+    !network(r.source);
   // Sole reviewed external C prerequisite: pgcrypto's pure UUID generator.
   // Require its actual extension/version/owner/library/symbol and zero-arg signature.
   const reviewedUuid = (r: (typeof rows)[number]) =>
@@ -798,7 +815,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       .filter(
         (r) =>
           network(r.body) ||
-          (!r.system && unsafeOperator(r.body)) ||
+          (!r.system && unsafeOperator(r.body, undefined, ownCoreScope(r))) ||
           network(`${r.schema}.${r.name}(`) ||
           (!r.system &&
             !reviewedUuid(r) &&
