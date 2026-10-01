@@ -1,0 +1,14 @@
+{
+  "fixBase": "7f7a280f0126cf3e7066fd50fbd2dbc5c8609297",
+  "sqlSHA256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+  "bytes": 44438,
+  "completeDefinitionAndAclTailByteIdentical": true,
+  "zeroDefaultPredicates": 5,
+  "versionHelperOwnerPredicates": 2,
+  "unchangedProductAndSharedPaths": [
+    "src/lib/crm/http.server.ts",
+    "src/lib/crm/atomicForward.database.test.ts",
+    "src/lib/crm/atomicForward.http.test.ts",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts"
+  ]
+}

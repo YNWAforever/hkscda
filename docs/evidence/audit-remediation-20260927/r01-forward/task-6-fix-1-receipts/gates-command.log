@@ -1,0 +1,4 @@
+{"gate": "typecheck", "command": "bun run typecheck", "exit": 0, "elapsedSeconds": 27.84, "log": "task-6-final-typecheck.log"}
+{"gate": "tests", "command": "bun test --isolate --timeout 30000", "exit": 0, "elapsedSeconds": 51.08, "log": "task-6-final-tests.log", "summary": ["\n 3235 pass", " 292 skip", " 0 fail", " 10499 expect() calls"]}
+{"gate": "lint", "command": "bun run lint", "exit": 0, "elapsedSeconds": 26.27, "log": "task-6-final-lint.log"}
+{"gate": "build", "command": "bun run build", "exit": 0, "elapsedSeconds": 35.5, "log": "task-6-final-build.log"}

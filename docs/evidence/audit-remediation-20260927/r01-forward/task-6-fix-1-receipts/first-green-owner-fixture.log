@@ -1,0 +1,12 @@
+{"mode":"green","refusalCount":50,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true,"failure":{"message":"Fix1 metadata refusal failed: bump_supporter_edit_version owner 42501 must be able to SET ROLE \"supabase_admin\""}}
+551 |             throw new Error("Unexpected Fix1 metadata acceptance");
+552 |           });
+553 |         } catch(e) {status=(e as {errno?:string}).errno??"unexpected";message=(e as Error).message;}
+554 |         const preserved=hash(await snapshot(db))===hash(before) && hash(await extra())===beforeExtra && await rowState()===beforeRows;
+555 |         refusal.push({case:c.name,status,message,setupComplete,fixtureProfile,preserved});
+556 |         if(status!=="55000" || !setupComplete || !preserved) throw new Error("Fix1 metadata refusal failed: "+c.name+" "+status+" "+message);
+                                                                             ^
+error: Fix1 metadata refusal failed: bump_supporter_edit_version owner 42501 must be able to SET ROLE "supabase_admin"
+      at green (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\runR01CrmForward.ts:556:72)
+
+Bun v1.3.14 (Windows x64)

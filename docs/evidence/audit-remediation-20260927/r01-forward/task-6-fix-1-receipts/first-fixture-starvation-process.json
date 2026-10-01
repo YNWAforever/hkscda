@@ -1,0 +1,5 @@
+{
+  "ProcessId": 36988,
+  "ParentProcessId": 35968,
+  "CommandLine": "\"C:\\Users\\laich\\.bun\\bin\\bun.exe\" run docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-red.ts red"
+}

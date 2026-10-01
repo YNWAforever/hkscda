@@ -1,0 +1,93 @@
+{
+  "meaning": "Bun1.3.14 static runtime import closure, plus explicit runner child bun test atomicForward.database.test.ts; no HTTP mapping import/execution; Fix1 receipts observe current HTTP bytes separately from the DB runtime closure",
+  "entries": [
+    "supabase/rls-tests/helpers/runR01CrmForward.ts",
+    "src/lib/crm/atomicForward.database.test.ts"
+  ],
+  "httpMappingInRuntimeClosure": false,
+  "files": {
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "sha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+      "imports": [
+        {
+          "kind": "import-statement",
+          "path": "node:fs/promises"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:path"
+        },
+        {
+          "kind": "import-statement",
+          "path": "./productionSchemaClone"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:crypto"
+        },
+        {
+          "kind": "import-statement",
+          "path": "../../../src/lib/operations/releaseSchema"
+        },
+        {
+          "kind": "import-statement",
+          "path": "../../../src/lib/operations/releaseManifest"
+        }
+      ]
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "imports": [
+        {
+          "kind": "import-statement",
+          "path": "bun"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:crypto"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:fs/promises"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:os"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:path"
+        }
+      ]
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "imports": []
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "imports": []
+    },
+    "src/lib/crm/atomicForward.database.test.ts": {
+      "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+      "imports": [
+        {
+          "kind": "import-statement",
+          "path": "bun:test"
+        },
+        {
+          "kind": "import-statement",
+          "path": "bun"
+        },
+        {
+          "kind": "import-statement",
+          "path": "node:crypto"
+        },
+        {
+          "kind": "import-statement",
+          "path": "../../../supabase/rls-tests/helpers/productionSchemaClone"
+        }
+      ]
+    }
+  }
+}

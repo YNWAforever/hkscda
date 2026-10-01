@@ -1,0 +1,15 @@
+{
+  "clone": "r01_clone_fbb702655a17498dbc6d0ea5e2d4c6a0",
+  "normalDrop": true,
+  "forcedDrop": false,
+  "postgresBackendTermination": false,
+  "fullPreservation": {
+    "catalog": true,
+    "rows": true,
+    "authDefaultsNativeDependenciesLedger": true,
+    "source": true,
+    "template": true,
+    "modern": true
+  },
+  "exit": -1
+}

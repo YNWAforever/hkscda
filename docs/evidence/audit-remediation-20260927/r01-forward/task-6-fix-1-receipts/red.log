@@ -1,0 +1,13 @@
+{"case":"bump_supporter_edit_version owner","status":"success","setupComplete":true,"preserved":true}
+{"case":"bump_supporter_edit_version extra ACL recipient","status":"success","setupComplete":true,"preserved":true}
+{"case":"bump_supporter_edit_version owner EXECUTE grant option","status":"success","setupComplete":true,"preserved":true}
+{"case":"bump_supporter_edit_version_from_role owner","status":"success","setupComplete":true,"preserved":true}
+{"case":"bump_supporter_edit_version_from_role extra ACL recipient","status":"success","setupComplete":true,"preserved":true}
+{"case":"bump_supporter_edit_version_from_role owner EXECUTE grant option","status":"success","setupComplete":true,"preserved":true}
+{"case":"role helper missing historical PUBLIC","status":"success","setupComplete":true,"preserved":true}
+{"case":"public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) argument default","status":"success","setupComplete":true,"preserved":true}
+{"case":"public.replace_supporter_roles_atomic(uuid,jsonb) argument default","status":"success","setupComplete":true,"preserved":true}
+{"case":"public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) argument default","status":"success","setupComplete":true,"preserved":true}
+{"case":"public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb) argument default","status":"success","setupComplete":true,"preserved":true}
+{"case":"private.require_crm_supporter_actor(uuid) argument default","status":"success","setupComplete":true,"preserved":true}
+{"acceptedDriftCount":12,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}

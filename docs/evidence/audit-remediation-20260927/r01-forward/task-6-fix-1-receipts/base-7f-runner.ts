@@ -28,8 +28,6 @@ async function red() {
   await mkdir(archive, { recursive: true });
   const paths = [
     "src/lib/crm/atomicForward.database.test.ts",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-gates.py",
     "supabase/rls-tests/helpers/runR01CrmForward.ts",
     "supabase/rls-tests/helpers/productionSchemaClone.ts",
     "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql",
@@ -144,7 +142,7 @@ async function green() {
   const root = resolve(import.meta.dir, "../../.."),
     out = resolve(
       root,
-      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-receipts",
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-green-receipts",
     ),
     file = "20261001213914_r01_crm_atomic_forward.sql";
   await mkdir(out, { recursive: true });
@@ -172,8 +170,6 @@ async function green() {
   ];
   const paths = [
     "src/lib/crm/atomicForward.database.test.ts",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-gates.py",
     "supabase/rls-tests/helpers/runR01CrmForward.ts",
     "supabase/rls-tests/helpers/productionSchemaClone.ts",
     "src/lib/crm/service.ts",
@@ -506,117 +502,6 @@ async function green() {
           (await rowState()) === beforeRows;
         refusal.push({ case: sig + " " + change, status, preserved });
         if (status !== "55000" || !preserved) throw new Error("Function refusal failed");
-      }
-    }
-    // Fix1: exact prerequisite helper owner/complete ACL and zero argument defaults.
-    if (!mode.endsWith("-smoke")) {
-      const metadataCases: {
-        name: string;
-        sql?: string;
-        sig?: string;
-        last?: string;
-        replacement?: string;
-      }[] = [];
-      for (const name of ["bump_supporter_edit_version", "bump_supporter_edit_version_from_role"]) {
-        metadataCases.push(
-          {
-            name: name + " owner",
-            sql: `alter function private.${name}() owner to supabase_admin`,
-          },
-          {
-            name: name + " extra ACL recipient",
-            sql: `grant execute on function private.${name}() to dashboard_user`,
-          },
-          {
-            name: name + " owner EXECUTE grant option",
-            sql: `grant execute on function private.${name}() to postgres with grant option`,
-          },
-        );
-      }
-      metadataCases.push({
-        name: "role helper missing historical PUBLIC",
-        sql: "revoke execute on function private.bump_supporter_edit_version_from_role() from public",
-      });
-      for (const [sig, last, replacement] of [
-        [
-          "public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb)",
-          "p_detail jsonb)",
-          "p_detail jsonb DEFAULT '{}'::jsonb)",
-        ],
-        [
-          "public.replace_supporter_roles_atomic(uuid,jsonb)",
-          "p_roles jsonb)",
-          "p_roles jsonb DEFAULT '[]'::jsonb)",
-        ],
-        [
-          "public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb)",
-          "p_detail jsonb)",
-          "p_detail jsonb DEFAULT '{}'::jsonb)",
-        ],
-        [
-          "public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb)",
-          "p_detail jsonb)",
-          "p_detail jsonb DEFAULT '{}'::jsonb)",
-        ],
-        [
-          "private.require_crm_supporter_actor(uuid)",
-          "p_actor uuid)",
-          "p_actor uuid DEFAULT NULL::uuid)",
-        ],
-      ])
-        metadataCases.push({ name: sig + " argument default", sig, last, replacement });
-      for (const c of metadataCases) {
-        let status = "success",
-          message = "",
-          setupComplete = false,
-          fixtureProfile: unknown;
-        try {
-          await db.begin(async (tx) => {
-            // Existing clone session owner may legally transfer ownership; postgres may not.
-            if (c.sig || !c.sql!.includes("owner to")) await tx`set local role postgres`;
-            if (c.sig) {
-              await tx.unsafe(text);
-              const [prior] =
-                await tx`select pg_get_functiondef(p.oid) definition,md5((to_jsonb(p)-'pronargdefaults'-'proargdefaults')::text) metadata from pg_proc p where p.oid=${c.sig}::regprocedure`;
-              if (!prior.definition.includes(c.last!))
-                throw new Error("Exact default fixture argument absent");
-              await tx.unsafe(prior.definition.replace(c.last!, c.replacement!));
-              const [changed] =
-                await tx`select md5((to_jsonb(p)-'pronargdefaults'-'proargdefaults')::text) metadata,p.pronargdefaults,p.proargdefaults::text defaults,md5(p.prosrc) body from pg_proc p where p.oid=${c.sig}::regprocedure`;
-              if (
-                changed.metadata !== prior.metadata ||
-                changed.pronargdefaults !== 1 ||
-                changed.defaults === null
-              )
-                throw new Error("Otherwise-identical default fixture failed");
-              fixtureProfile = { beforeMetadata: prior.metadata, ...changed };
-            } else {
-              const oldDefinitions =
-                await tx`select p.proname,md5(pg_get_functiondef(p.oid)) body from pg_proc p where p.oid in ('private.bump_supporter_edit_version()'::regprocedure,'private.bump_supporter_edit_version_from_role()'::regprocedure) order by p.proname`;
-              await tx.unsafe(c.sql!);
-              const newDefinitions =
-                await tx`select p.proname,md5(pg_get_functiondef(p.oid)) body from pg_proc p where p.oid in ('private.bump_supporter_edit_version()'::regprocedure,'private.bump_supporter_edit_version_from_role()'::regprocedure) order by p.proname`;
-              if (hash(oldDefinitions) !== hash(newDefinitions))
-                throw new Error("Helper body changed in metadata fixture");
-              fixtureProfile =
-                await tx`select p.proname,pg_get_userbyid(p.proowner) owner,md5(pg_get_functiondef(p.oid)) definitionMd5,(select jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(a.grantor),'grantee',case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,'privilege',a.privilege_type,'grantable',a.is_grantable) order by a.grantor,a.grantee,a.privilege_type) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a) effectiveAcl from pg_proc p where p.oid in ('private.bump_supporter_edit_version()'::regprocedure,'private.bump_supporter_edit_version_from_role()'::regprocedure) order by p.proname`;
-            }
-            setupComplete = true;
-            await tx`set local role postgres`;
-            await tx.unsafe(text);
-            throw new Error("Unexpected Fix1 metadata acceptance");
-          });
-        } catch (e) {
-          status = (e as { errno?: string }).errno ?? "unexpected";
-          message = (e as Error).message;
-        }
-        const preserved =
-          hash(await snapshot(db)) === hash(before) &&
-          hash(await extra()) === beforeExtra &&
-          (await rowState()) === beforeRows;
-        refusal.push({ case: c.name, status, message, setupComplete, fixtureProfile, preserved });
-        if (status !== "55000" || !setupComplete || !preserved)
-          throw new Error("Fix1 metadata refusal failed: " + c.name + " " + status + " " + message);
       }
     }
     receipt.refusals = refusal;
