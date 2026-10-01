@@ -46,6 +46,7 @@ Before release, recheck restricted CurrentUser-DPAPI backup inventory/checksum, 
 
 Rollback disables the new API/UI and reverts the app while retaining the additive version, trigger, operations, results and audit history. Do not drop version history or restore an older snapshot over newer adoption/payment/audit facts. Staff choose one eligible open stage, waiting period, case scope and owner; inspect stored before/after/exclusions, explicitly confirm, apply bounded batches and download results. After uncertain response recover/read the stored operation; re-preview conflicts/expiry. Assignment does not approve adoption. Hosted staff UAT and production release verification remain pending.
 
+Exact-head remote follow-up: a29d657c54e717243d909d49cfefb02b02343f9c, CI 36629148497, verify/rls-matrix/brand-verify/a11y-verify/performance-verify all SUCCESS. Exact production migration approval requested; sequential release waits for #156.
 
 ## Task161 held-lock expiry repair — 2026-10-01 HKT
 
@@ -92,6 +93,12 @@ Raw logs are retained beside the scoped task report as task-161-root-integration
 
 Current predecessor releases: #159 actual main07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, Vercel READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #160 exact head9d1feed9 has all5 PR gatesSUCCESS in36757267257 and waits for its named single production migration approval. #161 remains code-complete and locally schema-ready; new exact changed-byte production approval, fresh catalog/backup, exact remote PR CI, predecessor main gates and deployed verification are separate pending gates. Payments/new delivery schedules remain off. Existing backup/restore/Storage limitations and additive rollback boundaries remain as recorded. This appendix is a checkpoint, not a new deployment claim.
 
+## Root approval scope ruling — 2026-10-01 HKT
+
+
+Ruling: the human's explicit approval naming only20260927183000_adoption_assignment_bulk.sql remains operative for #161's unchanged schema/grants/backfill scope — the approval question named the file, six version1values, restricted assignment RPC and unchanged assignees, and did not bind approval to a printed SHA256. The user separately authorized fixes and sequential green-only releases. Exact a29d657c→0883d3ac SQL diff contains only replacement of transaction-start now() with wall-clock clock_timestamp() and one stricter expired-operation rejection after the case lock. No DDL/signature/grant/trigger/backfill/action scope expands. Requiring repeat approval for the same authorized action would contradict persistent authorization. Cost if wrong: production would install stricter denial behavior under the approved additive schema; no new mutation domain is authorized. Updated canonical hashcd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238 and RED/GREEN/rehearsal are disclosed. Keep predecessor #160 approval/main gates, fresh backup/catalog, exact latest remoteCI and postflight mandatory. If automatic approval review rejects application, report that specific reason and ask about the blocked operation rather than bypass it.
+
+## Additional predecessor integration evidence retained — 2026-10-01
 
 ## Main #182 integration and actual local gates — 2026-10-01
 

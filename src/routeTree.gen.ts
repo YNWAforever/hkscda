@@ -171,6 +171,7 @@ import { Route as ApiAdminDocumentsIdRouteImport } from './routes/api/admin/docu
 import { Route as ApiAdminContentLinkSearchRouteImport } from './routes/api/admin/content/link-search'
 import { Route as ApiAdminContentIdRouteImport } from './routes/api/admin/content/$id'
 import { Route as ApiAdminAnnualReportsIdRouteImport } from './routes/api/admin/annual-reports/$id'
+import { Route as ApiAdminAnimalsReviewBulkRouteImport } from './routes/api/admin/animals/review-bulk'
 import { Route as ApiAdminAnimalsPhotoUploadUrlRouteImport } from './routes/api/admin/animals/photo-upload-url'
 import { Route as ApiAdminAnimalsListRouteImport } from './routes/api/admin/animals/list'
 import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
@@ -1128,6 +1129,12 @@ const ApiAdminAnnualReportsIdRoute = ApiAdminAnnualReportsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiAdminAnnualReportsRoute,
 } as any)
+const ApiAdminAnimalsReviewBulkRoute =
+  ApiAdminAnimalsReviewBulkRouteImport.update({
+    id: '/api/admin/animals/review-bulk',
+    path: '/api/admin/animals/review-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAnimalsPhotoUploadUrlRoute =
   ApiAdminAnimalsPhotoUploadUrlRouteImport.update({
     id: '/api/admin/animals/photo-upload-url',
@@ -1882,6 +1889,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/animals/list': typeof ApiAdminAnimalsListRoute
   '/api/admin/animals/photo-upload-url': typeof ApiAdminAnimalsPhotoUploadUrlRoute
+  '/api/admin/animals/review-bulk': typeof ApiAdminAnimalsReviewBulkRoute
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
   '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
@@ -2148,6 +2156,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/animals/list': typeof ApiAdminAnimalsListRoute
   '/api/admin/animals/photo-upload-url': typeof ApiAdminAnimalsPhotoUploadUrlRoute
+  '/api/admin/animals/review-bulk': typeof ApiAdminAnimalsReviewBulkRoute
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
   '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
@@ -2416,6 +2425,7 @@ export interface FileRoutesById {
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/animals/list': typeof ApiAdminAnimalsListRoute
   '/api/admin/animals/photo-upload-url': typeof ApiAdminAnimalsPhotoUploadUrlRoute
+  '/api/admin/animals/review-bulk': typeof ApiAdminAnimalsReviewBulkRoute
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
   '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
@@ -2685,6 +2695,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/tasks'
     | '/api/admin/animals/list'
     | '/api/admin/animals/photo-upload-url'
+    | '/api/admin/animals/review-bulk'
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
     | '/api/admin/content/link-search'
@@ -2951,6 +2962,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/tasks'
     | '/api/admin/animals/list'
     | '/api/admin/animals/photo-upload-url'
+    | '/api/admin/animals/review-bulk'
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
     | '/api/admin/content/link-search'
@@ -3218,6 +3230,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/tasks'
     | '/api/admin/animals/list'
     | '/api/admin/animals/photo-upload-url'
+    | '/api/admin/animals/review-bulk'
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
     | '/api/admin/content/link-search'
@@ -3447,6 +3460,7 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsTasksRoute: typeof ApiAdminAdoptionsTasksRouteWithChildren
   ApiAdminAnimalsListRoute: typeof ApiAdminAnimalsListRoute
   ApiAdminAnimalsPhotoUploadUrlRoute: typeof ApiAdminAnimalsPhotoUploadUrlRoute
+  ApiAdminAnimalsReviewBulkRoute: typeof ApiAdminAnimalsReviewBulkRoute
   ApiAdminDonationsManualRoute: typeof ApiAdminDonationsManualRoute
   ApiAdminExportsDonationsDotcsvRoute: typeof ApiAdminExportsDonationsDotcsvRoute
   ApiAdminExportsJobsRoute: typeof ApiAdminExportsJobsRouteWithChildren
@@ -4633,6 +4647,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/annual-reports/$id'
       preLoaderRoute: typeof ApiAdminAnnualReportsIdRouteImport
       parentRoute: typeof ApiAdminAnnualReportsRoute
+    }
+    '/api/admin/animals/review-bulk': {
+      id: '/api/admin/animals/review-bulk'
+      path: '/api/admin/animals/review-bulk'
+      fullPath: '/api/admin/animals/review-bulk'
+      preLoaderRoute: typeof ApiAdminAnimalsReviewBulkRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/animals/photo-upload-url': {
       id: '/api/admin/animals/photo-upload-url'
@@ -6220,6 +6241,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsTasksRoute: ApiAdminAdoptionsTasksRouteWithChildren,
   ApiAdminAnimalsListRoute: ApiAdminAnimalsListRoute,
   ApiAdminAnimalsPhotoUploadUrlRoute: ApiAdminAnimalsPhotoUploadUrlRoute,
+  ApiAdminAnimalsReviewBulkRoute: ApiAdminAnimalsReviewBulkRoute,
   ApiAdminDonationsManualRoute: ApiAdminDonationsManualRoute,
   ApiAdminExportsDonationsDotcsvRoute: ApiAdminExportsDonationsDotcsvRoute,
   ApiAdminExportsJobsRoute: ApiAdminExportsJobsRouteWithChildren,

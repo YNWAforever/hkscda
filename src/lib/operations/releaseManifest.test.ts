@@ -9,7 +9,7 @@ test("release manifest covers every new public table, RPC, and additive column a
   const columns = releaseManifest
     .filter((item) => item.kind === "column")
     .map((item) => `${item.table}.${item.name}`);
-  expect(tables).toHaveLength(18);
+  expect(tables).toHaveLength(20);
   expect(functions.length).toBeGreaterThanOrEqual(45);
   expect(columns).toContain("public_status_token.submission_fingerprint");
   expect(columns).toContain("dog_friendly_estates.version");
@@ -47,6 +47,9 @@ test("release manifest covers every new public table, RPC, and additive column a
     "get_adoption_assignment_bulk_operation",
     "create_adoption_assignment_bulk_preview",
     "apply_adoption_assignment_bulk_item",
+    "get_animal_review_bulk_operation",
+    "create_animal_review_bulk_preview",
+    "apply_animal_review_bulk_item",
   ]) {
     expect(functions).toContain(name);
   }

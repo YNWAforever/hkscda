@@ -67,6 +67,10 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - T23 adoption assignment slice in progress on isolated branch: dedicated local DB 3 pass/18 assertions after red-to-green timestamp-version and closing-stage races; focused UI/API/selection/manifest 9 pass/66 assertions; schema catalog 104 compatible. Full isolated suite 2865 pass/97 skip/0 fail across 509 files; typecheck/lint/build exit 0 (lint 52 existing warnings). Draft PR #161 source 4f0c4c9 opened; remote CI pending. Volunteer reviewer #160 CI run 36341891052 passed verify, RLS, performance, brand and a11y.
 
 - PR161 sequential repairs d87311ab / a5d3c751: actor/assignee/stage locks, JSON400, durable recovery and default-filter select-all. Final full3000pass115skip/9347assert; typecheck/lint0; clone6tests38assert; 1000-row full SQL backfill and 3-width UI/Axe0. Independent review closed; current CI and exact production migration approval pending. #156 provider gate still blocks sequential release.
+
+- T23 animal editorial review bulk in progress on isolated branch: missing-RPC red/green; dedicated DB 3 pass/18 assertions including role downgrade and audit rollback; focused UI/selection/API 5 pass/22 assertions; catalog 109 compatible. Full isolated suite 2870 pass/100 skip/0 fail across 513 files before final test-only assertion; typecheck/lint/build exit 0. Draft PR and remote CI pending. Parent adoption #161 CI run 36343892629 passed verify, RLS, performance, brand and a11y.
+
+- PR162 sequential repair 1fec4ea6: actor lock, JSON400 and durable read recovery. Full3006pass121skip/9383assert; clone6tests39assertions; 1000-item partial results preserve animal fields; full SQL rollback253ms; 3-width UI/Axe0. Independent review closed. Current CI/production approval and #156 provider gate remain open.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
@@ -87,6 +91,14 @@ Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery a
 ## 2026-10-01 HKT Task161 integration / #159 release checkpoint
 
 Task161 independently approved and final combined source gates passed:3065pass97skip0fail; strict typecheck/lint/serialbuild0,52existing warnings; scope census0. Repaired SQL hashcd143432 preserved. Source predecessor#1609d1feed9 integrated; manifest51/trackers34unique. #159 actual main07e4c881/mainCI36758558621 all5SUCCESS/aliasREADY;26of46released. #160 and changed-byte#161 production approval/deployment remain pending; Task162/164 independently approved before integration. See sequential-merge-161-20260930.md and sequential-execution-20261001.md for actual environment/limits.
+
+
+Task162 root integration verified2026-10-01HKT: independent review approved; 3079pass97skip0fail9739assertions543files113.24s; strictType/lint/serialBuild0;52oldwarnings;fixture0; hash8f5eceb8 preserved. Source/deployment/enablement separate; remoteCI/schemaapproval/sequence pending.
+
+## Prepared integration for PR#162 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
 
 ## Actual main #182 integration — 2026-10-01 HKT
 
