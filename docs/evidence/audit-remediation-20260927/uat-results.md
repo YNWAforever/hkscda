@@ -69,6 +69,11 @@ See sequential-merge-168-20260930.md. Final3051pass/133skip, strict typecheck/li
 ## PR169 preparation — 2026-09-30
 
 PR169 actual drawer at390/768/1366: keyboard selection; lost response reconciled; committed POST/failed GET stays saved; conflict requires new selection; unknown secondclick keepsversion1 after backgroundversion3.12cases,Axe0/errors0/nooverflow. Synthetic provider-free fixture stopped; hosted staff/full private-file journey not-run.
+
+
+## PR170 preparation — 2026-09-30
+
+PR170390/768/1366actualpanel: recovery preservation/busy fence,keyboard,25writes after10item interruptedresponse,1000preview40pages,CSV,Axe0/errors0/nooverflow;768at200%zoom. Actualmobilecheckbox no detaildrawer;filterABA no stale25selection. Hostedstaff/fullprivateexportsnot-run.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

@@ -14,12 +14,20 @@ mock.module("../adminPageCopy", () => ({
 }));
 
 let pledgesError: Error | null = null;
+let mockRole: "staff" | "treasurer" = "treasurer";
 
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
-  useQuery: () => ({
-    data: pledgesError ? undefined : { pledges: [], total: 0 },
-    error: pledgesError,
+  useQuery: (options: { queryKey?: readonly unknown[] }) => ({
+    data:
+      options.queryKey?.[0] === "admin-me"
+        ? { admin: { role: mockRole } }
+        : options.queryKey?.[0] === "sponsorship-followup-assignees"
+          ? { assignees: [] }
+          : pledgesError
+            ? undefined
+            : { pledges: [], total: 0 },
+    error: options.queryKey?.[0] === "admin-me" ? null : pledgesError,
     isLoading: false,
     isFetching: false,
     refetch: () => {},
@@ -51,6 +59,15 @@ describe("PledgeReviewLane", () => {
 
   test("renders the pledge review workspace", () => {
     expect(render()).toContain("承諾審核");
+  });
+
+  test("shows follow-up bulk controls to staff but not treasury readers", () => {
+    mockRole = "treasurer";
+    expect(render()).not.toContain("助養跟進選取");
+    mockRole = "staff";
+    expect(render()).toContain("助養跟進選取");
+    expect(render()).toContain("選取全部符合條件");
+    mockRole = "treasurer";
   });
 
   test("shows a retry instead of a raw English message and a false empty state on failure", () => {

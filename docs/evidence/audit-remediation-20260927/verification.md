@@ -129,6 +129,10 @@ Source `05bb6f1b64fbf39c8f40944b27f446a38751e809`: `SUPABASE_LOCAL_URL=http://12
 
 PR169 current application b918ff918c98a2188335465237a6add66abfd0c7:3065pass137skip0fail9587assert552files32.75s;typecheck0/lint0(52warnings)/build0;isolated service_role4tests24assert0;exact fullmigration2row8.59ms rollback0;three-width12casebrowser0. RemoteCI pending. See sequential-merge-169-20260930.md.
 
+
+## PR170 preparation — 2026-09-30
+
+PR170 a50a09f581f7862ebf9ba2fdde53d58cdf65a307:full3074pass141skip0fail9628assert556files19.97s;typecheck/build0;lint52warnings0beforecatalog-onlyintegration;DB4tests22assert275ms;fullSQL2oldrows12.19ms/1000preview51.41ms/900apply948.87ms;rollback0. See sequential-merge-170-20260930.md.
 ## T22 broker repair verification, 2026-09-30
 
 Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`: full suite2991 pass/96 skip/0 fail/9255 assertions, typecheck/lint/build exit0 (52 existing lint warnings). Actual local Auth20 concurrent broker attempts yield1session/1carrier exchange; real SDK9tests/23assertions, Chromium cross-tab/HTTP-wait/quota fallback/logout and actual page3widths pass. Exact SQL whole-file rollback/grants/RLS pass. Historical direct-provider concurrent OTP diagnostic remains failed and preserved; it is no longer the public application redemption path. Hosted redemption/configuration, real Turnstile/SMTP, full backup restore and actual staff UAT remain not-run. New production migration, key provision and activation remain gated. [Commands, exits, environments and rollback](sequential-merge-156-broker-20260930.md).

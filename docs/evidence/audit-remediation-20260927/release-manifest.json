@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "19655dafd325adb9ca864f75648a5a22d96bd24e",
-  "appShaNote": "PR169 combined review source19655dafd325adb9ca864f75648a5a22d96bd24e; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
+  "appSha": "edfeb53272db21217892dd025b5335e5123e1457",
+  "appShaNote": "PR170 combined review sourceedfeb53272db21217892dd025b5335e5123e1457; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "607a5a952950157f137f625b4e5eded69fc161bc0bc82e1afca977dd5000d888",
+  "schemaManifestHash": "66f3b7ca1d71a0d1542f3d0b0925583c215a2e81835bebf988977c77521d43b3",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -289,6 +289,11 @@
       "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2"
     },
     {
+      "version": "20260928080000",
+      "file": "20260928080000_sponsorship_followup_bulk.sql",
+      "sha256": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800"
+    },
+    {
       "version": "20260930120000",
       "file": "20260930120000_supporter_recovery_single_use.sql",
       "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
@@ -316,7 +321,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -672,7 +678,7 @@
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "56 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
+  "migrationManifestNote": "57 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
   "productionCiRun": {
     "id": 36758558621,
     "sha": "07e4c881863b715342ed0757aad7bd691a272738",
@@ -721,8 +727,8 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "bba28b681024f9c646833fa1ea24c5a24647b768",
-    "schemaManifestHash": "07108d158d504bcc5ab295ae22f0584caeae27c429181ec45340dce3ac4377b2",
-    "migrationCount": 55
+    "appSha": "19655dafd325adb9ca864f75648a5a22d96bd24e",
+    "schemaManifestHash": "607a5a952950157f137f625b4e5eded69fc161bc0bc82e1afca977dd5000d888",
+    "migrationCount": 56
   }
 }

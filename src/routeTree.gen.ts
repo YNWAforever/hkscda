@@ -158,6 +158,7 @@ import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/a
 import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
+import { Route as ApiAdminSponsorshipsFollowupBulkRouteImport } from './routes/api/admin/sponsorships/followup-bulk'
 import { Route as ApiAdminSponsorshipsFollowupAssigneesRouteImport } from './routes/api/admin/sponsorships/followup-assignees'
 import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
 import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
@@ -1060,6 +1061,12 @@ const ApiAdminSponsorshipsPledgesRoute =
     path: '/api/admin/sponsorships/pledges',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminSponsorshipsFollowupBulkRoute =
+  ApiAdminSponsorshipsFollowupBulkRouteImport.update({
+    id: '/api/admin/sponsorships/followup-bulk',
+    path: '/api/admin/sponsorships/followup-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminSponsorshipsFollowupAssigneesRoute =
   ApiAdminSponsorshipsFollowupAssigneesRouteImport.update({
     id: '/api/admin/sponsorships/followup-assignees',
@@ -1934,6 +1941,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
+  '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
@@ -2205,6 +2213,7 @@ export interface FileRoutesByTo {
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
+  '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
@@ -2478,6 +2487,7 @@ export interface FileRoutesById {
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
+  '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
@@ -2752,6 +2762,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/followup-assignees'
+    | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/supporters/tag-bulk'
@@ -3023,6 +3034,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/followup-assignees'
+    | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/supporters/tag-bulk'
@@ -3295,6 +3307,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/followup-assignees'
+    | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/supporters/tag-bulk'
@@ -3522,6 +3535,7 @@ export interface RootRouteChildren {
   ApiAdminSponsorshipsAnimalsRoute: typeof ApiAdminSponsorshipsAnimalsRoute
   ApiAdminSponsorshipsDeliveriesRoute: typeof ApiAdminSponsorshipsDeliveriesRoute
   ApiAdminSponsorshipsFollowupAssigneesRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRoute
+  ApiAdminSponsorshipsFollowupBulkRoute: typeof ApiAdminSponsorshipsFollowupBulkRoute
   ApiAdminSponsorshipsPledgesRoute: typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   ApiAdminVolunteersActivitiesRoute: typeof ApiAdminVolunteersActivitiesRouteWithChildren
   ApiAdminVolunteersBulkRoute: typeof ApiAdminVolunteersBulkRoute
@@ -4608,6 +4622,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/sponsorships/pledges'
       fullPath: '/api/admin/sponsorships/pledges'
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/followup-bulk': {
+      id: '/api/admin/sponsorships/followup-bulk'
+      path: '/api/admin/sponsorships/followup-bulk'
+      fullPath: '/api/admin/sponsorships/followup-bulk'
+      preLoaderRoute: typeof ApiAdminSponsorshipsFollowupBulkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/sponsorships/followup-assignees': {
@@ -6339,6 +6360,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSponsorshipsDeliveriesRoute: ApiAdminSponsorshipsDeliveriesRoute,
   ApiAdminSponsorshipsFollowupAssigneesRoute:
     ApiAdminSponsorshipsFollowupAssigneesRoute,
+  ApiAdminSponsorshipsFollowupBulkRoute: ApiAdminSponsorshipsFollowupBulkRoute,
   ApiAdminSponsorshipsPledgesRoute:
     ApiAdminSponsorshipsPledgesRouteWithChildren,
   ApiAdminVolunteersActivitiesRoute:
