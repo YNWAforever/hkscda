@@ -726,4 +726,76 @@ describe("R01 test-only clone boundaries", () => {
       ),
     ).resolves.toBeUndefined();
   });
+  test("valid closing-comment spellings remain operator candidates before normalization", async () => {
+    for (const [symbol, expression] of [
+      ["*/", "1 */ 2"],
+      ["*/", "1*/-2"],
+      ["*/", "1*/+2"],
+      ["*/", "1/* synthetic comment */*/2"],
+      ["*/", "1*/-- synthetic comment\n2"],
+      ["~*/+", "1~*/+2"],
+      ["*/~", "1*/~2"],
+    ]) {
+      const functions: FunctionProbe[] = [
+        {
+          schema: "public",
+          name: "entry",
+          body: `PERFORM ${expression};`,
+          language: "plpgsql",
+          system: false,
+          config: ["search_path=bridge,pg_catalog"],
+        },
+        { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+      ];
+      const operators: OperatorProbe[] = [
+        {
+          oid: 100001,
+          schema: "bridge",
+          name: symbol,
+          system: false,
+          implementation: "bridge.opaque",
+        },
+      ];
+      await expect(
+        assertSafeFixtureTables(
+          metadataOnlyProbe(functions, "public.entry", undefined, operators),
+          ["synthetic"],
+        ),
+      ).rejects.toThrow();
+      functions[0].body = "RETURN NEW;";
+      await expect(
+        assertSafeFixtureTables(
+          metadataOnlyProbe(functions, "public.entry", expression, operators),
+          ["synthetic"],
+        ),
+      ).rejects.toThrow();
+      await expect(
+        assertSafeFixtureTables(
+          metadataOnlyProbe(functions, "public.entry", expression, operators, [100001]),
+          ["synthetic"],
+        ),
+      ).rejects.toThrow();
+    }
+  });
+  test("valid */ operator spelling stays fenced through a transitive helper", async () => {
+    const functions: FunctionProbe[] = [
+      {
+        schema: "public",
+        name: "entry",
+        body: "PERFORM bridge.forward();",
+        language: "plpgsql",
+        system: false,
+      },
+      { schema: "bridge", name: "forward", body: "SELECT 1 */ 2;", language: "sql", system: false },
+      { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+    ];
+    await expect(
+      assertSafeFixtureTables(
+        metadataOnlyProbe(functions, "public.entry", undefined, [
+          { schema: "bridge", name: "*/", system: false, implementation: "bridge.opaque" },
+        ]),
+        ["synthetic"],
+      ),
+    ).rejects.toThrow();
+  });
 });

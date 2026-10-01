@@ -754,11 +754,15 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
         return " ";
       },
     );
-    // PG17 ends operator names at comment delimiters and splits trailing unary
-    // +/- unless a non-SQL operator character permits a signed compound name.
-    // Keep scanning raw comment fragments conservatively; no SQL is evaluated.
+    // Preserve raw/unreviewed symbol candidates before delimiter splitting:
+    // */ is a legal operator spelling outside comments, and overlapping comment
+    // boundaries cannot safely discard a candidate without a full SQL parser.
     const tokens = [...unqualified.matchAll(/[+\-*/<>=~!@#%^&|`?:]+/g)]
-      .flatMap((m) => m[0].split(/--|\/\*|\*\//))
+      .flatMap((m) => [
+        m[0],
+        ...m[0].split(/--|\/\*|\*\//),
+        ...[...customSymbols].filter((symbol) => m[0].includes(symbol)),
+      ])
       .flatMap((run) => {
         if (/[~!@#%^&|`?]/.test(run)) return [run];
         let end = run.length;

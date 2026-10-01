@@ -1,0 +1,14 @@
+{
+  "mode": "hosted",
+  "round": 4,
+  "startedAt": "2026-10-01T13:14:39.932Z",
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "zeroTables": 158,
+  "parity": true,
+  "managedHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "fixturePathsSafe": true,
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "cleanup": true,
+  "completedAt": "2026-10-01T13:16:47.607Z"
+}
