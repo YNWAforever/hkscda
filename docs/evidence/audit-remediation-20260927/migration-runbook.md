@@ -173,6 +173,30 @@ The exact file completed BEGIN/ROLLBACK rehearsal, then manual application only 
 ## PR164 sequential candidate correction
 
 Undeployed20260927190000 now hashes79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5. SharedAuth/adminlocks fence actor eligibility; fullSQLBEGIN/ROLLBACK preserves1000synthetic content/revision pairs, no backfill,298ms. Production7content/7revisions/0draft-statusitems; candidateobjectsabsent. See sequential-merge-164-20260930.md for exactgate results/grants/RLS/backup/rollback. Retain review/audit andoperation history onapp rollback.
+
+## Historical PR165 finance rehearsal (2026-09-29)
+
+## T23 manual finance atomic settlement addendum
+
+Version 20260927201916, SHA-256 211ef805cb09d643ca4b04f1e0d0e6fa54601af65ea60cfeb637d6882b327b66. A partial unique index rejects duplicate nonblank normalized bank references on succeeded FPS, PayMe and manual payments. A service-role-only `reconcile_manual_payment_atomic(uuid,uuid,text)` function checks current treasurer/admin Auth state and commits payment, donation, `payment.mark_received` audit and one durable delivery job together. The existing fenced worker then runs receipt/email delivery independently and reports a committed payment even if delivery fails. Existing webhook intake and provider settlement are unchanged.
+
+Before a data-bearing rehearsal, run this read-only duplicate preflight against the clone and review every group with finance staff:
+
+```sql
+select lower(btrim(bank_reference)) normalized_reference, count(*) payment_count,
+       array_agg(id order by id) payment_ids
+from public.payment
+where provider in ('fps','payme','manual') and status='succeeded'
+  and nullif(btrim(bank_reference),'') is not null
+group by lower(btrim(bank_reference))
+having count(*) > 1;
+```
+
+The named unlinked loopback database at 127.0.0.1:57322 returned no duplicate groups. The exact revised file completed BEGIN/ROLLBACK rehearsal after dropping the already-installed local index inside the transaction; only its revised function was applied for rollback-only synthetic fixtures. The fixture disabled a non-repository experimental local donation trigger inside its own rollback transaction and still proved that the RPC queues exactly one job. No ledger row was fabricated. The local release checker reports 115 compatible requirements; the local ledger remains at 20260927150000. Supabase's local security advisor reported no error-level findings. A fresh **45-file** ordered migration rehearsal and sanitized data-bearing rehearsal, actual concurrent-connection finance test, index build lock estimate, backup/restore, provider sandbox, staff identity UAT and production catalog comparison remain open. On application rollback keep the index and RPC until older-app compatibility is proved; never restore an older DB over newer payments or audits.
+
+## PR165 reviewed candidate
+
+Exact SQL/hash and6-row unchanged-data/duplicate rejection drills: sequential-merge-165-20260930.md. The old finance hash in historical sections is superseded by d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86. No production application. Fresh catalog/duplicate/lock/grant/RLS/backup checks and exact approval precede DDL; retain reference index and all audit/payment/job facts on rollback.
 ## T22 single-use recovery candidate, 2026-09-30
 
 The manifest now has 47 candidate entries in this #156 worktree. New exact file: `20260930120000_supporter_recovery_single_use.sql`, committed-byte SHA-256 `a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e`. Adds one private RLS challenge table, expiry index and three service-only RPCs; no backfill, Auth-schema patch, cron, supporter linking or fake ledger. Whole-file rollback rehearsal plus catalog/signature/grant/RLS and real isolated Auth20-way single-use tests exit 0. Production read-only catalog still lacks these objects (ledger95/supporters15); production application is not approved yet. Full backup restore remains not-run. Disable recovery and retain additive schema for app rollback; consumed codes and external sessions cannot be undone by dropping schema. Exact preflight, backup freshness, server-only key, supported-browser requirements and no-real-sending activation boundaries: [T22 release evidence](sequential-merge-156-broker-20260930.md).

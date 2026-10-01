@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "4fe3668a0f54fe9a71f68d8ccbff7f27e1b1024c",
-  "appShaNote": "Final combined-source verified PR164 source; following metadata commit changes documentation only. Later165-179 source excluded.",
+  "appSha": "7901dd1f203fa9b75469570d300810865411b480",
+  "appShaNote": "PR165 combined runtime source 7901dd1f203fa9b75469570d300810865411b480 passed recorded local gates; later166-179excluded. Following manifest-binding commit changes documentation only; fresh exact-head CI remains required.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "e74e20c9a144b37d5704ee3431a7b4a08b886477001dbb5d8d9f1b7c7ef82fbe",
+  "schemaManifestHash": "f660721de0e97bab66b0002e376d3eab05d0c955643ef0693c28a53a9cfac368",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -274,15 +274,18 @@
       "sha256": "b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb"
     },
     {
+      "version": "20260927201916",
+      "file": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86"
+    },
+    {
       "version": "20260930120000",
       "file": "20260930120000_supporter_recovery_single_use.sql",
       "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
     }
   ],
   "ciRun": {
-    "id": null,
-    "sha": "4fe3668a0f54fe9a71f68d8ccbff7f27e1b1024c",
-    "status": "Local combined3093pass97skip0fail9830assert546files115.91s/typecheck/lint/serialbuild0; fresh exact-head remoteCI pending"
+    "status": "fresh exact-head CI pending; local full/type/lint/build passed"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -298,7 +301,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-161-20260930.md",
     "docs/evidence/audit-remediation-20260927/pr-status-20261001.json",
     "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -654,7 +658,7 @@
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "53 source-file entries verified against canonical LF SQL; source inventory only, no bulk production apply or ledger rewrite.",
+  "migrationManifestNote": "54 source-file entries verified against canonical LF SQL; source inventory only, no bulk production apply or ledger rewrite.",
   "productionCiRun": {
     "id": 36758558621,
     "sha": "07e4c881863b715342ed0757aad7bd691a272738",
@@ -665,7 +669,8 @@
     "migration161": "explicit filename/schema/backfill approval already received; operative after stricter guards, per recorded ruling; waits for predecessor and fresh preflight",
     "migration162": "new exact named migration approval pending",
     "laterActivation": "approved terms/methods/provider sandbox/hosted identities/content and schedules remain separately gated",
-    "migration164": "named exact migration approval pending; updated b564a09a expiry guards disclosed"
+    "migration164": "named exact migration approval pending; updated b564a09a expiry guards disclosed",
+    "migration165": "named exact d4f68382 manual-payment RPC/reference index approval pending; no production financial operation"
   },
   "blockedGate": {
     "pr": 160,
@@ -701,8 +706,8 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b",
-    "schemaManifestHash": "907e5e3d06d87d685d08299ccc886ea705823cc4a130feada7545ce31ac084e7",
-    "migrationCount": 52
+    "appSha": "4fe3668a0f54fe9a71f68d8ccbff7f27e1b1024c",
+    "schemaManifestHash": "e74e20c9a144b37d5704ee3431a7b4a08b886477001dbb5d8d9f1b7c7ef82fbe",
+    "migrationCount": 53
   }
 }

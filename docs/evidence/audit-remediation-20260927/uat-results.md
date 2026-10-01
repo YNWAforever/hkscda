@@ -45,6 +45,10 @@ Mobile homepage score regressed 4 points in that early comparison; investigate o
 - Dedicated loopback DB after final role assertion: `ANIMAL_REVIEW_BULK_TEST_DATABASE_URL=postgresql://postgres:***@127.0.0.1:57322/postgres ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1 bun test --isolate src/lib/contentReview/animalBulk.database.test.ts` exit 0, 3 pass/18 assertions. Fixture rolls back. `CHECK_RELEASE_SCHEMA_DATABASE_URL` checker exit 0, 109 compatible, zero issues.
 - Same-source remote CI #162 run `36345471697`: verify, RLS, a11y and performance passed; brand pending at capture. Real provider, real email sink and hosted role/browser UAT: **not-run**.
 
+## PR165 isolated acceptance
+
+Actual commands/source/exit codes,4DBtests29assertions plusCRM17tests90assertions,6syntheticlegacyfullSQLdrill,three-width before/after and external not-run gates: sequential-merge-165-20260930.md. No hosted or provider success inferred.
+
 PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
 
 

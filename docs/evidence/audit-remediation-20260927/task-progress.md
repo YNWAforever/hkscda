@@ -85,6 +85,12 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 
 ### 2026-09-30 PR164 follow-up
 CMS bulk actor-lock/JSON/recovery/queue races repaired and independently reviewed. DB role/concurrency/audit and1000-item evidence,full SQL unchanged-row drill and3-width UI recorded in sequential-merge-164-20260930.md. Code complete for this slice; schema ready locally only;deployed/operationally-enabled no. #162 unmount backport integrated through#163.
+
+- Historical PR165 source74c032ae CI36350007831 five green; current sequential integration requires new verification. See t23-finance-atomic.md; prior Windows manifest hash superseded by committed LF hash.
+
+## 2026-09-30 PR165
+
+Reproduced/fixed actor revocation race, lost committed response recovery, CRM duplicate-reference409 and durable delivery status on busy. Four findings closed; local gates pass. Code complete for this slice; schema ready only locally;deployed/operationally-enabled no. Exact CI/schema approval pending; original overall task remains in progress.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
@@ -124,6 +130,13 @@ Staff: existing deployed overview/CRMtag bulk use stored snapshot→preview→pe
 
 
 Task164 root integration verified2026-10-01HKT: independent review approved; 3093pass97skip0fail9830assertions546files115.91s; strictType/lint/serialBuild0;52oldwarnings;fixture0; hashb564a09a preserved. Source/deployment/enablement separate; remoteCI/schemaapproval/sequence pending.
+
+Task165 CODE-ONLY COMPLETE2026-10-01HKT: unchanged reviewed finance source; root3102pass97skip0fail9885assertions547files106.06s; targetedCRM/strictType/lint/serialBuild0;24fixturetables0. RemoteCI/namedDDL/sequence/hosted/provider gates pending. Invalid shared CRM target attempt retained, guard unchanged.
+
+## Prepared integration for PR#165 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
 
 ## Prepared integration for PR#164 — 2026-10-01 HKT
 

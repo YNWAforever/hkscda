@@ -38,6 +38,10 @@ Before each next approved schema change: verify the reviewed source hash, curren
 
 Source freeze 5793e12d6933ba06c58c226d29a4ca8931601398 includes reviewed CMS bulk and both queue unmount guards. Inventory now52unique SQL files, all committed LF hashes verified; CSV SHA256 a3519ee326b19427326b51cdb8606aa8792dc16b499af76622931d078a1892cf. Historical #163 freeze above remains labelled. CMS clone6tests39assertions,1000items796success202skip2conflict,unchanged content/revisions,full SQL rollback298ms;actual queue/component UI passes. Typecheck/lint/serial build exit0,52lint warnings; final full suite3012pass127skip0fail/9419assertions/543files/33.81s/exit0; exact remote CI pending. Production unchanged at#155, #156stillNO-GO; #164 exact SQL approval not yet requested.
 
+## PR165 source update
+
+Freeze 421bf7f790dd595fbc0161ea885605dde617f3f4;53 source SQL checksums and updated CSV hash. Local full3017pass131skip9445assertions/36.43s;typecheck/lint/build0,52warnings;manualDB4tests29assertions;CRM17tests90assertions;UI3widths/Axe0;full-file6-row rollback251ms. Four independent findings closed. Fresh CI pending; exact SQL approval not yet requested. Production remains#155;#156blocks next release.
+
 PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
 
 
