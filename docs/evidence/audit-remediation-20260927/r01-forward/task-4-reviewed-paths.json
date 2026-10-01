@@ -1,0 +1,102 @@
+{
+  "reviewedAt": "2026-10-02",
+  "profiles": {
+    "hosted": [
+      {
+        "name": "public.internship_command",
+        "hash": "84662adb879ce5365c625d7d4dfb629c"
+      },
+      {
+        "name": "public.internship_history_guard",
+        "hash": "308d9a20a14412d81ee2f226a96784c2"
+      },
+      {
+        "name": "public.internship_validate_intake",
+        "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      },
+      {
+        "name": "storage.enforce_bucket_lifecycle_service_role",
+        "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+      },
+      {
+        "name": "storage.enforce_bucket_name_length",
+        "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+      },
+      {
+        "name": "storage.protect_bucket_control_columns",
+        "hash": "81db66d9936722b1164bca480ccbbf68"
+      },
+      {
+        "name": "storage.protect_delete",
+        "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+      },
+      {
+        "name": "storage.update_updated_at_column",
+        "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+      }
+    ],
+    "modern": [
+      {
+        "name": "private.lock_admin_user_mutation",
+        "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+      },
+      {
+        "name": "private.require_active_admin_user",
+        "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+      },
+      {
+        "name": "public.internship_command",
+        "hash": "84662adb879ce5365c625d7d4dfb629c"
+      },
+      {
+        "name": "public.internship_history_guard",
+        "hash": "308d9a20a14412d81ee2f226a96784c2"
+      },
+      {
+        "name": "public.internship_validate_intake",
+        "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.mark_internship_attachment_uploaded",
+        "hash": "4592d14b324b3fd7db847d663cae4eaa"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      },
+      {
+        "name": "storage.enforce_bucket_lifecycle_service_role",
+        "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+      },
+      {
+        "name": "storage.enforce_bucket_name_length",
+        "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+      },
+      {
+        "name": "storage.protect_bucket_control_columns",
+        "hash": "81db66d9936722b1164bca480ccbbf68"
+      },
+      {
+        "name": "storage.protect_delete",
+        "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+      },
+      {
+        "name": "storage.update_updated_at_column",
+        "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+      }
+    ]
+  },
+  "manualReview": "Complete existing internship_command (all reachable actor branches), validator/history guard, Auth/Storage trigger and admin lock paths reviewed. SQL-only advisory locks, local immutable history/audit/command writes; no network primitives. Trigger mark/claim bodies retained exactly from reviewed legacy and modern contracts. Auth getUser and Storage operations are inert DI, not hosted identity/provider acceptance."
+}
