@@ -211,6 +211,11 @@ Checksum correction at #166 package refresh: the earlier #165 packet used a Wind
 ## PR166 reviewed candidate
 
 Exact unchanged SQL8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. One stable read RPC/two partial indexes; no mutation/backfill.7-row full-file rollback253ms,1000-row read/grant fixtures. Production7rows,candidate absent; exact DDL approval and fresh preflight required. See sequential-merge-166-20260930.md.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 exact candidate20260928073000 SHA256 c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2: owner/version trigger and assignment+eligible-picker RPCs. Full2row isolated rollback8.59ms,service_role4tests24assert. Production2pledges/0needs_followup/candidateabsent/ledger95. Exact approval pending; preserve additive schema on rollback.
 ## T22 single-use recovery candidate, 2026-09-30
 
 The manifest now has 47 candidate entries in this #156 worktree. New exact file: `20260930120000_supporter_recovery_single_use.sql`, committed-byte SHA-256 `a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e`. Adds one private RLS challenge table, expiry index and three service-only RPCs; no backfill, Auth-schema patch, cron, supporter linking or fake ledger. Whole-file rollback rehearsal plus catalog/signature/grant/RLS and real isolated Auth20-way single-use tests exit 0. Production read-only catalog still lacks these objects (ledger95/supporters15); production application is not approved yet. Full backup restore remains not-run. Disable recovery and retain additive schema for app rollback; consumed codes and external sessions cannot be undone by dropping schema. Exact preflight, backup freshness, server-only key, supported-browser requirements and no-real-sending activation boundaries: [T22 release evidence](sequential-merge-156-broker-20260930.md).

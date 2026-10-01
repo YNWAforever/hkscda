@@ -55,6 +55,7 @@ test("release manifest covers every new public table, RPC, and additive column a
     "apply_cms_review_bulk_item",
     "reconcile_manual_payment_atomic",
     "editorial_quality_queue",
+    "list_sponsorship_followup_assignees",
   ]) {
     expect(functions).toContain(name);
   }

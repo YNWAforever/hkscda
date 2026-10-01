@@ -120,6 +120,14 @@ Environment: isolated worktree codex/audit-supporter-recovery-20260927; dedicate
 - Concurrent build + full bun test --isolate: 2848 pass, 90 skip, 1 fail: unrelated migration-safety scan exceeded Bun's 5-second test timeout at 6112 ms. The targeted scan alone passed 1/1 in 109 ms. Repeating the full suite alone exited 0: 2849 pass, 90 skip, 0 fail across 498 files.
 - Browser with real role identities, exact filter-preserving links, schema/worker readiness, and bulk mutation UAT are not-run / open.
 
+## T23 sponsorship follow-up source #169
+
+Source `05bb6f1b64fbf39c8f40944b27f446a38751e809`: `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2910 pass/109 skip/0 fail/9057 assertions across 523 files. The first concurrent gate run had one 5-second RLS setup timeout; the same RLS file passed 39/39 alone, then the sequential full suite passed. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0. Dedicated 127.0.0.1:57322 sponsorship database tests exited 0, 3 pass/20 assertions including direct authenticated UPDATE denial and two-connection one-winner/one-audit; final exact migration file BEGIN/ROLLBACK succeeded. Local release catalog check exited 0 with 119 compatible requirements and no issues, with no forged ledger row. Remote source CI `36360874161` passed all five jobs. See `t23-sponsorship-followup.md`. Hosted staff browser, same-SHA private preview, 47-file fresh/data-bearing rehearsal and release approval remain not-run.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 current application b918ff918c98a2188335465237a6add66abfd0c7:3065pass137skip0fail9587assert552files32.75s;typecheck0/lint0(52warnings)/build0;isolated service_role4tests24assert0;exact fullmigration2row8.59ms rollback0;three-width12casebrowser0. RemoteCI pending. See sequential-merge-169-20260930.md.
 
 ## T22 broker repair verification, 2026-09-30
 

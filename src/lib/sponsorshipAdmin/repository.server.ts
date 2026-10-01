@@ -31,6 +31,8 @@ type PledgeRow = {
   status: PledgeSummary["status"];
   created_at: string;
   updated_at: string;
+  followup_assignee_user_id?: string | null;
+  followup_version?: number | string;
 };
 
 type SupporterRow = {
@@ -404,6 +406,7 @@ function mapAudit(row: AuditRow): PledgeAuditEntry {
 
 function mapSummary(row: PledgeRow, supporters: Map<string, SupporterRow>): PledgeSummary {
   const supporter = supporters.get(row.supporter_id);
+  const followupVersion = Number(row.followup_version);
   return {
     id: row.id,
     supporterId: row.supporter_id,
@@ -414,6 +417,9 @@ function mapSummary(row: PledgeRow, supporters: Map<string, SupporterRow>): Pled
     currency: row.currency,
     language: row.language,
     status: row.status,
+    followupAssigneeUserId: row.followup_assignee_user_id ?? null,
+    followupVersion:
+      Number.isSafeInteger(followupVersion) && followupVersion > 0 ? followupVersion : null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

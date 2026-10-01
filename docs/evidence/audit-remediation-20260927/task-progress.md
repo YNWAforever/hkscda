@@ -105,6 +105,11 @@ See sequential-merge-167-20260930.md for exact commands, source SHA, local Postg
 ## PR168 readiness verification (2026-09-30)
 
 See sequential-merge-168-20260930.md. Final3051pass/133skip, strict typecheck/lint/build0 and actual three-width SSR/client navigation/Axe0. Server-generated references correlate for client navigation; transport failures do not invent a reference. Stable section IDs tolerate approved CMS copy edits. No migration or schedule activation. #167 fivegreenCI36640615081; #168 freshCI pending; ordered #156 gate and predecessor schema approval questions remain.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 individual sponsorship follow-up slice repaired/reviewed and locally verified. ADMIN-04 remains partial; code-complete slice, schema locally ready, not deployed/operationally enabled. Ordered merge blocked at#156; exact PR169 migration approval pending.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
@@ -152,6 +157,13 @@ Task166 root2026-10-01: quality source/SQL unchanged; latest165+approved160proof
 Task167 root combinedcheckpoint2026-10-01: reviewedown77e06cd4,predecessor91953ffa;sourceconflicts0;canonicalSQL55;focused2pass54assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
 
 Task168 root combinedcheckpoint2026-10-01: reviewedown672d7845,predecessor3e021d7a;sourceconflicts0;canonicalSQL55;focused2pass54assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task169 root combinedcheckpoint2026-10-01: reviewedowndd17c5fb,predecessor9d063e5d;sourceconflicts0;canonicalSQL56;focused2pass55assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+## Prepared integration for PR#169 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
 
 ## Prepared integration for PR#168 — 2026-10-01 HKT
 
