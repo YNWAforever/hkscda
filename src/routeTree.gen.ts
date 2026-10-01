@@ -157,6 +157,8 @@ import { Route as ApiAdminVolunteersBulkRouteImport } from './routes/api/admin/v
 import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
 import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
 import { Route as ApiAdminSupportersFormatPreviewRouteImport } from './routes/api/admin/supporters/format-preview'
+import { Route as ApiAdminSupportersAssignmentBulkRouteImport } from './routes/api/admin/supporters/assignment-bulk'
+import { Route as ApiAdminSupportersAssignmentAssigneesRouteImport } from './routes/api/admin/supporters/assignment-assignees'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
 import { Route as ApiAdminSponsorshipsFollowupBulkRouteImport } from './routes/api/admin/sponsorships/followup-bulk'
@@ -1059,6 +1061,18 @@ const ApiAdminSupportersFormatPreviewRoute =
   ApiAdminSupportersFormatPreviewRouteImport.update({
     id: '/format-preview',
     path: '/format-preview',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminSupportersAssignmentBulkRoute =
+  ApiAdminSupportersAssignmentBulkRouteImport.update({
+    id: '/assignment-bulk',
+    path: '/assignment-bulk',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminSupportersAssignmentAssigneesRoute =
+  ApiAdminSupportersAssignmentAssigneesRouteImport.update({
+    id: '/assignment-assignees',
+    path: '/assignment-assignees',
     getParentRoute: () => ApiAdminSupportersRoute,
   } as any)
 const ApiAdminSupportersIdRoute = ApiAdminSupportersIdRouteImport.update({
@@ -1982,6 +1996,8 @@ export interface FileRoutesByFullPath {
   '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/assignment-assignees': typeof ApiAdminSupportersAssignmentAssigneesRoute
+  '/api/admin/supporters/assignment-bulk': typeof ApiAdminSupportersAssignmentBulkRoute
   '/api/admin/supporters/format-preview': typeof ApiAdminSupportersFormatPreviewRoute
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
@@ -2259,6 +2275,8 @@ export interface FileRoutesByTo {
   '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/assignment-assignees': typeof ApiAdminSupportersAssignmentAssigneesRoute
+  '/api/admin/supporters/assignment-bulk': typeof ApiAdminSupportersAssignmentBulkRoute
   '/api/admin/supporters/format-preview': typeof ApiAdminSupportersFormatPreviewRoute
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
@@ -2538,6 +2556,8 @@ export interface FileRoutesById {
   '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/assignment-assignees': typeof ApiAdminSupportersAssignmentAssigneesRoute
+  '/api/admin/supporters/assignment-bulk': typeof ApiAdminSupportersAssignmentBulkRoute
   '/api/admin/supporters/format-preview': typeof ApiAdminSupportersFormatPreviewRoute
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
@@ -2818,6 +2838,8 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/assignment-assignees'
+    | '/api/admin/supporters/assignment-bulk'
     | '/api/admin/supporters/format-preview'
     | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
@@ -3095,6 +3117,8 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/assignment-assignees'
+    | '/api/admin/supporters/assignment-bulk'
     | '/api/admin/supporters/format-preview'
     | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
@@ -3373,6 +3397,8 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/assignment-assignees'
+    | '/api/admin/supporters/assignment-bulk'
     | '/api/admin/supporters/format-preview'
     | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
@@ -4683,6 +4709,20 @@ declare module '@tanstack/react-router' {
       path: '/format-preview'
       fullPath: '/api/admin/supporters/format-preview'
       preLoaderRoute: typeof ApiAdminSupportersFormatPreviewRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/assignment-bulk': {
+      id: '/api/admin/supporters/assignment-bulk'
+      path: '/assignment-bulk'
+      fullPath: '/api/admin/supporters/assignment-bulk'
+      preLoaderRoute: typeof ApiAdminSupportersAssignmentBulkRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/assignment-assignees': {
+      id: '/api/admin/supporters/assignment-assignees'
+      path: '/assignment-assignees'
+      fullPath: '/api/admin/supporters/assignment-assignees'
+      preLoaderRoute: typeof ApiAdminSupportersAssignmentAssigneesRouteImport
       parentRoute: typeof ApiAdminSupportersRoute
     }
     '/api/admin/supporters/$id': {
@@ -6021,12 +6061,17 @@ const ApiAdminSupportersIdRouteWithChildren =
 
 interface ApiAdminSupportersRouteChildren {
   ApiAdminSupportersIdRoute: typeof ApiAdminSupportersIdRouteWithChildren
+  ApiAdminSupportersAssignmentAssigneesRoute: typeof ApiAdminSupportersAssignmentAssigneesRoute
+  ApiAdminSupportersAssignmentBulkRoute: typeof ApiAdminSupportersAssignmentBulkRoute
   ApiAdminSupportersFormatPreviewRoute: typeof ApiAdminSupportersFormatPreviewRoute
   ApiAdminSupportersTagBulkRoute: typeof ApiAdminSupportersTagBulkRoute
 }
 
 const ApiAdminSupportersRouteChildren: ApiAdminSupportersRouteChildren = {
   ApiAdminSupportersIdRoute: ApiAdminSupportersIdRouteWithChildren,
+  ApiAdminSupportersAssignmentAssigneesRoute:
+    ApiAdminSupportersAssignmentAssigneesRoute,
+  ApiAdminSupportersAssignmentBulkRoute: ApiAdminSupportersAssignmentBulkRoute,
   ApiAdminSupportersFormatPreviewRoute: ApiAdminSupportersFormatPreviewRoute,
   ApiAdminSupportersTagBulkRoute: ApiAdminSupportersTagBulkRoute,
 }

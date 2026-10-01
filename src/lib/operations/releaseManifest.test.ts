@@ -9,8 +9,8 @@ test("release manifest covers every new public table, RPC, and additive column a
   const columns = releaseManifest
     .filter((item) => item.kind === "column")
     .map((item) => `${item.table}.${item.name}`);
-  expect(tables).toHaveLength(26);
-  expect(functions.length).toBeGreaterThanOrEqual(79);
+  expect(tables).toHaveLength(28);
+  expect(functions.length).toBeGreaterThanOrEqual(83);
   expect(columns).toContain("public_status_token.submission_fingerprint");
   expect(columns).toContain("dog_friendly_estates.version");
   expect(columns).toContain("adoption_fees.version");
@@ -21,6 +21,7 @@ test("release manifest covers every new public table, RPC, and additive column a
   expect(columns).toContain("payment.checkout_attempted_at");
   expect(columns).toContain("adoption_case.bulk_row_version");
   expect(columns).toContain("supporter.edit_version");
+  expect(columns).toContain("supporter.crm_assignee_user_id");
   for (const name of [
     "create_public_sponsorship_pledge",
     "issue_receipt_with_audit",
@@ -42,6 +43,10 @@ test("release manifest covers every new public table, RPC, and additive column a
     "get_crm_tag_bulk_operation",
     "create_crm_tag_bulk_preview",
     "apply_crm_tag_bulk_item",
+    "get_crm_assignment_bulk_operation",
+    "create_crm_assignment_bulk_preview",
+    "apply_crm_assignment_bulk_item",
+    "list_crm_assignment_assignees",
     "get_volunteer_review_bulk_operation",
     "create_volunteer_review_bulk_preview",
     "apply_volunteer_review_bulk_item",
@@ -81,6 +86,8 @@ test("release manifest covers every new public table, RPC, and additive column a
   ]) {
     expect(columns).toContain(column);
   }
+  expect(tables).toContain("crm_assignment_bulk_operation");
+  expect(tables).toContain("crm_assignment_bulk_item");
   expect(tables).toContain("sponsorship_followup_bulk_operation");
   expect(tables).toContain("sponsorship_followup_bulk_item");
   expect(tables).toContain("finance_bank_match_operation");

@@ -25,15 +25,28 @@ const supporter: SupporterSummary = {
   whatsappConsent: null,
 };
 
+let liveActor = "fixture-finance";
+mock.module("../../../lib/admin/useLiveAdminActor", () => ({ useLiveAdminActor: () => liveActor }));
+
 let supportersError: Error | null = null;
+let identityStatus = "active",
+  identityRole = "admin";
 
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
-  useQuery: () => ({
-    data: supportersError ? undefined : { supporters: [supporter], total: 1 },
-    error: supportersError,
-    isLoading: false,
-  }),
+  useQuery: (options: { queryKey: readonly unknown[] }) =>
+    options.queryKey[0] === "admin-me"
+      ? {
+          data: {
+            admin: { authUserId: "fixture-finance", status: identityStatus, role: identityRole },
+          },
+          isError: false,
+        }
+      : {
+          data: supportersError ? undefined : { supporters: [supporter], total: 1 },
+          error: supportersError,
+          isLoading: false,
+        },
 }));
 
 mock.module("@tanstack/react-router", () => ({
@@ -83,10 +96,30 @@ mock.module("./SupporterFormDialog", () => ({
 const { SupporterList } = await import("./SupporterList");
 
 describe("SupporterList", () => {
+  test("assignment UI hides a stale cached actor after another tab changes identity", () => {
+    liveActor = "other-finance";
+    expect(renderToStaticMarkup(<SupporterList />)).not.toContain("批量指派跟進負責人");
+    liveActor = "fixture-finance";
+  });
+  test("assignment UI requires the current active finance identity", () => {
+    for (const [role, status] of [
+      ["staff", "active"],
+      ["admin", "disabled"],
+      ["treasurer", "pending"],
+    ]) {
+      identityRole = role!;
+      identityStatus = status!;
+      expect(renderToStaticMarkup(<SupporterList />)).not.toContain("批量指派跟進負責人");
+    }
+    identityRole = "admin";
+    identityStatus = "active";
+  });
   test("renders an explicit open action for supporter details", () => {
     const markup = renderToStaticMarkup(<SupporterList />);
 
     expect(markup).toContain("Open");
+    expect(markup).toContain("批量指派跟進負責人");
+    expect(markup).toContain("批量跟進負責人");
     expect(markup).toContain('href="/admin/supporters/supporter-1"');
   });
 

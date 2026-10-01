@@ -216,6 +216,13 @@ Task176 root combinedcheckpoint2026-10-01: reviewedown30d16463,predecessor66663b
 
 Task177 root combinedcheckpoint2026-10-01: reviewedownbf1c6779,predecessor1e21f9b3;sourceconflicts0;canonicalSQL61;focused2pass67assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
 
+Task178 root combinedcheckpoint2026-10-01: reviewedown2028bfbd,predecessor3571eb55;sourceconflicts0;canonicalSQL62;focused2pass74assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+## Prepared integration for PR#178 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
+
 ## Prepared integration for PR#177 — 2026-10-01 HKT
 
 Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.

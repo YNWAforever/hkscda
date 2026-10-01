@@ -64,6 +64,11 @@ See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `0
 ## PR176 current preparation — 2026-09-30
 
 See [sequential-merge-176-20260930.md](sequential-merge-176-20260930.md): app `82c62c7a46994f12f413b946d099a6e7a8bc263b`, stale response/invalid JSON/keyboard fixes. Full 3136 pass / 145 skip; 13 focused / 52 assertions; typecheck/lint/build exit 0. Actual isolated Auth/PostgREST 1000-selection role/read-only verification and three-width before/after UI, Axe0. No new SQL; 59 inherited migration files. Code-complete slice, not deployed or enabled; #156 release blocker remains. #175 exact-head five gates green.
+
+
+## PR178 current preparation — 2026-09-30
+
+See [sequential-merge-178-20260930.md](sequential-merge-178-20260930.md): app `79838107c738854a28ac5a977b0e9fa6c3c6f5c2`, direct-column privilege bypass and recovery/live-actor races repaired. Full3159pass145skip10026assertions; typecheck/lint/build0; actual role DB5pass31assertions; exact SQL preserves15rows and reports898success101skip1conflict for1000items with audit rollback/retry;12browsercases/Axe0 and six before/after screenshots.61-file inventory; exact approval awaits five current-head CI gates. Code-complete/local-schema-ready, not deployed or enabled; #156 ordered-release blocker retained. Shared actor fix is backported separately to175.
 ## PR175 live-actor follow-up — 2026-09-30
 
 App `7be2da1a9e9dba41983542a9da777c7449afcecd`; shared actor-bound requests and live Auth query cancellation backported from178. Fresh typecheck/lint/build0;full3134pass145skip;12bankbrowsercases/Axe0. Exact SQL unchanged, approval pending, release stillblocked156. See [updated175 report](sequential-merge-175-20260930.md).

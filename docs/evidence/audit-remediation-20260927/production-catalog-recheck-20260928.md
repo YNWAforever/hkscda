@@ -90,3 +90,7 @@ R01 remains **partial / production incompatible**. The metadata-only checker inv
 - `20260912074524_sponsorship_second_month`
 - `20260912074646_sponsorship_monthly_ledger`
 - `20260912074747_sponsorship_assignments`
+
+## #178 source-manifest re-evaluation of saved metadata
+
+Without a new production query, the prior read-only JSON snapshot was checked against the #178 140-requirement manifest: incompatible, 134 required missing entries (28 tables, 83 functions, 23 columns). The last observed live ledger is still 79 versions; the source-only/live-only divergence through the same live maximum remains 51/21 versions. The #178 additive migration is the 53rd post-ledger source file. No production catalog, migration or app state was changed. A fresh live catalog and sanitized bridge rehearsal remain required before approval.

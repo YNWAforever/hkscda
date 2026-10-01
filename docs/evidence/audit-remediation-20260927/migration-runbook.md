@@ -241,6 +241,11 @@ See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `0
 ## PR177 current preparation — 2026-09-30
 
 See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9`. Production version fence is already provided by149; duplicate177DDL reproduced42701 and replaced with narrow direct-EXECUTE revoke.15-row preservation/grant/trigger rehearsal0;5focused101assertions;full3140pass141skip;type/lint/build0.60-file manifest. Grant change not applied in production. #161 single migration approval received; ordered release remains blocked at156.
+
+
+## PR178 current preparation — 2026-09-30
+
+See [sequential-merge-178-20260930.md](sequential-merge-178-20260930.md): app `79838107c738854a28ac5a977b0e9fa6c3c6f5c2`, direct-column privilege bypass and recovery/live-actor races repaired. Full3159pass145skip10026assertions; typecheck/lint/build0; actual role DB5pass31assertions; exact SQL preserves15rows and reports898success101skip1conflict for1000items with audit rollback/retry;12browsercases/Axe0 and six before/after screenshots.61-file inventory; exact approval awaits five current-head CI gates. Code-complete/local-schema-ready, not deployed or enabled; #156 ordered-release blocker retained. Shared actor fix is backported separately to175.
 ## T22 single-use recovery candidate, 2026-09-30
 
 The manifest now has 47 candidate entries in this #156 worktree. New exact file: `20260930120000_supporter_recovery_single_use.sql`, committed-byte SHA-256 `a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e`. Adds one private RLS challenge table, expiry index and three service-only RPCs; no backfill, Auth-schema patch, cron, supporter linking or fake ledger. Whole-file rollback rehearsal plus catalog/signature/grant/RLS and real isolated Auth20-way single-use tests exit 0. Production read-only catalog still lacks these objects (ledger95/supporters15); production application is not approved yet. Full backup restore remains not-run. Disable recovery and retain additive schema for app rollback; consumed codes and external sessions cannot be undone by dropping schema. Exact preflight, backup freshness, server-only key, supported-browser requirements and no-real-sending activation boundaries: [T22 release evidence](sequential-merge-156-broker-20260930.md).

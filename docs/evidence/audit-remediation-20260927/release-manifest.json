@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "4bd22597ef047c6ea1c0b5bf9d027e3a17eeba55",
-  "appShaNote": "PR177 combined review source4bd22597ef047c6ea1c0b5bf9d027e3a17eeba55; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
+  "appSha": "641f10abbc9ead69c1bd61b45b6439f2b099a28c",
+  "appShaNote": "PR178 combined review source641f10abbc9ead69c1bd61b45b6439f2b099a28c; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "48a46864390a57fda7dc7409474b6fc7b42677246b7fbb374eaa868c5fe4fbcf",
+  "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -184,16 +184,6 @@
       "sha256": "d0fcb0c6ebbcfbfaf2bd245964815d6052c30880919d5344b806f9c1f072c53f"
     },
     {
-      "version": "20260927122000",
-      "file": "20260927122000_content_publication_eligibility.sql",
-      "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
-    },
-    {
-      "version": "20260927130600",
-      "file": "20260927130600_sponsor_public_profile_fields.sql",
-      "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
-    },
-    {
       "version": "20260927090000",
       "file": "20260927090000_crm_private_export_jobs.sql",
       "sha256": "6665fcf0ef6ec9d783bca79ad7cd9769110a8a5c9a04f15c3a7a8463d4ade162"
@@ -214,6 +204,11 @@
       "sha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
     },
     {
+      "version": "20260927122000",
+      "file": "20260927122000_content_publication_eligibility.sql",
+      "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
+    },
+    {
       "version": "20260927130000",
       "file": "20260927130000_payment_instruction_snapshots.sql",
       "sha256": "aceef86734c3616688fcdb7da6cf27e7fef31ffd0bd46524d896fb05b87e2758"
@@ -224,14 +219,14 @@
       "sha256": "dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23"
     },
     {
+      "version": "20260927130600",
+      "file": "20260927130600_sponsor_public_profile_fields.sql",
+      "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
+    },
+    {
       "version": "20260927140000",
       "file": "20260927140000_donation_delivery_recovery.sql",
       "sha256": "7368ea1052220be96c71b26f9003f26e259ea51a69f83dca031a79152d8913d3"
-    },
-    {
-      "version": "20260927150000",
-      "file": "20260927150000_sponsorship_terms_document_kind.sql",
-      "sha256": "1f32b4531134e117baf8ff236f2250ca839b2da27ce8560c08498db576b754b3"
     },
     {
       "version": "20260927140500",
@@ -242,6 +237,11 @@
       "version": "20260927143710",
       "file": "20260927143710_public_animal_listing_page.sql",
       "sha256": "e2320e10dc29949dacb218ddd46ff28ad6afb3e3bdc865a1416e5306487a518d"
+    },
+    {
+      "version": "20260927150000",
+      "file": "20260927150000_sponsorship_terms_document_kind.sql",
+      "sha256": "1f32b4531134e117baf8ff236f2250ca839b2da27ce8560c08498db576b754b3"
     },
     {
       "version": "20260927163302",
@@ -312,6 +312,11 @@
       "version": "20260928113000",
       "file": "20260928113000_crm_supporter_version_fence.sql",
       "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62"
+    },
+    {
+      "version": "20260928120000",
+      "file": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09"
     },
     {
       "version": "20260930120000",
@@ -699,7 +704,7 @@
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "61 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
+  "migrationManifestNote": "62 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
   "productionCiRun": {
     "id": 36758558621,
     "sha": "07e4c881863b715342ed0757aad7bd691a272738",
@@ -748,8 +753,8 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "8f2ebf8256afa1e31b6a05fdf0fe9022b99ac9db",
-    "schemaManifestHash": "be6246244dfbb3cf7cbbdc0026b6ab7798c771d5a7171e4f507aa7745a88b9dc",
-    "migrationCount": 60
+    "appSha": "4bd22597ef047c6ea1c0b5bf9d027e3a17eeba55",
+    "schemaManifestHash": "48a46864390a57fda7dc7409474b6fc7b42677246b7fbb374eaa868c5fe4fbcf",
+    "migrationCount": 61
   }
 }
