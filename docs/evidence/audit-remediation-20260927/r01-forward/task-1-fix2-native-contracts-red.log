@@ -1,0 +1,40 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\productionSchemaClone.test.ts:
+(pass) R01 test-only clone boundaries > remote, existing, ambiguous and unexpected-credential DB URLs are refused [0.33ms]
+(pass) R01 test-only clone boundaries > catalog comparison ignores JSON key order and detects grant option/owner changes [0.80ms]
+(pass) R01 test-only clone boundaries > data, role, cluster, schedule and network invocation SQL cannot enter restore [1.44ms]
+(pass) R01 test-only clone boundaries > dollar-quoted function bodies are stored as one definition without invocation [0.60ms]
+(pass) R01 test-only clone boundaries > pinned dump inert settings allow quoted heap but never role or replication changes [0.16ms]
+(pass) R01 test-only clone boundaries > CTAS and non-definition TABLE forms are rejected without evaluating requests [0.23ms]
+(pass) R01 test-only clone boundaries > all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL [0.14ms]
+(pass) R01 test-only clone boundaries > direct external webhook trigger is rejected even without a collected body [0.73ms]
+(pass) R01 test-only clone boundaries > transitive external-schema executable bodies are inspected before fixtures [0.75ms]
+(pass) R01 test-only clone boundaries > unreviewed external C and missing trigger entrypoints fail closed [0.13ms]
+(pass) R01 test-only clone boundaries > only exact reviewed pgcrypto UUID implementation can pass opaque-function fencing [0.28ms]
+(pass) R01 test-only clone boundaries > inspected safe external SQL helper remains usable, while absent dependencies fail closed [0.43ms]
+(pass) R01 test-only clone boundaries > explicit custom operators cannot conceal opaque executable paths [0.20ms]
+(pass) R01 test-only clone boundaries > unqualified custom operator and configured search_path cannot conceal opaque execution [0.23ms]
+(pass) R01 test-only clone boundaries > custom operators in defaults/checks are rejected independently of triggers [0.31ms]
+(pass) R01 test-only clone boundaries > backend signaling and global configuration primitives are never fixture paths [0.66ms]
+(pass) R01 test-only clone boundaries > only pinned dump's empty session search_path setting survives the config fence [0.18ms]
+(pass) R01 test-only clone boundaries > prefix and transitive operator paths fail closed; explicit cataloged core calls remain usable [0.26ms]
+413 |       const name = similarity ? "similarity_op" : `citext_${suffix}`;
+414 |       const type = similarity ? "pg_catalog.text" : "public.citext";
+415 |       const native: FunctionProbe = { schema: "public", name, body: "", language: "c", system: false, source: name, library: similarity ? "$libdir/pg_trgm" : "$libdir/citext", extension: similarity ? "pg_trgm" : "citext", extensionVersion: "1.6", owner: "supabase_admin", arguments: 2, argumentTypes: [type, type], result: "boolean" };
+416 |       const op: OperatorProbe = { schema: "public", name: symbol, system: false, implementation: `public.${name}`, leftType: type, rightType: type, owner: "supabase_admin", restriction: null, join: null };
+417 |       const entry: FunctionProbe = { schema: "public", name: "entry", body: `PERFORM x ${symbol} y;`, language: "plpgsql", system: false };
+418 |       await expect(assertSafeFixtureTables(metadataOnlyProbe([entry, native], "public.entry", `x OPERATOR(public.${symbol}) y`, [op]), ["synthetic"])).resolves.toBeUndefined();
+                                                                                                                                                                      ^
+error:
+
+Expected promise that resolves
+Received promise that rejected: Promise { <rejected> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:418:161)
+(fail) R01 test-only clone boundaries > seven exact reviewed native operator contracts permit the existing comparison paths [3.45ms]
+
+ 18 pass
+ 1 fail
+ 74 expect() calls
+Ran 19 tests across 1 file. [71.00ms]

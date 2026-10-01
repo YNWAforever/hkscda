@@ -1,0 +1,13 @@
+{
+  "mode": "modern",
+  "round": 1,
+  "startedAt": "2026-10-01T11:26:59.836Z",
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "zeroTables": 162,
+  "parity": true,
+  "managedHash": "950e98859ddddf69be83007f4054c81c2165aa06a74f88c985bc3463a2baa8cf",
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "cleanup": true,
+  "completedAt": "2026-10-01T11:27:05.372Z"
+}

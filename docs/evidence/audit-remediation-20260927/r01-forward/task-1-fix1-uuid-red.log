@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\productionSchemaClone.test.ts:
+(pass) R01 test-only clone boundaries > remote, existing, ambiguous and unexpected-credential DB URLs are refused [0.58ms]
+(pass) R01 test-only clone boundaries > catalog comparison ignores JSON key order and detects grant option/owner changes [1.03ms]
+(pass) R01 test-only clone boundaries > data, role, cluster, schedule and network invocation SQL cannot enter restore [2.30ms]
+(pass) R01 test-only clone boundaries > dollar-quoted function bodies are stored as one definition without invocation [0.64ms]
+(pass) R01 test-only clone boundaries > pinned dump inert settings allow quoted heap but never role or replication changes [0.30ms]
+(pass) R01 test-only clone boundaries > CTAS and non-definition TABLE forms are rejected without evaluating requests [0.46ms]
+(pass) R01 test-only clone boundaries > all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL [0.19ms]
+(pass) R01 test-only clone boundaries > direct external webhook trigger is rejected even without a collected body [1.02ms]
+(pass) R01 test-only clone boundaries > transitive external-schema executable bodies are inspected before fixtures [0.87ms]
+(pass) R01 test-only clone boundaries > unreviewed external C and missing trigger entrypoints fail closed [0.16ms]
+172 |     ).rejects.toThrow();
+173 |   });
+174 |   test('only exact reviewed pgcrypto UUID implementation can pass opaque-function fencing',async()=>{
+175 |     const uuid:FunctionProbe={schema:'extensions',name:'gen_random_uuid',body:'',language:'c',system:false,source:'pg_random_uuid',library:'$libdir/pgcrypto',extension:'pgcrypto',extensionVersion:'1.3',owner:'postgres',arguments:0,result:'uuid'};
+176 |     const entry:FunctionProbe={schema:'public',name:'entry',body:'RETURN NEW;',language:'plpgsql',system:false};
+177 |     await expect(assertSafeFixtureTables(metadataOnlyProbe([entry,uuid],'public.entry','extensions.gen_random_uuid()'),['synthetic'])).resolves.toBeUndefined();
+                                                                                                                                                      ^
+error:
+
+Expected promise that resolves
+Received promise that rejected: Promise { <rejected> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:177:145)
+(fail) R01 test-only clone boundaries > only exact reviewed pgcrypto UUID implementation can pass opaque-function fencing [1.86ms]
+
+ 10 pass
+ 1 fail
+ 41 expect() calls
+Ran 11 tests across 1 file. [76.00ms]

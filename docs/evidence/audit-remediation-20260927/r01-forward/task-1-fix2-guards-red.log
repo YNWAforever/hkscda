@@ -1,0 +1,76 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\productionSchemaClone.test.ts:
+(pass) R01 test-only clone boundaries > remote, existing, ambiguous and unexpected-credential DB URLs are refused [11.79ms]
+(pass) R01 test-only clone boundaries > catalog comparison ignores JSON key order and detects grant option/owner changes [17.78ms]
+(pass) R01 test-only clone boundaries > data, role, cluster, schedule and network invocation SQL cannot enter restore [5.39ms]
+(pass) R01 test-only clone boundaries > dollar-quoted function bodies are stored as one definition without invocation [26.74ms]
+(pass) R01 test-only clone boundaries > pinned dump inert settings allow quoted heap but never role or replication changes [1.34ms]
+(pass) R01 test-only clone boundaries > CTAS and non-definition TABLE forms are rejected without evaluating requests [1.39ms]
+(pass) R01 test-only clone boundaries > all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL [0.39ms]
+(pass) R01 test-only clone boundaries > direct external webhook trigger is rejected even without a collected body [1.51ms]
+(pass) R01 test-only clone boundaries > transitive external-schema executable bodies are inspected before fixtures [1.41ms]
+(pass) R01 test-only clone boundaries > unreviewed external C and missing trigger entrypoints fail closed [0.22ms]
+(pass) R01 test-only clone boundaries > only exact reviewed pgcrypto UUID implementation can pass opaque-function fencing [0.91ms]
+(pass) R01 test-only clone boundaries > inspected safe external SQL helper remains usable, while absent dependencies fail closed [0.26ms]
+249 |     const functions: FunctionProbe[] = [
+250 |       { schema: "public", name: "entry", body: "PERFORM 1 OPERATOR(bridge.##) 2;", language: "plpgsql", system: false },
+251 |       { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+252 |     ];
+253 |     await expect(assertSafeFixtureTables(metadataOnlyProbe(functions, "public.entry", undefined,
+254 |       [{ schema: "bridge", name: "##", system: false, implementation: "bridge.opaque" }]), ["synthetic"])).rejects.toThrow();
+                                                                                                                         ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:254:116)
+(fail) R01 test-only clone boundaries > explicit custom operators cannot conceal opaque executable paths [11.34ms]
+257 |     const functions: FunctionProbe[] = [
+258 |       { schema: "public", name: "entry", body: "PERFORM 1 ## 2;", language: "plpgsql", system: false, config: ["search_path=bridge, public"] },
+259 |       { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+260 |     ];
+261 |     await expect(assertSafeFixtureTables(metadataOnlyProbe(functions, "public.entry", undefined,
+262 |       [{ schema: "bridge", name: "##", system: false, implementation: "bridge.opaque" }]), ["synthetic"])).rejects.toThrow();
+                                                                                                                         ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:262:116)
+(fail) R01 test-only clone boundaries > unqualified custom operator and configured search_path cannot conceal opaque execution [1.06ms]
+269 |       { schema: "public", name: "entry", body: "RETURN NEW;", language: "plpgsql", system: false },
+270 |       { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+271 |     ];
+272 |     for (const expression of ["1 OPERATOR(bridge.##) 2", "1 ## 2", "1 OPERATOR(\"bridge\".##) 2"])
+273 |       await expect(assertSafeFixtureTables(metadataOnlyProbe(functions, "public.entry", expression,
+274 |         [{ schema: "bridge", name: "##", system: false, implementation: "bridge.opaque" }]), ["synthetic"])).rejects.toThrow();
+                                                                                                                           ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:274:118)
+(fail) R01 test-only clone boundaries > custom operators in defaults/checks are rejected independently of triggers [0.67ms]
+279 |         const call = `${qualified ? "pg_catalog." : ""}${name}(1)`;
+280 |         const functions: FunctionProbe[] = [
+281 |           { schema: "public", name: "entry", body: `PERFORM ${call};`, language: "plpgsql", system: false },
+282 |           { schema: "pg_catalog", name, body: "", language: "internal", system: true },
+283 |         ];
+284 |         await expect(assertSafeFixtureTables(metadataOnlyProbe(functions, "public.entry"), ["synthetic"])).rejects.toThrow();
+                                                                                                                         ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:284:116)
+(fail) R01 test-only clone boundaries > backend signaling and global configuration primitives are never fixture paths [1.30ms]
+
+ 12 pass
+ 4 fail
+ 49 expect() calls
+Ran 16 tests across 1 file. [1259.00ms]

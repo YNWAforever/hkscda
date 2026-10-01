@@ -786,11 +786,11 @@
     },
     {
       "issue_id": "R01",
-      "implementation_status": "partial overall; focused #182 readonly ACL repair applied and postflight passed",
-      "code_complete": "partial overall; focused readonly repair yes",
-      "schema_ready": "partial; final public checker incompatible, 44 residual issues at ledger112",
-      "deployed": "partial; focused #182 source accepted",
-      "operationally_enabled": "partial (#182 readonly ACL clamp enforced); wider compatibility/UAT open",
+      "implementation_status": "partial overall; focused #182 readonly ACL repair applied and postflight passed; Task1 structural forward source/harness partial, realJWT control-field RED unresolved",
+      "code_complete": "partial overall; focused readonly repair yes; Task1 not complete (ACL source-edit authorization pending)",
+      "schema_ready": "partial; production checker unchanged incompatible44 at ledger112; Task1 final isolated readiness pending ACL repair",
+      "deployed": "partial; focused #182 source accepted; Task1 forward SQL not applied/deployed",
+      "operationally_enabled": "partial (#182 readonly ACL clamp enforced); wider compatibility/UAT open; Task1 isolated checkout false/version1",
       "proofs": [
         {
           "pr": 134,
@@ -811,8 +811,8 @@
           "accepted": true
         }
       ],
-      "acceptance_evidence": "2026-09-27 baseline: production missing 8 minimum tables 14 RPCs and fingerprint column; historical fresh/upgrade rehearsal 67 requirements passed. Later approved CMS and other dependency migrations applied; ledger95 observed 2026-09-30. Baseline missing counts are not current.; 2026-10-01 pre160/182 historical read-only public catalog138tables276functions/ledger98; that snapshot checker exit1 incompatible; production-compatibility-20261001.json; prior missing counts not current; dedicated57322 exact reviewed picker/grant transaction:146structuralchecks compatible0issues/exit0; original catalog/ACL/ledger rollback verified; two pre-DDL harness errors retained; pre160/182 production snapshot92gaps; fresh post-rollout catalog pending; R01 legacy whole-file36success/26collisions, all92gaps mapped; focused182 role RED3/17->GREEN20/0/110assert; full sourceaca3027/127/0, TS/lint/build0; integrated candidate gates pending; current actual release receipt: all-merge-execution-20261001.json; 182 nine table-role checks/no column writes;11 RPC objects unchanged; original rows preserved; final production-compatibility-after-approved-rollout-20261001.json; baseline92 gaps are historical",
-      "external_inputs": "legacy dependency forward review/approval; hosted/provider/full recovery UAT not-run; later11 scoped migrations approved for per-file execution",
+      "acceptance_evidence": "2026-09-27 baseline: production missing 8 minimum tables 14 RPCs and fingerprint column; historical fresh/upgrade rehearsal 67 requirements passed. Later approved CMS and other dependency migrations applied; ledger95 observed 2026-09-30. Baseline missing counts are not current.; 2026-10-01 pre160/182 historical read-only public catalog138tables276functions/ledger98; that snapshot checker exit1 incompatible; production-compatibility-20261001.json; prior missing counts not current; dedicated57322 exact reviewed picker/grant transaction:146structuralchecks compatible0issues/exit0; original catalog/ACL/ledger rollback verified; two pre-DDL harness errors retained; pre160/182 production snapshot92gaps; fresh post-rollout catalog pending; R01 legacy whole-file36success/26collisions, all92gaps mapped; focused182 role RED3/17->GREEN20/0/110assert; full sourceaca3027/127/0, TS/lint/build0; integrated candidate gates pending; current actual release receipt: all-merge-execution-20261001.json; 182 nine table-role checks/no column writes;11 RPC objects unchanged; original rows preserved; final production-compatibility-after-approved-rollout-20261001.json; baseline92 gaps are historical; Task1 exact zero-data schema-clone parity and three real database REDs; baseline four gates0; r01-forward/task-1-evidence.md",
+      "external_inputs": "legacy dependency forward review/approval; hosted/provider/full recovery UAT not-run; later11 scoped migrations approved for per-file execution; Task1 source ACL edit rejected by automatic approval review, explicit user authorization pending",
       "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
     },
     {

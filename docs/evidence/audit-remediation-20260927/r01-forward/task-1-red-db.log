@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\donations\idempotency.database.test.ts:
+PostgresError: column "idempotency_key" does not exist
+    errno: "42703",
+ severity: "ERROR",
+ position: "11",
+     file: "parse_relation.c",
+  routine: "errorMissingColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 donation/payment forward schema on a guarded new clone > current repository projection can read all five nullable intent columns [12.70ms]
+
+ 0 pass
+ 5 filtered out
+ 1 fail
+Ran 1 test across 1 file. [178.00ms]

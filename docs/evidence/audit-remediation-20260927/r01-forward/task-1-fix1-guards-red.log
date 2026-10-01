@@ -1,0 +1,83 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\productionSchemaClone.test.ts:
+(pass) R01 test-only clone boundaries > remote, existing, ambiguous and unexpected-credential DB URLs are refused [2.04ms]
+(pass) R01 test-only clone boundaries > catalog comparison ignores JSON key order and detects grant option/owner changes [6.83ms]
+(pass) R01 test-only clone boundaries > data, role, cluster, schedule and network invocation SQL cannot enter restore [1.72ms]
+(pass) R01 test-only clone boundaries > dollar-quoted function bodies are stored as one definition without invocation [1.31ms]
+(pass) R01 test-only clone boundaries > pinned dump inert settings allow quoted heap but never role or replication changes [1.06ms]
+71 |     ).toHaveLength(2);
+72 |     expect(() => schemaStatements('SET default_table_access_method = "network_method";')).toThrow();
+73 |   });
+74 |   test('CTAS and non-definition TABLE forms are rejected without evaluating requests',()=>{
+75 |     for(const statement of ["CREATE TABLE public.synthetic AS SELECT extensions.http_head('https://example.invalid');","CREATE TABLE public.synthetic AS SELECT 1;","CREATE TABLE public.synthetic OF public.some_type;","CREATE TABLE public.synthetic (id integer) AS SELECT 1;"])
+76 |       expect(()=>schemaStatements(statement)).toThrow();
+                                                   ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: [ "CREATE TABLE public.synthetic AS SELECT extensions.http_head('https://example.invalid')" ]
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:76:47)
+(fail) R01 test-only clone boundaries > CTAS and non-definition TABLE forms are rejected without evaluating requests [3.89ms]
+75 |     for(const statement of ["CREATE TABLE public.synthetic AS SELECT extensions.http_head('https://example.invalid');","CREATE TABLE public.synthetic AS SELECT 1;","CREATE TABLE public.synthetic OF public.some_type;","CREATE TABLE public.synthetic (id integer) AS SELECT 1;"])
+76 |       expect(()=>schemaStatements(statement)).toThrow();
+77 |   });
+78 |   test('all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL',()=>{
+79 |     for(const name of ['http','http_get','http_post','http_put','http_delete','http_head','http_patch','http_request','http_set_curlopt'])
+80 |       expect(()=>schemaStatements(`CREATE INDEX synthetic ON public.synthetic ((extensions.${name}('https://example.invalid')));`)).toThrow();
+                                                                                                                                         ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: [ "CREATE INDEX synthetic ON public.synthetic ((extensions.http_head('https://example.invalid')))" ]
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:80:133)
+(fail) R01 test-only clone boundaries > all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL [0.38ms]
+78 |   test('all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL',()=>{
+79 |     for(const name of ['http','http_get','http_post','http_put','http_delete','http_head','http_patch','http_request','http_set_curlopt'])
+80 |       expect(()=>schemaStatements(`CREATE INDEX synthetic ON public.synthetic ((extensions.${name}('https://example.invalid')));`)).toThrow();
+81 |   });
+82 |   test('direct external webhook trigger is rejected even without a collected body',async()=>{
+83 |     await expect(assertSafeFixtureTables(metadataOnlyProbe([],'supabase_functions.http_request'),['synthetic'])).rejects.toThrow();
+                                                                                                                              ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:83:122)
+(fail) R01 test-only clone boundaries > direct external webhook trigger is rejected even without a collected body [1.13ms]
+82 |   test('direct external webhook trigger is rejected even without a collected body',async()=>{
+83 |     await expect(assertSafeFixtureTables(metadataOnlyProbe([],'supabase_functions.http_request'),['synthetic'])).rejects.toThrow();
+84 |   });
+85 |   test('transitive external-schema executable bodies are inspected before fixtures',async()=>{
+86 |     const functions:FunctionProbe[]=[{schema:'public',name:'entry',body:'PERFORM bridge.forward();',language:'plpgsql',system:false},{schema:'bridge',name:'forward',body:"SELECT extensions.http_head('https://example.invalid');",language:'sql',system:false}];
+87 |     await expect(assertSafeFixtureTables(metadataOnlyProbe(functions,'public.entry'),['synthetic'])).rejects.toThrow();
+                                                                                                                  ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:87:110)
+(fail) R01 test-only clone boundaries > transitive external-schema executable bodies are inspected before fixtures [0.52ms]
+86 |     const functions:FunctionProbe[]=[{schema:'public',name:'entry',body:'PERFORM bridge.forward();',language:'plpgsql',system:false},{schema:'bridge',name:'forward',body:"SELECT extensions.http_head('https://example.invalid');",language:'sql',system:false}];
+87 |     await expect(assertSafeFixtureTables(metadataOnlyProbe(functions,'public.entry'),['synthetic'])).rejects.toThrow();
+88 |     await expect(assertSafeFixtureTables(metadataOnlyProbe(functions,'public.absent','bridge.forward()'),['synthetic'])).rejects.toThrow();
+89 |   });
+90 |   test('unreviewed external C and missing trigger entrypoints fail closed',async()=>{
+91 |     await expect(assertSafeFixtureTables(metadataOnlyProbe([{schema:'bridge',name:'opaque',body:'$libdir/unreviewed',language:'c',system:false}],'bridge.opaque'),['synthetic'])).rejects.toThrow();
+                                                                                                                                                                                               ^
+error:
+
+Expected promise that rejects
+Received promise that resolved: Promise { <resolved> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:91:187)
+(fail) R01 test-only clone boundaries > unreviewed external C and missing trigger entrypoints fail closed [0.22ms]
+
+ 5 pass
+ 5 fail
+ 33 expect() calls
+Ran 10 tests across 1 file. [120.00ms]
