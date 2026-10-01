@@ -239,7 +239,7 @@ async function runGreen() {
     "src/lib/operations/releaseSchema.ts",
     "src/lib/operations/releaseManifest.ts",
     "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-fix-1-gates.py",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-gates.py",
     "package.json",
     "bun.lock",
     "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts",
@@ -302,13 +302,8 @@ async function runGreen() {
     }
     receipt.reviewedFunctions = reviewed;
     const [authProfile] =
-      await db`select has_table_privilege('service_role','auth.users','SELECT') serviceSelect,has_table_privilege('service_role','auth.users','UPDATE') serviceUpdate,has_any_column_privilege('service_role','auth.users','SELECT') serviceColumnSelect,has_any_column_privilege('service_role','auth.users','UPDATE') serviceColumnUpdate,relacl::text acl from pg_class where oid='auth.users'::regclass`;
-    if (
-      authProfile.serviceselect !== false ||
-      authProfile.serviceupdate !== false ||
-      authProfile.servicecolumnselect !== false ||
-      authProfile.servicecolumnupdate !== false
-    )
+      await db`select has_table_privilege('service_role','auth.users','SELECT') serviceSelect,has_table_privilege('service_role','auth.users','UPDATE') serviceUpdate,relacl::text acl from pg_class where oid='auth.users'::regclass`;
+    if (authProfile.serviceselect !== false || authProfile.serviceupdate !== false)
       throw new Error(
         "Managed Auth privilege profile differs from hosted; calibration not authorized",
       );
@@ -452,7 +447,7 @@ async function runGreen() {
           // Missing-object branches must be exercised even on a modern source.
           if (modern)
             await tx.unsafe(
-              "drop function public.reserve_animal_draft_image_upload(uuid,text);drop table public.animal_draft_image_upload_intent",
+              "drop function public.reserve_animal_draft_image_upload(uuid,text);drop function private.require_animal_archive_actor(uuid);drop table public.animal_draft_image_upload_intent",
             );
           await tx.unsafe(mutation);
           await tx`set local role postgres`;

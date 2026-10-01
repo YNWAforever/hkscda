@@ -134,6 +134,7 @@ describe.skipIf(!url)("R01 animal draft intent and audited archive", () => {
       );
     for (const sql of [
       "select id from auth.users limit 0",
+      "select email from auth.users limit 0",
       "select id from auth.users for update",
       "update auth.users set banned_until=now() where false",
     ])
@@ -145,6 +146,28 @@ describe.skipIf(!url)("R01 animal draft intent and audited archive", () => {
         },
         "42501",
       );
+    const authColumns =
+      await db`select attname,attgenerated,has_column_privilege('service_role',attrelid,attnum,'SELECT') readable,has_column_privilege('service_role',attrelid,attnum,'UPDATE') writable from pg_attribute where attrelid='auth.users'::regclass and attnum>0 and not attisdropped order by attnum`;
+    expect(authColumns.length).toBeGreaterThan(0);
+    for (const column of authColumns) {
+      expect(column.readable).toBe(false);
+      expect(column.writable).toBe(false);
+      const quoted = '"' + String(column.attname).replaceAll('"', '""') + '"';
+      for (const sql of [
+        `select ${quoted} from auth.users limit 0`,
+        ...(column.attgenerated === ""
+          ? [`update auth.users set ${quoted}=${quoted} where false`]
+          : []),
+      ])
+        await state(
+          db,
+          async (s) => {
+            await s`set local role service_role`;
+            await s.unsafe(sql);
+          },
+          "42501",
+        );
+    }
     const [helper] =
       await db`select pg_get_userbyid(proowner) owner,prosecdef,proconfig from pg_proc where oid='private.require_animal_archive_actor(uuid)'::regprocedure`;
     expect(helper).toEqual({ owner: "postgres", prosecdef: true, proconfig: ['search_path=""'] });

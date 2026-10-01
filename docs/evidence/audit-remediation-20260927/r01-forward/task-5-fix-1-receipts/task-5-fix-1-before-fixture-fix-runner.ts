@@ -452,7 +452,7 @@ async function runGreen() {
           // Missing-object branches must be exercised even on a modern source.
           if (modern)
             await tx.unsafe(
-              "drop function public.reserve_animal_draft_image_upload(uuid,text);drop table public.animal_draft_image_upload_intent",
+              "drop function public.reserve_animal_draft_image_upload(uuid,text);drop function private.require_animal_archive_actor(uuid);drop table public.animal_draft_image_upload_intent",
             );
           await tx.unsafe(mutation);
           await tx`set local role postgres`;

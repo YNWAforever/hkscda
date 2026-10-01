@@ -5,14 +5,12 @@
 set local search_path = '';
 do $migration$
 declare v_table oid; v_draft oid; v_function oid; v_actual jsonb; v_acl text[];
-  v_default record; v_need_table boolean; v_need_public_functions boolean; v_need_private_function boolean;
 begin
   if current_user <> 'postgres' then raise exception 'R01 animal requires postgres owner context' using errcode='55000'; end if;
   if not pg_catalog.has_schema_privilege('service_role','private','USAGE') then
     raise exception 'R01 animal private schema prerequisite differs' using errcode='55000';
   end if;
   if pg_catalog.has_table_privilege('service_role','auth.users','SELECT,UPDATE')
-    or pg_catalog.has_any_column_privilege('service_role','auth.users','SELECT,UPDATE')
     or not pg_catalog.has_table_privilege('postgres','auth.users','SELECT')
     or not pg_catalog.has_table_privilege('postgres','auth.users','UPDATE')
     or (select count(*) from pg_catalog.pg_attribute where attrelid='auth.users'::pg_catalog.regclass and not attisdropped and ((attname='id' and atttypid='uuid'::pg_catalog.regtype and attnotnull) or (attname in ('email_confirmed_at','banned_until') and atttypid='timestamptz'::pg_catalog.regtype)))<>3
@@ -20,37 +18,6 @@ begin
     or not exists(select 1 from pg_catalog.pg_constraint c join pg_catalog.pg_index i on i.indexrelid=c.conindid where c.conrelid='public.admin_user'::pg_catalog.regclass and c.conname='admin_user_auth_user_id_key' and c.contype='u' and c.convalidated and not c.condeferrable and not c.condeferred and i.indisvalid and i.indisready and pg_catalog.pg_get_constraintdef(c.oid,true)='UNIQUE (auth_user_id)') then
     raise exception 'R01 animal actor bridge prerequisites differ' using errcode='55000';
   end if;
-  -- Current-role defaults are global plus schema additions. Validate only
-  -- branches that will CREATE: replacement keeps an existing function ACL.
-  -- Known recipients below are exactly those explicitly revoked on creation;
-  -- unfamiliar recipients/options must fail, never be silently stripped.
-  v_need_table := pg_catalog.to_regclass('public.animal_draft_image_upload_intent') is null;
-  v_need_public_functions := pg_catalog.to_regprocedure('public.set_animal_archived_with_audit(uuid,uuid,boolean)') is null
-    or pg_catalog.to_regprocedure('public.reserve_animal_draft_image_upload(uuid,text)') is null
-    or pg_catalog.to_regprocedure('public.mark_animal_draft_image_attached()') is null
-    or pg_catalog.to_regprocedure('public.claim_expired_animal_draft_image_uploads(timestamptz,integer)') is null;
-  v_need_private_function := pg_catalog.to_regprocedure('private.require_animal_archive_actor(uuid)') is null;
-  for v_default in select d.* from pg_catalog.pg_default_acl d
-    where d.defaclrole='postgres'::pg_catalog.regrole and (
-      (d.defaclobjtype='r' and v_need_table and d.defaclnamespace in (0,'public'::pg_catalog.regnamespace))
-      or (d.defaclobjtype='f' and (
-        (d.defaclnamespace=0 and (v_need_public_functions or v_need_private_function))
-        or (d.defaclnamespace='public'::pg_catalog.regnamespace and v_need_public_functions)
-        or (d.defaclnamespace='private'::pg_catalog.regnamespace and v_need_private_function)
-      )))
-  loop
-    if exists(select 1 from pg_catalog.aclexplode(v_default.defaclacl) a where
-      a.grantor<>'postgres'::pg_catalog.regrole or a.is_grantable
-      or a.grantee not in (0,'postgres'::pg_catalog.regrole,'anon'::pg_catalog.regrole,'authenticated'::pg_catalog.regrole,'service_role'::pg_catalog.regrole)
-      or (v_default.defaclobjtype='f' and a.privilege_type<>'EXECUTE')
-      or (v_default.defaclobjtype='r' and a.privilege_type not in ('DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE'))
-    ) or (v_default.defaclnamespace=0 and (
-      (select pg_catalog.array_agg(a.privilege_type order by a.privilege_type) from pg_catalog.aclexplode(v_default.defaclacl) a where a.grantee='postgres'::pg_catalog.regrole)
-      is distinct from (case when v_default.defaclobjtype='f' then array['EXECUTE']::text[] else array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[] end)
-    )) then
-      raise exception 'R01 animal creation default ACL prerequisites differ' using errcode='55000';
-    end if;
-  end loop;
   v_draft := pg_catalog.to_regclass('public.animal_draft');
   if v_draft is null or not exists(select 1 from pg_catalog.pg_class where oid=v_draft and relkind='r' and relpersistence='p' and relowner='postgres'::pg_catalog.regrole and relrowsecurity and not relhasrules and not exists(select 1 from pg_catalog.pg_rewrite where ev_class=v_draft)) then
     raise exception 'R01 animal draft prerequisite relation differs' using errcode='55000';
