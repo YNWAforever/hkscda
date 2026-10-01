@@ -322,6 +322,12 @@ jobs:
           CRM_TAG_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
           CRM_TAG_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
+      - name: Run volunteer reviewer bulk database scenarios
+        run: bun test src/lib/volunteers/directory/reviewerBulk.database.test.ts
+        env:
+          VOLUNTEER_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          VOLUNTEER_REVIEW_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop

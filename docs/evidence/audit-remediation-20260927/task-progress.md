@@ -59,6 +59,10 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 
 - T23 sequential #159: actor authorization race, transient recovery loss, keyboard scrolling and JSON status repaired at baf92b18. Full 2987 pass/105 skip/0 fail; typecheck/lint/build 0; actual service-role clone 4 tests/35 assertions includes 1000 rows and concurrent retry; three-width UI/Axe passes. Production migration approval pending; see sequential-merge-159-20260930.md.
 
+- T23 volunteer reviewer slice: in progress on `codex/audit-volunteer-review-bulk-20260928`. Narrow admin-only reviewer assignment, no eligibility/status changes. Dedicated local DB 2 pass/14 assertions; focused directory/selection/API 7 pass/30 assertions; 98-item catalog compatible. Full gates and PR pending; ADMIN-04 remains partial across other domains.
+- T23 volunteer reviewer final local verification: 8 focused pass/32 assertions after red-to-green 1001st-item selection guard; dedicated DB 2 pass/14 assertions; full isolated suite 2860 pass/94 skip/0 fail across 506 files; typecheck, lint, build exit 0 (lint 52 existing warnings). Draft PR #160 source d6b540d opened; remote CI pending. Parent CRM bulk #159 CI run 36339607930 passed verify, RLS, performance, brand and a11y.
+
+- PR160 sequential repair cf09870b: permission locks, JSON400 and durable recovery; 2993 pass/109 skip; typecheck/lint/build0; clone4tests30assertions; 3-width UI/Axe0. Current remote CI/review and exact production approval pending; #156 provider concurrency remains a predecessor gate.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).

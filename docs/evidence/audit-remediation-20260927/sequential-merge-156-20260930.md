@@ -60,6 +60,9 @@ References consulted: [Supabase passwordless email](https://supabase.com/docs/gu
 
 Refreshed upstream release metadata: latest published release remains v2.197.0 (2026-09-09). Source inspection shows verifyUserAndToken reads a user/token before later confirmation/issuance, consistent with the reproduced race; this is an inference from source and local results, not hosted-provider evidence. Existing upstream OTP signup race issues concern a different failure and are not a verified fix for concurrent token consumption. No provider configuration or Auth schema was changed. Sources: https://github.com/supabase/auth/releases/tag/v2.197.0 and https://github.com/supabase/auth/blob/v2.197.0/internal/api/verify.go. A provider fix or reviewed replacement token flow is still required before this PR meets the requested merge condition.
 
+## Independent blocker review
+
+A second read-only reviewer confirmed the assertion matches the actual direct-provider boundary and found no supported configuration fix. Token-hash reads enter the same non-atomic consumption path; an application mutex cannot prevent direct provider redemption; expiry/request limits do not serialize consumption. PKCE was not demonstrated to solve this behavior and must not be presented as a fix. Keep the assertion and disabled flag. Minimum defensible provider repair must atomically validate/consume within session issuance and cover numeric POST, token-hash POST and confirmation-link GET. Hosted version/parity remains untested; no new Auth call, provider config or schema change was made by this review. Sources: [Supabase passwordless semantics](https://supabase.com/docs/guides/auth/auth-email-passwordless), [v2.197.0 verifier](https://github.com/supabase/auth/blob/v2.197.0/internal/api/verify.go), [token lookup](https://github.com/supabase/auth/blob/v2.197.0/internal/models/one_time_token.go).
 
 ## Follow-up: approved T22 fallback implemented
 

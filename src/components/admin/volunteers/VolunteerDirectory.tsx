@@ -1,6 +1,13 @@
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import {
+  addVolunteerSelection,
+  collectMatchingVolunteerIds,
+} from "../../../lib/volunteers/directory/reviewerBulkSelection";
 import type { DirectoryList } from "../../../lib/volunteers/directory/types";
+import { VolunteerReviewBulkPanel } from "./VolunteerReviewBulkPanel";
 
 import {
   directoryQuery,
@@ -13,7 +20,15 @@ const control =
 const link =
   "inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--color-border)] px-4 py-2 font-medium text-[var(--color-primary)] hover:bg-[var(--color-muted)] focus-visible:outline-2";
 type ListData = DirectoryList;
-export function DirectoryResults({ data, search }: { data: ListData; search: DirectorySearch }) {
+export function DirectoryResults({
+  data,
+  search,
+  selection,
+}: {
+  data: ListData;
+  search: DirectorySearch;
+  selection?: { ids: string[]; disabled: boolean; toggle: (id: string) => void };
+}) {
   const pages = Math.max(1, Math.ceil(data.total / data.limit));
   return (
     <div className="space-y-4">
@@ -39,6 +54,17 @@ export function DirectoryResults({ data, search }: { data: ListData; search: Dir
               className="min-w-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
+                {selection && (
+                  <label className="inline-flex min-h-11 min-w-11 items-center justify-center">
+                    <input
+                      type="checkbox"
+                      aria-label={"選取 " + (profile.display_name || profile.id)}
+                      checked={selection.ids.includes(profile.id)}
+                      disabled={selection.disabled}
+                      onChange={() => selection.toggle(profile.id)}
+                    />
+                  </label>
+                )}
                 <h2 className="break-words text-lg font-semibold">
                   {profile.display_name || "未填姓名"}
                 </h2>
@@ -90,11 +116,75 @@ export function DirectoryResults({ data, search }: { data: ListData; search: Dir
   );
 }
 export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
+  const identity = useQuery(adminIdentityQueryOptions());
+  const isAdmin = identity.data?.admin.role === "admin";
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedScope, setSelectedScope] = useState("");
+  const [selectionBusy, setSelectionBusy] = useState(false);
+  const [selectionError, setSelectionError] = useState("");
+  const filterKey = JSON.stringify([search.q ?? "", search.status ?? "", search.tier ?? ""]);
+  const effectiveSelectedIds = selectedScope === filterKey ? selectedIds : [];
+  const filterKeyRef = useRef(filterKey);
+  filterKeyRef.current = filterKey;
+  useEffect(() => {
+    setSelectedIds([]);
+    setSelectedScope(filterKey);
+    setSelectionError("");
+  }, [filterKey]);
   const query = useQuery({
     queryKey: ["volunteer-directory", search],
     queryFn: () =>
       fetchAdminJson<ListData>(`/api/admin/volunteers/people?${directoryQuery(search)}`),
   });
+  const selectionDisabled = selectionBusy || query.isFetching || !query.data;
+  function toggleSelected(id: string) {
+    setSelectedScope(filterKey);
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        effectiveSelectedIds.includes(id)
+          ? effectiveSelectedIds.filter((item) => item !== id)
+          : addVolunteerSelection(effectiveSelectedIds, [id]),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  function selectVisible() {
+    if (!query.data || selectionDisabled) return;
+    setSelectedScope(filterKey);
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        addVolunteerSelection(
+          effectiveSelectedIds,
+          query.data.profiles.map((item) => item.id),
+        ),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  async function selectAllMatching() {
+    if (!query.data || selectionDisabled) return;
+    const scope = filterKey;
+    setSelectionBusy(true);
+    setSelectionError("");
+    try {
+      const ids = await collectMatchingVolunteerIds(query.data.total, async (page, limit) =>
+        fetchAdminJson<DirectoryList>(
+          `/api/admin/volunteers/people?${directoryQuery({ ...search, page })}&limit=${limit}`,
+        ),
+      );
+      if (filterKeyRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      setSelectedScope(scope);
+      setSelectedIds(ids);
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+    } finally {
+      setSelectionBusy(false);
+    }
+  }
   return (
     <section className="min-w-0 space-y-6">
       <form
@@ -168,7 +258,58 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
           </button>
         </div>
       )}
-      {query.data && !query.isError && <DirectoryResults data={query.data} search={search} />}
+      {isAdmin && query.data && !query.isError && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <button
+              type="button"
+              className={link}
+              disabled={selectionDisabled || query.data.profiles.length === 0}
+              onClick={selectVisible}
+            >
+              選取本頁
+            </button>
+            <button
+              type="button"
+              className={link}
+              disabled={selectionDisabled || query.data.total < 1 || query.data.total > 1000}
+              onClick={selectAllMatching}
+            >
+              選取全部符合條件（最多 1000 筆）
+            </button>
+            <button
+              type="button"
+              className={link}
+              disabled={selectionBusy || effectiveSelectedIds.length === 0}
+              onClick={() => setSelectedIds([])}
+            >
+              清除選取
+            </button>
+            {selectionBusy && <span role="status">正在固定選取範圍…</span>}
+            {selectionError && (
+              <span role="alert" className="text-[var(--color-error)]">
+                {selectionError}
+              </span>
+            )}
+          </div>
+          <VolunteerReviewBulkPanel
+            selectedIds={effectiveSelectedIds}
+            filterKey={filterKey}
+            selectionDisabled={selectionDisabled}
+          />
+        </div>
+      )}
+      {query.data && !query.isError && (
+        <DirectoryResults
+          data={query.data}
+          search={search}
+          selection={
+            isAdmin
+              ? { ids: effectiveSelectedIds, disabled: selectionDisabled, toggle: toggleSelected }
+              : undefined
+          }
+        />
+      )}
     </section>
   );
 }

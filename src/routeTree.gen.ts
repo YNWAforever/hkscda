@@ -145,6 +145,7 @@ import { Route as ApiDonationsDonationIdStatusRouteImport } from './routes/api/d
 import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
 import { Route as ApiAdoptionApplicationsPhotoUploadUrlsRouteImport } from './routes/api/adoption/applications/photo-upload-urls'
 import { Route as ApiAdminVolunteersTasksRouteImport } from './routes/api/admin/volunteers/tasks'
+import { Route as ApiAdminVolunteersReviewerBulkRouteImport } from './routes/api/admin/volunteers/reviewer-bulk'
 import { Route as ApiAdminVolunteersRegistrationsRouteImport } from './routes/api/admin/volunteers/registrations'
 import { Route as ApiAdminVolunteersQualificationsRouteImport } from './routes/api/admin/volunteers/qualifications'
 import { Route as ApiAdminVolunteersPeopleRouteImport } from './routes/api/admin/volunteers/people'
@@ -978,6 +979,12 @@ const ApiAdminVolunteersTasksRoute = ApiAdminVolunteersTasksRouteImport.update({
   path: '/api/admin/volunteers/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminVolunteersReviewerBulkRoute =
+  ApiAdminVolunteersReviewerBulkRouteImport.update({
+    id: '/api/admin/volunteers/reviewer-bulk',
+    path: '/api/admin/volunteers/reviewer-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminVolunteersRegistrationsRoute =
   ApiAdminVolunteersRegistrationsRouteImport.update({
     id: '/api/admin/volunteers/registrations',
@@ -1892,6 +1899,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/volunteers/people': typeof ApiAdminVolunteersPeopleRoute
   '/api/admin/volunteers/qualifications': typeof ApiAdminVolunteersQualificationsRoute
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  '/api/admin/volunteers/reviewer-bulk': typeof ApiAdminVolunteersReviewerBulkRoute
   '/api/admin/volunteers/tasks': typeof ApiAdminVolunteersTasksRoute
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
@@ -2156,6 +2164,7 @@ export interface FileRoutesByTo {
   '/api/admin/volunteers/people': typeof ApiAdminVolunteersPeopleRoute
   '/api/admin/volunteers/qualifications': typeof ApiAdminVolunteersQualificationsRoute
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  '/api/admin/volunteers/reviewer-bulk': typeof ApiAdminVolunteersReviewerBulkRoute
   '/api/admin/volunteers/tasks': typeof ApiAdminVolunteersTasksRoute
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
@@ -2422,6 +2431,7 @@ export interface FileRoutesById {
   '/api/admin/volunteers/people': typeof ApiAdminVolunteersPeopleRoute
   '/api/admin/volunteers/qualifications': typeof ApiAdminVolunteersQualificationsRoute
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  '/api/admin/volunteers/reviewer-bulk': typeof ApiAdminVolunteersReviewerBulkRoute
   '/api/admin/volunteers/tasks': typeof ApiAdminVolunteersTasksRoute
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
@@ -2689,6 +2699,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/people'
     | '/api/admin/volunteers/qualifications'
     | '/api/admin/volunteers/registrations'
+    | '/api/admin/volunteers/reviewer-bulk'
     | '/api/admin/volunteers/tasks'
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
@@ -2953,6 +2964,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/people'
     | '/api/admin/volunteers/qualifications'
     | '/api/admin/volunteers/registrations'
+    | '/api/admin/volunteers/reviewer-bulk'
     | '/api/admin/volunteers/tasks'
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
@@ -3218,6 +3230,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/people'
     | '/api/admin/volunteers/qualifications'
     | '/api/admin/volunteers/registrations'
+    | '/api/admin/volunteers/reviewer-bulk'
     | '/api/admin/volunteers/tasks'
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
@@ -3437,6 +3450,7 @@ export interface RootRouteChildren {
   ApiAdminVolunteersPeopleRoute: typeof ApiAdminVolunteersPeopleRoute
   ApiAdminVolunteersQualificationsRoute: typeof ApiAdminVolunteersQualificationsRoute
   ApiAdminVolunteersRegistrationsRoute: typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  ApiAdminVolunteersReviewerBulkRoute: typeof ApiAdminVolunteersReviewerBulkRoute
   ApiAdminVolunteersTasksRoute: typeof ApiAdminVolunteersTasksRoute
   ApiAdoptionStatusTokenRoute: typeof ApiAdoptionStatusTokenRoute
   ApiSponsorshipsStatusTokenRoute: typeof ApiSponsorshipsStatusTokenRoute
@@ -4422,6 +4436,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/volunteers/tasks'
       fullPath: '/api/admin/volunteers/tasks'
       preLoaderRoute: typeof ApiAdminVolunteersTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/reviewer-bulk': {
+      id: '/api/admin/volunteers/reviewer-bulk'
+      path: '/api/admin/volunteers/reviewer-bulk'
+      fullPath: '/api/admin/volunteers/reviewer-bulk'
+      preLoaderRoute: typeof ApiAdminVolunteersReviewerBulkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/volunteers/registrations': {
@@ -6197,6 +6218,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminVolunteersQualificationsRoute: ApiAdminVolunteersQualificationsRoute,
   ApiAdminVolunteersRegistrationsRoute:
     ApiAdminVolunteersRegistrationsRouteWithChildren,
+  ApiAdminVolunteersReviewerBulkRoute: ApiAdminVolunteersReviewerBulkRoute,
   ApiAdminVolunteersTasksRoute: ApiAdminVolunteersTasksRoute,
   ApiAdoptionStatusTokenRoute: ApiAdoptionStatusTokenRoute,
   ApiSponsorshipsStatusTokenRoute: ApiSponsorshipsStatusTokenRoute,
