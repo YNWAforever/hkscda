@@ -801,6 +801,37 @@ describe("R01 test-only clone boundaries", () => {
 });
 
 describe("R01 function's own pinned operator scope", () => {
+  test("dynamic EXECUTE cannot hide behind parentheses, comments or newlines in any scope", async () => {
+    for (const statement of [
+      "EXECUTE('SELECT 1');",
+      "EXECUTE/*comment*/'SELECT 1';",
+      "EXECUTE\n('SELECT 1');",
+      "EXECUTE--comment\n'SELECT 1';",
+    ]) {
+      for (const config of [undefined, ["search_path=pg_catalog, pg_temp"]]) {
+        const body = `BEGIN ${statement} END;`;
+        await expect(
+          assertSafeFixtureTables(
+            metadataOnlyProbe(
+              [
+                {
+                  schema: "public",
+                  name: "entry",
+                  body,
+                  source: body,
+                  language: "plpgsql",
+                  system: false,
+                  config,
+                },
+              ],
+              "public.entry",
+            ),
+            ["synthetic"],
+          ),
+        ).rejects.toThrow();
+      }
+    }
+  });
   const source = `
 declare
   value text := lower(btrim(p_age));

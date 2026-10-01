@@ -787,7 +787,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       )
     );
   };
-  const network = (body: string) => networkPrimitive.test(body) || /\bexecute\s/i.test(body);
+  const network = (body: string) => networkPrimitive.test(body) || /\bexecute\b/i.test(body);
   // This is each function's OWN stored scope. pg_temp is never searched for
   // functions/operators. Do not propagate a caller's scope to its callees.
   // Any SET/RESET token conservatively disables the exception; inspecting
