@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\atomicForward.http.test.ts:
+(pass) R01 CRM actor denial HTTP translation > createSupporter returns generic forbidden for transaction actor fence42501 [3.73ms]
+(pass) R01 CRM actor denial HTTP translation > updateSupporter returns generic forbidden for transaction actor fence42501 [1.97ms]
+(pass) R01 CRM actor denial HTTP translation > appendConsents returns generic forbidden for transaction actor fence42501 [0.31ms]
+(pass) R01 CRM actor denial HTTP translation > existing Response denial is passed through [0.13ms]
+(pass) R01 CRM actor denial HTTP translation > Zod validation remains400 [0.57ms]
+(pass) R01 CRM actor denial HTTP translation > P4090 remains version conflict409 [0.29ms]
+(pass) R01 CRM actor denial HTTP translation > unknown SQL failure remains generic500 [0.23ms]
+
+ 7 pass
+ 0 fail
+ 20 expect() calls
+Ran 7 tests across 1 file. [57.00ms]

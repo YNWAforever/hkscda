@@ -1,0 +1,1258 @@
+{
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "clone": "r01_clone_bb5d1cc957f5488f927861b53ac73854",
+  "schemaParity": true,
+  "query": "  select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements($1::jsonb->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')='supporter'))\n    || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid='public.supporter'::regclass))\n  from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;\n",
+  "probes": [
+    {
+      "type": "string",
+      "count": null,
+      "matches": "0"
+    }
+  ],
+  "actual": {
+    "shape": {
+      "rules": false,
+      "rewrites": 0,
+      "persistence": "p"
+    },
+    "columns": [],
+    "indexes": [],
+    "policies": [],
+    "triggers": [],
+    "relations": [],
+    "constraints": []
+  },
+  "expected": {
+    "relations": [
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "DELETE"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "MAINTAIN"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "REFERENCES"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "SELECT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "TRIGGER"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "TRUNCATE"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "DELETE"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "MAINTAIN"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "REFERENCES"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "SELECT"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "TRIGGER"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "TRUNCATE"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "DELETE"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "MAINTAIN"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "REFERENCES"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "SELECT"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "TRIGGER"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "TRUNCATE"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "forceRls": false,
+        "kind": "r",
+        "name": "supporter",
+        "options": null,
+        "owner": "postgres",
+        "replicaIdentity": "d",
+        "rls": true,
+        "schema": "public"
+      }
+    ],
+    "columns": [
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": null,
+        "default": "gen_random_uuid()",
+        "generated": "",
+        "identity": "",
+        "name": "id",
+        "notNull": true,
+        "position": 1,
+        "schema": "public",
+        "table": "supporter",
+        "type": "uuid"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": "pg_catalog.default",
+        "default": null,
+        "generated": "",
+        "identity": "",
+        "name": "name",
+        "notNull": true,
+        "position": 2,
+        "schema": "public",
+        "table": "supporter",
+        "type": "text"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": "pg_catalog.default",
+        "default": null,
+        "generated": "",
+        "identity": "",
+        "name": "email",
+        "notNull": false,
+        "position": 3,
+        "schema": "public",
+        "table": "supporter",
+        "type": "public.citext"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": "pg_catalog.default",
+        "default": null,
+        "generated": "",
+        "identity": "",
+        "name": "phone",
+        "notNull": false,
+        "position": 4,
+        "schema": "public",
+        "table": "supporter",
+        "type": "text"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": "pg_catalog.default",
+        "default": "'zh-HK'::text",
+        "generated": "",
+        "identity": "",
+        "name": "language",
+        "notNull": true,
+        "position": 5,
+        "schema": "public",
+        "table": "supporter",
+        "type": "text"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": "pg_catalog.default",
+        "default": "'{}'::text[]",
+        "generated": "",
+        "identity": "",
+        "name": "tags",
+        "notNull": true,
+        "position": 6,
+        "schema": "public",
+        "table": "supporter",
+        "type": "text[]"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": "pg_catalog.default",
+        "default": "'donation_form'::text",
+        "generated": "",
+        "identity": "",
+        "name": "source",
+        "notNull": true,
+        "position": 7,
+        "schema": "public",
+        "table": "supporter",
+        "type": "text"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": null,
+        "default": null,
+        "generated": "",
+        "identity": "",
+        "name": "deleted_at",
+        "notNull": false,
+        "position": 8,
+        "schema": "public",
+        "table": "supporter",
+        "type": "timestamp with time zone"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": null,
+        "default": "now()",
+        "generated": "",
+        "identity": "",
+        "name": "created_at",
+        "notNull": true,
+        "position": 9,
+        "schema": "public",
+        "table": "supporter",
+        "type": "timestamp with time zone"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": null,
+        "default": "now()",
+        "generated": "",
+        "identity": "",
+        "name": "updated_at",
+        "notNull": true,
+        "position": 10,
+        "schema": "public",
+        "table": "supporter",
+        "type": "timestamp with time zone"
+      },
+      {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "INSERT"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "UPDATE"
+          }
+        ],
+        "collation": null,
+        "default": "1",
+        "generated": "",
+        "identity": "",
+        "name": "edit_version",
+        "notNull": true,
+        "position": 11,
+        "schema": "public",
+        "table": "supporter",
+        "type": "bigint"
+      },
+      {
+        "acl": [],
+        "collation": null,
+        "default": null,
+        "generated": "",
+        "identity": "",
+        "name": "crm_assignee_user_id",
+        "notNull": false,
+        "position": 12,
+        "schema": "public",
+        "table": "supporter",
+        "type": "uuid"
+      }
+    ],
+    "constraints": [
+      {
+        "definition": "FOREIGN KEY (crm_assignee_user_id) REFERENCES auth.users(id)",
+        "name": "supporter_crm_assignee_user_id_fkey",
+        "schema": "public",
+        "table": "supporter",
+        "type": "f",
+        "validated": true
+      },
+      {
+        "definition": "CHECK (edit_version > 0)",
+        "name": "supporter_edit_version_check",
+        "schema": "public",
+        "table": "supporter",
+        "type": "c",
+        "validated": true
+      },
+      {
+        "definition": "UNIQUE (email)",
+        "name": "supporter_email_key",
+        "schema": "public",
+        "table": "supporter",
+        "type": "u",
+        "validated": true
+      },
+      {
+        "definition": "CHECK (language = ANY (ARRAY['zh-HK'::text, 'en'::text]))",
+        "name": "supporter_language_check",
+        "schema": "public",
+        "table": "supporter",
+        "type": "c",
+        "validated": true
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "supporter_pkey",
+        "schema": "public",
+        "table": "supporter",
+        "type": "p",
+        "validated": true
+      }
+    ],
+    "indexes": [
+      {
+        "definition": "CREATE INDEX supporter_active_name_trgm_idx ON public.supporter USING gin (name public.gin_trgm_ops) WHERE (deleted_at IS NULL)",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": false,
+        "valid": true
+      },
+      {
+        "definition": "CREATE INDEX supporter_active_phone_trgm_idx ON public.supporter USING gin (phone public.gin_trgm_ops) WHERE ((deleted_at IS NULL) AND (phone IS NOT NULL))",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": false,
+        "valid": true
+      },
+      {
+        "definition": "CREATE INDEX supporter_crm_assignee_active_idx ON public.supporter USING btree (crm_assignee_user_id) WHERE (deleted_at IS NULL)",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": false,
+        "valid": true
+      },
+      {
+        "definition": "CREATE INDEX supporter_deleted_at_idx ON public.supporter USING btree (deleted_at)",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": false,
+        "valid": true
+      },
+      {
+        "definition": "CREATE INDEX supporter_tags_gin_idx ON public.supporter USING gin (tags)",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": false,
+        "valid": true
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX supporter_email_key ON public.supporter USING btree (email)",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": true,
+        "valid": true
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX supporter_pkey ON public.supporter USING btree (id)",
+        "ready": true,
+        "schema": "public",
+        "table": "supporter",
+        "unique": true,
+        "valid": true
+      }
+    ],
+    "triggers": [
+      {
+        "definition": "CREATE TRIGGER audit_supporter AFTER INSERT OR DELETE OR UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+        "enabled": "O",
+        "name": "audit_supporter",
+        "schema": "public",
+        "table": "supporter"
+      },
+      {
+        "definition": "CREATE TRIGGER bump_supporter_edit_version BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION private.bump_supporter_edit_version()",
+        "enabled": "O",
+        "name": "bump_supporter_edit_version",
+        "schema": "public",
+        "table": "supporter"
+      },
+      {
+        "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+        "enabled": "O",
+        "name": "set_updated_at",
+        "schema": "public",
+        "table": "supporter"
+      }
+    ],
+    "policies": [
+      {
+        "check": null,
+        "command": "r",
+        "name": "staff can read supporters",
+        "permissive": true,
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "supporter",
+        "using": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])"
+      },
+      {
+        "check": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])",
+        "command": "w",
+        "name": "staff can update supporters",
+        "permissive": true,
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "supporter",
+        "using": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])"
+      }
+    ],
+    "shape": {
+      "rules": false,
+      "rewrites": 0,
+      "persistence": "p"
+    }
+  },
+  "digests": {
+    "actual": "8d7e9a61a9f5fb4f179a09782ac98509",
+    "expected": "7332a9caaf51755403cd1d969b84cc32"
+  },
+  "diffs": [
+    {
+      "facet": "relations",
+      "expected": [
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "DELETE"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "SELECT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "DELETE"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "SELECT"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantable": false,
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "DELETE"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "SELECT"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantable": false,
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "forceRls": false,
+          "kind": "r",
+          "name": "supporter",
+          "options": null,
+          "owner": "postgres",
+          "replicaIdentity": "d",
+          "rls": true,
+          "schema": "public"
+        }
+      ],
+      "actual": []
+    },
+    {
+      "facet": "columns",
+      "expected": [
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": null,
+          "default": "gen_random_uuid()",
+          "generated": "",
+          "identity": "",
+          "name": "id",
+          "notNull": true,
+          "position": 1,
+          "schema": "public",
+          "table": "supporter",
+          "type": "uuid"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": "pg_catalog.default",
+          "default": null,
+          "generated": "",
+          "identity": "",
+          "name": "name",
+          "notNull": true,
+          "position": 2,
+          "schema": "public",
+          "table": "supporter",
+          "type": "text"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": "pg_catalog.default",
+          "default": null,
+          "generated": "",
+          "identity": "",
+          "name": "email",
+          "notNull": false,
+          "position": 3,
+          "schema": "public",
+          "table": "supporter",
+          "type": "public.citext"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": "pg_catalog.default",
+          "default": null,
+          "generated": "",
+          "identity": "",
+          "name": "phone",
+          "notNull": false,
+          "position": 4,
+          "schema": "public",
+          "table": "supporter",
+          "type": "text"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": "pg_catalog.default",
+          "default": "'zh-HK'::text",
+          "generated": "",
+          "identity": "",
+          "name": "language",
+          "notNull": true,
+          "position": 5,
+          "schema": "public",
+          "table": "supporter",
+          "type": "text"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": "pg_catalog.default",
+          "default": "'{}'::text[]",
+          "generated": "",
+          "identity": "",
+          "name": "tags",
+          "notNull": true,
+          "position": 6,
+          "schema": "public",
+          "table": "supporter",
+          "type": "text[]"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": "pg_catalog.default",
+          "default": "'donation_form'::text",
+          "generated": "",
+          "identity": "",
+          "name": "source",
+          "notNull": true,
+          "position": 7,
+          "schema": "public",
+          "table": "supporter",
+          "type": "text"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": null,
+          "default": null,
+          "generated": "",
+          "identity": "",
+          "name": "deleted_at",
+          "notNull": false,
+          "position": 8,
+          "schema": "public",
+          "table": "supporter",
+          "type": "timestamp with time zone"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": null,
+          "default": "now()",
+          "generated": "",
+          "identity": "",
+          "name": "created_at",
+          "notNull": true,
+          "position": 9,
+          "schema": "public",
+          "table": "supporter",
+          "type": "timestamp with time zone"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": null,
+          "default": "now()",
+          "generated": "",
+          "identity": "",
+          "name": "updated_at",
+          "notNull": true,
+          "position": 10,
+          "schema": "public",
+          "table": "supporter",
+          "type": "timestamp with time zone"
+        },
+        {
+          "acl": [
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "INSERT"
+            },
+            {
+              "grantable": false,
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "privilege": "UPDATE"
+            }
+          ],
+          "collation": null,
+          "default": "1",
+          "generated": "",
+          "identity": "",
+          "name": "edit_version",
+          "notNull": true,
+          "position": 11,
+          "schema": "public",
+          "table": "supporter",
+          "type": "bigint"
+        },
+        {
+          "acl": [],
+          "collation": null,
+          "default": null,
+          "generated": "",
+          "identity": "",
+          "name": "crm_assignee_user_id",
+          "notNull": false,
+          "position": 12,
+          "schema": "public",
+          "table": "supporter",
+          "type": "uuid"
+        }
+      ],
+      "actual": []
+    },
+    {
+      "facet": "constraints",
+      "expected": [
+        {
+          "definition": "FOREIGN KEY (crm_assignee_user_id) REFERENCES auth.users(id)",
+          "name": "supporter_crm_assignee_user_id_fkey",
+          "schema": "public",
+          "table": "supporter",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "CHECK (edit_version > 0)",
+          "name": "supporter_edit_version_check",
+          "schema": "public",
+          "table": "supporter",
+          "type": "c",
+          "validated": true
+        },
+        {
+          "definition": "UNIQUE (email)",
+          "name": "supporter_email_key",
+          "schema": "public",
+          "table": "supporter",
+          "type": "u",
+          "validated": true
+        },
+        {
+          "definition": "CHECK (language = ANY (ARRAY['zh-HK'::text, 'en'::text]))",
+          "name": "supporter_language_check",
+          "schema": "public",
+          "table": "supporter",
+          "type": "c",
+          "validated": true
+        },
+        {
+          "definition": "PRIMARY KEY (id)",
+          "name": "supporter_pkey",
+          "schema": "public",
+          "table": "supporter",
+          "type": "p",
+          "validated": true
+        }
+      ],
+      "actual": []
+    },
+    {
+      "facet": "indexes",
+      "expected": [
+        {
+          "definition": "CREATE INDEX supporter_active_name_trgm_idx ON public.supporter USING gin (name public.gin_trgm_ops) WHERE (deleted_at IS NULL)",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": false,
+          "valid": true
+        },
+        {
+          "definition": "CREATE INDEX supporter_active_phone_trgm_idx ON public.supporter USING gin (phone public.gin_trgm_ops) WHERE ((deleted_at IS NULL) AND (phone IS NOT NULL))",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": false,
+          "valid": true
+        },
+        {
+          "definition": "CREATE INDEX supporter_crm_assignee_active_idx ON public.supporter USING btree (crm_assignee_user_id) WHERE (deleted_at IS NULL)",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": false,
+          "valid": true
+        },
+        {
+          "definition": "CREATE INDEX supporter_deleted_at_idx ON public.supporter USING btree (deleted_at)",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": false,
+          "valid": true
+        },
+        {
+          "definition": "CREATE INDEX supporter_tags_gin_idx ON public.supporter USING gin (tags)",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": false,
+          "valid": true
+        },
+        {
+          "definition": "CREATE UNIQUE INDEX supporter_email_key ON public.supporter USING btree (email)",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": true,
+          "valid": true
+        },
+        {
+          "definition": "CREATE UNIQUE INDEX supporter_pkey ON public.supporter USING btree (id)",
+          "ready": true,
+          "schema": "public",
+          "table": "supporter",
+          "unique": true,
+          "valid": true
+        }
+      ],
+      "actual": []
+    },
+    {
+      "facet": "triggers",
+      "expected": [
+        {
+          "definition": "CREATE TRIGGER audit_supporter AFTER INSERT OR DELETE OR UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+          "enabled": "O",
+          "name": "audit_supporter",
+          "schema": "public",
+          "table": "supporter"
+        },
+        {
+          "definition": "CREATE TRIGGER bump_supporter_edit_version BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION private.bump_supporter_edit_version()",
+          "enabled": "O",
+          "name": "bump_supporter_edit_version",
+          "schema": "public",
+          "table": "supporter"
+        },
+        {
+          "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+          "enabled": "O",
+          "name": "set_updated_at",
+          "schema": "public",
+          "table": "supporter"
+        }
+      ],
+      "actual": []
+    },
+    {
+      "facet": "policies",
+      "expected": [
+        {
+          "check": null,
+          "command": "r",
+          "name": "staff can read supporters",
+          "permissive": true,
+          "roles": [
+            "authenticated"
+          ],
+          "schema": "public",
+          "table": "supporter",
+          "using": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])"
+        },
+        {
+          "check": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])",
+          "command": "w",
+          "name": "staff can update supporters",
+          "permissive": true,
+          "roles": [
+            "authenticated"
+          ],
+          "schema": "public",
+          "table": "supporter",
+          "using": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])"
+        }
+      ],
+      "actual": []
+    }
+  ],
+  "dependencyDomainDrift": [],
+  "templatePreserved": true,
+  "cleanup": "normal owned drop"
+}

@@ -1,0 +1,38 @@
+{
+  "kind": "existing-path inert injected error compatibility probe; no DB/HTTP/provider",
+  "results": [
+    {
+      "action": "createSupporter",
+      "injected": {
+        "code": "42501",
+        "message": "supporter_edit_forbidden"
+      },
+      "status": 500,
+      "body": {
+        "error": "Could not process CRM request"
+      }
+    },
+    {
+      "action": "updateSupporter",
+      "injected": {
+        "code": "42501",
+        "message": "supporter_edit_forbidden"
+      },
+      "status": 500,
+      "body": {
+        "error": "Could not process CRM request"
+      }
+    },
+    {
+      "action": "appendConsents",
+      "injected": {
+        "code": "42501",
+        "message": "supporter_edit_forbidden"
+      },
+      "status": 500,
+      "body": {
+        "error": "Could not process CRM request"
+      }
+    }
+  ]
+}

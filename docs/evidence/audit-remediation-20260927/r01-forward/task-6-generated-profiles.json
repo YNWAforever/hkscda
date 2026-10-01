@@ -1,0 +1,83 @@
+{
+  "file": "20261001213914_r01_crm_atomic_forward.sql",
+  "sourceGeneration": "exact LF historical body hashes plus controller ruled own-domain fence/consent guard; utility unchanged",
+  "functions": [
+    {
+      "name": "public.mutate_crm_supporter_with_audit",
+      "oldMd5": "a239e42582809956b821b1bfe1fb2962",
+      "newMd5": "b855a871526b63f13a1d653757a2f4c1"
+    },
+    {
+      "name": "public.replace_supporter_roles_atomic",
+      "oldMd5": "f2c7e2d7478e45b8320a59b43b56f818",
+      "newMd5": "f2c7e2d7478e45b8320a59b43b56f818"
+    },
+    {
+      "name": "public.append_crm_consents_with_audit",
+      "oldMd5": "65f1847569ad471a239e0c1a1dd60324",
+      "newMd5": "fad2e7acedab10443930040b3e667939"
+    },
+    {
+      "name": "public.mutate_crm_supporter_if_version_with_audit",
+      "oldMd5": "c39e9474fb941717626a0e9e3afd1477",
+      "newMd5": "f6963da392c67e51fea8e5b451698238"
+    },
+    {
+      "name": "private.require_crm_supporter_actor",
+      "oldMd5": "60f3f9ec8d075cfd67c0e992d2667030",
+      "newMd5": "60f3f9ec8d075cfd67c0e992d2667030"
+    }
+  ],
+  "tableProfiles": [
+    {
+      "mode": "hosted",
+      "profiles": [
+        {
+          "name": "supporter",
+          "md5": "3148b717a290aa5be32b446245ddc1ce"
+        },
+        {
+          "name": "supporter_role",
+          "md5": "42e54bc9095fec260c06c0a0abcdaa99"
+        },
+        {
+          "name": "consent",
+          "md5": "b0910115759516475c6d75ad981f0472"
+        },
+        {
+          "name": "audit_log",
+          "md5": "5fc405c73d66e35453f7e2bebc7ee56e"
+        },
+        {
+          "name": "admin_user",
+          "md5": "270bf82ae3cd7989bf451639f80f6eb1"
+        }
+      ]
+    },
+    {
+      "mode": "modern",
+      "profiles": [
+        {
+          "name": "supporter",
+          "md5": "8ac590a6fec96f6c2cbaa48e7be16c97"
+        },
+        {
+          "name": "supporter_role",
+          "md5": "0ecced41c05768089eace4c02023d22a"
+        },
+        {
+          "name": "consent",
+          "md5": "cfcca1dcec350f6b1a66dc13e0cdce7a"
+        },
+        {
+          "name": "audit_log",
+          "md5": "65bb62e35c43389f61c9afcd31fb1808"
+        },
+        {
+          "name": "admin_user",
+          "md5": "20f917785e938aab9c65b7791d47e580"
+        }
+      ]
+    }
+  ]
+}

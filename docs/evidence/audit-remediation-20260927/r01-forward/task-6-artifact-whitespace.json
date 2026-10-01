@@ -1,0 +1,9 @@
+{
+  "sourceCommand": "git diff --cached --check -- [explicit Task6 source and metadata paths]",
+  "sourceExit": 0,
+  "fullCommand": "git diff --cached --check",
+  "fullExit": 2,
+  "initialStagedDiagnosticOutputLines": 473,
+  "rawLog": "task-6-gate-receipts/artifact-whitespace.log",
+  "qualification": "Full staged raw receipt payload includes original CRLF gate JSON and captured output whitespace. Original bytes are intentionally preserved via receipt-directory * -text attributes. Source/metadata check0 is distinct from full-artifact check2; no entire-evidence whitespace-clean claim. This diagnostic precedes addition of its own packaging metadata."
+}

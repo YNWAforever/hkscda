@@ -1,0 +1,159 @@
+{
+  "mode": "green-smoke",
+  "startedAt": "2026-10-01T22:06:31.428Z",
+  "sourceCommit": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+  "testedExecutableBlobs": {
+    "src/lib/crm/atomicForward.database.test.ts": {
+      "sha256": "8e116c3bb05d2c6bbbd8e146c235bbf1030bb97068c0b0fd81fbc0df6c3ede45",
+      "canonicalSha256": "8e116c3bb05d2c6bbbd8e146c235bbf1030bb97068c0b0fd81fbc0df6c3ede45"
+    },
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "sha256": "7da25033f36eaa15108e00c5d0accde1cfa4501e3a08e61db552937dde4239fe",
+      "canonicalSha256": "7da25033f36eaa15108e00c5d0accde1cfa4501e3a08e61db552937dde4239fe"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "src/lib/crm/service.ts": {
+      "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+      "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110"
+    },
+    "src/lib/crm/repository.server.ts": {
+      "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+      "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b"
+    },
+    "src/lib/crm/http.server.ts": {
+      "sha256": "23b777f66064243497aaeca973231f8704dd1edd772d98ba65a01592ecf7d134",
+      "canonicalSha256": "23b777f66064243497aaeca973231f8704dd1edd772d98ba65a01592ecf7d134"
+    },
+    "src/lib/crm/consent.ts": {
+      "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172"
+    },
+    "src/lib/crm/schemas.ts": {
+      "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a"
+    },
+    "src/lib/crm/types.ts": {
+      "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "6fbec6ad1547d2a01d3416b30a3b57d08e1a8e0f433d9c2ff416cb290cbba4b7",
+      "canonicalSha256": "6fbec6ad1547d2a01d3416b30a3b57d08e1a8e0f433d9c2ff416cb290cbba4b7"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "sha256": "b3ef1a69e4d92362611ede79ba775b5b28904e4acaff166550859e9b57844bc2",
+      "canonicalSha256": "b3ef1a69e4d92362611ede79ba775b5b28904e4acaff166550859e9b57844bc2"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+      "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+    },
+    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+      "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+    }
+  },
+  "clone": "r01_clone_e4f18324c45f442b8ee9f78d18485006",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "productionActions": "schema/catalog read only; no production actor calls or data",
+  "dependencyGate": "controller released PR189 exact592 CI36928397189 allfiveSUCCESS",
+  "task1Applied": false,
+  "manifestInitial": 44,
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "issues": 41
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "issues": 41
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "issues": 33
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "issues": 30
+    },
+    {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "issues": 25
+    }
+  ],
+  "manifestBeforeTask6": 25,
+  "preMigrationRowHash": "cedc355fe40ca6f37fe9879ca7a7ba2bdfb35616684aea617df94db790011efa",
+  "preMigrationCompleteAuthDefaultNativeLedgerHash": "66fd423167b7a044af7a70761c90a0daaf32cbe5b80eef554d9d1f90c55eb975",
+  "normalBaselineAccepted": true,
+  "normalBaselineRollbackPreserved": true,
+  "refusals": [],
+  "migrationRowsPreserved": true,
+  "completeAuthDefaultsNativeLedgerPreserved": true,
+  "unrelatedCatalogPreserved": true,
+  "secondApplyCatalogIdentical": true,
+  "secondApplyRowsIdentical": true,
+  "manifestAfterTask6": 22,
+  "testExit": 0,
+  "testSummary": [
+    "\n 23 pass",
+    " 0 fail",
+    " 199 expect() calls"
+  ],
+  "postTestRowsPreserved": true,
+  "postTestCatalogPreserved": true,
+  "postTestAuthDefaultsNativeLedgerPreserved": true,
+  "templateBefore": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templatePreserved": true,
+  "modernBefore": "2a008c317589a983c000926b42f1938ed19d34e7737bb3ba358d251e2f877631",
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "cleanup": "normal newly owned clone drop only",
+  "completedAt": "2026-10-01T22:06:37.565Z"
+}

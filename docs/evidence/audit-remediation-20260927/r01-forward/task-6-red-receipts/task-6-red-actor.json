@@ -1,0 +1,123 @@
+{
+  "mode": "red-actor",
+  "sourceCommit": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+  "startedAt": "2026-10-01T21:31:43.456Z",
+  "clone": "r01_clone_ae22c5f3119e4e0895a757fff6e8c7b6",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "testedExecutableBlobs": {
+    "src/lib/crm/atomicForward.database.test.ts": "0968ba04a980b5d82d69dfb2afbdfb6720a66e6f105e357278b975b43619227a",
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": "590c3803d963960d27d300de877ab87a5dbbdd26c43f72fd9128b4b8c4c9afa8",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+  },
+  "productionActions": "schema/catalog only; no data read or actor commands",
+  "task1Applied": false,
+  "dependentSqlApplied": false,
+  "authEffectiveAccess": {
+    "sel": false,
+    "upd": false
+  },
+  "targetProfiles": [
+    {
+      "schema": "private",
+      "proname": "bump_supporter_edit_version",
+      "args": "",
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "sourcemd5": "ce77bf772b703ab19ea00a56121ff227",
+      "definitionmd5": "08619e0337db72d3d685130718c47538"
+    },
+    {
+      "schema": "private",
+      "proname": "bump_supporter_edit_version_from_role",
+      "args": "",
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": null,
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "sourcemd5": "fb159fa8743f67d5493d7144d4fa5c02",
+      "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb"
+    },
+    {
+      "schema": "public",
+      "proname": "append_crm_consents_with_audit",
+      "args": "p_rows jsonb, p_actor_user_id uuid, p_supporter_id uuid, p_at timestamp with time zone, p_detail jsonb",
+      "result": "void",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "sourcemd5": "65f1847569ad471a239e0c1a1dd60324",
+      "definitionmd5": "0633682b0db7ac1de30c8548f2befa5d"
+    },
+    {
+      "schema": "public",
+      "proname": "mutate_crm_supporter_if_version_with_audit",
+      "args": "p_supporter_id uuid, p_expected_version bigint, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "sourcemd5": "c39e9474fb941717626a0e9e3afd1477",
+      "definitionmd5": "3d8be4a98da61f65dce77796ae4aad2f"
+    },
+    {
+      "schema": "public",
+      "proname": "mutate_crm_supporter_with_audit",
+      "args": "p_operation text, p_supporter_id uuid, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "sourcemd5": "a239e42582809956b821b1bfe1fb2962",
+      "definitionmd5": "3407692e6c0b30e95b07a89025bfd4c6"
+    },
+    {
+      "schema": "public",
+      "proname": "replace_supporter_roles_atomic",
+      "args": "p_supporter_id uuid, p_roles jsonb",
+      "result": "void",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "sourcemd5": "f2c7e2d7478e45b8320a59b43b56f818",
+      "definitionmd5": "dde0bab5c462490179d1b02834cfc62d"
+    }
+  ],
+  "testExit": 1,
+  "testSummary": [
+    "\n 0 pass",
+    " 1 fail",
+    " 1 expect() calls"
+  ],
+  "catalogPreserved": true,
+  "result": "actual versioned wrapper accepts banned Auth actor",
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "cleanup": "normal owned clone drop only",
+  "completedAt": "2026-10-01T21:31:46.052Z"
+}
