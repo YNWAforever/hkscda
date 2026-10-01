@@ -1,0 +1,41 @@
+{
+  "parent": "63a705318d8ca9a92e3223149f677275cd3f5b1c",
+  "scope": "separate guard Fix Round1; standalone EXECUTE keyword fence",
+  "executableBlobs": {
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.test.ts": {
+      "sha256": "dccb2c30c88e28e20b948cadbebd7a45a77a06edfc24de1ba8eac5180a7807d1",
+      "gitBlob": "aee6da0e5c95ac6d1e3ac42a72f1b5da95772f8c"
+    }
+  },
+  "command": "bun test supabase/rls-tests/helpers/productionSchemaClone.test.ts --timeout 30000",
+  "red": {
+    "exit": 1,
+    "pass": 32,
+    "fail": 1,
+    "assertions": 331
+  },
+  "green": {
+    "exit": 0,
+    "pass": 33,
+    "fail": 0,
+    "assertions": 338
+  },
+  "retainedIgnoredLogs": [
+    {
+      "file": "task-3-guard-fix-1-red.log",
+      "sha256": "e9302ca66ad4a953a0c7f4b3ef293e77127b1977ae9623dbe747d7cbfb3934a8",
+      "bytes": 5790
+    },
+    {
+      "file": "task-3-guard-fix-1-green.log",
+      "sha256": "62e8a8493d66e85301f07165a01a799d6cf3f82b4e1516ad362db8aca40cb589",
+      "bytes": 4455
+    }
+  ],
+  "priorActualReceipts": "original hashes retained unchanged; not relabeled",
+  "newActualCoverage": "subsequent final hosted/modern trigger and Task3 composition; pending at this fix commit"
+}
