@@ -28,7 +28,7 @@ begin
  RETURNS trigger
  LANGUAGE plpgsql
  SECURITY DEFINER
- SET search_path TO ''public'', ''pg_temp''
+ SET search_path = public, pg_temp
 AS $function$
 declare a public.animals%rowtype;
 begin
