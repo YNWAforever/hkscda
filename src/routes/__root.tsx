@@ -147,6 +147,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
+  const isAdoptionWizard = /^\/adoption\/apply\/?$/.test(location.pathname);
   const analyticsPagePath = redactSensitivePagePath(location.pathname);
 
   useEffect(() => {
@@ -165,7 +166,7 @@ function RootComponent() {
         <Outlet />
       </div>
       <Footer />
-      <ShortlistTray />
+      {isAdoptionWizard ? null : <ShortlistTray />}
       <ContextualDonationPrompt pathname={location.pathname} />
       <HelpWidget />
     </div>

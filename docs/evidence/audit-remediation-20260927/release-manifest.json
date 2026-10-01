@@ -1,16 +1,18 @@
 {
   "schemaVersion": 1,
-  "appSha": "641f10abbc9ead69c1bd61b45b6439f2b099a28c",
-  "appShaNote": "PR178 combined review source641f10abbc9ead69c1bd61b45b6439f2b099a28c; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
-  "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
+  "appSha": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+  "appShaNote": "Full local four-gate run is bound to this combined code SHA. Subsequent documentation-only head requires fresh exact-head PR CI; acceptance is recorded only after actual main five gates and same-SHA READY. Previous source reports remain historical.",
+  "productionAliasShaObserved": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+  "schemaManifestHash": "61125ee02a14beee04c0f359d84cfaa586d2cfc6cea325784182cddd07c6ff35",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
     "sponsorshipTermsPdfSha256": null,
     "volunteerPolicy": null,
     "publishedContentRevision": null,
-    "reason": "Operational activation versions not certified in this package; payment admission disabled. Separate method/content/terms/provider approvals remain required; null is not a default."
+    "reason": "Checkout singleton enabled=false/version1 verified after every approved DDL. Other operational method/content/terms/provider versions remain uncertified; null is not a default.",
+    "checkoutAdmissionVersion": 1,
+    "checkoutEnabled": false
   },
   "migrationChecksums": [
     {
@@ -322,10 +324,15 @@
       "version": "20260930120000",
       "file": "20260930120000_supporter_recovery_single_use.sql",
       "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
+    },
+    {
+      "version": "20261001080000",
+      "file": "20261001080000_service_readonly_evidence_privileges.sql",
+      "sha256": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808"
     }
   ],
   "ciRun": {
-    "status": "fresh combined exact-head CI pending; scoped integration checks in progress"
+    "status": "fresh exact documentation-head PR179 CI required before merge; actual acceptance in PR body and sequential receipts"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -348,13 +355,41 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md",
+    "docs/evidence/audit-remediation-20260927/final-local-gates-20261001.json",
+    "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
+    "docs/evidence/audit-remediation-20260927/release-checkpoint-20261001.md",
+    "docs/evidence/audit-remediation-20260927/migration-approval-packet-20261001.md",
+    "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json",
+    "docs/evidence/audit-remediation-20260927/r01-legacy-migration-review-20261001.md",
+    "docs/evidence/audit-remediation-20260927/r01-legacy-migration-verification-20261001.json",
+    "docs/evidence/audit-remediation-20260927/r01-legacy-migration-inventory-20261001.csv",
+    "docs/evidence/audit-remediation-20260927/sequential-fix-r01-readonly-20261001.md",
+    "docs/evidence/audit-remediation-20260927/r01-readonly-privilege-verification-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-execution-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-166-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-169-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-170-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-172-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/current-operations-handoff-20261001.md",
+    "docs/evidence/audit-remediation-20260927/catalog-projection-review-20261001.md",
+    "docs/evidence/audit-remediation-20260927/pr179-final-combined-local-gates-20261001.json",
+    "docs/evidence/audit-remediation-20260927/merge-scope-pr-status-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-173-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-175-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-177-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-178-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/current-issue-status-20261001.json",
+    "docs/evidence/audit-remediation-20260927/current-issue-status-20261001.md",
+    "docs/evidence/audit-remediation-20260927/current-migration-runbook-20261001.md",
+    "docs/evidence/audit-remediation-20260927/production-catalog-after-approved-rollout-20261001.json",
+    "docs/evidence/audit-remediation-20260927/production-compatibility-after-approved-rollout-20261001.json"
   ],
   "rollbackTarget": {
     "appSha": null,
     "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
   },
-  "releaseDecision": "NO-GO for next sequential release pending #160 named migration approval and latest reviewed-head CI; continue independent preparation.",
+  "releaseDecision": "45/46 accepted scoped source releases; remaining candidates require sequential green exact-head/main gates and same-SHA READY. Complete operational remediation remains gated by residual R01 catalog and external content/provider/hosted/recovery UAT. Payment and new sending/media schedules remain disabled.",
   "productionActionsPerformed": [
     {
       "action": "sequential approved merge and automatic deployment",
@@ -698,31 +733,458 @@
         "url": "https://github.com/YNWAforever/hkscda/actions/runs/36758558621",
         "workflowName": "CI"
       }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 160,
+      "sourceSha": "ffe4db25ce7ac65b077a073ec54ce0fb882864b2",
+      "mergeSha": "af786636211e7376db16694500c67d18555c70d9",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36802463075,
+        "headSha": "af786636211e7376db16694500c67d18555c70d9",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36802463075"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_6yxJYbY4Sjp8j2MZqxmwrTj2Pm4C",
+      "aliasSha": "af786636211e7376db16694500c67d18555c70d9"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 182,
+      "sourceSha": "61416eb7b08bcfe98abb6b6fe149f8369bee4bbb",
+      "mergeSha": "124148ac2b0b7698906087d0c66836c66be95d2f",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36803461825,
+        "headSha": "124148ac2b0b7698906087d0c66836c66be95d2f",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36803461825"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_EmrqZLa8rcSYnaF9m8hPzNrV7FL6",
+      "aliasSha": "124148ac2b0b7698906087d0c66836c66be95d2f"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 161,
+      "sourceSha": "c01090d4050329a7f5c6136e3dbebef257c0648f",
+      "mergeSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36805966176,
+        "headSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36805966176"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_5JiefMgUWb9TVbfwn7zfjgSfSp95",
+      "aliasSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 162,
+      "sourceSha": "00673f85ed27f266d4a06c9912d14278980ca81b",
+      "mergeSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36807434318,
+        "headSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36807434318"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_9LzUJkbBoSnnBtb83yg27rJL2Wku",
+      "aliasSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 163,
+      "sourceSha": "23c5c752caab440473e326ee77e97c3f76e7260d",
+      "mergeSha": "93989d29d1adaacf05af406b8d595262c5b7c818",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36808409156,
+        "headSha": "93989d29d1adaacf05af406b8d595262c5b7c818",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36808409156"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_9Xhmo3dfWKPHDJja1sKp5k2Nfi9a",
+      "aliasSha": "93989d29d1adaacf05af406b8d595262c5b7c818"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 164,
+      "sourceSha": "2c5a86c25a3762004dec7480189391515a6904b2",
+      "mergeSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36809549878,
+        "headSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36809549878"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_337BE9zjMnxvwq8RbL8e2bqKuGKN",
+      "aliasSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 165,
+      "sourceSha": "d853c3c526b2868b734e32ff305c25cb9f6f3547",
+      "mergeSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36810707899,
+        "headSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36810707899"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_84qPQBNPNz8HcfipZWZ5RU4VQGk3",
+      "aliasSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 166,
+      "sourceSha": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+      "mergeSha": "145624623b740685d134eda93344afe8a80aebff",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36812083168,
+        "headSha": "145624623b740685d134eda93344afe8a80aebff",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36812083168"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_TLiecPmvUWof9MCn23Frg1nBbrX7",
+      "aliasSha": "145624623b740685d134eda93344afe8a80aebff"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 167,
+      "sourceSha": "3c5125fb311026539ade6f11fda25073d240718a",
+      "mergeSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36813137411,
+        "headSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36813137411"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_4UCLGvDXqSrgwcukwzWvP8N21ddE",
+      "aliasSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 168,
+      "sourceSha": "82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8",
+      "mergeSha": "756a3979da51b70647a45a449948600a33b95c8e",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36816694953,
+        "headSha": "756a3979da51b70647a45a449948600a33b95c8e",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36816694953"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_JCS6ixapVcwp4YaYSmk8oKc77tZP",
+      "aliasSha": "756a3979da51b70647a45a449948600a33b95c8e"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 169,
+      "sourceSha": "f8c4f1604cf8638394c65b734149db053fc480cd",
+      "mergeSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36817868572,
+        "headSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36817868572"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_8FcERY3jVW9rjys45XHbJqyi3WLw",
+      "aliasSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 170,
+      "sourceSha": "dfae45034e81a76b1141dd6d2882ee0527f6e37a",
+      "mergeSha": "a1c038d7f78e498a34c717dd0491ec66232d7198",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36819010956,
+        "headSha": "a1c038d7f78e498a34c717dd0491ec66232d7198",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36819010956"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_Bg3JpQiiMrGqANU5tWmfYFuGzW8p",
+      "aliasSha": "a1c038d7f78e498a34c717dd0491ec66232d7198"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 171,
+      "sourceSha": "47b3a4654f06a8663610fd6f809dbacf25738fd4",
+      "mergeSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36820293487,
+        "headSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36820293487"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_4EcbzJB1C4TF7MA6ZZoSqzSKPrXZ",
+      "aliasSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 172,
+      "sourceSha": "f117dc3889f03f19dd4c419734a980ba4625cdbc",
+      "mergeSha": "f277103be09d7c27967f23fca4a667743c421aaf",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36822299791,
+        "headSha": "f277103be09d7c27967f23fca4a667743c421aaf",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36822299791"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_AB1raYZ1BnoLFvZj5Xi3RuMANDba",
+      "aliasSha": "f277103be09d7c27967f23fca4a667743c421aaf"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 173,
+      "sourceSha": "e5ed74c7d680b30102612bfee2b44b49cc754822",
+      "mergeSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36823569108,
+        "headSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36823569108"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_BNn5LAYDtyGMySXxzop2sBuWVb1h",
+      "aliasSha": "748fd6441add145f481524ad186ce4bb1186ad9f"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 174,
+      "sourceSha": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+      "mergeSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36824674785,
+        "headSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36824674785"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_Ej8pAVT2SxQk4vwWeWbSM5URnaTS",
+      "aliasSha": "ac613c5f342b4c5797b354174c47cee61e89b095"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 175,
+      "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+      "mergeSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36826152769,
+        "headSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36826152769"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT",
+      "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 176,
+      "sourceSha": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+      "mergeSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36827586656,
+        "headSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36827586656"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_BMZHGpKBS1Xo7qqCK6RUypyTu1f5",
+      "aliasSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 177,
+      "sourceSha": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+      "mergeSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36828955860,
+        "headSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36828955860"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_1Lbworrg8Wa7saAgtLfuHAY5SAcV",
+      "aliasSha": "a569bf033c42e6037fd59eafd522014a3564137b"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 178,
+      "sourceSha": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+      "mergeSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36830360908,
+        "headSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36830360908"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC",
+      "aliasSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91"
     }
   ],
-  "capturedAt": "2026-09-30T19:55:37.086189+00:00",
-  "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
+  "capturedAt": "2026-10-01T07:38:42.863321+00:00",
+  "productionDeploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC",
   "productionDeploymentState": "READY",
-  "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "62 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
+  "productionSchemaLedgerCountObserved": 112,
+  "migrationManifestNote": "63 canonical LF entries: original62 rehearsed/mapped separately plus new readonly forward repair. No apply-all authority or ledger rewrite.",
   "productionCiRun": {
-    "id": 36758558621,
-    "sha": "07e4c881863b715342ed0757aad7bd691a272738",
+    "id": 36830360908,
+    "sha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
     "status": "success; all five gates"
   },
   "remainingApprovals": {
-    "migration160": "named single migration approval requested; pending",
-    "migration161": "explicit filename/schema/backfill approval already received; operative after stricter guards, per recorded ruling; waits for predecessor and fresh preflight",
-    "migration162": "new exact named migration approval pending",
-    "laterActivation": "approved terms/methods/provider sandbox/hosted identities/content and schedules remain separately gated",
-    "migration164": "named exact migration approval pending; updated b564a09a expiry guards disclosed",
-    "migration165": "named exact d4f68382 manual-payment RPC/reference index approval pending; no production financial operation",
-    "migration166": "named exact 8c1b4550 quality read RPC/index approval pending; no content mutation"
+    "migration160": {
+      "file": "20260927181701_volunteer_review_bulk.sql",
+      "sha256": "96149a16e41cdf9fdf2e246b700033877fc91c3c00403a2b2efcd39d12cb3164",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "reviewer assignment/operation/result tables and restricted RPCs; no profile/status backfill",
+      "providerVersion": "20261001014214",
+      "evidence": "all-merge-execution-20261001.json"
+    },
+    "migration161": {
+      "file": "20260927183000_adoption_assignment_bulk.sql",
+      "sha256": "cd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "six production cases gain version1; no assignee change or adoption approval; stricter expiry guards",
+      "providerVersion": "20261001022601",
+      "evidence": "all-merge-execution-20261001.json"
+    },
+    "migration162": {
+      "file": "20260927184500_animal_review_bulk.sql",
+      "sha256": "8f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "versioned per-item animal review; no automatic publishing",
+      "providerVersion": "20261001024348",
+      "evidence": "all-merge-execution-20261001.json"
+    },
+    "migration164": {
+      "file": "20260927190000_cms_review_bulk.sql",
+      "sha256": "b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "versioned per-item CMS review; no content publish/unpublish",
+      "providerVersion": "20261001031157",
+      "evidence": "all-merge-execution-20261001.json"
+    },
+    "migration165": {
+      "file": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "atomic manual-payment RPC and reference uniqueness; no real reconcile/refund; never deduplicate history blindly",
+      "providerVersion": "20261001032650",
+      "evidence": "all-merge-execution-20261001.json"
+    },
+    "migration166": {
+      "file": "20260927211801_editorial_quality_queue.sql",
+      "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "quality read RPC and index; no content mutation",
+      "providerVersion": "20261001034448",
+      "evidence": "all-merge-166-postflight-20261001.json"
+    },
+    "migration169": {
+      "file": "20260928073000_sponsorship_followup_assignment.sql",
+      "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "assignment version/RPC; no notifications",
+      "providerVersion": "20261001045928",
+      "evidence": "all-merge-169-postflight-20261001.json"
+    },
+    "migration170": {
+      "file": "20260928080000_sponsorship_followup_bulk.sql",
+      "sha256": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "snapshot/result RPCs; per-item role/version and post-lock expiry checks",
+      "providerVersion": "20261001051516",
+      "evidence": "all-merge-170-postflight-20261001.json"
+    },
+    "migration172": {
+      "file": "20260928090000_finance_bank_dryrun.sql",
+      "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "bounded read-only bank preview RPC/index; no financial write",
+      "providerVersion": "20261001055531",
+      "evidence": "all-merge-172-postflight-20261001.json"
+    },
+    "migration173": {
+      "file": "20260928100000_finance_delivery_retry_guard.sql",
+      "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "failed delivery read/index and guarded retry; schedule/sending stays disabled",
+      "providerVersion": "20261001061046",
+      "evidence": "all-merge-173-postflight-20261001.json"
+    },
+    "migration175": {
+      "file": "20260928110000_finance_bank_match_confirmation.sql",
+      "sha256": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "reviewed snapshot bank-match RPC; final expiry guard outside handled23505; no real confirmation performed",
+      "providerVersion": "20261001063913",
+      "evidence": "all-merge-175-postflight-20261001.json"
+    },
+    "migration177": {
+      "file": "20260928113000_crm_supporter_version_fence.sql",
+      "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "revoke private bump trigger function EXECUTE only; preserve existing columns/rows/triggers",
+      "providerVersion": "20261001070942",
+      "evidence": "all-merge-177-postflight-20261001.json"
+    },
+    "migration178": {
+      "file": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "assignment version/RPC/result schema; preserve ordinary legacy column privileges; no identity merge",
+      "providerVersion": "20261001072505",
+      "evidence": "all-merge-178-postflight-20261001.json"
+    },
+    "legacyDependencies": "Final public catalog at ledger112: 44 residual issues in the implemented checker; see production-compatibility-after-approved-rollout-20261001.json. These legacy dependencies remain outside the exact approved scopes. The earlier ledger98/92-gap inventory is historical; source63-file inventory is not apply-all authority.",
+    "activation": "approved terms/content/retention/method versions; scoped hosted identities; provider sandbox; payment/sending/media schedule and region rollout approvals remain separate",
+    "readonlyEvidenceRepair": {
+      "pr": 182,
+      "file": "20261001080000_service_readonly_evidence_privileges.sql",
+      "sha256": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808",
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "three public evidence tables: revoke inherited table/column writes, retain only service SELECT; precreate empty duplicate archive, no dedupe/backfill/DML; owner RPC writers preserved",
+      "providerVersion": "20261001014620",
+      "evidence": "all-merge-execution-20261001.json"
+    }
   },
   "blockedGate": {
-    "pr": 160,
-    "environment": "production release authorization",
-    "result": "PR160 named production migration approval pending; test-proof follow-up and fresh exact-head CI in progress",
+    "environment": "wider R01 legacy readiness and external operational UAT",
+    "result": "Final implemented public checker: 44 residual issues; no legacy replay authority or provider/hosted-UAT certification",
     "enabled": false
   },
   "sequentialProgress": {
@@ -731,9 +1193,9 @@
       179
     ],
     "requestedCount": 46,
-    "actualMainReleasedCount": 26,
-    "throughPr": 159,
-    "note": "#157 actual main release is corrective #181; #180 remains explicitly do-not-merge evidence branch."
+    "actualMainReleasedCount": 45,
+    "throughPr": 178,
+    "note": "#157 actual main release is corrective #181; #182 is an additional scoped repair; #180 remains do-not-merge. PR179 self-acceptance occurs after this immutable premerge package."
   },
   "approvedMigrationReceipts": [
     {
@@ -750,11 +1212,306 @@
       "sourceFile": "20260927172030_crm_tag_bulk.sql",
       "sha256": "15ca57d14f074a933bdba9001ad3758fe1f6340765321fa0054d032428611522",
       "providerVersion": "20260930180311"
+    },
+    {
+      "sourceFile": "20260927181701_volunteer_review_bulk.sql",
+      "sha256": "96149a16e41cdf9fdf2e246b700033877fc91c3c00403a2b2efcd39d12cb3164",
+      "providerVersion": "20261001014214",
+      "pr": 160,
+      "ledgerBefore": 98,
+      "ledgerAfter": 99,
+      "postflight": "all-merge-execution-20261001.json"
+    },
+    {
+      "sourceFile": "20261001080000_service_readonly_evidence_privileges.sql",
+      "sha256": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808",
+      "providerVersion": "20261001014620",
+      "pr": 182,
+      "ledgerBefore": 99,
+      "ledgerAfter": 100,
+      "postflight": "all-merge-execution-20261001.json"
+    },
+    {
+      "sourceFile": "20260927183000_adoption_assignment_bulk.sql",
+      "sha256": "cd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238",
+      "providerVersion": "20261001022601",
+      "pr": 161,
+      "ledgerBefore": 100,
+      "ledgerAfter": 101,
+      "postflight": "all-merge-execution-20261001.json"
+    },
+    {
+      "sourceFile": "20260927184500_animal_review_bulk.sql",
+      "sha256": "8f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41",
+      "providerVersion": "20261001024348",
+      "pr": 162,
+      "ledgerBefore": 101,
+      "ledgerAfter": 102,
+      "postflight": "all-merge-execution-20261001.json"
+    },
+    {
+      "sourceFile": "20260927190000_cms_review_bulk.sql",
+      "sha256": "b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb",
+      "providerVersion": "20261001031157",
+      "pr": 164,
+      "ledgerBefore": 102,
+      "ledgerAfter": 103,
+      "postflight": "all-merge-execution-20261001.json"
+    },
+    {
+      "sourceFile": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86",
+      "providerVersion": "20261001032650",
+      "pr": 165,
+      "ledgerBefore": 103,
+      "ledgerAfter": 104,
+      "postflight": "all-merge-execution-20261001.json"
+    },
+    {
+      "sourceFile": "20260927211801_editorial_quality_queue.sql",
+      "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642",
+      "providerVersion": "20261001034448",
+      "pr": 166,
+      "ledgerBefore": 104,
+      "ledgerAfter": 105,
+      "postflight": "all-merge-166-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928073000_sponsorship_followup_assignment.sql",
+      "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2",
+      "providerVersion": "20261001045928",
+      "pr": 169,
+      "ledgerBefore": 105,
+      "ledgerAfter": 106,
+      "postflight": "all-merge-169-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928080000_sponsorship_followup_bulk.sql",
+      "sha256": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800",
+      "providerVersion": "20261001051516",
+      "pr": 170,
+      "ledgerBefore": 106,
+      "ledgerAfter": 107,
+      "postflight": "all-merge-170-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928090000_finance_bank_dryrun.sql",
+      "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0",
+      "providerVersion": "20261001055531",
+      "pr": 172,
+      "ledgerBefore": 107,
+      "ledgerAfter": 108,
+      "postflight": "all-merge-172-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928100000_finance_delivery_retry_guard.sql",
+      "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a",
+      "providerVersion": "20261001061046",
+      "pr": 173,
+      "ledgerBefore": 108,
+      "ledgerAfter": 109,
+      "postflight": "all-merge-173-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928110000_finance_bank_match_confirmation.sql",
+      "sha256": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3",
+      "providerVersion": "20261001063913",
+      "pr": 175,
+      "ledgerBefore": 109,
+      "ledgerAfter": 110,
+      "postflight": "all-merge-175-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928113000_crm_supporter_version_fence.sql",
+      "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62",
+      "providerVersion": "20261001070942",
+      "pr": 177,
+      "ledgerBefore": 110,
+      "ledgerAfter": 111,
+      "postflight": "all-merge-177-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "providerVersion": "20261001072505",
+      "pr": 178,
+      "ledgerBefore": 111,
+      "ledgerAfter": 112,
+      "postflight": "all-merge-178-postflight-20261001.json"
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "4bd22597ef047c6ea1c0b5bf9d027e3a17eeba55",
-    "schemaManifestHash": "48a46864390a57fda7dc7409474b6fc7b42677246b7fbb374eaa868c5fe4fbcf",
-    "migrationCount": 61
+    "appSha": "641f10abbc9ead69c1bd61b45b6439f2b099a28c",
+    "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
+    "migrationCount": 62
+  },
+  "localVerification": {
+    "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+    "startedAt": "2026-10-01T04:50:01.038535+00:00",
+    "environment": "Windows; loopback checkout DB57322 and Auth52321; provider/production operations none",
+    "databaseOptIns": "only existing checkout-policy; other isolated per-feature evidence retained under its recorded SHA/environment",
+    "gates": [
+      {
+        "gate": "full-test",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 0,
+        "elapsedSeconds": 152.19,
+        "log": "task-179-root-final-full-test.log",
+        "pass": 3195,
+        "skip": 188,
+        "fail": 0,
+        "assertions": 10138,
+        "files": 593
+      },
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 41.21,
+        "log": "task-179-root-final-typecheck.log"
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 51.07,
+        "log": "task-179-root-final-lint.log",
+        "summary": [
+          "52",
+          "0",
+          "52"
+        ]
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 117.17,
+        "log": "task-179-root-final-build.log"
+      }
+    ],
+    "diffCheckExit": 0,
+    "trackedDrift": false,
+    "completedAt": "2026-10-01T04:56:03.143395+00:00"
+  },
+  "productionCompatibility": {
+    "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+    "requirements": 146,
+    "issues": 44,
+    "state": "incompatible",
+    "checkerExit": 1,
+    "catalogTables": 154,
+    "catalogFunctions": 304,
+    "ledger": 112,
+    "report": "docs/evidence/audit-remediation-20260927/production-compatibility-after-approved-rollout-20261001.json",
+    "limitation": "Implemented public table/column/RLS/service grants and RPC signatures/expected role grants only; not full constraints/indexes/private/storage/column-denial/behavioral UAT",
+    "capturedAt": "2026-10-01T07:27:18.716717+00:00"
+  },
+  "isolatedStructuralVerification": {
+    "requirements": 146,
+    "candidateIssues": 0,
+    "exit": 0,
+    "baselineIssues": 1,
+    "scope": "temporary exact reviewed169picker/grant declaration on existing dedicated57322 in rollback transaction; structural checks only",
+    "receipt": "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json",
+    "restored": true
+  },
+  "previousCombinedSource": {
+    "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+    "head": "c63fc81bf464d7b114bdf530c74b159024604974",
+    "ciRun": 36785488855,
+    "allFiveGates": "success before this source integration"
+  },
+  "combinedCandidateVerification": {
+    "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+    "fourLocalGateExits": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "receipt": "docs/evidence/audit-remediation-20260927/pr179-final-combined-local-gates-20261001.json",
+    "exactDocumentationHeadCi": "mandatory before179 merge; not inferred from older d661 CI"
+  },
+  "focusedReadonlyRepair": {
+    "pr": 182,
+    "source": "aca5822a124521d9e6acc94b171600ac344e9b97",
+    "reviewedEvidenceHead": "61416eb7b08bcfe98abb6b6fe149f8369bee4bbb",
+    "codeComplete": true,
+    "isolatedSchemaReady": true,
+    "deployed": true,
+    "operationallyEnabled": true,
+    "receipt": "docs/evidence/audit-remediation-20260927/r01-readonly-privilege-verification-20261001.json",
+    "note": "Readonly evidence ACL enforcement applied under explicit182 approval; this does not activate payment/delivery schedules."
+  },
+  "legacyWholeFileVerification": {
+    "source": "c63fc81bf464d7b114bdf530c74b159024604974",
+    "files": 62,
+    "success": 36,
+    "collision": 26,
+    "exit": 0,
+    "issueMappings": 92,
+    "legacyGaps": 45,
+    "legacyFiles": 24,
+    "productionPresentCollisions": 14,
+    "productionAbsentCollisions": 12,
+    "restored": true,
+    "productionApplicable": false,
+    "report": "docs/evidence/audit-remediation-20260927/r01-legacy-migration-verification-20261001.json"
+  },
+  "previousManifestSnapshot": {
+    "capturedAt": "2026-09-30T22:15:00.772301+00:00",
+    "appSha": "92b6f01956698b915e2a6614968eb45b5836edcd",
+    "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
+    "productionCompatibility": {
+      "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+      "requirements": 146,
+      "issues": 92,
+      "kinds": {
+        "missing-table": 21,
+        "missing-function": 61,
+        "missing-column": 10
+      },
+      "state": "incompatible",
+      "checkerExit": 1,
+      "catalogTables": 138,
+      "catalogFunctions": 276,
+      "ledger": 98,
+      "report": "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
+      "limitation": "Implemented public table/column/RLS/service grants and RPC signatures/execute-role checks only; not full constraints/indexes/private/storage policies or behavioral UAT"
+    },
+    "localVerification": {
+      "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+      "receipt": "docs/evidence/audit-remediation-20260927/final-local-gates-20261001.json",
+      "allFourExit": 0,
+      "pass": 3195,
+      "skip": 168,
+      "fail": 0,
+      "lintWarnings": 52,
+      "bounds": "Previous combined source290abb19 only; not relabelled as92b6f019 verification"
+    },
+    "combinedCandidateVerification": {
+      "source": "92b6f01956698b915e2a6614968eb45b5836edcd",
+      "strictTypecheckExit": 0,
+      "manifestContracts": {
+        "exit": 0,
+        "pass": 2,
+        "skip": 20,
+        "fail": 0,
+        "assertions": 74
+      },
+      "fullSuite": "not rerun locally after integration; prior full runs remain bound to290abb19 and aca5822a; fresh combined CI mandatory",
+      "buildLint": "not rerun locally after integration; prior source runs retained; fresh combined CI mandatory"
+    },
+    "sequentialProgress": {
+      "requestedPrRange": [
+        134,
+        179
+      ],
+      "requestedCount": 46,
+      "actualMainReleasedCount": 38,
+      "throughPr": 171,
+      "note": "#157 actual main release is corrective #181; #182 is an additional scoped repair; #180 remains do-not-merge. PR179 self-acceptance occurs after this immutable premerge package."
+    }
   }
 }

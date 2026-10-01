@@ -1,806 +1,3008 @@
-[
-  {
-    "baseRefName": "main",
-    "headRefOid": "758fc9ac5f6423379a9cd87318d969e6e940ee63",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "f61276f7a7560035ef7da8259eabb9149c82edca"
+{
+  "capturedAt": "2026-09-30T22:15:00.772301+00:00",
+  "mainShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
+  "actualMainReleasedCount": 26,
+  "note": "Actual157 main release is corrective181. Candidate status is not schema/deployment/enablement evidence.179 snapshot precedes this documentation-only checkpoint.",
+  "pullRequests": [
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-remediation-20260927",
+      "headRefOid": "758fc9ac5f6423379a9cd87318d969e6e940ee63",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "f61276f7a7560035ef7da8259eabb9149c82edca"
+      },
+      "number": 134,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-27T06:02:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36298813929/job/108562524553",
+          "name": "verify",
+          "startedAt": "2026-09-27T06:00:21Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-27T06:10:39Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36298813929/job/108562801998",
+          "name": "brand-verify",
+          "startedAt": "2026-09-27T06:02:17Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-27T06:05:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36298813929/job/108562802030",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-27T06:02:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-27T06:04:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36298813929/job/108562802034",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-27T06:02:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-27T06:07:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36298813929/job/108562802039",
+          "name": "performance-verify",
+          "startedAt": "2026-09-27T06:02:17Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "Audit remediation slice 1: schema checks and public form safety",
+      "url": "https://github.com/YNWAforever/hkscda/pull/134"
     },
-    "mergedAt": "2026-09-29T00:15:43Z",
-    "number": 134,
-    "state": "MERGED",
-    "title": "Audit remediation slice 1: schema checks and public form safety",
-    "url": "https://github.com/YNWAforever/hkscda/pull/134",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36502210175,
-      "headSha": "f61276f7a7560035ef7da8259eabb9149c82edca",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36502210175",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-payment-policy-20260927",
+      "headRefOid": "524e052415ec5aa75f58bc13ec009a49f93f6948",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "9609756e69743163e46f9bfde57a5c0cad684255"
+      },
+      "number": 135,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:30:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36503255221/job/109198777957",
+          "name": "verify",
+          "startedAt": "2026-09-29T00:28:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:39:29Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36503255221/job/109199284972",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T00:30:56Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:32:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36503255221/job/109199284870",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T00:30:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:32:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36503255221/job/109199284869",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T00:30:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:35:36Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36503255221/job/109199284914",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T00:30:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: enforce approved checkout admission on the server",
+      "url": "https://github.com/YNWAforever/hkscda/pull/135"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "524e052415ec5aa75f58bc13ec009a49f93f6948",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "9609756e69743163e46f9bfde57a5c0cad684255"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-payment-instructions-20260927",
+      "headRefOid": "95fc7bef412a954e2eec8127c3f73ac15abb19fd",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "eea15f0ce71c09067ed590eb70c8b41e67497952"
+      },
+      "number": 136,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:46:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36504604608/job/109203076781",
+          "name": "verify",
+          "startedAt": "2026-09-29T00:45:06Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:55:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36504604608/job/109203444794",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T00:46:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:49:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36504604608/job/109203444740",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T00:46:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:48:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36504604608/job/109203444733",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T00:46:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T00:52:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36504604608/job/109203444884",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T00:46:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T04: Approved payment instructions and immutable snapshots",
+      "url": "https://github.com/YNWAforever/hkscda/pull/136"
     },
-    "mergedAt": "2026-09-29T00:40:22Z",
-    "number": 135,
-    "state": "MERGED",
-    "title": "fix: enforce approved checkout admission on the server",
-    "url": "https://github.com/YNWAforever/hkscda/pull/135",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36504234340,
-      "headSha": "9609756e69743163e46f9bfde57a5c0cad684255",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36504234340",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-payment-lifecycle-20260927",
+      "headRefOid": "32e4c855fa1d4ae71d29fd7e94148b29dd19ce28",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "6e745fad991d91289e5c33557e33e42d6d731735"
+      },
+      "number": 137,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:04:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506005666/job/109207561034",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:03:06Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:13:28Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506005666/job/109208033952",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:05:00Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:07:39Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506005666/job/109208033867",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:05:00Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:07:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506005666/job/109208033807",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:05:00Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:10:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506005666/job/109208033960",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:05:00Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T05: Preserve committed payments and recover receipt delivery",
+      "url": "https://github.com/YNWAforever/hkscda/pull/137"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "95fc7bef412a954e2eec8127c3f73ac15abb19fd",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "eea15f0ce71c09067ed590eb70c8b41e67497952"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-receipt-date-font-20260927",
+      "headRefOid": "60857f9d8645e1cb231c86589f396ed7e5bf228f",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1"
+      },
+      "number": 138,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:12:26Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506641915/job/109209437682",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:10:38Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:21:06Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506641915/job/109209883389",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:12:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:15:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506641915/job/109209883370",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:12:31Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:14:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506641915/job/109209883449",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:12:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:17:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36506641915/job/109209883381",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:12:29Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T06: fix Hong Kong receipt dates and cache font bytes",
+      "url": "https://github.com/YNWAforever/hkscda/pull/138"
     },
-    "mergedAt": "2026-09-29T00:56:41Z",
-    "number": 136,
-    "state": "MERGED",
-    "title": "T04: Approved payment instructions and immutable snapshots",
-    "url": "https://github.com/YNWAforever/hkscda/pull/136",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36505530161,
-      "headSha": "eea15f0ce71c09067ed590eb70c8b41e67497952",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36505530161",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-proof-token-20260927",
+      "headRefOid": "a23b3aa58f50fd3981c9eabe40aca45ad309a5db",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "379fa0e128a136b9a4877c49b518b620007a55e0"
+      },
+      "number": 139,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:21:51Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507431928/job/109211911737",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:20:30Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:30:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507431928/job/109212247290",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:21:53Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:24:20Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507431928/job/109212247276",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:21:53Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:24:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507431928/job/109212247294",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:21:53Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:27:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507431928/job/109212247234",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:21:53Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T07: normalize absent proof upload challenge tokens",
+      "url": "https://github.com/YNWAforever/hkscda/pull/139"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "32e4c855fa1d4ae71d29fd7e94148b29dd19ce28",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "6e745fad991d91289e5c33557e33e42d6d731735"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-adoption-drafts-20260927",
+      "headRefOid": "964255ae9aed575629ab77dd296d3730ca395474",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6"
+      },
+      "number": 140,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:26:26Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507749697/job/109212900017",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:24:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:35:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507749697/job/109213374841",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:26:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:29:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507749697/job/109213374782",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:26:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:28:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507749697/job/109213374789",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:26:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:30:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36507749697/job/109213374769",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:26:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T09A: explicit expiring adoption drafts",
+      "url": "https://github.com/YNWAforever/hkscda/pull/140"
     },
-    "mergedAt": "2026-09-29T01:13:58Z",
-    "number": 137,
-    "state": "MERGED",
-    "title": "T05: Preserve committed payments and recover receipt delivery",
-    "url": "https://github.com/YNWAforever/hkscda/pull/137",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36506914766,
-      "headSha": "6e745fad991d91289e5c33557e33e42d6d731735",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36506914766",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-safe-drafts-20260927",
+      "headRefOid": "ce371ff4deff6b0e9fecf5031c2fd51fd3bdf5c2",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "890e84fae048364cbad9a50a3d7785fc7b97c861"
+      },
+      "number": 141,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:31:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36508177102/job/109214235774",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:29:56Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:40:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36508177102/job/109214696015",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:31:44Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:34:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36508177102/job/109214696035",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:31:45Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:34:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36508177102/job/109214696033",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:31:45Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:37:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36508177102/job/109214695963",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:31:45Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T09B: opt-in sponsorship drafts and recovery",
+      "url": "https://github.com/YNWAforever/hkscda/pull/141"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "60857f9d8645e1cb231c86589f396ed7e5bf228f",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-sponsorship-commitment-20260927",
+      "headRefOid": "aaf9bce4aad559bd816b8bdbfa268c9d1b7bf58b",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "8b039aa8f48338ff8b914ffac93aaf11598040d0"
+      },
+      "number": 142,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:43:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509080049/job/109217003800",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:41:25Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:51:36Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509080049/job/109217424730",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:43:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:45:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509080049/job/109217424644",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:43:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:45:33Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509080049/job/109217424624",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:43:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:48:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509080049/job/109217424681",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:43:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T08: sponsorship commitment choices and versioned terms gate",
+      "url": "https://github.com/YNWAforever/hkscda/pull/142"
     },
-    "mergedAt": "2026-09-29T01:24:33Z",
-    "number": 138,
-    "state": "MERGED",
-    "title": "T06: fix Hong Kong receipt dates and cache font bytes",
-    "url": "https://github.com/YNWAforever/hkscda/pull/138",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36507756796,
-      "headSha": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36507756796",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-cms-unsaved-20260927",
+      "headRefOid": "644c439633c8cb59534af471b04e5e580693a7b8",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "fa42610f9dfc66284c0b51d005f7c622b82fd28f"
+      },
+      "number": 143,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:46:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509383199/job/109217920676",
+          "name": "verify",
+          "startedAt": "2026-09-29T01:45:21Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:55:25Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509383199/job/109218305093",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T01:46:57Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:49:34Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509383199/job/109218305191",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T01:46:57Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:49:20Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509383199/job/109218305112",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T01:46:57Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T01:52:01Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36509383199/job/109218304993",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T01:46:57Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T10: Guard unsaved adoption CMS changes",
+      "url": "https://github.com/YNWAforever/hkscda/pull/143"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "a23b3aa58f50fd3981c9eabe40aca45ad309a5db",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "379fa0e128a136b9a4877c49b518b620007a55e0"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-cms-history-20260927",
+      "headRefOid": "ded566c99c075504f91f739c1eecdb4d8e0a0100",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "37f7abddfb9caea673b9f07e9b1ba352084cb395"
+      },
+      "number": 144,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T02:02:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36510506914/job/109221401286",
+          "name": "verify",
+          "startedAt": "2026-09-29T02:00:12Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T02:11:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36510506914/job/109221921520",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T02:02:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T02:05:06Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36510506914/job/109221921486",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T02:02:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T02:04:48Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36510506914/job/109221921413",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T02:02:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T02:07:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36510506914/job/109221921492",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T02:02:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T11: Page adoption CMS revision summaries",
+      "url": "https://github.com/YNWAforever/hkscda/pull/144"
     },
-    "mergedAt": "2026-09-29T01:35:37Z",
-    "number": 139,
-    "state": "MERGED",
-    "title": "T07: normalize absent proof upload challenge tokens",
-    "url": "https://github.com/YNWAforever/hkscda/pull/139",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36508642202,
-      "headSha": "379fa0e128a136b9a4877c49b518b620007a55e0",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36508642202",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-estate-version-20260927",
+      "headRefOid": "16c76034c41fa0e1b6ff21fd0a80ace9e6e92964",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "591b8aae10a22d31aa94f08eb3c0652ccf53b19b"
+      },
+      "number": 145,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:13:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36588374583/job/109474672274",
+          "name": "verify",
+          "startedAt": "2026-09-29T15:12:11Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:22:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36588374583/job/109475287612",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T15:13:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:16:23Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36588374583/job/109475287613",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T15:13:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:15:42Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36588374583/job/109475287373",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T15:13:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:19:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36588374583/job/109475287301",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T15:13:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: version estate edits and publication (T12 R05)",
+      "url": "https://github.com/YNWAforever/hkscda/pull/145"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "964255ae9aed575629ab77dd296d3730ca395474",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-fee-reorder-20260927",
+      "headRefOid": "587a691ed90f7672dbf9d57ee613421cf7267e44",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "87e4aa1acfab082bba1a6c97260d74ca5ebd96b5"
+      },
+      "number": 146,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:26:42Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36589857892/job/109480260590",
+          "name": "verify",
+          "startedAt": "2026-09-29T15:24:50Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:35:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36589857892/job/109481100380",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T15:26:44Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:29:29Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36589857892/job/109481100802",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T15:26:44Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:29:30Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36589857892/job/109481100326",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T15:26:44Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:32:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36589857892/job/109481100330",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T15:26:44Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T13 / R06: atomic audited adoption fee reorder",
+      "url": "https://github.com/YNWAforever/hkscda/pull/146"
     },
-    "mergedAt": "2026-09-29T01:46:27Z",
-    "number": 140,
-    "state": "MERGED",
-    "title": "T09A: explicit expiring adoption drafts",
-    "url": "https://github.com/YNWAforever/hkscda/pull/140",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36509476864,
-      "headSha": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36509476864",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-export-ui-20260927",
+      "headRefOid": "34cff5310939e906825d3d9f21ef84d5cd5f8711",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "82c9247f28b4d1dcbd73261c33f2233143540340"
+      },
+      "number": 147,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:34:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36591039290/job/109483881704",
+          "name": "verify",
+          "startedAt": "2026-09-29T15:33:01Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:43:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36591039290/job/109484750924",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T15:34:59Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:37:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36591039290/job/109484750921",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T15:35:00Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:37:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36591039290/job/109484750807",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T15:34:59Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T15:40:23Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36591039290/job/109484750894",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T15:34:59Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T14 / ADMIN-01: visible CRM export progress and failures",
+      "url": "https://github.com/YNWAforever/hkscda/pull/147"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "ce371ff4deff6b0e9fecf5031c2fd51fd3bdf5c2",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "890e84fae048364cbad9a50a3d7785fc7b97c861"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-export-jobs-20260927",
+      "headRefOid": "9ad54052a9622ed4a61838c76b68d11338680dd5",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "10db7f36315f780eed743b3182a60f1c3ae9c177"
+      },
+      "number": 148,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:06:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36594989175/job/109497467965",
+          "name": "verify",
+          "startedAt": "2026-09-29T16:04:17Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:15:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36594989175/job/109498358222",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T16:06:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:08:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36594989175/job/109498358223",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T16:06:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:08:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36594989175/job/109498358561",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T16:06:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:11:54Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36594989175/job/109498358352",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T16:06:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T14: private paged CRM export jobs",
+      "url": "https://github.com/YNWAforever/hkscda/pull/148"
     },
-    "mergedAt": "2026-09-29T01:57:07Z",
-    "number": 141,
-    "state": "MERGED",
-    "title": "T09B: opt-in sponsorship drafts and recovery",
-    "url": "https://github.com/YNWAforever/hkscda/pull/141",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36510299370,
-      "headSha": "890e84fae048364cbad9a50a3d7785fc7b97c861",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36510299370",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-supporter-dialog-20260927",
+      "headRefOid": "d2d880b987be0896b7e5a81c911ba5f1c0d5a2d9",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "020e03eeb1b7a54cce908babc5ec3bd271d370a5"
+      },
+      "number": 149,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:20:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36596743299/job/109503493702",
+          "name": "verify",
+          "startedAt": "2026-09-29T16:18:30Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:27:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36596743299/job/109504149344",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T16:20:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:23:00Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36596743299/job/109504149248",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T16:20:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:22:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36596743299/job/109504149506",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T16:20:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:25:35Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36596743299/job/109504149350",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T16:20:05Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T15: version-safe supporter edits",
+      "url": "https://github.com/YNWAforever/hkscda/pull/149"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "aaf9bce4aad559bd816b8bdbfa268c9d1b7bf58b",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "8b039aa8f48338ff8b914ffac93aaf11598040d0"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-list-query-20260927",
+      "headRefOid": "ce1242a1b91d2de9c19861a833308d981410b45d",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "be4fcb642750e5a45839ce90ead6af1747a821f2"
+      },
+      "number": 150,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:32:24Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36598202959/job/109508479354",
+          "name": "verify",
+          "startedAt": "2026-09-29T16:30:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:39:33Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36598202959/job/109509321697",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T16:32:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:35:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36598202959/job/109509321661",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T16:32:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:34:44Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36598202959/job/109509321612",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T16:32:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:36:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36598202959/job/109509321558",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T16:32:26Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T15 ADMIN-03: unify debounced admin list searches",
+      "url": "https://github.com/YNWAforever/hkscda/pull/150"
     },
-    "mergedAt": "2026-09-29T12:52:07Z",
-    "number": 142,
-    "state": "MERGED",
-    "title": "T08: sponsorship commitment choices and versioned terms gate",
-    "url": "https://github.com/YNWAforever/hkscda/pull/142",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36571024953,
-      "headSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36571024953",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-volunteer-availability-20260927",
+      "headRefOid": "b3dce0f883062fd66d4050104975e2d7d66ccfa5",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "419f4e0ea597dfa07a8ac265b0744a03fe67f563"
+      },
+      "number": 151,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:40:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36599174781/job/109511796875",
+          "name": "verify",
+          "startedAt": "2026-09-29T16:38:21Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:49:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36599174781/job/109512639033",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T16:40:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:43:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36599174781/job/109512639032",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T16:40:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:42:42Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36599174781/job/109512638949",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T16:40:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:45:51Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36599174781/job/109512639076",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T16:40:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: explain volunteer availability and align page layout",
+      "url": "https://github.com/YNWAforever/hkscda/pull/151"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "644c439633c8cb59534af471b04e5e580693a7b8",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "fa42610f9dfc66284c0b51d005f7c622b82fd28f"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-volunteer-bulk-20260927",
+      "headRefOid": "bf48cb20f70d78d5a15ba6936e810a103624b0ec",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "2b718dc8adcc123707885d1827071448ae4cdc6e"
+      },
+      "number": 152,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:51:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36600411611/job/109516242952",
+          "name": "verify",
+          "startedAt": "2026-09-29T16:49:07Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T17:00:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36600411611/job/109517136434",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T16:51:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:54:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36600411611/job/109517136571",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T16:51:17Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:53:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36600411611/job/109517136619",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T16:51:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T16:56:47Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36600411611/job/109517136614",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T16:51:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "feat: simplify volunteer bulk planning and recovery",
+      "url": "https://github.com/YNWAforever/hkscda/pull/152"
     },
-    "mergedAt": "2026-09-29T15:04:05Z",
-    "number": 143,
-    "state": "MERGED",
-    "title": "T10: Guard unsaved adoption CMS changes",
-    "url": "https://github.com/YNWAforever/hkscda/pull/143",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36587348342,
-      "headSha": "fa42610f9dfc66284c0b51d005f7c622b82fd28f",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36587348342",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-content-eligibility-20260927",
+      "headRefOid": "db3db8bea6099504aa65b78cb6fccc116bfcee36",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "4304127a030f7e6b49926f0759a655b0a60aaa59"
+      },
+      "number": 153,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T18:16:14Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36610600451/job/109550717637",
+          "name": "verify",
+          "startedAt": "2026-09-29T18:14:09Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T18:25:06Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36610600451/job/109551590225",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T18:16:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T18:18:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36610600451/job/109551590216",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T18:16:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T18:19:04Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36610600451/job/109551590193",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T18:16:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T18:21:47Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36610600451/job/109551590359",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T18:16:16Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T18: content eligibility, archive and sponsor profile",
+      "url": "https://github.com/YNWAforever/hkscda/pull/153"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "ded566c99c075504f91f739c1eecdb4d8e0a0100",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "37f7abddfb9caea673b9f07e9b1ba352084cb395"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-media-repair-20260927",
+      "headRefOid": "6a97d3ca8d7ae4499ec08a5e8281f2a31b751914",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "68352546b61c1a61b79fad4638640b2dddd30ac9"
+      },
+      "number": 154,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T19:45:13Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36621262620/job/109586955683",
+          "name": "verify",
+          "startedAt": "2026-09-29T19:43:31Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T19:53:54Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36621262620/job/109587641119",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T19:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T19:48:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36621262620/job/109587640866",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T19:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T19:47:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36621262620/job/109587640921",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T19:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T19:50:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36621262620/job/109587640912",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T19:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: prevent failed media repairs from starving the queue",
+      "url": "https://github.com/YNWAforever/hkscda/pull/154"
     },
-    "mergedAt": "2026-09-29T15:15:50Z",
-    "number": 144,
-    "state": "MERGED",
-    "title": "T11: Page adoption CMS revision summaries",
-    "url": "https://github.com/YNWAforever/hkscda/pull/144",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36588856862,
-      "headSha": "37f7abddfb9caea673b9f07e9b1ba352084cb395",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36588856862",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-public-pagination-20260927",
+      "headRefOid": "26cc56466e492994906afad587c11ef1131cde0e",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "24196faf027998388eff3196a6979e23566e2443"
+      },
+      "number": 155,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T20:03:59Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36623433675/job/109594297623",
+          "name": "verify",
+          "startedAt": "2026-09-29T20:02:01Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T20:11:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36623433675/job/109595123049",
+          "name": "brand-verify",
+          "startedAt": "2026-09-29T20:04:01Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T20:06:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36623433675/job/109595123042",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-29T20:04:01Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T20:06:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36623433675/job/109595122985",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-29T20:04:01Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-29T20:09:42Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36623433675/job/109595123034",
+          "name": "performance-verify",
+          "startedAt": "2026-09-29T20:04:01Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T21: bound public animal listing and prepare responsive images",
+      "url": "https://github.com/YNWAforever/hkscda/pull/155"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "16c76034c41fa0e1b6ff21fd0a80ace9e6e92964",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "591b8aae10a22d31aa94f08eb3c0652ccf53b19b"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-supporter-recovery-20260927",
+      "headRefOid": "edd13112c66bf83c2b840b8d93441e0c3b9c838e",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "5b3c1e6b19c741d287c0b538b5db423c187346e0"
+      },
+      "number": 156,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:38:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36738002794/job/109964668126",
+          "name": "verify",
+          "startedAt": "2026-09-30T15:36:20Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:46:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36738002794/job/109965765002",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T15:38:50Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:41:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36738002794/job/109965765129",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T15:38:49Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:41:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36738002794/job/109965765089",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T15:38:49Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:44:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36738002794/job/109965765109",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T15:38:49Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T22: add safe supporter email recovery entry",
+      "url": "https://github.com/YNWAforever/hkscda/pull/156"
     },
-    "mergedAt": "2026-09-29T15:26:59Z",
-    "number": 145,
-    "state": "MERGED",
-    "title": "fix: version estate edits and publication (T12 R05)",
-    "url": "https://github.com/YNWAforever/hkscda/pull/145",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36590275015,
-      "headSha": "591b8aae10a22d31aa94f08eb3c0652ccf53b19b",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36590275015",
-      "workflowName": "CI"
+    {
+      "baseRefName": "codex/audit-supporter-recovery-20260927",
+      "headRefName": "codex/audit-supporter-portal-20260928",
+      "headRefOid": "381e6ad409d7dce6b717feff3d77250e1cfd200f",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "b68efb8af36e73f67178fbe85f95fa9cee00736d"
+      },
+      "number": 157,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:55:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36740060375/job/109971811713",
+          "name": "verify",
+          "startedAt": "2026-09-30T15:52:48Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T16:08:23Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36740060375/job/109972907226",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T15:55:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T16:03:37Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36740060375/job/109972907151",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T15:55:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T15:57:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36740060375/job/109972907027",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T15:55:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T16:01:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36740060375/job/109972907209",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T15:55:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T22: add verified supporter portal and consent controls",
+      "url": "https://github.com/YNWAforever/hkscda/pull/157"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "587a691ed90f7672dbf9d57ee613421cf7267e44",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "87e4aa1acfab082bba1a6c97260d74ca5ebd96b5"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-task-overview-20260928",
+      "headRefOid": "87769fbcd046f24df4ec8eb5674626e519b133a8",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "d507340491dc50a780c7031dbcd459b85ebfff38"
+      },
+      "number": 158,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T17:34:01Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36752007379/job/110012718794",
+          "name": "verify",
+          "startedAt": "2026-09-30T17:31:40Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T17:42:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36752007379/job/110013691968",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T17:34:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T17:36:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36752007379/job/110013692039",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T17:34:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T17:36:41Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36752007379/job/110013692052",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T17:34:03Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T17:39:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36752007379/job/110013692059",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T17:34:03Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: add role-based task overview",
+      "url": "https://github.com/YNWAforever/hkscda/pull/158"
     },
-    "mergedAt": "2026-09-29T15:37:23Z",
-    "number": 146,
-    "state": "MERGED",
-    "title": "T13 / R06: atomic audited adoption fee reorder",
-    "url": "https://github.com/YNWAforever/hkscda/pull/146",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36591612497,
-      "headSha": "87e4aa1acfab082bba1a6c97260d74ca5ebd96b5",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36591612497",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-bulk-review-20260928",
+      "headRefOid": "09e7a7a3699562a537eeac86c45909289f7825db",
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "07e4c881863b715342ed0757aad7bd691a272738"
+      },
+      "number": 159,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T18:12:21Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36756686655/job/110028608366",
+          "name": "verify",
+          "startedAt": "2026-09-30T18:10:36Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T18:21:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36756686655/job/110029311736",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T18:12:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T18:15:22Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36756686655/job/110029311976",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T18:12:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T18:14:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36756686655/job/110029311755",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T18:12:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T18:17:37Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36756686655/job/110029311703",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T18:12:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: auditable CRM tag bulk preview and apply",
+      "url": "https://github.com/YNWAforever/hkscda/pull/159"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "34cff5310939e906825d3d9f21ef84d5cd5f8711",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "82c9247f28b4d1dcbd73261c33f2233143540340"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-volunteer-review-bulk-20260928",
+      "headRefOid": "ffe4db25ce7ac65b077a073ec54ce0fb882864b2",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 160,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:04:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36776685834/job/110096261928",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:01:40Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:13:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36776685834/job/110097251540",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:04:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:06:32Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36776685834/job/110097251581",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:04:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:07:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36776685834/job/110097251819",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:04:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:09:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36776685834/job/110097251546",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:04:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: bounded volunteer reviewer bulk assignment",
+      "url": "https://github.com/YNWAforever/hkscda/pull/160"
     },
-    "mergedAt": "2026-09-29T15:49:52Z",
-    "number": 147,
-    "state": "MERGED",
-    "title": "T14 / ADMIN-01: visible CRM export progress and failures",
-    "url": "https://github.com/YNWAforever/hkscda/pull/147",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36593182986,
-      "headSha": "82c9247f28b4d1dcbd73261c33f2233143540340",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36593182986",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-adoption-assignment-bulk-20260928",
+      "headRefOid": "f0ad57ea30f9a93a1d78bf8092f33116d2243c2c",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 161,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:18:28Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36764490686/job/110055096566",
+          "name": "verify",
+          "startedAt": "2026-09-30T19:16:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:27:22Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36764490686/job/110055968279",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T19:18:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:21:20Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36764490686/job/110055967951",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T19:18:30Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:21:48Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36764490686/job/110055968072",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T19:18:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:24:20Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36764490686/job/110055968070",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T19:18:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: guarded adoption case bulk assignment",
+      "url": "https://github.com/YNWAforever/hkscda/pull/161"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "9ad54052a9622ed4a61838c76b68d11338680dd5",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "10db7f36315f780eed743b3182a60f1c3ae9c177"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-animal-review-bulk-20260929",
+      "headRefOid": "4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 162,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:54:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36768709335/job/110069310048",
+          "name": "verify",
+          "startedAt": "2026-09-30T19:52:45Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:02:54Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36768709335/job/110070164442",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T19:54:58Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:58:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36768709335/job/110070164437",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T19:55:00Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:58:00Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36768709335/job/110070164555",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T19:54:58Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:00:42Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36768709335/job/110070164333",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T19:54:59Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: safely send animal drafts to editorial review in bulk",
+      "url": "https://github.com/YNWAforever/hkscda/pull/162"
     },
-    "mergedAt": "2026-09-29T16:15:32Z",
-    "number": 148,
-    "state": "MERGED",
-    "title": "T14: private paged CRM export jobs",
-    "url": "https://github.com/YNWAforever/hkscda/pull/148",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36596400446,
-      "headSha": "10db7f36315f780eed743b3182a60f1c3ae9c177",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36596400446",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-release-package-20260929",
+      "headRefOid": "6ca3e3380a4bc23ea7c372907b40a2851e0f5568",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 163,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T19:59:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36769099661/job/110070627274",
+          "name": "verify",
+          "startedAt": "2026-09-30T19:56:10Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:07:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36769099661/job/110071806964",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T19:59:13Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:02:00Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36769099661/job/110071807000",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T19:59:15Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:02:06Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36769099661/job/110071807080",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T19:59:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:04:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36769099661/job/110071807004",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T19:59:13Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T24: record remediation release gates and staff handoff",
+      "url": "https://github.com/YNWAforever/hkscda/pull/163"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "d2d880b987be0896b7e5a81c911ba5f1c0d5a2d9",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "020e03eeb1b7a54cce908babc5ec3bd271d370a5"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-cms-review-bulk-20260929",
+      "headRefOid": "bc4b5a6fd753c2a1e4008f7c6bff486106f0575d",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 164,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:18:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36771448101/job/110078579254",
+          "name": "verify",
+          "startedAt": "2026-09-30T20:16:26Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:27:45Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36771448101/job/110079544483",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T20:18:53Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:21:41Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36771448101/job/110079544266",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T20:18:52Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:21:51Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36771448101/job/110079544318",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T20:18:52Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:23:53Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36771448101/job/110079544313",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T20:18:52Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: safely send CMS drafts to editorial review in bulk",
+      "url": "https://github.com/YNWAforever/hkscda/pull/164"
     },
-    "mergedAt": "2026-09-29T16:28:50Z",
-    "number": 149,
-    "state": "MERGED",
-    "title": "T15: version-safe supporter edits",
-    "url": "https://github.com/YNWAforever/hkscda/pull/149",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36598019572,
-      "headSha": "020e03eeb1b7a54cce908babc5ec3bd271d370a5",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36598019572",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-manual-finance-atomic-20260929",
+      "headRefOid": "0a37ae0faea1f43de70ffa968f624ac1632a9ea5",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 165,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:53:20Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36775499500/job/110092245934",
+          "name": "verify",
+          "startedAt": "2026-09-30T20:51:07Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:02:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36775499500/job/110093111949",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T20:53:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:56:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36775499500/job/110093111727",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T20:53:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:56:21Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36775499500/job/110093111712",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T20:53:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T20:58:59Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36775499500/job/110093111891",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T20:53:23Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: settle manual payments and audit atomically",
+      "url": "https://github.com/YNWAforever/hkscda/pull/165"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "ce1242a1b91d2de9c19861a833308d981410b45d",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "be4fcb642750e5a45839ce90ead6af1747a821f2"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-cms-quality-20260929",
+      "headRefOid": "91953ffa2016cc2a5e7d6fee96fe96b94017cc80",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 166,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:16:03Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778022582/job/110100759210",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:13:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:23:54Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778022582/job/110101710605",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:16:06Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:18:49Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778022582/job/110101710510",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:16:06Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:19:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778022582/job/110101710858",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:16:06Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:22:06Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778022582/job/110101710553",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:16:06Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "feat: add CMS demo, expired and missing-source review queues",
+      "url": "https://github.com/YNWAforever/hkscda/pull/166"
     },
-    "mergedAt": "2026-09-29T16:40:00Z",
-    "number": 150,
-    "state": "MERGED",
-    "title": "T15 ADMIN-03: unify debounced admin list searches",
-    "url": "https://github.com/YNWAforever/hkscda/pull/150",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36599383783,
-      "headSha": "be4fcb642750e5a45839ce90ead6af1747a821f2",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36599383783",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-sponsorship-proof-queue-20260929",
+      "headRefOid": "3e021d7ab7e8b365b6f0f6cdec02be8f66eacd85",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 167,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:20:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778508830/job/110102389414",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:17:56Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:28:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778508830/job/110103227149",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:20:14Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:22:54Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778508830/job/110103227089",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:20:12Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:23:27Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778508830/job/110103227176",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:20:12Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:30:25Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778508830/job/110103227082",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:20:12Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: add filtered sponsorship proof review queue",
+      "url": "https://github.com/YNWAforever/hkscda/pull/167"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "b3dce0f883062fd66d4050104975e2d7d66ccfa5",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "419f4e0ea597dfa07a8ac265b0744a03fe67f563"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-readiness-20260929",
+      "headRefOid": "9d063e5d3867366d96edf669fd00793656649616",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 168,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:22:30Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778744868/job/110103183616",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:20:05Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:31:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778744868/job/110104090979",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:22:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:25:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778744868/job/110104091028",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:22:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:25:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778744868/job/110104090974",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:22:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:28:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778744868/job/110104091093",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:22:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T02: add protected readiness and public content gate",
+      "url": "https://github.com/YNWAforever/hkscda/pull/168"
     },
-    "mergedAt": "2026-09-29T16:50:20Z",
-    "number": 151,
-    "state": "MERGED",
-    "title": "fix: explain volunteer availability and align page layout",
-    "url": "https://github.com/YNWAforever/hkscda/pull/151",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36600633838,
-      "headSha": "419f4e0ea597dfa07a8ac265b0744a03fe67f563",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36600633838",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-sponsorship-followup-20260928",
+      "headRefOid": "bb34bfc2c038527701f19bfc9147235f0c8a01b6",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 169,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:24:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778979584/job/110103973158",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:22:13Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:32:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778979584/job/110104720219",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:24:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:27:23Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778979584/job/110104720086",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:24:20Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:27:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778979584/job/110104720116",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:24:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:29:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36778979584/job/110104720102",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:24:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "feat: guard sponsorship follow-up assignment (T23)",
+      "url": "https://github.com/YNWAforever/hkscda/pull/169"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "bf48cb20f70d78d5a15ba6936e810a103624b0ec",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "2b718dc8adcc123707885d1827071448ae4cdc6e"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-sponsorship-bulk-20260928",
+      "headRefOid": "ea5eb539e55d22770ad5a95c0c23d63c95e669d6",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 170,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:53:05Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36781977320/job/110114189638",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:50:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:01:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36781977320/job/110115057054",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:53:07Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:55:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36781977320/job/110115056946",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:53:08Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:56:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36781977320/job/110115056957",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:53:07Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:58:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36781977320/job/110115056932",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:53:07Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: guarded sponsorship follow-up bulk assignment",
+      "url": "https://github.com/YNWAforever/hkscda/pull/170"
     },
-    "mergedAt": "2026-09-29T17:01:35Z",
-    "number": 152,
-    "state": "MERGED",
-    "title": "feat: simplify volunteer bulk planning and recovery",
-    "url": "https://github.com/YNWAforever/hkscda/pull/152",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36601994914,
-      "headSha": "2b718dc8adcc123707885d1827071448ae4cdc6e",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36601994914",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-sponsorship-reminder-20260928",
+      "headRefOid": "15596e7892fef4a0271cd21eaa761cf2d35976b6",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 171,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:53:48Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782063155/job/110114482866",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:51:25Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:02:37Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782063155/job/110115305051",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:53:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:56:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782063155/job/110115305070",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:53:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:56:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782063155/job/110115305226",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:53:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:59:38Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782063155/job/110115305126",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:53:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: read-only sponsorship reminder draft preview",
+      "url": "https://github.com/YNWAforever/hkscda/pull/171"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "db3db8bea6099504aa65b78cb6fccc116bfcee36",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "4304127a030f7e6b49926f0759a655b0a60aaa59"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-finance-bank-dryrun-20260928",
+      "headRefOid": "f0294436c0ecf417330bc4279ad7caf89dba707f",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 172,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:54:48Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782228487/job/110115032347",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:53:03Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:06:34Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782228487/job/110115647580",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:54:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:57:26Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782228487/job/110115647574",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:54:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:57:28Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782228487/job/110115647497",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:54:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:59:18Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782228487/job/110115647446",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:54:51Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "feat(finance): preview canonical bank statements without settlement",
+      "url": "https://github.com/YNWAforever/hkscda/pull/172"
     },
-    "mergedAt": "2026-09-29T19:40:18Z",
-    "number": 153,
-    "state": "MERGED",
-    "title": "T18: content eligibility, archive and sponsor profile",
-    "url": "https://github.com/YNWAforever/hkscda/pull/153",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36620897215,
-      "headSha": "4304127a030f7e6b49926f0759a655b0a60aaa59",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36620897215",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-finance-delivery-20260928",
+      "headRefOid": "da2d9b85a239ba41f3590f653a9df490aedfc8a7",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 173,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:56:25Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782310687/job/110115300045",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:53:50Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:05:04Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782310687/job/110116196873",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:56:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:59:03Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782310687/job/110116196908",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:56:28Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:59:14Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782310687/job/110116196987",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:56:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:02:27Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782310687/job/110116196952",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:56:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "feat(finance): expose failed delivery jobs with guarded retry",
+      "url": "https://github.com/YNWAforever/hkscda/pull/173"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "6a97d3ca8d7ae4499ec08a5e8281f2a31b751914",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "68352546b61c1a61b79fad4638640b2dddd30ac9"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-task-guidance-20260928",
+      "headRefOid": "e42378e83797e2546760543582a0128486d4dc5b",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 174,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:57:32Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782447745/job/110115753042",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:55:09Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:05:27Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782447745/job/110116577435",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:57:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782447745/job/110116577479",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:57:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782447745/job/110116577499",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:57:36Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:03:23Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782447745/job/110116577462",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:57:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "feat(admin): guide role-based task overview",
+      "url": "https://github.com/YNWAforever/hkscda/pull/174"
     },
-    "mergedAt": "2026-09-29T19:59:49Z",
-    "number": 154,
-    "state": "MERGED",
-    "title": "fix: prevent failed media repairs from starving the queue",
-    "url": "https://github.com/YNWAforever/hkscda/pull/154",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36623173950,
-      "headSha": "68352546b61c1a61b79fad4638640b2dddd30ac9",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36623173950",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-finance-match-confirm-20260928",
+      "headRefOid": "66663ba8abca94d9afbfdbff35d41f5f65f8fa88",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 175,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:57:44Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782529619/job/110116024974",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:55:57Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:06:28Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782529619/job/110116646584",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:57:47Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:35Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782529619/job/110116646550",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:57:46Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782529619/job/110116646600",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:57:47Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:03:30Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782529619/job/110116646587",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:57:47Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: Guarded bank match confirmation snapshots",
+      "url": "https://github.com/YNWAforever/hkscda/pull/175"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "26cc56466e492994906afad587c11ef1131cde0e",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "24196faf027998388eff3196a6979e23566e2443"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-crm-format-preview-20260928",
+      "headRefOid": "1e21f9b3d4d2cf928f9e2b75b54a8e68088f6798",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 176,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T21:59:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782631718/job/110116362668",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:56:57Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:06:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782631718/job/110117238344",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T21:59:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:02:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782631718/job/110117238322",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T21:59:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:02:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782631718/job/110117238331",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T21:59:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:05:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782631718/job/110117238415",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T21:59:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "T23: Read-only CRM contact format preview",
+      "url": "https://github.com/YNWAforever/hkscda/pull/176"
     },
-    "mergedAt": "2026-09-29T20:13:05Z",
-    "number": 155,
-    "state": "MERGED",
-    "title": "T21: bound public animal listing and prepare responsive images",
-    "url": "https://github.com/YNWAforever/hkscda/pull/155",
-    "mainCi": {
-      "conclusion": "success",
-      "databaseId": 36624781016,
-      "headSha": "24196faf027998388eff3196a6979e23566e2443",
-      "status": "completed",
-      "url": "https://github.com/YNWAforever/hkscda/actions/runs/36624781016",
-      "workflowName": "CI"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-crm-version-fence-20260928",
+      "headRefOid": "3571eb554fde1fa3f94dffdc1c2da000b17c9468",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 177,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782718078/job/110116660652",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:57:49Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:08:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782718078/job/110117490036",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T22:00:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:03:04Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782718078/job/110117489986",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T22:00:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:03:39Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782718078/job/110117490109",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T22:00:37Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:05:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782718078/job/110117489973",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T22:00:19Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: preserve CRM version fence and restrict trigger execution",
+      "url": "https://github.com/YNWAforever/hkscda/pull/177"
     },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "edd13112c66bf83c2b840b8d93441e0c3b9c838e",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "5b3c1e6b19c741d287c0b538b5db423c187346e0"
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-crm-assignment-20260928",
+      "headRefOid": "4ac62d8e11f897b2699f254682b362213a53ffd0",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 178,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:02:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782830186/job/110117045572",
+          "name": "verify",
+          "startedAt": "2026-09-30T21:59:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:10:37Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782830186/job/110118100725",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T22:02:17Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:04:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782830186/job/110118100686",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T22:02:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:05:29Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782830186/job/110118100676",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T22:02:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:07:45Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782830186/job/110118100648",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T22:02:04Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: guard CRM assignment writes and actor-scoped recovery",
+      "url": "https://github.com/YNWAforever/hkscda/pull/178"
     },
-    "mergedAt": "2026-09-30T16:31:24Z",
-    "number": 156,
-    "state": "MERGED",
-    "title": "T22: add safe supporter email recovery entry",
-    "url": "https://github.com/YNWAforever/hkscda/pull/156",
-    "effectiveMainRelease": {
-      "pr": 156,
-      "sha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
-      "ci": 36744827478,
-      "conclusion": "success; all5 gates"
-    },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-supporter-recovery-20260927",
-    "headRefOid": "381e6ad409d7dce6b717feff3d77250e1cfd200f",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "b68efb8af36e73f67178fbe85f95fa9cee00736d"
-    },
-    "mergedAt": "2026-09-30T16:51:45Z",
-    "number": 157,
-    "state": "MERGED",
-    "title": "T22: add verified supporter portal and consent controls",
-    "url": "https://github.com/YNWAforever/hkscda/pull/157",
-    "effectiveMainRelease": {
-      "pr": 181,
-      "sha": "da3d06b1d462fb6c86d800c4825edeba9823092d",
-      "ci": 36750331821,
-      "conclusion": "success; all5 gates"
-    },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "87769fbcd046f24df4ec8eb5674626e519b133a8",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "d507340491dc50a780c7031dbcd459b85ebfff38"
-    },
-    "mergedAt": "2026-09-30T17:44:20Z",
-    "number": 158,
-    "state": "MERGED",
-    "title": "T23: add role-based task overview",
-    "url": "https://github.com/YNWAforever/hkscda/pull/158",
-    "effectiveMainRelease": {
-      "pr": 158,
-      "sha": "d507340491dc50a780c7031dbcd459b85ebfff38",
-      "ci": 36753543456,
-      "conclusion": "success; all5 gates"
-    },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "09e7a7a3699562a537eeac86c45909289f7825db",
-    "isDraft": false,
-    "mergeCommit": {
-      "oid": "07e4c881863b715342ed0757aad7bd691a272738"
-    },
-    "mergedAt": "2026-09-30T18:26:10Z",
-    "number": 159,
-    "state": "MERGED",
-    "title": "T23: auditable CRM tag bulk preview and apply",
-    "url": "https://github.com/YNWAforever/hkscda/pull/159",
-    "effectiveMainRelease": {
-      "pr": 159,
-      "sha": "07e4c881863b715342ed0757aad7bd691a272738",
-      "ci": 36758558621,
-      "conclusion": "success; all5 gates"
-    },
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "9d1feed9e560bb89e0d066b761558cb6864a55fc",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 160,
-    "state": "OPEN",
-    "title": "T23: bounded volunteer reviewer bulk assignment",
-    "url": "https://github.com/YNWAforever/hkscda/pull/160",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "f0ad57ea30f9a93a1d78bf8092f33116d2243c2c",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 161,
-    "state": "OPEN",
-    "title": "T23: guarded adoption case bulk assignment",
-    "url": "https://github.com/YNWAforever/hkscda/pull/161",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "main",
-    "headRefOid": "4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 162,
-    "state": "OPEN",
-    "title": "T23: safely send animal drafts to editorial review in bulk",
-    "url": "https://github.com/YNWAforever/hkscda/pull/162",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-animal-review-bulk-20260929",
-    "headRefOid": "d3b71dca07cbdf71ac4d8956ab79aeb807c9df67",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 163,
-    "state": "OPEN",
-    "title": "T24: record remediation release gates and staff handoff",
-    "url": "https://github.com/YNWAforever/hkscda/pull/163",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-release-package-20260929",
-    "headRefOid": "314783b853b12495b35934aa49bf9b64e4d9d245",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 164,
-    "state": "OPEN",
-    "title": "T23: safely send CMS drafts to editorial review in bulk",
-    "url": "https://github.com/YNWAforever/hkscda/pull/164",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-cms-review-bulk-20260929",
-    "headRefOid": "de88d8836dc3afe1e006a0cdd14c4a5940d5006d",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 165,
-    "state": "OPEN",
-    "title": "T23: settle manual payments and audit atomically",
-    "url": "https://github.com/YNWAforever/hkscda/pull/165",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-manual-finance-atomic-20260929",
-    "headRefOid": "efb8aba86575d28b41e5adc7a27b113caf921672",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 166,
-    "state": "OPEN",
-    "title": "feat: add CMS demo, expired and missing-source review queues",
-    "url": "https://github.com/YNWAforever/hkscda/pull/166",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-cms-quality-20260929",
-    "headRefOid": "77e06cd4cdf963cdc1929a67f05215d32f1f85e8",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 167,
-    "state": "OPEN",
-    "title": "T23: add filtered sponsorship proof review queue",
-    "url": "https://github.com/YNWAforever/hkscda/pull/167",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-sponsorship-proof-queue-20260929",
-    "headRefOid": "672d784580465b4ed71486e8bc1dd3e7d34f664b",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 168,
-    "state": "OPEN",
-    "title": "T02: add protected readiness and public content gate",
-    "url": "https://github.com/YNWAforever/hkscda/pull/168",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-readiness-20260929",
-    "headRefOid": "dd17c5fbf878f51754e7f844f659bc853269a907",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 169,
-    "state": "OPEN",
-    "title": "feat: guard sponsorship follow-up assignment (T23)",
-    "url": "https://github.com/YNWAforever/hkscda/pull/169",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-sponsorship-followup-20260928",
-    "headRefOid": "2cb148ab50cf8499f63ee5ab7d47c4e5a509d6a0",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 170,
-    "state": "OPEN",
-    "title": "T23: guarded sponsorship follow-up bulk assignment",
-    "url": "https://github.com/YNWAforever/hkscda/pull/170",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-sponsorship-bulk-20260928",
-    "headRefOid": "d496a793c57360604207de6126b6386a418c9d32",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 171,
-    "state": "OPEN",
-    "title": "T23: read-only sponsorship reminder draft preview",
-    "url": "https://github.com/YNWAforever/hkscda/pull/171",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-sponsorship-reminder-20260928",
-    "headRefOid": "b9a0c8895e955313ef2c34b747724299a6afc915",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 172,
-    "state": "OPEN",
-    "title": "feat(finance): preview canonical bank statements without settlement",
-    "url": "https://github.com/YNWAforever/hkscda/pull/172",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-finance-bank-dryrun-20260928",
-    "headRefOid": "ec1a71318918727026413012937a8ffacbbd9d28",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 173,
-    "state": "OPEN",
-    "title": "feat(finance): expose failed delivery jobs with guarded retry",
-    "url": "https://github.com/YNWAforever/hkscda/pull/173",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-finance-delivery-20260928",
-    "headRefOid": "0e7e4e75f134c40a99b8842d962ce39b0a9d5ff5",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 174,
-    "state": "OPEN",
-    "title": "feat(admin): guide role-based task overview",
-    "url": "https://github.com/YNWAforever/hkscda/pull/174",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-task-guidance-20260928",
-    "headRefOid": "5e64bd64796677d65bd4a59239296373f39ef5f2",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 175,
-    "state": "OPEN",
-    "title": "T23: Guarded bank match confirmation snapshots",
-    "url": "https://github.com/YNWAforever/hkscda/pull/175",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-finance-match-confirm-20260928",
-    "headRefOid": "30d16463fb2442a4962817ee5ca6321ec37ca620",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 176,
-    "state": "OPEN",
-    "title": "T23: Read-only CRM contact format preview",
-    "url": "https://github.com/YNWAforever/hkscda/pull/176",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-crm-format-preview-20260928",
-    "headRefOid": "bf1c67791f4120ee22cd952e20c8571b780021e3",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 177,
-    "state": "OPEN",
-    "title": "fix: preserve CRM version fence and restrict trigger execution",
-    "url": "https://github.com/YNWAforever/hkscda/pull/177",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-crm-version-fence-20260928",
-    "headRefOid": "419da937b699ca619d89fe60f2de6a31a940a093",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 178,
-    "state": "OPEN",
-    "title": "fix: guard CRM assignment writes and actor-scoped recovery",
-    "url": "https://github.com/YNWAforever/hkscda/pull/178",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  },
-  {
-    "baseRefName": "codex/audit-adoption-drafts-20260927",
-    "headRefOid": "991dcca468a50e6004befaf5127bb1f72c705927",
-    "isDraft": true,
-    "mergeCommit": null,
-    "mergedAt": null,
-    "number": 179,
-    "state": "OPEN",
-    "title": "fix: keep adoption wizard progress visible on mobile",
-    "url": "https://github.com/YNWAforever/hkscda/pull/179",
-    "capturedAt": "2026-09-30T19:55:37.086189+00:00"
-  }
-]
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-adoption-wizard-mobile-20260928",
+      "headRefOid": "290abb19a781ce41efc7ad62410a0a278113bf36",
+      "isDraft": true,
+      "mergeCommit": null,
+      "number": 179,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:18Z",
+          "conclusion": "CANCELLED",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782964789/job/110117496743",
+          "name": "verify",
+          "startedAt": "2026-09-30T22:00:17Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:03:21Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782965396/job/110117504296",
+          "name": "verify",
+          "startedAt": "2026-09-30T22:00:53Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:18Z",
+          "conclusion": "CANCELLED",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782964789/job/110117502536",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T22:00:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:12:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782965396/job/110118549154",
+          "name": "brand-verify",
+          "startedAt": "2026-09-30T22:03:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:18Z",
+          "conclusion": "CANCELLED",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782964789/job/110117502863",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T22:00:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:06:01Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782965396/job/110118549228",
+          "name": "a11y-verify",
+          "startedAt": "2026-09-30T22:03:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:18Z",
+          "conclusion": "CANCELLED",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782964789/job/110117503026",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T22:00:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:06:36Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782965396/job/110118549144",
+          "name": "rls-matrix",
+          "startedAt": "2026-09-30T22:03:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:00:18Z",
+          "conclusion": "CANCELLED",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782964789/job/110117503030",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T22:00:18Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-09-30T22:08:44Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/YNWAforever/hkscda/actions/runs/36782965396/job/110118549174",
+          "name": "performance-verify",
+          "startedAt": "2026-09-30T22:03:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        }
+      ],
+      "title": "fix: keep adoption wizard progress visible on mobile",
+      "url": "https://github.com/YNWAforever/hkscda/pull/179"
+    }
+  ]
+}

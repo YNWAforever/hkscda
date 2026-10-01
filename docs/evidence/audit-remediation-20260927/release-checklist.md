@@ -97,6 +97,11 @@ See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c
 ## PR178 current preparation — 2026-09-30
 
 See [sequential-merge-178-20260930.md](sequential-merge-178-20260930.md): app `79838107c738854a28ac5a977b0e9fa6c3c6f5c2`, direct-column privilege bypass and recovery/live-actor races repaired. Full3159pass145skip10026assertions; typecheck/lint/build0; actual role DB5pass31assertions; exact SQL preserves15rows and reports898success101skip1conflict for1000items with audit rollback/retry;12browsercases/Axe0 and six before/after screenshots.61-file inventory; exact approval awaits five current-head CI gates. Code-complete/local-schema-ready, not deployed or enabled; #156 ordered-release blocker retained. Shared actor fix is backported separately to175.
+
+
+## PR179 integrated preparation — 2026-09-30
+
+App `c0da836ee5f3e3a47bd2d61f4cb83d7e52ec436a` integrates through178 and the focused wizard removal/tray fix. Typecheck/lint/build0;full3155pass150skip9996assertions;actual built before/after keyboard/client-navigation/sponsor-preservation proof at390/768/1440,afterAxe0/overflow0/errors0. Single same-host CLS samples and six hashes are in [sequential-merge-179-20260930.md](sequential-merge-179-20260930.md); no hosted or full-submit claim.61 inherited SQL files,no new migration.175 actor followup source is identical and its evidence is carried forward;178 five gatesgreen and exactapprovalrequested.22/46merged;156actualproviderfailure stillblocks orderedrelease. Formal terms/content/retention/identities/provider/notification and exactschema approvals remain external.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

@@ -173,6 +173,11 @@ See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c
 ## PR178 current preparation — 2026-09-30
 
 See [sequential-merge-178-20260930.md](sequential-merge-178-20260930.md): app `79838107c738854a28ac5a977b0e9fa6c3c6f5c2`, direct-column privilege bypass and recovery/live-actor races repaired. Full3159pass145skip10026assertions; typecheck/lint/build0; actual role DB5pass31assertions; exact SQL preserves15rows and reports898success101skip1conflict for1000items with audit rollback/retry;12browsercases/Axe0 and six before/after screenshots.61-file inventory; exact approval awaits five current-head CI gates. Code-complete/local-schema-ready, not deployed or enabled; #156 ordered-release blocker retained. Shared actor fix is backported separately to175.
+
+
+## PR179 integrated preparation — 2026-09-30
+
+App `c0da836ee5f3e3a47bd2d61f4cb83d7e52ec436a` integrates through178 and the focused wizard removal/tray fix. Typecheck/lint/build0;full3155pass150skip9996assertions;actual built before/after keyboard/client-navigation/sponsor-preservation proof at390/768/1440,afterAxe0/overflow0/errors0. Single same-host CLS samples and six hashes are in [sequential-merge-179-20260930.md](sequential-merge-179-20260930.md); no hosted or full-submit claim.61 inherited SQL files,no new migration.175 actor followup source is identical and its evidence is carried forward;178 five gatesgreen and exactapprovalrequested.22/46merged;156actualproviderfailure stillblocks orderedrelease. Formal terms/content/retention/identities/provider/notification and exactschema approvals remain external.
 ## PR175 live-actor follow-up — 2026-09-30
 
 App `7be2da1a9e9dba41983542a9da777c7449afcecd`; shared actor-bound requests and live Auth query cancellation backported from178. Fresh typecheck/lint/build0;full3134pass145skip;12bankbrowsercases/Axe0. Exact SQL unchanged, approval pending, release stillblocked156. See [updated175 report](sequential-merge-175-20260930.md).
@@ -187,3 +192,18 @@ Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd131
 ## T23 dependency continuation, 2026-10-01 HKT
 
 Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery and portal. T23 source unchanged; routes preserved. Full3024 pass/97 skip/0 fail/9384 assertions; typecheck/lint/build exit0; actual local Auth three-role/API/status checks and3width keyboard/Axe0 task overview pass. Independent review clear. New integrated captures preserve older before/after images. No T23 migration; combined manifest48. Still22/46 merged; exact #156 production schema approval pending; #157 migration already approved. #158 code-complete for overview only, ADMIN-04 partial for later bulk/filter slices; deployed=no, operationally-enabled=no. See sequential-merge-158-20260930.md for exact commands/environments/rollback and not-run gates.
+
+## Current final checkpoint — 2026-10-01 HKT
+
+See [actual release checkpoint](release-checkpoint-20261001.md): source290abb19 full3195pass168skip0fail/type0/lint0(52warnings)/build0;26actualmainreleases through159/main07e4c881/ledger98; current146-object production check exit1/92gaps. Historical observations above retain their SHA/environment and do not override this current status. Independent final review and documentation-head exact CI remain pending; no production action.
+
+## Final isolated schema contract drill — 2026-10-01 HKT
+
+Current146-object checker on the existing dedicated loopback57322 baseline: exit1 with one missing `list_sponsorship_followup_assignees` RPC. The schema-only per-feature clone52322 separately reports45legacy gaps (exit1); its focused rehearsal evidence is not a full-schema certification. In a single-connection transaction on57322, only the exact reviewed169 picker declaration/service-role grants from canonical c1eb28ad were temporarily created; all146 implemented public schema checks then reported compatible/0issues/exit0. Rollback restored the exact original checker report, function definitions/OIDs/owners/ACL/config and migration ledger. No application data DML or production connection. This certifies the implemented structural checks, not current function-body hashes, all private/storage/index constraints, provider behavior or hosted UAT.
+
+Two harness attempts actually failed before BEGIN/DDL: aggregate `pg_get_functiondef`42809 and Bun's explicit transaction client guard. Both are recorded alongside the successful correction. [Actual sanitized receipt](final-isolated-schema-drill-20261001.json). Source/SQL/UI bytes and the prior3195pass168skip/type/lint/build results are unchanged. Production remains146requirements/92gaps/ledger98.
+
+
+## R01 forward readonly privilege repair and legacy replay bounds — 2026-10-01
+
+[62-file legacy review](r01-legacy-migration-review-20261001.md):36 whole-file successes/26 collisions with all92 current gaps mapped; production applicability remains uncertified. Current manifest63 adds [#182](https://github.com/YNWAforever/hkscda/pull/182) `20261001080000_service_readonly_evidence_privileges.sql`, SHA256 `e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808`. This new exact file has no production approval. It revokes inherited table/column writes on three evidence tables, precreates only an empty archive, keeps owner RPCs and performs no dedupe/backfill/application DML. [Matched RED/GREEN, actual gates, preflight, staff handoff and rollback](sequential-fix-r01-readonly-20261001.md). Retain tightened ACLs/additive evidence on rollback. Legacy whole-file approvals remain separate; no fake ledger or apply-all authority. #160 existing question pending; #161 prior scope approval operative. Payment/new mail/media schedules stay disabled.

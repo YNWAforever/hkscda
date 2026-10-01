@@ -1,0 +1,1023 @@
+{
+  "capturedAt": "2026-10-01T07:38:42.540555+00:00",
+  "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+  "lastAcceptedMain": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+  "issues": [
+    {
+      "issue_id": "PAY-01",
+      "implementation_status": "partial: donor UI follows server projection; activation checklist pending",
+      "code_complete": "partial",
+      "schema_ready": "yes (checkout schema in production)",
+      "deployed": "yes (#135; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 135,
+          "effectiveMainPr": 135,
+          "mainSha": "9609756e69743163e46f9bfde57a5c0cad684255",
+          "mainCiRun": 36504234340,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "33 focused + 5 projection + 1 isolated DB; full suite 2799 pass/83 skip/0 fail; sandbox provider UAT not-run; main CI 36504234340 success; current alias #155 READY",
+      "external_inputs": "provider mode/approval, callback, reconciliation, receipt, notification and release approval",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "PAY-02",
+      "implementation_status": "code-complete: atomic server admission; release-gated",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929003610)",
+      "deployed": "yes",
+      "operationally_enabled": "yes (admission gate; payments disabled)",
+      "proofs": [
+        {
+          "pr": 135,
+          "effectiveMainPr": 135,
+          "mainSha": "9609756e69743163e46f9bfde57a5c0cad684255",
+          "mainCiRun": 36504234340,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Restricted service-role red-green 21 assertions; full 2799 pass 83 skip 0 fail; new-head CI 5/5; approved production migration verified; deployment READY; main CI 5/5 passed",
+      "external_inputs": "Payment activation remains separately unauthorized",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "PAY-03",
+      "implementation_status": "code-complete for approved donation and sponsorship instructions; activation gated",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929004923)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 136,
+          "effectiveMainPr": 136,
+          "mainSha": "eea15f0ce71c09067ed590eb70c8b41e67497952",
+          "mainCiRun": 36505530161,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Service-role snapshot regression red-green; 2 DB suites 37 assertions; full 2810 pass 83 skip 0 fail; standalone live-schema rehearsal; typecheck lint build exit 0",
+      "external_inputs": "Payment activation and approved real details remain separate",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "PAY-04",
+      "implementation_status": "partial: unavailable/not_configured rendered; T02 readiness alert remains",
+      "code_complete": "partial",
+      "schema_ready": "no new #168 schema; existing payment config schema present; broader R01 dependencies remain partial",
+      "deployed": "yes (#168 readiness endpoint; main five gates and same-SHA READY verified)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 135,
+          "effectiveMainPr": 135,
+          "mainSha": "9609756e69743163e46f9bfde57a5c0cad684255",
+          "mainCiRun": 36504234340,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 136,
+          "effectiveMainPr": 136,
+          "mainSha": "eea15f0ce71c09067ed590eb70c8b41e67497952",
+          "mainCiRun": 36505530161,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 168,
+          "sourceSha": "82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8",
+          "mainSha": "756a3979da51b70647a45a449948600a33b95c8e",
+          "mainCiRun": 36816694953,
+          "gates": "5SUCCESS",
+          "aliasSha": "756a3979da51b70647a45a449948600a33b95c8e",
+          "deploymentId": "dpl_JCS6ixapVcwp4YaYSmk8oKc77tZP",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "public.server 5/5; checkout projection 5/5; live readiness synthetic not-run; main CI 36504234340 success; current alias #155 READY; current readiness acceptance: source 82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8 / main 756a3979da51b70647a45a449948600a33b95c8e / main CI 36816694953 five SUCCESS / same-SHA READY; all-merge-execution-20261001.json",
+      "external_inputs": "hosted authenticated readiness/alerting/live synthetic UAT; wider R01 catalog dependencies; payment activation separate",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "PAY-05",
+      "implementation_status": "partial: prior bulk queues plus manual settlement lock/replay/delivery recovery repaired; later finance/notification workflows pending",
+      "code_complete": "partial",
+      "schema_ready": "approved financial/recovery slices individually applied and postflight recorded; wider R01 legacy dependencies partial",
+      "deployed": "5/5 mapped financial/recovery slices accepted",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 137,
+          "effectiveMainPr": 137,
+          "mainSha": "6e745fad991d91289e5c33557e33e42d6d731735",
+          "mainCiRun": 36506914766,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 156,
+          "effectiveMainPr": 156,
+          "mainSha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
+          "mainCiRun": 36744827478,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 165,
+          "sourceSha": "d853c3c526b2868b734e32ff305c25cb9f6f3547",
+          "mainSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+          "mainCiRun": 36810707899,
+          "gates": "5SUCCESS",
+          "aliasSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+          "deploymentId": "dpl_84qPQBNPNz8HcfipZWZ5RU4VQGk3",
+          "accepted": true
+        },
+        {
+          "pr": 173,
+          "sourceSha": "e5ed74c7d680b30102612bfee2b44b49cc754822",
+          "mainSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+          "mainCiRun": 36823569108,
+          "gates": "5SUCCESS",
+          "aliasSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+          "deploymentId": "dpl_BNn5LAYDtyGMySXxzop2sBuWVb1h",
+          "accepted": true
+        },
+        {
+          "pr": 175,
+          "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+          "mainSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "mainCiRun": 36826152769,
+          "gates": "5SUCCESS",
+          "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "3017pass131skip;typecheck/lint/build0;manualDB4tests29assertions;CRM17tests90assertions;fullSQL6legacyrowsunchanged251ms;UI3widths/Axe0;see sequential-merge-165-20260930.md; current financial slice acceptance: #165 9f9732e92dded2aaee0b7861b4d7de41eff689a6 / CI 36810707899 five SUCCESS / same-SHA READY; exact row/audit hashes unchanged; all-merge-execution-20261001.json",
+      "external_inputs": "provider sandbox/callback/receipt-email partial failure and hosted treasurer UAT; broader R01 legacy dependencies; payments/new sending off",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "CONTENT-01",
+      "implementation_status": "partial; eligibility code and schema deployed; editorial review pending",
+      "code_complete": "yes",
+      "schema_ready": "yes (#153)",
+      "deployed": "yes (#153)",
+      "operationally_enabled": "partial; no automatic classification",
+      "proofs": [
+        {
+          "pr": 153,
+          "effectiveMainPr": 153,
+          "mainSha": "4304127a030f7e6b49926f0759a655b0a60aaa59",
+          "mainCiRun": 36620897215,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 166,
+          "sourceSha": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+          "mainSha": "145624623b740685d134eda93344afe8a80aebff",
+          "mainCiRun": 36812083168,
+          "gates": "5SUCCESS",
+          "aliasSha": "145624623b740685d134eda93344afe8a80aebff",
+          "deploymentId": "dpl_TLiecPmvUWof9MCn23Frg1nBbrX7",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "PR CI 36610600451 five green; production migrations 20260929193826 and 20260929193915; seven rows unchanged; Vercel READY; main CI 36620897215 five green",
+      "external_inputs": "Approved classification/replacement copy and real staff UAT",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "CONTENT-02",
+      "implementation_status": "partial; T18/T21 deployed; approved photos/facts pending",
+      "code_complete": "partial",
+      "schema_ready": "yes (#155)",
+      "deployed": "yes (#155)",
+      "operationally_enabled": "yes (bounded listing); paid transforms disabled",
+      "proofs": [
+        {
+          "pr": 153,
+          "effectiveMainPr": 153,
+          "mainSha": "4304127a030f7e6b49926f0759a655b0a60aaa59",
+          "mainCiRun": 36620897215,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 155,
+          "effectiveMainPr": 155,
+          "mainSha": "24196faf027998388eff3196a6979e23566e2443",
+          "mainCiRun": 36624781016,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "PR CI 36623433675 five green; migration 20260929201203; unchanged 292-row hash; anon read; Vercel READY; main CI 36624781016 pending; local p50 221.73->17.56ms",
+      "external_inputs": "Real-role UAT; approved photos/facts; paid transforms remain disabled",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "VOL-01",
+      "implementation_status": "code-complete and deployed; session policy and hosted UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "not-required; catalog present",
+      "deployed": "yes (#151; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 151,
+          "effectiveMainPr": 151,
+          "mainSha": "419f4e0ea597dfa07a8ac265b0744a03fe67f563",
+          "mainCiRun": 36600633838,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "2856 pass 150 skip; typecheck lint build exit 0; coverage 17 pass; synthetic mobile desktop keyboard zoom pass; see sequential-merge-151-20260930.md; main CI 36600633838 success; current alias #155 READY",
+      "external_inputs": "Approved session publication and real role UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "VOL-02",
+      "implementation_status": "code-complete and deployed; session policy and hosted UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "not-required; catalog present",
+      "deployed": "yes (#151; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 151,
+          "effectiveMainPr": 151,
+          "mainSha": "419f4e0ea597dfa07a8ac265b0744a03fe67f563",
+          "mainCiRun": 36600633838,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "2856 pass 150 skip; typecheck lint build exit 0; coverage 17 pass; synthetic mobile desktop keyboard zoom pass; see sequential-merge-151-20260930.md; main CI 36600633838 success; current alias #155 READY",
+      "external_inputs": "Approved session publication and real role UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "SPON-01",
+      "implementation_status": "code-complete: explicit later/proof choices and proof field validation; approved terms gate blocks launch",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929125117)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 142,
+          "effectiveMainPr": 142,
+          "mainSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
+          "mainCiRun": 36571024953,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "red-to-green radio UI/schema; focused sponsorship 260 pass/1 skip; updated full 2852 pass/83 skip/0 fail; legacy retry red-green 57 focused pass; isolated DB constraint/RLS test exit 0; synthetic 390px mobile/keyboard UAT exit 0; real-content UAT not-run",
+      "external_inputs": "approved terms publication and full browser/provider UAT",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "SPON-02",
+      "implementation_status": "partial: published PDF reader and content-hash consent gate; no approved document or slot assignment",
+      "code_complete": "partial",
+      "schema_ready": "yes (production 20260929125117)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 142,
+          "effectiveMainPr": 142,
+          "mainSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
+          "mainCiRun": 36571024953,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "red-to-green missing/stale terms 409/503 and anonymous reader; isolated DB constraint/RLS test exit 0; real published terms not-run",
+      "external_inputs": "association-approved zh-HK/en PDFs and audited slot publication path",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "SPON-03",
+      "implementation_status": "partial: total monthly amount/preference/manual arrangement summary in form and status; final policy copy pending",
+      "code_complete": "partial",
+      "schema_ready": "not applicable",
+      "deployed": "yes (#142; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 142,
+          "effectiveMainPr": 142,
+          "mainSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
+          "mainCiRun": 36571024953,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "static UI contract and focused sponsorship 260 pass/1 skip; updated full 2852 pass/83 skip/0 fail; legacy retry red-green 57 focused pass; real-content UAT not-run; main CI 36571024953 success; current alias #155 READY",
+      "external_inputs": "approved allocation/cancellation/renewal copy",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "SPON-04",
+      "implementation_status": "partial: safe draft plus field/409/413/429/network messages; complete journey UAT pending",
+      "code_complete": "partial",
+      "schema_ready": "not applicable",
+      "deployed": "yes (#142; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 141,
+          "effectiveMainPr": 141,
+          "mainSha": "890e84fae048364cbad9a50a3d7785fc7b97c861",
+          "mainCiRun": 36510299370,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 142,
+          "effectiveMainPr": 142,
+          "mainSha": "8b039aa8f48338ff8b914ffac93aaf11598040d0",
+          "mainCiRun": 36571024953,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "draft mobile synthetic exit 0; proof upload 429 red-to-green; focused sponsorship 260 pass/1 skip; updated full 2852 pass/83 skip/0 fail; legacy retry red-green 57 focused pass; synthetic 390px mobile/keyboard UAT exit 0; real-content UAT not-run; #141 updated full 2837 pass; synthetic mobile draft recovery pass; PR CI 5/5; main CI 36571024953 success; current alias #155 READY",
+      "external_inputs": "approved terms and mobile/keyboard/full journey UAT",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "ADOPT-01",
+      "implementation_status": "code-complete: opt-in versioned TTL and data whitelist",
+      "code_complete": "yes",
+      "schema_ready": "not applicable",
+      "deployed": "yes (#140 and #141 merged; production READY)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 140,
+          "effectiveMainPr": 140,
+          "mainSha": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6",
+          "mainCiRun": 36509476864,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 141,
+          "effectiveMainPr": 141,
+          "mainSha": "890e84fae048364cbad9a50a3d7785fc7b97c861",
+          "mainCiRun": 36510299370,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "red-to-green TTL/legacy/storage-denied/whitelist; 22 focused isolated pass; full 2834 pass/86 skip/0 fail; mobile synthetic resume/clear exit 0; updated full 2837 pass 83 skip 0 fail; 390px keyboard/resume/photo recovery rerun exit 0; PR CI 5/5",
+      "external_inputs": "seven-day retention approval and browser UAT",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "ADOPT-02",
+      "implementation_status": "code-complete wizard UI; full hosted journey UAT unverified",
+      "code_complete": "yes (UI implementation)",
+      "schema_ready": "not applicable;179 no new SQL",
+      "deployed": "partial (#140/#141); focused #179 wizard slice not deployed",
+      "operationally_enabled": "no; retention and hosted journey gates",
+      "proofs": [
+        {
+          "pr": 140,
+          "effectiveMainPr": 140,
+          "mainSha": "f52500d9eabc0383ec0f6afd9fec2e0607e2dac6",
+          "mainCiRun": 36509476864,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 141,
+          "effectiveMainPr": 141,
+          "mainSha": "890e84fae048364cbad9a50a3d7785fc7b97c861",
+          "mainCiRun": 36510299370,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 179,
+          "accepted": false,
+          "status": "pending sequential acceptance"
+        }
+      ],
+      "acceptance_evidence": "26focused59assertions;full3155pass150skip9996assertions;type/lint/build0;built3width keyboard/remove/ranks/sponsor/navigation/Axe0;sequential-merge-179-20260930.md; root179 canonical62SQL/focused2pass74assertions/strictType0; combinedlocalfull/lint/build/DBnot-run; freshcombinedCIpending; sequential-merge-179-20260930.md; final combined source290abb19 gates0; owned179 wizard code complete, prior same-host three-width UI retained; full seven-step hosted submission/upload journey not-run; current full combined local gates at2e9d1ee:3195pass188skip0fail10138assert593files, TS/lint/build0; earlier focused UI remains source/environment-bound; full hosted seven-step/upload not-run",
+      "external_inputs": "sequential release, scoped hosted identities, seven-step/expiry/private-file journey, approved retention/terms",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "CRM-01",
+      "implementation_status": "code-complete; production schema ready; #157 deployed via corrective #181",
+      "code_complete": "yes",
+      "schema_ready": "yes production (#156 20260930163010; #157 20260930165057)",
+      "deployed": "yes (#156/#157 via #181)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 156,
+          "effectiveMainPr": 156,
+          "mainSha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
+          "mainCiRun": 36744827478,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 157,
+          "effectiveMainPr": 181,
+          "mainSha": "da3d06b1d462fb6c86d800c4825edeba9823092d",
+          "mainCiRun": 36750331821,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "3019 pass 96 skip 0 fail; typecheck lint build exit0; DB roles/audit rollback/concurrent idempotency; SDK22/66; Chromium two-tab password/logout/refresh; same-task portal logout3 cases; full UI3widths Axe0; independent review clear; sequential-merge-157-20260930.md; #181 exact-head CI36748823918/main36750331821 all5 SUCCESS; alias READY da3d06b1; sequential-execution-20261001.md",
+      "external_inputs": "Recovery key/sandbox/real staff UAT; operationally enabled remains no",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "ADMIN-01",
+      "implementation_status": "code-complete; production schema ready; worker gated",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929160535)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 148,
+          "effectiveMainPr": 148,
+          "mainSha": "10db7f36315f780eed743b3182a60f1c3ae9c177",
+          "mainCiRun": 36596400446,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Both PR/main five gates passed; deployment READY; clone 145 assertions plus actual service_role lifecycle",
+      "external_inputs": "CRON_SECRET absent; new jobs disabled; real identity UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "ADMIN-02",
+      "implementation_status": "code-complete; production schema ready",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929162248)",
+      "deployed": "yes (#149; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 149,
+          "effectiveMainPr": 149,
+          "mainSha": "020e03eeb1b7a54cce908babc5ec3bd271d370a5",
+          "mainCiRun": 36598019572,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "PR five CI gates pass; 15 profile hashes unchanged; actual service_role DB 3 pass 13 assertions; see sequential-merge-150-20260930.md; main CI 36598019572 success; current alias #155 READY",
+      "external_inputs": "Real staff UAT not-run; wider R01 dependencies remain",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "ADMIN-03",
+      "implementation_status": "code-complete; deployed; staff UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "n/a",
+      "deployed": "yes (#150; present in production #155)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 150,
+          "effectiveMainPr": 150,
+          "mainSha": "be4fcb642750e5a45839ce90ead6af1747a821f2",
+          "mainCiRun": 36599383783,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "PR five jobs including isolated DB pass; typecheck lint build 0; mobile export/query regressions pass; main CI 36599383783 success; current alias #155 READY",
+      "external_inputs": "Real staff UAT not-run; wider R01 dependencies remain",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "ADMIN-04",
+      "implementation_status": "code-complete slices; sequential production rollout in progress",
+      "code_complete": "yes for implemented tag/review/assignment/preview/worklist slices",
+      "schema_ready": "reviewed applied scopes separately recorded; wider R01 legacy dependencies partial",
+      "deployed": "20/20 mapped reviewed slices accepted; wider R01/hosted UAT remain partial",
+      "operationally_enabled": "partial; hosted staff UAT pending; payment/new schedules off",
+      "proofs": [
+        {
+          "pr": 158,
+          "effectiveMainPr": 158,
+          "mainSha": "d507340491dc50a780c7031dbcd459b85ebfff38",
+          "mainCiRun": 36753543456,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 159,
+          "effectiveMainPr": 159,
+          "mainSha": "07e4c881863b715342ed0757aad7bd691a272738",
+          "mainCiRun": 36758558621,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 160,
+          "sourceSha": "ffe4db25ce7ac65b077a073ec54ce0fb882864b2",
+          "mainSha": "af786636211e7376db16694500c67d18555c70d9",
+          "mainCiRun": 36802463075,
+          "gates": "5SUCCESS",
+          "aliasSha": "af786636211e7376db16694500c67d18555c70d9",
+          "deploymentId": "dpl_6yxJYbY4Sjp8j2MZqxmwrTj2Pm4C",
+          "accepted": true
+        },
+        {
+          "pr": 161,
+          "sourceSha": "c01090d4050329a7f5c6136e3dbebef257c0648f",
+          "mainSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff",
+          "mainCiRun": 36805966176,
+          "gates": "5SUCCESS",
+          "aliasSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff",
+          "deploymentId": "dpl_5JiefMgUWb9TVbfwn7zfjgSfSp95",
+          "accepted": true
+        },
+        {
+          "pr": 162,
+          "sourceSha": "00673f85ed27f266d4a06c9912d14278980ca81b",
+          "mainSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a",
+          "mainCiRun": 36807434318,
+          "gates": "5SUCCESS",
+          "aliasSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a",
+          "deploymentId": "dpl_9LzUJkbBoSnnBtb83yg27rJL2Wku",
+          "accepted": true
+        },
+        {
+          "pr": 163,
+          "sourceSha": "23c5c752caab440473e326ee77e97c3f76e7260d",
+          "mainSha": "93989d29d1adaacf05af406b8d595262c5b7c818",
+          "mainCiRun": 36808409156,
+          "gates": "5SUCCESS",
+          "aliasSha": "93989d29d1adaacf05af406b8d595262c5b7c818",
+          "deploymentId": "dpl_9Xhmo3dfWKPHDJja1sKp5k2Nfi9a",
+          "accepted": true
+        },
+        {
+          "pr": 164,
+          "sourceSha": "2c5a86c25a3762004dec7480189391515a6904b2",
+          "mainSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920",
+          "mainCiRun": 36809549878,
+          "gates": "5SUCCESS",
+          "aliasSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920",
+          "deploymentId": "dpl_337BE9zjMnxvwq8RbL8e2bqKuGKN",
+          "accepted": true
+        },
+        {
+          "pr": 165,
+          "sourceSha": "d853c3c526b2868b734e32ff305c25cb9f6f3547",
+          "mainSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+          "mainCiRun": 36810707899,
+          "gates": "5SUCCESS",
+          "aliasSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+          "deploymentId": "dpl_84qPQBNPNz8HcfipZWZ5RU4VQGk3",
+          "accepted": true
+        },
+        {
+          "pr": 166,
+          "sourceSha": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+          "mainSha": "145624623b740685d134eda93344afe8a80aebff",
+          "mainCiRun": 36812083168,
+          "gates": "5SUCCESS",
+          "aliasSha": "145624623b740685d134eda93344afe8a80aebff",
+          "deploymentId": "dpl_TLiecPmvUWof9MCn23Frg1nBbrX7",
+          "accepted": true
+        },
+        {
+          "pr": 167,
+          "sourceSha": "3c5125fb311026539ade6f11fda25073d240718a",
+          "mainSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+          "mainCiRun": 36813137411,
+          "gates": "5SUCCESS",
+          "aliasSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+          "deploymentId": "dpl_4UCLGvDXqSrgwcukwzWvP8N21ddE",
+          "accepted": true
+        },
+        {
+          "pr": 169,
+          "sourceSha": "f8c4f1604cf8638394c65b734149db053fc480cd",
+          "mainSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a",
+          "mainCiRun": 36817868572,
+          "gates": "5SUCCESS",
+          "aliasSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a",
+          "deploymentId": "dpl_8FcERY3jVW9rjys45XHbJqyi3WLw",
+          "accepted": true
+        },
+        {
+          "pr": 170,
+          "sourceSha": "dfae45034e81a76b1141dd6d2882ee0527f6e37a",
+          "mainSha": "a1c038d7f78e498a34c717dd0491ec66232d7198",
+          "mainCiRun": 36819010956,
+          "gates": "5SUCCESS",
+          "aliasSha": "a1c038d7f78e498a34c717dd0491ec66232d7198",
+          "deploymentId": "dpl_Bg3JpQiiMrGqANU5tWmfYFuGzW8p",
+          "accepted": true
+        },
+        {
+          "pr": 171,
+          "sourceSha": "47b3a4654f06a8663610fd6f809dbacf25738fd4",
+          "mainSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9",
+          "mainCiRun": 36820293487,
+          "gates": "5SUCCESS",
+          "aliasSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9",
+          "deploymentId": "dpl_4EcbzJB1C4TF7MA6ZZoSqzSKPrXZ",
+          "accepted": true
+        },
+        {
+          "pr": 172,
+          "sourceSha": "f117dc3889f03f19dd4c419734a980ba4625cdbc",
+          "mainSha": "f277103be09d7c27967f23fca4a667743c421aaf",
+          "mainCiRun": 36822299791,
+          "gates": "5SUCCESS",
+          "aliasSha": "f277103be09d7c27967f23fca4a667743c421aaf",
+          "deploymentId": "dpl_AB1raYZ1BnoLFvZj5Xi3RuMANDba",
+          "accepted": true
+        },
+        {
+          "pr": 173,
+          "sourceSha": "e5ed74c7d680b30102612bfee2b44b49cc754822",
+          "mainSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+          "mainCiRun": 36823569108,
+          "gates": "5SUCCESS",
+          "aliasSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+          "deploymentId": "dpl_BNn5LAYDtyGMySXxzop2sBuWVb1h",
+          "accepted": true
+        },
+        {
+          "pr": 174,
+          "sourceSha": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+          "mainSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+          "mainCiRun": 36824674785,
+          "gates": "5SUCCESS",
+          "aliasSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+          "deploymentId": "dpl_Ej8pAVT2SxQk4vwWeWbSM5URnaTS",
+          "accepted": true
+        },
+        {
+          "pr": 175,
+          "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+          "mainSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "mainCiRun": 36826152769,
+          "gates": "5SUCCESS",
+          "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT",
+          "accepted": true
+        },
+        {
+          "pr": 176,
+          "sourceSha": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+          "mainSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+          "mainCiRun": 36827586656,
+          "gates": "5SUCCESS",
+          "aliasSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+          "deploymentId": "dpl_BMZHGpKBS1Xo7qqCK6RUypyTu1f5",
+          "accepted": true
+        },
+        {
+          "pr": 177,
+          "sourceSha": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+          "mainSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+          "mainCiRun": 36828955860,
+          "gates": "5SUCCESS",
+          "aliasSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+          "deploymentId": "dpl_1Lbworrg8Wa7saAgtLfuHAY5SAcV",
+          "accepted": true
+        },
+        {
+          "pr": 178,
+          "sourceSha": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+          "mainSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+          "mainCiRun": 36830360908,
+          "gates": "5SUCCESS",
+          "aliasSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+          "deploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "5DB31assertions;1000items898success101skip1conflict;full3159pass145skip;type/lint/build0;12UIcases/Axe0; sequential-merge-178-20260930.md; task178 RED2fail GREEN7pass49assert full3161pass145skip10044assert; type/lint/build0; exact catalog/column-grants/whole-ledger/audit rollback; hash 941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09; round1 exact heldPID+whole item JSON RED2fail GREEN7pass53assert full3161pass145skip10048assert; type/lint/build0; prior whole SQL rehearsal inherited; see sequential-merge-178-20260930.md; root178 canonical62SQL/focused2pass74assertions/strictType0; combinedlocalfull/lint/build/DBnot-run; freshcombinedCIpending; sequential-merge-178-20260930.md; final combined3195pass168skip0fail10138assert592files62.30s/type0/lint0(52existingwarnings)/build0; final-local-gates-20261001.json; current actual release receipt: all-merge-execution-20261001.json; accepted releases 160,182,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178; pending gates remain pending",
+      "external_inputs": "candidate-specific catalog/schema and sequential green releases; global R01 legacy dependencies; hosted staff UAT; payments/new schedules off",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "PERF-01",
+      "implementation_status": "code and schema deployed; broader UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "yes (#155)",
+      "deployed": "yes (#155)",
+      "operationally_enabled": "yes (bounded listing); paid transforms disabled",
+      "proofs": [
+        {
+          "pr": 155,
+          "effectiveMainPr": 155,
+          "mainSha": "24196faf027998388eff3196a6979e23566e2443",
+          "mainCiRun": 36624781016,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "PR CI 36623433675 five green; migration 20260929201203; unchanged 292-row hash; anon read; Vercel READY; main CI 36624781016 five green; local p50 221.73->17.56ms",
+      "external_inputs": "Real-role UAT; approved photos/facts; paid transforms remain disabled",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "OPS-01",
+      "implementation_status": "verified-fixed",
+      "code_complete": "yes",
+      "schema_ready": "not-applicable (historical CI incident)",
+      "deployed": "yes",
+      "operationally_enabled": "n/a",
+      "proofs": [],
+      "acceptance_evidence": "Historical aa280ed incident remains closed. Every current accepted release has its own five-gate main and same-SHA READY receipt; no new incident inferred.",
+      "external_inputs": "",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "SEC-01",
+      "implementation_status": "partial",
+      "code_complete": "yes for deployed fail-closed Turnstile/limiter and signed-proof source guards",
+      "schema_ready": "no",
+      "deployed": "partial (#134 and #139 deployed)",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 134,
+          "effectiveMainPr": 134,
+          "mainSha": "f61276f7a7560035ef7da8259eabb9149c82edca",
+          "mainCiRun": 36502210175,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 139,
+          "effectiveMainPr": 139,
+          "mainSha": "379fa0e128a136b9a4877c49b518b620007a55e0",
+          "mainCiRun": 36508642202,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Red-to-green production fail-closed Turnstile/limiter tests and adoption 503 no-write test; 73 affected API/security tests passed; T07 red-to-green proof token 30 focused isolated pass; updated full suite 2830 pass 83 skip 0 fail; typecheck lint build exit 0; browser/provider UAT pending; predecessor #134 main CI 5/5; production protection pairs present; source completion separated from provider/browser UAT; no new secret inspection or provider challenge performed",
+      "external_inputs": "hosted Turnstile/browser/rate-limit and private-upload journey UAT; relevant legacy schema dependencies remain R01",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R01",
+      "implementation_status": "partial overall; focused #182 readonly ACL repair applied and postflight passed",
+      "code_complete": "partial overall; focused readonly repair yes",
+      "schema_ready": "partial; final public checker incompatible, 44 residual issues at ledger112",
+      "deployed": "partial; focused #182 source accepted",
+      "operationally_enabled": "partial (#182 readonly ACL clamp enforced); wider compatibility/UAT open",
+      "proofs": [
+        {
+          "pr": 134,
+          "effectiveMainPr": 134,
+          "mainSha": "f61276f7a7560035ef7da8259eabb9149c82edca",
+          "mainCiRun": 36502210175,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        },
+        {
+          "pr": 182,
+          "sourceSha": "61416eb7b08bcfe98abb6b6fe149f8369bee4bbb",
+          "mainSha": "124148ac2b0b7698906087d0c66836c66be95d2f",
+          "mainCiRun": 36803461825,
+          "gates": "5SUCCESS",
+          "aliasSha": "124148ac2b0b7698906087d0c66836c66be95d2f",
+          "deploymentId": "dpl_EmrqZLa8rcSYnaF9m8hPzNrV7FL6",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "2026-09-27 baseline: production missing 8 minimum tables 14 RPCs and fingerprint column; historical fresh/upgrade rehearsal 67 requirements passed. Later approved CMS and other dependency migrations applied; ledger95 observed 2026-09-30. Baseline missing counts are not current.; 2026-10-01 pre160/182 historical read-only public catalog138tables276functions/ledger98; that snapshot checker exit1 incompatible; production-compatibility-20261001.json; prior missing counts not current; dedicated57322 exact reviewed picker/grant transaction:146structuralchecks compatible0issues/exit0; original catalog/ACL/ledger rollback verified; two pre-DDL harness errors retained; pre160/182 production snapshot92gaps; fresh post-rollout catalog pending; R01 legacy whole-file36success/26collisions, all92gaps mapped; focused182 role RED3/17->GREEN20/0/110assert; full sourceaca3027/127/0, TS/lint/build0; integrated candidate gates pending; current actual release receipt: all-merge-execution-20261001.json; 182 nine table-role checks/no column writes;11 RPC objects unchanged; original rows preserved; final production-compatibility-after-approved-rollout-20261001.json; baseline92 gaps are historical",
+      "external_inputs": "legacy dependency forward review/approval; hosted/provider/full recovery UAT not-run; later11 scoped migrations approved for per-file execution",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R02",
+      "implementation_status": "code-complete protected readiness/public-content-gate slice deployed",
+      "code_complete": "yes (readiness slice)",
+      "schema_ready": "no new #168 schema; existing payment config schema present; broader R01 dependencies remain partial",
+      "deployed": "yes (#168 readiness endpoint; main five gates and same-SHA READY verified)",
+      "operationally_enabled": "partial (endpoint deployed); hosted operator/alerts UAT not-run",
+      "proofs": [
+        {
+          "pr": 168,
+          "sourceSha": "82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8",
+          "mainSha": "756a3979da51b70647a45a449948600a33b95c8e",
+          "mainCiRun": 36816694953,
+          "gates": "5SUCCESS",
+          "aliasSha": "756a3979da51b70647a45a449948600a33b95c8e",
+          "deploymentId": "dpl_JCS6ixapVcwp4YaYSmk8oKc77tZP",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Red19pass3fail;landmark8pass1fail;final3051pass133skip;typecheck/lint/build0;3width real client-navigation/private reference/Axe0;see sequential-merge-168-20260930.md; root168 canonical55SQL/focused2pass54assertions/strictType0; combinedlocalfull/lint/build/DBnot-run; freshcombinedCIpending; sequential-merge-168-20260930.md; current readiness acceptance: source 82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8 / main 756a3979da51b70647a45a449948600a33b95c8e / main CI 36816694953 five SUCCESS / same-SHA READY; all-merge-execution-20261001.json",
+      "external_inputs": "hosted authenticated readiness/alerting/live synthetic UAT; wider R01 catalog dependencies; payment activation separate",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R03",
+      "implementation_status": "code-complete; deployed; staff UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929150318)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 143,
+          "effectiveMainPr": 143,
+          "mainSha": "fa42610f9dfc66284c0b51d005f7c622b82fd28f",
+          "mainCiRun": 36587348342,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Synthetic mobile keyboard unsaved guard pass; full 2852 pass 83 skip; typecheck lint build exit 0; five PR CI gates green; CMS clone service-role and grants pass; public HTTP 200",
+      "external_inputs": "Authenticated staff UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R04",
+      "implementation_status": "code-complete; production schema ready; staff UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929150318)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 144,
+          "effectiveMainPr": 144,
+          "mainSha": "37f7abddfb9caea673b9f07e9b1ba352084cb395",
+          "mainCiRun": 36588856862,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Full 2860 pass 83 skip; mobile keyboard history and dirty guard pass; DB 1002 rows rollback; payload 1402897 to 8711 bytes; typecheck lint build exit 0; five PR CI gates green",
+      "external_inputs": "Real staff UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R05",
+      "implementation_status": "code-complete; production schema ready; staff UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929151028)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 145,
+          "effectiveMainPr": 145,
+          "mainSha": "591b8aae10a22d31aa94f08eb3c0652ccf53b19b",
+          "mainCiRun": 36590275015,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "Full 2868 pass 83 skip; typecheck lint build exit 0; synthetic mobile and SQL rollback pass; service-role clone create retry stale denied actor audit rollback pass; grants verified live",
+      "external_inputs": "Real staff UAT not-run; wider R01 dependencies remain",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R06",
+      "implementation_status": "code-complete; production schema ready; staff UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "yes (production 20260929152453)",
+      "deployed": "yes",
+      "operationally_enabled": "no",
+      "proofs": [
+        {
+          "pr": 146,
+          "effectiveMainPr": 146,
+          "mainSha": "87e4aa1acfab082bba1a6c97260d74ca5ebd96b5",
+          "mainCiRun": 36591612497,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "2875 pass 83 skip; typecheck lint build exit 0; clone role rollback and 14-row backfill pass; two-connection service-role conflict pass; mobile synthetic exit 0",
+      "external_inputs": "Real staff UAT not-run; historical create RPC remains R01",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R07",
+      "implementation_status": "code-complete; merged; hosted proof UAT pending",
+      "code_complete": "yes",
+      "schema_ready": "not applicable",
+      "deployed": "yes",
+      "operationally_enabled": "partial (provider UAT pending)",
+      "proofs": [
+        {
+          "pr": 139,
+          "effectiveMainPr": 139,
+          "mainSha": "379fa0e128a136b9a4877c49b518b620007a55e0",
+          "mainCiRun": 36508642202,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "30 focused proof regressions; full 2830 pass 83 skip 0 fail; five PR and main CI jobs green; deployment READY",
+      "external_inputs": "Real provider challenge and complete proof-upload UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R08",
+      "implementation_status": "code-complete and deployed; operational activation gated",
+      "code_complete": "yes",
+      "schema_ready": "yes (#154 four approved files)",
+      "deployed": "yes (#154)",
+      "operationally_enabled": "no; new media cron disabled",
+      "proofs": [
+        {
+          "pr": 154,
+          "effectiveMainPr": 154,
+          "mainSha": "68352546b61c1a61b79fad4638640b2dddd30ac9",
+          "mainCiRun": 36623173950,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "PR CI 36621262620 five green; production ledger 94; postflight RLS grants constraints indexes pass; Vercel READY; main CI 36623173950 five green",
+      "external_inputs": "Hosted duration and Storage acceptance; real-role UAT; separate scheduler activation",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R09",
+      "implementation_status": "external measurement blocked; current regions reverified; no config change",
+      "code_complete": "no",
+      "schema_ready": "not-applicable (no DB region move)",
+      "deployed": "no",
+      "operationally_enabled": "no",
+      "proofs": [],
+      "acceptance_evidence": "not-run for this issue; current production dpl_D6goofbM7umWWoTqQVGtBxHzkvVP READY/iad1/main07e4c881; DB ACTIVE_HEALTHY/ap-southeast-1; region-benchmark.md current addendum; two-geography 30sample cold/warm benchmark not-run",
+      "external_inputs": "private fixture deployment, two geography runners and current plan/function-region constraints; no public preview or paid environment authorized",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R10",
+      "implementation_status": "code-complete: explicit Asia/Hong_Kong formatting",
+      "code_complete": "yes",
+      "schema_ready": "not applicable",
+      "deployed": "yes (#138; present in production #155)",
+      "operationally_enabled": "yes (date formatting only)",
+      "proofs": [
+        {
+          "pr": 138,
+          "effectiveMainPr": 138,
+          "mainSha": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1",
+          "mainCiRun": 36507756796,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "UTC midnight/year-end red-to-green; rendered before/after A4 PDF; 2822 pass/86 skip/0 fail; typecheck/lint/build exit 0; main CI 36507756796 success; current alias #155 READY",
+      "external_inputs": "Real receipt delivery/provider UAT not-run",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    },
+    {
+      "issue_id": "R11",
+      "implementation_status": "partial: process cache done; size/glyph coverage open",
+      "code_complete": "partial",
+      "schema_ready": "not applicable",
+      "deployed": "yes (#138; present in production #155)",
+      "operationally_enabled": "partial (font byte cache)",
+      "proofs": [
+        {
+          "pr": 138,
+          "effectiveMainPr": 138,
+          "mainSha": "df6e7c8b2f0fba904ab6b8ea50dbbd63bd67b4a1",
+          "mainCiRun": 36507756796,
+          "gates": "historical success; original sequential receipt retained",
+          "accepted": true
+        }
+      ],
+      "acceptance_evidence": "single-flight/retry tests; 100 PDF same-host benchmark 103335ms vs 104233ms; fetches 100 vs 1; size 4.34MB; main CI 36507756796 success; current alias #155 READY",
+      "external_inputs": "Approved rare-glyph font and safe size improvement remain open",
+      "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
+    }
+  ],
+  "limits": "Current addendum supersedes stale pending phrasing in older retained evidence; deployment does not certify provider/hosted roles/complete journey/full recovery/operational activation."
+}
