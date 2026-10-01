@@ -1,0 +1,50 @@
+# T24 · staff operations and rollback handoff
+
+**Current state (2026-09-30):** #134–#155 merged/deployed (22/46), main/alias 24196faf027998388eff3196a6979e23566e2443 READY, main CI five green. #156 onward not merged: actual local Auth concurrent OTP failure blocks sequential release. New checkout remains disabled; new recovery delivery/media schedules and real content classification remain unenabled. Later #159–#162 bulk interfaces are verified locally but not deployed. Staff continue approved live procedures until the relevant new function is explicitly enabled.
+
+## Staff roles and day-one checks after an approved release
+
+| Owner | Required action / evidence |
+|---|---|
+| Release owner + DBA | Confirm exact app SHA, migration manifest checksum, production backup/restore test, ordered catalog/signature/grants/RLS/seed gate, compatible rollback target and CI at same SHA. Sequential main release is already approved when gates pass; obtain only outstanding exact production migration and operational activation approvals. |
+| Finance treasurer | Approve each payment method, public instructions/config version and account details; inspect sandbox callbacks, pending/uncertain reconciliation, receipt delivery and refund controls. Payment success remains committed even if PDF/email fails. Never bulk-refund or void without per-item review. |
+| Content owner | Review exact live IDs, source classification, photo rights, animal mapping, terms/copy diffs and public impact before any publication/archive. #133 fallback is only for CMS revision read `PGRST205`/`42P01`; permission, unexpected, missing published revision and invalid content stay errors. |
+| Volunteer coordinator | Approve policy and 14/30-day activity coverage; review each bulk preview's scope, exceptions and capacity. Confirm notices separately. |
+| Admin lead | Exercise each actual role's direct API, export, private media/receipt and revoked-session behavior in private candidate. Train staff on 25 visible / up to 1000 matching selection, expiring snapshots, per-item result CSV, conflict refresh and failed-only retry. Do not assume a bulk job is one atomic multirow command. |
+| On-call | Record worker last success/backlog, webhook replay, pending payments, receipt failures, error rate and public-content smoke before/after release. Keep old provider event intake and reconciliation available while new checkout admission is disabled. |
+
+## Operational workflow for new bulk controls (once approved and deployed)
+
+1. Select a bounded list with its displayed filters; confirm **this page** versus **all matching** and the count. A changed filter invalidates selection. No generic table editor exists.
+2. Run preview and read eligible, skipped and conflict reasons, before/after data, expiry and public impact. Do not use an expired snapshot or bypass a version conflict.
+3. Apply 25 at a time. Each item rechecks current role and record version; success, skipped, conflict and failed are distinct. Save the per-item result and audit reference. A refreshed tab retains the saved operation ID. Use read recovery after an outage; pending mount recovery blocks a replacement preview.
+4. On an uncertain response, first reload durable results and continue still-pending items in the same operation; completed items are idempotent. Re-preview conflicts, expired snapshots or changed scope; never blindly undo completed groups. Notification draft, recipient preview and actual sending are separate approved actions. No workflow automatically publishes an animal or approves an adoption/payment.
+
+## Incident isolation and rollback
+
+- Schema fault or unexpected payment behavior: disable **new checkout** and affected new write endpoints via the reviewed policy/config, preserving prior webhook ingestion, reconciliation and durable provider events. Investigate the exact catalog, error/audit IDs and pending event queue before retry. Never mark a committed payment pending because receipt/email failed.
+- Bulk issue: stop the specific UI/API operation, keep operation/result/audit rows, let in-flight per-item transactions settle, inspect succeeded versus failed IDs and perform a new snapshot for unresolved items. Do not blindly replay all IDs.
+- Media worker issue: pause new claims, retain leases/checkpoints and committed-public invariant, inspect stuck/permanent failure counts, then resume with fencing intact. Do not expose uncommitted media.
+- App rollback: no old app SHA is certified against the complete additive schema. Prove compatibility in a private candidate, leave additive schema/data in place, and roll app/config only. Do not restore an older DB over newer payment/audit/events.
+- Sequential main release approval is recorded; exact production DDL approvals apply only to their named files. Publishing, payment enablement, new schedules, sending and refunds remain separately gated.
+
+## Outstanding inputs for release owners
+
+- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone for the remaining per-PR changes; 51 source files are inventoried. Existing restricted backup has no Storage bytes and full restore remains not-run.
+- Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
+- Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
+- Supported Auth atomic OTP redemption fix and hosted parity; local Mailpit sink already exercised; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
+- Remaining T23 domain implementations: sponsorship, finance, CMS and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.
+
+
+## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
+
+26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.
+
+Source freeze is reviewed combined PR162 `4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b`; this PR changes documentation only and excludes later164–179source. Manifest52unique migration files recomputed against actual canonical LF SQL with0mismatches. Updated release-manifest.json and pr-status-20261001.json distinguish source, actual main releases, isolated schema and enablement. Prior20260930report remains historical. Fresh exact-head PR162/PR163 remote gates are pending at this capture; no fresh local full/type/build rerun for identical source in this documentation-only descendant.
+
+Next sequential release holds only at #160's pending single production migration approval. #161's explicit named-file schema/backfill approval remains operative after two strictly narrower wall-clock expiry checks; exact new hashcd143432 disclosed, schema/grants/backfill unchanged. Fresh predecessor main/alias, catalog/signature/grants/RLS/checksum/backup and postflight remain mandatory. #162 and later unapproved production migrations await named approvals; no blanket schema rollout.
+
+Restricted backup refreshed2026-09-30T16:29:12Z: encrypted1,913,782bytes, SHAae4c855334e4685cfc10c289c0be50ae960dc047934128eb8b98da209afb755d. Schema/data/roles were separate in-memory dump processes, not one cross-dump snapshot; CurrentUser DPAPI roundtrip and restricted ACL checked. Full restore, off-machine copy and Storage object bytes remain not-run. Backup precedes156/157/159additive changes; replay exact approved empty-object migrations if recovery requires those objects. Preserve later financial/audit facts and additive history on app rollback; no older snapshot restore over new facts.
+
+Staff: existing deployed overview/CRMtag bulk use stored snapshot→preview→per-item permission/version checks→apply→result/recovery. Expired/stale items require new preview; retry unknown outcomes from the saved operation. Reviewer/adoption/animal/CMS controls remain release-gated in later candidates. No blind refunds/adoption approvals/identity merge. Payments/new recovery/delivery/media schedules remain disabled; existing signed webhook/reconciliation remains compatible. Hosted staff-role API/export/private-file journeys, approved terms/content, provider sandbox/full journeys and same-region hosted T20 are not-run/unverified; null configuration versions remain null.

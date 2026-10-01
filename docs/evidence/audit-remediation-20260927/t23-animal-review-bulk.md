@@ -12,7 +12,7 @@ Scope: batch send unpublished, unclassified saved animal drafts to source review
 
 - Dedicated rollback-only DB fixture `ANIMAL_REVIEW_BULK_TEST_DATABASE_URL=<127.0.0.1:57322> ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1 bun test src/lib/contentReview/animalBulk.database.test.ts`: exit 0, 3 pass, 18 assertions. Covers current/past-publication, already classified, stale draft, duplicate apply, 1001 cap, actor revocation/role downgrade, expiry, forbidden grants and forced `editorial.review` audit failure rollback.
 - Focused UI/selection/API: exit 0, 5 pass, 22 assertions. `CHECK_RELEASE_SCHEMA_DATABASE_URL=<dedicated loopback> bun scripts/check-release-schema.ts`: exit 0, 109 requirements compatible, zero issues.
-- Typecheck, lint and build: each exit 0; lint reported 52 existing warnings and zero errors. Full isolated suite before the test-only role-downgrade assertion: exit 0, 2870 pass, 100 skip, 0 fail, 8914 assertions across 513 files. Final dedicated DB case rerun after that assertion: exit 0, 3 pass, 18 assertions. Remote CI and real-role browser UAT pending.
+- Typecheck, lint and build: each exit 0; lint reported 52 existing warnings and zero errors. Full isolated suite before the test-only role-downgrade assertion: exit 0, 2870 pass, 100 skip, 0 fail, 8914 assertions across 513 files. Final dedicated DB case rerun after that assertion: exit 0, 3 pass, 18 assertions. Draft PR #162 source e3ebbb47aad2cb3de830dd7bb5e944cb4c79bc0e. Remote run 36345471697: verify, RLS, performance and a11y passed; brand pending at capture. Real-role browser UAT not-run.
 
 ## Release boundary
 
