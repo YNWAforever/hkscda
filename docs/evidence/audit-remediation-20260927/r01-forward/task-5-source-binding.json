@@ -154,7 +154,7 @@
     "task-5-green-setup-1-console.log": {
       "sha256": "58bfbea49ddac78e2587c3917061f433cd4a22e784a1e35e33ad751343627de7",
       "canonicalSha256": "79db5f342886846c78e34c2224c75bb3f46a1344796893569153b0f73339e44b",
-      "gitBlob": "be15f6d01a5458a28b5c706c1e89df093820b42c"
+      "gitBlob": "4ec277decfdf6cbe49b7b6906af631afb2269433"
     },
     "task-5-green-setup-2-db.json": {
       "sha256": "dcbfaaa450105b053fc7836dd6ffc66fc182185f89dfaf70693177a5c779a710",
@@ -169,7 +169,7 @@
     "task-5-green-setup-2-console.log": {
       "sha256": "3f4c0ab4a85b91652d11003f1ab08404a8730c60cea8cbc388bed1fb40af4bcf",
       "canonicalSha256": "a8b000600590e1684324eb998995d511a9e47f064f3cecd3495d5bfc46a63f48",
-      "gitBlob": "fc9fd82e02009d053e79d0bee81bf1e8ee6076cd"
+      "gitBlob": "10f09495461a304712faa50dc20d2fcade813fd5"
     },
     "task-5-upload-diagnostic-db.json": {
       "sha256": "bfb286f66692071e90d2f0abcdefd740445fb9e1e3ed0c544d88b0f5c8b98355",
@@ -184,7 +184,7 @@
     "task-5-upload-diagnostic-console.log": {
       "sha256": "afc5cf672fdb4f91b071c5c91a1aae04093249af8f296fa1ce72701d8c3ba330",
       "canonicalSha256": "f670bdd4fa18e027608c7204962045d0921555af425e32272438f207f3425e26",
-      "gitBlob": "f96322ddf33163fe397b8ffa2cedd248f16740bd"
+      "gitBlob": "1610fca1b0990d33158c874537ed786c6cd38767"
     },
     "task-5-upload-diagnostic-fixed-db.json": {
       "sha256": "70d165374609d9a7550850322ca5bff7e2f97fef955e27d05e145e0e8920d9df",
@@ -239,12 +239,12 @@
     "task-5-final-v0-gates.json": {
       "sha256": "ac9dd6093085444d5405e8c31d83de3e37f45f10989379c623658ff73af9988c",
       "canonicalSha256": "699b7cf019a86bf4dccaf02f0fb97d96e901e552d4a20c8ee1c243f66c75e2ef",
-      "gitBlob": "a7905884e08e719a84e66ddbd3a3b8e834be08fd"
+      "gitBlob": "8ef32b1588c3b9fa8fd86a533e1f50e52ae578de"
     },
     "task-5-final-gates.json": {
       "sha256": "5cfd291f4d5ff171f7ccc60d7f9e3ea166f20df97deb53144a9a4cca26411da2",
       "canonicalSha256": "3b3ed0fbc89ca1a51a690c8766f238f24c4efe7df7864b87f7e3345755bc0a56",
-      "gitBlob": "330e3cf318ea0f7fb9853f8e5ba35783f3dcc16f"
+      "gitBlob": "0707cd52ed302d3783fb6dadc64802538757543e"
     },
     "task-5-v0-forward.sql": {
       "sha256": "ee913551969c28167a9f6233d8dc4e6c9a3b45326e3e5deff96e56cf34c31fd9",
@@ -284,12 +284,12 @@
     "task-5-actor-privilege-preflight.json": {
       "sha256": "60fcf8832b6aeff5d996fb0f7913eb6e4d567e7439ac5d5d9d2be1b930dc661a",
       "canonicalSha256": "b68bdecbc601b3d6e3c9f6c32f9c415ab3f5b677429bc8848d575fb943f7054b",
-      "gitBlob": "b34c5252b046bb86f1a0173a239067b3838cd242"
+      "gitBlob": "1d242e5618d94e92ea97b4e2d4c190413b161510"
     },
     "task-5-controller-preflight-v2.json": {
       "sha256": "83dd344e8ce3385268c521f07e09522350a6ce75b828db75494c6dd2cd12f3b3",
       "canonicalSha256": "97af09cfc81f0a2424c5c8d6557408103b66c2e75d6a50be4bf5947507096816",
-      "gitBlob": "9063bff39fbf0b2247a241d9095a11a37ded838d"
+      "gitBlob": "e7dabddc31ecdf07bfab2b8acd901229d531e681"
     },
     "task-5-function-profiles.json": {
       "sha256": "d6e1ef62463a54e5ec60c2361f2a715ad5aa8ebb9975eecb16a2599120731454",
@@ -339,7 +339,7 @@
     "task-5-final-v0-typecheck.log": {
       "sha256": "ca3add339b5043cc476fb12c77289f4e79b13a60e9a6c22c0ebfdf468e3456a9",
       "canonicalSha256": "58445e1b976b37f168afb46ae11f5f929883e5e8c298ee3b0f3e5efa2892b6c4",
-      "gitBlob": "6e7bc739b1241189eed8de70e941829c8c4ed96d"
+      "gitBlob": "0c2c78fa85337d1a00d0eef03b25fc24dd15f338"
     },
     "task-5-final-v0-tests.log": {
       "sha256": "30b3bee3be03a28400652ddd169bc104ad17d582c16350442a33c9cf7c970d45",
@@ -1927,5 +1927,7 @@
     "service_auth_update": false,
     "service_private_usage": true,
     "queryScope": "read-only catalog/ledger count; no production rows or actor RPC"
-  }
+  },
+  "rawReceiptPreservation": "task-5-receipts/.gitattributes uses -text only inside this evidence folder; original raw CRLF/LF bytes are stored exactly. The source commit c86dbc58 staged nonignored evidence; a separate packaging commit includes ignored raw logs and scoped raw-byte attributes. All 24 executed input blobs remain unchanged.",
+  "rawReceiptFormatting": "Exact original CRLF/formatter blank lines/Bun snippet spaces retained; unscoped Git diff whitespace warnings belong only to immutable receipts. Source/metadata diff-check0."
 }

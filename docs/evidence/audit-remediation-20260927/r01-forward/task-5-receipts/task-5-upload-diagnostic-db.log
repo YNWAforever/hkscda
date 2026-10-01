@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\animals\draftIntent.database.test.ts:
+UPLOAD first before
+SP before
+SP created
+SP body
+ROLE before
+ROLE set
+SP body done
+UPLOAD first done
+UPLOAD failing before
+SP before
+(fail) R01 animal draft intent and audited archive > actual upload handler reserves before inert Storage and keeps intent on ambiguous signed failure [30010.72ms]
+  ^ this test timed out after 30000ms.
+(fail) R01 animal draft intent and audited archive > (unnamed) [30008.22ms]
+  ^ a beforeEach/afterEach hook timed out for this test.

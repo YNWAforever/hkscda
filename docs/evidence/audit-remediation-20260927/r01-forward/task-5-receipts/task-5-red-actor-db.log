@@ -1,0 +1,111 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\animals\draftIntent.database.test.ts:
+16 | }
+17 | async function state(tx: SQL, run: (s: SQL) => Promise<unknown>, wanted: string) {
+18 |   let code: string | undefined;
+19 |   try { if (tx === db) await db.begin(async s => run(s as SQL)); else await savepoint(tx, run); }
+20 |   catch (error) { code = (error as { errno?: string }).errno; }
+21 |   expect(code).toBe(wanted);
+                    ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at state (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:21:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:64:11)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:14:44)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 animal draft intent and audited archive > archive rejects missing Auth actor before audit or mutation [58.65ms]
+16 | }
+17 | async function state(tx: SQL, run: (s: SQL) => Promise<unknown>, wanted: string) {
+18 |   let code: string | undefined;
+19 |   try { if (tx === db) await db.begin(async s => run(s as SQL)); else await savepoint(tx, run); }
+20 |   catch (error) { code = (error as { errno?: string }).errno; }
+21 |   expect(code).toBe(wanted);
+                    ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at state (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:21:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:64:11)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:14:44)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 animal draft intent and audited archive > archive rejects missing admin actor before audit or mutation [55.41ms]
+16 | }
+17 | async function state(tx: SQL, run: (s: SQL) => Promise<unknown>, wanted: string) {
+18 |   let code: string | undefined;
+19 |   try { if (tx === db) await db.begin(async s => run(s as SQL)); else await savepoint(tx, run); }
+20 |   catch (error) { code = (error as { errno?: string }).errno; }
+21 |   expect(code).toBe(wanted);
+                    ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at state (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:21:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:64:11)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:14:44)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 animal draft intent and audited archive > archive rejects treasurer actor before audit or mutation [105.36ms]
+16 | }
+17 | async function state(tx: SQL, run: (s: SQL) => Promise<unknown>, wanted: string) {
+18 |   let code: string | undefined;
+19 |   try { if (tx === db) await db.begin(async s => run(s as SQL)); else await savepoint(tx, run); }
+20 |   catch (error) { code = (error as { errno?: string }).errno; }
+21 |   expect(code).toBe(wanted);
+                    ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at state (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:21:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:64:11)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:14:44)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 animal draft intent and audited archive > archive rejects pending actor before audit or mutation [59.07ms]
+16 | }
+17 | async function state(tx: SQL, run: (s: SQL) => Promise<unknown>, wanted: string) {
+18 |   let code: string | undefined;
+19 |   try { if (tx === db) await db.begin(async s => run(s as SQL)); else await savepoint(tx, run); }
+20 |   catch (error) { code = (error as { errno?: string }).errno; }
+21 |   expect(code).toBe(wanted);
+                    ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at state (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:21:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:64:11)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:14:44)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 animal draft intent and audited archive > archive rejects disabled actor before audit or mutation [42.83ms]
+16 | }
+17 | async function state(tx: SQL, run: (s: SQL) => Promise<unknown>, wanted: string) {
+18 |   let code: string | undefined;
+19 |   try { if (tx === db) await db.begin(async s => run(s as SQL)); else await savepoint(tx, run); }
+20 |   catch (error) { code = (error as { errno?: string }).errno; }
+21 |   expect(code).toBe(wanted);
+                    ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at state (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:21:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:64:11)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\animals\draftIntent.database.test.ts:14:44)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 animal draft intent and audited archive > archive rejects suspended actor before audit or mutation [30.26ms]
+
+ 0 pass
+ 9 filtered out
+ 6 fail
+ 6 expect() calls
+Ran 6 tests across 1 file. [1.81s]

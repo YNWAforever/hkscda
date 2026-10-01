@@ -1,0 +1,25 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\animals\draftIntent.database.test.ts:
+(pass) R01 animal draft intent and audited archive > current caller requires the exact missing-target contracts [9.07ms]
+(pass) R01 animal draft intent and audited archive > direct clients cannot access intents or execute the four functions [69.71ms]
+(pass) R01 animal draft intent and audited archive > archive rejects missing Auth actor before audit or mutation [16.24ms]
+(pass) R01 animal draft intent and audited archive > archive rejects missing admin actor before audit or mutation [15.75ms]
+(pass) R01 animal draft intent and audited archive > archive rejects treasurer actor before audit or mutation [21.26ms]
+(pass) R01 animal draft intent and audited archive > archive rejects pending actor before audit or mutation [17.34ms]
+(pass) R01 animal draft intent and audited archive > archive rejects disabled actor before audit or mutation [23.41ms]
+(pass) R01 animal draft intent and audited archive > archive rejects suspended actor before audit or mutation [17.41ms]
+(pass) R01 animal draft intent and audited archive > archive and unarchive retry without duplicate audit and preserve linked facts [61.73ms]
+(pass) R01 animal draft intent and audited archive > audit failure rolls back archive and retry state [19.17ms]
+(pass) R01 animal draft intent and audited archive > reserve validates path/expiry, renews one intent and refuses a cleanup claim [27.68ms]
+(pass) R01 animal draft intent and audited archive > trigger attaches primary and gallery paths atomically and fences late saves [19.90ms]
+(pass) R01 animal draft intent and audited archive > actual upload handler reserves before inert Storage and keeps intent on ambiguous signed failure [21.62ms]
+(pass) R01 animal draft intent and audited archive > actual cleanup retains ambiguous removal claim, finishes other items and retries after lease [31.64ms]
+(pass) R01 animal draft intent and audited archive > stale finish cannot erase a renewed claim; failed finish leaves fenced intent [28.25ms]
+(pass) R01 animal draft intent and audited archive > concurrent archive retries serialize and fence Auth/admin state until audit commit [383.37ms]
+(pass) R01 animal draft intent and audited archive > cleanup claims skip locked rows and concurrent claims never duplicate work [43.98ms]
+
+ 17 pass
+ 0 fail
+ 100 expect() calls
+Ran 17 tests across 1 file. [1.60s]
