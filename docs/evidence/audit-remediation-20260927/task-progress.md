@@ -87,3 +87,13 @@ Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery a
 ## 2026-10-01 HKT Task161 integration / #159 release checkpoint
 
 Task161 independently approved and final combined source gates passed:3065pass97skip0fail; strict typecheck/lint/serialbuild0,52existing warnings; scope census0. Repaired SQL hashcd143432 preserved. Source predecessor#1609d1feed9 integrated; manifest51/trackers34unique. #159 actual main07e4c881/mainCI36758558621 all5SUCCESS/aliasREADY;26of46released. #160 and changed-byte#161 production approval/deployment remain pending; Task162/164 independently approved before integration. See sequential-merge-161-20260930.md and sequential-execution-20261001.md for actual environment/limits.
+
+## Actual main #182 integration — 2026-10-01 HKT
+
+Predecessor-main evidence additions are preserved below. #160 main af786636/all five CI gates and same-SHA READY accepted. #182 exact e002 DDL applied20261001014620 after explicit single-file approval; source main124148ac gates still running at capture. Existing app/SQL source is retained; new readonly regression/forward SQL and latest160 test proof are integrated.
+
+
+
+## R01 readonly default-grant repair — 2026-10-01 HKT
+
+Actual source aca5822a124521d9e6acc94b171600ac344e9b97 adds a forward-only three-table privilege clamp and real opt-in role regression. Matched RED3pass17fail/exit1; GREEN20pass110assert/exit0; whole-file rollback/catalog idempotence/later owner archive compatibility and original9audit preservation passed. Full3027pass127skip0fail, strictTS0, corrected full lint0errors52warnings, serial placeholder build0. Independent spec/quality review approved. Exact e002 migration has no production approval/application; overall production146/92/ledger98 remains NO-GO. [Scope, commands, failure history, rollback and staff handoff](sequential-fix-r01-readonly-20261001.md).
