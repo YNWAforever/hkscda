@@ -1929,5 +1929,12 @@
     "queryScope": "read-only catalog/ledger count; no production rows or actor RPC"
   },
   "rawReceiptPreservation": "task-5-receipts/.gitattributes uses -text only inside this evidence folder; original raw CRLF/LF bytes are stored exactly. The source commit c86dbc58 staged nonignored evidence; a separate packaging commit includes ignored raw logs and scoped raw-byte attributes. All 24 executed input blobs remain unchanged.",
-  "rawReceiptFormatting": "Exact original CRLF/formatter blank lines/Bun snippet spaces retained; unscoped Git diff whitespace warnings belong only to immutable receipts. Source/metadata diff-check0."
+  "rawReceiptFormatting": "Exact original CRLF/formatter blank lines/Bun snippet spaces retained; unscoped Git diff whitespace warnings belong only to immutable receipts. Source/metadata diff-check0.",
+  "artifactWhitespaceEvidence": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-5-artifact-whitespace.json",
+    "sha256": "b143363f24e53d21e31c1d6c13ce47ec4423163f238268f111f488cad6a1ac5e",
+    "gitBlob": "f8c448c99bec94f457da20a50b16689f306a3e35",
+    "unscopedExit": 2,
+    "scopedSourceMetadataExit": 0
+  }
 }
