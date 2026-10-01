@@ -1,0 +1,49 @@
+{
+  "source": "c67e9b84b716f550acb4252fc8a3ce6ae5dcccd8",
+  "startedAt": "2026-10-01T03:31:47.292710+00:00",
+  "environment": "Windows; loopback checkout DB57322 and Auth52321; provider/production operations none",
+  "databaseOptIns": "only existing checkout-policy; other isolated per-feature evidence retained under its recorded SHA/environment",
+  "gates": [
+    {
+      "gate": "full-test",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 63.45,
+      "log": "task-178-main182-chain-full-test.log",
+      "pass": 3194,
+      "skip": 188,
+      "fail": 0,
+      "assertions": 10137,
+      "files": 593
+    },
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 0,
+      "elapsedSeconds": 28.26,
+      "log": "task-178-main182-chain-typecheck.log"
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 0,
+      "elapsedSeconds": 25.01,
+      "log": "task-178-main182-chain-lint.log",
+      "summary": [
+        "52",
+        "0",
+        "52"
+      ]
+    },
+    {
+      "gate": "build",
+      "command": "bun run build",
+      "exit": 0,
+      "elapsedSeconds": 36.15,
+      "log": "task-178-main182-chain-build.log"
+    }
+  ],
+  "diffCheckExit": 0,
+  "trackedDrift": false,
+  "completedAt": "2026-10-01T03:34:20.313670+00:00"
+}
