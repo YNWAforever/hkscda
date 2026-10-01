@@ -1,0 +1,52 @@
+{
+  "base": "309262c57b1f1c3a1c05203e20fc563f05ecd28c",
+  "branch": "codex/audit-r01-payment-columns-20261001",
+  "boundAt": "2026-10-01T12:58:27.666Z",
+  "sources": [
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "gitBlob": "f0f0b109424dfc5fd63337bfcf71c7ad6600dfdd",
+      "canonicalLfSha256": "7be2183c353d057ed3abb66517f3213da24c2048ef21e77080c7472484084190"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "gitBlob": "67f774ca9812410f1065007997bdcd8f2f9cf36b",
+      "canonicalLfSha256": "e1222a691a7f8cdfdbc824109b76a06d62a6f1903b63a87c87be4649b5544346"
+    }
+  ],
+  "commands": [
+    {
+      "command": "bun test supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "exit": 0,
+      "pass": 24,
+      "fail": 0,
+      "assertions": 283
+    },
+    {
+      "command": "bun run typecheck",
+      "exit": 0,
+      "output": "$ tsc --noEmit"
+    },
+    {
+      "command": "bun node_modules/eslint/bin/eslint.js supabase/rls-tests/helpers/productionSchemaClone.ts supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": "bun run .superpowers/sdd/r01-forward-schema-plan-20261001/probe-task-1-fix3.ts",
+      "exit": 0,
+      "parity": true,
+      "fixturePathsSafe": true,
+      "originalStatesPreserved": true,
+      "normalCleanup": true
+    }
+  ],
+  "status": "Harness scoped lexical fix GREEN pending independent review; Task1 PARTIAL: payment ACL authorization pending",
+  "externalNotRun": [
+    "full suite/build/global lint deferred to controller",
+    "production DDL/DML/RPC",
+    "provider calls",
+    "payment ACL patch",
+    "push/PR"
+  ]
+}

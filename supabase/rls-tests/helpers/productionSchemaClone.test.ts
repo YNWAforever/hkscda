@@ -622,4 +622,108 @@ describe("R01 test-only clone boundaries", () => {
         ),
       ).rejects.toThrow();
   });
+  test("compact SQL operators followed by unary signs cannot hide opaque implementations", async () => {
+    for (const [symbol, expression] of [
+      ["=", "1=-2"],
+      ["=", "1=+2"],
+      ["=", "1=++2"],
+      ["=", "1=+-2"],
+      ["<=", "1<=-2"],
+      [">=", "1>=+2"],
+      ["<>", "1<>+-2"],
+      ["*", "1*-2"],
+      ["/", "1/+2"],
+      ["+", "1+-2"],
+      ["-", "1-+2"],
+      ["<->", "1<->-2"],
+      ["->", "1->+2"],
+      ["=", "1=/* synthetic comment */-2"],
+      ["=", "1=-- synthetic comment\n-2"],
+      ["=", "1/* synthetic comment */=-2"],
+    ]) {
+      const functions: FunctionProbe[] = [
+        {
+          schema: "public",
+          name: "entry",
+          body: `PERFORM ${expression};`,
+          language: "plpgsql",
+          system: false,
+          config: ["search_path=bridge,pg_catalog"],
+        },
+        { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+      ];
+      const operators: OperatorProbe[] = [
+        { schema: "bridge", name: symbol, system: false, implementation: "bridge.opaque" },
+      ];
+      await expect(
+        assertSafeFixtureTables(
+          metadataOnlyProbe(functions, "public.entry", undefined, operators),
+          ["synthetic"],
+        ),
+      ).rejects.toThrow();
+      functions[0].body = "RETURN NEW;";
+      await expect(
+        assertSafeFixtureTables(
+          metadataOnlyProbe(functions, "public.entry", expression, operators),
+          ["synthetic"],
+        ),
+      ).rejects.toThrow();
+    }
+  });
+  test("compact operators in transitive helpers remain fenced", async () => {
+    const functions: FunctionProbe[] = [
+      {
+        schema: "public",
+        name: "entry",
+        body: "PERFORM bridge.forward();",
+        language: "plpgsql",
+        system: false,
+      },
+      { schema: "bridge", name: "forward", body: "SELECT 1=-2;", language: "sql", system: false },
+      { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+    ];
+    await expect(
+      assertSafeFixtureTables(
+        metadataOnlyProbe(functions, "public.entry", undefined, [
+          { schema: "bridge", name: "=", system: false, implementation: "bridge.opaque" },
+        ]),
+        ["synthetic"],
+      ),
+    ).rejects.toThrow();
+  });
+  test("legal multiple-character names with non-SQL characters retain their trailing signs", async () => {
+    const functions: FunctionProbe[] = [
+      { schema: "public", name: "entry", body: "", language: "plpgsql", system: false },
+      { schema: "bridge", name: "opaque", body: "", language: "c", system: false },
+    ];
+    for (const symbol of ["@-", "~+", "#-", "%+", "|-", "?-", "!+", "^-", "&+", "`-"]) {
+      functions[0].body = `PERFORM 1${symbol}2;`;
+      await expect(
+        assertSafeFixtureTables(
+          metadataOnlyProbe(functions, "public.entry", undefined, [
+            { schema: "bridge", name: symbol, system: false, implementation: "bridge.opaque" },
+          ]),
+          ["synthetic"],
+        ),
+      ).rejects.toThrow();
+    }
+  });
+  test("compact core comparisons and unary signs retain ordinary fixture compatibility", async () => {
+    const entry: FunctionProbe = {
+      schema: "public",
+      name: "entry",
+      body: "PERFORM 1=-2; PERFORM 1=+2; PERFORM 1<=+-2;",
+      language: "plpgsql",
+      system: false,
+    };
+    await expect(
+      assertSafeFixtureTables(
+        metadataOnlyProbe([entry], "public.entry", "1=-2", [
+          { schema: "pg_catalog", name: "=", system: true, implementation: "pg_catalog.int4eq" },
+          { schema: "pg_catalog", name: "<=", system: true, implementation: "pg_catalog.int4le" },
+        ]),
+        ["synthetic"],
+      ),
+    ).resolves.toBeUndefined();
+  });
 });
