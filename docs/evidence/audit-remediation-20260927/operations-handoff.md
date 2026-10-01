@@ -126,3 +126,8 @@ Staff: existing deployed overview/CRMtag bulk use stored snapshot→preview→pe
 ## Current final checkpoint — 2026-10-01 HKT
 
 See [actual release checkpoint](release-checkpoint-20261001.md): source290abb19 full3195pass168skip0fail/type0/lint0(52warnings)/build0;26actualmainreleases through159/main07e4c881/ledger98; current146-object production check exit1/92gaps. Historical observations above retain their SHA/environment and do not override this current status. Independent final review and documentation-head exact CI remain pending; no production action.
+
+
+## R01 forward readonly privilege repair and legacy replay bounds — 2026-10-01
+
+[62-file legacy review](r01-legacy-migration-review-20261001.md):36 whole-file successes/26 collisions with all92 current gaps mapped; production applicability remains uncertified. Current manifest63 adds [#182](https://github.com/YNWAforever/hkscda/pull/182) `20261001080000_service_readonly_evidence_privileges.sql`, SHA256 `e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808`. This new exact file has no production approval. It revokes inherited table/column writes on three evidence tables, precreates only an empty archive, keeps owner RPCs and performs no dedupe/backfill/application DML. [Matched RED/GREEN, actual gates, preflight, staff handoff and rollback](sequential-fix-r01-readonly-20261001.md). Retain tightened ACLs/additive evidence on rollback. Legacy whole-file approvals remain separate; no fake ledger or apply-all authority. #160 existing question pending; #161 prior scope approval operative. Payment/new mail/media schedules stay disabled.

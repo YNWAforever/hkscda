@@ -1,6 +1,6 @@
 # Concrete release checkpoint — 2026-10-01 HKT
 
-Captured 2026-09-30T22:15:00.772301+00:00. Tested combined source `290abb19a781ce41efc7ad62410a0a278113bf36`. This checkpoint is documentation/evidence only; independent final integration review and its exact-head CI follow. It records executed results, not a new implementation plan.
+Initial production capture 2026-09-30T22:15:00.772301+00:00; full-suite combined source `290abb19a781ce41efc7ad62410a0a278113bf36`. Current source integration `92b6f01956698b915e2a6614968eb45b5836edcd` adds the separately reviewed readonly evidence test/forward migration and preserves application/UI/historical SQL bytes. Combined strict typecheck and manifest contracts passed; prior full runs remain bound to their recorded sources. Fresh exact-head CI follows this evidence publication. Executed results and remaining gates are recorded below.
 
 ## Actual rollout and current gates
 
@@ -44,7 +44,7 @@ The latest read-only production public catalog has138tables/276functions/98ledge
 | PERF-01 | yes | yes (#155) | yes (#155) | yes (bounded listing); paid transforms disabled |
 | OPS-01 | yes | not-applicable (historical CI incident) | yes | n/a |
 | SEC-01 | yes for deployed fail-closed Turnstile/limiter and signed-proof source guards | no | partial (#134 and #139 deployed) | no |
-| R01 | no | no; current checker146requirements/92issues (21tables,61functions,10columns) | partial (#134-#155 dependency slices) | no |
+| R01 | partial; focused #182 repair yes | focused isolated-ready; overall no, checker146/92 | partial (#134-#159); #182 not deployed | no |
 | R02 | yes (readiness slice) | no new schema; existing dependencies independently gated | no (#168) | no |
 | R03 | yes | yes (production 20260929150318) | yes | no |
 | R04 | yes | yes (production 20260929150318) | yes | no |
@@ -112,3 +112,10 @@ Next release action waits on the existing160named migration question, fresh cand
 Current146-object checker on the existing dedicated loopback57322 baseline: exit1 with one missing `list_sponsorship_followup_assignees` RPC. The schema-only per-feature clone52322 separately reports45legacy gaps (exit1); its focused rehearsal evidence is not a full-schema certification. In a single-connection transaction on57322, only the exact reviewed169 picker declaration/service-role grants from canonical c1eb28ad were temporarily created; all146 implemented public schema checks then reported compatible/0issues/exit0. Rollback restored the exact original checker report, function definitions/OIDs/owners/ACL/config and migration ledger. No application data DML or production connection. This certifies the implemented structural checks, not current function-body hashes, all private/storage/index constraints, provider behavior or hosted UAT.
 
 Two harness attempts actually failed before BEGIN/DDL: aggregate `pg_get_functiondef`42809 and Bun's explicit transaction client guard. Both are recorded alongside the successful correction. [Actual sanitized receipt](final-isolated-schema-drill-20261001.json). Source/SQL/UI bytes and the prior3195pass168skip/type/lint/build results are unchanged. Production remains146requirements/92gaps/ledger98.
+
+
+## R01 completed legacy rehearsal and focused repair
+
+The [62-file review](r01-legacy-migration-review-20261001.md) publishes all92 schema-qualified gap mappings and canonical checksums. Whole-file36success/26collisions, six bounded negative checks, synthetic1,000-row preservation and exact original-stack restoration are retained;14 collisions are also present in production and12 are template/candidate-only. These are bounded synthetic results, not production replay certification. Production-default role checks exposed inherited direct service writes; [#182](https://github.com/YNWAforever/hkscda/pull/182) repairs three read-only evidence tables with a new exact e002 forward SQL, matched RED17fail→GREEN20pass. Its sourceaca full3027/127/0, strictTS/lint/build0 and separate20-role proof are recorded at their actual source.
+
+The current inventory has63 files. New e002 production DDL requires named approval and a fresh restricted backup/catalog/preflight; no live archive/dedupe or owner-RPC behavior is enabled. Existing160 question remains pending;161 prior named scope approval remains operative. Current combined strict typecheck0 and contracts2pass20skip74assertions0 are from92b6f019; local full/lint/build were not rerun after integration and fresh combined CI is required. All20 new role cases skipped in the contract command were separately exercised GREEN. #134–#159 actual rollout26/46 and ledger98 are unchanged.

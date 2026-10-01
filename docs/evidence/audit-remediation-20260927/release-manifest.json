@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "290abb19a781ce41efc7ad62410a0a278113bf36",
-  "appShaNote": "Final combined source tested at290abb19; this checkpoint changes documentation/evidence only. Fresh exact-head CI is still mandatory before its release.",
+  "appSha": "92b6f01956698b915e2a6614968eb45b5836edcd",
+  "appShaNote": "Reviewed readonly test/forward SQL and focused evidence merged into final candidate at92b6f019. Existing application/UI and historical SQL are byte-identical to prior c63 head. Combined strict typecheck and manifest contracts passed; previous full suites retain their original source binding. Fresh exact-head CI required after documentation publication.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "94ff3be6a6da222e743273dfaedc4ff4d67b5b500a6abc6bb38e9a77e580e664",
+  "schemaManifestHash": "61125ee02a14beee04c0f359d84cfaa586d2cfc6cea325784182cddd07c6ff35",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -322,10 +322,15 @@
       "version": "20260930120000",
       "file": "20260930120000_supporter_recovery_single_use.sql",
       "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
+    },
+    {
+      "version": "20261001080000",
+      "file": "20261001080000_service_readonly_evidence_privileges.sql",
+      "sha256": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808"
     }
   ],
   "ciRun": {
-    "status": "final documentation-head fresh CI pending; recorded per-candidate snapshot is not deployment evidence"
+    "status": "fresh combined exact-head CI pending after this source/evidence integration"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -353,7 +358,12 @@
     "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
     "docs/evidence/audit-remediation-20260927/release-checkpoint-20261001.md",
     "docs/evidence/audit-remediation-20260927/migration-approval-packet-20261001.md",
-    "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json"
+    "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json",
+    "docs/evidence/audit-remediation-20260927/r01-legacy-migration-review-20261001.md",
+    "docs/evidence/audit-remediation-20260927/r01-legacy-migration-verification-20261001.json",
+    "docs/evidence/audit-remediation-20260927/r01-legacy-migration-inventory-20261001.csv",
+    "docs/evidence/audit-remediation-20260927/sequential-fix-r01-readonly-20261001.md",
+    "docs/evidence/audit-remediation-20260927/r01-readonly-privilege-verification-20261001.json"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -709,7 +719,7 @@
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "62 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
+  "migrationManifestNote": "63 canonical LF entries: original62 rehearsed/mapped separately plus new readonly forward repair. No apply-all authority or ledger rewrite.",
   "productionCiRun": {
     "id": 36758558621,
     "sha": "07e4c881863b715342ed0757aad7bd691a272738",
@@ -795,7 +805,14 @@
       "scope": "assignment version/RPC/result schema; preserve ordinary legacy column privileges; no identity merge"
     },
     "legacyDependencies": "Current R01 report also identifies earlier upload/atomic/fingerprint dependencies. Review exact legacy slices, isolated data-bearing rehearsal and named authorization before DDL; the62-file manifest is not apply-all authority.",
-    "activation": "approved terms/content/retention/method versions; scoped hosted identities; provider sandbox; payment/sending/media schedule and region rollout approvals remain separate"
+    "activation": "approved terms/content/retention/method versions; scoped hosted identities; provider sandbox; payment/sending/media schedule and region rollout approvals remain separate",
+    "readonlyEvidenceRepair": {
+      "pr": 182,
+      "file": "20261001080000_service_readonly_evidence_privileges.sql",
+      "sha256": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808",
+      "status": "new named production approval pending; not applied",
+      "scope": "three public evidence tables: revoke inherited table/column writes, retain only service SELECT; precreate empty duplicate archive, no dedupe/backfill/DML; owner RPC writers preserved"
+    }
   },
   "blockedGate": {
     "pr": 160,
@@ -842,7 +859,8 @@
     "pass": 3195,
     "skip": 168,
     "fail": 0,
-    "lintWarnings": 52
+    "lintWarnings": 52,
+    "bounds": "Previous combined source290abb19 only; not relabelled as92b6f019 verification"
   },
   "productionCompatibility": {
     "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
@@ -869,5 +887,49 @@
     "scope": "temporary exact reviewed169picker/grant declaration on existing dedicated57322 in rollback transaction; structural checks only",
     "receipt": "docs/evidence/audit-remediation-20260927/final-isolated-schema-drill-20261001.json",
     "restored": true
+  },
+  "previousCombinedSource": {
+    "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+    "head": "c63fc81bf464d7b114bdf530c74b159024604974",
+    "ciRun": 36785488855,
+    "allFiveGates": "success before this source integration"
+  },
+  "combinedCandidateVerification": {
+    "source": "92b6f01956698b915e2a6614968eb45b5836edcd",
+    "strictTypecheckExit": 0,
+    "manifestContracts": {
+      "exit": 0,
+      "pass": 2,
+      "skip": 20,
+      "fail": 0,
+      "assertions": 74
+    },
+    "fullSuite": "not rerun locally after integration; prior full runs remain bound to290abb19 and aca5822a; fresh combined CI mandatory",
+    "buildLint": "not rerun locally after integration; prior source runs retained; fresh combined CI mandatory"
+  },
+  "focusedReadonlyRepair": {
+    "pr": 182,
+    "source": "aca5822a124521d9e6acc94b171600ac344e9b97",
+    "reviewedEvidenceHead": "61416eb7b08bcfe98abb6b6fe149f8369bee4bbb",
+    "codeComplete": true,
+    "isolatedSchemaReady": true,
+    "deployed": false,
+    "operationallyEnabled": false,
+    "receipt": "docs/evidence/audit-remediation-20260927/r01-readonly-privilege-verification-20261001.json"
+  },
+  "legacyWholeFileVerification": {
+    "source": "c63fc81bf464d7b114bdf530c74b159024604974",
+    "files": 62,
+    "success": 36,
+    "collision": 26,
+    "exit": 0,
+    "issueMappings": 92,
+    "legacyGaps": 45,
+    "legacyFiles": 24,
+    "productionPresentCollisions": 14,
+    "productionAbsentCollisions": 12,
+    "restored": true,
+    "productionApplicable": false,
+    "report": "docs/evidence/audit-remediation-20260927/r01-legacy-migration-verification-20261001.json"
   }
 }
