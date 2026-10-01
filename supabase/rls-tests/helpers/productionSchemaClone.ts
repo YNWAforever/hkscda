@@ -1,0 +1,594 @@
+/** Test-only: authenticated schema reads; writes are confined to a new local DB. */
+import { SQL } from "bun";
+import { createHash, randomUUID } from "node:crypto";
+import { writeFile, unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+const container = "supabase_db_hkscda-audit-integration-fresh";
+const template = "audit_pr135_20260929";
+const project = "iihqjzilgawhfdhdevam";
+const cli = ["bun", "x", "supabase@2.118.0"];
+const canonical = (value: unknown): unknown =>
+  Array.isArray(value)
+    ? value.map(canonical)
+    : value && typeof value === "object"
+      ? Object.fromEntries(
+          Object.entries(value)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([k, v]) => [k, canonical(v)]),
+        )
+      : value;
+export const hash = (value: unknown) =>
+  createHash("sha256")
+    .update(typeof value === "string" ? value : JSON.stringify(canonical(value)))
+    .digest("hex");
+const qi = (name: string) => '"' + name.replaceAll('"', '""') + '"';
+const networkPrimitive =
+  /\b(?:net"?\s*\.|http"?\s*\(|http_(?:get|post|put|delete)"?\s*\(|dblink(?:_[a-z_]+)?"?\s*\(|cron"?\s*\.|pg_read_file"?\s*\(|pg_ls_dir"?\s*\(|lo_import"?\s*\(|pg_notify"?\s*\()/i;
+const calls = (body: string, qualified: string) => {
+  const [schema, name] = qualified.split(".");
+  return new RegExp(`(?:"?${schema}"?\\s*\\.\\s*)?"?${name}"?\\s*\\(`, "i").test(body);
+};
+
+// Names/types rather than OIDs make this comparable across independently restored DBs.
+// Function bodies are hashed, never included in receipts (they can contain URLs).
+const aclJson = (expression: string) =>
+  `(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(${expression}) x)`;
+export const catalogQuery =
+  `with pinned as materialized (select pg_catalog.set_config('search_path','',true)) select jsonb_build_object(
+ 'schemas',(select jsonb_agg(jsonb_build_object('name',nspname,'owner',pg_get_userbyid(nspowner),'acl',nspacl::text) order by nspname) from pg_namespace where nspname in ('public','private')),
+ 'relations',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'kind',c.relkind,'owner',pg_get_userbyid(c.relowner),'acl',c.relacl::text,'rls',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'options',c.reloptions,'replicaIdentity',c.relreplident) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+ 'columns',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',a.attname,'position',a.attnum,'type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',a.attacl::text,'default',pg_get_expr(d.adbin,d.adrelid)) order by n.nspname,c.relname,a.attnum) from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname in ('public','private') and a.attnum>0 and not a.attisdropped),
+ 'functions',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'args',pg_get_function_identity_arguments(p.oid),'result',pg_get_function_result(p.oid),'owner',pg_get_userbyid(p.proowner),'acl',p.proacl::text,'config',p.proconfig,'definer',p.prosecdef,'volatility',p.provolatile,'parallel',p.proparallel,'bodyMd5',md5(pg_get_functiondef(p.oid))) order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private') and p.prokind in ('f','p')),
+ 'constraints',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',con.conname,'type',con.contype,'validated',con.convalidated,'definition',pg_get_constraintdef(con.oid,true)) order by n.nspname,c.relname,con.conname) from pg_constraint con join pg_namespace n on n.oid=con.connamespace left join pg_class c on c.oid=con.conrelid where n.nspname in ('public','private')),
+ 'indexes',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'definition',pg_get_indexdef(i.indexrelid),'valid',i.indisvalid,'ready',i.indisready,'unique',i.indisunique) order by n.nspname,c.relname,pg_get_indexdef(i.indexrelid)) from pg_index i join pg_class c on c.oid=i.indrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+ 'triggers',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',t.tgname,'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid,true)) order by n.nspname,c.relname,t.tgname) from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and not t.tgisinternal),
+ 'policies',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',p.polname,'command',p.polcmd,'permissive',p.polpermissive,'roles',(select jsonb_agg(case when r=0 then 'PUBLIC' else pg_get_userbyid(r) end order by case when r=0 then 'PUBLIC' else pg_get_userbyid(r) end) from unnest(p.polroles) r),'using',pg_get_expr(p.polqual,p.polrelid),'check',pg_get_expr(p.polwithcheck,p.polrelid)) order by n.nspname,c.relname,p.polname) from pg_policy p join pg_class c on c.oid=p.polrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+ 'defaults',(select jsonb_agg(jsonb_build_object('owner',pg_get_userbyid(d.defaclrole),'schema',coalesce(n.nspname,''),'kind',d.defaclobjtype,'acl',d.defaclacl::text,'entries',(select jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(a.grantor),'grantee',case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,'privilege',a.privilege_type,'grantable',a.is_grantable) order by a.grantor,a.grantee,a.privilege_type) from aclexplode(d.defaclacl) a)) order by pg_get_userbyid(d.defaclrole),coalesce(n.nspname,''),d.defaclobjtype) from pg_default_acl d left join pg_namespace n on n.oid=d.defaclnamespace where d.defaclnamespace=0 or n.nspname in ('public','private')),
+ 'types',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',t.typname,'kind',t.typtype,'owner',pg_get_userbyid(t.typowner),'acl',t.typacl::text,'enum',(select jsonb_agg(e.enumlabel order by e.enumsortorder) from pg_enum e where e.enumtypid=t.oid)) order by n.nspname,t.typname) from pg_type t join pg_namespace n on n.oid=t.typnamespace where n.nspname in ('public','private')),
+ 'views',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'definitionMd5',md5(pg_get_viewdef(c.oid,true))) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('v','m')),
+ 'extensions',(select jsonb_agg(jsonb_build_object('name',e.extname,'version',e.extversion,'schema',n.nspname,'owner',pg_get_userbyid(e.extowner)) order by e.extname) from pg_extension e join pg_namespace n on n.oid=e.extnamespace where n.nspname in ('public','private')),
+ 'extensionMembers',(select jsonb_agg(jsonb_build_object('extension',e.extname,'object',pg_describe_object(d.classid,d.objid,d.objsubid)) order by e.extname,pg_describe_object(d.classid,d.objid,d.objsubid)) from pg_depend d join pg_extension e on e.oid=d.refobjid join pg_namespace n on n.oid=e.extnamespace where d.refclassid='pg_extension'::regclass and d.deptype='e' and n.nspname in ('public','private')),
+ 'databaseOwner',(select pg_get_userbyid(datdba) from pg_database where datname=current_database()),
+ 'roles',(select jsonb_agg(jsonb_build_object('name',rolname,'super',rolsuper,'inherit',rolinherit,'login',rolcanlogin,'bypassRls',rolbypassrls) order by rolname) from pg_roles where rolname in ('anon','authenticated','service_role','postgres','supabase_admin')),
+ 'memberships',(select jsonb_agg(jsonb_build_object('role',pg_get_userbyid(roleid),'member',pg_get_userbyid(member),'grantor',pg_get_userbyid(grantor),'admin',admin_option,'inherit',inherit_option,'set',set_option) order by pg_get_userbyid(roleid),pg_get_userbyid(member),pg_get_userbyid(grantor)) from pg_auth_members where pg_get_userbyid(member) in ('anon','authenticated','service_role'))
+) catalog from pinned`
+    .replace("nspacl::text", aclJson("coalesce(nspacl,acldefault('n',nspowner))"))
+    .replace(
+      "c.relacl::text",
+      aclJson(
+        `coalesce(c.relacl,acldefault(case when c.relkind='S' then 's'::"char" else 'r'::"char" end,c.relowner))`,
+      ),
+    )
+    .replace("a.attacl::text", aclJson("a.attacl"))
+    .replace("p.proacl::text", aclJson("coalesce(p.proacl,acldefault('f',p.proowner))"))
+    .replace("'acl',d.defaclacl::text,", "")
+    .replace("t.typacl::text", aclJson("coalesce(t.typacl,acldefault('T',t.typowner))"))
+    .replace(
+      "order by a.grantor,a.grantee,a.privilege_type",
+      "order by pg_get_userbyid(a.grantor),case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,a.privilege_type",
+    );
+
+type DefaultEntry = { grantor: string; grantee: string; privilege: string; grantable: boolean };
+type DefaultAcl = {
+  owner: string;
+  schema: string;
+  kind: string;
+  acl: string;
+  entries: DefaultEntry[];
+};
+export type Catalog = Record<string, unknown> & {
+  defaults: DefaultAcl[] | null;
+  extensions: { name: string; version: string; schema: string; owner: string }[] | null;
+};
+
+async function captured(args: string[], input?: string): Promise<string> {
+  const p = Bun.spawn(args, {
+    stdin: input === undefined ? "ignore" : "pipe",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  if (input !== undefined && p.stdin != null && typeof p.stdin !== "number") {
+    p.stdin.write(input);
+    p.stdin.end();
+  }
+  const [stdout, , exit] = await Promise.all([
+    new Response(p.stdout).text(),
+    new Response(p.stderr).text(),
+    p.exited,
+  ]);
+  if (exit !== 0) throw new Error(`Command ${args[0]} exited ${exit}; captured output suppressed`);
+  return stdout;
+}
+
+export async function snapshot(sql: SQL): Promise<Catalog> {
+  const [row] = await sql.unsafe(catalogQuery);
+  return row.catalog as Catalog;
+}
+
+/** Aggregate hashes only, against the two declared synthetic read-only sources. */
+export async function localSourceState(url: string): Promise<string> {
+  if (
+    ![
+      "postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929",
+      "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+    ].includes(url)
+  )
+    throw new Error("Readonly synthetic source allowlist");
+  const sql = new SQL(url, { max: 1 });
+  try {
+    await sql.unsafe("begin read only;set local statement_timeout='30s'");
+    const catalog = await snapshot(sql),
+      prerequisites = await managed(sql);
+    const tables = await sql.unsafe(
+      "select n.nspname,c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname !~ '^pg_' and n.nspname<>'information_schema' and c.relkind in ('r','p','m') order by 1,2",
+    );
+    const rows: unknown[] = [];
+    for (const t of tables) {
+      const [r] = await sql.unsafe(
+        `select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' order by to_jsonb(t)::text),'')) hash from ${qi(t.nspname)}.${qi(t.relname)} t`,
+      );
+      rows.push({ schema: t.nspname, table: t.relname, ...r });
+    }
+    const sequences = await sql.unsafe(
+      "select schemaname,sequencename,sequenceowner,data_type::text,start_value,min_value,max_value,increment_by,cycle,cache_size,last_value from pg_sequences where schemaname !~ '^pg_' order by 1,2",
+    );
+    await sql.unsafe("rollback");
+    return hash({ catalog, prerequisites, rows, sequences });
+  } finally {
+    await sql.close();
+  }
+}
+
+export function assertCloneUrl(url: string): string {
+  const u = new URL(url);
+  if (
+    u.protocol !== "postgresql:" ||
+    u.hostname !== "127.0.0.1" ||
+    u.port !== "52322" ||
+    !/^\/r01_clone_[a-f0-9]{32}$/.test(u.pathname) ||
+    u.username !== "supabase_admin" ||
+    u.password !== "postgres" ||
+    u.search ||
+    u.hash
+  )
+    throw new Error("Only a guarded newly created R01 loopback clone is allowed");
+  return u.pathname.slice(1);
+}
+
+/** Pure parser: reject executable SQL outside schema restore's small allowlist. */
+export function schemaStatements(text: string): string[] {
+  const parts: string[] = [];
+  let part = "",
+    mode = "",
+    tag = "";
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i],
+      next = text[i + 1];
+    if (mode === "line") {
+      if (c === "\n") {
+        mode = "";
+        part += "\n";
+      }
+      continue;
+    }
+    if (mode === "dollar") {
+      if (text.slice(i, i + tag.length) === tag) {
+        part += tag;
+        i += tag.length - 1;
+        mode = "";
+      } else part += c;
+      continue;
+    }
+    if (mode === "single" || mode === "double") {
+      part += c;
+      const q = mode === "single" ? "'" : '"';
+      if (c === q) {
+        if (next === q) {
+          part += next;
+          i++;
+        } else mode = "";
+      }
+      continue;
+    }
+    if (c === "-" && next === "-") {
+      mode = "line";
+      i++;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      mode = c === "'" ? "single" : "double";
+      part += c;
+      continue;
+    }
+    if (c === "$") {
+      const m = text.slice(i).match(/^\$\w*\$/);
+      if (m) {
+        tag = m[0];
+        mode = "dollar";
+        part += tag;
+        i += tag.length - 1;
+        continue;
+      }
+    }
+    if (c === ";") {
+      if (part.trim()) parts.push(part.trim());
+      part = "";
+    } else part += c;
+  }
+  if (part.trim()) parts.push(part.trim());
+  if (mode && mode !== "line") throw new Error("Unclosed schema SQL lexical mode");
+  const definitions = parts
+    .filter((x) => /^CREATE\s+OR\s+REPLACE\s+FUNCTION\s/i.test(x))
+    .map((body) => ({
+      body,
+      name: body
+        .match(
+          /^CREATE\s+OR\s+REPLACE\s+FUNCTION\s+"?([a-z_][a-z_0-9]*)"?\."?([a-z_][a-z_0-9]*)"?/i,
+        )
+        ?.slice(1)
+        .join("."),
+    }));
+  const unsafe = new Set(
+    definitions
+      .filter((x) => networkPrimitive.test(x.body) || /\bexecute\s/i.test(x.body))
+      .flatMap((x) => (x.name ? [x.name] : [])),
+  );
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const d of definitions)
+      if (d.name && !unsafe.has(d.name) && [...unsafe].some((name) => calls(d.body, name))) {
+        unsafe.add(d.name);
+        changed = true;
+      }
+  }
+  for (const statement of parts) {
+    if (
+      !/^(?:SET\s|SELECT pg_catalog\.set_config\('search_path', '', false\)$|CREATE\s+(?:OR\s+REPLACE\s+(?:FUNCTION|VIEW|TRIGGER)|SCHEMA\s+IF\s+NOT\s+EXISTS|TABLE|UNIQUE\s+INDEX|INDEX|CONSTRAINT\s+TRIGGER|TRIGGER|VIEW|TYPE|SEQUENCE|POLICY)\s|ALTER\s+(?:SCHEMA|FUNCTION|TABLE|VIEW|SEQUENCE|TYPE|DEFAULT\s+PRIVILEGES)\s|GRANT\s|REVOKE\s|COMMENT\s+ON\s)/i.test(
+        statement,
+      )
+    )
+      throw new Error(
+        "Unsupported schema-only statement; restore refused (" +
+          statement
+            .split(/\s+/)
+            .slice(0, 5)
+            .filter((x) => /^[A-Z]+$/.test(x))
+            .join(" ") +
+          ")",
+      );
+    if (/^(?:GRANT|REVOKE)\s/i.test(statement) && !/\sON\s/i.test(statement))
+      throw new Error("Cluster role membership change refused");
+    if (
+      /^(?:CREATE|ALTER)\s+(?:ROLE|DATABASE|SYSTEM|SERVER|FOREIGN|EXTENSION|PUBLICATION|SUBSCRIPTION)\b/i.test(
+        statement,
+      )
+    )
+      throw new Error("Global/network schema operation refused");
+    if (
+      /^SET\s/i.test(statement) &&
+      !/^SET\s+(?:statement_timeout|lock_timeout|idle_in_transaction_session_timeout|client_encoding|standard_conforming_strings|check_function_bodies|xmloption|client_min_messages|row_security|default_tablespace|default_table_access_method)\s*=\s*(?:'[^']*'|[0-9]+|on|off|true|false|content|warning|heap|"heap")$/i.test(
+        statement,
+      )
+    )
+      throw new Error(
+        "Unexpected session setting refused: " +
+          (statement.match(/^SET\s+([a-z_]+)/i)?.[1] ?? "unknown"),
+      );
+    // Stored functions/triggers are never called by restore. Other DDL may plan
+    // expressions, so refuse direct or transitive network/dynamic SQL references.
+    const storesOnly =
+      /^(?:CREATE\s+(?:OR\s+REPLACE\s+)?(?:FUNCTION|TRIGGER|CONSTRAINT\s+TRIGGER)\s|ALTER\s+FUNCTION\s|GRANT\s|REVOKE\s|COMMENT\s+ON\s)/i.test(
+        statement,
+      );
+    if (
+      !storesOnly &&
+      (networkPrimitive.test(statement) || [...unsafe].some((name) => calls(statement, name)))
+    )
+      throw new Error("Potential network-bearing DDL evaluation refused");
+  }
+  return parts;
+}
+
+export async function captureProductionSchema(): Promise<{ schema: string; catalog: Catalog }> {
+  const query = async () => {
+    const path = join(tmpdir(), `r01-catalog-${randomUUID()}.sql`);
+    await writeFile(path, catalogQuery, { flag: "wx" });
+    try {
+      const text = await captured([
+        ...cli,
+        "db",
+        "query",
+        "--linked",
+        "--project-ref",
+        project,
+        "--output",
+        "json",
+        "--file",
+        path,
+      ]);
+      return (JSON.parse(text) as { rows: { catalog: Catalog }[] }).rows[0].catalog;
+    } finally {
+      await unlink(path);
+    }
+  };
+  const catalog = await query();
+  const schema = await captured([
+    ...cli,
+    "db",
+    "dump",
+    "--project-ref",
+    project,
+    "--schema",
+    "public,private",
+  ]);
+  schemaStatements(schema);
+  const after = await query();
+  if (hash(catalog) !== hash(after))
+    throw new Error("Production catalog changed during schema capture; retry required");
+  return { schema, catalog };
+}
+
+/** Existing modern source is read-only; restore still uses a newly owned DB. */
+export async function captureModernLocalSchema() {
+  const url = "postgresql://postgres:postgres@127.0.0.1:57322/postgres";
+  const sql = new SQL(url, { max: 1 });
+  try {
+    const catalog = await snapshot(sql);
+    const schema = await captured([
+      ...cli,
+      "db",
+      "dump",
+      "--db-url",
+      url,
+      "--schema",
+      "public,private",
+    ]);
+    schemaStatements(schema);
+    if (hash(await snapshot(sql)) !== hash(catalog))
+      throw new Error("Modern source catalog changed during capture");
+    return { catalog, schema };
+  } finally {
+    await sql.close();
+  }
+}
+
+async function managed(sql: SQL): Promise<Record<string, unknown>> {
+  const [row] = await sql.unsafe(
+    catalogQuery.replaceAll("('public','private')", "('auth','storage')"),
+  );
+  const catalog = row.catalog as Catalog;
+  const { defaults: _defaults, ...prerequisites } = catalog; // Global defaults are compared to production separately.
+  return prerequisites;
+}
+
+async function alignDefaults(sql: SQL, target: Catalog) {
+  const current = (await snapshot(sql)).defaults ?? [];
+  const kinds: Record<string, string> = {
+    r: "TABLES",
+    S: "SEQUENCES",
+    f: "FUNCTIONS",
+    T: "TYPES",
+    n: "SCHEMAS",
+  };
+  for (const d of current) {
+    for (const e of d.entries)
+      await sql.unsafe(
+        `alter default privileges for role ${qi(d.owner)}${d.schema ? " in schema " + qi(d.schema) : ""} revoke all on ${kinds[d.kind]} from ${e.grantee === "PUBLIC" ? "PUBLIC" : qi(e.grantee)}`,
+      );
+  }
+  for (const d of target.defaults ?? []) {
+    for (const e of d.entries) {
+      if (e.grantor !== d.owner || !/^[A-Z]+$/.test(e.privilege) || !kinds[d.kind])
+        throw new Error("Unsupported global default ACL; exact restore blocked");
+      await sql.unsafe(
+        `alter default privileges for role ${qi(d.owner)}${d.schema ? " in schema " + qi(d.schema) : ""} grant ${e.privilege} on ${kinds[d.kind]} to ${e.grantee === "PUBLIC" ? "PUBLIC" : qi(e.grantee)}${e.grantable ? " with grant option" : ""}`,
+      );
+    }
+  }
+}
+
+async function alignSchemaAcl(sql: SQL, target: Catalog) {
+  const schemas = target.schemas as { name: string; owner: string; acl: DefaultEntry[] }[];
+  const current = (await snapshot(sql)).schemas as { name: string; acl: DefaultEntry[] }[];
+  for (const schema of schemas) {
+    if (!["public", "private"].includes(schema.name)) throw new Error("Schema ACL restore scope");
+    for (const role of new Set(
+      (current.find((x) => x.name === schema.name)?.acl ?? []).map((e) => e.grantee),
+    ))
+      await sql.unsafe(
+        `revoke all on schema ${qi(schema.name)} from ${role === "PUBLIC" ? "PUBLIC" : qi(role)}`,
+      );
+    for (const e of schema.acl) {
+      if (!["USAGE", "CREATE"].includes(e.privilege) || e.grantor !== schema.owner)
+        throw new Error("Unsupported schema ACL grantor");
+      await sql.unsafe(
+        `grant ${e.privilege} on schema ${qi(schema.name)} to ${e.grantee === "PUBLIC" ? "PUBLIC" : qi(e.grantee)}${e.grantable ? " with grant option" : ""}`,
+      );
+    }
+  }
+}
+
+export async function createProductionClone(capture: { schema: string; catalog: Catalog }) {
+  const name = "r01_clone_" + randomUUID().replaceAll("-", "");
+  const url = `postgresql://supabase_admin:postgres@127.0.0.1:52322/${name}`;
+  assertCloneUrl(url);
+  const admin = new SQL("postgresql://postgres:postgres@127.0.0.1:52322/postgres", { max: 1 });
+  let created = false;
+  let sql: SQL | undefined;
+  const templateUrl = "postgresql://postgres:postgres@127.0.0.1:52322/" + template;
+  const templateBefore = await localSourceState(templateUrl);
+  let templatePreserved = false;
+  const ddl = async (command: string) => {
+    if (
+      ![
+        `create database ${qi(name)} owner postgres template ${qi(template)}`,
+        `drop database ${qi(name)}`,
+      ].includes(command)
+    )
+      throw new Error("Exact new-database DDL allowlist");
+    await captured([
+      "docker",
+      "exec",
+      container,
+      "psql",
+      "-U",
+      "supabase_admin",
+      "-d",
+      "postgres",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-c",
+      command,
+    ]);
+  };
+  const close = async () => {
+    await sql?.close();
+    if (created) {
+      let active = await admin.unsafe("select pid from pg_stat_activity where datname=$1", [name]);
+      for (let attempt = 0; active.length && attempt < 30; attempt++) {
+        await Bun.sleep(100);
+        active = await admin.unsafe("select pid from pg_stat_activity where datname=$1", [name]);
+      }
+      if (active.length)
+        throw new Error("New clone retained due to active sessions; no force/termination allowed");
+      await ddl(`drop database ${qi(name)}`);
+      created = false;
+    }
+    await admin.close();
+    if ((await localSourceState(templateUrl)) !== templateBefore)
+      throw new Error("Original synthetic template catalog/rows/sequences/ledger changed");
+    templatePreserved = true;
+  };
+  try {
+    if ((await admin.unsafe("select datname from pg_database where datname=$1", [name])).length)
+      throw new Error("New clone name collision");
+    if (
+      (await admin.unsafe("select pid from pg_stat_activity where datname=$1", [template])).length
+    )
+      throw new Error("Template sessions active; no termination allowed");
+    await ddl(`create database ${qi(name)} owner postgres template ${qi(template)}`);
+    created = true;
+    sql = new SQL(url, { max: 1 });
+    const prerequisites = await managed(sql);
+    const statements = schemaStatements(capture.schema);
+    await sql.begin(async (tx) => {
+      await tx.unsafe(
+        "set local lock_timeout='3s';set local statement_timeout='30s';drop schema public cascade;drop schema if exists private cascade;",
+      );
+      await tx.unsafe(
+        "create schema public authorization pg_database_owner;create schema private authorization postgres",
+      );
+      // CLI schema exports omit supabase_admin defaults and implicit PUBLIC USAGE.
+      // Restore actual captured metadata, including extension-member inheritance.
+      await alignDefaults(tx as SQL, capture.catalog);
+      for (const e of capture.catalog.extensions ?? []) {
+        if (
+          !["citext", "pg_trgm"].includes(e.name) ||
+          e.owner !== "supabase_admin" ||
+          e.schema !== "public" ||
+          e.version !== "1.6"
+        )
+          throw new Error("Unsupported production extension prerequisite; exact clone blocked");
+        await tx.unsafe(`create extension ${qi(e.name)} with schema public version '1.6'`);
+      }
+      // pg_dump lists only differences from ordinary creation privileges. Avoid
+      // inheriting broad schema defaults while restoring explicitly clamped objects.
+      await alignDefaults(tx as SQL, { ...capture.catalog, defaults: null });
+      // pg_dump data is never accepted. Function definitions are stored, never invoked.
+      await tx.unsafe(statements.join(";\n") + ";");
+      await alignDefaults(tx as SQL, capture.catalog);
+      await alignSchemaAcl(tx as SQL, capture.catalog);
+    });
+    const managedAfter = await managed(sql);
+    if (hash(managedAfter) !== hash(prerequisites)) {
+      const facets = Object.keys(prerequisites).filter(
+        (k) => hash(prerequisites[k]) !== hash(managedAfter[k]),
+      );
+      const removed = facets.map((k) => ({
+        facet: k,
+        removed: ((prerequisites[k] as { name?: string; table?: string }[]) ?? [])
+          .filter((x) => !((managedAfter[k] as unknown[]) ?? []).some((y) => hash(y) === hash(x)))
+          .map((x) => ({ name: x.name, table: x.table })),
+      }));
+      throw new Error(
+        "Auth/Storage prerequisite definitions changed; compatible clone blocked: " +
+          JSON.stringify(removed),
+      );
+    }
+    const actual = await snapshot(sql);
+    if (hash(actual) !== hash(capture.catalog)) {
+      const facets = Object.keys(capture.catalog).filter(
+        (k) => hash(actual[k]) !== hash(capture.catalog[k]),
+      );
+      throw new Error(
+        "Exact normalized production catalog parity failed: " +
+          facets.join(",") +
+          "; expected " +
+          hash(capture.catalog) +
+          " actual " +
+          hash(actual),
+      );
+    }
+    const tables = await sql.unsafe(
+      "select n.nspname,c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('r','p') order by 1,2",
+    );
+    for (const t of tables) {
+      const [r] = await sql.unsafe(
+        `select count(*)::text count from ${qi(t.nspname)}.${qi(t.relname)}`,
+      );
+      if (r.count !== "0") throw new Error("Schema-only clone has unexpected application rows");
+    }
+    return {
+      sql,
+      url,
+      name,
+      catalog: actual,
+      prerequisites: hash(prerequisites),
+      tableCount: tables.length,
+      templateBefore,
+      get templatePreserved() {
+        return templatePreserved;
+      },
+      close,
+    };
+  } catch (error) {
+    await close();
+    throw error;
+  }
+}
+
+/** Reject network-bearing direct/transitive trigger paths before synthetic writes. */
+export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
+  const qualified = tables.map((t) => (t.includes(".") ? t : "public." + t));
+  if (qualified.some((t) => !/^(?:public|private|auth|storage)\.[a-z_][a-z_0-9]*$/.test(t)))
+    throw new Error("Fixture table scope");
+  const rows = (await sql.unsafe(
+    "select n.nspname schema,p.proname name,pg_get_functiondef(p.oid) body from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private','auth','storage') and p.prokind='f'",
+  )) as { schema: string; name: string; body: string }[];
+  const network = (body: string) => networkPrimitive.test(body) || /\bexecute\s/i.test(body);
+  const unsafe = new Set(rows.filter((r) => network(r.body)).map((r) => `${r.schema}.${r.name}`));
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const r of rows)
+      if (!unsafe.has(`${r.schema}.${r.name}`) && [...unsafe].some((name) => calls(r.body, name))) {
+        unsafe.add(`${r.schema}.${r.name}`);
+        changed = true;
+      }
+  }
+  const triggers = await sql.unsafe(
+    "select tn.nspname||'.'||c.relname table_name,n.nspname||'.'||p.proname function_name from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace tn on tn.oid=c.relnamespace join pg_proc p on p.oid=t.tgfoid join pg_namespace n on n.oid=p.pronamespace where not t.tgisinternal",
+  );
+  for (const t of triggers)
+    if (qualified.includes(t.table_name) && unsafe.has(t.function_name))
+      throw new Error("Unsafe fixture trigger path; no provider/network primitive executed");
+  const expressions = await sql.unsafe(
+    `select pg_get_expr(d.adbin,d.adrelid) expression from pg_attrdef d join pg_class c on c.oid=d.adrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) union all select pg_get_expr(d.conbin,d.conrelid) from pg_constraint d join pg_class c on c.oid=d.conrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) and d.conbin is not null`,
+  );
+  for (const e of expressions)
+    if (network(e.expression) || [...unsafe].some((name) => calls(e.expression, name)))
+      throw new Error("Unsafe fixture default/constraint path");
+}

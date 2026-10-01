@@ -1,0 +1,42 @@
+{
+  "mode": "red-modern",
+  "startedAt": "2026-10-01T10:11:22.806Z",
+  "productionActions": "schema/catalog reads only; no production rows or mutation",
+  "environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+  "sourceCatalogHash": "ff54a5cf4a410e0f192aad005ac5e8964fa6118f27b8adc5cd9e9c601720d27b",
+  "catalogCounts": {
+    "roles": 5,
+    "types": 334,
+    "views": 3,
+    "columns": 2218,
+    "indexes": 409,
+    "schemas": 2,
+    "defaults": 6,
+    "policies": 82,
+    "triggers": 154,
+    "functions": 387,
+    "relations": 574,
+    "extensions": 2,
+    "constraints": 824,
+    "memberships": null,
+    "databaseOwner": "postgres",
+    "extensionMembers": 136
+  },
+  "clone": "r01_clone_7ce7168cf96041ddaab4011be4ae60ea",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisitesHash": "482cc9eb2636bcdcc71e4217c34992570389e0c668119ef3ebe74d0a3464b00c",
+  "legacyFactsBeforeHash": "f2250b15a27512e5bc88f502c78cfcc8c52ceb0c81cd1ff86e4bc31751dee8e5",
+  "testCommand": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000 --test-name-pattern NULL, malformed",
+  "testExit": 1,
+  "testSummary": [
+    "\n 0 pass",
+    " 1 fail",
+    " 1 expect() calls"
+  ],
+  "watchedRed": true,
+  "legacyFactsAfterHash": "f2250b15a27512e5bc88f502c78cfcc8c52ceb0c81cd1ff86e4bc31751dee8e5",
+  "result": "watched RED",
+  "cleanup": "only exact newly-created clone dropped without FORCE/session termination",
+  "completedAt": "2026-10-01T10:11:33.283Z"
+}

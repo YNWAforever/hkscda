@@ -1,0 +1,24 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\donations\idempotency.database.test.ts:
+ 8 | let db: SQL;
+ 9 | let supporter: string;
+10 |
+11 | async function sqlState(operation: Promise<unknown>, expected: string) {
+12 |   try { await operation; throw new Error(`Expected SQLSTATE ${expected}`); }
+13 |   catch (error) { expect((error as { errno?: string }).errno).toBe(expected); }
+                                                                   ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at sqlState (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\src\lib\donations\idempotency.database.test.ts:13:63)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\src\lib\donations\idempotency.database.test.ts:111:13)
+(fail) R01 donation/payment forward schema on a guarded new clone > JWT finance actors cannot directly rewrite server-controlled intent fields [52.54ms]
+
+ 0 pass
+ 6 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [414.00ms]
