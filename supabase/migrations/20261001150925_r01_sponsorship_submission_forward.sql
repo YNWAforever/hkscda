@@ -10,6 +10,15 @@ begin
     raise exception 'R01 sponsorship requires accepted Task2 fingerprint prerequisite' using errcode='55000';
   end if;
 
+  -- Validate both existing relation profiles before creating or granting anything.
+  if exists(select 1 from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+    where n.nspname='public' and c.relname in ('sponsorship_proof_upload_intent','sponsorship_staff_proof_upload_intent')
+      and (c.relkind is distinct from 'r' or c.relpersistence is distinct from 'p'
+        or c.relhasrules is distinct from false
+        or exists(select 1 from pg_catalog.pg_rewrite r where r.ev_class=c.oid))) then
+    raise exception 'R01 sponsorship intent relation persistence or rewrite-rule drift' using errcode='55000';
+  end if;
+
   v_table := pg_catalog.to_regclass('public.sponsorship_proof_upload_intent'); v_existing := v_table is not null;
   if v_table is null then
     create table public.sponsorship_proof_upload_intent (

@@ -391,6 +391,18 @@ async function run() {
       );
       if (shadow.marker !== "synthetic shadow") throw new Error("Shadow changed");
       await db.unsafe("drop table pg_temp.sponsorship_proof_upload_intent;set search_path=''");
+      // The shared catalog projection omits these facets; inspect them directly.
+      const intentProfiles = async () =>
+        db.unsafe(`select c.relname, c.relkind, c.relpersistence, c.relhasrules,
+          coalesce((select jsonb_agg(jsonb_build_object('name',r.rulename,
+            'type',r.ev_type,'enabled',r.ev_enabled,'instead',r.is_instead,
+            'definition',pg_catalog.pg_get_ruledef(r.oid)) order by r.rulename)
+            from pg_catalog.pg_rewrite r where r.ev_class=c.oid),'[]'::jsonb) rules
+          from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+          where n.nspname='public' and c.relname in
+            ('sponsorship_proof_upload_intent','sponsorship_staff_proof_upload_intent')
+          order by c.relname`);
+      const profiles = hash(await intentProfiles());
       const mutations = [
         ["client grant", "grant select on public.sponsorship_proof_upload_intent to anon"],
         [
@@ -421,8 +433,17 @@ async function run() {
           "wrong function body",
           "create or replace function public.reserve_staff_sponsorship_proof_upload(p_pledge_id uuid,p_storage_path text) returns void language plpgsql set search_path='' as $$ begin return; end $$",
         ],
+        ...tables.flatMap((table) => [
+          [
+            table + " insert rule",
+            `create rule r01_suppress_intent as on insert to public.${table} do instead nothing`,
+          ],
+          [table + " unlogged", `alter table public.${table} set unlogged`],
+        ]),
       ];
       const rejected = [];
+      const unexpected = [];
+      const accepted = new Error("Rollback unexpected migration acceptance");
       for (const [label, mutation] of mutations) {
         let code = "success";
         try {
@@ -430,14 +451,26 @@ async function run() {
             await tx.unsafe(mutation);
             await tx`set local role postgres`;
             await tx.unsafe(text);
+            // Always roll back a drift fixture, even while watching its RED.
+            throw accepted;
           });
         } catch (e) {
-          code = (e as { errno?: string }).errno ?? "unexpected";
+          code = e === accepted ? "success" : ((e as { errno?: string }).errno ?? "unexpected");
         }
-        const preserved = hash(await snapshot(db)) === hash(first) && (await rowState()) === facts;
+        const profilePreserved = hash(await intentProfiles()) === profiles;
+        const preserved =
+          profilePreserved &&
+          hash(await snapshot(db)) === hash(first) &&
+          (await rowState()) === facts;
         if (code !== "55000" || !preserved)
-          throw new Error("Preflight rollback failed " + label + " " + code);
-        rejected.push({ case: label, sqlState: code, preserved });
+          unexpected.push({ case: label, sqlState: code, preserved, profilePreserved });
+        rejected.push({ case: label, sqlState: code, preserved, profilePreserved });
+      }
+      receipt.preflightResults = rejected;
+      receipt.intentProfileHash = profiles;
+      if (unexpected.length) {
+        receipt.watchedProfileDriftRed = unexpected;
+        throw new Error("Preflight rollback failed: " + JSON.stringify(unexpected));
       }
       const final = await manifest(first);
       if (!modern && final.issues.length !== 33)
