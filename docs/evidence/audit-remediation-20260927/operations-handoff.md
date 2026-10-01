@@ -63,6 +63,11 @@ PR169: saved indicates committed assignment; failed refresh never undoes it. Unk
 ## PR170 preparation — 2026-09-30
 
 PR170 recovery GET failure retains operationID; reload results before resuming pending items. Filters clear selection. Expired operation requires explicit fresh snapshot for unresolved items, keeping prior results. No proof/payment approval or notifications.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 draft is ephemeral: current status,recipient,proof or month/allocation changes clear it; regenerate after reviewing facts. Pending proof/adjustment requiresfinance review. No send action or approved payment instructions. Sending requires separate authorization.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

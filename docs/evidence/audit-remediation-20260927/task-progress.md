@@ -115,6 +115,11 @@ PR169 individual sponsorship follow-up slice repaired/reviewed and locally verif
 ## PR170 preparation — 2026-09-30
 
 PR170six concretebugsred-to-green;reviewclosed.Individual+bulk sponsorshipfollowupslicescodecomplete;ADMIN-04partial. Production schemas/deploy/enablepending. Parent169cataloggateamendmentintegrated.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 read-only reminder preview repaired,reviewed andlocallyaccepted. No migration. ADMIN-04partial;codecomplete slice,not deployed/enabled. Continue172–179 while#156orderedmergegate remains.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
@@ -166,6 +171,13 @@ Task168 root combinedcheckpoint2026-10-01: reviewedown672d7845,predecessor3e021d
 Task169 root combinedcheckpoint2026-10-01: reviewedowndd17c5fb,predecessor9d063e5d;sourceconflicts0;canonicalSQL56;focused2pass55assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
 
 Task170 root combinedcheckpoint2026-10-01: reviewedown70182bef,predecessorbb34bfc2;sourceconflicts0;canonicalSQL57;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task171 root combinedcheckpoint2026-10-01: reviewedownd496a793,predecessor6cd2ded7;sourceconflicts0;canonicalSQL57;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+## Prepared integration for PR#171 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
 
 ## Prepared integration for PR#170 — 2026-10-01 HKT
 

@@ -67,6 +67,11 @@ PR169 local code/gates ready,production schema/deploy/enable not ready. Inventor
 ## PR170 preparation — 2026-09-30
 
 PR170 code/local gates complete;schema approved/applied=no,deployed=no,operationally enabled=no.56fileinventory. Full3074pass141skip9628assert;typecheck/build0;lint0beforecatalog-onlymerge;1000itemservice_role;3widthAxe0. Orderedmerge stillblocked#156;exact schema approval andlatestCIrequired.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 no new SQL;56inheritedmigrationinventory. Full3084pass141skip9676assert;typecheck/lint/build0;15browsercases/Axe0. Codecomplete slice only;deploy/enable=no. #169dd17c5fbfivegreen36646284540 andexactmigrationapprovalrequested;#170/#171CIpending;#156OTPgate blocksorderedmerge.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

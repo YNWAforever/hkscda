@@ -74,6 +74,11 @@ PR169 actual drawer at390/768/1366: keyboard selection; lost response reconciled
 ## PR170 preparation — 2026-09-30
 
 PR170390/768/1366actualpanel: recovery preservation/busy fence,keyboard,25writes after10item interruptedresponse,1000preview40pages,CSV,Axe0/errors0/nooverflow;768at200%zoom. Actualmobilecheckbox no detaildrawer;filterABA no stale25selection. Hostedstaff/fullprivateexportsnot-run.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171390/768/1366actualdrawer: cancel,recipientchange,pendingproof,settledledger andlateoldresponse eachclearcopyabledraft;15cases/Axe0/errors0/nooverflow. Synthetic GETs andsimulatedcancelonly;no provider/DBwrite. Hostedstaff/privatejourneysnot-run.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

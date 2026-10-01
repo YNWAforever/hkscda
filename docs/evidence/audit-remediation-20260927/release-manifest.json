@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "edfeb53272db21217892dd025b5335e5123e1457",
-  "appShaNote": "PR170 combined review sourceedfeb53272db21217892dd025b5335e5123e1457; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
+  "appSha": "ff0d8d964be6ab605baff343a56ac11c5dfdf194",
+  "appShaNote": "PR171 source ff0d8d964be6ab605baff343a56ac11c5dfdf194; subsequent binding commit is documentation only; new exact-head CI required.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "66f3b7ca1d71a0d1542f3d0b0925583c215a2e81835bebf988977c77521d43b3",
   "configVersions": {
@@ -300,7 +300,7 @@
     }
   ],
   "ciRun": {
-    "status": "fresh combined exact-head CI pending; scoped integration checks in progress"
+    "status": "fresh exact-head CI pending after reviewed test timing repair"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -322,7 +322,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -727,8 +728,8 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "19655dafd325adb9ca864f75648a5a22d96bd24e",
-    "schemaManifestHash": "607a5a952950157f137f625b4e5eded69fc161bc0bc82e1afca977dd5000d888",
-    "migrationCount": 56
+    "appSha": "a2a627c38a7c0ba9730163aac5ccf610889e523b",
+    "schemaManifestHash": "66f3b7ca1d71a0d1542f3d0b0925583c215a2e81835bebf988977c77521d43b3",
+    "migrationCount": 57
   }
 }
