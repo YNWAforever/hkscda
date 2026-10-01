@@ -1361,6 +1361,15 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "column",
     schema: "public",
+    table: "supporter",
+    name: "edit_version",
+    feature: "crm-bulk",
+    required: true,
+    type: "bigint",
+  },
+  {
+    kind: "column",
+    schema: "public",
     table: "payment",
     name: "checkout_url",
     feature: "finance",

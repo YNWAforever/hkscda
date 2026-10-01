@@ -20,6 +20,7 @@ test("release manifest covers every new public table, RPC, and additive column a
   expect(columns).toContain("donation.idempotency_fingerprint");
   expect(columns).toContain("payment.checkout_attempted_at");
   expect(columns).toContain("adoption_case.bulk_row_version");
+  expect(columns).toContain("supporter.edit_version");
   for (const name of [
     "create_public_sponsorship_pledge",
     "issue_receipt_with_audit",

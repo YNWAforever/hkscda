@@ -145,6 +145,11 @@ See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `0
 ## PR176 current preparation — 2026-09-30
 
 See [sequential-merge-176-20260930.md](sequential-merge-176-20260930.md): app `82c62c7a46994f12f413b946d099a6e7a8bc263b`, stale response/invalid JSON/keyboard fixes. Full 3136 pass / 145 skip; 13 focused / 52 assertions; typecheck/lint/build exit 0. Actual isolated Auth/PostgREST 1000-selection role/read-only verification and three-width before/after UI, Axe0. No new SQL; 59 inherited migration files. Code-complete slice, not deployed or enabled; #156 release blocker remains. #175 exact-head five gates green.
+
+
+## PR177 current preparation — 2026-09-30
+
+See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9`. Production version fence is already provided by149; duplicate177DDL reproduced42701 and replaced with narrow direct-EXECUTE revoke.15-row preservation/grant/trigger rehearsal0;5focused101assertions;full3140pass141skip;type/lint/build0.60-file manifest. Grant change not applied in production. #161 single migration approval received; ordered release remains blocked at156.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
@@ -208,6 +213,13 @@ Task174 root combinedcheckpoint2026-10-01: reviewedown0e7e4e75,predecessorda2d9b
 Task175 root combinedcheckpoint2026-10-01: reviewedownb4fbe9bd,predecessore42378e8;sourceconflicts0;canonicalSQL60;focused2pass66assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
 
 Task176 root combinedcheckpoint2026-10-01: reviewedown30d16463,predecessor66663ba8;sourceconflicts0;canonicalSQL60;focused2pass66assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task177 root combinedcheckpoint2026-10-01: reviewedownbf1c6779,predecessor1e21f9b3;sourceconflicts0;canonicalSQL61;focused2pass67assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+## Prepared integration for PR#177 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
 
 ## Prepared integration for PR#176 — 2026-10-01 HKT
 

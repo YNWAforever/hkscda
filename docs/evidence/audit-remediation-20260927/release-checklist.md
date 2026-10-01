@@ -87,6 +87,11 @@ See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `0
 ## PR176 current preparation — 2026-09-30
 
 See [sequential-merge-176-20260930.md](sequential-merge-176-20260930.md): app `82c62c7a46994f12f413b946d099a6e7a8bc263b`, stale response/invalid JSON/keyboard fixes. Full 3136 pass / 145 skip; 13 focused / 52 assertions; typecheck/lint/build exit 0. Actual isolated Auth/PostgREST 1000-selection role/read-only verification and three-width before/after UI, Axe0. No new SQL; 59 inherited migration files. Code-complete slice, not deployed or enabled; #156 release blocker remains. #175 exact-head five gates green.
+
+
+## PR177 current preparation — 2026-09-30
+
+See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9`. Production version fence is already provided by149; duplicate177DDL reproduced42701 and replaced with narrow direct-EXECUTE revoke.15-row preservation/grant/trigger rehearsal0;5focused101assertions;full3140pass141skip;type/lint/build0.60-file manifest. Grant change not applied in production. #161 single migration approval received; ordered release remains blocked at156.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

@@ -212,7 +212,7 @@ test.skipIf(!enabled)(
         )) as Array<{ result: { status: string } }>;
         expect(repeat[0]!.result.status).toBe("succeeded");
         await tx.unsafe(
-          "update public.supporter set tags=array['changed']::text[] where id=$1::uuid",
+          "update public.supporter set name='Edited after preview' where id=$1::uuid",
           [ids[1]],
         );
         const stale = (await serviceCall(
