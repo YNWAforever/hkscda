@@ -1,0 +1,12 @@
+{
+  "capturedAt": "2026-10-01T20:55:04.338534Z",
+  "source": "Supabase execute_sql current catalog only; typed transcription of actual tool receipt",
+  "ledgerCount": 112,
+  "serviceAuthAnyColumnSelect": false,
+  "serviceAuthAnyColumnUpdate": false,
+  "intentTable": null,
+  "publicTargetOverloads": 0,
+  "privateBridge": null,
+  "productionActions": "No data reads, actor RPC, DDL or DML",
+  "earlierDefaultAclRead": "postgres global r/f absent; public f known postgres/anon/authenticated/service EXECUTE nongrantable; public r known recipients nongrantable; private r/f absent; service_role inherited parent memberships absent. No role or default mutation to manufacture inheritance."
+}

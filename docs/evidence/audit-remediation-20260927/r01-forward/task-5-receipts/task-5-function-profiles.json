@@ -1,0 +1,47 @@
+[
+  {
+    "name": "public.set_animal_archived_with_audit",
+    "sig": "uuid,uuid,boolean",
+    "args": "p_actor_user_id uuid, p_animal_id uuid, p_archived boolean",
+    "result": "jsonb",
+    "definer": false,
+    "language": "plpgsql",
+    "md5": "1032db3be15fc3ea053c43648d45291d"
+  },
+  {
+    "name": "public.reserve_animal_draft_image_upload",
+    "sig": "uuid,text",
+    "args": "p_animal_id uuid, p_storage_path text",
+    "result": "void",
+    "definer": false,
+    "language": "plpgsql",
+    "md5": "5658c0440a73a3712a7fa7a9d9b0a637"
+  },
+  {
+    "name": "public.mark_animal_draft_image_attached",
+    "sig": "",
+    "args": "",
+    "result": "trigger",
+    "definer": false,
+    "language": "plpgsql",
+    "md5": "af001f689c6f2649e666114cfefc3dd7"
+  },
+  {
+    "name": "public.claim_expired_animal_draft_image_uploads",
+    "sig": "timestamptz,integer",
+    "args": "p_cutoff timestamp with time zone, p_limit integer",
+    "result": "TABLE(animal_id uuid, storage_path text, claimed_at timestamp with time zone)",
+    "definer": false,
+    "language": "sql",
+    "md5": "ca2a09ef407124d7cb7dbe2e9f36cdf7"
+  },
+  {
+    "name": "private.require_animal_archive_actor",
+    "sig": "uuid",
+    "args": "p_actor uuid",
+    "result": "void",
+    "definer": true,
+    "language": "plpgsql",
+    "md5": "5e3d7a6501a7dc851864ba6e09f8097c"
+  }
+]

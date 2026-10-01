@@ -1,0 +1,2 @@
+$ tsc --noEmit
+supabase/rls-tests/helpers/runR01AnimalDraftForward.ts(313,23): error TS18048: 'preservedTables' is possibly 'undefined'.

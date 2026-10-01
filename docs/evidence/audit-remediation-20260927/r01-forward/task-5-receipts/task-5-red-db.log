@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\animals\draftIntent.database.test.ts:
+PostgresError: relation "public.animal_draft_image_upload_intent" does not exist
+    errno: "42P01",
+ severity: "ERROR",
+ position: "89",
+     file: "parse_relation.c",
+  routine: "parserOpenTable",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 animal draft intent and audited archive > current caller requires the exact missing-target contracts [6.39ms]
+
+ 0 pass
+ 14 filtered out
+ 1 fail
+Ran 1 test across 1 file. [1228.00ms]
