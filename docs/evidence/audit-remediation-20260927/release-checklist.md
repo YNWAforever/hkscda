@@ -48,6 +48,10 @@ PR162 selection-generation backport61e8952f verified:3006pass121skip/9383asserti
 
 Freeze 4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee;54 committed SQL hashes verified. Runtime identical to tested e229f46d:3022pass133skip9462assertions/40.72s;typecheck/lint/build0,52warnings;DB2tests122assertions;UI3widths/Axe0;SQL7rowsrollback253ms. Fresh remote CI pending. #156 remains blocked; requested disabled-feature exception unanswered, not an approval.
 
+
+## PR167 verified read queue (2026-09-30)
+
+See sequential-merge-167-20260930.md for exact commands, source SHA, local PostgREST and three-width browser evidence. No new migration; not deployed. Pending proofs are filtered before count/page, including active pledges with later proofs. Staff review each current proof; no bulk money approval. Earlier #156 OTP release blocker remains. #165/#166 exact schema questions now pending after five green CI gates.
 ## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
 
 26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.

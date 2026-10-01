@@ -16,6 +16,12 @@ test("each role receives only its own actionable 3-5 task destinations", () => {
     label: "已過期內容",
     href: "/admin/content?quality=expired",
   });
+  expect(staff.find((card) => card.key === "sponsorship_proof_pending")?.href).toBe(
+    "/admin/sponsorships?proof=pending",
+  );
+  expect(treasurer.find((card) => card.key === "sponsorship_followup")?.href).toBe(
+    "/admin/sponsorships?status=needs_followup",
+  );
 });
 
 test("failed source is unavailable, never zero, while other task counts remain", async () => {

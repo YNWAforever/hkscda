@@ -136,6 +136,21 @@ describe("createSponsorshipAdminService", () => {
     });
   });
 
+  test("pending proof filter survives schema parsing and reaches the repository", async () => {
+    const repo = createFakeRepo();
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.listPledges({ proof: "pending", page: "2" });
+
+    expect(repo.listPledges).toHaveBeenCalledWith(
+      expect.objectContaining({ proof: "pending", page: 2, pageSize: 25 }),
+    );
+  });
+
   test("getPledgeDetail returns null when the repository returns null", async () => {
     const repo = createFakeRepo({ getPledgeDetail: mock(async () => null) });
     const service = createSponsorshipAdminService({

@@ -28,6 +28,11 @@ describe("pledgeListSearchSchema", () => {
     expect(result.status).toBe("provisional");
   });
 
+  test("accepts only the pending-proof queue filter", () => {
+    expect(pledgeListSearchSchema.parse({ proof: "pending" }).proof).toBe("pending");
+    expect(() => pledgeListSearchSchema.parse({ proof: "approved" })).toThrow();
+  });
+
   test("rejects an invalid status filter", () => {
     expect(() => pledgeListSearchSchema.parse({ status: "bogus" })).toThrow();
   });

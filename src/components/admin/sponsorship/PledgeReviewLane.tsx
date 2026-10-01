@@ -21,58 +21,24 @@ import {
 } from "./pledgeReviewLogic";
 import { PledgeDetailDrawer } from "./PledgeDetailDrawer";
 import { centsToHkd } from "../../../lib/donations/domain";
+import { useListQueryState } from "../../../lib/admin/useListQueryState";
 import {
-  parseListPage,
-  useListQueryState,
-  type ListRouteState,
-} from "../../../lib/admin/useListQueryState";
+  PAGE_SIZE_OPTIONS,
+  PLEDGE_ROUTE,
+  PLEDGE_STATUSES,
+  type PledgeFilters,
+} from "./pledgeListRoute";
 
 type PledgeListResponse = {
   pledges: PledgeSummary[];
   total: number;
 };
 
-const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
-
 // A monthly commitment, so /月 is right here. `centsToHkd` rather than
 // rounding: HK$123.45 was being shown as HK$123.
 function amountLabel(pledge: PledgeSummary) {
   return `${centsToHkd(pledge.amountCents)}/月`;
 }
-
-type PledgeFilters = { status: PledgeStatus | "all"; pageSize: (typeof PAGE_SIZE_OPTIONS)[number] };
-const PLEDGE_STATUSES: Array<PledgeStatus | "all"> = [
-  "all",
-  "pending_payment",
-  "provisional",
-  "active",
-  "needs_followup",
-  "cancelled",
-];
-const PLEDGE_ROUTE: ListRouteState<PledgeFilters> = {
-  key: "sponsorship-pledges",
-  read(params) {
-    const status = params.get("status");
-    const size = Number(params.get("pageSize"));
-    return {
-      filters: {
-        status: PLEDGE_STATUSES.includes(status as PledgeStatus) ? (status as PledgeStatus) : "all",
-        pageSize: PAGE_SIZE_OPTIONS.includes(size as PledgeFilters["pageSize"])
-          ? (size as PledgeFilters["pageSize"])
-          : 25,
-      },
-      page: parseListPage(params.get("page")),
-    };
-  },
-  write(params, filters, page) {
-    if (filters.status === "all") params.delete("status");
-    else params.set("status", filters.status);
-    if (filters.pageSize === 25) params.delete("pageSize");
-    else params.set("pageSize", String(filters.pageSize));
-    if (page === 1) params.delete("page");
-    else params.set("page", String(page));
-  },
-};
 
 export function PledgeReviewLane() {
   const { pageCopy } = useAdminPageCopy();
@@ -81,12 +47,13 @@ export function PledgeReviewLane() {
     key: "sponsorship-pledges",
     initialFilters: {
       status: "all" as PledgeStatus | "all",
+      proof: "all" as PledgeFilters["proof"],
       pageSize: 25 as PledgeFilters["pageSize"],
     },
     routeState: PLEDGE_ROUTE,
   });
   const { query, page, setPage, filters, changeFilter } = listState;
-  const { status, pageSize } = filters;
+  const { status, proof, pageSize } = filters;
   const reviewTrigger = useRef<HTMLElement | null>(null);
   const [selectedPledgeId, setSelectedPledgeId] = useState<string | null>(null);
 
@@ -105,10 +72,11 @@ export function PledgeReviewLane() {
       buildPledgeListSearchParams({
         q: query,
         status: status === "all" ? "" : status,
+        proof: proof === "all" ? "" : proof,
         page,
         pageSize,
       }),
-    [page, pageSize, query, status],
+    [page, pageSize, proof, query, status],
   );
 
   const { data, error, isLoading, isFetching, refetch } = useQuery<PledgeListResponse, Error>({
@@ -213,7 +181,7 @@ export function PledgeReviewLane() {
   return (
     <div className="space-y-5">
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="grid gap-3 p-4 lg:grid-cols-[minmax(260px,1fr)_220px]">
+        <div className="grid gap-3 p-4 lg:grid-cols-[minmax(260px,1fr)_220px_220px]">
           <label className="relative block">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <Input
@@ -239,6 +207,18 @@ export function PledgeReviewLane() {
                   {option.label}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={proof}
+            onValueChange={(value) => changeFilter({ proof: value as PledgeFilters["proof"] })}
+          >
+            <SelectTrigger aria-label="憑證審核篩選" className="h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">所有憑證狀態</SelectItem>
+              <SelectItem value="pending">待核實憑證</SelectItem>
             </SelectContent>
           </Select>
         </div>

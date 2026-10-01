@@ -55,12 +55,12 @@ const definitions: Record<TaskKey, TaskDefinition> = {
   sponsorship_proof_pending: {
     key: "sponsorship_proof_pending",
     label: "待核實助養憑證",
-    href: "/admin/sponsorships",
+    href: "/admin/sponsorships?proof=pending",
   },
   sponsorship_followup: {
     key: "sponsorship_followup",
     label: "助養待跟進",
-    href: "/admin/sponsorships",
+    href: "/admin/sponsorships?status=needs_followup",
   },
   payment_pending: {
     key: "payment_pending",

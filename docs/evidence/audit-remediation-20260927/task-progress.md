@@ -95,6 +95,11 @@ Reproduced/fixed actor revocation race, lost committed response recovery, CRM du
 ## 2026-09-30 PR166
 
 Quality queue read regression complete: generation race and400/403mapping repaired;1000-row actual-role pagination preserves all content/audit. Code complete for this slice; schema ready locally only;not deployed or enabled. #162-#165 selection backport propagated. Independent #167 review proceeds.
+
+
+## PR167 verified read queue (2026-09-30)
+
+See sequential-merge-167-20260930.md for exact commands, source SHA, local PostgREST and three-width browser evidence. No new migration; not deployed. Pending proofs are filtered before count/page, including active pledges with later proofs. Staff review each current proof; no bulk money approval. Earlier #156 OTP release blocker remains. #165/#166 exact schema questions now pending after five green CI gates.
 ## T22 recovery broker continuation, 2026-09-30
 
 Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
@@ -138,6 +143,13 @@ Task164 root integration verified2026-10-01HKT: independent review approved; 309
 Task165 CODE-ONLY COMPLETE2026-10-01HKT: unchanged reviewed finance source; root3102pass97skip0fail9885assertions547files106.06s; targetedCRM/strictType/lint/serialBuild0;24fixturetables0. RemoteCI/namedDDL/sequence/hosted/provider gates pending. Invalid shared CRM target attempt retained, guard unchanged.
 
 Task166 root2026-10-01: quality source/SQL unchanged; latest165+approved160proof integrated; focused5pass63assertions/finalstrictType0; freshcombinedremoteCIpending; fulllocal/lint/build/DB rerunnot-run, prior evidence retained. No deployment/enablement.
+
+Task167 root combinedcheckpoint2026-10-01: reviewedown77e06cd4,predecessor91953ffa;sourceconflicts0;canonicalSQL55;focused2pass54assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+## Prepared integration for PR#167 — 2026-10-01 HKT
+
+Historical predecessor preparation evidence below is preserved. This source preparation performs no production DDL or main merge. #160/#182 acceptance and later named migration authority remain as recorded; each candidate needs its own fresh CI and production postflight.
+
 
 ## Prepared integration for PR#166 — 2026-10-01 HKT
 

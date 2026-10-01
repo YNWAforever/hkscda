@@ -487,14 +487,19 @@ export function createSupabaseSponsorshipAdminRepository(
   return {
     async listPledges(input) {
       const from = (input.page - 1) * input.pageSize;
+      const selection: string =
+        input.proof === "pending" ? "*,sponsorship_payment_proof!inner(id)" : "*";
       let query = client
         .from("sponsorship_pledge")
-        .select("*", { count: "exact" })
+        .select(selection, { count: "exact" })
         .order("created_at", { ascending: false })
         .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.status) query = query.eq("status", input.status);
+      if (input.proof === "pending") {
+        query = query.eq("sponsorship_payment_proof.review_status", "pending");
+      }
 
       if (input.q) {
         const candidateIds = await searchPledgeIds(client, input.q);
@@ -505,7 +510,9 @@ export function createSupabaseSponsorshipAdminRepository(
       const { data, error, count } = await query;
       if (error) throw error;
 
-      const rows = (data ?? []) as PledgeRow[];
+      // The conditional embedded PostgREST select retains every pledge column;
+      // Supabase's string parser cannot infer a conditional select expression.
+      const rows = (data ?? []) as unknown as PledgeRow[];
       const supporters = await loadSupportersByIds(
         client,
         rows.map((row) => row.supporter_id),

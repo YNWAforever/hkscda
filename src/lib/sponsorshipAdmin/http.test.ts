@@ -48,12 +48,15 @@ describe("createSponsorshipAdminHandlers", () => {
     });
 
     const response = await handlers.listPledges({
-      request: request("http://localhost/api/admin/sponsorships/pledges?status=active"),
+      request: request(
+        "http://localhost/api/admin/sponsorships/pledges?status=active&proof=pending",
+      ),
     });
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.total).toBe(1);
     expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(service.listPledges).toHaveBeenCalledWith({ status: "active", proof: "pending" });
   });
 
   test("getPledge returns 404 when the service returns null", async () => {

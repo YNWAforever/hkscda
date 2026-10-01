@@ -27,10 +27,28 @@ mock.module("@tanstack/react-query", () => ({
 }));
 
 const { PledgeReviewLane } = await import("./PledgeReviewLane");
+const { PLEDGE_ROUTE } = await import("./pledgeListRoute");
 
 const render = () => renderToStaticMarkup(<PledgeReviewLane />);
 
 describe("PledgeReviewLane", () => {
+  test("direct task URL restores the proof queue filter and clears it on all", () => {
+    const route = PLEDGE_ROUTE.read(new URLSearchParams("proof=pending&page=2"), {
+      status: "all",
+      proof: "all",
+      pageSize: 25,
+    });
+    expect(route.filters.proof).toBe("pending");
+    expect(route.page).toBe(2);
+    const params = new URLSearchParams("proof=pending");
+    PLEDGE_ROUTE.write(params, { ...route.filters, proof: "all" }, 1);
+    expect(params.has("proof")).toBe(false);
+  });
+
+  test("renders a distinct pending-proof filter", () => {
+    expect(render()).toContain("憑證審核篩選");
+  });
+
   test("renders the pledge review workspace", () => {
     expect(render()).toContain("承諾審核");
   });

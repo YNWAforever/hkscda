@@ -7,6 +7,7 @@ import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
 export type PledgeListFilters = {
   q?: string;
   status?: string;
+  proof?: string;
   page?: number;
   pageSize?: number;
 };
@@ -24,9 +25,11 @@ export function buildPledgeListSearchParams(filters: PledgeListFilters) {
   const params = new URLSearchParams();
   const q = trimmed(filters.q);
   const status = trimmed(filters.status);
+  const proof = trimmed(filters.proof);
 
   if (q) params.set("q", q);
   if (status) params.set("status", status);
+  if (proof === "pending") params.set("proof", proof);
   params.set("page", String(normalizedPositiveInteger(filters.page, 1)));
   params.set("pageSize", String(normalizedPositiveInteger(filters.pageSize, 25)));
   return params;
