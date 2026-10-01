@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "ff0d8d964be6ab605baff343a56ac11c5dfdf194",
-  "appShaNote": "PR171 source ff0d8d964be6ab605baff343a56ac11c5dfdf194; subsequent binding commit is documentation only; new exact-head CI required.",
+  "appSha": "ada348459bcfc5e7cf3704763ffaf21036eb69da",
+  "appShaNote": "PR172 source ada348459bcfc5e7cf3704763ffaf21036eb69da; subsequent binding commit is documentation only; new exact-head CI required.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
-  "schemaManifestHash": "66f3b7ca1d71a0d1542f3d0b0925583c215a2e81835bebf988977c77521d43b3",
+  "schemaManifestHash": "81c521535ceeb2246fa6a968693aae8bd20267d9a2bfaf9a83b16081e6640edd",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -292,6 +292,11 @@
       "version": "20260928080000",
       "file": "20260928080000_sponsorship_followup_bulk.sql",
       "sha256": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800"
+    },
+    {
+      "version": "20260928090000",
+      "file": "20260928090000_finance_bank_dryrun.sql",
+      "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0"
     },
     {
       "version": "20260930120000",
@@ -679,7 +684,7 @@
   "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 98,
-  "migrationManifestNote": "57 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
+  "migrationManifestNote": "58 canonical LF source inventory entries verified; no apply-all authority or ledger rewrite.",
   "productionCiRun": {
     "id": 36758558621,
     "sha": "07e4c881863b715342ed0757aad7bd691a272738",
@@ -728,8 +733,8 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "a2a627c38a7c0ba9730163aac5ccf610889e523b",
-    "schemaManifestHash": "66f3b7ca1d71a0d1542f3d0b0925583c215a2e81835bebf988977c77521d43b3",
-    "migrationCount": 57
+    "appSha": "be1c5478a6970eabd8089ff2aa427f914db98f00",
+    "schemaManifestHash": "81c521535ceeb2246fa6a968693aae8bd20267d9a2bfaf9a83b16081e6640edd",
+    "migrationCount": 58
   }
 }
