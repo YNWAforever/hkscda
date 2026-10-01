@@ -25,7 +25,7 @@ export const hash = (value: unknown) =>
     .digest("hex");
 const qi = (name: string) => '"' + name.replaceAll('"', '""') + '"';
 const networkPrimitive =
-  /\b(?:(?:net|cron|supabase_functions)"?\s*\.|http(?:_[a-z_0-9]+)?"?\s*\(|dblink(?:_[a-z_0-9]+)?"?\s*\(|pg_(?:read_(?:binary_)?file|ls_[a-z_]+|notify)"?\s*\(|lo_(?:import|export)"?\s*\()/i;
+  /\b(?:(?:net|cron|supabase_functions)"?\s*\.|http(?:_[a-z_0-9]+)?"?\s*\(|dblink(?:_[a-z_0-9]+)?"?\s*\(|pg_(?:read_(?:binary_)?file|ls_[a-z_]+|notify|terminate_backend|cancel_backend|reload_conf|rotate_logfile|promote|log_backend_memory_contexts)"?\s*\(|set_config"?\s*\(|lo_(?:import|export)"?\s*\()/i;
 const escapePattern = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const calls = (body: string, qualified: string) => {
   const [schema, name] = qualified.split(".");
@@ -330,8 +330,12 @@ export function schemaStatements(text: string): string[] {
       /^(?:CREATE\s+(?:OR\s+REPLACE\s+)?(?:FUNCTION|TRIGGER|CONSTRAINT\s+TRIGGER)\s|ALTER\s+FUNCTION\s|GRANT\s|REVOKE\s|COMMENT\s+ON\s)/i.test(
         statement,
       );
+    const inertDumpSearchPath = /^SELECT pg_catalog\.set_config\('search_path', '', false\)$/i.test(
+      statement,
+    );
     if (
       !storesOnly &&
+      !inertDumpSearchPath &&
       (networkPrimitive.test(statement) || [...unsafe].some((name) => calls(statement, name)))
     )
       throw new Error("Potential network-bearing DDL evaluation refused");
@@ -615,7 +619,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
   // Read definitions across schemas: a public trigger may call an external helper.
   // No definition is invoked; bodies remain in memory and never enter receipts.
   const rows = (await sql.unsafe(
-    "select n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(p.proowner) owner,p.pronargs arguments,format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
+    "select p.oid,n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(p.proowner) owner,p.pronargs arguments,array(select tn.nspname||'.'||t.typname from unnest(p.proargtypes) with ordinality a(type_oid,position) join pg_type t on t.oid=a.type_oid join pg_namespace tn on tn.oid=t.typnamespace order by a.position) \"argumentTypes\",format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
   )) as {
     schema: string;
     name: string;
@@ -629,7 +633,137 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
     owner: string;
     arguments: number;
     result: string;
+    oid: number;
+    argumentTypes: string[];
   }[];
+  // Operators can invoke opaque code without spelling a function call. Do not
+  // infer operand types or overload resolution: every possible overload must
+  // be core or one of the seven independently reviewed native contracts.
+  const nativeContracts = [
+    ["=", "citext_eq", "eqsel", 101, "eqjoinsel", 105],
+    ["<>", "citext_ne", "neqsel", 102, "neqjoinsel", 106],
+    ["<", "citext_lt", "scalarltsel", 103, "scalarltjoinsel", 107],
+    ["<=", "citext_le", "scalarlesel", 336, "scalarlejoinsel", 386],
+    [">", "citext_gt", "scalargtsel", 104, "scalargtjoinsel", 108],
+    [">=", "citext_ge", "scalargesel", 337, "scalargejoinsel", 398],
+    ["%", "similarity_op", "matchingsel", 5040, "matchingjoinsel", 5041],
+  ] as const;
+  const reviewedNative = (r: (typeof rows)[number]) => {
+    const contract = nativeContracts.find((c) => c[1] === r.name);
+    const trgm = r.name === "similarity_op";
+    const type = trgm ? "pg_catalog.text" : "public.citext";
+    return (
+      !!contract &&
+      r.schema === "public" &&
+      r.language === "c" &&
+      r.source === r.name &&
+      r.library === (trgm ? "$libdir/pg_trgm" : "$libdir/citext") &&
+      r.extension === (trgm ? "pg_trgm" : "citext") &&
+      r.extensionVersion === "1.6" &&
+      ["postgres", "supabase_admin"].includes(r.owner) &&
+      r.arguments === 2 &&
+      r.argumentTypes?.length === 2 &&
+      r.argumentTypes.every((t) => t === type) &&
+      r.result === "boolean"
+    );
+  };
+  const operators = (await sql.unsafe(
+    "select o.oid,n.nspname schema,o.oprname name,(n.nspname='pg_catalog' and o.oid<16384) system,pn.nspname||'.'||p.proname implementation,p.oid \"implementationOid\",ln.nspname||'.'||lt.typname \"leftType\",rn.nspname||'.'||rt.typname \"rightType\",pg_get_userbyid(o.oprowner) owner,sn.nspname||'.'||s.proname restriction,s.oid \"restrictionOid\",jn.nspname||'.'||j.proname \"join\",j.oid \"joinOid\" from pg_operator o join pg_namespace n on n.oid=o.oprnamespace join pg_proc p on p.oid=o.oprcode join pg_namespace pn on pn.oid=p.pronamespace left join pg_type lt on lt.oid=o.oprleft left join pg_namespace ln on ln.oid=lt.typnamespace left join pg_type rt on rt.oid=o.oprright left join pg_namespace rn on rn.oid=rt.typnamespace left join pg_proc s on s.oid=o.oprrest left join pg_namespace sn on sn.oid=s.pronamespace left join pg_proc j on j.oid=o.oprjoin left join pg_namespace jn on jn.oid=j.pronamespace",
+  )) as {
+    schema: string;
+    name: string;
+    system: boolean;
+    implementation: string;
+    implementationOid: number;
+    leftType: string;
+    rightType: string;
+    owner: string;
+    restriction: string | null;
+    restrictionOid: number | null;
+    join: string | null;
+    joinOid: number | null;
+    oid: number;
+  }[];
+  const reviewedPlanner = (
+    name: string | null,
+    oid: number | null,
+    expectedName: string,
+    expectedOid: number,
+    join: boolean,
+  ) => {
+    if (name === null && oid === null) return true;
+    const args = join
+      ? [
+          "pg_catalog.internal",
+          "pg_catalog.oid",
+          "pg_catalog.internal",
+          "pg_catalog.int2",
+          "pg_catalog.internal",
+        ]
+      : ["pg_catalog.internal", "pg_catalog.oid", "pg_catalog.internal", "pg_catalog.int4"];
+    return (
+      name === "pg_catalog." + expectedName &&
+      oid === expectedOid &&
+      rows.some(
+        (r) =>
+          r.oid === oid &&
+          r.system &&
+          r.schema === "pg_catalog" &&
+          r.name === expectedName &&
+          r.language === "internal" &&
+          r.source === expectedName &&
+          r.library === null &&
+          r.extension === null &&
+          ["postgres", "supabase_admin"].includes(r.owner) &&
+          r.arguments === args.length &&
+          JSON.stringify(r.argumentTypes) === JSON.stringify(args) &&
+          r.result === "double precision",
+      )
+    );
+  };
+  const reviewedOperator = (o: (typeof operators)[number]) => {
+    if (o.system) return true;
+    const c = nativeContracts.find((c) => c[0] === o.name);
+    if (!c || o.schema !== "public" || !["postgres", "supabase_admin"].includes(o.owner))
+      return false;
+    const type = c[1] === "similarity_op" ? "pg_catalog.text" : "public.citext";
+    return (
+      o.leftType === type &&
+      o.rightType === type &&
+      o.implementation === "public." + c[1] &&
+      rows.some((r) => r.oid === o.implementationOid && r.name === c[1] && reviewedNative(r)) &&
+      reviewedPlanner(o.restriction, o.restrictionOid, c[2], c[3], false) &&
+      reviewedPlanner(o.join, o.joinOid, c[4], c[5], true)
+    );
+  };
+  const customSymbols = new Set(operators.filter((o) => !reviewedOperator(o)).map((o) => o.name));
+  const unsafeOperator = (body: string, resolved?: number[]) => {
+    // Stored defaults/checks are deparsed under pg_catalog-only search_path.
+    // User operators are qualified, and actual non-pinned dependency OIDs are
+    // checked. This proves core resolution without trusting a same-symbol user
+    // implementation or trying to infer types from PLpgSQL source text.
+    if (resolved?.some((oid) => !operators.some((o) => o.oid === oid && reviewedOperator(o))))
+      return true;
+    let explicitUnsafe = false;
+    const unqualified = body.replace(
+      /\bOPERATOR\s*\(\s*"?([a-z_][a-z_0-9]*)"?\s*\.\s*([+\-*/<>=~!@#%^&|`?:]+)\s*\)/gi,
+      (_match, schema: string, name: string) => {
+        const candidates = operators.filter((o) => o.schema === schema && o.name === name);
+        if (!candidates.length || candidates.some((o) => !reviewedOperator(o)))
+          explicitUnsafe = true;
+        return " ";
+      },
+    );
+    return (
+      explicitUnsafe ||
+      /\bOPERATOR\s*\(/i.test(unqualified) ||
+      [...unqualified.matchAll(/[+\-*/<>=~!@#%^&|`?:]+/g)].some(
+        (m) =>
+          customSymbols.has(m[0]) &&
+          !(resolved && operators.some((o) => o.name === m[0] && o.system)),
+      )
+    );
+  };
   const network = (body: string) => networkPrimitive.test(body) || /\bexecute\s/i.test(body);
   // Sole reviewed external C prerequisite: pgcrypto's pure UUID generator.
   // Require its actual extension/version/owner/library/symbol and zero-arg signature.
@@ -649,8 +783,12 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       .filter(
         (r) =>
           network(r.body) ||
+          (!r.system && unsafeOperator(r.body)) ||
           network(`${r.schema}.${r.name}(`) ||
-          (!r.system && !reviewedUuid(r) && !["sql", "plpgsql"].includes(r.language)),
+          (!r.system &&
+            !reviewedUuid(r) &&
+            !reviewedNative(r) &&
+            !["sql", "plpgsql"].includes(r.language)),
       )
       .map((r) => `${r.schema}.${r.name}`),
   );
@@ -671,6 +809,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       if (
         !r.system &&
         !reviewedUuid(r) &&
+        !reviewedNative(r) &&
         !unsafe.has(`${r.schema}.${r.name}`) &&
         [...unsafe].some((name) => calls(r.body, name))
       ) {
@@ -686,13 +825,21 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       qualified.includes(t.table_name) &&
       (network(t.function_name + "(") || !known.has(t.function_name) || unsafe.has(t.function_name))
     )
-      throw new Error("Unsafe fixture trigger path; no provider/network primitive executed");
-  const expressions = await sql.unsafe(
-    `select pg_get_expr(d.adbin,d.adrelid) expression from pg_attrdef d join pg_class c on c.oid=d.adrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) union all select pg_get_expr(d.conbin,d.conrelid) from pg_constraint d join pg_class c on c.oid=d.conrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) and d.conbin is not null`,
-  );
+      throw new Error(
+        "Unsafe fixture trigger path: " +
+          t.function_name +
+          "; no provider/network primitive executed",
+      );
+  const expressions = await sql.begin(async (tx) => {
+    await tx.unsafe("set local search_path=pg_catalog");
+    return await tx.unsafe(
+      `select pg_get_expr(d.adbin,d.adrelid) expression,array(select dep.refobjid from pg_depend dep where dep.classid='pg_attrdef'::regclass and dep.objid=d.oid and dep.refclassid='pg_operator'::regclass) "operatorOids" from pg_attrdef d join pg_class c on c.oid=d.adrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) union all select pg_get_expr(d.conbin,d.conrelid),array(select dep.refobjid from pg_depend dep where dep.classid='pg_constraint'::regclass and dep.objid=d.oid and dep.refclassid='pg_operator'::regclass) from pg_constraint d join pg_class c on c.oid=d.conrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) and d.conbin is not null`,
+    );
+  });
   for (const e of expressions)
     if (
       network(e.expression) ||
+      unsafeOperator(e.expression, e.operatorOids) ||
       unknownQualifiedCall(e.expression) ||
       [...unsafe].some((name) => calls(e.expression, name))
     )

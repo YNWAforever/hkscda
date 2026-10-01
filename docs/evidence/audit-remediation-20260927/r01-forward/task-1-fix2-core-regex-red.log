@@ -1,0 +1,41 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\productionSchemaClone.test.ts:
+(pass) R01 test-only clone boundaries > remote, existing, ambiguous and unexpected-credential DB URLs are refused [2.73ms]
+(pass) R01 test-only clone boundaries > catalog comparison ignores JSON key order and detects grant option/owner changes [9.87ms]
+(pass) R01 test-only clone boundaries > data, role, cluster, schedule and network invocation SQL cannot enter restore [2.36ms]
+(pass) R01 test-only clone boundaries > dollar-quoted function bodies are stored as one definition without invocation [1.20ms]
+(pass) R01 test-only clone boundaries > pinned dump inert settings allow quoted heap but never role or replication changes [0.32ms]
+(pass) R01 test-only clone boundaries > CTAS and non-definition TABLE forms are rejected without evaluating requests [1.06ms]
+(pass) R01 test-only clone boundaries > all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL [0.26ms]
+(pass) R01 test-only clone boundaries > direct external webhook trigger is rejected even without a collected body [1.23ms]
+(pass) R01 test-only clone boundaries > transitive external-schema executable bodies are inspected before fixtures [1.68ms]
+(pass) R01 test-only clone boundaries > unreviewed external C and missing trigger entrypoints fail closed [0.25ms]
+(pass) R01 test-only clone boundaries > only exact reviewed pgcrypto UUID implementation can pass opaque-function fencing [0.95ms]
+(pass) R01 test-only clone boundaries > inspected safe external SQL helper remains usable, while absent dependencies fail closed [0.83ms]
+(pass) R01 test-only clone boundaries > explicit custom operators cannot conceal opaque executable paths [0.49ms]
+(pass) R01 test-only clone boundaries > unqualified custom operator and configured search_path cannot conceal opaque execution [0.36ms]
+(pass) R01 test-only clone boundaries > custom operators in defaults/checks are rejected independently of triggers [0.54ms]
+(pass) R01 test-only clone boundaries > backend signaling and global configuration primitives are never fixture paths [1.11ms]
+(pass) R01 test-only clone boundaries > only pinned dump's empty session search_path setting survives the config fence [0.24ms]
+(pass) R01 test-only clone boundaries > prefix and transitive operator paths fail closed; explicit cataloged core calls remain usable [0.50ms]
+(pass) R01 test-only clone boundaries > seven exact reviewed native operator contracts permit the existing comparison paths [13.20ms]
+583 |     const entry: FunctionProbe = { schema: "public", name: "entry", body: "RETURN NEW;", language: "plpgsql", system: false };
+584 |     const operators: OperatorProbe[] = [
+585 |       { oid: 641, schema: "pg_catalog", name: "~", system: true, implementation: "pg_catalog.textregexeq" },
+586 |       { oid: 100001, schema: "public", name: "~", system: false, implementation: "public.unreviewed" },
+587 |     ];
+588 |     await expect(assertSafeFixtureTables(metadataOnlyProbe([entry], "public.entry", "fingerprint ~ '^[0-9a-f]{64}$'", operators, []), ["synthetic"])).resolves.toBeUndefined();
+                                                                                                                                                                     ^
+error:
+
+Expected promise that resolves
+Received promise that rejected: Promise { <rejected> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.test.ts:588:160)
+(fail) R01 test-only clone boundaries > stored core regex resolves through catalog dependencies without trusting custom regex implementations [4.75ms]
+
+ 19 pass
+ 1 fail
+ 235 expect() calls
+Ran 20 tests across 1 file. [225.00ms]
