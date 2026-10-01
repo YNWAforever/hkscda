@@ -1,0 +1,424 @@
+{
+  "parent": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+  "executableBlobs": {
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a",
+      "gitBlob": "052921a7793141a440fb7c1e475ea52ba705938a"
+    },
+    "supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts": {
+      "sha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166",
+      "gitBlob": "3b47187e207a8c07767f6e912a40c1b140ac3a14"
+    },
+    "supabase/rls-tests/helpers/runR01AnimalPreferenceForward.ts": {
+      "sha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d",
+      "gitBlob": "accd1535174584e428aa6c0f101cc30f98ee6231"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    }
+  },
+  "watchedOriginalRed": {
+    "mode": "red",
+    "startedAt": "2026-10-01T15:36:41.305Z",
+    "testedExecutableBlobs": {
+      "supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts": {
+        "sha256": "bbc81064d93429a030dbcc4a8b49eab43e24842f0fc6336e05bbb94b9fd04b18",
+        "canonicalSha256": "bbc81064d93429a030dbcc4a8b49eab43e24842f0fc6336e05bbb94b9fd04b18"
+      },
+      "supabase/rls-tests/helpers/runR01AnimalPreferenceForward.ts": {
+        "sha256": "14d5a26d6f7a21cb8d40e3bb83e21af0bffc66d716e3b1ff6de1ac2d4f823740",
+        "canonicalSha256": "14d5a26d6f7a21cb8d40e3bb83e21af0bffc66d716e3b1ff6de1ac2d4f823740"
+      },
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+        "sha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093",
+        "canonicalSha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093"
+      }
+    },
+    "productionActions": "read-only catalog/schema; no rows or actor RPC",
+    "environment": "new guarded empty clone52322; no animals rows or generated expression evaluation",
+    "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+    "clone": "r01_clone_d2195afab69b4d628719102905c52f03",
+    "schemaParity": true,
+    "zeroApplicationTables": 158,
+    "beforeFunction": {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "args": "",
+      "name": "enforce_current_animal_preference",
+      "owner": "postgres",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "result": "trigger",
+      "schema": "public",
+      "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+      "definer": true,
+      "parallel": "u",
+      "volatility": "v"
+    },
+    "testCommand": "bun test supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts --timeout 30000",
+    "testExit": 1,
+    "testSummary": [
+      "\n 0 pass",
+      " 2 fail",
+      " 2 expect() calls"
+    ],
+    "watchedRed": true,
+    "rowsLedgerPreserved": true,
+    "result": "watched RED",
+    "originalSources": {
+      "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "templatePreserved": true,
+      "modernBeforeHash": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+      "modernPreserved": true
+    },
+    "testedExecutableBlobsPreserved": true,
+    "cleanup": "exact owned clone dropped normally; no force/session termination",
+    "completedAt": "2026-10-01T15:41:04.275Z"
+  },
+  "finalActualRuns": {
+    "green": {
+      "mode": "green",
+      "startedAt": "2026-10-01T16:19:44.739Z",
+      "testedExecutableBlobs": {
+        "supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts": {
+          "sha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166",
+          "canonicalSha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166"
+        },
+        "supabase/rls-tests/helpers/runR01AnimalPreferenceForward.ts": {
+          "sha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d",
+          "canonicalSha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a",
+          "canonicalSha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a"
+        }
+      },
+      "productionActions": "read-only catalog/schema; no rows or actor RPC",
+      "environment": "new guarded empty clone52322; actual synthetic animals/parents/preferences rolled back",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "clone": "r01_clone_4fc62c7bb9db4fe0b580269636049d05",
+      "schemaParity": true,
+      "zeroApplicationTables": 158,
+      "beforeFunction": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "enforce_current_animal_preference",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+        "definer": true,
+        "parallel": "u",
+        "volatility": "v"
+      },
+      "afterFunction": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "enforce_current_animal_preference",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+        "definer": true,
+        "parallel": "u",
+        "volatility": "v"
+      },
+      "migration": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a",
+        "firstApply": 0,
+        "secondApply": 0,
+        "onlyReviewedFunctionBodyChanged": true,
+        "allOtherCatalogPreserved": true,
+        "ownerAclConfigTriggersPreserved": true,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "testCommand": "bun test supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 6 pass",
+        " 0 fail",
+        " 16 expect() calls"
+      ],
+      "rowsLedgerPreserved": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+        "modernPreserved": true
+      },
+      "testedExecutableBlobsPreserved": true,
+      "cleanup": "exact owned clone dropped normally; no force/session termination",
+      "completedAt": "2026-10-01T16:20:25.808Z"
+    },
+    "green-modern": {
+      "mode": "green-modern",
+      "startedAt": "2026-10-01T16:20:25.891Z",
+      "testedExecutableBlobs": {
+        "supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts": {
+          "sha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166",
+          "canonicalSha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166"
+        },
+        "supabase/rls-tests/helpers/runR01AnimalPreferenceForward.ts": {
+          "sha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d",
+          "canonicalSha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a",
+          "canonicalSha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a"
+        }
+      },
+      "productionActions": "read-only catalog/schema; no rows or actor RPC",
+      "environment": "new guarded empty clone52322; actual synthetic animals/parents/preferences rolled back",
+      "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "clone": "r01_clone_4a087e2d64304165bb8954fe787f916d",
+      "schemaParity": true,
+      "zeroApplicationTables": 162,
+      "beforeFunction": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "enforce_current_animal_preference",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+        "definer": true,
+        "parallel": "u",
+        "volatility": "v"
+      },
+      "afterFunction": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "enforce_current_animal_preference",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+        "definer": true,
+        "parallel": "u",
+        "volatility": "v"
+      },
+      "migration": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a",
+        "firstApply": 0,
+        "secondApply": 0,
+        "onlyReviewedFunctionBodyChanged": true,
+        "allOtherCatalogPreserved": true,
+        "ownerAclConfigTriggersPreserved": true,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "testCommand": "bun test supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 6 pass",
+        " 0 fail",
+        " 16 expect() calls"
+      ],
+      "rowsLedgerPreserved": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+        "modernPreserved": true
+      },
+      "testedExecutableBlobsPreserved": true,
+      "cleanup": "exact owned clone dropped normally; no force/session termination",
+      "completedAt": "2026-10-01T16:20:37.586Z"
+    }
+  },
+  "retainedIgnoredEvidence": [
+    {
+      "file": "task-3-preference-red-db.json",
+      "sha256": "5ddd654c18fc7d20210ca8ec5e2d5c2b3487b98fd5c1ff2598fd5f29a8c02800",
+      "bytes": 2586
+    },
+    {
+      "file": "task-3-preference-red-db.log",
+      "sha256": "04cd0d1bf8f09bbf401f08383ca7b83c9ef62ea2ac6d838c80cd40301ec5242d",
+      "bytes": 1373
+    },
+    {
+      "file": "task-3-preference-green-savepoint-fixture-error.json",
+      "sha256": "3c3d34bd3ea8426b9196b3e4f927145b137c24dcb4338e9e20cc7f9c4a714dab",
+      "bytes": 4209
+    },
+    {
+      "file": "task-3-preference-green-savepoint-fixture-error.log",
+      "sha256": "328d098ed3854b3daacac545de00ef777b62fdef1c28222970b37bb640724cf7",
+      "bytes": 2518
+    },
+    {
+      "file": "task-3-preference-green-before-null-preflight.json",
+      "sha256": "d0bb2e4ac123839ec7f29008cfff15d61b3e063b7a3a2f08124eb6810e86a0bb",
+      "bytes": 4268
+    },
+    {
+      "file": "task-3-preference-green-modern-before-null-preflight.json",
+      "sha256": "d09cb35320c64b129da5588af793f14a1bd721e328b82a745e124c7cb81fd596",
+      "bytes": 4275
+    },
+    {
+      "file": "task-3-preference-missing-attachments-red.json",
+      "sha256": "17ba30c67f57d5ad6bfbe2d4c73f662823ad347f3081ce2c0d14cfc5336ae6dc",
+      "bytes": 3223
+    },
+    {
+      "file": "task-3-preference-missing-attachments-red.log",
+      "sha256": "924e9a8e804e5871944fb2a354700d5dff2a3d17d7e4a19fbc01d80725cc9ec0",
+      "bytes": 3255
+    },
+    {
+      "file": "task-3-preference-green-db.log",
+      "sha256": "2d29e887279a0fa0a05cad3619522d6ec5dc58e2ca860c05a9e9263540b06716",
+      "bytes": 1059
+    },
+    {
+      "file": "task-3-preference-green-modern-db.log",
+      "sha256": "9dfc3eae4ae4b5b84671693ef2883103fde1fa97291ebfdcae71682301daa172",
+      "bytes": 1059
+    }
+  ],
+  "fullGates": "pending final composition",
+  "catalogRule": "only reviewed enforce_current_animal_preference body delta; all other facets equal"
+}
