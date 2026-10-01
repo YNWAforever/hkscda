@@ -1,0 +1,923 @@
+{
+  "capturedAt": "2026-10-01T03:27:51.824487+00:00",
+  "environment": {
+    "repository": "YNWAforever/hkscda",
+    "supabaseProject": "iihqjzilgawhfdhdevam",
+    "postgres": "17.6",
+    "sourceWorktree": "audit-adoption-wizard-mobile-20260928",
+    "productionCheckout": false,
+    "newMailMediaSchedulesEnabled": false
+  },
+  "scope": {
+    "remaining11Migrations": "explicitly approved together; filenames/hashes in migration-approval-packet-20261001.md",
+    "pr182": "explicit single-file approval received after automatic-review rejection",
+    "legacyMigrations": "not authorized by this packet"
+  },
+  "backup": {
+    "ciphertextSha": "ad8e0eff94aa9377bd008b657de59868a78eff19e3054f1d32e4ddcb59d7167e",
+    "currentUserOnlyAcl": true,
+    "fullRestore": "not-run",
+    "offMachine": "not-run",
+    "storageBytes": "not-run",
+    "refreshAfter160182": "success/exit0",
+    "completedUtc": "2026-10-01T03:48:25Z",
+    "roundTripVerified": true,
+    "refreshAfter161": "success/exit0",
+    "encryptedBytes": 2006502,
+    "refreshAfter162": "success/exit0",
+    "refreshAfter164": "success/exit0",
+    "refreshAfter165": "success/exit0",
+    "refreshAfter166": "success/exit0",
+    "path": "hkscda-before-next-approved-ddl-20261001T034825Z.dpapi"
+  },
+  "migrations": [
+    {
+      "pr": 160,
+      "sourceSha": "ffe4db25ce7ac65b077a073ec54ce0fb882864b2",
+      "file": "20260927181701_volunteer_review_bulk.sql",
+      "sha": "96149a16e41cdf9fdf2e246b700033877fc91c3c00403a2b2efcd39d12cb3164",
+      "providerVersion": "20261001014214",
+      "ledgerBefore": 98,
+      "ledgerAfter": 99,
+      "apply": "success",
+      "postflight": "pass;3empty tables/RLS/service SELECTonly/5pinnedservice-only functions",
+      "existingRows": "2profiles/6cases/600audits hashes preserved"
+    },
+    {
+      "pr": 182,
+      "sourceSha": "61416eb7b08bcfe98abb6b6fe149f8369bee4bbb",
+      "file": "20261001080000_service_readonly_evidence_privileges.sql",
+      "sha": "e0023564a32cc3f46aff90647c0fa42a9909d9826e37c72442e4cf9a0e557808",
+      "providerVersion": "20261001014620",
+      "ledgerBefore": 99,
+      "ledgerAfter": 100,
+      "apply": "success after explicit approval; initial auto-review rejection caused no mutation",
+      "postflight": "pass;3tables/9rolecombinations no table/column writes;service SELECTonly;11RPCs unchanged",
+      "existingRows": "draft1/600audits hashes preserved;archive/export/snapshot0"
+    },
+    {
+      "pr": 161,
+      "sourceSha": "c01090d4050329a7f5c6136e3dbebef257c0648f",
+      "file": "20260927183000_adoption_assignment_bulk.sql",
+      "sha": "cd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238",
+      "providerVersion": "20261001022601",
+      "ledgerBefore": 100,
+      "ledgerAfter": 101,
+      "apply": "success under retained named scope approval",
+      "postflight": "pass;2emptyRLSserviceSELECTonlytables/6pinned signatures/2validindexes/enabledversiontrigger",
+      "existingRows": "6caseoriginalfields and600audit hashes preserved;6newversions1"
+    },
+    {
+      "pr": 162,
+      "sourceSha": "00673f85ed27f266d4a06c9912d14278980ca81b",
+      "file": "20260927184500_animal_review_bulk.sql",
+      "sha": "8f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41",
+      "providerVersion": "20261001024348",
+      "ledgerBefore": 101,
+      "ledgerAfter": 102,
+      "apply": "success under exact11-file scope approval",
+      "postflight": "pass;2emptyRLSserviceSELECTonly tables/6table-role checks/no table or column writes/4pinnedservice-only signatures/2validindexes",
+      "existingRows": "292animals/0drafts/0editorialreviews/600audits hashes and existing editorial RPC definition preserved"
+    },
+    {
+      "pr": 164,
+      "sourceSha": "2c5a86c25a3762004dec7480189391515a6904b2",
+      "file": "20260927190000_cms_review_bulk.sql",
+      "sha": "b564a09a64d523a8145eef01548dd90f1477ac291f7aac236f6deeca42e3efcb",
+      "providerVersion": "20261001031157",
+      "ledgerBefore": 102,
+      "ledgerAfter": 103,
+      "apply": "success under exact11-file scope approval",
+      "postflight": "pass;2empty RLS serviceSELECTonly tables/6table-role checks including columnwrites and MAINTAIN/4pinnedservice-only functions/2validindexes",
+      "existingRows": "7content items/7immutable revisions/0editorial reviews/600audits exacthashes and existing editorial RPC unchanged; checkoutfalse"
+    },
+    {
+      "pr": 165,
+      "sourceSha": "d853c3c526b2868b734e32ff305c25cb9f6f3547",
+      "file": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86",
+      "providerVersion": "20261001032650",
+      "ledgerBefore": 103,
+      "ledgerAfter": 104,
+      "apply": "success under exact11-file scope approval",
+      "postflight": "pass;valid/ready normalized partial unique reference index;postgres-owned empty-search-path service-only definer RPC;4existing table RLS/owners unchanged",
+      "existingRows": "6payments/6donations/0jobs/600audits exacthashes preserved;duplicate groups0;checkoutfalse"
+    },
+    {
+      "pr": 166,
+      "file": "20260927211801_editorial_quality_queue.sql",
+      "sha": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642",
+      "providerVersion": "20261001034448",
+      "ledgerBefore": 104,
+      "ledgerAfter": 105,
+      "postflight": "stable postgres definer RPC with pinned empty search_path/service-only EXECUTE;2 nonunique partial indexes valid/ready; existing RLS/owners/grants unchanged",
+      "existingRows": "7 content/7 revisions/0 review/600 audits hashes unchanged;checkout false; no live content operation",
+      "evidence": "all-merge-166-postflight-20261001.json",
+      "sourceSha": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+      "apply": "success under exact11-file scope approval"
+    }
+  ],
+  "releases": [
+    {
+      "pr": 160,
+      "sourceSha": "ffe4db25ce7ac65b077a073ec54ce0fb882864b2",
+      "prCiRun": 36776685834,
+      "prGates": "5SUCCESS",
+      "mergeSha": "af786636211e7376db16694500c67d18555c70d9",
+      "mergedAt": "2026-10-01T01:43:36Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36802463075,
+      "mainGates": "5SUCCESS",
+      "deploymentId": "dpl_6yxJYbY4Sjp8j2MZqxmwrTj2Pm4C",
+      "deploymentState": "READY",
+      "aliasSha": "af786636211e7376db16694500c67d18555c70d9",
+      "accepted": true
+    },
+    {
+      "pr": 182,
+      "sourceSha": "61416eb7b08bcfe98abb6b6fe149f8369bee4bbb",
+      "prCiRun": 36793267001,
+      "prGates": "5SUCCESS",
+      "mergeSha": "124148ac2b0b7698906087d0c66836c66be95d2f",
+      "mergedAt": "2026-10-01T01:56:19Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36803461825,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "124148ac2b0b7698906087d0c66836c66be95d2f",
+      "accepted": true,
+      "deploymentId": "dpl_EmrqZLa8rcSYnaF9m8hPzNrV7FL6"
+    },
+    {
+      "pr": 161,
+      "sourceSha": "c01090d4050329a7f5c6136e3dbebef257c0648f",
+      "prCiRun": 36804951048,
+      "prGates": "5SUCCESS",
+      "mergeSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff",
+      "mergedAt": "2026-10-01T02:27:59Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36805966176,
+      "mainGates": "5SUCCESS",
+      "deploymentId": "dpl_5JiefMgUWb9TVbfwn7zfjgSfSp95",
+      "deploymentState": "READY",
+      "aliasSha": "0a755dcc6bfc82a3ee5ffc99d9cae5f525b26aff",
+      "accepted": true
+    },
+    {
+      "pr": 162,
+      "sourceSha": "00673f85ed27f266d4a06c9912d14278980ca81b",
+      "prCiRun": 36805897874,
+      "prGates": "5SUCCESS",
+      "mergeSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a",
+      "mergedAt": "2026-10-01T02:46:45Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36807434318,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "8507a6986cda289d3663f08aa8dabc3180ea7c5a",
+      "accepted": true,
+      "deploymentId": "dpl_9LzUJkbBoSnnBtb83yg27rJL2Wku"
+    },
+    {
+      "pr": 163,
+      "sourceSha": "23c5c752caab440473e326ee77e97c3f76e7260d",
+      "prCiRun": 36807271887,
+      "prGates": "5SUCCESS",
+      "mergeSha": "93989d29d1adaacf05af406b8d595262c5b7c818",
+      "mergedAt": "2026-10-01T02:59:25Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36808409156,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "93989d29d1adaacf05af406b8d595262c5b7c818",
+      "accepted": true,
+      "deploymentId": "dpl_9Xhmo3dfWKPHDJja1sKp5k2Nfi9a"
+    },
+    {
+      "pr": 164,
+      "sourceSha": "2c5a86c25a3762004dec7480189391515a6904b2",
+      "prCiRun": 36807152739,
+      "prGates": "5SUCCESS",
+      "mergeSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920",
+      "mergedAt": "2026-10-01T03:13:53Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36809549878,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "83c156abbf839cb966b475ae12d3d3cdf7d2e920",
+      "accepted": true,
+      "deploymentId": "dpl_337BE9zjMnxvwq8RbL8e2bqKuGKN"
+    },
+    {
+      "pr": 165,
+      "sourceSha": "d853c3c526b2868b734e32ff305c25cb9f6f3547",
+      "prCiRun": 36807423199,
+      "prGates": "5SUCCESS",
+      "mergeSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+      "mergedAt": "2026-10-01T03:28:58Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36810707899,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "9f9732e92dded2aaee0b7861b4d7de41eff689a6",
+      "accepted": true,
+      "deploymentId": "dpl_84qPQBNPNz8HcfipZWZ5RU4VQGk3"
+    },
+    {
+      "pr": 166,
+      "sourceSha": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+      "prCiRun": 36807690280,
+      "prGates": "5SUCCESS",
+      "mergeSha": "145624623b740685d134eda93344afe8a80aebff",
+      "mergedAt": "2026-10-01T03:46:50Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36812083168,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "145624623b740685d134eda93344afe8a80aebff",
+      "accepted": true,
+      "deploymentId": "dpl_TLiecPmvUWof9MCn23Frg1nBbrX7"
+    },
+    {
+      "pr": 167,
+      "sourceSha": "3c5125fb311026539ade6f11fda25073d240718a",
+      "prCiRun": 36807971978,
+      "prGates": "5SUCCESS",
+      "mergeSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+      "mergedAt": "2026-10-01T04:00:48Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36813137411,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+      "accepted": true,
+      "deploymentId": "dpl_4UCLGvDXqSrgwcukwzWvP8N21ddE"
+    },
+    {
+      "pr": 168,
+      "sourceSha": "82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8",
+      "prCiRun": 36815370226,
+      "prGates": "5SUCCESS",
+      "mergeSha": "756a3979da51b70647a45a449948600a33b95c8e",
+      "mergedAt": "2026-10-01T04:46:46Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36816694953,
+      "mainGates": "pending",
+      "deploymentState": "pending",
+      "aliasSha": null,
+      "accepted": false
+    }
+  ],
+  "instrumentation": [
+    "Sandbox exec launcher twice failed applying deny-read ACLs before process launch; read/authorized commands used reviewed escalation.",
+    "Supabase receipt parser initially matched prose instead of JSON before DDL; corrected bounded JSON extraction.",
+    "182 postflight object equality initially failed on JSON property ordering; normalized all11 RPC objects equal; no mutation repeated.",
+    "Tracker path probe included nonexistent root file and exited1; both real tracker paths were identified; no root file created.",
+    "161 combined local first run on default old Auth55321:3027pass145skip6fail; focused same unchanged3suites on established Auth52321:48pass0fail86assert/exit0; old named synthetic identities census0/0. Full corrected environment run retained under c44.",
+    "162 preparation stopped before commit on a fourth documentation-only report conflict, then on an overstrict append-prefix assertion. Exact diffs show only an inserted historical CI line plus append; all historical lines preserved with equal/insert-only proof, incoming appended text retained, source guards unchanged. Successful integration3fed full3046pass150skip0fail and all4gates0; receipt-only head00673 independently reviewed.",
+    "163 source preparation full local gates passed; immediate post-push GitHub PR API returned a stale head and guard stopped. Later API/remote5652 equality confirmed; bounded read-only head propagation rechecks added; no force push or production operation.",
+    "162 first multi-statement read-only postflight returned only the final result set. Replaced with a single aggregate SELECT and asserted every baseline hash/ledger/table grant/signature/index; no mutation repeated.",
+    "Optional upgrade-compatibility metadata query failed42601 on a missing whitespace before FROM; corrected read-only query succeeded, no mutation. Current17.6 catalog has0ltree/0gist-float indexes and0non-extension custom estimators; no DB upgrade performed. Production checkoutfalse/version1 and new162 MAINTAIN privilegesfalse verified.",
+    "Actual merged163main93989d29 both trackers retain the corrected dated R01 baseline;34rows each. Source merge preserved provenance as reviewed.",
+    "Actual merged164main83c156ab retains the dated163 R01 correction in both34-row trackers; normal merge preserved provenance.",
+    "166 readonly preflight42703 review has no id and42P01 guessed audit name; corrected actual catalog before DDL; no mutation",
+    "168-178 adjacent R01/R02 text conflict reproduced merge-tree1; date-only first168guard1 beforepush; ancestry merge only2datedR01fields/all33otherrows/appSQLworkflow unchanged;merge-tree0;freshCI required",
+    "168 nativegh protected merge1: cacheddirty preflight refused before server mutation; main167 unchanged; actualvirtual/current merge tree equal; optional normal REST sha-pinned transport prepared, no override",
+    "168 protected REST405, actualPR OPEN/main167 unchanged; ordinary main167 ancestry synchronization treeidentical;new82a9eb3a mergeabletrue/freshCI36815370226; nooverride"
+  ],
+  "notRun": [
+    "hosted real-staff bulk operations/private-files/export UAT",
+    "provider sandbox transactions",
+    "full backup restore/off-machine/Storage object recovery",
+    "two-geography production benchmark"
+  ],
+  "reviews": [
+    {
+      "pr": 161,
+      "head": "c01090d4050329a7f5c6136e3dbebef257c0648f",
+      "findings": "none after current-scope tracker repair"
+    },
+    {
+      "pr": 162,
+      "head": "00673f85ed27f266d4a06c9912d14278980ca81b",
+      "findings": "none; source/receipt independently verified"
+    },
+    {
+      "pr": 163,
+      "head": "23c5c752caab440473e326ee77e97c3f76e7260d",
+      "findings": "dated baseline Minor fixed and independently closed; freshCI36807271887 five SUCCESS"
+    },
+    {
+      "pr": 164,
+      "head": "2c5a86c25a3762004dec7480189391515a6904b2",
+      "findings": "none; R01 normal-merge dated correction preservation proved"
+    },
+    {
+      "pr": 165,
+      "head": "d853c3c526b2868b734e32ff305c25cb9f6f3547",
+      "findings": "none; R01 normal-merge dated correction preservation proved"
+    },
+    {
+      "pr": 166,
+      "head": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 167,
+      "head": "3c5125fb311026539ade6f11fda25073d240718a",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 168,
+      "head": "abe1b4f455e807694755be9688a40de1ca82591e",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 169,
+      "head": "9825ae90f15c18ae941a82f50c5032826a20b0d6",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 170,
+      "head": "dcdd2b8783cf94601de7b3720b903314069e07f9",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 171,
+      "head": "2dc4b35f041a61d1bc796520009053454c7a0518",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 172,
+      "head": "936c3f56f931e711d848b0c9aedc27bc0db568e5",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 173,
+      "head": "d2e0d74e2dc7ed56e8e2d94f8eded39c3332983a",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 174,
+      "head": "41007cb5e334a528f05fec2a1a71dd0180bae2b1",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 175,
+      "head": "93e595b8af7feb600478ee650d211039d20b4ded",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 176,
+      "head": "7c80a208d9a165978fa2711af5908b775c03c8f0",
+      "findings": "none; source/receipts/history/rawgates verified"
+    },
+    {
+      "pr": 177,
+      "head": "3fb2c3fc79ad9f22ed5ff4ed577e820e8c089179",
+      "findings": "none; source/receipts/history/rawgates verified; conditional freshCI/postflight/predecessor"
+    },
+    {
+      "pr": 178,
+      "head": "6486e8bd1e052a619e9f8d32637ff041937e86b1",
+      "findings": "none; source/receipts/history/rawgates verified; conditional freshCI/postflight/predecessor"
+    },
+    {
+      "scope": "168-178 dated-provenance correction",
+      "findings": "source/SQL/workflow/other docs unchanged;two R01 fields only;34IDs/33otherrows;all actual167main merge-tree0;original RED class168/169 before fix, all11 retrospectively reviewed RED1; corrected per-candidate pre-fix not-run metadata; no gates relabelled",
+      "heads": {
+        "168": "0f1ceebe0bed0d141c5c49beef51d77fa999283c",
+        "169": "4fa6534acc5895e19a47ec19f1863d62519b560a",
+        "170": "440f7b3d06080a253472b2e5045a34642a1470fd",
+        "171": "178e7681fe80d07bfbfaf94b5a87de246f06e541",
+        "172": "834bd3e6162e42cdcdae9d05eee11e169c0557f4",
+        "173": "bb84c15c78333652d24f4afd09537fbbd9014d1f",
+        "174": "dd205b3fc00e08697540db0b7cbbb3b5a663c5f2",
+        "175": "f831151467aa9584db13bdad4683d3791edf4f14",
+        "176": "b4a56bbd641c8fc3aafd4edddcd5b27ae7502b82",
+        "177": "e3b655621085272687efb4671b896b0b7d9db285",
+        "178": "d897da63f29c966565d6c15e8d42d887b1a99c8e"
+      }
+    }
+  ],
+  "documentProvenanceRepair": {
+    "startedAt": "2026-10-01T03:59:38.644950+00:00",
+    "reason": "Read-only merge-tree exit1: adjacent provenance/feature rows form conservative text conflict; semantic 3way has no incompatible field edits. Date-only first fix remained conflicting before push; explicit ancestry merge resolves text conflict without changing app source.",
+    "main": "145624623b740685d134eda93344afe8a80aebff",
+    "scope": "two R01.test_evidence fields only; app/SQL/workflow unchanged; prior local gates retain original SHA; fresh exact-head CI required",
+    "items": [
+      {
+        "pr": 168,
+        "originalHead": "abe1b4f455e807694755be9688a40de1ca82591e",
+        "head": "0f1ceebe0bed0d141c5c49beef51d77fa999283c",
+        "incoming": "145624623b740685d134eda93344afe8a80aebff",
+        "branch": "codex/audit-readiness-20260929",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-readiness-20260929",
+        "redMergeTreeExit": 1,
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 169,
+        "originalHead": "9825ae90f15c18ae941a82f50c5032826a20b0d6",
+        "head": "4fa6534acc5895e19a47ec19f1863d62519b560a",
+        "incoming": "0f1ceebe0bed0d141c5c49beef51d77fa999283c",
+        "branch": "codex/audit-sponsorship-followup-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sponsorship-followup-20260928",
+        "redMergeTreeExit": 1,
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 170,
+        "originalHead": "dcdd2b8783cf94601de7b3720b903314069e07f9",
+        "head": "440f7b3d06080a253472b2e5045a34642a1470fd",
+        "incoming": "4fa6534acc5895e19a47ec19f1863d62519b560a",
+        "branch": "codex/audit-sponsorship-bulk-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sponsorship-bulk-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 171,
+        "originalHead": "2dc4b35f041a61d1bc796520009053454c7a0518",
+        "head": "178e7681fe80d07bfbfaf94b5a87de246f06e541",
+        "incoming": "440f7b3d06080a253472b2e5045a34642a1470fd",
+        "branch": "codex/audit-sponsorship-reminder-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sponsorship-reminder-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 172,
+        "originalHead": "936c3f56f931e711d848b0c9aedc27bc0db568e5",
+        "head": "834bd3e6162e42cdcdae9d05eee11e169c0557f4",
+        "incoming": "178e7681fe80d07bfbfaf94b5a87de246f06e541",
+        "branch": "codex/audit-finance-bank-dryrun-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-finance-bank-dryrun-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 173,
+        "originalHead": "d2e0d74e2dc7ed56e8e2d94f8eded39c3332983a",
+        "head": "bb84c15c78333652d24f4afd09537fbbd9014d1f",
+        "incoming": "834bd3e6162e42cdcdae9d05eee11e169c0557f4",
+        "branch": "codex/audit-finance-delivery-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-finance-delivery-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 174,
+        "originalHead": "41007cb5e334a528f05fec2a1a71dd0180bae2b1",
+        "head": "dd205b3fc00e08697540db0b7cbbb3b5a663c5f2",
+        "incoming": "bb84c15c78333652d24f4afd09537fbbd9014d1f",
+        "branch": "codex/audit-task-guidance-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-task-guidance-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 175,
+        "originalHead": "93e595b8af7feb600478ee650d211039d20b4ded",
+        "head": "f831151467aa9584db13bdad4683d3791edf4f14",
+        "incoming": "dd205b3fc00e08697540db0b7cbbb3b5a663c5f2",
+        "branch": "codex/audit-finance-match-confirm-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-finance-match-confirm-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 176,
+        "originalHead": "7c80a208d9a165978fa2711af5908b775c03c8f0",
+        "head": "b4a56bbd641c8fc3aafd4edddcd5b27ae7502b82",
+        "incoming": "f831151467aa9584db13bdad4683d3791edf4f14",
+        "branch": "codex/audit-crm-format-preview-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-crm-format-preview-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 177,
+        "originalHead": "3fb2c3fc79ad9f22ed5ff4ed577e820e8c089179",
+        "head": "e3b655621085272687efb4671b896b0b7d9db285",
+        "incoming": "b4a56bbd641c8fc3aafd4edddcd5b27ae7502b82",
+        "branch": "codex/audit-crm-version-fence-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-crm-assignment-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      },
+      {
+        "pr": 178,
+        "originalHead": "6486e8bd1e052a619e9f8d32637ff041937e86b1",
+        "head": "d897da63f29c966565d6c15e8d42d887b1a99c8e",
+        "incoming": "e3b655621085272687efb4671b896b0b7d9db285",
+        "branch": "codex/audit-crm-assignment-20260928",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-crm-assignment-bulk-20260928",
+        "redMergeTreeExit": "not-run before fix; representative class reproduced on168/169",
+        "greenMergeTreeExit": 0,
+        "unchangedAppSqlWorkflow": true,
+        "diffCheckExit": 0,
+        "csvAssertions": [
+          {
+            "file": "docs/evidence/audit-remediation-20260927/tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          },
+          {
+            "file": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+            "ids": 34,
+            "unchangedOtherRows": 33,
+            "changedField": "R01.test_evidence"
+          }
+        ],
+        "freshCI": "pending",
+        "pushExit": 0,
+        "independentRetrospectiveOriginalMergeTreeExit": 1,
+        "independentNewHeadVs167MainMergeTreeExit": 0
+      }
+    ],
+    "completedAt": "2026-10-01T04:00:34.651469+00:00"
+  },
+  "mergeabilityProof": {
+    "pr": 168,
+    "proof": "pr168-actual-merge-tree-20261001.json",
+    "positiveExit": 0,
+    "negativeStaleHeadExit": 1,
+    "negativeMovedMainExit": 1,
+    "mutation": "none",
+    "normalProtectedMergeOnly": true,
+    "outcome": "native CLI1 and normal REST405; no main mutation; superseded by normal actual-main sync"
+  },
+  "actualMainAncestrySynchronization": {
+    "startedAt": "2026-10-01T04:31:39.551436+00:00",
+    "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+    "reason": "Standard direct actual-main ancestry synchronization resolved server dirty state on168; preserve each entire tracked tree and establish one shared predecessor chain",
+    "items": [
+      {
+        "pr": 168,
+        "oldHead": "0f1ceebe0bed0d141c5c49beef51d77fa999283c",
+        "head": "82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "64e4fc93ea0c73f7cc858c2ccacb0c50770c42c5",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "reason": "Protected REST405 after native CLI metadata refusal; standard actual-main synchronization, no source edits or override",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 169,
+        "oldHead": "4fa6534acc5895e19a47ec19f1863d62519b560a",
+        "head": "f8c4f1604cf8638394c65b734149db053fc480cd",
+        "incoming": "82a9eb3a571a42ac0fa1e98bd405ae7142ef25e8",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "32f672b3432aa9de71fc7ec339d934ef4ca7b0dc",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sponsorship-followup-20260928",
+        "branch": "codex/audit-sponsorship-followup-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 170,
+        "oldHead": "440f7b3d06080a253472b2e5045a34642a1470fd",
+        "head": "dfae45034e81a76b1141dd6d2882ee0527f6e37a",
+        "incoming": "f8c4f1604cf8638394c65b734149db053fc480cd",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "ebeb83492ecf670c9bd45d06c3bfbf8ff275b747",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sponsorship-bulk-20260928",
+        "branch": "codex/audit-sponsorship-bulk-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 171,
+        "oldHead": "178e7681fe80d07bfbfaf94b5a87de246f06e541",
+        "head": "47b3a4654f06a8663610fd6f809dbacf25738fd4",
+        "incoming": "dfae45034e81a76b1141dd6d2882ee0527f6e37a",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "b81e0f2419c9821a4558ff6ebd29515ed125b47d",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sponsorship-reminder-20260928",
+        "branch": "codex/audit-sponsorship-reminder-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 172,
+        "oldHead": "834bd3e6162e42cdcdae9d05eee11e169c0557f4",
+        "head": "f117dc3889f03f19dd4c419734a980ba4625cdbc",
+        "incoming": "47b3a4654f06a8663610fd6f809dbacf25738fd4",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "9747939263b45eb3d1a649886cafaf1c84ec781d",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-finance-bank-dryrun-20260928",
+        "branch": "codex/audit-finance-bank-dryrun-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 173,
+        "oldHead": "bb84c15c78333652d24f4afd09537fbbd9014d1f",
+        "head": "e5ed74c7d680b30102612bfee2b44b49cc754822",
+        "incoming": "f117dc3889f03f19dd4c419734a980ba4625cdbc",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "9689d72b32383bd14b9018b099054ab34e7359de",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-finance-delivery-20260928",
+        "branch": "codex/audit-finance-delivery-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 174,
+        "oldHead": "dd205b3fc00e08697540db0b7cbbb3b5a663c5f2",
+        "head": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+        "incoming": "e5ed74c7d680b30102612bfee2b44b49cc754822",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "c205e4b6425a055642dfd3654de510800eb41a52",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-task-guidance-20260928",
+        "branch": "codex/audit-task-guidance-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 175,
+        "oldHead": "f831151467aa9584db13bdad4683d3791edf4f14",
+        "head": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+        "incoming": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "645eadeecd7d8d1000e90fc67f036909269f6dae",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-finance-match-confirm-20260928",
+        "branch": "codex/audit-finance-match-confirm-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 176,
+        "oldHead": "b4a56bbd641c8fc3aafd4edddcd5b27ae7502b82",
+        "head": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+        "incoming": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "acb5518e0136d64c0e959da210c5bfb26a329787",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-crm-format-preview-20260928",
+        "branch": "codex/audit-crm-format-preview-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 177,
+        "oldHead": "e3b655621085272687efb4671b896b0b7d9db285",
+        "head": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+        "incoming": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "38afea41ced17753bccbd10dec046f261d1eef24",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-crm-assignment-20260928",
+        "branch": "codex/audit-crm-version-fence-20260928",
+        "mainMutation": "none"
+      },
+      {
+        "pr": 178,
+        "oldHead": "d897da63f29c966565d6c15e8d42d887b1a99c8e",
+        "head": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+        "incoming": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+        "actualMain": "e6884a825a67f5cbdecfac6ef130a16ff0fe2102",
+        "tree": "f25c049d1c2de246757d5d628bcbcac430ae4bfc",
+        "entireTrackedTreeUnchanged": true,
+        "mergeExit": 0,
+        "pushExit": 0,
+        "freshCI": "pending",
+        "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-crm-assignment-bulk-20260928",
+        "branch": "codex/audit-crm-assignment-20260928",
+        "mainMutation": "none"
+      }
+    ],
+    "completedAt": "2026-10-01T04:32:14.966173+00:00"
+  }
+}

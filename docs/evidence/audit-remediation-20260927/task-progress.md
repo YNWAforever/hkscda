@@ -227,3 +227,7 @@ See [actual release checkpoint](release-checkpoint-20261001.md): source290abb19 
 ## R01 readonly default-grant repair — 2026-10-01 HKT
 
 Actual source aca5822a124521d9e6acc94b171600ac344e9b97 adds a forward-only three-table privilege clamp and real opt-in role regression. Matched RED3pass17fail/exit1; GREEN20pass110assert/exit0; whole-file rollback/catalog idempotence/later owner archive compatibility and original9audit preservation passed. Full3027pass127skip0fail, strictTS0, corrected full lint0errors52warnings, serial placeholder build0. Independent spec/quality review approved. Exact e002 migration has no production approval/application; overall production146/92/ledger98 remains NO-GO. [Scope, commands, failure history, rollback and staff handoff](sequential-fix-r01-readonly-20261001.md).
+
+## Current sequential execution from #160 — 2026-10-01
+
+Actual schema/app/release states are recorded in [the execution receipt](all-merge-execution-20261001.md). #160 schema and #182 ACL clamp applied with one genuine ledger entry each; no real bulk/financial/content operation. The remaining11 named migration scope is explicitly approved; each release still waits its actual five main gates and same-SHA READY alias. Accepted additional releases: 160,182,161,162,163,164,165,166,167. Hosted/provider/recovery UAT remain not-run.
