@@ -165,6 +165,7 @@ import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/ad
 import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
 import { Route as ApiAdminFinanceDeliveryJobsRouteImport } from './routes/api/admin/finance/delivery-jobs'
 import { Route as ApiAdminFinanceBankStatementPreviewRouteImport } from './routes/api/admin/finance/bank-statement-preview'
+import { Route as ApiAdminFinanceBankMatchOperationsRouteImport } from './routes/api/admin/finance/bank-match-operations'
 import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
 import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
@@ -1106,6 +1107,12 @@ const ApiAdminFinanceBankStatementPreviewRoute =
     path: '/api/admin/finance/bank-statement-preview',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminFinanceBankMatchOperationsRoute =
+  ApiAdminFinanceBankMatchOperationsRouteImport.update({
+    id: '/api/admin/finance/bank-match-operations',
+    path: '/api/admin/finance/bank-match-operations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminFinanceActivityRoute = ApiAdminFinanceActivityRouteImport.update({
   id: '/api/admin/finance/activity',
   path: '/api/admin/finance/activity',
@@ -1958,6 +1965,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
+  '/api/admin/finance/bank-match-operations': typeof ApiAdminFinanceBankMatchOperationsRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
   '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
@@ -2233,6 +2241,7 @@ export interface FileRoutesByTo {
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
+  '/api/admin/finance/bank-match-operations': typeof ApiAdminFinanceBankMatchOperationsRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
   '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
@@ -2510,6 +2519,7 @@ export interface FileRoutesById {
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
+  '/api/admin/finance/bank-match-operations': typeof ApiAdminFinanceBankMatchOperationsRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
   '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
@@ -2788,6 +2798,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
+    | '/api/admin/finance/bank-match-operations'
     | '/api/admin/finance/bank-statement-preview'
     | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
@@ -3063,6 +3074,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
+    | '/api/admin/finance/bank-match-operations'
     | '/api/admin/finance/bank-statement-preview'
     | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
@@ -3339,6 +3351,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
+    | '/api/admin/finance/bank-match-operations'
     | '/api/admin/finance/bank-statement-preview'
     | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
@@ -3571,6 +3584,7 @@ export interface RootRouteChildren {
   ApiAdminExportsPaymentsDotcsvRoute: typeof ApiAdminExportsPaymentsDotcsvRoute
   ApiAdminExportsSupportersDotcsvRoute: typeof ApiAdminExportsSupportersDotcsvRoute
   ApiAdminFinanceActivityRoute: typeof ApiAdminFinanceActivityRoute
+  ApiAdminFinanceBankMatchOperationsRoute: typeof ApiAdminFinanceBankMatchOperationsRoute
   ApiAdminFinanceBankStatementPreviewRoute: typeof ApiAdminFinanceBankStatementPreviewRoute
   ApiAdminFinanceDeliveryJobsRoute: typeof ApiAdminFinanceDeliveryJobsRoute
   ApiAdminSponsorshipsAnimalsRoute: typeof ApiAdminSponsorshipsAnimalsRoute
@@ -4712,6 +4726,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/finance/bank-statement-preview'
       fullPath: '/api/admin/finance/bank-statement-preview'
       preLoaderRoute: typeof ApiAdminFinanceBankStatementPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/finance/bank-match-operations': {
+      id: '/api/admin/finance/bank-match-operations'
+      path: '/api/admin/finance/bank-match-operations'
+      fullPath: '/api/admin/finance/bank-match-operations'
+      preLoaderRoute: typeof ApiAdminFinanceBankMatchOperationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/finance/activity': {
@@ -6421,6 +6442,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminExportsPaymentsDotcsvRoute: ApiAdminExportsPaymentsDotcsvRoute,
   ApiAdminExportsSupportersDotcsvRoute: ApiAdminExportsSupportersDotcsvRoute,
   ApiAdminFinanceActivityRoute: ApiAdminFinanceActivityRoute,
+  ApiAdminFinanceBankMatchOperationsRoute:
+    ApiAdminFinanceBankMatchOperationsRoute,
   ApiAdminFinanceBankStatementPreviewRoute:
     ApiAdminFinanceBankStatementPreviewRoute,
   ApiAdminFinanceDeliveryJobsRoute: ApiAdminFinanceDeliveryJobsRoute,

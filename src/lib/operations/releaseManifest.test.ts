@@ -9,7 +9,7 @@ test("release manifest covers every new public table, RPC, and additive column a
   const columns = releaseManifest
     .filter((item) => item.kind === "column")
     .map((item) => `${item.table}.${item.name}`);
-  expect(tables).toHaveLength(24);
+  expect(tables).toHaveLength(26);
   expect(functions.length).toBeGreaterThanOrEqual(79);
   expect(columns).toContain("public_status_token.submission_fingerprint");
   expect(columns).toContain("dog_friendly_estates.version");
@@ -54,6 +54,9 @@ test("release manifest covers every new public table, RPC, and additive column a
     "create_cms_review_bulk_preview",
     "apply_cms_review_bulk_item",
     "reconcile_manual_payment_atomic",
+    "get_finance_bank_match_operation",
+    "create_finance_bank_match_preview",
+    "apply_finance_bank_match_item",
     "editorial_quality_queue",
     "get_sponsorship_followup_bulk_operation",
     "create_sponsorship_followup_bulk_preview",
@@ -79,5 +82,13 @@ test("release manifest covers every new public table, RPC, and additive column a
   }
   expect(tables).toContain("sponsorship_followup_bulk_operation");
   expect(tables).toContain("sponsorship_followup_bulk_item");
+  expect(tables).toContain("finance_bank_match_operation");
+  expect(tables).toContain("finance_bank_match_item");
+  const bankItem = releaseManifest.find(
+    (item) => item.kind === "table" && item.name === "finance_bank_match_item",
+  );
+  expect(bankItem && bankItem.kind === "table" ? bankItem.columns?.payment_hint : null).toBe(
+    "text",
+  );
   expect(releaseManifest.every((item) => item.schema === "public" && item.required)).toBe(true);
 });

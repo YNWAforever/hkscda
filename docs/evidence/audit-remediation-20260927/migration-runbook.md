@@ -231,6 +231,11 @@ See [sequential-merge-172-20260930.md](sequential-merge-172-20260930.md) for fin
 ## PR173 current preparation — 2026-09-30
 
 See [sequential-merge-173-20260930.md](sequential-merge-173-20260930.md): app `40a8765beaa04613fae1f9cc77e74a11d34810f1`, rejected-retry/lost-response/page1000/keyboard fixes;17focused/88assertions,3110fullpasses143skips,type/lint/build0; real concurrent one-audit retry and1000job pagination;3width UI/Axe0.58-fileinventory,local-schema-ready,notdeployed/notenabled;#156releaseblock retained.
+
+
+## PR175 current preparation — 2026-09-30
+
+See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `04d673b8ef64d690ed75bf47cdc0175aefed5b02`, serialized/actor-scoped snapshotrecovery andpaginationfixes. Full3125pass145skip9862assertions;19focused86assertions;type/lint/build0withexplicitfinal-counterclarificationboundary;1000syntheticresult897success100skip3conflict/auditrollback;12browsercases/Axe0.59-fileinventory;local-schema-ready,notdeployed/notenabled. #172–#174fivegreen;#156releaseblockretained.
 ## T22 single-use recovery candidate, 2026-09-30
 
 The manifest now has 47 candidate entries in this #156 worktree. New exact file: `20260930120000_supporter_recovery_single_use.sql`, committed-byte SHA-256 `a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e`. Adds one private RLS challenge table, expiry index and three service-only RPCs; no backfill, Auth-schema patch, cron, supporter linking or fake ledger. Whole-file rollback rehearsal plus catalog/signature/grant/RLS and real isolated Auth20-way single-use tests exit 0. Production read-only catalog still lacks these objects (ledger95/supporters15); production application is not approved yet. Full backup restore remains not-run. Disable recovery and retain additive schema for app rollback; consumed codes and external sessions cannot be undone by dropping schema. Exact preflight, backup freshness, server-only key, supported-browser requirements and no-real-sending activation boundaries: [T22 release evidence](sequential-merge-156-broker-20260930.md).

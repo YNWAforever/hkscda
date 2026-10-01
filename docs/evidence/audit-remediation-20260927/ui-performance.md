@@ -54,6 +54,16 @@ See [sequential-merge-173-20260930.md](sequential-merge-173-20260930.md): app `4
 ## PR174 current preparation — 2026-09-30
 
 See [sequential-merge-174-20260930.md](sequential-merge-174-20260930.md): app `ea7541079ca3cd3c0390f9f3bef1a8665b4746f2`, treasury guidance corrected without permission expansion. Full3113pass143skip9802assertions;type/lint/build0;actualisolatedAuth/API3roles;9browsercases/Axe0,12screenshots.58inheritedSQLfiles,no newmigration. Codecomplete slice,notdeployed/notenabled;#156remains releaseblock. #172fivegreen andexactapprovalrequested;#173CIpending.
+
+
+## PR175 current preparation — 2026-09-30
+
+See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `04d673b8ef64d690ed75bf47cdc0175aefed5b02`, serialized/actor-scoped snapshotrecovery andpaginationfixes. Full3125pass145skip9862assertions;19focused86assertions;type/lint/build0withexplicitfinal-counterclarificationboundary;1000syntheticresult897success100skip3conflict/auditrollback;12browsercases/Axe0.59-fileinventory;local-schema-ready,notdeployed/notenabled. #172–#174fivegreen;#156releaseblockretained.
+
+
+## PR175 live-actor follow-up — 2026-09-30
+
+App `7be2da1a9e9dba41983542a9da777c7449afcecd`; shared actor-bound requests and live Auth query cancellation backported from178. Fresh typecheck/lint/build0;full3134pass145skip;12bankbrowsercases/Axe0. Exact SQL unchanged, approval pending, release stillblocked156. See [updated175 report](sequential-merge-175-20260930.md).
 ## T22 broker UI and SDK evidence, 2026-09-30
 
 Actual page screenshots `ui/t22-broker-after-{390,768,1366}.png` use synthetic HTTP/Auth/Turnstile on loopback56553; keyboard, fresh challenge after failure, wrong/valid code, late actor change and logout pass; Axe0/no overflow/no page errors. `t22-session-browser.json` separately uses the actual application Supabase factory and SDK with real browser Web Locks/localStorage and intercepted Auth transport to prove cross-tab/HTTP-wait fencing and quota behavior; synchronous UI stubs do not prove this invariant. Earlier before screenshots remain historical. No new same-environment Lighthouse before/after or production-performance claim is made for this auth repair. CI fixture performance is a separate release gate. [Full evidence](sequential-merge-156-broker-20260930.md).
