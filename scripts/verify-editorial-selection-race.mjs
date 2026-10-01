@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+const targetKind = process.env.EDITORIAL_SELECTION_KIND ?? "animal";
+const otherKind = targetKind === "animal" ? "content" : "animal";
 const browser = await chromium.launch();
 try {
   const page = await browser.newPage({ viewport: { width: 390, height: 1000 } });
@@ -15,7 +17,7 @@ try {
     const url = new URL(route.request().url()),
       kind = url.searchParams.get("kind"),
       pageNumber = Number(url.searchParams.get("page"));
-    if (hold && kind === "animal" && pageNumber === 2) {
+    if (hold && kind === targetKind && pageNumber === 2) {
       started();
       await new Promise((resolve) => {
         release = resolve;
@@ -43,15 +45,17 @@ try {
   );
   await page.locator("summary").filter({ hasText: "內容來源審核佇列" }).click();
   const kind = page.getByLabel("資料類型");
-  await kind.selectOption("animal");
-  const all = page.getByRole("button", { name: /選取全部.*動物資料/ });
+  await kind.selectOption(targetKind);
+  const all = page.getByRole("button", {
+    name: new RegExp("選取全部.*" + (targetKind === "animal" ? "動物資料" : "宣傳內容")),
+  });
   await all.waitFor();
   hold = true;
   await all.click();
   await began;
-  await kind.selectOption("content");
-  await page.getByText("Synthetic content 1", { exact: false }).first().waitFor();
-  await kind.selectOption("animal");
+  await kind.selectOption(otherKind);
+  await page.getByText(`Synthetic ${otherKind} 1`, { exact: false }).first().waitFor();
+  await kind.selectOption(targetKind);
   release();
   hold = false;
   await page

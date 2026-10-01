@@ -8,6 +8,11 @@ import {
   collectAnimalReviewIds,
 } from "../../../lib/contentReview/animalBulkSelection";
 import { AnimalReviewBulkPanel } from "./AnimalReviewBulkPanel";
+import {
+  addCmsReviewSelection,
+  collectCmsReviewIds,
+} from "../../../lib/contentReview/cmsBulkSelection";
+import { CmsReviewBulkPanel } from "./CmsReviewBulkPanel";
 import type { ReviewInput, ReviewQueueRow } from "../../../lib/contentReview/service";
 import { TablePager } from "../TablePager";
 const labels = { approved: "已核實可發布", demo: "示範資料（不可發布）", needs_review: "待核實" };
@@ -114,18 +119,20 @@ export function ContentReviewQueue({
       setSelectedIds(
         selectedIds.includes(id)
           ? selectedIds.filter((item) => item !== id)
-          : addAnimalReviewSelection(selectedIds, [id]),
+          : kind === "animal"
+            ? addAnimalReviewSelection(selectedIds, [id])
+            : addCmsReviewSelection(selectedIds, [id]),
       );
     } catch (cause) {
       setSelectionError(cause instanceof Error ? cause.message : "無法選取");
     }
   }
   function selectVisible() {
-    if (selectionDisabled || kind !== "animal" || !query.data) return;
+    if (selectionDisabled || !query.data) return;
     setSelectionError("");
     try {
       setSelectedIds(
-        addAnimalReviewSelection(
+        (kind === "animal" ? addAnimalReviewSelection : addCmsReviewSelection)(
           selectedIds,
           query.data.items.map((item) => item.entity_id),
         ),
@@ -135,15 +142,18 @@ export function ContentReviewQueue({
     }
   }
   async function selectAllMatching() {
-    if (selectionDisabled || kind !== "animal" || !query.data) return;
+    if (selectionDisabled || !query.data) return;
     setSelectionBusy(true);
     setSelectionError("");
     try {
       const generation = selectionGeneration.current;
-      const ids = await collectAnimalReviewIds(query.data.total, async (nextPage) =>
-        fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
-          `/api/admin/content-review?kind=animal&page=${nextPage}`,
-        ),
+      const selectedKind = kind;
+      const ids = await (selectedKind === "animal" ? collectAnimalReviewIds : collectCmsReviewIds)(
+        query.data.total,
+        async (nextPage) =>
+          fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
+            `/api/admin/content-review?kind=${selectedKind}&page=${nextPage}`,
+          ),
       );
       if (selectionGeneration.current !== generation) throw new Error("資料類型已變更；請重新選取");
       setSelectedIds(ids);
@@ -181,7 +191,7 @@ export function ContentReviewQueue({
           未能載入審核佇列。<button onClick={() => void query.refetch()}>重試</button>
         </p>
       )}
-      {isAdmin && kind === "animal" && (
+      {isAdmin && (
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
@@ -199,7 +209,7 @@ export function ContentReviewQueue({
             }
             onClick={selectAllMatching}
           >
-            選取全部動物資料（最多 1000 筆）
+            選取全部{kind === "animal" ? "動物資料" : "宣傳內容"}（最多 1000 筆）
           </button>
           <button
             type="button"
@@ -220,7 +230,7 @@ export function ContentReviewQueue({
       <ul>
         {query.data?.items.map((row) => (
           <li key={row.entity_id} className="border-b py-3">
-            {isAdmin && kind === "animal" && (
+            {isAdmin && (
               <label className="inline-flex min-h-11 items-center gap-2">
                 <input
                   type="checkbox"
@@ -228,7 +238,7 @@ export function ContentReviewQueue({
                   disabled={selectionDisabled}
                   onChange={() => toggleSelected(row.entity_id)}
                 />
-                選取此動物草稿
+                選取此{kind === "animal" ? "動物" : "CMS"}草稿
               </label>
             )}
             <p>
@@ -259,6 +269,13 @@ export function ContentReviewQueue({
       </ul>
       {isAdmin && kind === "animal" && (
         <AnimalReviewBulkPanel
+          selectedIds={selectedIds}
+          filterKey={kind}
+          selectionDisabled={selectionDisabled}
+        />
+      )}
+      {isAdmin && kind === "content" && (
+        <CmsReviewBulkPanel
           selectedIds={selectedIds}
           filterKey={kind}
           selectionDisabled={selectionDisabled}
