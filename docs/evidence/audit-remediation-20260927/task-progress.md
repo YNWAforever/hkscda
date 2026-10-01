@@ -230,7 +230,7 @@ Actual source aca5822a124521d9e6acc94b171600ac344e9b97 adds a forward-only three
 
 ## Current sequential execution from #160 — 2026-10-01
 
-Actual schema/app/release states are recorded in [the execution receipt](all-merge-execution-20261001.md). #160 schema and #182 ACL clamp applied with one genuine ledger entry each; no real bulk/financial/content operation. The remaining11 named migration scope is explicitly approved; each release still waits its actual five main gates and same-SHA READY alias. Accepted additional releases: 160,182,161,162,163,164,165,166,167. Hosted/provider/recovery UAT remain not-run.
+Actual schema/app/release states are recorded in [the execution receipt](all-merge-execution-20261001.md). #160 schema and #182 ACL clamp applied with one genuine ledger entry each; no real bulk/financial/content operation. The remaining11 named migration scope is explicitly approved; each release still waits its actual five main gates and same-SHA READY alias. Accepted additional releases: 160,182,161,162,163,164,165,166,167,168,169,170,171,172,173. Hosted/provider/recovery UAT remain not-run.
 
 ## Final PR179 integration of reviewed predecessor sources — 2026-10-01
 

@@ -1,0 +1,5 @@
+## Catalog projection review — 2026-10-01
+
+The original #170 pre/postflight receipts retain their actual fields and timestamps. Their338 prior function comparisons cover body hash, owner, config, return/signature/volatility and the captured PUBLIC/anon/authenticated/service-role EXECUTE flags. Scoped old table comparisons cover columns, constraints, triggers, RLS enabled and the captured table/column effective privileges, including MAINTAIN. Seven exact row-group hashes and empty new operation/result tables were compared.
+
+Full normalized ACL entries/grant options, FORCE RLS and policy definitions were not included in that pre-170 projection. Their preservation is not retrospectively certified by a later read. Source SQL is the exact approved hash and alters only its named new objects. The independent review found this verification projection gap; remaining un-applied scopes will use the stronger pre/postflight projection including full ACLs and policies, plus index table/key/predicate assertions. Existing raw results are not relabelled or replaced; provider/hosted UAT remains not-run.

@@ -1,0 +1,541 @@
+{
+  "source": "f8c4f1604cf8638394c65b734149db053fc480cd",
+  "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2",
+  "environment": "production explicitly approved single DDL; readonly catalog/hashes; no actor RPC or payment/notification",
+  "before": {
+    "rls": [
+      {
+        "rls": true,
+        "name": "audit_log",
+        "owner": "postgres"
+      },
+      {
+        "rls": true,
+        "name": "payment",
+        "owner": "postgres"
+      },
+      {
+        "rls": true,
+        "name": "sponsorship_pledge",
+        "owner": "postgres"
+      }
+    ],
+    "rows": {
+      "audit": {
+        "hash": "5157554725c66373afe57e0ea2f8c5a1",
+        "count": 600
+      },
+      "pledge": {
+        "hash": "dcd779f3401df1b54589b494ec15fd51",
+        "count": 2
+      },
+      "payment": {
+        "hash": "1369055ec6d240eec0b31abe073f454b",
+        "count": 6
+      }
+    },
+    "index": null,
+    "roles": [
+      {
+        "role": "anon",
+        "table": "audit_log",
+        "delete": false,
+        "insert": true,
+        "select": true,
+        "update": false
+      },
+      {
+        "role": "authenticated",
+        "table": "audit_log",
+        "delete": false,
+        "insert": true,
+        "select": true,
+        "update": false
+      },
+      {
+        "role": "service_role",
+        "table": "audit_log",
+        "delete": false,
+        "insert": true,
+        "select": true,
+        "update": false
+      },
+      {
+        "role": "anon",
+        "table": "payment",
+        "delete": false,
+        "insert": false,
+        "select": false,
+        "update": false
+      },
+      {
+        "role": "authenticated",
+        "table": "payment",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "role": "service_role",
+        "table": "payment",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "role": "anon",
+        "table": "sponsorship_pledge",
+        "delete": false,
+        "insert": false,
+        "select": false,
+        "update": false
+      },
+      {
+        "role": "authenticated",
+        "table": "sponsorship_pledge",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "role": "service_role",
+        "table": "sponsorship_pledge",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      }
+    ],
+    "ledger": 105,
+    "checkout": {
+      "enabled": false,
+      "version": 1
+    },
+    "functions": [
+      null,
+      null,
+      null
+    ],
+    "newColumns": [],
+    "newTrigger": null,
+    "oldTriggers": [
+      {
+        "name": "RI_ConstraintTrigger_a_18893",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18893\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_preference NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_18894",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18894\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_preference NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_18924",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18924\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_payment_proof NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_18925",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18925\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_payment_proof NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_20628",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20628\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_period NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_20629",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20629\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_period NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_20692",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20692\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_assignment NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_20693",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20693\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_assignment NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_21492",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21492\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_delivery_outbox NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_21493",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21493\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_delivery_outbox NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_21649",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21649\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_contact_verification NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_21650",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21650\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_contact_verification NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_22259",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_22259\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_payment_instruction_snapshot NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_restrict_del\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_22260",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_22260\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_payment_instruction_snapshot NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_c_18875",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_18875\" AFTER INSERT ON public.sponsorship_pledge FROM supporter NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+      },
+      {
+        "name": "RI_ConstraintTrigger_c_18876",
+        "enabled": "O",
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_18876\" AFTER UPDATE ON public.sponsorship_pledge FROM supporter NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+      },
+      {
+        "name": "record_public_consent_intents",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER record_public_consent_intents AFTER INSERT ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION record_public_consent_intents()"
+      },
+      {
+        "name": "set_updated_at",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+      },
+      {
+        "name": "sponsorship_cancel_transition",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER sponsorship_cancel_transition AFTER UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION private.sponsorship_cancel_transition()"
+      },
+      {
+        "name": "sponsorship_contact_submission_immutable",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER sponsorship_contact_submission_immutable BEFORE UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION private.preserve_sponsorship_contact_submission()"
+      }
+    ]
+  },
+  "apply": {
+    "success": true
+  },
+  "after": {
+    "fk": {
+      "valid": true,
+      "definition": "FOREIGN KEY (followup_assignee_user_id) REFERENCES auth.users(id)"
+    },
+    "index": {
+      "ready": true,
+      "valid": true,
+      "unique": false,
+      "definition": "CREATE INDEX sponsorship_pledge_followup_assignee_idx ON public.sponsorship_pledge USING btree (followup_assignee_user_id, created_at) WHERE (status = 'needs_followup'::text)"
+    },
+    "latest": {
+      "name": "sponsorship_followup_assignment",
+      "version": "20261001045928"
+    },
+    "backfill": {
+      "count": 2,
+      "versionOne": 2,
+      "assigneeNull": 2
+    },
+    "baseline": {
+      "rls": [
+        {
+          "rls": true,
+          "name": "audit_log",
+          "owner": "postgres"
+        },
+        {
+          "rls": true,
+          "name": "payment",
+          "owner": "postgres"
+        },
+        {
+          "rls": true,
+          "name": "sponsorship_pledge",
+          "owner": "postgres"
+        }
+      ],
+      "rows": {
+        "audit": {
+          "hash": "5157554725c66373afe57e0ea2f8c5a1",
+          "count": 600
+        },
+        "pledge": {
+          "hash": "dcd779f3401df1b54589b494ec15fd51",
+          "count": 2
+        },
+        "payment": {
+          "hash": "1369055ec6d240eec0b31abe073f454b",
+          "count": 6
+        }
+      },
+      "index": "sponsorship_pledge_followup_assignee_idx",
+      "roles": [
+        {
+          "role": "anon",
+          "table": "audit_log",
+          "delete": false,
+          "insert": true,
+          "select": true,
+          "update": false
+        },
+        {
+          "role": "authenticated",
+          "table": "audit_log",
+          "delete": false,
+          "insert": true,
+          "select": true,
+          "update": false
+        },
+        {
+          "role": "service_role",
+          "table": "audit_log",
+          "delete": false,
+          "insert": true,
+          "select": true,
+          "update": false
+        },
+        {
+          "role": "anon",
+          "table": "payment",
+          "delete": false,
+          "insert": false,
+          "select": false,
+          "update": false
+        },
+        {
+          "role": "authenticated",
+          "table": "payment",
+          "delete": true,
+          "insert": true,
+          "select": true,
+          "update": true
+        },
+        {
+          "role": "service_role",
+          "table": "payment",
+          "delete": true,
+          "insert": true,
+          "select": true,
+          "update": true
+        },
+        {
+          "role": "anon",
+          "table": "sponsorship_pledge",
+          "delete": false,
+          "insert": false,
+          "select": false,
+          "update": false
+        },
+        {
+          "role": "authenticated",
+          "table": "sponsorship_pledge",
+          "delete": true,
+          "insert": true,
+          "select": true,
+          "update": true
+        },
+        {
+          "role": "service_role",
+          "table": "sponsorship_pledge",
+          "delete": true,
+          "insert": true,
+          "select": true,
+          "update": true
+        }
+      ],
+      "ledger": 106,
+      "checkout": {
+        "enabled": false,
+        "version": 1
+      },
+      "functions": [
+        "private.bump_sponsorship_followup_version()",
+        "assign_sponsorship_followup(uuid,uuid,uuid,bigint)",
+        "list_sponsorship_followup_assignees(uuid)"
+      ],
+      "newColumns": [
+        {
+          "name": "followup_assignee_user_id",
+          "type": "uuid",
+          "default": null,
+          "nullable": "YES"
+        },
+        {
+          "name": "followup_version",
+          "type": "bigint",
+          "default": "1",
+          "nullable": "NO"
+        }
+      ],
+      "newTrigger": {
+        "enabled": "O",
+        "definition": "CREATE TRIGGER sponsorship_pledge_followup_version_before_update BEFORE UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION private.bump_sponsorship_followup_version()"
+      },
+      "oldTriggers": [
+        {
+          "name": "RI_ConstraintTrigger_a_18893",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18893\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_preference NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_18894",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18894\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_preference NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_18924",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18924\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_payment_proof NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_18925",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_18925\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_payment_proof NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_20628",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20628\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_period NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_20629",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20629\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_period NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_20692",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20692\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_assignment NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_20693",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20693\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_assignment NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_21492",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21492\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_delivery_outbox NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_21493",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21493\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_delivery_outbox NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_21649",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21649\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_contact_verification NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_21650",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_21650\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_contact_verification NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_22259",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_22259\" AFTER DELETE ON public.sponsorship_pledge FROM sponsorship_payment_instruction_snapshot NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_restrict_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_22260",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_22260\" AFTER UPDATE ON public.sponsorship_pledge FROM sponsorship_payment_instruction_snapshot NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_c_18875",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_18875\" AFTER INSERT ON public.sponsorship_pledge FROM supporter NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_c_18876",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_18876\" AFTER UPDATE ON public.sponsorship_pledge FROM supporter NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_c_22866",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_22866\" AFTER INSERT ON public.sponsorship_pledge FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_c_22867",
+          "enabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_22867\" AFTER UPDATE ON public.sponsorship_pledge FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+        },
+        {
+          "name": "record_public_consent_intents",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER record_public_consent_intents AFTER INSERT ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION record_public_consent_intents()"
+        },
+        {
+          "name": "set_updated_at",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+        },
+        {
+          "name": "sponsorship_cancel_transition",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER sponsorship_cancel_transition AFTER UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION private.sponsorship_cancel_transition()"
+        },
+        {
+          "name": "sponsorship_contact_submission_immutable",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER sponsorship_contact_submission_immutable BEFORE UPDATE ON public.sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION private.preserve_sponsorship_contact_submission()"
+        }
+      ]
+    },
+    "functions": [
+      {
+        "anon": false,
+        "owner": "postgres",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "returns": "jsonb",
+        "signature": "assign_sponsorship_followup(uuid,uuid,uuid,bigint)",
+        "service_role": true,
+        "authenticated": false,
+        "public_execute": false
+      },
+      {
+        "anon": false,
+        "owner": "postgres",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "returns": "TABLE(\"authUserId\" uuid, email text, role text)",
+        "signature": "list_sponsorship_followup_assignees(uuid)",
+        "service_role": true,
+        "authenticated": false,
+        "public_execute": false
+      },
+      {
+        "anon": false,
+        "owner": "postgres",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": false,
+        "returns": "trigger",
+        "signature": "private.bump_sponsorship_followup_version()",
+        "service_role": false,
+        "authenticated": false,
+        "public_execute": false
+      }
+    ]
+  },
+  "assertions": "all passed"
+}

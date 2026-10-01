@@ -14,21 +14,17 @@
     "legacyMigrations": "not authorized by this packet"
   },
   "backup": {
-    "ciphertextSha": "ad8e0eff94aa9377bd008b657de59868a78eff19e3054f1d32e4ddcb59d7167e",
+    "path": "hkscda-before-next-approved-ddl-20261001T061410Z.dpapi",
+    "ciphertextSha": "78a3de25d70a46093b952a9aca1f3559ef3cab1f8c24fd506933bc007df175bf",
+    "completedUtc": "2026-10-01T06:14:10Z",
+    "encryptedBytes": 2032854,
     "currentUserOnlyAcl": true,
+    "roundTripVerified": true,
+    "refreshAfter173": "success/exit0",
     "fullRestore": "not-run",
     "offMachine": "not-run",
     "storageBytes": "not-run",
-    "refreshAfter160182": "success/exit0",
-    "completedUtc": "2026-10-01T03:48:25Z",
-    "roundTripVerified": true,
-    "refreshAfter161": "success/exit0",
-    "encryptedBytes": 2006502,
-    "refreshAfter162": "success/exit0",
-    "refreshAfter164": "success/exit0",
-    "refreshAfter165": "success/exit0",
-    "refreshAfter166": "success/exit0",
-    "path": "hkscda-before-next-approved-ddl-20261001T034825Z.dpapi"
+    "snapshotBoundary": "separate schema/data/role dumps; not one transaction"
   },
   "migrations": [
     {
@@ -114,6 +110,59 @@
       "existingRows": "7 content/7 revisions/0 review/600 audits hashes unchanged;checkout false; no live content operation",
       "evidence": "all-merge-166-postflight-20261001.json",
       "sourceSha": "ee5646af0000121cb3a0e5b193d81d4f7b95c5bb",
+      "apply": "success under exact11-file scope approval"
+    },
+    {
+      "pr": 169,
+      "file": "20260928073000_sponsorship_followup_assignment.sql",
+      "sha": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2",
+      "providerVersion": "20261001045928",
+      "ledgerBefore": 105,
+      "ledgerAfter": 106,
+      "postflight": "two columns/FK validated;2 pledges version1/unassigned;2 public postgres definer RPCs pinned empty search_path/service-only EXECUTE;invoker version trigger/client EXECUTE denied;partial index valid/ready; existing RLS/owners/grants/triggers unchanged",
+      "existingRows": "2 pledge original fields/6 payments/600 audit rows exact hashes unchanged;checkout false/version1;no live assignment/payment/notification",
+      "evidence": "all-merge-169-postflight-20261001.json",
+      "sourceSha": "f8c4f1604cf8638394c65b734149db053fc480cd",
+      "apply": "success under exact11-file scope approval"
+    },
+    {
+      "pr": 170,
+      "file": "20260928080000_sponsorship_followup_bulk.sql",
+      "sha": "c3819e013b6593b36d0257ad54d6920c75529596dda460f6d66011fe83857800",
+      "providerVersion": "20261001051516",
+      "ledgerBefore": 106,
+      "ledgerAfter": 107,
+      "postflight": "2 empty RLS operation/result tables;captured role-table/column write flags denied inclMAINTAIN/serviceSELECTonly;3 public service-only and1 private owner-only flags/empty paths;2validreadyindexes;338 prior bodyHash/owner/config/signature/4EXECUTEflags unchanged",
+      "existingRows": "6 payments/6 donations/15 supporters/13 supporter roles/2 pledges/0 delivery jobs/600 audits exact normalized hashes unchanged; checkout false/version1;no live bulk assignment",
+      "evidence": "all-merge-170-postflight-20261001.json",
+      "sourceSha": "dfae45034e81a76b1141dd6d2882ee0527f6e37a",
+      "apply": "success under exact11-file scope approval",
+      "verificationLimits": "Full ACL/grant options and FORCE RLS/policy definitions not captured before170; no retrospective certification; original receipt retained"
+    },
+    {
+      "pr": 172,
+      "file": "20260928090000_finance_bank_dryrun.sql",
+      "sha": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0",
+      "providerVersion": "20261001055531",
+      "ledgerBefore": 107,
+      "ledgerAfter": 108,
+      "postflight": "1 valid/ready exact pending manual-payment index; service-only postgres SECURITY DEFINER preview RPC with empty search_path;342 existing function definitions/owners/config/full ACLs and existing table/column ACLs/FORCE RLS/policies/indexes unchanged",
+      "existingRows": "6 payments/6 donations/15 supporters/13 supporter roles/2 pledges/0 delivery jobs/600 audits exact normalized hashes unchanged; checkout false/version1;no live bank-match preview or confirmation",
+      "evidence": "all-merge-172-postflight-20261001.json",
+      "sourceSha": "f117dc3889f03f19dd4c419734a980ba4625cdbc",
+      "apply": "success under exact11-file scope approval"
+    },
+    {
+      "pr": 173,
+      "file": "20260928100000_finance_delivery_retry_guard.sql",
+      "sha": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a",
+      "providerVersion": "20261001061046",
+      "ledgerBefore": 108,
+      "ledgerAfter": 109,
+      "postflight": "1 valid/ready exact failed-delivery index;service-only failed-job list RPC;exact retry RPC body and search_path tightened to empty while its owner/signature/return/volatility/full ACL remain;342 other existing function metadata/full ACLs and prior table/column ACLs/FORCE RLS/policies/indexes unchanged",
+      "existingRows": "6 payments/6 donations/15 supporters/13 supporter roles/2 pledges/0 delivery jobs/600 audits normalized hashes unchanged;checkout false/version1;no job retry/send/scheduler activation",
+      "evidence": "all-merge-173-postflight-20261001.json",
+      "sourceSha": "e5ed74c7d680b30102612bfee2b44b49cc754822",
       "apply": "success under exact11-file scope approval"
     }
   ],
@@ -262,6 +311,96 @@
       "mergedAt": "2026-10-01T04:46:46Z",
       "mergeCommandExit": 0,
       "mainCiRun": 36816694953,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "756a3979da51b70647a45a449948600a33b95c8e",
+      "accepted": true,
+      "deploymentId": "dpl_JCS6ixapVcwp4YaYSmk8oKc77tZP"
+    },
+    {
+      "pr": 169,
+      "sourceSha": "f8c4f1604cf8638394c65b734149db053fc480cd",
+      "prCiRun": 36815555119,
+      "prGates": "5SUCCESS",
+      "mergeSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a",
+      "mergedAt": "2026-10-01T05:01:58Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36817868572,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "eaaa63dc88ba184ebdcf658d0ca26872a0e89c0a",
+      "accepted": true,
+      "deploymentId": "dpl_8FcERY3jVW9rjys45XHbJqyi3WLw"
+    },
+    {
+      "pr": 170,
+      "sourceSha": "dfae45034e81a76b1141dd6d2882ee0527f6e37a",
+      "prCiRun": 36815557068,
+      "prGates": "5SUCCESS",
+      "mergeSha": "a1c038d7f78e498a34c717dd0491ec66232d7198",
+      "mergedAt": "2026-10-01T05:16:47Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36819010956,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "a1c038d7f78e498a34c717dd0491ec66232d7198",
+      "accepted": true,
+      "deploymentId": "dpl_Bg3JpQiiMrGqANU5tWmfYFuGzW8p"
+    },
+    {
+      "pr": 171,
+      "sourceSha": "47b3a4654f06a8663610fd6f809dbacf25738fd4",
+      "prCiRun": 36815561081,
+      "prGates": "5SUCCESS",
+      "mergeSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9",
+      "mergedAt": "2026-10-01T05:32:51Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36820293487,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "315e6fc1a56946eca7c0d8c1c4447079d8f4baa9",
+      "accepted": true,
+      "deploymentId": "dpl_4EcbzJB1C4TF7MA6ZZoSqzSKPrXZ"
+    },
+    {
+      "pr": 172,
+      "sourceSha": "f117dc3889f03f19dd4c419734a980ba4625cdbc",
+      "prCiRun": 36815567618,
+      "prGates": "5SUCCESS",
+      "mergeSha": "f277103be09d7c27967f23fca4a667743c421aaf",
+      "mergedAt": "2026-10-01T05:57:39Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36822299791,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "f277103be09d7c27967f23fca4a667743c421aaf",
+      "accepted": true,
+      "deploymentId": "dpl_AB1raYZ1BnoLFvZj5Xi3RuMANDba"
+    },
+    {
+      "pr": 173,
+      "sourceSha": "e5ed74c7d680b30102612bfee2b44b49cc754822",
+      "prCiRun": 36815571583,
+      "prGates": "5SUCCESS",
+      "mergeSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+      "mergedAt": "2026-10-01T06:12:37Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36823569108,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+      "accepted": true,
+      "deploymentId": "dpl_BNn5LAYDtyGMySXxzop2sBuWVb1h"
+    },
+    {
+      "pr": 174,
+      "sourceSha": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+      "prCiRun": 36815575696,
+      "prGates": "5SUCCESS",
+      "mergeSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+      "mergedAt": "2026-10-01T06:25:13Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36824674785,
       "mainGates": "pending",
       "deploymentState": "pending",
       "aliasSha": null,
@@ -283,7 +422,9 @@
     "166 readonly preflight42703 review has no id and42P01 guessed audit name; corrected actual catalog before DDL; no mutation",
     "168-178 adjacent R01/R02 text conflict reproduced merge-tree1; date-only first168guard1 beforepush; ancestry merge only2datedR01fields/all33otherrows/appSQLworkflow unchanged;merge-tree0;freshCI required",
     "168 nativegh protected merge1: cacheddirty preflight refused before server mutation; main167 unchanged; actualvirtual/current merge tree equal; optional normal REST sha-pinned transport prepared, no override",
-    "168 protected REST405, actualPR OPEN/main167 unchanged; ordinary main167 ancestry synchronization treeidentical;new82a9eb3a mergeabletrue/freshCI36815370226; nooverride"
+    "168 protected REST405, actualPR OPEN/main167 unchanged; ordinary main167 ancestry synchronization treeidentical;new82a9eb3a mergeabletrue/freshCI36815370226; nooverride",
+    "PR171 first strict normal merge guard exit1 on unsettled GitHub mergeability; no draft-ready/main mutation; fresh server state re-read required",
+    "Strong172 preparatory catalog SELECT failed22023: aclexplode zero-dimensional empty column ACL; readonly NULL/array-dimension probes reproduced mechanism; guarded-null correction before any172DDL"
   ],
   "notRun": [
     "hosted real-staff bulk operations/private-files/export UAT",
@@ -919,5 +1060,135 @@
       }
     ],
     "completedAt": "2026-10-01T04:32:14.966173+00:00"
+  },
+  "capturedAtMeaning": "initial capture; later events use their own timestamps",
+  "lastUpdatedAt": "2026-10-01T06:25:59.581383+00:00",
+  "final179Integration": {
+    "pr": 179,
+    "original": "d6610f7d2ef8ad8646c79f8d9dfad7ca59fa6cf1",
+    "checkpoint": "2c755a8fbb9ed97b3d6c07bc649b8e903cd4022a",
+    "incoming": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+    "head": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+    "mergeExit": 1,
+    "whitespaceGateFirstExit": 2,
+    "whitespaceCorrection": "one trailing blank line removed only from newly appended progress section",
+    "diffCheckExit": 0,
+    "sourceChanges": [],
+    "threeReviewedSourceBlobsAlreadyMatchOriginal": true,
+    "ownedWorkingDocsPreserved": true,
+    "all34TrackerRowsPreserved": true,
+    "mainMutation": false,
+    "sourcePush": false,
+    "completedAt": "2026-10-01T04:49:44.196872+00:00"
+  },
+  "finalCombinedLocalGates": {
+    "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
+    "startedAt": "2026-10-01T04:50:01.038535+00:00",
+    "environment": "Windows; loopback checkout DB57322 and Auth52321; provider/production operations none",
+    "databaseOptIns": "only existing checkout-policy; other isolated per-feature evidence retained under its recorded SHA/environment",
+    "gates": [
+      {
+        "gate": "full-test",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 0,
+        "elapsedSeconds": 152.19,
+        "log": "task-179-root-final-full-test.log",
+        "pass": 3195,
+        "skip": 188,
+        "fail": 0,
+        "assertions": 10138,
+        "files": 593
+      },
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 41.21,
+        "log": "task-179-root-final-typecheck.log"
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 51.07,
+        "log": "task-179-root-final-lint.log",
+        "summary": [
+          "52",
+          "0",
+          "52"
+        ]
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 117.17,
+        "log": "task-179-root-final-build.log"
+      }
+    ],
+    "diffCheckExit": 0,
+    "trackedDrift": false,
+    "completedAt": "2026-10-01T04:56:03.143395+00:00"
+  },
+  "backupHistory": [
+    {
+      "ciphertextSha": "ad8e0eff94aa9377bd008b657de59868a78eff19e3054f1d32e4ddcb59d7167e",
+      "currentUserOnlyAcl": true,
+      "fullRestore": "not-run",
+      "offMachine": "not-run",
+      "storageBytes": "not-run",
+      "refreshAfter160182": "success/exit0",
+      "completedUtc": "2026-10-01T03:48:25Z",
+      "roundTripVerified": true,
+      "refreshAfter161": "success/exit0",
+      "encryptedBytes": 2006502,
+      "refreshAfter162": "success/exit0",
+      "refreshAfter164": "success/exit0",
+      "refreshAfter165": "success/exit0",
+      "refreshAfter166": "success/exit0",
+      "path": "hkscda-before-next-approved-ddl-20261001T034825Z.dpapi"
+    },
+    {
+      "ciphertextSha": "12ba279a3a5778e0b006e462a27219a5389f657c04d888d52a42b4895c661f01",
+      "currentUserOnlyAcl": true,
+      "fullRestore": "not-run",
+      "offMachine": "not-run",
+      "storageBytes": "not-run",
+      "refreshAfter160182": "success/exit0",
+      "completedUtc": "2026-10-01T05:03:23Z",
+      "roundTripVerified": true,
+      "refreshAfter161": "success/exit0",
+      "encryptedBytes": 2013526,
+      "refreshAfter162": "success/exit0",
+      "refreshAfter164": "success/exit0",
+      "refreshAfter165": "success/exit0",
+      "refreshAfter166": "success/exit0",
+      "path": "hkscda-before-next-approved-ddl-20261001T050323Z.dpapi",
+      "refreshAfter169": "success/exit0"
+    },
+    {
+      "ciphertextSha": "58ac7a295cdc53b3997b3380ddadf2ebe29da198de645567ebb37a284f55079a",
+      "currentUserOnlyAcl": true,
+      "fullRestore": "not-run",
+      "offMachine": "not-run",
+      "storageBytes": "not-run",
+      "refreshAfter160182": "success/exit0",
+      "completedUtc": "2026-10-01T05:18:20Z",
+      "roundTripVerified": true,
+      "refreshAfter161": "success/exit0",
+      "encryptedBytes": 2026454,
+      "refreshAfter162": "success/exit0",
+      "refreshAfter164": "success/exit0",
+      "refreshAfter165": "success/exit0",
+      "refreshAfter166": "success/exit0",
+      "path": "hkscda-before-next-approved-ddl-20261001T051820Z.dpapi",
+      "refreshAfter169": "success/exit0",
+      "refreshAfter170": "success/exit0"
+    }
+  ],
+  "catalogProjectionReview": {
+    "date": "2026-10-01",
+    "170OriginalFieldsRetained": true,
+    "remainingScopes": "full normalized ACL/grant options/FORCE RLS/policies/index structure baseline required"
   }
 }
