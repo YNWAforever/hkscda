@@ -25,11 +25,56 @@ export const hash = (value: unknown) =>
     .digest("hex");
 const qi = (name: string) => '"' + name.replaceAll('"', '""') + '"';
 const networkPrimitive =
-  /\b(?:net"?\s*\.|http"?\s*\(|http_(?:get|post|put|delete)"?\s*\(|dblink(?:_[a-z_]+)?"?\s*\(|cron"?\s*\.|pg_read_file"?\s*\(|pg_ls_dir"?\s*\(|lo_import"?\s*\(|pg_notify"?\s*\()/i;
+  /\b(?:(?:net|cron|supabase_functions)"?\s*\.|http(?:_[a-z_0-9]+)?"?\s*\(|dblink(?:_[a-z_0-9]+)?"?\s*\(|pg_(?:read_(?:binary_)?file|ls_[a-z_]+|notify)"?\s*\(|lo_(?:import|export)"?\s*\()/i;
+const escapePattern = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const calls = (body: string, qualified: string) => {
   const [schema, name] = qualified.split(".");
-  return new RegExp(`(?:"?${schema}"?\\s*\\.\\s*)?"?${name}"?\\s*\\(`, "i").test(body);
+  return new RegExp(
+    `(?:"?${escapePattern(schema)}"?\\s*\\.\\s*)?"?${escapePattern(name)}"?\\s*\\(`,
+    "i",
+  ).test(body);
 };
+
+/** Actual dump tables are column definitions, never queries or typed-table forms. */
+function assertTableDefinition(statement: string) {
+  const identifier = '(?:"(?:[^"\\n]|"")+"|[a-z_][a-z_0-9]*)';
+  const start = statement.match(
+    new RegExp(
+      `^CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?${identifier}\\.${identifier}\\s*\\(`,
+      "i",
+    ),
+  );
+  if (!start) throw new Error("Only qualified CREATE TABLE column definitions are allowed");
+  let depth = 1,
+    quote = "";
+  for (let i = start[0].length; i < statement.length; i++) {
+    const c = statement[i];
+    if (quote) {
+      if (c === quote) {
+        if (statement[i + 1] === quote) i++;
+        else quote = "";
+      }
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      quote = c;
+      continue;
+    }
+    if (c === "(") depth++;
+    else if (c === ")" && !--depth) {
+      const suffix = statement.slice(i + 1).trim();
+      if (
+        suffix &&
+        !new RegExp(`^(?:WITH\\s*\\([^()]*\\)\\s*)?(?:TABLESPACE\\s+${identifier})?$`, "i").test(
+          suffix,
+        )
+      )
+        throw new Error("Executable or unreviewed CREATE TABLE suffix refused");
+      return;
+    }
+  }
+  throw new Error("Unclosed CREATE TABLE definition");
+}
 
 // Names/types rather than OIDs make this comparable across independently restored DBs.
 // Function bodies are hashed, never included in receipts (they can contain URLs).
@@ -39,7 +84,8 @@ export const catalogQuery =
   `with pinned as materialized (select pg_catalog.set_config('search_path','',true)) select jsonb_build_object(
  'schemas',(select jsonb_agg(jsonb_build_object('name',nspname,'owner',pg_get_userbyid(nspowner),'acl',nspacl::text) order by nspname) from pg_namespace where nspname in ('public','private')),
  'relations',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'kind',c.relkind,'owner',pg_get_userbyid(c.relowner),'acl',c.relacl::text,'rls',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'options',c.reloptions,'replicaIdentity',c.relreplident) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
- 'columns',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',a.attname,'position',a.attnum,'type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',a.attacl::text,'default',pg_get_expr(d.adbin,d.adrelid)) order by n.nspname,c.relname,a.attnum) from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname in ('public','private') and a.attnum>0 and not a.attisdropped),
+ 'columns',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',a.attname,'position',a.attnum,'type',format_type(a.atttypid,a.atttypmod),'collation',(select cn.nspname||'.'||co.collname from pg_collation co join pg_namespace cn on cn.oid=co.collnamespace where co.oid=a.attcollation),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',a.attacl::text,'default',pg_get_expr(d.adbin,d.adrelid)) order by n.nspname,c.relname,a.attnum) from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname in ('public','private') and a.attnum>0 and not a.attisdropped),
+ 'sequences',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'type',format_type(s.seqtypid,-1),'start',s.seqstart::text,'increment',s.seqincrement::text,'min',s.seqmin::text,'max',s.seqmax::text,'cache',s.seqcache::text,'cycle',s.seqcycle,'ownedBy',(select jsonb_build_object('schema',tn.nspname,'table',tc.relname,'column',a.attname,'dependency',d.deptype) from pg_depend d join pg_class tc on tc.oid=d.refobjid join pg_namespace tn on tn.oid=tc.relnamespace join pg_attribute a on a.attrelid=tc.oid and a.attnum=d.refobjsubid where d.classid='pg_class'::regclass and d.objid=c.oid and d.refclassid='pg_class'::regclass and d.deptype in ('a','i'))) order by n.nspname,c.relname) from pg_sequence s join pg_class c on c.oid=s.seqrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
  'functions',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'args',pg_get_function_identity_arguments(p.oid),'result',pg_get_function_result(p.oid),'owner',pg_get_userbyid(p.proowner),'acl',p.proacl::text,'config',p.proconfig,'definer',p.prosecdef,'volatility',p.provolatile,'parallel',p.proparallel,'bodyMd5',md5(pg_get_functiondef(p.oid))) order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private') and p.prokind in ('f','p')),
  'constraints',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',con.conname,'type',con.contype,'validated',con.convalidated,'definition',pg_get_constraintdef(con.oid,true)) order by n.nspname,c.relname,con.conname) from pg_constraint con join pg_namespace n on n.oid=con.connamespace left join pg_class c on c.oid=con.conrelid where n.nspname in ('public','private')),
  'indexes',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'definition',pg_get_indexdef(i.indexrelid),'valid',i.indisvalid,'ready',i.indisready,'unique',i.indisunique) order by n.nspname,c.relname,pg_get_indexdef(i.indexrelid)) from pg_index i join pg_class c on c.oid=i.indrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
@@ -245,6 +291,7 @@ export function schemaStatements(text: string): string[] {
       }
   }
   for (const statement of parts) {
+    if (/^CREATE\s+TABLE\s/i.test(statement)) assertTableDefinition(statement);
     if (
       !/^(?:SET\s|SELECT pg_catalog\.set_config\('search_path', '', false\)$|CREATE\s+(?:OR\s+REPLACE\s+(?:FUNCTION|VIEW|TRIGGER)|SCHEMA\s+IF\s+NOT\s+EXISTS|TABLE|UNIQUE\s+INDEX|INDEX|CONSTRAINT\s+TRIGGER|TRIGGER|VIEW|TYPE|SEQUENCE|POLICY)\s|ALTER\s+(?:SCHEMA|FUNCTION|TABLE|VIEW|SEQUENCE|TYPE|DEFAULT\s+PRIVILEGES)\s|GRANT\s|REVOKE\s|COMMENT\s+ON\s)/i.test(
         statement,
@@ -565,16 +612,68 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
   const qualified = tables.map((t) => (t.includes(".") ? t : "public." + t));
   if (qualified.some((t) => !/^(?:public|private|auth|storage)\.[a-z_][a-z_0-9]*$/.test(t)))
     throw new Error("Fixture table scope");
+  // Read definitions across schemas: a public trigger may call an external helper.
+  // No definition is invoked; bodies remain in memory and never enter receipts.
   const rows = (await sql.unsafe(
-    "select n.nspname schema,p.proname name,pg_get_functiondef(p.oid) body from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private','auth','storage') and p.prokind='f'",
-  )) as { schema: string; name: string; body: string }[];
+    "select n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(p.proowner) owner,p.pronargs arguments,format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
+  )) as {
+    schema: string;
+    name: string;
+    body: string;
+    language: string;
+    system: boolean;
+    source: string;
+    library: string | null;
+    extension: string | null;
+    extensionVersion: string | null;
+    owner: string;
+    arguments: number;
+    result: string;
+  }[];
   const network = (body: string) => networkPrimitive.test(body) || /\bexecute\s/i.test(body);
-  const unsafe = new Set(rows.filter((r) => network(r.body)).map((r) => `${r.schema}.${r.name}`));
+  // Sole reviewed external C prerequisite: pgcrypto's pure UUID generator.
+  // Require its actual extension/version/owner/library/symbol and zero-arg signature.
+  const reviewedUuid = (r: (typeof rows)[number]) =>
+    r.schema === "extensions" &&
+    r.name === "gen_random_uuid" &&
+    r.language === "c" &&
+    r.source === "pg_random_uuid" &&
+    r.library === "$libdir/pgcrypto" &&
+    r.extension === "pgcrypto" &&
+    r.extensionVersion === "1.3" &&
+    ["postgres", "supabase_admin"].includes(r.owner) &&
+    r.arguments === 0 &&
+    r.result === "uuid";
+  const unsafe = new Set(
+    rows
+      .filter(
+        (r) =>
+          network(r.body) ||
+          network(`${r.schema}.${r.name}(`) ||
+          (!r.system && !reviewedUuid(r) && !["sql", "plpgsql"].includes(r.language)),
+      )
+      .map((r) => `${r.schema}.${r.name}`),
+  );
+  const known = new Set(rows.map((r) => `${r.schema}.${r.name}`));
+  const unknownQualifiedCall = (body: string) =>
+    [...body.matchAll(/"?([a-z_][a-z_0-9]*)"?\s*\.\s*"?([a-z_][a-z_0-9]*)"?\s*\(/gi)].some(
+      (m) =>
+        !/\b(?:INTO|TABLE|ON|REFERENCES|TYPE|TRIGGER|VIEW|POLICY|SCHEMA)\s+$/i.test(
+          body.slice(0, m.index),
+        ) && !known.has(m[1] + "." + m[2]),
+    );
+  for (const r of rows)
+    if (!r.system && unknownQualifiedCall(r.body)) unsafe.add(`${r.schema}.${r.name}`);
   let changed = true;
   while (changed) {
     changed = false;
     for (const r of rows)
-      if (!unsafe.has(`${r.schema}.${r.name}`) && [...unsafe].some((name) => calls(r.body, name))) {
+      if (
+        !r.system &&
+        !reviewedUuid(r) &&
+        !unsafe.has(`${r.schema}.${r.name}`) &&
+        [...unsafe].some((name) => calls(r.body, name))
+      ) {
         unsafe.add(`${r.schema}.${r.name}`);
         changed = true;
       }
@@ -583,12 +682,23 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
     "select tn.nspname||'.'||c.relname table_name,n.nspname||'.'||p.proname function_name from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace tn on tn.oid=c.relnamespace join pg_proc p on p.oid=t.tgfoid join pg_namespace n on n.oid=p.pronamespace where not t.tgisinternal",
   );
   for (const t of triggers)
-    if (qualified.includes(t.table_name) && unsafe.has(t.function_name))
+    if (
+      qualified.includes(t.table_name) &&
+      (network(t.function_name + "(") || !known.has(t.function_name) || unsafe.has(t.function_name))
+    )
       throw new Error("Unsafe fixture trigger path; no provider/network primitive executed");
   const expressions = await sql.unsafe(
     `select pg_get_expr(d.adbin,d.adrelid) expression from pg_attrdef d join pg_class c on c.oid=d.adrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) union all select pg_get_expr(d.conbin,d.conrelid) from pg_constraint d join pg_class c on c.oid=d.conrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname||'.'||c.relname in (${qualified.map((t) => "'" + t + "'").join(",")}) and d.conbin is not null`,
   );
   for (const e of expressions)
-    if (network(e.expression) || [...unsafe].some((name) => calls(e.expression, name)))
-      throw new Error("Unsafe fixture default/constraint path");
+    if (
+      network(e.expression) ||
+      unknownQualifiedCall(e.expression) ||
+      [...unsafe].some((name) => calls(e.expression, name))
+    )
+      throw new Error(
+        "Unsafe fixture default/constraint path: " +
+          [...unsafe].filter((name) => calls(e.expression, name)).join(",") +
+          (unknownQualifiedCall(e.expression) ? "; unknown qualified call" : ""),
+      );
 }

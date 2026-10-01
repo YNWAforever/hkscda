@@ -1,0 +1,60 @@
+{
+  "round": 1,
+  "baseCommit": "7c5caf0ac9a7b2e4f8de96eacbf30b410631fbdd",
+  "status": "harness guard fixes ready for scoped re-review; payment ACL actor RED remains unresolved",
+  "environment": "production schema/catalog reads only; new loopback52322 clones from untouched synthetic template; modern57322 source readonly; no network-bearing SQL executed",
+  "checks": [
+    {
+      "command": "bun test supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "phase": "watched initial guard RED",
+      "exit": 1,
+      "summary": "5pass5fail33assertions"
+    },
+    {
+      "command": "same scoped guards",
+      "phase": "reviewed UUID prerequisite RED",
+      "exit": 1,
+      "summary": "10pass1fail41assertions"
+    },
+    {
+      "command": "bun test supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "phase": "final scoped GREEN",
+      "exit": 0,
+      "summary": "12pass0fail45assertions"
+    },
+    {
+      "command": "bun run typecheck",
+      "exit": 0
+    },
+    {
+      "command": "bun node_modules/eslint/bin/eslint.js supabase/rls-tests/helpers/productionSchemaClone.ts supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "exit": 0,
+      "output": "empty"
+    },
+    {
+      "command": "bun run .superpowers/sdd/r01-forward-schema-plan-20261001/probe-task-1-fix1.ts",
+      "exit": 0,
+      "output": "fresh modern+hosted parity and collation/sequence variants true; original sources preserved; normal cleanup"
+    }
+  ],
+  "testedFiles": [
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "canonicalLfSha256": "75174779cf17270db5c8a64b8e09e4f3462134b99b15a20857604eae24d60184",
+      "gitBlob": "186edee7c302e480fd5b2b3f6219fe3e13ea03b4"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+      "canonicalLfSha256": "358d193828b1af0496ef353b4d4652b00ab09484f7d08b8cc27631fdd60917e3",
+      "gitBlob": "f88c3f811f8e34dc1096a861558dc18315c51b71"
+    }
+  ],
+  "notRun": [
+    "redundant full suite/lint/build",
+    "payment ACL edit/application",
+    "production DDL/DML/RPC",
+    "provider calls",
+    "push/PR/merge"
+  ],
+  "preservation": "all prior receipts/hashes retain their original meaning; expanded collation/sequence facets explain revised projection hashes"
+}
