@@ -1,0 +1,1931 @@
+{
+  "executionParent": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+  "branch": "codex/audit-r01-animal-draft-upload-20261002",
+  "testedSourceCandidateTree": "b1614bb90a085fe6f42a12a3e052df8ff65737ab",
+  "packagingMeaning": "Candidate tree binds source before evidence/tracker packaging; commit containing this binding is packaging HEAD. No executable source was edited after final V1 rehearsals/gates.",
+  "actualFinalComposition": {
+    "src/lib/animals/draftIntent.database.test.ts": {
+      "sha256": "c16de6459f294aff8a39871112558bea6eb0b2af97a00a8611346f33c7187970",
+      "canonicalSha256": "c16de6459f294aff8a39871112558bea6eb0b2af97a00a8611346f33c7187970",
+      "gitBlob": "314e627e7df1468ca3b2d57f78ca9bbb2b8f4370"
+    },
+    "src/lib/animals/draftIntent.testSupport.ts": {
+      "sha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0",
+      "canonicalSha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0",
+      "gitBlob": "07ee81dfbe9ebdfaee45ca26c13c3338c0f90481"
+    },
+    "src/lib/animals/draftUpload.server.ts": {
+      "sha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1",
+      "canonicalSha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1",
+      "gitBlob": "a865bf4721038ca3aa8cbd33102b490a5d258329"
+    },
+    "src/lib/animals/draftUploadCleanup.server.ts": {
+      "sha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809",
+      "canonicalSha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809",
+      "gitBlob": "e451e8d7a8de142747896ce0d9a078d156eb4d8b"
+    },
+    "src/lib/animals/photoUpload.http.server.ts": {
+      "sha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48",
+      "canonicalSha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48",
+      "gitBlob": "da1084f09a51a0ce4fe76998faaa76ff3f38f0a1"
+    },
+    "src/lib/animals/photoUpload.ts": {
+      "sha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a",
+      "canonicalSha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a",
+      "gitBlob": "24c21430315d1de15a7b5444fb276faf80872188"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    "src/lib/supabase.server.ts": {
+      "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    "src/lib/http/publicJson.server.ts": {
+      "sha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "gitBlob": "02f75bdefbb4db5fb6438138c7bdda44053e2032"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "8de32c1ca01d9818858a1867b03ecadc90e6144b00f3d817690300197a2a5b81",
+      "canonicalSha256": "8de32c1ca01d9818858a1867b03ecadc90e6144b00f3d817690300197a2a5b81",
+      "gitBlob": "2f11c5c1375ace810794aca878bcf9f919cd3dd9"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-gates.py": {
+      "sha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2",
+      "canonicalSha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2",
+      "gitBlob": "1f9d7422790f05000559a90d1b12fd2185e8e382"
+    },
+    "package.json": {
+      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "gitBlob": "043a1e7d45f1cfbe92ff0306304817ecd253a891"
+    },
+    "bun.lock": {
+      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "gitBlob": "0d6238fb8646bc4263cad4021f7e83a1d0905cd2"
+    },
+    "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": {
+      "sha256": "41a3c6841683d47913c858b8b98d8f47d04aaa67aa3b77d85ece29da90d29c71",
+      "canonicalSha256": "41a3c6841683d47913c858b8b98d8f47d04aaa67aa3b77d85ece29da90d29c71",
+      "gitBlob": "6a12f6bf72cd250a009fd6ab18c603f065c4dbbf"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-reviewed-paths.json": {
+      "sha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27",
+      "canonicalSha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27",
+      "gitBlob": "444ef4341efdcd9334707a46c204b9425b6c96d3"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+      "canonicalSha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+      "gitBlob": "951feb55dbe3c1a0d476eec5402deb30d847c90d"
+    }
+  },
+  "receipts": {
+    "task-5-red-db.json": {
+      "sha256": "fcdbbdb4f1db61244f089e48fc65d95176ca761a28829e3df51017469fbe7a31",
+      "canonicalSha256": "fcdbbdb4f1db61244f089e48fc65d95176ca761a28829e3df51017469fbe7a31",
+      "gitBlob": "7df67a883ce89aa9e4108e286f4d5bbb66f7f3e8"
+    },
+    "task-5-red-db.log": {
+      "sha256": "2d5b2a5d8b65fd390cf6daedee751dce1be82a4cd9356ad5c42081e6d1139dd8",
+      "canonicalSha256": "2d5b2a5d8b65fd390cf6daedee751dce1be82a4cd9356ad5c42081e6d1139dd8",
+      "gitBlob": "84e868a90c1cf1e3673a3b4e74df16b9afd51a50"
+    },
+    "task-5-red-actor-db.json": {
+      "sha256": "899691c883433cfc5ed91e99569c3e657363761ab0dce9ff6b8c5acdccad5472",
+      "canonicalSha256": "899691c883433cfc5ed91e99569c3e657363761ab0dce9ff6b8c5acdccad5472",
+      "gitBlob": "7b6d9dbb0696b6c2ed5751f9cfe12f5be9ce02ba"
+    },
+    "task-5-red-actor-db.log": {
+      "sha256": "dfbfd647a104818bed8d4e2517559b149573062414df63637051355c4602a58c",
+      "canonicalSha256": "dfbfd647a104818bed8d4e2517559b149573062414df63637051355c4602a58c",
+      "gitBlob": "6c5f99f2d9ccde489a7b18d17f438c8a1996b253"
+    },
+    "task-5-green-setup-1-db.json": {
+      "sha256": "2e7681d66dcb06e30d883cd032d6237d2f412c8f7cc8fba417ce9e56e64f405b",
+      "canonicalSha256": "2e7681d66dcb06e30d883cd032d6237d2f412c8f7cc8fba417ce9e56e64f405b",
+      "gitBlob": "eb9461ef4064d8f69b117572c700b0ec57d36a81"
+    },
+    "task-5-green-setup-1-console.log": {
+      "sha256": "58bfbea49ddac78e2587c3917061f433cd4a22e784a1e35e33ad751343627de7",
+      "canonicalSha256": "79db5f342886846c78e34c2224c75bb3f46a1344796893569153b0f73339e44b",
+      "gitBlob": "be15f6d01a5458a28b5c706c1e89df093820b42c"
+    },
+    "task-5-green-setup-2-db.json": {
+      "sha256": "dcbfaaa450105b053fc7836dd6ffc66fc182185f89dfaf70693177a5c779a710",
+      "canonicalSha256": "dcbfaaa450105b053fc7836dd6ffc66fc182185f89dfaf70693177a5c779a710",
+      "gitBlob": "489579ef2c02f407905b189511d32c575e130934"
+    },
+    "task-5-green-setup-2-db.log": {
+      "sha256": "437d0ddd7cca6ef5caaf6e0e582c285f0f4d80028943642b5156207b1ab8b77d",
+      "canonicalSha256": "437d0ddd7cca6ef5caaf6e0e582c285f0f4d80028943642b5156207b1ab8b77d",
+      "gitBlob": "9fe1d15c705e90ff337758f38ab1274034a67521"
+    },
+    "task-5-green-setup-2-console.log": {
+      "sha256": "3f4c0ab4a85b91652d11003f1ab08404a8730c60cea8cbc388bed1fb40af4bcf",
+      "canonicalSha256": "a8b000600590e1684324eb998995d511a9e47f064f3cecd3495d5bfc46a63f48",
+      "gitBlob": "fc9fd82e02009d053e79d0bee81bf1e8ee6076cd"
+    },
+    "task-5-upload-diagnostic-db.json": {
+      "sha256": "bfb286f66692071e90d2f0abcdefd740445fb9e1e3ed0c544d88b0f5c8b98355",
+      "canonicalSha256": "bfb286f66692071e90d2f0abcdefd740445fb9e1e3ed0c544d88b0f5c8b98355",
+      "gitBlob": "0a53d74084c2901926d1a5bac417f49d410035d4"
+    },
+    "task-5-upload-diagnostic-db.log": {
+      "sha256": "8313d18449fa93c150c7677b1cdbbbf423597a0d1ec932d1f27df692b1b4954c",
+      "canonicalSha256": "8313d18449fa93c150c7677b1cdbbbf423597a0d1ec932d1f27df692b1b4954c",
+      "gitBlob": "0d889295b71abdc05d19acbeee4ba954f1fc50ae"
+    },
+    "task-5-upload-diagnostic-console.log": {
+      "sha256": "afc5cf672fdb4f91b071c5c91a1aae04093249af8f296fa1ce72701d8c3ba330",
+      "canonicalSha256": "f670bdd4fa18e027608c7204962045d0921555af425e32272438f207f3425e26",
+      "gitBlob": "f96322ddf33163fe397b8ffa2cedd248f16740bd"
+    },
+    "task-5-upload-diagnostic-fixed-db.json": {
+      "sha256": "70d165374609d9a7550850322ca5bff7e2f97fef955e27d05e145e0e8920d9df",
+      "canonicalSha256": "70d165374609d9a7550850322ca5bff7e2f97fef955e27d05e145e0e8920d9df",
+      "gitBlob": "3383f4a8e577fbb5efbfcfc97b81e280551200d3"
+    },
+    "task-5-upload-diagnostic-fixed-db.log": {
+      "sha256": "8fab55eaf11a8a1479df4fba57ce428086f67245a445dd4e91f61b0431e4fe71",
+      "canonicalSha256": "8fab55eaf11a8a1479df4fba57ce428086f67245a445dd4e91f61b0431e4fe71",
+      "gitBlob": "513da67b8e9eb3822de86114aa31e303a527f7ec"
+    },
+    "task-5-green-v0-db.json": {
+      "sha256": "56442866a58f443d6fae2346c5f90379c17acdfecc495650db014181fd5eb6ef",
+      "canonicalSha256": "56442866a58f443d6fae2346c5f90379c17acdfecc495650db014181fd5eb6ef",
+      "gitBlob": "a345cfcea51f5b7a226c4c5b59074b905e3f9f61"
+    },
+    "task-5-green-v0-db.log": {
+      "sha256": "8550144f3571fc2942ddcdd79cada408251aa5e7ee723e661d53d7368c40535e",
+      "canonicalSha256": "8550144f3571fc2942ddcdd79cada408251aa5e7ee723e661d53d7368c40535e",
+      "gitBlob": "18da8b2ef138ade9e3d54387772f12920be16afe"
+    },
+    "task-5-green-modern-v0-db.json": {
+      "sha256": "8d80b5147492371219cee1c3fadd9afa68cc568c842925a91eb89f0e3a2cc851",
+      "canonicalSha256": "8d80b5147492371219cee1c3fadd9afa68cc568c842925a91eb89f0e3a2cc851",
+      "gitBlob": "5d6147b2f802d58cc2c1ee0960fd22156a843820"
+    },
+    "task-5-green-modern-v0-db.log": {
+      "sha256": "e2f829322ddf5a5d6af0f465548c41b35efbe69ec68089c902a94ae3924cd231",
+      "canonicalSha256": "e2f829322ddf5a5d6af0f465548c41b35efbe69ec68089c902a94ae3924cd231",
+      "gitBlob": "1196e0454d18423716c355e3b973eebaee367633"
+    },
+    "task-5-green-db.json": {
+      "sha256": "5254b2ea08b748c0d6afb5b711dc7040ebb9f7e0945866d82269b72bd43b3508",
+      "canonicalSha256": "5254b2ea08b748c0d6afb5b711dc7040ebb9f7e0945866d82269b72bd43b3508",
+      "gitBlob": "1a56770bd5419803049d550ec24d3d2070d437c4"
+    },
+    "task-5-green-db.log": {
+      "sha256": "8f5dea6121134184beff4fe0abcec0600d51026c90a0013559b1ca4996d945d6",
+      "canonicalSha256": "8f5dea6121134184beff4fe0abcec0600d51026c90a0013559b1ca4996d945d6",
+      "gitBlob": "c814a2923e14c610bef879e4324a69136593082b"
+    },
+    "task-5-green-modern-db.json": {
+      "sha256": "e18e488e5b638aa94646b59125065e2ae4a980297cd928436da44bd733f98301",
+      "canonicalSha256": "e18e488e5b638aa94646b59125065e2ae4a980297cd928436da44bd733f98301",
+      "gitBlob": "59108693d22151cbdb717cec5990289a01b80349"
+    },
+    "task-5-green-modern-db.log": {
+      "sha256": "0c941c7de5288ae7dfd0b23aed1e84c19c17d73eb2a7fb8c00e3d0cff140951a",
+      "canonicalSha256": "0c941c7de5288ae7dfd0b23aed1e84c19c17d73eb2a7fb8c00e3d0cff140951a",
+      "gitBlob": "4ee9581f11930ae149bde5f5892cbfe6d5ed5fa7"
+    },
+    "task-5-final-v0-gates.json": {
+      "sha256": "ac9dd6093085444d5405e8c31d83de3e37f45f10989379c623658ff73af9988c",
+      "canonicalSha256": "699b7cf019a86bf4dccaf02f0fb97d96e901e552d4a20c8ee1c243f66c75e2ef",
+      "gitBlob": "a7905884e08e719a84e66ddbd3a3b8e834be08fd"
+    },
+    "task-5-final-gates.json": {
+      "sha256": "5cfd291f4d5ff171f7ccc60d7f9e3ea166f20df97deb53144a9a4cca26411da2",
+      "canonicalSha256": "3b3ed0fbc89ca1a51a690c8766f238f24c4efe7df7864b87f7e3345755bc0a56",
+      "gitBlob": "330e3cf318ea0f7fb9853f8e5ba35783f3dcc16f"
+    },
+    "task-5-v0-forward.sql": {
+      "sha256": "ee913551969c28167a9f6233d8dc4e6c9a3b45326e3e5deff96e56cf34c31fd9",
+      "canonicalSha256": "ee913551969c28167a9f6233d8dc4e6c9a3b45326e3e5deff96e56cf34c31fd9",
+      "gitBlob": "73fb6dcaced695824973e7ce7996aabf3436b2ac"
+    },
+    "task-5-v0-manifest.csv": {
+      "sha256": "82bcc1530f45f742a036945df543966767ec9c5aecff834ad9a2b1fe61724793",
+      "canonicalSha256": "82bcc1530f45f742a036945df543966767ec9c5aecff834ad9a2b1fe61724793",
+      "gitBlob": "09ddfafde5ea77b393d2088da885f5be19241cd8"
+    },
+    "task-5-v0-runner.ts": {
+      "sha256": "445ea5b69d71c63fa1b4d85b5c247abd024b7d7d6da7f220c0814f31d74db493",
+      "canonicalSha256": "445ea5b69d71c63fa1b4d85b5c247abd024b7d7d6da7f220c0814f31d74db493",
+      "gitBlob": "5bd1015453decd1d7834cb458fa4a33c0a3de03c"
+    },
+    "task-5-runner-erased-type-proof.json": {
+      "sha256": "eac452b004a6dcf887ea81a6d66e4a2259bc1a64e635df432d5125491882ee93",
+      "canonicalSha256": "eac452b004a6dcf887ea81a6d66e4a2259bc1a64e635df432d5125491882ee93",
+      "gitBlob": "57811a954877e9075e52d5795a3136ac4a135aeb"
+    },
+    "task-5-after-v0-gates-sources.json": {
+      "sha256": "91a236e1d285e96fb1f7abddcc8a00f821d722d08a58fffa1948ab8cf384d00e",
+      "canonicalSha256": "91a236e1d285e96fb1f7abddcc8a00f821d722d08a58fffa1948ab8cf384d00e",
+      "gitBlob": "f1288d5f6504a210b78d8f9c61b5a99776c37170"
+    },
+    "task-5-before-final-gates-sources.json": {
+      "sha256": "9a03f65058d5e26b152e139f1c13c8fcb953b6fd3a88a50a5a01e42e5dae7903",
+      "canonicalSha256": "9a03f65058d5e26b152e139f1c13c8fcb953b6fd3a88a50a5a01e42e5dae7903",
+      "gitBlob": "a925d3e147b0ec5c82da7775c78af222f50b3524"
+    },
+    "task-5-after-final-gates-sources.json": {
+      "sha256": "bf234bee1c536888874b923de2e32d791569eb58ca45f99f0f76ea48fbd2e376",
+      "canonicalSha256": "bf234bee1c536888874b923de2e32d791569eb58ca45f99f0f76ea48fbd2e376",
+      "gitBlob": "778a65a64d9e0cc5b990bb96abfb575336c6e645"
+    },
+    "task-5-actor-privilege-preflight.json": {
+      "sha256": "60fcf8832b6aeff5d996fb0f7913eb6e4d567e7439ac5d5d9d2be1b930dc661a",
+      "canonicalSha256": "b68bdecbc601b3d6e3c9f6c32f9c415ab3f5b677429bc8848d575fb943f7054b",
+      "gitBlob": "b34c5252b046bb86f1a0173a239067b3838cd242"
+    },
+    "task-5-controller-preflight-v2.json": {
+      "sha256": "83dd344e8ce3385268c521f07e09522350a6ce75b828db75494c6dd2cd12f3b3",
+      "canonicalSha256": "97af09cfc81f0a2424c5c8d6557408103b66c2e75d6a50be4bf5947507096816",
+      "gitBlob": "9063bff39fbf0b2247a241d9095a11a37ded838d"
+    },
+    "task-5-function-profiles.json": {
+      "sha256": "d6e1ef62463a54e5ec60c2361f2a715ad5aa8ebb9975eecb16a2599120731454",
+      "canonicalSha256": "d6e1ef62463a54e5ec60c2361f2a715ad5aa8ebb9975eecb16a2599120731454",
+      "gitBlob": "8927539affca11290ac2a3e4b84c6f50f38cb732"
+    },
+    "task-5-review-functions.json": {
+      "sha256": "8669e76940d4fbdbf0136ade712d842f31ee2503c852bd3f6cf69ef8fd8975a8",
+      "canonicalSha256": "8669e76940d4fbdbf0136ade712d842f31ee2503c852bd3f6cf69ef8fd8975a8",
+      "gitBlob": "ef6e233941062c0ce816d16fb9b9dfeea2ab5694"
+    },
+    "task-5-cli-help.log": {
+      "sha256": "0e4e41f25e981ee443a8a2764d2f08fd9b82f4074b41da30dc5bd27081fc9090",
+      "canonicalSha256": "0e4e41f25e981ee443a8a2764d2f08fd9b82f4074b41da30dc5bd27081fc9090",
+      "gitBlob": "68d50f5faad45ba7e68877f20a53736539385546"
+    },
+    "task-5-cli-query-help.log": {
+      "sha256": "76e79bd9eb21ff812a81ad2b6a74c5c6e805d95142a94f199924d95544b46cfb",
+      "canonicalSha256": "76e79bd9eb21ff812a81ad2b6a74c5c6e805d95142a94f199924d95544b46cfb",
+      "gitBlob": "3844675b7419136f126e288545e92fb2df196c89"
+    },
+    "task-5-cli-dump-help.log": {
+      "sha256": "6d1c2b9d3a5eeabe33c1fc582cfdef21f52ca630228cc09935c1fb8afc5de5d8",
+      "canonicalSha256": "6d1c2b9d3a5eeabe33c1fc582cfdef21f52ca630228cc09935c1fb8afc5de5d8",
+      "gitBlob": "483e354b411c32ae571698d928112926dfa934e8"
+    },
+    "task-5-final-typecheck.log": {
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "canonicalSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "gitBlob": "f5b99e8a88f3351bff2d974f340241915d097a47"
+    },
+    "task-5-final-tests.log": {
+      "sha256": "126be6118ea786ff4cc7cc3c73fd764524ad15aeee7355f0fb57399974d2cc2e",
+      "canonicalSha256": "126be6118ea786ff4cc7cc3c73fd764524ad15aeee7355f0fb57399974d2cc2e",
+      "gitBlob": "c9d73dafb5c835d49bda2e4c1accbbd6728d69e8"
+    },
+    "task-5-final-lint.log": {
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "canonicalSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "gitBlob": "e26a53e181f0152d140961ba882ad1cb890771fe"
+    },
+    "task-5-final-build.log": {
+      "sha256": "280d4e8226cb88f726db5a0178936b2a81f3e5d225d377d01e6098f3b5989a94",
+      "canonicalSha256": "280d4e8226cb88f726db5a0178936b2a81f3e5d225d377d01e6098f3b5989a94",
+      "gitBlob": "f60d1960eb69613ef52c54384ab3ac56f712a9d6"
+    },
+    "task-5-final-v0-typecheck.log": {
+      "sha256": "ca3add339b5043cc476fb12c77289f4e79b13a60e9a6c22c0ebfdf468e3456a9",
+      "canonicalSha256": "58445e1b976b37f168afb46ae11f5f929883e5e8c298ee3b0f3e5efa2892b6c4",
+      "gitBlob": "6e7bc739b1241189eed8de70e941829c8c4ed96d"
+    },
+    "task-5-final-v0-tests.log": {
+      "sha256": "30b3bee3be03a28400652ddd169bc104ad17d582c16350442a33c9cf7c970d45",
+      "canonicalSha256": "30b3bee3be03a28400652ddd169bc104ad17d582c16350442a33c9cf7c970d45",
+      "gitBlob": "d1684858b90b15b45f869d37ce4cc1b0acd5341a"
+    },
+    "task-5-final-v0-lint.log": {
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "canonicalSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "gitBlob": "e26a53e181f0152d140961ba882ad1cb890771fe"
+    },
+    "task-5-final-v0-build.log": {
+      "sha256": "ab63073b328487e071c7d190b65e628951b542eb2d3f596f0a314e255f99c659",
+      "canonicalSha256": "ab63073b328487e071c7d190b65e628951b542eb2d3f596f0a314e255f99c659",
+      "gitBlob": "5a6bc48557023031bc89d5c9066b1d3caa269785"
+    },
+    "task-5-production-final-readonly.json": {
+      "sha256": "986606cbb56b0e9a504225c512911fec9f61e8f8aab61ea993e5cf975cfb6b46",
+      "canonicalSha256": "986606cbb56b0e9a504225c512911fec9f61e8f8aab61ea993e5cf975cfb6b46",
+      "gitBlob": "9bcf30d1fdb218829bc5aa750e50038ae4dc5853"
+    }
+  },
+  "finalHosted": {
+    "mode": "green",
+    "startedAt": "2026-10-01T20:08:22.614Z",
+    "sourceCommit": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+    "testedExecutableBlobs": {
+      "src/lib/animals/draftIntent.database.test.ts": {
+        "sha256": "c16de6459f294aff8a39871112558bea6eb0b2af97a00a8611346f33c7187970",
+        "canonicalSha256": "c16de6459f294aff8a39871112558bea6eb0b2af97a00a8611346f33c7187970"
+      },
+      "src/lib/animals/draftIntent.testSupport.ts": {
+        "sha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0",
+        "canonicalSha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0"
+      },
+      "src/lib/animals/draftUpload.server.ts": {
+        "sha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1",
+        "canonicalSha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1"
+      },
+      "src/lib/animals/draftUploadCleanup.server.ts": {
+        "sha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809",
+        "canonicalSha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809"
+      },
+      "src/lib/animals/photoUpload.http.server.ts": {
+        "sha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48",
+        "canonicalSha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48"
+      },
+      "src/lib/animals/photoUpload.ts": {
+        "sha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a",
+        "canonicalSha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a"
+      },
+      "src/lib/admin/session.server.ts": {
+        "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+        "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+      },
+      "src/lib/donations/supabase.server.ts": {
+        "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+        "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+      },
+      "src/lib/supabase.server.ts": {
+        "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+        "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+      },
+      "src/lib/http/publicJson.server.ts": {
+        "sha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+        "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262"
+      },
+      "src/lib/operations/releaseSchema.ts": {
+        "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+        "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+      },
+      "src/lib/operations/releaseManifest.ts": {
+        "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+        "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+      },
+      "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+        "sha256": "8de32c1ca01d9818858a1867b03ecadc90e6144b00f3d817690300197a2a5b81",
+        "canonicalSha256": "8de32c1ca01d9818858a1867b03ecadc90e6144b00f3d817690300197a2a5b81"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-5-gates.py": {
+        "sha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2",
+        "canonicalSha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2"
+      },
+      "package.json": {
+        "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+        "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+      },
+      "bun.lock": {
+        "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+        "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+      },
+      "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": {
+        "sha256": "41a3c6841683d47913c858b8b98d8f47d04aaa67aa3b77d85ece29da90d29c71",
+        "canonicalSha256": "41a3c6841683d47913c858b8b98d8f47d04aaa67aa3b77d85ece29da90d29c71"
+      },
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+        "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+        "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-5-reviewed-paths.json": {
+        "sha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27",
+        "canonicalSha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27"
+      },
+      "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+        "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+        "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+      },
+      "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+      },
+      "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+      },
+      "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+        "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+        "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+      },
+      "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+        "sha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+        "canonicalSha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e"
+      }
+    },
+    "productionActions": "catalog/schema reads only; no production data or actor RPC",
+    "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+    "upstreamCiHold": "controller released PR188 exact490 CI36913123561 attempt1 allfiveSUCCESS",
+    "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+    "clone": "r01_clone_aa612de39af54b7fbf3cd6a79b376923",
+    "schemaParity": true,
+    "zeroApplicationTables": 158,
+    "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+    "reviewedFunctions": [
+      {
+        "name": "private.bump_sponsorship_followup_version",
+        "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+      },
+      {
+        "name": "private.bump_supporter_edit_version",
+        "hash": "d1fd0a986ef9bb089e9d5025e4177a49"
+      },
+      {
+        "name": "private.is_valid_animal_public_profile",
+        "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+      },
+      {
+        "name": "private.normalize_public_animal_age",
+        "hash": "1f85086f172d61fff31de8d854f32a55"
+      },
+      {
+        "name": "private.preserve_sponsorship_contact_submission",
+        "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+      },
+      {
+        "name": "private.sponsorship_cancel_transition",
+        "hash": "17036bab02ad4087b0727e395faac4b1"
+      },
+      {
+        "name": "public.enforce_current_animal_preference",
+        "hash": "5d9512de7da0c787523292316c6603e7"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.record_public_consent_intents",
+        "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+      },
+      {
+        "name": "public.set_animal_catalog_membership_defaults",
+        "hash": "16d251076045243facecbe0088b5422c"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      }
+    ],
+    "authPrivilegeProfile": {
+      "serviceselect": false,
+      "serviceupdate": false,
+      "acl": "{supabase_auth_admin=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin,postgres=ar*wdDxtm/supabase_auth_admin}"
+    },
+    "manifestBefore": {
+      "requirements": 146,
+      "issues": 44
+    },
+    "dependencies": [
+      {
+        "file": "20261001134252_r01_adoption_upload_forward.sql",
+        "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+        "issues": 41
+      },
+      {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "issues": 41
+      },
+      {
+        "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "issues": 33
+      },
+      {
+        "file": "20261001175310_r01_internship_upload_forward.sql",
+        "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+        "issues": 30
+      }
+    ],
+    "task1Applied": false,
+    "manifestBeforeTask5": {
+      "requirements": 146,
+      "issues": 30
+    },
+    "foreignKeyTriggers": [
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "499603",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1654",
+          "tgname": "RI_ConstraintTrigger_a_499603",
+          "tgqual": null,
+          "tgtype": 9,
+          "tgnargs": 0,
+          "tgrelid": "496903",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499602",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "498681",
+          "tgconstrrelid": "497351",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499603",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499602",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "499604",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1655",
+          "tgname": "RI_ConstraintTrigger_a_499604",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "496903",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499602",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "498681",
+          "tgconstrrelid": "497351",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499604",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499602",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "499605",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1644",
+          "tgname": "RI_ConstraintTrigger_c_499605",
+          "tgqual": null,
+          "tgtype": 5,
+          "tgnargs": 0,
+          "tgrelid": "497351",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499602",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "498681",
+          "tgconstrrelid": "496903",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499605",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499602",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "499606",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1645",
+          "tgname": "RI_ConstraintTrigger_c_499606",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "497351",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499602",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "498681",
+          "tgconstrrelid": "496903",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499606",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499602",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "499608",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1654",
+          "tgname": "RI_ConstraintTrigger_a_499608",
+          "tgqual": null,
+          "tgtype": 9,
+          "tgnargs": 0,
+          "tgrelid": "24860",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499607",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "497351",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499608",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499607",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "499609",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1655",
+          "tgname": "RI_ConstraintTrigger_a_499609",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "24860",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499607",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "497351",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499609",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499607",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "499610",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1644",
+          "tgname": "RI_ConstraintTrigger_c_499610",
+          "tgqual": null,
+          "tgtype": 5,
+          "tgnargs": 0,
+          "tgrelid": "497351",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499607",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "24860",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499610",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499607",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "499611",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1645",
+          "tgname": "RI_ConstraintTrigger_c_499611",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "497351",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "499607",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "24860",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "499611",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "499607",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      }
+    ],
+    "preflightResults": [
+      {
+        "case": "client grant",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "client column grant",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "owner ACL drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "service grant option",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "missing service right",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled RLS",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unexpected policy",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong default",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong index",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled trigger",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong trigger args",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong function body",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "definer drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "config drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "public execute",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unexpected overload",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "insert rewrite rule",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unlogged relation",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong column type",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong collation",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "extra FK",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "not validated constraint",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong owner",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "forced RLS",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unknown archive body",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper client execute",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper grant option",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper wrong owner",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper invoker drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper wrong config",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper wrong body",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper overload",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_id_fkey referenced action",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_id_fkey intent check",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_updated_by_fkey referenced action",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_updated_by_fkey intent check",
+        "sqlState": "55000",
+        "preserved": true
+      }
+    ],
+    "manifestAfter": {
+      "requirements": 146,
+      "issues": 25
+    },
+    "migration": {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+      "firstApply": 0,
+      "secondApply": 0,
+      "unrelatedCatalogPreserved": true,
+      "modernGoodMediaCatalogPreserved": false,
+      "knownArchiveBodyHardened": true,
+      "preexistingRowsPreserved": true,
+      "tempShadowPreserved": true,
+      "relationProfileHash": "58ff6997ea8ab6ba6d6fabfcd4f785196de8c00c93791d6e87adfa471e547149"
+    },
+    "testCommand": "bun test src/lib/animals/draftIntent.database.test.ts --timeout 30000",
+    "testExit": 0,
+    "testSummary": [
+      "\n 17 pass",
+      " 0 fail",
+      " 100 expect() calls"
+    ],
+    "ledgerPreserved": true,
+    "preexistingSyntheticFactsPreservedAfterTests": true,
+    "result": "GREEN",
+    "originalSources": {
+      "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "templatePreserved": true,
+      "modernBeforeHash": "cdf51c4ed52ddf7f17b9e5e203bb56edd78761a1bc9255ee725928ad4615e653",
+      "modernPreserved": true
+    },
+    "cleanup": "only exact owned clone normally dropped; no force/session termination",
+    "completedAt": "2026-10-01T20:09:16.569Z",
+    "testedExecutableBlobsPreserved": true
+  },
+  "finalModern": {
+    "mode": "green-modern",
+    "startedAt": "2026-10-01T20:09:38.559Z",
+    "sourceCommit": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+    "testedExecutableBlobs": {
+      "src/lib/animals/draftIntent.database.test.ts": {
+        "sha256": "c16de6459f294aff8a39871112558bea6eb0b2af97a00a8611346f33c7187970",
+        "canonicalSha256": "c16de6459f294aff8a39871112558bea6eb0b2af97a00a8611346f33c7187970"
+      },
+      "src/lib/animals/draftIntent.testSupport.ts": {
+        "sha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0",
+        "canonicalSha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0"
+      },
+      "src/lib/animals/draftUpload.server.ts": {
+        "sha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1",
+        "canonicalSha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1"
+      },
+      "src/lib/animals/draftUploadCleanup.server.ts": {
+        "sha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809",
+        "canonicalSha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809"
+      },
+      "src/lib/animals/photoUpload.http.server.ts": {
+        "sha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48",
+        "canonicalSha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48"
+      },
+      "src/lib/animals/photoUpload.ts": {
+        "sha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a",
+        "canonicalSha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a"
+      },
+      "src/lib/admin/session.server.ts": {
+        "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+        "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+      },
+      "src/lib/donations/supabase.server.ts": {
+        "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+        "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+      },
+      "src/lib/supabase.server.ts": {
+        "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+        "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+      },
+      "src/lib/http/publicJson.server.ts": {
+        "sha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+        "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262"
+      },
+      "src/lib/operations/releaseSchema.ts": {
+        "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+        "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+      },
+      "src/lib/operations/releaseManifest.ts": {
+        "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+        "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+      },
+      "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+        "sha256": "8de32c1ca01d9818858a1867b03ecadc90e6144b00f3d817690300197a2a5b81",
+        "canonicalSha256": "8de32c1ca01d9818858a1867b03ecadc90e6144b00f3d817690300197a2a5b81"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-5-gates.py": {
+        "sha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2",
+        "canonicalSha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2"
+      },
+      "package.json": {
+        "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+        "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+      },
+      "bun.lock": {
+        "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+        "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+      },
+      "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": {
+        "sha256": "41a3c6841683d47913c858b8b98d8f47d04aaa67aa3b77d85ece29da90d29c71",
+        "canonicalSha256": "41a3c6841683d47913c858b8b98d8f47d04aaa67aa3b77d85ece29da90d29c71"
+      },
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+        "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+        "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-5-reviewed-paths.json": {
+        "sha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27",
+        "canonicalSha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27"
+      },
+      "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+        "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+        "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+      },
+      "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+      },
+      "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+      },
+      "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+        "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+        "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+      },
+      "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+        "sha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+        "canonicalSha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e"
+      }
+    },
+    "productionActions": "catalog/schema reads only; no production data or actor RPC",
+    "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+    "upstreamCiHold": "controller released PR188 exact490 CI36913123561 attempt1 allfiveSUCCESS",
+    "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+    "clone": "r01_clone_51b6070934944b8e9d3caad15999345f",
+    "schemaParity": true,
+    "zeroApplicationTables": 162,
+    "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+    "reviewedFunctions": [
+      {
+        "name": "private.bump_sponsorship_followup_version",
+        "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+      },
+      {
+        "name": "private.bump_supporter_edit_version",
+        "hash": "08619e0337db72d3d685130718c47538"
+      },
+      {
+        "name": "private.is_valid_animal_public_profile",
+        "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+      },
+      {
+        "name": "private.lock_admin_user_mutation",
+        "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+      },
+      {
+        "name": "private.normalize_public_animal_age",
+        "hash": "1f85086f172d61fff31de8d854f32a55"
+      },
+      {
+        "name": "private.preserve_sponsorship_contact_submission",
+        "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+      },
+      {
+        "name": "private.require_active_admin_user",
+        "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+      },
+      {
+        "name": "private.sponsorship_cancel_transition",
+        "hash": "17036bab02ad4087b0727e395faac4b1"
+      },
+      {
+        "name": "public.enforce_current_animal_preference",
+        "hash": "5d9512de7da0c787523292316c6603e7"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.record_public_consent_intents",
+        "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+      },
+      {
+        "name": "public.set_animal_catalog_membership_defaults",
+        "hash": "fa013ae528d796d1cdee6f769d16abeb"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      }
+    ],
+    "authPrivilegeProfile": {
+      "serviceselect": false,
+      "serviceupdate": false,
+      "acl": "{supabase_auth_admin=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin,postgres=ar*wdDxtm/supabase_auth_admin}"
+    },
+    "manifestBefore": {
+      "requirements": 146,
+      "issues": 1
+    },
+    "dependencies": [
+      {
+        "file": "20261001134252_r01_adoption_upload_forward.sql",
+        "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+        "issues": 1
+      },
+      {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "issues": 1
+      },
+      {
+        "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "issues": 1
+      },
+      {
+        "file": "20261001175310_r01_internship_upload_forward.sql",
+        "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+        "issues": 1
+      }
+    ],
+    "task1Applied": false,
+    "manifestBeforeTask5": {
+      "requirements": 146,
+      "issues": 1
+    },
+    "foreignKeyTriggers": [
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "504149",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1654",
+          "tgname": "RI_ConstraintTrigger_a_504149",
+          "tgqual": null,
+          "tgtype": 9,
+          "tgnargs": 0,
+          "tgrelid": "501393",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504148",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "503205",
+          "tgconstrrelid": "501837",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504149",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504148",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "504150",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1655",
+          "tgname": "RI_ConstraintTrigger_a_504150",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "501393",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504148",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "503205",
+          "tgconstrrelid": "501837",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504150",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504148",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "504151",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1644",
+          "tgname": "RI_ConstraintTrigger_c_504151",
+          "tgqual": null,
+          "tgtype": 5,
+          "tgnargs": 0,
+          "tgrelid": "501837",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504148",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "503205",
+          "tgconstrrelid": "501393",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504151",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504148",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_id_fkey",
+        "trigger": {
+          "oid": "504152",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1645",
+          "tgname": "RI_ConstraintTrigger_c_504152",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "501837",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504148",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "503205",
+          "tgconstrrelid": "501393",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504152",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504148",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "504154",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1654",
+          "tgname": "RI_ConstraintTrigger_a_504154",
+          "tgqual": null,
+          "tgtype": 9,
+          "tgnargs": 0,
+          "tgrelid": "24860",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504153",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "501837",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504154",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504153",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "504155",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1655",
+          "tgname": "RI_ConstraintTrigger_a_504155",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "24860",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504153",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "501837",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504155",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504153",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "504156",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1644",
+          "tgname": "RI_ConstraintTrigger_c_504156",
+          "tgqual": null,
+          "tgtype": 5,
+          "tgnargs": 0,
+          "tgrelid": "501837",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504153",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "24860",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504156",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504153",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      },
+      {
+        "conname": "animal_draft_updated_by_fkey",
+        "trigger": {
+          "oid": "504157",
+          "tgargs": "\\x",
+          "tgattr": [],
+          "tgfoid": "1645",
+          "tgname": "RI_ConstraintTrigger_c_504157",
+          "tgqual": null,
+          "tgtype": 17,
+          "tgnargs": 0,
+          "tgrelid": "501837",
+          "tgenabled": "O",
+          "tgnewtable": null,
+          "tgoldtable": null,
+          "tgparentid": "0",
+          "tgconstraint": "504153",
+          "tgdeferrable": false,
+          "tgisinternal": true,
+          "tgconstrindid": "26672",
+          "tgconstrrelid": "24860",
+          "tginitdeferred": false
+        },
+        "dependencies": [
+          {
+            "objid": "504157",
+            "classid": "2620",
+            "deptype": "i",
+            "objsubid": 0,
+            "refobjid": "504153",
+            "refclassid": "2606",
+            "refobjsubid": 0
+          }
+        ]
+      }
+    ],
+    "modernKnownArchiveBodyDelta": true,
+    "preflightResults": [
+      {
+        "case": "client grant",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "client column grant",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "owner ACL drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "service grant option",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "missing service right",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled RLS",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unexpected policy",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong default",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong index",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled trigger",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong trigger args",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong function body",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "definer drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "config drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "public execute",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unexpected overload",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "insert rewrite rule",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unlogged relation",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong column type",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong collation",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "extra FK",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "not validated constraint",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong owner",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "forced RLS",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "unknown archive body",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper client execute",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper grant option",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper wrong owner",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper invoker drift",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper wrong config",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper wrong body",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "helper overload",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_id_fkey referenced action",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_id_fkey intent check",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_updated_by_fkey referenced action",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "disabled animal_draft_updated_by_fkey intent check",
+        "sqlState": "55000",
+        "preserved": true
+      }
+    ],
+    "manifestAfter": {
+      "requirements": 146,
+      "issues": 1
+    },
+    "migration": {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+      "firstApply": 0,
+      "secondApply": 0,
+      "unrelatedCatalogPreserved": true,
+      "modernGoodMediaCatalogPreserved": true,
+      "knownArchiveBodyHardened": true,
+      "preexistingRowsPreserved": true,
+      "tempShadowPreserved": true,
+      "relationProfileHash": "901f017fd1097206f4170f4d3e1e7534ad04affa7811e1f64744885ea83d12e2"
+    },
+    "testCommand": "bun test src/lib/animals/draftIntent.database.test.ts --timeout 30000",
+    "testExit": 0,
+    "testSummary": [
+      "\n 17 pass",
+      " 0 fail",
+      " 100 expect() calls"
+    ],
+    "ledgerPreserved": true,
+    "preexistingSyntheticFactsPreservedAfterTests": true,
+    "result": "GREEN",
+    "originalSources": {
+      "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "templatePreserved": true,
+      "modernBeforeHash": "cdf51c4ed52ddf7f17b9e5e203bb56edd78761a1bc9255ee725928ad4615e653",
+      "modernPreserved": true
+    },
+    "cleanup": "only exact owned clone normally dropped; no force/session termination",
+    "completedAt": "2026-10-01T20:10:02.034Z",
+    "testedExecutableBlobsPreserved": true
+  },
+  "finalGates": {
+    "phase": "final",
+    "source": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+    "startedAt": "2026-10-01T20:10:03.070528+00:00",
+    "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+    "gates": [
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 26.62,
+        "log": "task-5-final-typecheck.log"
+      },
+      {
+        "gate": "tests",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 0,
+        "elapsedSeconds": 50.66,
+        "log": "task-5-final-tests.log",
+        "summary": [
+          "\n 3228 pass",
+          " 266 skip",
+          " 0 fail",
+          " 10478 expect() calls"
+        ]
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 25.47,
+        "log": "task-5-final-lint.log"
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 41.88,
+        "log": "task-5-final-build.log"
+      }
+    ],
+    "completedAt": "2026-10-01T20:12:27.704874+00:00"
+  },
+  "oldBodyRed": {
+    "mode": "red-actor",
+    "startedAt": "2026-10-01T19:31:00.751Z",
+    "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+    "archiveProfile": [
+      {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "p_actor_user_id uuid, p_animal_id uuid, p_archived boolean",
+        "name": "set_animal_archived_with_audit",
+        "owner": "postgres",
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "jsonb",
+        "schema": "public",
+        "bodyMd5": "24c511a72fdb32759907fbd2b0f71d73",
+        "definer": false,
+        "parallel": "u",
+        "volatility": "v"
+      }
+    ],
+    "zeroApplicationTables": 162,
+    "schemaParity": true,
+    "testedExecutableBlobs": {
+      "src/lib/animals/draftIntent.database.test.ts": "79925e803606824c03e71cc150447b3f270a640dd4b6c4d79331596d7fdd3273",
+      "src/lib/animals/draftIntent.testSupport.ts": "ec052706e2b44b79dbbc885d5d010b787791317b317ab74027831d209a36cbb5",
+      "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": "9a33a88ddb5fd60e08f3c79b384adf8979982154ebc6d62bf9a52bc10dcae7d6",
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "productionActions": "schema/catalog only; no data read or actor calls",
+    "testExit": 1,
+    "testSummary": [
+      "\n 0 pass",
+      " 6 fail",
+      " 6 expect() calls"
+    ],
+    "result": "watched RED: known legacy archive accepts unauthorized actor",
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d62f75103778083c73460f549da2e99b76c8e1e2da8fc61d63b43e14e977d5e9",
+    "modernPreserved": true,
+    "testedExecutableBlobsPreserved": true,
+    "cleanup": "only newly owned clone normally dropped",
+    "completedAt": "2026-10-01T19:31:04.619Z"
+  },
+  "missingTargetRed": {
+    "mode": "red",
+    "startedAt": "2026-10-01T19:31:50.333Z",
+    "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+    "archiveProfile": [],
+    "zeroApplicationTables": 158,
+    "schemaParity": true,
+    "testedExecutableBlobs": {
+      "src/lib/animals/draftIntent.database.test.ts": "79925e803606824c03e71cc150447b3f270a640dd4b6c4d79331596d7fdd3273",
+      "src/lib/animals/draftIntent.testSupport.ts": "ec052706e2b44b79dbbc885d5d010b787791317b317ab74027831d209a36cbb5",
+      "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": "9a33a88ddb5fd60e08f3c79b384adf8979982154ebc6d62bf9a52bc10dcae7d6",
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "productionActions": "schema/catalog only; no data read or actor calls",
+    "testExit": 1,
+    "testSummary": [
+      "\n 0 pass",
+      " 1 fail"
+    ],
+    "result": "watched RED: missing animal draft intent relation",
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d62f75103778083c73460f549da2e99b76c8e1e2da8fc61d63b43e14e977d5e9",
+    "modernPreserved": true,
+    "testedExecutableBlobsPreserved": true,
+    "cleanup": "only newly owned clone normally dropped",
+    "completedAt": "2026-10-01T19:31:55.985Z"
+  },
+  "knownBodyDelta": {
+    "oldArchiveDefinitionMd5": "24c511a72fdb32759907fbd2b0f71d73",
+    "hardenedArchiveDefinitionMd5": "1032db3be15fc3ea053c43648d45291d",
+    "newPrivateBridgeDefinitionMd5": "5e3d7a6501a7dc851864ba6e09f8097c",
+    "publicArchive": "INVOKER/postgres/empty search_path/service EXECUTE unchanged",
+    "privatePrerequisite": "Explicit controller-authorized new bridge, not a sixth public releaseManifest requirement",
+    "managedAuthCalibration": "none; hosted and owned clone service Auth SELECT/UPDATE false, ACL equal"
+  },
+  "fixtureTransitions": {
+    "beforeV0Gates": "d62f75103778083c73460f549da2e99b76c8e1e2da8fc61d63b43e14e977d5e9",
+    "afterV0Gates": {
+      "at": "2026-10-01T20:08:21.523Z",
+      "modern": "cdf51c4ed52ddf7f17b9e5e203bb56edd78761a1bc9255ee725928ad4615e653",
+      "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6"
+    },
+    "beforeFinalV1Gates": {
+      "at": "2026-10-01T20:10:02.118Z",
+      "modern": "cdf51c4ed52ddf7f17b9e5e203bb56edd78761a1bc9255ee725928ad4615e653",
+      "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6"
+    },
+    "afterFinalV1Gates": {
+      "at": "2026-10-01T20:12:58.693Z",
+      "modern": "f52f62aa3d27df6715922036a02c103cfbc82bd178981a8e3c272df9602fc448",
+      "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6"
+    },
+    "meaning": "Dedicated57322 full-suite fixture transitions, never reset/restore/sequence-normalized; each separate clone preserved its own fresh baseline; template remained c653."
+  },
+  "notRun": [
+    "remote JWT/PostgREST/real Storage/provider UAT",
+    "Task1 payment source ACL change and actual actor acceptance",
+    "Task5 independent review/exact-head CI/controller PR",
+    "production application/deployment/activation"
+  ],
+  "productionFinalReadonly": {
+    "at": "2026-10-01T20:11:58.870520Z",
+    "ledger_count": 112,
+    "intent_table": null,
+    "public_target_overloads": 0,
+    "actor_bridge": null,
+    "service_auth_select": false,
+    "service_auth_update": false,
+    "service_private_usage": true,
+    "queryScope": "read-only catalog/ledger count; no production rows or actor RPC"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-01T20:11:58.870520Z",
+  "ledger_count": 112,
+  "intent_table": null,
+  "public_target_overloads": 0,
+  "actor_bridge": null,
+  "service_auth_select": false,
+  "service_auth_update": false,
+  "service_private_usage": true,
+  "queryScope": "read-only catalog/ledger count; no production rows or actor RPC"
+}
