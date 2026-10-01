@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\publicAdoption\uploadIntent.database.test.ts:
+(pass) R01 adoption forward schema on a guarded empty clone > current caller can query intent, fingerprint and exact cleanup signature [13.78ms]
+(pass) R01 adoption forward schema on a guarded empty clone > anon and authenticated SQL actors cannot read or mutate private intent/token or call cleanup [41.45ms]
+(pass) R01 adoption forward schema on a guarded empty clone > malformed hashes, photo counts, expired creation and duplicate bearer/application are rejected [32.16ms]
+(pass) R01 adoption forward schema on a guarded empty clone > submitted, unexpired, NULL and unknown intents defer without parent deletion [54.37ms]
+(pass) R01 adoption forward schema on a guarded empty clone > completed case retains application, photos and original modern row version [29.47ms]
+(pass) R01 adoption forward schema on a guarded empty clone > concurrent purge retries keep intent and cascade partial children until simulated Storage succeeds [68.12ms]
+(pass) R01 adoption forward schema on a guarded empty clone > cleanup rechecks expiry after waiting for an intent lock [67.96ms]
+(pass) R01 adoption forward schema on a guarded empty clone > cleanup uses wall-clock expiry after its lock rather than transaction start time [1030.50ms]
+(pass) R01 adoption forward schema on a guarded empty clone > committing case insertion holds parent key-share and cleanup then preserves completed case [43.07ms]
+(pass) R01 adoption forward schema on a guarded empty clone > cleanup parent lock prevents a late case insertion from orphaning committed work [44.28ms]
+(pass) R01 adoption forward schema on a guarded empty clone > downstream failure rolls back parent and cascaded child deletion atomically [605.13ms]
+
+ 11 pass
+ 0 fail
+ 49 expect() calls
+Ran 11 tests across 1 file. [2.82s]
