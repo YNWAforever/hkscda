@@ -82,6 +82,7 @@ import { Route as ApiJobsDonationsRouteImport } from './routes/api/jobs/donation
 import { Route as ApiJobsCrmExportsRouteImport } from './routes/api/jobs/crm-exports'
 import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
 import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
+import { Route as ApiInternalReadinessRouteImport } from './routes/api/internal/readiness'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
 import { Route as ApiAdminTaskOverviewRouteImport } from './routes/api/admin/task-overview'
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
@@ -646,6 +647,11 @@ const ApiInternshipsAttachmentRoute =
     path: '/api/internships/attachment',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiInternalReadinessRoute = ApiInternalReadinessRouteImport.update({
+  id: '/api/internal/readiness',
+  path: '/api/internal/readiness',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
   id: '/api/adoption/applications',
   path: '/api/adoption/applications',
@@ -1848,6 +1854,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/internal/readiness': typeof ApiInternalReadinessRoute
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
   '/api/jobs/crm-exports': typeof ApiJobsCrmExportsRoute
@@ -2116,6 +2123,7 @@ export interface FileRoutesByTo {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/internal/readiness': typeof ApiInternalReadinessRoute
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
   '/api/jobs/crm-exports': typeof ApiJobsCrmExportsRoute
@@ -2386,6 +2394,7 @@ export interface FileRoutesById {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/internal/readiness': typeof ApiInternalReadinessRoute
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
   '/api/jobs/crm-exports': typeof ApiJobsCrmExportsRoute
@@ -2657,6 +2666,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/admin/task-overview'
     | '/api/adoption/applications'
+    | '/api/internal/readiness'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
     | '/api/jobs/crm-exports'
@@ -2925,6 +2935,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/admin/task-overview'
     | '/api/adoption/applications'
+    | '/api/internal/readiness'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
     | '/api/jobs/crm-exports'
@@ -3194,6 +3205,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/admin/task-overview'
     | '/api/adoption/applications'
+    | '/api/internal/readiness'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
     | '/api/jobs/crm-exports'
@@ -3438,6 +3450,7 @@ export interface RootRouteChildren {
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
   ApiAdminTaskOverviewRoute: typeof ApiAdminTaskOverviewRoute
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
+  ApiInternalReadinessRoute: typeof ApiInternalReadinessRoute
   ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
   ApiJobsAdoptionUploadsRoute: typeof ApiJobsAdoptionUploadsRoute
   ApiJobsCrmExportsRoute: typeof ApiJobsCrmExportsRoute
@@ -4036,6 +4049,13 @@ declare module '@tanstack/react-router' {
       path: '/api/internships/attachment'
       fullPath: '/api/internships/attachment'
       preLoaderRoute: typeof ApiInternshipsAttachmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/readiness': {
+      id: '/api/internal/readiness'
+      path: '/api/internal/readiness'
+      fullPath: '/api/internal/readiness'
+      preLoaderRoute: typeof ApiInternalReadinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/adoption/applications': {
@@ -6228,6 +6248,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
   ApiAdminTaskOverviewRoute: ApiAdminTaskOverviewRoute,
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
+  ApiInternalReadinessRoute: ApiInternalReadinessRoute,
   ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
   ApiJobsAdoptionUploadsRoute: ApiJobsAdoptionUploadsRoute,
   ApiJobsCrmExportsRoute: ApiJobsCrmExportsRoute,

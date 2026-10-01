@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "de15c36f06ad6ca9b786af9f61748664a31efb1d",
-  "appShaNote": "PR167 combined review sourcede15c36f06ad6ca9b786af9f61748664a31efb1d; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
+  "appSha": "bba28b681024f9c646833fa1ea24c5a24647b768",
+  "appShaNote": "PR168 combined review sourcebba28b681024f9c646833fa1ea24c5a24647b768; following manifest commit documentation only; fresh exact-head combinedCI required before release.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "07108d158d504bcc5ab295ae22f0584caeae27c429181ec45340dce3ac4377b2",
   "configVersions": {
@@ -309,7 +309,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -714,7 +715,7 @@
     }
   ],
   "previousSourceFreeze": {
-    "appSha": "9103998811a1aa2badd99c0013bbde555e796484",
+    "appSha": "de15c36f06ad6ca9b786af9f61748664a31efb1d",
     "schemaManifestHash": "07108d158d504bcc5ab295ae22f0584caeae27c429181ec45340dce3ac4377b2",
     "migrationCount": 55
   }
