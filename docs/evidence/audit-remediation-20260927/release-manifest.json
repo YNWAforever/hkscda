@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "appSha": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
   "appShaNote": "Full local four-gate run is bound to this combined code SHA. Subsequent documentation-only head requires fresh exact-head PR CI; acceptance is recorded only after actual main five gates and same-SHA READY. Previous source reports remain historical.",
-  "productionAliasShaObserved": "748fd6441add145f481524ad186ce4bb1186ad9f",
+  "productionAliasShaObserved": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
   "schemaManifestHash": "61125ee02a14beee04c0f359d84cfaa586d2cfc6cea325784182cddd07c6ff35",
   "configVersions": {
     "paymentPolicy": null,
@@ -375,13 +375,21 @@
     "docs/evidence/audit-remediation-20260927/catalog-projection-review-20261001.md",
     "docs/evidence/audit-remediation-20260927/pr179-final-combined-local-gates-20261001.json",
     "docs/evidence/audit-remediation-20260927/merge-scope-pr-status-20261001.json",
-    "docs/evidence/audit-remediation-20260927/all-merge-173-postflight-20261001.json"
+    "docs/evidence/audit-remediation-20260927/all-merge-173-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-175-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-177-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/all-merge-178-postflight-20261001.json",
+    "docs/evidence/audit-remediation-20260927/current-issue-status-20261001.json",
+    "docs/evidence/audit-remediation-20260927/current-issue-status-20261001.md",
+    "docs/evidence/audit-remediation-20260927/current-migration-runbook-20261001.md",
+    "docs/evidence/audit-remediation-20260927/production-catalog-after-approved-rollout-20261001.json",
+    "docs/evidence/audit-remediation-20260927/production-compatibility-after-approved-rollout-20261001.json"
   ],
   "rollbackTarget": {
     "appSha": null,
     "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
   },
-  "releaseDecision": "40/46 accepted scoped source releases; remaining candidates require sequential green exact-head/main gates and same-SHA READY. Complete operational remediation remains gated by residual R01 catalog and external content/provider/hosted/recovery UAT. Payment and new sending/media schedules remain disabled.",
+  "releaseDecision": "45/46 accepted scoped source releases; remaining candidates require sequential green exact-head/main gates and same-SHA READY. Complete operational remediation remains gated by residual R01 catalog and external content/provider/hosted/recovery UAT. Payment and new sending/media schedules remain disabled.",
   "productionActionsPerformed": [
     {
       "action": "sequential approved merge and automatic deployment",
@@ -965,16 +973,96 @@
       "deploymentState": "READY",
       "deploymentId": "dpl_BNn5LAYDtyGMySXxzop2sBuWVb1h",
       "aliasSha": "748fd6441add145f481524ad186ce4bb1186ad9f"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 174,
+      "sourceSha": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+      "mergeSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36824674785,
+        "headSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36824674785"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_Ej8pAVT2SxQk4vwWeWbSM5URnaTS",
+      "aliasSha": "ac613c5f342b4c5797b354174c47cee61e89b095"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 175,
+      "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+      "mergeSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36826152769,
+        "headSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36826152769"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT",
+      "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 176,
+      "sourceSha": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+      "mergeSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36827586656,
+        "headSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36827586656"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_BMZHGpKBS1Xo7qqCK6RUypyTu1f5",
+      "aliasSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 177,
+      "sourceSha": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+      "mergeSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36828955860,
+        "headSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36828955860"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_1Lbworrg8Wa7saAgtLfuHAY5SAcV",
+      "aliasSha": "a569bf033c42e6037fd59eafd522014a3564137b"
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 178,
+      "sourceSha": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+      "mergeSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36830360908,
+        "headSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36830360908"
+      },
+      "deploymentState": "READY",
+      "deploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC",
+      "aliasSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91"
     }
   ],
-  "capturedAt": "2026-10-01T06:26:09.343416+00:00",
-  "productionDeploymentId": "dpl_BNn5LAYDtyGMySXxzop2sBuWVb1h",
+  "capturedAt": "2026-10-01T07:38:42.863321+00:00",
+  "productionDeploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC",
   "productionDeploymentState": "READY",
-  "productionSchemaLedgerCountObserved": 109,
+  "productionSchemaLedgerCountObserved": 112,
   "migrationManifestNote": "63 canonical LF entries: original62 rehearsed/mapped separately plus new readonly forward repair. No apply-all authority or ledger rewrite.",
   "productionCiRun": {
-    "id": 36823569108,
-    "sha": "748fd6441add145f481524ad186ce4bb1186ad9f",
+    "id": 36830360908,
+    "sha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
     "status": "success; all five gates"
   },
   "remainingApprovals": {
@@ -1061,22 +1149,28 @@
     "migration175": {
       "file": "20260928110000_finance_bank_match_confirmation.sql",
       "sha256": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3",
-      "status": "approved in exact named11-file packet; not applied; pending sequential predecessor acceptance and fresh per-file catalog/backup/postflight",
-      "scope": "reviewed snapshot bank-match RPC; final expiry guard outside handled23505; no real confirmation performed"
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "reviewed snapshot bank-match RPC; final expiry guard outside handled23505; no real confirmation performed",
+      "providerVersion": "20261001063913",
+      "evidence": "all-merge-175-postflight-20261001.json"
     },
     "migration177": {
       "file": "20260928113000_crm_supporter_version_fence.sql",
       "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62",
-      "status": "approved in exact named11-file packet; not applied; pending sequential predecessor acceptance and fresh per-file catalog/backup/postflight",
-      "scope": "revoke private bump trigger function EXECUTE only; preserve existing columns/rows/triggers"
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "revoke private bump trigger function EXECUTE only; preserve existing columns/rows/triggers",
+      "providerVersion": "20261001070942",
+      "evidence": "all-merge-177-postflight-20261001.json"
     },
     "migration178": {
       "file": "20260928120000_crm_assignment_bulk.sql",
       "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
-      "status": "approved in exact named11-file packet; not applied; pending sequential predecessor acceptance and fresh per-file catalog/backup/postflight",
-      "scope": "assignment version/RPC/result schema; preserve ordinary legacy column privileges; no identity merge"
+      "status": "approved; applied once; catalog postflight passed",
+      "scope": "assignment version/RPC/result schema; preserve ordinary legacy column privileges; no identity merge",
+      "providerVersion": "20261001072505",
+      "evidence": "all-merge-178-postflight-20261001.json"
     },
-    "legacyDependencies": "Residual legacy dependencies remain separate from the approved11-file packet. The earlier ledger98/92-gap inventory is historical; fresh final catalog follows the remaining approved scopes. Source63-file inventory is not apply-all authority.",
+    "legacyDependencies": "Final public catalog at ledger112: 44 residual issues in the implemented checker; see production-compatibility-after-approved-rollout-20261001.json. These legacy dependencies remain outside the exact approved scopes. The earlier ledger98/92-gap inventory is historical; source63-file inventory is not apply-all authority.",
     "activation": "approved terms/content/retention/method versions; scoped hosted identities; provider sandbox; payment/sending/media schedule and region rollout approvals remain separate",
     "readonlyEvidenceRepair": {
       "pr": 182,
@@ -1089,8 +1183,8 @@
     }
   },
   "blockedGate": {
-    "environment": "wider R01 legacy readiness",
-    "result": "Final catalog refresh pending after the remaining approved DDL; older ledger98/92-gap snapshot is historical",
+    "environment": "wider R01 legacy readiness and external operational UAT",
+    "result": "Final implemented public checker: 44 residual issues; no legacy replay authority or provider/hosted-UAT certification",
     "enabled": false
   },
   "sequentialProgress": {
@@ -1099,8 +1193,8 @@
       179
     ],
     "requestedCount": 46,
-    "actualMainReleasedCount": 40,
-    "throughPr": 173,
+    "actualMainReleasedCount": 45,
+    "throughPr": 178,
     "note": "#157 actual main release is corrective #181; #182 is an additional scoped repair; #180 remains do-not-merge. PR179 self-acceptance occurs after this immutable premerge package."
   },
   "approvedMigrationReceipts": [
@@ -1217,6 +1311,33 @@
       "ledgerBefore": 108,
       "ledgerAfter": 109,
       "postflight": "all-merge-173-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928110000_finance_bank_match_confirmation.sql",
+      "sha256": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3",
+      "providerVersion": "20261001063913",
+      "pr": 175,
+      "ledgerBefore": 109,
+      "ledgerAfter": 110,
+      "postflight": "all-merge-175-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928113000_crm_supporter_version_fence.sql",
+      "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62",
+      "providerVersion": "20261001070942",
+      "pr": 177,
+      "ledgerBefore": 110,
+      "ledgerAfter": 111,
+      "postflight": "all-merge-177-postflight-20261001.json"
+    },
+    {
+      "sourceFile": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "providerVersion": "20261001072505",
+      "pr": 178,
+      "ledgerBefore": 111,
+      "ledgerAfter": 112,
+      "postflight": "all-merge-178-postflight-20261001.json"
     }
   ],
   "previousSourceFreeze": {
@@ -1274,24 +1395,17 @@
     "completedAt": "2026-10-01T04:56:03.143395+00:00"
   },
   "productionCompatibility": {
-    "source": "290abb19a781ce41efc7ad62410a0a278113bf36",
+    "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
     "requirements": 146,
-    "issues": 92,
-    "kinds": {
-      "missing-table": 21,
-      "missing-function": 61,
-      "missing-column": 10
-    },
+    "issues": 44,
     "state": "incompatible",
     "checkerExit": 1,
-    "catalogTables": 138,
-    "catalogFunctions": 276,
-    "ledger": 98,
-    "report": "docs/evidence/audit-remediation-20260927/production-compatibility-20261001.json",
-    "limitation": "Implemented public table/column/RLS/service grants and RPC signatures/execute-role checks only; not full constraints/indexes/private/storage policies or behavioral UAT",
-    "historical": true,
-    "snapshotMeaning": "pre160/182 ledger98 catalog; not a current gap count",
-    "currentCatalogPending": true
+    "catalogTables": 154,
+    "catalogFunctions": 304,
+    "ledger": 112,
+    "report": "docs/evidence/audit-remediation-20260927/production-compatibility-after-approved-rollout-20261001.json",
+    "limitation": "Implemented public table/column/RLS/service grants and RPC signatures/expected role grants only; not full constraints/indexes/private/storage/column-denial/behavioral UAT",
+    "capturedAt": "2026-10-01T07:27:18.716717+00:00"
   },
   "isolatedStructuralVerification": {
     "requirements": 146,

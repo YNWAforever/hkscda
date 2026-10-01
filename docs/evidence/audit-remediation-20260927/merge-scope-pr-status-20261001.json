@@ -1,8 +1,8 @@
 {
-  "capturedAt": "2026-10-01T06:26:08.767731+00:00",
+  "capturedAt": "2026-10-01T07:34:04.280826+00:00",
   "repository": "YNWAforever/hkscda",
   "scope": "original134-179 plus separate approved182; no180 merge authority",
-  "mergedOriginalCount": 41,
+  "mergedOriginalCount": 45,
   "rows": [
     {
       "baseRefName": "main",
@@ -1935,11 +1935,13 @@
       "baseRefName": "main",
       "headRefName": "codex/audit-finance-match-confirm-20260928",
       "headRefOid": "cc08229218c1be5b01c5598ac94d2d41a767be93",
-      "isDraft": true,
-      "mergeCommit": null,
-      "mergedAt": null,
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "e876278c9460df449c1c32ce706f7a48f12d951e"
+      },
+      "mergedAt": "2026-10-01T06:41:45Z",
       "number": 175,
-      "state": "OPEN",
+      "state": "MERGED",
       "title": "T23: Guarded bank match confirmation snapshots",
       "url": "https://github.com/YNWAforever/hkscda/pull/175",
       "exactHeadFiveGreen": true,
@@ -1980,11 +1982,13 @@
       "baseRefName": "main",
       "headRefName": "codex/audit-crm-format-preview-20260928",
       "headRefOid": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
-      "isDraft": true,
-      "mergeCommit": null,
-      "mergedAt": null,
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "1fef00e8c4b8429d34b593b0437f8cf034c7674c"
+      },
+      "mergedAt": "2026-10-01T06:57:30Z",
       "number": 176,
-      "state": "OPEN",
+      "state": "MERGED",
       "title": "T23: Read-only CRM contact format preview",
       "url": "https://github.com/YNWAforever/hkscda/pull/176",
       "exactHeadFiveGreen": true,
@@ -2025,11 +2029,13 @@
       "baseRefName": "main",
       "headRefName": "codex/audit-crm-version-fence-20260928",
       "headRefOid": "c3480ed371a9bc810f656f29e073121ec366a7b1",
-      "isDraft": true,
-      "mergeCommit": null,
-      "mergedAt": null,
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "a569bf033c42e6037fd59eafd522014a3564137b"
+      },
+      "mergedAt": "2026-10-01T07:11:56Z",
       "number": 177,
-      "state": "OPEN",
+      "state": "MERGED",
       "title": "fix: preserve CRM version fence and restrict trigger execution",
       "url": "https://github.com/YNWAforever/hkscda/pull/177",
       "exactHeadFiveGreen": true,
@@ -2070,11 +2076,13 @@
       "baseRefName": "main",
       "headRefName": "codex/audit-crm-assignment-20260928",
       "headRefOid": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
-      "isDraft": true,
-      "mergeCommit": null,
-      "mergedAt": null,
+      "isDraft": false,
+      "mergeCommit": {
+        "oid": "ce5f7271d1496584c71ca9c94f64772a21a45e91"
+      },
+      "mergedAt": "2026-10-01T07:26:44Z",
       "number": 178,
-      "state": "OPEN",
+      "state": "MERGED",
       "title": "fix: guard CRM assignment writes and actor-scoped recovery",
       "url": "https://github.com/YNWAforever/hkscda/pull/178",
       "exactHeadFiveGreen": true,

@@ -14,13 +14,13 @@
     "legacyMigrations": "not authorized by this packet"
   },
   "backup": {
-    "path": "hkscda-before-next-approved-ddl-20261001T061410Z.dpapi",
-    "ciphertextSha": "78a3de25d70a46093b952a9aca1f3559ef3cab1f8c24fd506933bc007df175bf",
-    "completedUtc": "2026-10-01T06:14:10Z",
-    "encryptedBytes": 2032854,
+    "path": "hkscda-before-next-approved-ddl-20261001T073259Z.dpapi",
+    "ciphertextSha": "95b31da9d86866392ec61008a42d57d2d201073f8161f691d97d9a09a0ebc61f",
+    "completedUtc": "2026-10-01T07:32:59Z",
+    "encryptedBytes": 2065878,
     "currentUserOnlyAcl": true,
     "roundTripVerified": true,
-    "refreshAfter173": "success/exit0",
+    "refreshAfterLatestApprovedDdl": "success/exit0",
     "fullRestore": "not-run",
     "offMachine": "not-run",
     "storageBytes": "not-run",
@@ -164,6 +164,45 @@
       "evidence": "all-merge-173-postflight-20261001.json",
       "sourceSha": "e5ed74c7d680b30102612bfee2b44b49cc754822",
       "apply": "success under exact11-file scope approval"
+    },
+    {
+      "pr": 175,
+      "file": "20260928110000_finance_bank_match_confirmation.sql",
+      "sha": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3",
+      "providerVersion": "20261001063913",
+      "ledgerBefore": 109,
+      "ledgerAfter": 110,
+      "postflight": "2 empty RLS operation/result tables with service SELECT only and no client/table/column writes;3 valid/ready exact indexes including per-operation normalized reference uniqueness;3 service-only public SECURITY DEFINER RPCs and1 owner-only private guard with empty search_path;344 existing function metadata/full ACLs and specified prior business-table ACL/RLS/policies/indexes/constraints/triggers unchanged",
+      "existingRows": "6 payments/6 donations/15 supporters/13 supporter roles/2 pledges/0 delivery jobs/600 audits normalized hashes unchanged;existing165 global reference uniqueness retained;checkout false/version1;no real confirmation/credit/refund/job/send",
+      "evidence": "all-merge-175-postflight-20261001.json",
+      "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+      "apply": "success under exact11-file scope approval"
+    },
+    {
+      "pr": 177,
+      "file": "20260928113000_crm_supporter_version_fence.sql",
+      "sha": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62",
+      "providerVersion": "20261001070942",
+      "ledgerBefore": 110,
+      "ledgerAfter": 111,
+      "postflight": "Only PUBLIC/anon/authenticated/service_role EXECUTE removed from existing private.bump_supporter_edit_version();postgres owner EXECUTE/body/config/signature/return/volatility unchanged;347 other function metadata/full ACLs unchanged;specified table/column ACL/FORCE RLS/policies/indexes/constraints/triggers preserved;no schema/backfill recreation",
+      "existingRows": "6 payments/6 donations/15 supporters/13 supporter roles/2 pledges/0 delivery jobs/600 audits exact normalized hashes unchanged including existing edit versions;checkout false/version1;no actor operation or new scheduler",
+      "evidence": "all-merge-177-postflight-20261001.json",
+      "sourceSha": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+      "apply": "success under exact11-file scope approval"
+    },
+    {
+      "pr": 178,
+      "file": "20260928120000_crm_assignment_bulk.sql",
+      "sha": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "providerVersion": "20261001072505",
+      "ledgerBefore": 111,
+      "ledgerAfter": 112,
+      "postflight": "Two empty RLS operation/result tables, three valid ready indexes, four service-only public SECURITY DEFINER RPCs and one owner-only private helper, all with empty search_path. Nullable Auth FK owner column added; old authenticated column INSERT/UPDATE preserved while table-wide client INSERT/UPDATE revoked. New owner client INSERT/UPDATE denied; pre-existing table REFERENCES inheritance preserved without a new REFERENCES grant",
+      "existingRows": "All seven captured business-row hashes, all 348 existing function metadata/full ACLs and scoped existing tables/policies preserved within the exact authorized supporter column grant/FK changes; all 15 supporter owners remain NULL and edit versions unchanged",
+      "evidence": "all-merge-178-postflight-20261001.json",
+      "sourceSha": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+      "apply": "success"
     }
   ],
   "releases": [
@@ -401,10 +440,71 @@
       "mergedAt": "2026-10-01T06:25:13Z",
       "mergeCommandExit": 0,
       "mainCiRun": 36824674785,
-      "mainGates": "pending",
-      "deploymentState": "pending",
-      "aliasSha": null,
-      "accepted": false
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+      "accepted": true,
+      "deploymentId": "dpl_Ej8pAVT2SxQk4vwWeWbSM5URnaTS"
+    },
+    {
+      "pr": 175,
+      "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+      "prCiRun": 36815579497,
+      "prGates": "5SUCCESS",
+      "mergeSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+      "mergedAt": "2026-10-01T06:41:45Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36826152769,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+      "accepted": true,
+      "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT"
+    },
+    {
+      "pr": 176,
+      "sourceSha": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+      "prCiRun": 36815585101,
+      "prGates": "5SUCCESS",
+      "mergeSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+      "mergedAt": "2026-10-01T06:57:30Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36827586656,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+      "accepted": true,
+      "deploymentId": "dpl_BMZHGpKBS1Xo7qqCK6RUypyTu1f5"
+    },
+    {
+      "pr": 177,
+      "sourceSha": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+      "prCiRun": 36815588532,
+      "prGates": "5SUCCESS",
+      "mergeSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+      "mergedAt": "2026-10-01T07:11:56Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36828955860,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+      "accepted": true,
+      "deploymentId": "dpl_1Lbworrg8Wa7saAgtLfuHAY5SAcV"
+    },
+    {
+      "pr": 178,
+      "sourceSha": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+      "prCiRun": 36815592957,
+      "prGates": "5SUCCESS",
+      "mergeSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+      "mergedAt": "2026-10-01T07:26:44Z",
+      "mergeCommandExit": 0,
+      "mainCiRun": 36830360908,
+      "mainGates": "5SUCCESS",
+      "deploymentState": "READY",
+      "aliasSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+      "accepted": true,
+      "deploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC"
     }
   ],
   "instrumentation": [
@@ -424,7 +524,8 @@
     "168 nativegh protected merge1: cacheddirty preflight refused before server mutation; main167 unchanged; actualvirtual/current merge tree equal; optional normal REST sha-pinned transport prepared, no override",
     "168 protected REST405, actualPR OPEN/main167 unchanged; ordinary main167 ancestry synchronization treeidentical;new82a9eb3a mergeabletrue/freshCI36815370226; nooverride",
     "PR171 first strict normal merge guard exit1 on unsettled GitHub mergeability; no draft-ready/main mutation; fresh server state re-read required",
-    "Strong172 preparatory catalog SELECT failed22023: aclexplode zero-dimensional empty column ACL; readonly NULL/array-dimension probes reproduced mechanism; guarded-null correction before any172DDL"
+    "Strong172 preparatory catalog SELECT failed22023: aclexplode zero-dimensional empty column ACL; readonly NULL/array-dimension probes reproduced mechanism; guarded-null correction before any172DDL",
+    "Optional final-schema backup refresh first exited1 under Windows PowerShell5: ProcessStartInfo.ArgumentList unavailable before any dump process launched; same unchanged helper under PowerShell7 exited0, CurrentUser-DPAPI/ACL/roundtrip verified, final112 schema encrypted. Full restore/off-machine/Storage bytes not-run."
   ],
   "notRun": [
     "hosted real-staff bulk operations/private-files/export UAT",
@@ -1062,7 +1163,7 @@
     "completedAt": "2026-10-01T04:32:14.966173+00:00"
   },
   "capturedAtMeaning": "initial capture; later events use their own timestamps",
-  "lastUpdatedAt": "2026-10-01T06:25:59.581383+00:00",
+  "lastUpdatedAt": "2026-10-01T07:38:26.025776+00:00",
   "final179Integration": {
     "pr": 179,
     "original": "d6610f7d2ef8ad8646c79f8d9dfad7ca59fa6cf1",
@@ -1184,6 +1285,32 @@
       "path": "hkscda-before-next-approved-ddl-20261001T051820Z.dpapi",
       "refreshAfter169": "success/exit0",
       "refreshAfter170": "success/exit0"
+    },
+    {
+      "path": "hkscda-before-next-approved-ddl-20261001T061410Z.dpapi",
+      "ciphertextSha": "78a3de25d70a46093b952a9aca1f3559ef3cab1f8c24fd506933bc007df175bf",
+      "completedUtc": "2026-10-01T06:14:10Z",
+      "encryptedBytes": 2032854,
+      "currentUserOnlyAcl": true,
+      "roundTripVerified": true,
+      "refreshAfter173": "success/exit0",
+      "fullRestore": "not-run",
+      "offMachine": "not-run",
+      "storageBytes": "not-run",
+      "snapshotBoundary": "separate schema/data/role dumps; not one transaction"
+    },
+    {
+      "path": "hkscda-before-next-approved-ddl-20261001T064618Z.dpapi",
+      "ciphertextSha": "d489bcd8950477ed972aef0590949dea230c2fbe56333f2a686acd558db4df55",
+      "completedUtc": "2026-10-01T06:46:18Z",
+      "encryptedBytes": 2049686,
+      "currentUserOnlyAcl": true,
+      "roundTripVerified": true,
+      "refreshAfterLatestApprovedDdl": "success/exit0",
+      "fullRestore": "not-run",
+      "offMachine": "not-run",
+      "storageBytes": "not-run",
+      "snapshotBoundary": "separate schema/data/role dumps; not one transaction"
     }
   ],
   "catalogProjectionReview": {

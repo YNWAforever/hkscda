@@ -1,0 +1,6635 @@
+{
+  "tables": [
+    {
+      "rls": true,
+      "name": "about_page_content",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "content": "jsonb",
+        "page_slug": "text",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "admin_user",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "role": "text",
+        "email": "citext",
+        "status": "text",
+        "created_at": "timestamp with time zone",
+        "invited_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "auth_user_id": "uuid",
+        "invite_sent_at": "timestamp with time zone",
+        "last_invited_by": "uuid",
+        "invite_accepted_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adopter_profile",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "hkid": "text",
+        "gender": "text",
+        "address": "text",
+        "birthday": "date",
+        "facebook": "text",
+        "created_at": "timestamp with time zone",
+        "floor_area": "text",
+        "occupation": "text",
+        "updated_at": "timestamp with time zone",
+        "name_chinese": "text",
+        "name_english": "text",
+        "supporter_id": "uuid",
+        "household_size": "text",
+        "is_blacklisted": "boolean",
+        "living_area_id": "uuid",
+        "blacklist_reason": "text",
+        "monthly_household_income": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_application_animal_preference",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "rank": "integer",
+        "animal_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "animal_name_snapshot": "text",
+        "animal_type_snapshot": "text",
+        "public_application_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_application_detail",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "language": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "current_pets": "text",
+        "questionnaire": "jsonb",
+        "terms_version": "text",
+        "daily_schedule": "text",
+        "household_size": "integer",
+        "source_metadata": "jsonb",
+        "indoor_space_notes": "text",
+        "monthly_budget_hkd": "integer",
+        "window_door_safety": "text",
+        "emergency_care_plan": "text",
+        "household_agreement": "text",
+        "pet_care_experience": "text",
+        "landlord_restrictions": "text",
+        "public_application_id": "uuid",
+        "preferred_contact_method": "text",
+        "home_modifications_possible": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_application_photo",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "file_name": "text",
+        "mime_type": "text",
+        "size_bytes": "integer",
+        "uploaded_at": "timestamp with time zone",
+        "storage_path": "text",
+        "photo_category": "text",
+        "storage_bucket": "text",
+        "public_application_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_application_visit_preference",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "notes": "text",
+        "created_at": "timestamp with time zone",
+        "date_range_end": "date",
+        "cat_time_windows": "text[]",
+        "date_range_start": "date",
+        "dog_time_windows": "text[]",
+        "public_application_id": "uuid",
+        "preferred_time_windows": "text[]"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_applications",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "email": "text",
+        "phone": "text",
+        "reason": "text",
+        "status": "text",
+        "address": "text",
+        "animal_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "animal_name": "text",
+        "animal_type": "text",
+        "family_size": "integer",
+        "housing_type": "text",
+        "existing_pets": "text",
+        "applicant_name": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_assignment_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "case_id": "uuid",
+        "ordinal": "integer",
+        "applied_at": "timestamp with time zone",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "after_assignee": "uuid",
+        "before_assignee": "uuid",
+        "expected_updated_at": "timestamp with time zone",
+        "expected_row_version": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_assignment_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "min_age_days": "integer",
+        "actor_user_id": "uuid",
+        "assignee_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_attachment",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "entity_id": "uuid",
+        "file_name": "text",
+        "mime_type": "text",
+        "created_at": "timestamp with time zone",
+        "size_bytes": "integer",
+        "entity_type": "text",
+        "uploaded_by": "uuid",
+        "is_sensitive": "boolean",
+        "storage_path": "text",
+        "storage_bucket": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_case",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "reason": "text",
+        "source": "text",
+        "closed_at": "timestamp with time zone",
+        "processed": "boolean",
+        "status_id": "uuid",
+        "assessment": "jsonb",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "animal_type": "text",
+        "assigned_to": "uuid",
+        "family_size": "integer",
+        "preferences": "jsonb",
+        "housing_type": "text",
+        "supporter_id": "uuid",
+        "existing_pets": "text",
+        "applicant_name": "text",
+        "applicant_email": "text",
+        "applicant_phone": "text",
+        "status_category": "text",
+        "bulk_row_version": "bigint",
+        "applicant_address": "text",
+        "adopter_profile_id": "uuid",
+        "approved_animal_id": "uuid",
+        "requested_animal_id": "uuid",
+        "public_application_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_fee",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "is_active": "boolean",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "description": "text",
+        "amount_cents": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_fees",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "version": "integer",
+        "item_name": "text",
+        "price_hkd": "text",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "animal_type": "text",
+        "is_published": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_followup",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "score": "text",
+        "title": "text",
+        "due_at": "timestamp with time zone",
+        "outcome": "text",
+        "remarks": "text",
+        "priority": "text",
+        "animal_id": "uuid",
+        "status_id": "uuid",
+        "task_type": "text",
+        "volunteer": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "assigned_to": "text",
+        "environment": "text",
+        "completed_at": "timestamp with time zone",
+        "next_step_at": "timestamp with time zone",
+        "scheduled_at": "timestamp with time zone",
+        "has_window_net": "boolean",
+        "contact_channel": "text",
+        "status_category": "text",
+        "adoption_case_id": "uuid",
+        "adopter_profile_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_guide_publish_requests",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "created_at": "timestamp with time zone",
+        "release_id": "uuid",
+        "idempotency_key": "text",
+        "release_version": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_guide_releases",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "state": "text",
+        "topic": "text",
+        "species": "text",
+        "version": "integer",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "archived_at": "timestamp with time zone",
+        "archived_by": "uuid",
+        "en_asset_id": "uuid",
+        "published_at": "timestamp with time zone",
+        "published_by": "uuid",
+        "submitted_at": "timestamp with time zone",
+        "submitted_by": "uuid",
+        "zh_hk_asset_id": "uuid",
+        "knowledge_title": "text",
+        "knowledge_topic": "text",
+        "knowledge_post_id": "uuid",
+        "knowledge_short_intro": "text",
+        "knowledge_source_name": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_instruction_pages",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "version": "integer",
+        "page_key": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "draft_revision_id": "uuid",
+        "published_revision_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_instruction_publish_requests",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "page_key": "text",
+        "created_at": "timestamp with time zone",
+        "revision_id": "uuid",
+        "actor_admin_id": "uuid",
+        "idempotency_key": "text",
+        "revision_version": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_instruction_revisions",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "state": "text",
+        "content": "jsonb",
+        "version": "integer",
+        "page_key": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "archived_at": "timestamp with time zone",
+        "archived_by": "uuid",
+        "published_at": "timestamp with time zone",
+        "published_by": "uuid",
+        "revision_number": "integer",
+        "source_revision_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_intake_item",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "lane": "text",
+        "due_at": "timestamp with time zone",
+        "summary": "jsonb",
+        "urgency": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "resolved_at": "timestamp with time zone",
+        "adoption_case_id": "uuid",
+        "public_application_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "adoption_rules",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "content_en": "text",
+        "content_zh": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "is_published": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_draft",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "revision": "bigint",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_match",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "notes": "text",
+        "animal_id": "uuid",
+        "status_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "is_approved": "boolean",
+        "status_category": "text",
+        "adoption_case_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_position",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "name": "text",
+        "type": "text",
+        "email": "text",
+        "phone": "text",
+        "address": "text",
+        "for_cat": "boolean",
+        "for_dog": "boolean",
+        "is_active": "boolean",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "contact_person": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_profile_internal",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "cage": "text",
+        "has_chip": "boolean",
+        "animal_id": "uuid",
+        "adopted_at": "date",
+        "created_at": "timestamp with time zone",
+        "desexed_at": "date",
+        "is_desexed": "boolean",
+        "updated_at": "timestamp with time zone",
+        "deceased_at": "date",
+        "arrival_date": "date",
+        "chip_remarks": "text",
+        "is_adoptable": "boolean",
+        "desex_remarks": "text",
+        "internal_code": "text",
+        "internal_remarks": "text",
+        "arrival_source_id": "uuid",
+        "current_position_id": "uuid",
+        "is_inside_support_pool": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_publication_media_copy",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "animal_id": "uuid",
+        "copied_at": "timestamp with time zone",
+        "created_at": "timestamp with time zone",
+        "public_url": "text",
+        "lease_token": "uuid",
+        "public_path": "text",
+        "source_path": "text",
+        "next_retry_at": "timestamp with time zone",
+        "repair_status": "text",
+        "copy_claimed_at": "timestamp with time zone",
+        "last_error_code": "text",
+        "repair_attempts": "integer",
+        "publication_version_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_publication_preview",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "animal_id": "uuid",
+        "created_by": "uuid",
+        "expires_at": "timestamp with time zone",
+        "draft_revision": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_publication_publish_receipt",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "actor_id": "uuid",
+        "animal_id": "uuid",
+        "preview_id": "uuid",
+        "version_id": "uuid",
+        "committed_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_publication_version",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "reason": "text",
+        "revision": "bigint",
+        "animal_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "published_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_review_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "animal_id": "uuid",
+        "applied_at": "timestamp with time zone",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "expected_revision": "bigint",
+        "after_classification": "text",
+        "before_classification": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animal_review_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "evidence": "text",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "animals",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "age": "text",
+        "name": "text",
+        "type": "text",
+        "notes": "text",
+        "age_en": "text",
+        "gender": "text",
+        "status": "text",
+        "gallery": "jsonb",
+        "name_en": "text",
+        "notes_en": "text",
+        "image_url": "text",
+        "created_at": "timestamp with time zone",
+        "retired_at": "timestamp with time zone",
+        "source_url": "text",
+        "updated_at": "timestamp with time zone",
+        "description": "text",
+        "description_en": "text",
+        "public_profile": "jsonb",
+        "public_age_band": "text",
+        "adoption_eligible": "boolean",
+        "publication_state": "text",
+        "sponsorship_eligible": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "annual_reports",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "title": "text",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "year_label": "text",
+        "is_published": "boolean",
+        "document_asset_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "arrival_source",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "name_en": "text",
+        "name_zh": "text",
+        "is_active": "boolean",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "audit_log",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "action": "text",
+        "detail": "jsonb",
+        "entity": "text",
+        "entity_id": "text",
+        "timestamp": "timestamp with time zone",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "board_member",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "name": "text",
+        "is_active": "boolean",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "role_title": "text",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "effective_date": "date"
+      }
+    },
+    {
+      "rls": true,
+      "name": "care_topics",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "label_en": "text",
+        "label_zh": "text",
+        "content_en": "text",
+        "content_zh": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "animal_type": "text",
+        "is_published": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "checkout_admission",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "method": "text",
+        "purpose": "text",
+        "config_id": "uuid",
+        "admitted_at": "timestamp with time zone",
+        "config_version": "integer",
+        "policy_version": "integer",
+        "idempotency_key": "uuid",
+        "request_fingerprint": "text",
+        "instruction_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "checkout_method_approval",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "method": "text",
+        "enabled": "boolean",
+        "purpose": "text",
+        "config_id": "uuid",
+        "approved_at": "timestamp with time zone",
+        "approved_by": "uuid",
+        "config_version": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "checkout_policy",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "enabled": "boolean",
+        "version": "integer",
+        "singleton": "boolean",
+        "updated_at": "timestamp with time zone",
+        "approved_at": "timestamp with time zone",
+        "approved_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "cms_review_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "applied_at": "timestamp with time zone",
+        "content_id": "uuid",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "expected_revision": "uuid",
+        "after_classification": "text",
+        "before_classification": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "cms_review_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "evidence": "text",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "consent",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "source": "text",
+        "status": "text",
+        "channel": "text",
+        "timestamp": "timestamp with time zone",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "supporter_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_item",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "text",
+        "slug": "text",
+        "type": "text",
+        "title": "text",
+        "status": "text",
+        "cta_url": "text",
+        "summary": "text",
+        "version": "integer",
+        "og_title": "text",
+        "subtitle": "text",
+        "cta_label": "text",
+        "seo_title": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "published_at": "timestamp with time zone",
+        "content_class": "text",
+        "content_owner": "text",
+        "cover_media_id": "uuid",
+        "effective_from": "timestamp with time zone",
+        "og_description": "text",
+        "published_slug": "text",
+        "effective_until": "timestamp with time zone",
+        "seo_description": "text",
+        "source_reference": "text",
+        "draft_revision_id": "uuid",
+        "published_revision_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_link",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "linked_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "linked_type": "text",
+        "relationship": "text",
+        "content_item_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_media",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "caption": "text",
+        "alt_text": "text",
+        "is_cover": "boolean",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "storage_path": "text",
+        "storage_bucket": "text",
+        "content_item_id": "uuid",
+        "story_update_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_media_session",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "result": "jsonb",
+        "sha256": "text",
+        "byte_size": "integer",
+        "mime_type": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "expires_at": "timestamp with time zone",
+        "finalized_at": "timestamp with time zone",
+        "storage_path": "text",
+        "storage_bucket": "text",
+        "content_item_id": "uuid",
+        "story_update_id": "uuid",
+        "expected_version": "integer",
+        "finalization_payload": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_public_asset",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "ready": "boolean",
+        "sha256": "text",
+        "media_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "lease_token": "uuid",
+        "public_path": "text",
+        "revision_id": "uuid",
+        "source_path": "text",
+        "next_retry_at": "timestamp with time zone",
+        "public_bucket": "text",
+        "repair_status": "text",
+        "source_bucket": "text",
+        "content_item_id": "uuid",
+        "copy_claimed_at": "timestamp with time zone",
+        "last_error_code": "text",
+        "repair_attempts": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_publication_prepare",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "created_at": "timestamp with time zone",
+        "revision_id": "uuid",
+        "content_item_id": "uuid",
+        "idempotency_key": "text",
+        "expected_version": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_publish_request",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "created_at": "timestamp with time zone",
+        "revision_id": "uuid",
+        "content_item_id": "uuid",
+        "idempotency_key": "text",
+        "expected_version": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "content_revision",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "version": "integer",
+        "operation": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "is_published": "boolean",
+        "content_item_id": "uuid",
+        "public_snapshot": "jsonb",
+        "authoring_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "coordinator_status",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "key": "text",
+        "color": "text",
+        "category": "text",
+        "is_final": "boolean",
+        "label_en": "text",
+        "label_zh": "text",
+        "is_active": "boolean",
+        "is_system": "boolean",
+        "created_at": "timestamp with time zone",
+        "is_closing": "boolean",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "coordinator_status_history",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "note": "text",
+        "entity_id": "uuid",
+        "status_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "entity_type": "text",
+        "actor_user_id": "uuid",
+        "status_category": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "crm_assignment_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "applied_at": "timestamp with time zone",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "supporter_id": "uuid",
+        "after_assignee": "uuid",
+        "before_assignee": "uuid",
+        "expected_version": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "crm_assignment_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "actor_user_id": "uuid",
+        "assignee_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "crm_export_job",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "kind": "text",
+        "total": "integer",
+        "status": "text",
+        "filters": "jsonb",
+        "attempts": "integer",
+        "item_ids": "uuid[]",
+        "created_at": "timestamp with time zone",
+        "error_code": "text",
+        "expires_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "lease_owner": "uuid",
+        "lease_until": "timestamp with time zone",
+        "actor_user_id": "uuid",
+        "processed_count": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "crm_tag_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "after_tags": "text[]",
+        "applied_at": "timestamp with time zone",
+        "before_tags": "text[]",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "supporter_id": "uuid",
+        "expected_version": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "crm_tag_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "tag": "text",
+        "action": "text",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "document_assets",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "kind": "text",
+        "title": "text",
+        "language": "text",
+        "byte_size": "bigint",
+        "mime_type": "text",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "bucket_name": "text",
+        "object_path": "text",
+        "is_published": "boolean",
+        "checksum_sha256": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "dog_friendly_estates",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "notes": "text",
+        "version": "integer",
+        "district": "text",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "estate_name": "text",
+        "is_published": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "donation",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "type": "text",
+        "method": "text",
+        "status": "text",
+        "purpose": "text",
+        "currency": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "amount_cents": "integer",
+        "contact_name": "text",
+        "recurring_id": "uuid",
+        "supporter_id": "uuid",
+        "contact_email": "citext",
+        "contact_phone": "text",
+        "custom_purpose": "text",
+        "refunded_cents": "integer",
+        "contact_language": "text",
+        "receipt_requested": "boolean",
+        "acquisition_source": "text",
+        "acquisition_context": "text",
+        "acquisition_trigger": "text",
+        "acquisition_placement": "text",
+        "consent_email_requested": "boolean",
+        "consent_whatsapp_requested": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "donation_delivery_job",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "attempts": "integer",
+        "created_at": "timestamp with time zone",
+        "error_code": "text",
+        "payment_id": "uuid",
+        "updated_at": "timestamp with time zone",
+        "donation_id": "uuid",
+        "lease_owner": "uuid",
+        "lease_until": "timestamp with time zone",
+        "next_attempt_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "editorial_content_review",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "evidence": "text",
+        "entity_id": "uuid",
+        "entity_kind": "text",
+        "reviewed_at": "timestamp with time zone",
+        "reviewed_by": "uuid",
+        "revision_key": "text",
+        "classification": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "faq_entry",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "cta_key": "text",
+        "category": "text",
+        "answer_en": "text",
+        "answer_zh": "text",
+        "is_active": "boolean",
+        "sensitive": "boolean",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "keywords_en": "text[]",
+        "keywords_zh": "text[]",
+        "question_en": "text",
+        "question_zh": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "finance_bank_match_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "applied_at": "timestamp with time zone",
+        "payment_id": "uuid",
+        "reason_code": "text",
+        "amount_cents": "integer",
+        "operation_id": "uuid",
+        "payment_hint": "text",
+        "bank_reference": "text",
+        "delivery_job_id": "uuid",
+        "expected_payment_updated_at": "timestamp with time zone",
+        "expected_donation_updated_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "finance_bank_match_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "file_sha256": "text",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "group_enquiries",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "message": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "admin_notes": "text",
+        "assigned_to": "uuid",
+        "contact_name": "text",
+        "organisation": "text",
+        "activity_type": "text",
+        "contact_email": "citext",
+        "contact_phone": "text",
+        "idempotency_key": "text",
+        "participant_count": "integer",
+        "notification_error": "text",
+        "notification_status": "text",
+        "preferred_date_notes": "text",
+        "participant_age_profile": "text",
+        "other_activity_description": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_application",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "shelter": "text",
+        "revision": "bigint",
+        "created_at": "timestamp with time zone",
+        "applicant_id": "uuid",
+        "contact_snapshot": "jsonb",
+        "student_snapshot": "jsonb",
+        "intake_version_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_attachment",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "label": "text",
+        "byte_size": "integer",
+        "mime_type": "text",
+        "created_at": "timestamp with time zone",
+        "object_path": "text",
+        "uploaded_by": "uuid",
+        "content_hash": "text",
+        "application_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_command_result",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "key": "uuid",
+        "actor": "uuid",
+        "result": "jsonb",
+        "payload_hash": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_event",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "kind": "text",
+        "actor": "uuid",
+        "detail": "jsonb",
+        "created_at": "timestamp with time zone",
+        "application_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_intake_draft",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "boolean",
+        "body": "jsonb",
+        "revision": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_intake_preview",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "actor": "uuid",
+        "revision": "bigint",
+        "expires_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "internship_intake_version",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "reason": "text",
+        "published_at": "timestamp with time zone",
+        "published_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "knowledge_posts",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "title": "text",
+        "topic": "text",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "short_intro": "text",
+        "source_name": "text",
+        "external_url": "text",
+        "is_published": "boolean",
+        "document_asset_id": "uuid",
+        "en_document_asset_id": "uuid",
+        "zh_hk_document_asset_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "living_area",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "name_en": "text",
+        "name_zh": "text",
+        "is_active": "boolean",
+        "created_at": "timestamp with time zone",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "mail_delivery_event",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "event_id": "text",
+        "body_hash": "text",
+        "event_type": "text",
+        "occurred_at": "timestamp with time zone",
+        "received_at": "timestamp with time zone",
+        "provider_message_id": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "manual_gift_request",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "created_at": "timestamp with time zone",
+        "payment_id": "uuid",
+        "request_id": "uuid",
+        "donation_id": "uuid",
+        "payload_hash": "text",
+        "delivery_job_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "message",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "channel": "text",
+        "payload": "jsonb",
+        "sent_at": "timestamp with time zone",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "template_id": "uuid",
+        "supporter_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "message_template",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "key": "text",
+        "body": "text",
+        "channel": "text",
+        "subject": "text",
+        "language": "text",
+        "variables": "text[]",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "whatsapp_meta_status": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "payment",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "provider": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "donation_id": "uuid",
+        "received_at": "timestamp with time zone",
+        "amount_cents": "integer",
+        "provider_ref": "text",
+        "reconciled_by": "uuid",
+        "bank_reference": "text",
+        "refunded_cents": "integer",
+        "provider_order_ref": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "payment_public_config",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "state": "text",
+        "method": "text",
+        "details": "jsonb",
+        "version": "integer",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "sort_order": "integer",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "archived_at": "timestamp with time zone",
+        "archived_by": "uuid",
+        "published_at": "timestamp with time zone",
+        "published_by": "uuid",
+        "submitted_at": "timestamp with time zone",
+        "submitted_by": "uuid",
+        "display_label_en": "text",
+        "display_label_zh": "text",
+        "is_publicly_visible": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "payment_public_config_publish_requests",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "config_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "config_version": "integer",
+        "idempotency_key": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "public_status_token",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "entity_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "revoked_at": "timestamp with time zone",
+        "token_hash": "text",
+        "entity_type": "text",
+        "last_viewed_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "receipt",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "pdf_url": "text",
+        "tax_year": "integer",
+        "issued_at": "timestamp with time zone",
+        "voided_at": "timestamp with time zone",
+        "voided_by": "uuid",
+        "created_at": "timestamp with time zone",
+        "receipt_no": "text",
+        "updated_at": "timestamp with time zone",
+        "donation_ids": "uuid[]",
+        "supporter_id": "uuid",
+        "total_amount_cents": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "receipt_sequence",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "tax_year": "integer",
+        "created_at": "timestamp with time zone",
+        "next_value": "integer",
+        "updated_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "recipient_notification_draft",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "text",
+        "status": "text",
+        "channel": "text",
+        "subject": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "supporter_id": "uuid",
+        "recipient_name": "text",
+        "content_item_id": "uuid",
+        "story_update_id": "uuid",
+        "adoption_case_id": "uuid",
+        "recipient_contact": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "recipient_notification_draft_duplicate_archive",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "text",
+        "status": "text",
+        "channel": "text",
+        "kept_id": "uuid",
+        "subject": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "archived_at": "timestamp with time zone",
+        "supporter_id": "uuid",
+        "recipient_name": "text",
+        "content_item_id": "uuid",
+        "story_update_id": "uuid",
+        "adoption_case_id": "uuid",
+        "recipient_contact": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "recurring_mandate",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "provider": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "amount_cents": "integer",
+        "provider_ref": "text",
+        "supporter_id": "uuid",
+        "next_charge_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "rescue_story_profile",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "created_at": "timestamp with time zone",
+        "public_lat": "numeric(9,6)",
+        "public_lng": "numeric(9,6)",
+        "updated_at": "timestamp with time zone",
+        "animal_type": "text",
+        "is_featured": "boolean",
+        "rescue_date": "date",
+        "show_on_map": "boolean",
+        "public_status": "text",
+        "rescue_region": "text",
+        "content_item_id": "uuid",
+        "internal_address": "text",
+        "public_map_label": "text",
+        "internal_location_notes": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "site_config",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "key": "text",
+        "value": "jsonb",
+        "updated_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "site_document_slots",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "language": "text",
+        "slot_key": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "is_published": "boolean",
+        "document_asset_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "social_copy_variant",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "hashtags": "text[]",
+        "language": "text",
+        "platform": "text",
+        "copy_text": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "content_item_id": "uuid",
+        "story_update_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_allocation_command",
+      "grants": {
+        "service_role": []
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "command": "jsonb",
+        "actor_user_id": "uuid",
+        "idempotency_key": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_assignment",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "note": "text",
+        "end_note": "text",
+        "ended_by": "uuid",
+        "ended_on": "date",
+        "animal_id": "uuid",
+        "pledge_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "end_reason": "text",
+        "started_on": "date",
+        "updated_at": "timestamp with time zone",
+        "animal_name_snapshot": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_contact_verification",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "reason": "text",
+        "pledge_id": "uuid",
+        "verified_at": "timestamp with time zone",
+        "supporter_id": "uuid",
+        "actor_user_id": "uuid",
+        "after_contact": "jsonb",
+        "before_contact": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_delivery_outbox",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "event": "text",
+        "scope": "text",
+        "status": "text",
+        "sent_at": "timestamp with time zone",
+        "attempts": "integer",
+        "language": "text",
+        "proof_id": "uuid",
+        "pledge_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "last_error": "text",
+        "message_id": "uuid",
+        "lease_token": "uuid",
+        "lease_until": "timestamp with time zone",
+        "amount_cents": "integer",
+        "recipient_name": "text",
+        "next_attempt_at": "timestamp with time zone",
+        "recipient_email": "text",
+        "provider_message_id": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_followup_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "pledge_id": "uuid",
+        "applied_at": "timestamp with time zone",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "after_assignee": "uuid",
+        "before_assignee": "uuid",
+        "expected_version": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_followup_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "actor_user_id": "uuid",
+        "assignee_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_payment_allocation",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "note": "text",
+        "proof_id": "uuid",
+        "period_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "amount_cents": "integer",
+        "reverses_allocation_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_payment_instruction_snapshot",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "method": "text",
+        "snapshot": "jsonb",
+        "config_id": "uuid",
+        "pledge_id": "uuid",
+        "captured_at": "timestamp with time zone",
+        "config_version": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_payment_proof",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "source": "text",
+        "revision": "bigint",
+        "file_name": "text",
+        "file_size": "integer",
+        "file_type": "text",
+        "pledge_id": "uuid",
+        "reference": "text",
+        "created_at": "timestamp with time zone",
+        "review_note": "text",
+        "reviewed_at": "timestamp with time zone",
+        "reviewed_by": "uuid",
+        "amount_cents": "integer",
+        "payment_date": "date",
+        "storage_path": "text",
+        "review_status": "text",
+        "payment_method": "text",
+        "storage_bucket": "text",
+        "contact_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_payment_source",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "source": "text",
+        "proof_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "payment_id": "uuid",
+        "donation_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_period",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "note": "text",
+        "pledge_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "period_month": "date",
+        "committed_cents": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_pledge",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "notes": "text",
+        "status": "text",
+        "currency": "text",
+        "language": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "amount_cents": "integer",
+        "monthly_tier": "text",
+        "supporter_id": "uuid",
+        "followup_version": "bigint",
+        "contact_submission": "jsonb",
+        "consent_email_requested": "boolean",
+        "followup_assignee_user_id": "uuid",
+        "consent_whatsapp_requested": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_preference",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "rank": "integer",
+        "pledge_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "sponsor_animal_id": "uuid",
+        "animal_name_snapshot": "text",
+        "animal_type_snapshot": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_proof_review_command",
+      "grants": {
+        "service_role": []
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "command": "jsonb",
+        "created_at": "timestamp with time zone",
+        "actor_user_id": "uuid",
+        "idempotency_key": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_proof_submission_command",
+      "grants": {
+        "service_role": []
+      },
+      "schema": "public",
+      "columns": {
+        "command": "jsonb",
+        "proof_id": "uuid",
+        "actor_user_id": "uuid",
+        "idempotency_key": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "sponsorship_refund",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "reason": "text",
+        "proof_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "payment_id": "uuid",
+        "amount_cents": "integer",
+        "actor_user_id": "uuid",
+        "bank_reference": "text",
+        "idempotency_key": "uuid",
+        "expected_revision": "bigint",
+        "expected_refunded_cents": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "story_update",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "text",
+        "kind": "text",
+        "title": "text",
+        "created_at": "timestamp with time zone",
+        "created_by": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "visibility": "text",
+        "occurred_at": "timestamp with time zone",
+        "content_item_id": "uuid",
+        "is_authoring_active": "boolean",
+        "should_generate_adopter_drafts": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "successful_adoption",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "animal_id": "uuid",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "approved_by": "uuid",
+        "case_number": "text",
+        "pickup_date": "date",
+        "supporter_id": "uuid",
+        "approval_date": "date",
+        "adoption_case_id": "uuid",
+        "outcome_status_id": "uuid",
+        "adopter_profile_id": "uuid",
+        "adoption_fee_cents": "integer",
+        "outcome_status_category": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "supporter",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "name": "text",
+        "tags": "text[]",
+        "email": "citext",
+        "phone": "text",
+        "source": "text",
+        "language": "text",
+        "created_at": "timestamp with time zone",
+        "deleted_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "edit_version": "bigint",
+        "crm_assignee_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "supporter_consent_intent",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "source": "text",
+        "channel": "text",
+        "created_at": "timestamp with time zone",
+        "requested_at": "timestamp with time zone",
+        "supporter_id": "uuid",
+        "submission_id": "uuid",
+        "submission_type": "text",
+        "requested_status": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "supporter_role",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "role": "text",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "supporter_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_activity",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "type": "text",
+        "title": "text",
+        "status": "text",
+        "ends_at": "timestamp with time zone",
+        "min_age": "integer",
+        "capacity": "integer",
+        "location": "text",
+        "starts_at": "timestamp with time zone",
+        "created_at": "timestamp with time zone",
+        "updated_at": "timestamp with time zone",
+        "description": "text",
+        "shelter_key": "text",
+        "auto_approve": "boolean",
+        "template_key": "text",
+        "allow_waitlist": "boolean",
+        "group_headcount": "integer",
+        "policy_revision": "bigint",
+        "underage_policy": "text",
+        "policy_version_id": "uuid",
+        "registration_modes": "text[]",
+        "registrations_closed_at": "timestamp with time zone",
+        "registrations_closed_reason": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_assessment_policy_draft",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "boolean",
+        "body": "jsonb",
+        "revision": "bigint",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_assessment_policy_version",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "reason": "text",
+        "created_at": "timestamp with time zone",
+        "content_hash": "text",
+        "published_by": "uuid",
+        "effective_from": "date"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_attendance_event",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "reason": "text",
+        "command": "text",
+        "after_fact": "jsonb",
+        "before_fact": "jsonb",
+        "recorded_at": "timestamp with time zone",
+        "actor_user_id": "uuid",
+        "registration_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "input": "jsonb",
+        "action": "text",
+        "groups": "jsonb",
+        "selection": "jsonb",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "request_key": "uuid",
+        "request_hash": "text",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_change_preview",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "kind": "text",
+        "candidate": "jsonb",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "fingerprint": "text",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_command_result",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "result": "jsonb",
+        "operation": "text",
+        "created_at": "timestamp with time zone",
+        "payload_hash": "text",
+        "actor_user_id": "uuid",
+        "idempotency_key": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_credential",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "evidence": "text",
+        "profile_id": "uuid",
+        "revoked_at": "timestamp with time zone",
+        "valid_from": "timestamp with time zone",
+        "valid_until": "timestamp with time zone",
+        "verified_by": "uuid",
+        "credential_key": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_credential_definition",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "key": "text",
+        "label": "text",
+        "revision": "bigint",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_daily_policy_binding",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "body": "jsonb",
+        "revision": "bigint",
+        "timezone": "text",
+        "scope_key": "text",
+        "source_body": "jsonb",
+        "service_date": "date",
+        "release_rules": "jsonb",
+        "source_release_rules": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_daily_policy_history",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "reason": "text",
+        "revision": "bigint",
+        "timezone": "text",
+        "scope_key": "text",
+        "created_at": "timestamp with time zone",
+        "before_body": "jsonb",
+        "service_date": "date",
+        "actor_user_id": "uuid",
+        "release_rules": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_daily_policy_preview",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "timezone": "text",
+        "scope_key": "text",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "fingerprint": "text",
+        "service_date": "date",
+        "actor_user_id": "uuid",
+        "release_rules": "jsonb",
+        "expected_revision": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_group_request",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "revision": "bigint",
+        "headcount": "integer",
+        "created_at": "timestamp with time zone",
+        "enquiry_id": "uuid",
+        "activity_id": "uuid",
+        "submitted_by": "uuid",
+        "contact_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_legacy_identity_link",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "reason": "text",
+        "linked_at": "timestamp with time zone",
+        "profile_id": "uuid",
+        "actor_user_id": "uuid",
+        "registration_id": "uuid",
+        "original_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_monthly_assessment",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "status": "text",
+        "scope_key": "text",
+        "completed_at": "timestamp with time zone",
+        "completed_by": "uuid",
+        "period_start": "date",
+        "policy_version_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_monthly_assessment_result",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "coverage": "text",
+        "prior_tier": "text",
+        "profile_id": "uuid",
+        "assessment_id": "uuid",
+        "attendance_count": "integer",
+        "recommended_tier": "text",
+        "notification_type": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_operation_event",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "kind": "text",
+        "reason": "text",
+        "entity_id": "uuid",
+        "after_fact": "jsonb",
+        "created_at": "timestamp with time zone",
+        "before_fact": "jsonb",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_operation_outbox",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "kind": "text",
+        "status": "text",
+        "payload": "jsonb",
+        "attempts": "integer",
+        "dedup_key": "text",
+        "created_at": "timestamp with time zone",
+        "last_error": "text",
+        "available_at": "timestamp with time zone",
+        "claimed_until": "timestamp with time zone",
+        "retry_attempt_base": "integer"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_draft",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "body": "jsonb",
+        "revision": "bigint",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "template_key": "text"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_preview",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "manifest": "jsonb",
+        "candidate": "jsonb",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "fingerprint": "text",
+        "template_key": "text",
+        "actor_user_id": "uuid",
+        "draft_revision": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_schedule",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "version_id": "uuid",
+        "template_key": "text",
+        "effective_from": "timestamp with time zone",
+        "effective_until": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_source",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "revision": "bigint",
+        "scope_key": "text",
+        "current_version_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_source_preview",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "scope_key": "text",
+        "expires_at": "timestamp with time zone",
+        "provenance": "jsonb",
+        "template_key": "text",
+        "actor_user_id": "uuid",
+        "draft_revision": "bigint",
+        "effective_body": "jsonb",
+        "source_revisions": "jsonb",
+        "expected_revision": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_source_version",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "reason": "text",
+        "revision": "bigint",
+        "scope_key": "text",
+        "created_at": "timestamp with time zone",
+        "provenance": "jsonb",
+        "published_by": "uuid",
+        "effective_body": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_policy_version",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "jsonb",
+        "reason": "text",
+        "created_at": "timestamp with time zone",
+        "provenance": "jsonb",
+        "content_hash": "text",
+        "published_by": "uuid",
+        "template_key": "text",
+        "effective_from": "timestamp with time zone",
+        "effective_until": "timestamp with time zone",
+        "source_version_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_profile",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "tier": "text",
+        "status": "text",
+        "revision": "bigint",
+        "joined_on": "date",
+        "birth_date": "date",
+        "verified_at": "timestamp with time zone",
+        "verified_by": "uuid",
+        "auth_user_id": "uuid",
+        "display_name": "text",
+        "supporter_id": "uuid",
+        "history_coverage_start": "date"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_profile_event",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "reason": "text",
+        "created_at": "timestamp with time zone",
+        "event_type": "text",
+        "profile_id": "uuid",
+        "actor_user_id": "uuid",
+        "after_snapshot": "jsonb",
+        "before_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_profile_review_assignment",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "version": "bigint",
+        "profile_id": "uuid",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid",
+        "reviewer_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_registration",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "notes": "text",
+        "status": "text",
+        "language": "text",
+        "duty_role": "text",
+        "created_at": "timestamp with time zone",
+        "profile_id": "uuid",
+        "updated_at": "timestamp with time zone",
+        "activity_id": "uuid",
+        "contact_name": "text",
+        "declared_age": "integer",
+        "supporter_id": "uuid",
+        "youngest_age": "integer",
+        "contact_email": "text",
+        "contact_phone": "text",
+        "guardian_name": "text",
+        "status_reason": "text",
+        "guardian_phone": "text",
+        "internal_notes": "text",
+        "volunteer_hours": "numeric(6,2)",
+        "attendance_status": "text",
+        "organization_name": "text",
+        "participant_count": "integer",
+        "registration_type": "text",
+        "status_token_hash": "text",
+        "terms_acceptance_id": "uuid",
+        "consent_email_requested": "boolean",
+        "status_token_expires_at": "timestamp with time zone",
+        "booking_policy_version_id": "uuid",
+        "consent_whatsapp_requested": "boolean"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_release_transition",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "rule_key": "text",
+        "binding_key": "text",
+        "triggered_at": "timestamp with time zone",
+        "rule_snapshot": "jsonb"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_review_bulk_item",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "status": "text",
+        "ordinal": "integer",
+        "applied_at": "timestamp with time zone",
+        "profile_id": "uuid",
+        "reason_code": "text",
+        "operation_id": "uuid",
+        "after_reviewer": "uuid",
+        "before_reviewer": "uuid",
+        "expected_profile_revision": "bigint",
+        "expected_assignment_version": "bigint"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_review_bulk_operation",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "created_at": "timestamp with time zone",
+        "expires_at": "timestamp with time zone",
+        "filter_hash": "text",
+        "actor_user_id": "uuid",
+        "reviewer_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_runtime_job_run",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "bucket": "timestamp with time zone",
+        "result": "jsonb",
+        "status": "text",
+        "job_key": "text",
+        "updated_at": "timestamp with time zone",
+        "lease_owner": "uuid",
+        "lease_until": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_shelter_definition",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "key": "text",
+        "label": "text",
+        "location": "text",
+        "revision": "bigint",
+        "timezone": "text",
+        "updated_at": "timestamp with time zone",
+        "updated_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_task_completion",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "reason": "text",
+        "outbox_id": "uuid",
+        "completed_at": "timestamp with time zone",
+        "actor_user_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_terms_acceptance",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "source": "text",
+        "profile_id": "uuid",
+        "version_id": "uuid",
+        "accepted_at": "timestamp with time zone"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_terms_version",
+      "grants": {
+        "service_role": [
+          "SELECT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "body": "text",
+        "content_hash": "text",
+        "published_at": "timestamp with time zone",
+        "published_by": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "volunteer_tier_candidate",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "evidence": "jsonb",
+        "profile_id": "uuid",
+        "detected_at": "timestamp with time zone",
+        "trigger_kind": "text",
+        "candidate_tier": "text",
+        "policy_version_id": "uuid"
+      }
+    },
+    {
+      "rls": true,
+      "name": "webhook_event",
+      "grants": {
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      "schema": "public",
+      "columns": {
+        "id": "uuid",
+        "payload": "jsonb",
+        "provider": "text",
+        "created_at": "timestamp with time zone",
+        "event_type": "text",
+        "updated_at": "timestamp with time zone",
+        "processed_at": "timestamp with time zone",
+        "processing_owner": "text",
+        "provider_event_id": "text",
+        "processing_expires_at": "timestamp with time zone",
+        "processing_started_at": "timestamp with time zone"
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "admit_new_checkout",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_idempotency_key uuid, p_request_fingerprint text, p_method text, p_purpose text, p_expected_config_version integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "allocate_exact_sponsorship_payment",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_proof uuid, p_expected_net bigint, p_key uuid, p_month date, p_amount integer, p_reason text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "allocate_sponsorship_payment_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_proof_id uuid, p_actor_user_id uuid, p_allocations jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "animal_publication_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "animal_publication_immutable",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "append_crm_export_job_page",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_job uuid, p_owner uuid, p_csv_chunk text, p_count integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_adoption_assignment_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_case uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_animal_review_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_animal uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_cms_review_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_content uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_crm_assignment_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_supporter uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_crm_tag_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_supporter uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_finance_bank_match_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_ordinal integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_sponsorship_followup_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_pledge uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "apply_volunteer_review_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid, p_profile uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "archive_adoption_instruction_draft",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_expected_version integer, p_actor_user_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "assign_sponsorship_animal_with_audit",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_pledge_id uuid, p_animal_id uuid, p_actor_user_id uuid, p_note text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "assign_sponsorship_followup",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_pledge uuid, p_assignee uuid, p_expected_version bigint",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "bump_adoption_fee_version",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "bump_dog_friendly_estate_version",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "cancel_crm_export_job",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_job uuid, p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "cancel_sponsorship_pledge",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_pledge_id uuid, p_actor_user_id uuid, p_note text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "capture_sponsorship_payment_instructions",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_pledge_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "change_adoption_case_status",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_case_id uuid, p_status_id uuid, p_actor_user_id uuid, p_note text, p_closed_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "character",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "boolean",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "inet",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_cmp",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_eq",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_ge",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_gt",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_hash",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_hash_extended",
+      "schema": "public",
+      "returns": "bigint",
+      "arguments": "citext, bigint",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_larger",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_le",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_lt",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_ne",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_pattern_cmp",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_pattern_ge",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_pattern_gt",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_pattern_le",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_pattern_lt",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citext_smaller",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citextin",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "cstring",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citextout",
+      "schema": "public",
+      "returns": "cstring",
+      "arguments": "citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citextrecv",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "citextsend",
+      "schema": "public",
+      "returns": "bytea",
+      "arguments": "citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_crm_export_job",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_owner uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_donation_delivery_job",
+      "schema": "public",
+      "returns": "TABLE(payment_id uuid, attempts integer)",
+      "arguments": "p_job_id uuid, p_owner uuid, p_lease_until timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_due_animal_publication_media_copies",
+      "schema": "public",
+      "returns": "TABLE(source_path text, public_path text, claimed_at timestamp with time zone, lease_token uuid, attempts integer)",
+      "arguments": "p_cutoff timestamp with time zone, p_limit integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_due_content_public_assets",
+      "schema": "public",
+      "returns": "SETOF content_public_asset",
+      "arguments": "p_cutoff timestamp with time zone, p_limit integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_sponsorship_deliveries",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_limit integer, p_pledge uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_volunteer_operation_outbox",
+      "schema": "public",
+      "returns": "SETOF volunteer_operation_outbox",
+      "arguments": "p_limit integer, p_lease_until timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "claim_volunteer_runtime_job",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_job_key text, p_bucket timestamp with time zone, p_owner uuid, p_lease_until timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "cleanup_expired_crm_export_jobs",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "consume_supporter_recovery_challenge",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_id uuid, p_email_fingerprint text, p_code_fingerprint text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_adoption_assignment_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_assignee uuid, p_status uuid, p_min_age_days integer, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_animal_review_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_evidence text, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_cms_review_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_evidence text, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_content_media_session",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_expected_version integer, p_mime_type text, p_byte_size integer, p_story_update_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_content_revision_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_crm_assignment_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_assignee uuid, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_crm_tag_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_tag text, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_finance_bank_match_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_file_sha text, p_items jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_sponsorship_followup_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_assignee uuid, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_supporter_recovery_challenge",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_id uuid, p_auth_user_id uuid, p_email_fingerprint text, p_code_fingerprint text, p_sealed_carrier text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_volunteer_draft_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_key uuid, p_input jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_volunteer_registration",
+      "schema": "public",
+      "returns": "volunteer_registration",
+      "arguments": "p_activity_id uuid, p_supporter_id uuid, p_registration_type text, p_participant_count integer, p_contact_name text, p_contact_email text, p_contact_phone text, p_language text, p_organization_name text, p_declared_age integer, p_youngest_age integer, p_guardian_name text, p_guardian_phone text, p_notes text, p_status_token_hash text, p_status_token_expires_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_volunteer_registration",
+      "schema": "public",
+      "returns": "volunteer_registration",
+      "arguments": "p_activity_id uuid, p_supporter_id uuid, p_registration_type text, p_participant_count integer, p_contact_name text, p_contact_email text, p_contact_phone text, p_language text, p_organization_name text, p_declared_age integer, p_youngest_age integer, p_guardian_name text, p_guardian_phone text, p_notes text, p_status_token_hash text, p_status_token_expires_at timestamp with time zone, p_consent_email_requested boolean, p_consent_whatsapp_requested boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "create_volunteer_review_bulk_preview",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_ids uuid[], p_reviewer uuid, p_filter_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "crm_export_donations",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_filters jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "crm_export_job_download",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_job uuid, p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "crm_export_job_page",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_job uuid, p_owner uuid, p_offset integer, p_limit integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "crm_export_job_status",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_job uuid, p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "crm_read_supporters",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_filters jsonb, p_offset integer, p_limit integer, p_export boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "crm_supporter_summary",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_supporter_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "deactivate_faq_entry_with_audit",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_actor_user_id uuid, p_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "defer_volunteer_operation_outbox",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_id uuid, p_reason text, p_available_at timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "editorial_quality_queue",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_page integer, p_quality text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "editorial_review_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "editorial_review_queue",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_page integer, p_kind text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "end_sponsorship_assignment_with_audit",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_assignment_id uuid, p_actor_user_id uuid, p_reason text, p_note text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "enforce_current_animal_preference",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "enforce_editorial_review",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "enqueue_crm_export_job",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_kind text, p_filters jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "ensure_adoption_instruction_draft",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_expected_page_version integer, p_actor_user_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "fail_animal_publication_media_copy",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_public_path text, p_lease_token uuid, p_next_retry_at timestamp with time zone, p_error_code text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "fail_content_public_asset_copy",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_asset_id uuid, p_lease_token uuid, p_next_retry_at timestamp with time zone, p_error_code text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "fail_crm_export_job",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_job uuid, p_owner uuid, p_error text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "finalize_content_media_session",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_session_id uuid, p_expected_version integer, p_values jsonb, p_sha256 text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "finalize_successful_adoption",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_adoption_case_id uuid, p_match_id uuid, p_outcome_status_id uuid, p_case_number text, p_adoption_fee_cents integer, p_approval_date date, p_pickup_date date, p_approved_by uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "finish_sponsorship_delivery",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_actor uuid, p_id uuid, p_lease uuid, p_provider_id text, p_error text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "finish_volunteer_runtime_job",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_job_key text, p_bucket timestamp with time zone, p_owner uuid, p_status text, p_result jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "generate_due_volunteer_sessions",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_adoption_assignment_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_animal_review_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_cms_review_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_content_media_session",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_session_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_crm_assignment_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_crm_tag_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_finance_bank_match_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_media_repair_backlog",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_limit integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_sponsorship_followup_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "get_volunteer_review_bulk_operation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_operation uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "gin_extract_query_trgm",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "text, internal, smallint, internal, internal, internal, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gin_extract_value_trgm",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "text, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gin_trgm_consistent",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "internal, smallint, text, integer, internal, internal, internal, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gin_trgm_triconsistent",
+      "schema": "public",
+      "returns": "\"char\"",
+      "arguments": "internal, smallint, text, integer, internal, internal, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_compress",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_consistent",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "internal, text, smallint, oid, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_decompress",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_distance",
+      "schema": "public",
+      "returns": "double precision",
+      "arguments": "internal, text, smallint, oid, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_in",
+      "schema": "public",
+      "returns": "gtrgm",
+      "arguments": "cstring",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_options",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_out",
+      "schema": "public",
+      "returns": "cstring",
+      "arguments": "gtrgm",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_penalty",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "internal, internal, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_picksplit",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "internal, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_same",
+      "schema": "public",
+      "returns": "internal",
+      "arguments": "gtrgm, gtrgm, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "gtrgm_union",
+      "schema": "public",
+      "returns": "gtrgm",
+      "arguments": "internal, internal",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "guard_manual_checkout_approval",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "internship_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "internship_history_guard",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "internship_validate_intake",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "invalidate_supporter_recovery_challenge",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "issue_receipt",
+      "schema": "public",
+      "returns": "TABLE(receipt_no text, receipt_id uuid, pdf_url text, tax_year integer, issued_at timestamp with time zone, already_existed boolean)",
+      "arguments": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "list_crm_assignment_assignees",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "list_due_donation_delivery_jobs",
+      "schema": "public",
+      "returns": "TABLE(id uuid)",
+      "arguments": "p_limit integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "list_failed_donation_delivery_jobs",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_page integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "list_sponsorship_followup_assignees",
+      "schema": "public",
+      "returns": "TABLE(\"authUserId\" uuid, email text, role text)",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "log_animal_mutation",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mark_animal_publication_media_copied",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_public_path text, p_claimed_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mark_claimed_content_public_asset_ready",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_asset_id uuid, p_claimed_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mark_content_public_asset_ready",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_asset_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mark_repaired_animal_publication_media",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_public_path text, p_lease_token uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mark_repaired_content_public_asset",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_asset_id uuid, p_lease_token uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "max",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "min",
+      "schema": "public",
+      "returns": "citext",
+      "arguments": "citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_adoption_guide_release_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_operation text, p_release_id uuid, p_expected_version integer, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_annual_report_with_audit",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_actor_user_id uuid, p_operation text, p_id uuid, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_content_revision_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_expected_version integer, p_operation text, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_crm_supporter_if_version_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_supporter_id uuid, p_expected_version bigint, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_document_asset_with_audit",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_actor_user_id uuid, p_operation text, p_id uuid, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_dog_friendly_estate_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_command text, p_id uuid, p_expected_version integer, p_payload jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "mutate_payment_public_config_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_operation text, p_config_id uuid, p_expected_version integer, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "open_sponsorship_followup_months",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "p_actor uuid, p_pledge uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "prepare_content_public_assets",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_revision_id uuid, p_expected_version integer, p_idempotency_key text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "preview_manual_bank_matches",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_references text[], p_amounts integer[]",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "protect_attendance_activity_dimensions",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "protect_legacy_volunteer_attendance",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "public_animal_listing_page",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_filters jsonb",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "publish_adoption_guide_release",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_release_id uuid, p_expected_version integer, p_actor_user_id uuid, p_idempotency_key text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "publish_adoption_instruction_page",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_expected_version integer, p_actor_user_id uuid, p_idempotency_key text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "publish_animal_publication_once",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "publish_content_revision",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_revision_id uuid, p_expected_version integer, p_idempotency_key text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "publish_payment_public_config",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_config_id uuid, p_expected_version integer, p_actor_user_id uuid, p_idempotency_key text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "queue_animal_publication_media_copy",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "queue_donation_delivery_on_success",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "read_content_admin_summaries",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_filters jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "read_content_authoring_detail",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_content_id uuid, p_history_page integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "read_published_content_snapshots",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_filters jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "reconcile_legacy_sponsorship_payment",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_proof uuid, p_payment uuid, p_reason text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "reconcile_manual_payment_atomic",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_payment uuid, p_reference text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_exact_sponsorship_payment_proof",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_actor uuid, p_pledge uuid, p_key uuid, p_payment jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_mail_delivery_event",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_event_id text, p_message_id text, p_type text, p_occurred_at timestamp with time zone, p_body_hash text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_manual_gift_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_request_id uuid, p_actor_user_id uuid, p_input jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_public_consent_intents",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_sponsorship_full_refund",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_proof uuid, p_expected_revision bigint, p_reference text, p_reason text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_sponsorship_payment_proof",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text",
+      "executeRoles": []
+    },
+    {
+      "name": "record_sponsorship_receipt_request",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_actor uuid, p_proof uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_sponsorship_refund",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_proof uuid, p_expected_revision bigint, p_expected_refunded integer, p_key uuid, p_amount integer, p_reference text, p_reason text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "record_volunteer_promotion_review",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_actor uuid, p_registration uuid, p_reason text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_match",
+      "schema": "public",
+      "returns": "text[]",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_match",
+      "schema": "public",
+      "returns": "text[]",
+      "arguments": "citext, citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_matches",
+      "schema": "public",
+      "returns": "SETOF text[]",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_matches",
+      "schema": "public",
+      "returns": "SETOF text[]",
+      "arguments": "citext, citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_replace",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "citext, citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_replace",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "citext, citext, text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_split_to_array",
+      "schema": "public",
+      "returns": "text[]",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_split_to_array",
+      "schema": "public",
+      "returns": "text[]",
+      "arguments": "citext, citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_split_to_table",
+      "schema": "public",
+      "returns": "SETOF text",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "regexp_split_to_table",
+      "schema": "public",
+      "returns": "SETOF text",
+      "arguments": "citext, citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "reject_volunteer_attendance_event_mutation",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "reorder_adoption_fees_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_first_id uuid, p_second_id uuid, p_first_version integer, p_second_version integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "replace",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "citext, citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "resolve_public_supporter_identity",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_contact jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "restore_adoption_instruction_revision",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_source_revision_id uuid, p_expected_page_version integer, p_actor_user_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "restore_content_revision",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_revision_id uuid, p_expected_version integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "retry_donation_delivery_job_with_audit",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_job_id uuid, p_actor_user_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "retry_failed_media_repair",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_actor_user_id uuid, p_kind text, p_item_id text, p_reason text, p_cause_corrected boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "retry_volunteer_operation_outbox",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_actor uuid, p_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "reverse_sponsorship_allocation_with_audit",
+      "schema": "public",
+      "returns": "uuid",
+      "arguments": "p_allocation_id uuid, p_actor_user_id uuid, p_note text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "review_exact_sponsorship_payment_proof",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_pledge_id uuid, p_proof_id uuid, p_expected_revision bigint, p_idempotency_key uuid, p_decision text, p_actor_user_id uuid, p_note text, p_assign_animal_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "review_sponsorship_payment_proof",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text, p_allocations jsonb, p_assign_animal_id uuid",
+      "executeRoles": []
+    },
+    {
+      "name": "search_sponsorship_assignment_candidates",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_query text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_animal_catalog_membership_defaults",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_checkout_method_approval_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_method text, p_purpose text, p_config_id uuid, p_expected_config_version integer, p_enabled boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_checkout_policy_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_expected_version integer, p_enabled boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_content_publication_metadata",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_content_id uuid, p_expected_version integer, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_limit",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "real",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_supporter_marketing_email",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_auth_user_id uuid, p_verified_email text, p_status text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_updated_at",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_volunteer_attendance_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_registration_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_attendance_status text, p_command text, p_reason text, p_volunteer_hours numeric, p_update_volunteer_hours boolean, p_internal_notes text, p_update_internal_notes boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_volunteer_monotonic_updated_at",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "set_volunteer_registration_status_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_registration_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_status text, p_internal_notes text, p_update_internal_notes boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "settle_volunteer_operation_outbox",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_id uuid, p_attempt integer, p_status text, p_reason text, p_available_at timestamp with time zone, p_provider_message_id text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "show_limit",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "show_trgm",
+      "schema": "public",
+      "returns": "text[]",
+      "arguments": "text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "similarity",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "similarity_dist",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "similarity_op",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "split_part",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "citext, citext, integer",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "strict_word_similarity",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "strict_word_similarity_commutator_op",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "strict_word_similarity_dist_commutator_op",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "strict_word_similarity_dist_op",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "strict_word_similarity_op",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "strpos",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticlike",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticlike",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticnlike",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticnlike",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticregexeq",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticregexeq",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticregexne",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, citext",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "texticregexne",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "translate",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "citext, citext, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "update_adoption_fee_content_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor_user_id uuid, p_id uuid, p_expected_version integer, p_item_name text, p_price_hkd text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "update_adoption_instruction_draft",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_expected_version integer, p_content jsonb, p_actor_user_id uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "update_animal_status_with_audit",
+      "schema": "public",
+      "returns": "SETOF animals",
+      "arguments": "p_actor_user_id uuid, p_animal_id uuid, p_status text, p_updated_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "update_volunteer_activity_before_bulk",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_activity_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_input jsonb",
+      "executeRoles": []
+    },
+    {
+      "name": "update_volunteer_activity_with_audit",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_activity_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_input jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "upsert_about_page_content_with_audit",
+      "schema": "public",
+      "returns": "about_page_content",
+      "arguments": "p_actor_user_id uuid, p_page_slug text, p_content jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "upsert_adoption_rule_with_audit",
+      "schema": "public",
+      "returns": "adoption_rules",
+      "arguments": "p_actor_user_id uuid, p_id uuid, p_content_zh text, p_content_en text, p_sort_order integer, p_is_published boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "upsert_animal_internal_profile_with_audit",
+      "schema": "public",
+      "returns": "SETOF animal_profile_internal",
+      "arguments": "p_actor_user_id uuid, p_animal_id uuid, p_values jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "upsert_care_topic_with_audit",
+      "schema": "public",
+      "returns": "care_topics",
+      "arguments": "p_actor_user_id uuid, p_id uuid, p_animal_type text, p_label_zh text, p_label_en text, p_content_zh text, p_content_en text, p_sort_order integer, p_is_published boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "upsert_faq_entry_with_audit",
+      "schema": "public",
+      "returns": "faq_entry",
+      "arguments": "p_actor_user_id uuid, p_id uuid, p_category text, p_question_zh text, p_question_en text, p_answer_zh text, p_answer_en text, p_keywords_zh text[], p_keywords_en text[], p_cta_key text, p_sensitive boolean, p_sort_order integer, p_is_active boolean",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "verify_sponsorship_contact_submission",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_pledge uuid, p_reason text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_activity_counts",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_activity_ids uuid[]",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_activity_workspace_rows",
+      "schema": "public",
+      "returns": "TABLE(item jsonb)",
+      "arguments": "p_filter jsonb",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_admin_directory_read",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_query jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_apply_source_fields",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_body jsonb, p_parent jsonb, p_label text, p_parent_sources jsonb",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_apply_verified_attendance_policy",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_assessment_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_assessment_policy_ready",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p jsonb",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_assessment_senior_candidate",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_bind_daily_policy",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_body jsonb, p_date date",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_booking_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_bulk_admin",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_actor uuid",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_bulk_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_bulk_fingerprint",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_day date",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_bulk_item",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_action text, p_input jsonb, p_item jsonb, p_key uuid",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_bulk_result",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_operation volunteer_bulk_operation",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_calendar_policy_checks",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_ids uuid[]",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_cancellation_reason",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_body jsonb, p_start timestamp with time zone, p_now timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_change_fingerprint",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_activity uuid, p_other uuid, p_body jsonb, p_now timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_credential_history_guard",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_daily_fingerprint",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_key text, p_date date, p_timezone text, p_rules jsonb, p_now timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_daily_policy_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_daily_state",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_key text, p_date date, p_profile uuid, p_now timestamp with time zone, p_exclude uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_domain_guard",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_enforce_activity_policy",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_enforce_registration_policy",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_group_activity_guard",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_group_candidate",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_activity uuid, p_version uuid, p_headcount integer, p_now timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_group_snapshot_guard",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_immutable_fact",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_legacy_identity_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_member_registrations",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_upcoming_page integer, p_history_page integer, p_size integer",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_my_history",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_operation_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_persist_due_releases",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_persist_releases",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "p_activity uuid, p_stamp timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_policy_admin",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_booking_shape_guard",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_contact_tasks",
+      "schema": "public",
+      "returns": "trigger",
+      "arguments": "",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_credentials",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_profile uuid, p_requirement jsonb, p_at timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_evaluate",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_activity uuid, p_profile uuid, p_role text, p_now timestamp with time zone, p_exclude uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_evaluate_before_bulk",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_activity uuid, p_profile uuid, p_role text, p_now timestamp with time zone, p_exclude uuid",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_policy_fingerprint",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_manifest jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_json_matches",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_value jsonb, p_schema jsonb, p_depth integer",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_policy_json_schema",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_policy_manifest",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_ids jsonb, p_body jsonb, p_now timestamp with time zone",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_session_reason",
+      "schema": "public",
+      "returns": "text",
+      "arguments": "p_body jsonb, p_status text, p_starts_at timestamp with time zone, p_group_headcount integer, p_now timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_policy_settings_read",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_simulation",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_source_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_policy_window",
+      "schema": "public",
+      "returns": "timestamp with time zone",
+      "arguments": "p_window jsonb, p_start timestamp with time zone, p_timezone text",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_profile_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_public_session_summary",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_ids uuid[]",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_record_senior_candidate",
+      "schema": "public",
+      "returns": "void",
+      "arguments": "p_profile_id uuid, p_policy_version_id uuid, p_trigger text",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_release_is_active",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "p_binding text, p_rule jsonb, p_anchor timestamp with time zone, p_count integer, p_now timestamp with time zone",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_resolve_policy",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_body jsonb, p_source_scope text",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_resolve_source_node",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_value jsonb, p_parent jsonb, p_path text, p_label text, p_parent_sources jsonb",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_task_command",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p_actor uuid, p_command jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_validate_daily_policy",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_validate_policy",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_validate_policy_references",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p jsonb",
+      "executeRoles": []
+    },
+    {
+      "name": "volunteer_validate_policy_shape",
+      "schema": "public",
+      "returns": "jsonb",
+      "arguments": "p jsonb",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "volunteer_verified_attendance_count",
+      "schema": "public",
+      "returns": "integer",
+      "arguments": "p_profile_id uuid, p_policy jsonb, p_scope_key text, p_before_date date",
+      "executeRoles": [
+        "service_role"
+      ]
+    },
+    {
+      "name": "word_similarity",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "word_similarity_commutator_op",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "word_similarity_dist_commutator_op",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "word_similarity_dist_op",
+      "schema": "public",
+      "returns": "real",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    },
+    {
+      "name": "word_similarity_op",
+      "schema": "public",
+      "returns": "boolean",
+      "arguments": "text, text",
+      "executeRoles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ]
+    }
+  ],
+  "capturedAt": "2026-10-01T07:27:18.716717+00:00",
+  "migrationVersions": [
+    "20260611162942",
+    "20260611162956",
+    "20260623160506",
+    "20260623183933",
+    "20260627110000",
+    "20260630154259",
+    "20260707094012",
+    "20260718100000",
+    "20260718110000",
+    "20260718111000",
+    "20260719120000",
+    "20260719223000",
+    "20260724023312",
+    "20260724023618",
+    "20260726170246",
+    "20260731164635",
+    "20260731171123",
+    "20260803120000",
+    "20260906062155",
+    "20260906173545",
+    "20260907011009",
+    "20260912073702",
+    "20260912073842",
+    "20260912074006",
+    "20260912074036",
+    "20260912074117",
+    "20260912074156",
+    "20260912074228",
+    "20260912074346",
+    "20260912074430",
+    "20260912074524",
+    "20260912074646",
+    "20260912074747",
+    "20260913060000",
+    "20260913062837",
+    "20260913062952",
+    "20260913064921",
+    "20260913065257",
+    "20260913065833",
+    "20260913070057",
+    "20260913070128",
+    "20260913071632",
+    "20260913071639",
+    "20260913071927",
+    "20260913072235",
+    "20260913072454",
+    "20260913072851",
+    "20260913073012",
+    "20260913073314",
+    "20260913075040",
+    "20260913075643",
+    "20260913075913",
+    "20260913080143",
+    "20260913080152",
+    "20260913080537",
+    "20260913080838",
+    "20260913081521",
+    "20260913081533",
+    "20260913081720",
+    "20260913082300",
+    "20260913083120",
+    "20260913083503",
+    "20260913084120",
+    "20260913084247",
+    "20260913084717",
+    "20260913084920",
+    "20260913085252",
+    "20260913085500",
+    "20260913090746",
+    "20260913092132",
+    "20260913113000",
+    "20260913180745",
+    "20260913182552",
+    "20260914160716",
+    "20260914160736",
+    "20260914161341",
+    "20260914162305",
+    "20260914163506",
+    "20260914164558",
+    "20260929003610",
+    "20260929004923",
+    "20260929010634",
+    "20260929125117",
+    "20260929150318",
+    "20260929151028",
+    "20260929152453",
+    "20260929160535",
+    "20260929162248",
+    "20260929193826",
+    "20260929193915",
+    "20260929195749",
+    "20260929195809",
+    "20260929195832",
+    "20260929195857",
+    "20260929201203",
+    "20260930163010",
+    "20260930165057",
+    "20260930180311",
+    "20261001014214",
+    "20261001014620",
+    "20261001022601",
+    "20261001024348",
+    "20261001031157",
+    "20261001032650",
+    "20261001034448",
+    "20261001045928",
+    "20261001051516",
+    "20261001055531",
+    "20261001061046",
+    "20261001063913",
+    "20261001070942",
+    "20261001072505"
+  ]
+}

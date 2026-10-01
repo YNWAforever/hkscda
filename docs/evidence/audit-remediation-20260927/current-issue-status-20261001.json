@@ -1,7 +1,7 @@
 {
-  "capturedAt": "2026-10-01T06:26:12.600278+00:00",
+  "capturedAt": "2026-10-01T07:38:42.540555+00:00",
   "source": "2e9d1ee717c43cda3949d701aaa5f460f9e882b7",
-  "lastAcceptedMain": "748fd6441add145f481524ad186ce4bb1186ad9f",
+  "lastAcceptedMain": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
   "issues": [
     {
       "issue_id": "PAY-01",
@@ -110,7 +110,7 @@
       "implementation_status": "partial: prior bulk queues plus manual settlement lock/replay/delivery recovery repaired; later finance/notification workflows pending",
       "code_complete": "partial",
       "schema_ready": "approved financial/recovery slices individually applied and postflight recorded; wider R01 legacy dependencies partial",
-      "deployed": "4/5 mapped financial/recovery slices accepted",
+      "deployed": "5/5 mapped financial/recovery slices accepted",
       "operationally_enabled": "no",
       "proofs": [
         {
@@ -151,8 +151,13 @@
         },
         {
           "pr": 175,
-          "accepted": false,
-          "status": "pending sequential acceptance"
+          "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+          "mainSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "mainCiRun": 36826152769,
+          "gates": "5SUCCESS",
+          "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT",
+          "accepted": true
         }
       ],
       "acceptance_evidence": "3017pass131skip;typecheck/lint/build0;manualDB4tests29assertions;CRM17tests90assertions;fullSQL6legacyrowsunchanged251ms;UI3widths/Axe0;see sequential-merge-165-20260930.md; current financial slice acceptance: #165 9f9732e92dded2aaee0b7861b4d7de41eff689a6 / CI 36810707899 five SUCCESS / same-SHA READY; exact row/audit hashes unchanged; all-merge-execution-20261001.json",
@@ -513,7 +518,7 @@
       "implementation_status": "code-complete slices; sequential production rollout in progress",
       "code_complete": "yes for implemented tag/review/assignment/preview/worklist slices",
       "schema_ready": "reviewed applied scopes separately recorded; wider R01 legacy dependencies partial",
-      "deployed": "15/20 mapped reviewed slices accepted; wider R01/hosted UAT remain partial",
+      "deployed": "20/20 mapped reviewed slices accepted; wider R01/hosted UAT remain partial",
       "operationally_enabled": "partial; hosted staff UAT pending; payment/new schedules off",
       "proofs": [
         {
@@ -664,31 +669,56 @@
         },
         {
           "pr": 174,
-          "accepted": false,
-          "status": "pending sequential acceptance"
+          "sourceSha": "aac52b6115c14866965c2b8189e2cab0d3d5a2ab",
+          "mainSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+          "mainCiRun": 36824674785,
+          "gates": "5SUCCESS",
+          "aliasSha": "ac613c5f342b4c5797b354174c47cee61e89b095",
+          "deploymentId": "dpl_Ej8pAVT2SxQk4vwWeWbSM5URnaTS",
+          "accepted": true
         },
         {
           "pr": 175,
-          "accepted": false,
-          "status": "pending sequential acceptance"
+          "sourceSha": "cc08229218c1be5b01c5598ac94d2d41a767be93",
+          "mainSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "mainCiRun": 36826152769,
+          "gates": "5SUCCESS",
+          "aliasSha": "e876278c9460df449c1c32ce706f7a48f12d951e",
+          "deploymentId": "dpl_DqYbWZu9pertjzicM26tBNoFn2kT",
+          "accepted": true
         },
         {
           "pr": 176,
-          "accepted": false,
-          "status": "pending sequential acceptance"
+          "sourceSha": "5b69d32687bdc75ef318fb5fbafe99f46db0b231",
+          "mainSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+          "mainCiRun": 36827586656,
+          "gates": "5SUCCESS",
+          "aliasSha": "1fef00e8c4b8429d34b593b0437f8cf034c7674c",
+          "deploymentId": "dpl_BMZHGpKBS1Xo7qqCK6RUypyTu1f5",
+          "accepted": true
         },
         {
           "pr": 177,
-          "accepted": false,
-          "status": "pending sequential acceptance"
+          "sourceSha": "c3480ed371a9bc810f656f29e073121ec366a7b1",
+          "mainSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+          "mainCiRun": 36828955860,
+          "gates": "5SUCCESS",
+          "aliasSha": "a569bf033c42e6037fd59eafd522014a3564137b",
+          "deploymentId": "dpl_1Lbworrg8Wa7saAgtLfuHAY5SAcV",
+          "accepted": true
         },
         {
           "pr": 178,
-          "accepted": false,
-          "status": "pending sequential acceptance"
+          "sourceSha": "c307c2990b1c56c165b03f6e18a8ce3f25fa66e8",
+          "mainSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+          "mainCiRun": 36830360908,
+          "gates": "5SUCCESS",
+          "aliasSha": "ce5f7271d1496584c71ca9c94f64772a21a45e91",
+          "deploymentId": "dpl_FkFxVvL98SAWPEqvyG2BaPLqVAXC",
+          "accepted": true
         }
       ],
-      "acceptance_evidence": "5DB31assertions;1000items898success101skip1conflict;full3159pass145skip;type/lint/build0;12UIcases/Axe0; sequential-merge-178-20260930.md; task178 RED2fail GREEN7pass49assert full3161pass145skip10044assert; type/lint/build0; exact catalog/column-grants/whole-ledger/audit rollback; hash 941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09; round1 exact heldPID+whole item JSON RED2fail GREEN7pass53assert full3161pass145skip10048assert; type/lint/build0; prior whole SQL rehearsal inherited; see sequential-merge-178-20260930.md; root178 canonical62SQL/focused2pass74assertions/strictType0; combinedlocalfull/lint/build/DBnot-run; freshcombinedCIpending; sequential-merge-178-20260930.md; final combined3195pass168skip0fail10138assert592files62.30s/type0/lint0(52existingwarnings)/build0; final-local-gates-20261001.json; current actual release receipt: all-merge-execution-20261001.json; accepted releases 160,182,161,162,163,164,165,166,167,168,169,170,171,172,173; pending gates remain pending",
+      "acceptance_evidence": "5DB31assertions;1000items898success101skip1conflict;full3159pass145skip;type/lint/build0;12UIcases/Axe0; sequential-merge-178-20260930.md; task178 RED2fail GREEN7pass49assert full3161pass145skip10044assert; type/lint/build0; exact catalog/column-grants/whole-ledger/audit rollback; hash 941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09; round1 exact heldPID+whole item JSON RED2fail GREEN7pass53assert full3161pass145skip10048assert; type/lint/build0; prior whole SQL rehearsal inherited; see sequential-merge-178-20260930.md; root178 canonical62SQL/focused2pass74assertions/strictType0; combinedlocalfull/lint/build/DBnot-run; freshcombinedCIpending; sequential-merge-178-20260930.md; final combined3195pass168skip0fail10138assert592files62.30s/type0/lint0(52existingwarnings)/build0; final-local-gates-20261001.json; current actual release receipt: all-merge-execution-20261001.json; accepted releases 160,182,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178; pending gates remain pending",
       "external_inputs": "candidate-specific catalog/schema and sequential green releases; global R01 legacy dependencies; hosted staff UAT; payments/new schedules off",
       "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
     },
@@ -758,7 +788,7 @@
       "issue_id": "R01",
       "implementation_status": "partial overall; focused #182 readonly ACL repair applied and postflight passed",
       "code_complete": "partial overall; focused readonly repair yes",
-      "schema_ready": "partial overall; exact applied migrations in all-merge-execution-20261001.json; legacy compatibility still open",
+      "schema_ready": "partial; final public checker incompatible, 44 residual issues at ledger112",
       "deployed": "partial; focused #182 source accepted",
       "operationally_enabled": "partial (#182 readonly ACL clamp enforced); wider compatibility/UAT open",
       "proofs": [
@@ -781,7 +811,7 @@
           "accepted": true
         }
       ],
-      "acceptance_evidence": "2026-09-27 baseline: production missing 8 minimum tables 14 RPCs and fingerprint column; historical fresh/upgrade rehearsal 67 requirements passed. Later approved CMS and other dependency migrations applied; ledger95 observed 2026-09-30. Baseline missing counts are not current.; 2026-10-01 pre160/182 historical read-only public catalog138tables276functions/ledger98; that snapshot checker exit1 incompatible; production-compatibility-20261001.json; prior missing counts not current; dedicated57322 exact reviewed picker/grant transaction:146structuralchecks compatible0issues/exit0; original catalog/ACL/ledger rollback verified; two pre-DDL harness errors retained; pre160/182 production snapshot92gaps; fresh post-rollout catalog pending; R01 legacy whole-file36success/26collisions, all92gaps mapped; focused182 role RED3/17->GREEN20/0/110assert; full sourceaca3027/127/0, TS/lint/build0; integrated candidate gates pending; current actual release receipt: all-merge-execution-20261001.json; 182 nine table-role checks/no column writes;11 RPC objects unchanged; original rows preserved",
+      "acceptance_evidence": "2026-09-27 baseline: production missing 8 minimum tables 14 RPCs and fingerprint column; historical fresh/upgrade rehearsal 67 requirements passed. Later approved CMS and other dependency migrations applied; ledger95 observed 2026-09-30. Baseline missing counts are not current.; 2026-10-01 pre160/182 historical read-only public catalog138tables276functions/ledger98; that snapshot checker exit1 incompatible; production-compatibility-20261001.json; prior missing counts not current; dedicated57322 exact reviewed picker/grant transaction:146structuralchecks compatible0issues/exit0; original catalog/ACL/ledger rollback verified; two pre-DDL harness errors retained; pre160/182 production snapshot92gaps; fresh post-rollout catalog pending; R01 legacy whole-file36success/26collisions, all92gaps mapped; focused182 role RED3/17->GREEN20/0/110assert; full sourceaca3027/127/0, TS/lint/build0; integrated candidate gates pending; current actual release receipt: all-merge-execution-20261001.json; 182 nine table-role checks/no column writes;11 RPC objects unchanged; original rows preserved; final production-compatibility-after-approved-rollout-20261001.json; baseline92 gaps are historical",
       "external_inputs": "legacy dependency forward review/approval; hosted/provider/full recovery UAT not-run; later11 scoped migrations approved for per-file execution",
       "evidence": "tracker.csv / original sequential reports / all-merge-execution-20261001.json"
     },
