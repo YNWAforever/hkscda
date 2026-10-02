@@ -1,0 +1,20 @@
+import {readFile,writeFile,mkdir} from "node:fs/promises";
+import {SQL} from "bun";
+import {snapshot,hash,localSourceState} from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {functionsQuery,authQuery,nativeQuery,indexDetailsQuery} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile";
+const out=import.meta.dir+"/task-10-fix1-parity-"+Date.now();await mkdir(out);
+const p=import.meta.dir+"/task-10-fix1-proposal4/";const expected=JSON.parse(await readFile(p+"receipt.json","utf8"));const modern=JSON.parse(await readFile(import.meta.dir+"/task-10-capture-modern-1790948293703/receipt.json","utf8"));
+const container="r01-task10-fix1-role-20261002-126d7280-v2";
+const unsafe=async(query:string)=>{
+ if(query==="set local search_path=pg_catalog")return [];
+ if(!/^(select|with)\s/i.test(query))throw Error("Metadata read allowlist");
+ const input="begin read only;set local search_path=pg_catalog;select coalesce(json_agg(row_to_json(q)),'[]'::json) from ("+query+") q;commit;";
+ const child=Bun.spawn(["docker","exec","-i",container,"psql","-X","-qAt","-h","/tmp","-U","supabase_admin","-d","r01_task10_fix1","-v","ON_ERROR_STOP=1"],{stdin:new Blob([input]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(child.stdout).text(),new Response(child.stderr).text(),child.exited]);if(exit)throw Error(err);return JSON.parse(out);
+};const adapter={unsafe,begin:async(run:(tx:unknown)=>Promise<unknown>)=>run({unsafe})};
+const actual=await snapshot(adapter as unknown as SQL);const facets=Object.keys(expected.catalog).filter(k=>hash(expected.catalog[k])!==hash(actual[k]));
+const funcs=await unsafe(functionsQuery),auth=(await unsafe(authQuery))[0].value,native=(await unsafe(nativeQuery))[0].value,indexes=(await unsafe(indexDetailsQuery))[0].value;
+const roles=await unsafe("select rolname,rolsuper,rolinherit,rolcanlogin,rolbypassrls,rolcreatedb,rolcreaterole,rolreplication,rolconnlimit from pg_roles where rolname !~ '^pg_' and rolname not in('r01_task10_indirect','r01_task10_setonly') order by rolname");
+const memberships=await unsafe("select pg_get_userbyid(roleid) role,pg_get_userbyid(member) member,admin_option,inherit_option,set_option from pg_auth_members where pg_get_userbyid(member) !~ '^pg_' order by 1,2");
+const tableNames=await unsafe("select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('public','private','auth') and c.relkind in('r','p') order by 1");const counts=[];for(const t of tableNames)counts.push([t.name,(await unsafe('select count(*)::text count from '+t.name))[0].count]);
+const receipt={at:new Date().toISOString(),facets,catalogExpected:expected.catalog,catalogActual:actual,functionsEqual:hash(funcs)===hash(modern.functions),authEqual:hash(auth)===hash(modern.auth),nativeEqual:hash(native)===hash(modern.native),indexesEqual:hash(indexes)===hash(modern.indexes),rolesEqual:hash(roles)===hash(expected.roles),membershipsEqual:hash(memberships)===hash(expected.memberships),roles,memberships,counts,allRowsZero:counts.every(x=>x[1]==="0"),oidQualification:"Name-basedprofiles; bootstrapSupabaseAdmin OID10 and newobjectOIDs differ fromsource; noOIDnormalization/nativescannerchange",fixtureExtraRoles:["r01_task10_indirect","r01_task10_setonly"],modernState:await localSourceState("postgresql://postgres:postgres@127.0.0.1:57322/postgres"),templateState:await localSourceState("postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929")};
+await writeFile(out+"/receipt.json",JSON.stringify(receipt,null,2)+"\n");console.log(JSON.stringify({out,facets,...Object.fromEntries(Object.entries(receipt).filter(([k])=>k.endsWith("Equal")||k==="allRowsZero"))}));if(facets.length||!receipt.functionsEqual||!receipt.authEqual||!receipt.nativeEqual||!receipt.indexesEqual||!receipt.rolesEqual||!receipt.membershipsEqual||!receipt.allRowsZero)process.exitCode=1;

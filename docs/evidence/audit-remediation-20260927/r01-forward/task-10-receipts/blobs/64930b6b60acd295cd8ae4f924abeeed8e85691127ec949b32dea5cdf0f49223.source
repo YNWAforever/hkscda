@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-02T14:49:13.157051+00:00",
+  "status": "BLOCKED source approval pending, Fix1 open",
+  "head": "126d728028a844052537fd64d10cecb206ef6fb0",
+  "sourceApplied": false,
+  "fixCommit": null,
+  "migrationRawSha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+  "bindings": {
+    "task-10-fix1-report.md": {
+      "archive": "s00.source",
+      "rawSha256": "552c6c6780998751dd9ce2eb7915f2ca312f1d9d618322090def7f746ebc1f96",
+      "canonicalSha256": "d0eecffc9f4851a7b7e84c1dea7f6930aee94714ede03a8462e5f96a2ee36243",
+      "bytes": 14224
+    },
+    "task-10-report.md": {
+      "archive": "s01.source",
+      "rawSha256": "a26e448719ddd47eff5c79c2249f2dcd6fab1e41d4cb0887d4f443d7d0e30f77",
+      "canonicalSha256": "8e16dc158a56d8f52b6281d46a12a967ecefc95d8c582e0644a46205cd81576b",
+      "bytes": 28033
+    },
+    "task-10-fix1-source-approval-rejection.json": {
+      "archive": "s02.source",
+      "rawSha256": "61c5d5d7ea773be57f08255d8716b441505df48b87d3ffa3facfdfe91592b469",
+      "canonicalSha256": "5bc60690197ffc45c38c702143c8b1a7c8c513d5129a200f651cba2680576a18",
+      "bytes": 1405
+    },
+    "task-10-fix1-source-approval-proposal-v3/manifest.json": {
+      "archive": "s03.source",
+      "rawSha256": "764d5f6965d6db2964b8c7ccffc36072f5ce9f2ebd64cd51bb68ab3f73728995",
+      "canonicalSha256": "764d5f6965d6db2964b8c7ccffc36072f5ce9f2ebd64cd51bb68ab3f73728995",
+      "bytes": 2396
+    },
+    "task-10-fix1-source-approval-proposal-v3/approval-packet.md": {
+      "archive": "s04.source",
+      "rawSha256": "88c25075d67394b88e41d4e1f8758d3e4ead799e2ac6716d46e76c3b0509174f",
+      "canonicalSha256": "88c25075d67394b88e41d4e1f8758d3e4ead799e2ac6716d46e76c3b0509174f",
+      "bytes": 4423
+    },
+    "task-10-fix1-source-approval-proposal-v3/unapplied.patch": {
+      "archive": "s05.source",
+      "rawSha256": "3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1",
+      "canonicalSha256": "3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1",
+      "bytes": 46491
+    },
+    "task-10-fix1-role-proof-red-1790951602001192600/receipt.json": {
+      "archive": "s06.source",
+      "rawSha256": "9291a9ce8ee97ba6732eefc1c9f13a761451f736da2f753d16c5580d7fd6dffd",
+      "canonicalSha256": "4fff433c21701692348c232746572ce07b4d000182e80a2d9aa504ee18c6a615",
+      "bytes": 7349
+    },
+    "task-10-fix1-after-red-preservation.json": {
+      "archive": "s07.source",
+      "rawSha256": "4d7f32d90125686a9599b7e00e580d8f7fe25f8694c70bd74d5d8aba5ca9c904",
+      "canonicalSha256": "4d7f32d90125686a9599b7e00e580d8f7fe25f8694c70bd74d5d8aba5ca9c904",
+      "bytes": 440
+    },
+    "task-10-fix1-evidence-green7.log": {
+      "archive": "s08.source",
+      "rawSha256": "87fb3b95ac13b0d55345468156549d3f7d65e746f20407fa459d354b7c6bb271",
+      "canonicalSha256": "77350b4a49598ecd8f8a05df2ffb0d947e4482655ecde064c681bbd8144401e6",
+      "bytes": 45339
+    },
+    "task-10-fix1-focused-lint.log": {
+      "archive": "s09.source",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "task-10-fix1-full-scanner-oid.log": {
+      "archive": "s10.source",
+      "rawSha256": "ea04b8838e7f0b80e9f7d6edd0a3ad2da2f00de96c6bbcb77cb2e984e12fa528",
+      "canonicalSha256": "1651fcc33590cbd8be5aee60bad321ae388cfba2ae770e8d66ac37e6cb67d8ae",
+      "bytes": 45
+    }
+  }
+}

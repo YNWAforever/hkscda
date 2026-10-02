@@ -1,0 +1,41 @@
+{
+  "mode": "red",
+  "startedAt": "2026-10-01T10:10:16.508Z",
+  "productionActions": "schema/catalog reads only; no production rows or mutation",
+  "environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+  "sourceCatalogHash": "35bb5327140b49ae9ee3c507b468d5ef3d2f43e21745a0a2830a86c09b9dd170",
+  "catalogCounts": {
+    "columns": 2176,
+    "constraints": 808,
+    "databaseOwner": "postgres",
+    "defaults": 6,
+    "extensionMembers": 136,
+    "extensions": 2,
+    "functions": 353,
+    "indexes": 396,
+    "memberships": null,
+    "policies": 82,
+    "relations": 557,
+    "roles": 5,
+    "schemas": 2,
+    "triggers": 145,
+    "types": 326,
+    "views": 3
+  },
+  "clone": "r01_clone_f6782ad7097249cb91af9b171f225d78",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "managedPrerequisitesHash": "482cc9eb2636bcdcc71e4217c34992570389e0c668119ef3ebe74d0a3464b00c",
+  "legacyFactsBeforeHash": "2c2c2cf7a5fa60a7fb021cb2c072c3a16cb2200cabaff9c4aa0c8c0330e7fd03",
+  "testCommand": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000 --test-name-pattern current repository projection",
+  "testExit": 1,
+  "testSummary": [
+    "\n 0 pass",
+    " 1 fail"
+  ],
+  "watchedRed": true,
+  "legacyFactsAfterHash": "2c2c2cf7a5fa60a7fb021cb2c072c3a16cb2200cabaff9c4aa0c8c0330e7fd03",
+  "result": "watched RED",
+  "cleanup": "only exact newly-created clone dropped without FORCE/session termination",
+  "completedAt": "2026-10-01T10:10:56.005Z"
+}

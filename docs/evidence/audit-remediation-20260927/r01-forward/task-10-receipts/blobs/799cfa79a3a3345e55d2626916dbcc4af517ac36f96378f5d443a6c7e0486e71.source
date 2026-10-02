@@ -1,0 +1,14 @@
+import pathlib,json,subprocess,os,hashlib,time
+root=pathlib.Path.cwd();s=root/".superpowers/sdd/r01-forward-schema-plan-20261001";e=root/"docs/evidence/audit-remediation-20260927/r01-forward";out=s/("task-10-fix1-profile-refresh-"+str(time.time_ns()));out.mkdir();paths=[e/("task-10-"+x) for x in ["capture.ts","global-capture.ts","auth-component-red.ts","profile.ts","receipt.ts","receipt-contracts.json"]]+[root/"src/lib/admin/accessFence.database.test.ts",root/"supabase/rls-tests/helpers/productionSchemaClone.ts"]
+bindings={str(p.relative_to(root)).replace("\\","/"):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+for i,p in enumerate(paths):(out/f"s{i}.source").write_bytes(p.read_bytes())
+r={"bindings":bindings,"commands":[],"receiptPaths":[]};env=os.environ.copy();env["R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES"]="1"
+try:
+ for leaf,mode,pattern in [("capture","hosted","task-10-capture-hosted-*"),("capture","modern","task-10-capture-modern-*"),("global-capture","hosted","task-10-global-capture-hosted-*"),("global-capture","modern","task-10-global-capture-modern-*"),("auth-component-red",None,"task-10-auth-component-red-*")]:
+  args=["bun",str((e/("task-10-"+leaf+".ts")).relative_to(root))]+([mode] if mode else []);log=out/(str(len(r["commands"]))+".log")
+  with log.open("xb") as f:code=subprocess.run(args,env=env,stdout=f,stderr=subprocess.STDOUT).returncode
+  receipt=max(s.glob(pattern+"/receipt.json"),key=lambda p:p.stat().st_mtime);r["commands"].append({"args":args,"exit":code,"log":log.name,"logSha256":hashlib.sha256(log.read_bytes()).hexdigest()});r["receiptPaths"].append(str(receipt.relative_to(root)).replace("\\","/"));(out/"receipt.json").write_text(json.dumps(r,indent=2)+"\n");print(json.dumps({"command":args,"exit":code,"receipt":r["receiptPaths"][-1]}),flush=True)
+  if code:raise RuntimeError("freshprofile failed")
+ r["frozenInputsPreserved"]=all(hashlib.sha256((root/p).read_bytes()).hexdigest()==h for p,h in bindings.items());assert r["frozenInputsPreserved"]
+except Exception as x:r["error"]=str(x);raise
+finally:(out/"receipt.json").write_text(json.dumps(r,indent=2)+"\n");print(out,flush=True)

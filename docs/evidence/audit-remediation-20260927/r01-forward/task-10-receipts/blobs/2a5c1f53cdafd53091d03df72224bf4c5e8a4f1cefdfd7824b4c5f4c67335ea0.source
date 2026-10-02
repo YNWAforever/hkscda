@@ -1,0 +1,20 @@
+{
+  "command": "bun run .superpowers/sdd/r01-forward-schema-plan-20261001/probe-final-harness.ts",
+  "catalogHash": "35bb5327140b49ae9ee3c507b468d5ef3d2f43e21745a0a2830a86c09b9dd170",
+  "tables": 158,
+  "exactParity": true,
+  "managedHash": "482cc9eb2636bcdcc71e4217c34992570389e0c668119ef3ebe74d0a3464b00c",
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "fixturePathsChecked": [
+    "public.supporter",
+    "public.donation",
+    "public.payment",
+    "public.checkout_policy",
+    "public.admin_user",
+    "auth.users",
+    "public.audit_log"
+  ],
+  "clone": "r01_clone_90ecf8bd44db47fbbe5f6f90348180fb",
+  "cleanup": true
+}

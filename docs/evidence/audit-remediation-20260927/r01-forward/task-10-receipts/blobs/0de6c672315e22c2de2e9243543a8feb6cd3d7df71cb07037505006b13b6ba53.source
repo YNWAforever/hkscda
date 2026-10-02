@@ -1,0 +1,1000 @@
+{
+  "base": "66766c17f8c69d54fedd9d063b68949761e6047d",
+  "parent": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+  "branch": "codex/audit-r01-sponsorship-submission-20261001",
+  "testedTree": "final executable bytes unchanged through both final DB runs, final four gates and commit; actual Git blobs below",
+  "executableBlobs": {
+    "src/lib/sponsorship/submissionIntent.database.test.ts": {
+      "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+      "canonicalSha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+      "gitBlob": "1fd49cab6c3ba49297f28caa0a01303d1b2b10ca"
+    },
+    "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+      "sha256": "f650fa4b938230ca640485150545952271837bf747374406defc073fadc6cf3b",
+      "canonicalSha256": "f650fa4b938230ca640485150545952271837bf747374406defc073fadc6cf3b",
+      "gitBlob": "d20a03f29411b1bac1c2b92926e842dadc4bff0f"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "src/lib/sponsorship/proofIntent.server.ts": {
+      "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+      "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+      "gitBlob": "0301478e0ddf43150588458c7a6083d5a08aa83a"
+    },
+    "src/lib/sponsorship/proofCleanup.server.ts": {
+      "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+      "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+      "gitBlob": "ed2bbe1afbd70683d11e8157fc243e60f06361cd"
+    },
+    "src/lib/sponsorship/submission.server.ts": {
+      "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+      "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+      "gitBlob": "e203a1c0388836419f29aa83f0b0a5041abb45fd"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+      "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+      "canonicalSha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+      "gitBlob": "492643bb866a086b720bcbc83b2dadb4a011a828"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+      "canonicalSha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+      "gitBlob": "64f334a44c238cc0b70ffc63a85aec7350883ebe"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    }
+  },
+  "otherFrozenCompositionFiles": {
+    "supabase/rls-tests/helpers/productionSchemaClone.test.ts": {
+      "sha256": "dccb2c30c88e28e20b948cadbebd7a45a77a06edfc24de1ba8eac5180a7807d1",
+      "gitBlob": "aee6da0e5c95ac6d1e3ac42a72f1b5da95772f8c"
+    },
+    "supabase/rls-tests/helpers/runR01CoreScopeGuard.ts": {
+      "sha256": "02e9be947518c089d7991906d01b19cc44d36259268bba5128aa15004838612f",
+      "gitBlob": "981538c15a258ad5bafa4c0b9ee83e27254b4a74"
+    },
+    "supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts": {
+      "sha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166",
+      "gitBlob": "3b47187e207a8c07767f6e912a40c1b140ac3a14"
+    },
+    "supabase/rls-tests/helpers/runR01AnimalPreferenceForward.ts": {
+      "sha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d",
+      "gitBlob": "accd1535174584e428aa6c0f101cc30f98ee6231"
+    }
+  },
+  "watchedMissingTargetRed": {
+    "mode": "red",
+    "startedAt": "2026-10-01T15:07:08.316Z",
+    "sourceCommit": "66766c17f8c69d54fedd9d063b68949761e6047d",
+    "testedExecutableBlobs": {
+      "src/lib/sponsorship/submissionIntent.database.test.ts": {
+        "sha256": "61281c843538e9a0116f727c59d329420b0eba298c375f67b34475c6250375d7",
+        "canonicalSha256": "61281c843538e9a0116f727c59d329420b0eba298c375f67b34475c6250375d7"
+      },
+      "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+        "sha256": "1d7e45841df97c7aafc722f0b95f177f65fb36e733c3b516ea9d7e1fe563711a",
+        "canonicalSha256": "1d7e45841df97c7aafc722f0b95f177f65fb36e733c3b516ea9d7e1fe563711a"
+      },
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+        "sha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093",
+        "canonicalSha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093"
+      },
+      "src/lib/sponsorship/proofIntent.server.ts": {
+        "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+        "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3"
+      },
+      "src/lib/sponsorship/proofCleanup.server.ts": {
+        "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+        "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035"
+      },
+      "src/lib/sponsorship/submission.server.ts": {
+        "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+        "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c"
+      }
+    },
+    "productionActions": "catalog/schema reads only; zero production rows or actor RPC",
+    "environment": "unique guarded owned clone52322; source57322/template52322 read-only; inert Storage port only",
+    "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+    "clone": "r01_clone_ec544ac6ecaf43ed9cc21139d7d22b4e",
+    "schemaParity": true,
+    "zeroApplicationTables": 158,
+    "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+    "reviewedFunctions": [
+      {
+        "name": "private.bump_sponsorship_followup_version",
+        "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+      },
+      {
+        "name": "private.bump_supporter_edit_version",
+        "hash": "d1fd0a986ef9bb089e9d5025e4177a49"
+      },
+      {
+        "name": "private.has_admin_role",
+        "hash": "5369d861219863bb6601e7fa7d4be528"
+      },
+      {
+        "name": "private.increment_sponsorship_proof_revision",
+        "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+      },
+      {
+        "name": "private.preserve_sponsorship_contact_submission",
+        "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+      },
+      {
+        "name": "private.preserve_sponsorship_financial_history",
+        "hash": "2958be6daf21371da650f59bf5a89b15"
+      },
+      {
+        "name": "private.queue_sponsorship_transition",
+        "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+      },
+      {
+        "name": "private.snapshot_sponsorship_proof_contact",
+        "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+      },
+      {
+        "name": "private.sponsorship_cancel_transition",
+        "hash": "17036bab02ad4087b0727e395faac4b1"
+      },
+      {
+        "name": "private.sponsorship_proof_financial_transition",
+        "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+      },
+      {
+        "name": "public.enforce_current_animal_preference",
+        "hash": "5d9512de7da0c787523292316c6603e7"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.record_exact_sponsorship_payment_proof",
+        "hash": "2ab62b2fc24f6a119afce18e905a4099"
+      },
+      {
+        "name": "public.record_public_consent_intents",
+        "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+      },
+      {
+        "name": "public.record_sponsorship_payment_proof",
+        "hash": "e93e65d46d250f17a8df976521c9317e"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      }
+    ],
+    "manifestBefore": {
+      "requirements": 146,
+      "issues": 44
+    },
+    "testCommand": "bun test src/lib/sponsorship/submissionIntent.database.test.ts --timeout 30000 --test-name-pattern current caller",
+    "testExit": 1,
+    "testSummary": [
+      "\n 0 pass",
+      " 1 fail"
+    ],
+    "watchedRed": true,
+    "ledgerPreserved": true,
+    "result": "watched RED",
+    "originalSources": {
+      "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "templatePreserved": true,
+      "modernBeforeHash": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+      "modernPreserved": true
+    },
+    "cleanup": "exact owned clone normally dropped; no force or session termination",
+    "completedAt": "2026-10-01T15:08:14.364Z",
+    "testedExecutableBlobsPreserved": true
+  },
+  "finalActualRuns": {
+    "green": {
+      "mode": "green",
+      "startedAt": "2026-10-01T16:37:37.642Z",
+      "sourceCommit": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+      "testedExecutableBlobs": {
+        "src/lib/sponsorship/submissionIntent.database.test.ts": {
+          "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+          "canonicalSha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da"
+        },
+        "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+          "sha256": "f650fa4b938230ca640485150545952271837bf747374406defc073fadc6cf3b",
+          "canonicalSha256": "f650fa4b938230ca640485150545952271837bf747374406defc073fadc6cf3b"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "src/lib/sponsorship/proofIntent.server.ts": {
+          "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+          "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3"
+        },
+        "src/lib/sponsorship/proofCleanup.server.ts": {
+          "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+          "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035"
+        },
+        "src/lib/sponsorship/submission.server.ts": {
+          "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+          "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+          "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+          "canonicalSha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+          "canonicalSha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        }
+      },
+      "productionActions": "catalog/schema reads only; zero production rows or actor RPC",
+      "environment": "unique guarded owned clone52322; source57322/template52322 read-only; inert Storage port only",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "clone": "r01_clone_a43dad3116974be08061b7d018124950",
+      "schemaParity": true,
+      "zeroApplicationTables": 158,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "private.bump_sponsorship_followup_version",
+          "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+        },
+        {
+          "name": "private.bump_supporter_edit_version",
+          "hash": "d1fd0a986ef9bb089e9d5025e4177a49"
+        },
+        {
+          "name": "private.has_admin_role",
+          "hash": "5369d861219863bb6601e7fa7d4be528"
+        },
+        {
+          "name": "private.increment_sponsorship_proof_revision",
+          "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+        },
+        {
+          "name": "private.is_valid_animal_public_profile",
+          "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+        },
+        {
+          "name": "private.normalize_public_animal_age",
+          "hash": "1f85086f172d61fff31de8d854f32a55"
+        },
+        {
+          "name": "private.preserve_sponsorship_contact_submission",
+          "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+        },
+        {
+          "name": "private.preserve_sponsorship_financial_history",
+          "hash": "2958be6daf21371da650f59bf5a89b15"
+        },
+        {
+          "name": "private.queue_sponsorship_transition",
+          "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+        },
+        {
+          "name": "private.snapshot_sponsorship_proof_contact",
+          "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+        },
+        {
+          "name": "private.sponsorship_cancel_transition",
+          "hash": "17036bab02ad4087b0727e395faac4b1"
+        },
+        {
+          "name": "private.sponsorship_proof_financial_transition",
+          "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+        },
+        {
+          "name": "public.enforce_current_animal_preference",
+          "hash": "5d9512de7da0c787523292316c6603e7"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.record_exact_sponsorship_payment_proof",
+          "hash": "2ab62b2fc24f6a119afce18e905a4099"
+        },
+        {
+          "name": "public.record_public_consent_intents",
+          "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+        },
+        {
+          "name": "public.record_sponsorship_payment_proof",
+          "hash": "e93e65d46d250f17a8df976521c9317e"
+        },
+        {
+          "name": "public.set_animal_catalog_membership_defaults",
+          "hash": "16d251076045243facecbe0088b5422c"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 44
+      },
+      "preferenceDependency": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "beforeDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "afterDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "onlyReviewedFunctionBodyDelta": true,
+        "allOtherCatalogPreserved": true,
+        "firstApply": 0,
+        "secondApply": 0,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "manifestBeforeTask3": {
+        "requirements": 146,
+        "issues": 41
+      },
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 33
+      },
+      "migration": {
+        "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+        "sha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernTask3TargetsAndAllOtherCatalogPreserved": false,
+        "modernIntentionalPreferenceBodyDelta": false,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "rejected": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "function public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong trigger",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ],
+        "dependency": {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "task1Applied": false
+        }
+      },
+      "testCommand": "bun test src/lib/sponsorship/submissionIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 12 pass",
+        " 0 fail",
+        " 74 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "9c7d25d1846633bacd9125641670c8484da5ddad72f490671d416c2fa9ab327e",
+        "modernPreserved": true
+      },
+      "cleanup": "exact owned clone normally dropped; no force or session termination",
+      "completedAt": "2026-10-01T16:38:35.837Z",
+      "testedExecutableBlobsPreserved": true
+    },
+    "green-modern": {
+      "mode": "green-modern",
+      "startedAt": "2026-10-01T16:38:35.982Z",
+      "sourceCommit": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+      "testedExecutableBlobs": {
+        "src/lib/sponsorship/submissionIntent.database.test.ts": {
+          "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+          "canonicalSha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da"
+        },
+        "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+          "sha256": "f650fa4b938230ca640485150545952271837bf747374406defc073fadc6cf3b",
+          "canonicalSha256": "f650fa4b938230ca640485150545952271837bf747374406defc073fadc6cf3b"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "src/lib/sponsorship/proofIntent.server.ts": {
+          "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+          "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3"
+        },
+        "src/lib/sponsorship/proofCleanup.server.ts": {
+          "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+          "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035"
+        },
+        "src/lib/sponsorship/submission.server.ts": {
+          "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+          "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+          "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+          "canonicalSha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+          "canonicalSha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        }
+      },
+      "productionActions": "catalog/schema reads only; zero production rows or actor RPC",
+      "environment": "unique guarded owned clone52322; source57322/template52322 read-only; inert Storage port only",
+      "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "clone": "r01_clone_c49adbacb0a64578b5e97648e815376e",
+      "schemaParity": true,
+      "zeroApplicationTables": 162,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "private.bump_sponsorship_followup_version",
+          "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+        },
+        {
+          "name": "private.bump_supporter_edit_version",
+          "hash": "08619e0337db72d3d685130718c47538"
+        },
+        {
+          "name": "private.has_admin_role",
+          "hash": "5369d861219863bb6601e7fa7d4be528"
+        },
+        {
+          "name": "private.increment_sponsorship_proof_revision",
+          "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+        },
+        {
+          "name": "private.is_valid_animal_public_profile",
+          "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+        },
+        {
+          "name": "private.normalize_public_animal_age",
+          "hash": "1f85086f172d61fff31de8d854f32a55"
+        },
+        {
+          "name": "private.preserve_sponsorship_contact_submission",
+          "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+        },
+        {
+          "name": "private.preserve_sponsorship_financial_history",
+          "hash": "2958be6daf21371da650f59bf5a89b15"
+        },
+        {
+          "name": "private.queue_sponsorship_transition",
+          "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+        },
+        {
+          "name": "private.snapshot_sponsorship_proof_contact",
+          "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+        },
+        {
+          "name": "private.sponsorship_cancel_transition",
+          "hash": "17036bab02ad4087b0727e395faac4b1"
+        },
+        {
+          "name": "private.sponsorship_proof_financial_transition",
+          "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+        },
+        {
+          "name": "public.enforce_current_animal_preference",
+          "hash": "5d9512de7da0c787523292316c6603e7"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.record_exact_sponsorship_payment_proof",
+          "hash": "2ab62b2fc24f6a119afce18e905a4099"
+        },
+        {
+          "name": "public.record_public_consent_intents",
+          "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+        },
+        {
+          "name": "public.record_sponsorship_payment_proof",
+          "hash": "426bd826423032326a8252dd282544ff"
+        },
+        {
+          "name": "public.set_animal_catalog_membership_defaults",
+          "hash": "fa013ae528d796d1cdee6f769d16abeb"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "preferenceDependency": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "beforeDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "afterDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "onlyReviewedFunctionBodyDelta": true,
+        "allOtherCatalogPreserved": true,
+        "firstApply": 0,
+        "secondApply": 0,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "manifestBeforeTask3": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "migration": {
+        "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+        "sha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernTask3TargetsAndAllOtherCatalogPreserved": true,
+        "modernIntentionalPreferenceBodyDelta": true,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "rejected": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "function public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong trigger",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ],
+        "dependency": {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "task1Applied": false
+        }
+      },
+      "testCommand": "bun test src/lib/sponsorship/submissionIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 12 pass",
+        " 0 fail",
+        " 74 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "9c7d25d1846633bacd9125641670c8484da5ddad72f490671d416c2fa9ab327e",
+        "modernPreserved": true
+      },
+      "cleanup": "exact owned clone normally dropped; no force or session termination",
+      "completedAt": "2026-10-01T16:39:02.902Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "finalGates": {
+    "phase": "final",
+    "source": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+    "startedAt": "2026-10-01T16:43:15.651909+00:00",
+    "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+    "gates": [
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 30.57,
+        "log": "task-3-final-typecheck.log"
+      },
+      {
+        "gate": "tests",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 0,
+        "elapsedSeconds": 101.55,
+        "log": "task-3-final-tests.log",
+        "summary": [
+          "\n 3228 pass",
+          " 232 skip",
+          " 0 fail",
+          " 10477 expect() calls"
+        ]
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 43.49,
+        "log": "task-3-final-lint.log"
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 59.25,
+        "log": "task-3-final-build.log"
+      }
+    ],
+    "completedAt": "2026-10-01T16:47:10.528504+00:00"
+  },
+  "retainedIgnoredEvidence": [
+    {
+      "file": "task-3-red-db.json",
+      "sha256": "353c6bdf143c2180632b1ba458e254155160a449397b3ee6d8ce72c98116570e",
+      "bytes": 4807
+    },
+    {
+      "file": "task-3-red-db.log",
+      "sha256": "501a477ff4b8045e0f04d4b1e08b4efb53f14b5d0b636e8396e7353e8dcfa268",
+      "bytes": 647
+    },
+    {
+      "file": "task-3-red-unreviewed-body.json",
+      "sha256": "31882d2f521ab8726eace2cd3d04626d7504ca54ab617657120363ec64c928b5",
+      "bytes": 2544
+    },
+    {
+      "file": "task-3-green-function-preflight-refusal.json",
+      "sha256": "415bc2cd784c61d72afd20fcaca2bc351d809750a1a334fd8b9a6c6fcb99d325",
+      "bytes": 5052
+    },
+    {
+      "file": "task-3-green-index-scope-refusal.json",
+      "sha256": "2fc477ea18e6faa7820191b026c11638c2c496630dd623e882a986643ef00df1",
+      "bytes": 5324
+    },
+    {
+      "file": "task-3-green-index-scope-refusal-2.json",
+      "sha256": "5a72237cc523b232dace56f14e406e2aebd7f77e1a933dc155d03a37f311a376",
+      "bytes": 5324
+    },
+    {
+      "file": "task-3-green-index-column-diagnostic.json",
+      "sha256": "a28e22f0cbc8eb11aa95c3cc3fb306068b5469127234d143d975f71dc7eb01be",
+      "bytes": 6604
+    },
+    {
+      "file": "task-3-green-intermediate-db.json",
+      "sha256": "f6e69e7fcfd2d99bc1359a4c35adc95c7b4edf76c80e88955deaaf3f2a512123",
+      "bytes": 7051
+    },
+    {
+      "file": "task-3-green-status-fixture-error.json",
+      "sha256": "fbeca725c2d4dbfd86ad941e0df2ea346bed0f6873c528639bf03b722c16a141",
+      "bytes": 7126
+    },
+    {
+      "file": "task-3-green-before-shared-dependency.json",
+      "sha256": "8e5cdaa5e966d955c125d4fb22407f9748c806fbe0510de8e142b94231f6aeef",
+      "bytes": 7230
+    },
+    {
+      "file": "task-3-green-before-shared-dependency.log",
+      "sha256": "e33247ffd93f20d5edf058da870fd86e597c7f1af2f9819e986c1a9a846789af",
+      "bytes": 1886
+    },
+    {
+      "file": "task-3-green-before-header-rendering-fix.json",
+      "sha256": "d2b373569f8fb9c5cbec4f574a201e9cd65a48c7eac9a986ddcdca187d58ee7d",
+      "bytes": 9584
+    },
+    {
+      "file": "task-3-green-modern-before-header-rendering-fix.json",
+      "sha256": "a420d25466f6744dc32887dc8ab33cd0d1b9af61a5d10d06e32f7df4e7d30a6c",
+      "bytes": 9586
+    },
+    {
+      "file": "task-3-header-rendering-red-gates.json",
+      "sha256": "a982b208688b348805ed6bafe49070795638f47469557f8721131342734da6f8",
+      "bytes": 1141
+    },
+    {
+      "file": "task-3-header-rendering-red-tests.log",
+      "sha256": "837e98996f67d3d6648fc674af71196cd3735381547b3a935c6b799f7067fd9a",
+      "bytes": 408503
+    },
+    {
+      "file": "task-3-green-db.log",
+      "sha256": "3094c7d1295a70f4e1ab80e63810ced1c20e03414ba0cfb8cb073d77548555ce",
+      "bytes": 2044
+    },
+    {
+      "file": "task-3-green-modern-db.log",
+      "sha256": "4f40eb2ff73320c2e739bbfe1dbb550c631d1c509e14ab3142da4fa97981a084",
+      "bytes": 2045
+    },
+    {
+      "file": "task-3-final-typecheck.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    {
+      "file": "task-3-final-tests.log",
+      "sha256": "caf154092b1a3ea19fdeb2b5c0b4101e201ed01dcca7f7a36006dbb5ac7be767",
+      "bytes": 407907
+    },
+    {
+      "file": "task-3-final-lint.log",
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696
+    },
+    {
+      "file": "task-3-final-build.log",
+      "sha256": "8b801314f9535d2ff62d48eec319e9a9b2a82f8464695be307fa9e582e025145",
+      "bytes": 120067
+    }
+  ],
+  "gateDatabaseEffects": {
+    "beforeFirstGate": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+    "afterFirstGateAndFinalClonesPrestate": "9c7d25d1846633bacd9125641670c8484da5ddad72f490671d416c2fa9ab327e",
+    "reason": "existing authorized dedicated synthetic checkout/instruction gate fixtures commit local policy/audit updates; each clone preserved its own prestate; no global across-gate preservation claim",
+    "afterFinalGate": {
+      "observedAt": "2026-10-01T16:48:19.317Z",
+      "templateHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "modernHash": "0e1437ff69c1c79049b572084871aa15e7097cc593b32b17c999f5b24d40f8f0",
+      "actions": "aggregate read-only helper; no restoration/reset/actor calls",
+      "scope": "post authorized synthetic full-gate fixtures, distinct from per-clone preservation"
+    }
+  },
+  "acceptedDependencyCI": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008",
+  "production": "read-only schema/catalog; no data/actor RPC/migration; remains44gaps112ledger",
+  "notRun": [
+    "Task1-dependent full checkout/provider journey",
+    "remote Storage",
+    "provider/callback/email/delivery sending",
+    "hosted/browser actor UAT",
+    "production/release/enablement",
+    "new exact-head CI and independent eight-object review (controller subsequent)"
+  ]
+}

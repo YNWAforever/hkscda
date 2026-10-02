@@ -1,0 +1,187 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\evidenceEligibility.test.ts:
+13 | const baseline=JSON.parse(readFileSync(basePath,"utf8")) as Record<string,unknown>;
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+                                                                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:18:147)
+(fail) Task10 actual evidence gate selector inert regressions > reject false postTestsRowsPreserved [344.53ms]
+13 | const baseline=JSON.parse(readFileSync(basePath,"utf8")) as Record<string,unknown>;
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+                                                                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:18:147)
+(fail) Task10 actual evidence gate selector inert regressions > reject missing postTestsRowsPreserved [639.46ms]
+13 | const baseline=JSON.parse(readFileSync(basePath,"utf8")) as Record<string,unknown>;
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+                                                                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:18:147)
+(fail) Task10 actual evidence gate selector inert regressions > reject false helpersPreserved [569.48ms]
+13 | const baseline=JSON.parse(readFileSync(basePath,"utf8")) as Record<string,unknown>;
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+                                                                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:18:147)
+(fail) Task10 actual evidence gate selector inert regressions > reject missing helpersPreserved [668.29ms]
+13 | const baseline=JSON.parse(readFileSync(basePath,"utf8")) as Record<string,unknown>;
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+                                                                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:18:147)
+(fail) Task10 actual evidence gate selector inert regressions > reject false completeAuthDefaultNativeLedgerSequencePreserved [742.85ms]
+13 | const baseline=JSON.parse(readFileSync(basePath,"utf8")) as Record<string,unknown>;
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+                                                                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:18:147)
+(fail) Task10 actual evidence gate selector inert regressions > reject missing completeAuthDefaultNativeLedgerSequencePreserved [1187.22ms]
+14 | async function accepted(r:Record<string,unknown>){const p=Bun.spawn(["python","-c",probe],{stdin:new Blob([JSON.stringify(r)]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as boolean;}
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+19 |  test("reject nonempty failed flags",async()=>{expect(await accepted({...baseline,failedFinalFlags:["postTestsRowsPreserved"]})).toBe(false)});
+                                                                                                                                      ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:19:130)
+(fail) Task10 actual evidence gate selector inert regressions > reject nonempty failed flags [628.29ms]
+15 | describe("Task10 actual evidence gate selector inert regressions",()=>{
+16 |  for(const key of ["postTestsRowsPreserved","helpersPreserved","completeAuthDefaultNativeLedgerSequencePreserved"])
+17 |  for(const mutation of ["false","missing"])
+18 |  test(`reject ${mutation} ${key}`,async()=>{const r={...baseline};if(mutation==="false")r[key]=false;else delete r[key];expect(await accepted(r)).toBe(false)});
+19 |  test("reject nonempty failed flags",async()=>{expect(await accepted({...baseline,failedFinalFlags:["postTestsRowsPreserved"]})).toBe(false)});
+20 |  test("reject wrong mode",async()=>{expect(await accepted({...baseline,mode:"modern"})).toBe(false)});
+                                                                                             ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:20:89)
+(fail) Task10 actual evidence gate selector inert regressions > reject wrong mode [362.64ms]
+ 7 |   receipt.modernPreserved = modernBefore === (await localSourceState(modern));
+ 8 |   await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+ 9 |   console.log(
+10 |     JSON.stringify({
+11 |       out,
+12 |       error: receipt.error,
+                   ^
+ReferenceError: mode is not defined
+      at anonymous (file:///C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/lib/admin/evidenceEligibility.test.ts:12:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:29:207)
+(fail) Task10 actual post-cleanup preservation propagation > capture rejects preservation false after cleanup and retains receipt [4.73ms]
+26 |  const source=readFileSync(evidence+"task-10-"+leaf+".ts","utf8");const start=source.lastIndexOf("finally {")+"finally {".length;const body=source.slice(start,source.lastIndexOf("}"));
+27 |  const receipt:Record<string,unknown>={mode:leaf==="red"?"missing":leaf==="truncate-red"?"hosted-restrict":"hosted",schemaParity:true,catalogPreserved:true,completeMetadataPreserved:true,fullScannerPassed:true,testExit:0,expectedRed:true,baselineAccepted:true,completeRollback:true,allOtherHelperFacetsPreserved:true,otherHelpersPreserved:true,authDefaultNativeIndexPreserved:true,publicPrivateCatalogPreserved:true,actualCandidateResult:"55000"};let written=false;const processStub={exitCode:0};
+28 |  const finalizer=existsSync(evidence+"task-10-receipt.ts")?(await import("../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt")).completeReceipt:()=>0;
+29 |  await new AsyncFunction("c","receipt","process","localSourceState","modernBefore","modern","writeFile","resolve","out","console","before","beforeExtra","hash","snapshot","extra","db","completeReceipt",body)(
+30 |  {close:async()=>{},templatePreserved:false},receipt,processStub,async()=>"unchanged","unchanged","modern",async()=>{written=true},(...args:string[])=>args.join("/"),"out",{log:()=>{}},"same","same",()=>"same",async()=>({}),async()=>({}),{},finalizer);
+31 |  expect(written).toBe(true);expect(processStub.exitCode).toBe(1);
+                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:31:58)
+(fail) Task10 actual post-cleanup preservation propagation > global-capture rejects preservation false after cleanup and retains receipt [1.33ms]
+26 |  const source=readFileSync(evidence+"task-10-"+leaf+".ts","utf8");const start=source.lastIndexOf("finally {")+"finally {".length;const body=source.slice(start,source.lastIndexOf("}"));
+27 |  const receipt:Record<string,unknown>={mode:leaf==="red"?"missing":leaf==="truncate-red"?"hosted-restrict":"hosted",schemaParity:true,catalogPreserved:true,completeMetadataPreserved:true,fullScannerPassed:true,testExit:0,expectedRed:true,baselineAccepted:true,completeRollback:true,allOtherHelperFacetsPreserved:true,otherHelpersPreserved:true,authDefaultNativeIndexPreserved:true,publicPrivateCatalogPreserved:true,actualCandidateResult:"55000"};let written=false;const processStub={exitCode:0};
+28 |  const finalizer=existsSync(evidence+"task-10-receipt.ts")?(await import("../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt")).completeReceipt:()=>0;
+29 |  await new AsyncFunction("c","receipt","process","localSourceState","modernBefore","modern","writeFile","resolve","out","console","before","beforeExtra","hash","snapshot","extra","db","completeReceipt",body)(
+30 |  {close:async()=>{},templatePreserved:false},receipt,processStub,async()=>"unchanged","unchanged","modern",async()=>{written=true},(...args:string[])=>args.join("/"),"out",{log:()=>{}},"same","same",()=>"same",async()=>({}),async()=>({}),{},finalizer);
+31 |  expect(written).toBe(true);expect(processStub.exitCode).toBe(1);
+                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:31:58)
+(fail) Task10 actual post-cleanup preservation propagation > red rejects preservation false after cleanup and retains receipt [1.20ms]
+26 |  const source=readFileSync(evidence+"task-10-"+leaf+".ts","utf8");const start=source.lastIndexOf("finally {")+"finally {".length;const body=source.slice(start,source.lastIndexOf("}"));
+27 |  const receipt:Record<string,unknown>={mode:leaf==="red"?"missing":leaf==="truncate-red"?"hosted-restrict":"hosted",schemaParity:true,catalogPreserved:true,completeMetadataPreserved:true,fullScannerPassed:true,testExit:0,expectedRed:true,baselineAccepted:true,completeRollback:true,allOtherHelperFacetsPreserved:true,otherHelpersPreserved:true,authDefaultNativeIndexPreserved:true,publicPrivateCatalogPreserved:true,actualCandidateResult:"55000"};let written=false;const processStub={exitCode:0};
+28 |  const finalizer=existsSync(evidence+"task-10-receipt.ts")?(await import("../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt")).completeReceipt:()=>0;
+29 |  await new AsyncFunction("c","receipt","process","localSourceState","modernBefore","modern","writeFile","resolve","out","console","before","beforeExtra","hash","snapshot","extra","db","completeReceipt",body)(
+30 |  {close:async()=>{},templatePreserved:false},receipt,processStub,async()=>"unchanged","unchanged","modern",async()=>{written=true},(...args:string[])=>args.join("/"),"out",{log:()=>{}},"same","same",()=>"same",async()=>({}),async()=>({}),{},finalizer);
+31 |  expect(written).toBe(true);expect(processStub.exitCode).toBe(1);
+                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:31:58)
+(fail) Task10 actual post-cleanup preservation propagation > truncate-red rejects preservation false after cleanup and retains receipt [1.42ms]
+26 |  const source=readFileSync(evidence+"task-10-"+leaf+".ts","utf8");const start=source.lastIndexOf("finally {")+"finally {".length;const body=source.slice(start,source.lastIndexOf("}"));
+27 |  const receipt:Record<string,unknown>={mode:leaf==="red"?"missing":leaf==="truncate-red"?"hosted-restrict":"hosted",schemaParity:true,catalogPreserved:true,completeMetadataPreserved:true,fullScannerPassed:true,testExit:0,expectedRed:true,baselineAccepted:true,completeRollback:true,allOtherHelperFacetsPreserved:true,otherHelpersPreserved:true,authDefaultNativeIndexPreserved:true,publicPrivateCatalogPreserved:true,actualCandidateResult:"55000"};let written=false;const processStub={exitCode:0};
+28 |  const finalizer=existsSync(evidence+"task-10-receipt.ts")?(await import("../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt")).completeReceipt:()=>0;
+29 |  await new AsyncFunction("c","receipt","process","localSourceState","modernBefore","modern","writeFile","resolve","out","console","before","beforeExtra","hash","snapshot","extra","db","completeReceipt",body)(
+30 |  {close:async()=>{},templatePreserved:false},receipt,processStub,async()=>"unchanged","unchanged","modern",async()=>{written=true},(...args:string[])=>args.join("/"),"out",{log:()=>{}},"same","same",()=>"same",async()=>({}),async()=>({}),{},finalizer);
+31 |  expect(written).toBe(true);expect(processStub.exitCode).toBe(1);
+                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:31:58)
+(fail) Task10 actual post-cleanup preservation propagation > auth-component-red rejects preservation false after cleanup and retains receipt [1.59ms]
+
+ 0 pass
+ 13 fail
+ 16 expect() calls
+Ran 13 tests across 1 file. [5.66s]

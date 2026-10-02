@@ -1,0 +1,112 @@
+{
+  "reviewedAt": "2026-10-01",
+  "functions": [
+    {
+      "name": "private.bump_sponsorship_followup_version",
+      "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+    },
+    {
+      "name": "private.bump_supporter_edit_version",
+      "hash": "08619e0337db72d3d685130718c47538"
+    },
+    {
+      "name": "private.has_admin_role",
+      "hash": "5369d861219863bb6601e7fa7d4be528"
+    },
+    {
+      "name": "private.increment_sponsorship_proof_revision",
+      "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+    },
+    {
+      "name": "private.lock_admin_user_mutation",
+      "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+    },
+    {
+      "name": "private.preserve_sponsorship_contact_submission",
+      "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+    },
+    {
+      "name": "private.preserve_sponsorship_financial_history",
+      "hash": "2958be6daf21371da650f59bf5a89b15"
+    },
+    {
+      "name": "private.queue_sponsorship_transition",
+      "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+    },
+    {
+      "name": "private.require_active_admin_user",
+      "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+    },
+    {
+      "name": "private.snapshot_sponsorship_proof_contact",
+      "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+    },
+    {
+      "name": "private.sponsorship_cancel_transition",
+      "hash": "17036bab02ad4087b0727e395faac4b1"
+    },
+    {
+      "name": "private.sponsorship_proof_financial_transition",
+      "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7"
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "name": "public.mark_sponsorship_proof_upload_submitted",
+      "hash": "d9219aa538847e44fda957dfc893b7f8"
+    },
+    {
+      "name": "public.mark_staff_sponsorship_proof_attached",
+      "hash": "498c48ee988072311e8e43ab7566e9e4"
+    },
+    {
+      "name": "public.record_exact_sponsorship_payment_proof",
+      "hash": "2ab62b2fc24f6a119afce18e905a4099"
+    },
+    {
+      "name": "public.record_public_consent_intents",
+      "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+    },
+    {
+      "name": "public.record_sponsorship_payment_proof",
+      "hash": "426bd826423032326a8252dd282544ff"
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "name": "private.bump_supporter_edit_version",
+      "hash": "d1fd0a986ef9bb089e9d5025e4177a49"
+    },
+    {
+      "name": "public.record_sponsorship_payment_proof",
+      "hash": "e93e65d46d250f17a8df976521c9317e"
+    },
+    {
+      "name": "private.normalize_public_animal_age",
+      "hash": "1f85086f172d61fff31de8d854f32a55"
+    },
+    {
+      "name": "private.is_valid_animal_public_profile",
+      "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults",
+      "hash": "16d251076045243facecbe0088b5422c"
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults",
+      "hash": "fa013ae528d796d1cdee6f769d16abeb"
+    }
+  ],
+  "manualReview": "Complete actual hosted and modern trigger/RPC/queue/auth bodies read before fixtures; only pending proof inserts, no financial approval transition; local outbox rows with inert recipient; no network calls",
+  "historicalRefusal": "Unsafe fixture default/constraint path: private.normalize_public_animal_age; successful selected-animal path not-run",
+  "resolvedFixture": "Exact own-proconfig guard63a70531 plus reviewed EXECUTE fix3e869c56; actual hosted/modern generated animals and shared selected preferences passed at46e593f8. Task3 composition binds final bytes separately."
+}

@@ -1,0 +1,26 @@
+{
+  "task-10-gates.py": {
+    "rawSha256": "4a1e4884e443191cc1f55d7ed54031aca2fa0a385738e9a711120f08bf34b6dc",
+    "existingArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/4a1e4884e443191cc1f55d7ed54031aca2fa0a385738e9a711120f08bf34b6dc.source"
+  },
+  "task-10-capture.ts": {
+    "rawSha256": "1eeba0f7380e02b8bf7d3b5635429fbc0aa878fe83b49045af5247b7fcee9030",
+    "existingArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/1eeba0f7380e02b8bf7d3b5635429fbc0aa878fe83b49045af5247b7fcee9030.source"
+  },
+  "task-10-global-capture.ts": {
+    "rawSha256": "66ce64e58371fe2daea86c711ab21f958cc93107ebb62f332b4bdbef7e804ef4",
+    "existingArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/66ce64e58371fe2daea86c711ab21f958cc93107ebb62f332b4bdbef7e804ef4.source"
+  },
+  "task-10-red.ts": {
+    "rawSha256": "9be150557c8fd0134510b2a40e237d5a6ac4f00e72c7786daf74eb4789de643d",
+    "existingArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/9be150557c8fd0134510b2a40e237d5a6ac4f00e72c7786daf74eb4789de643d.source"
+  },
+  "task-10-truncate-red.ts": {
+    "rawSha256": "04b40b2bd89ed4801ab7540b31879cbe786a01942ca715af7f31d1eb6db73131",
+    "existingArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/04b40b2bd89ed4801ab7540b31879cbe786a01942ca715af7f31d1eb6db73131.source"
+  },
+  "task-10-auth-component-red.ts": {
+    "rawSha256": "0b7d10dd19d94a22c022d53da38a60d407b87be7c8bf2270218a78eb2cd8c71c",
+    "existingArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/0b7d10dd19d94a22c022d53da38a60d407b87be7c8bf2270218a78eb2cd8c71c.source"
+  }
+}

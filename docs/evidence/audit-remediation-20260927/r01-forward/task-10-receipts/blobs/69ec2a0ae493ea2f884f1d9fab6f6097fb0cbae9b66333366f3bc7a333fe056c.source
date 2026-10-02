@@ -1,0 +1,80 @@
+{
+  "phase": "final",
+  "source": "4bbd4a4dffbd053328e92c03281a23d1d4ebe682",
+  "startedAt": "2026-10-01T10:53:47.267982+00:00",
+  "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 0,
+      "elapsedSeconds": 33.87,
+      "log": "task-1-final-typecheck.log"
+    },
+    {
+      "gate": "tests",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 71.11,
+      "log": "task-1-final-tests.log",
+      "summary": [
+        "\n 3200 pass",
+        " 197 skip",
+        " 0 fail",
+        " 10161 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 0,
+      "elapsedSeconds": 31.29,
+      "log": "task-1-final-lint.log"
+    },
+    {
+      "gate": "build",
+      "command": "bun run build",
+      "exit": 0,
+      "elapsedSeconds": 86.8,
+      "log": "task-1-final-build.log"
+    }
+  ],
+  "completedAt": "2026-10-01T10:57:30.353039+00:00",
+  "testedSource": {
+    "baseCommit": "4bbd4a4dffbd053328e92c03281a23d1d4ebe682",
+    "capture": "hashes captured after gates; no functional source edits between gates and capture; docs-only receipts updated afterward",
+    "files": [
+      {
+        "path": "src/lib/donations/idempotency.database.test.ts",
+        "canonicalLfSha256": "ec35876ee97c5b29888f2a7a472761a61bf1a6bb112335e54a1e2ed35728635d",
+        "gitBlob": "562f379e676e77a722c2f03a87873794876230ee"
+      },
+      {
+        "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+        "canonicalLfSha256": "fd5343b827f0750080e76ae341ee536e00ae034d528eba16c1892ba362fe74f3",
+        "gitBlob": "4f24589530c000420b8e2dd4f20d2c57d7e82102"
+      },
+      {
+        "path": "supabase/rls-tests/helpers/productionSchemaClone.test.ts",
+        "canonicalLfSha256": "1a7e77a2fbc93db73590237768a7fcdf3b89a94e23fbf3550d85d5c0d7aa0cc0",
+        "gitBlob": "b3d104d25aa8505c7902d8a93073fc655f293cd0"
+      },
+      {
+        "path": "supabase/rls-tests/helpers/runR01Forward.ts",
+        "canonicalLfSha256": "5bc0ce675724788754ad9d0ab9e150456c5b749c92fb7a79032b07a0576bd9df",
+        "gitBlob": "7f29a19da2ad3dfb5d0caf38425fc76ae38faa7f"
+      },
+      {
+        "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+        "canonicalLfSha256": "5c25abdd2507c102e2892db9c8ed878132301ca7aecd55c9e33f304790d230c6",
+        "gitBlob": "8c40b3037204e5d1e8c135b64170971ac6b3e4ce"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
+        "canonicalLfSha256": "5e0ae907bdd8309f5d6a9b7bcc5405ab888ed5641d19f3da3bd537eb9e1e6b78",
+        "gitBlob": "a1d0a763af0162af3ebef09076d52d7d92cabf50"
+      }
+    ],
+    "scope": "local typecheck/full non-opt-in tests/lint/build; guarded DB actor regression remains watched RED; SQL not production applied"
+  }
+}

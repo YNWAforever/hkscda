@@ -1,0 +1,437 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\evidenceEligibility.test.ts:
+(pass) Task10 actual evidence gate selector inert regressions > accept a complete synthetic inert baseline [939.82ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false postTestsRowsPreserved [1093.37ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing postTestsRowsPreserved [566.43ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false helpersPreserved [1320.93ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing helpersPreserved [823.18ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false completeAuthDefaultNativeLedgerSequencePreserved [1930.54ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing completeAuthDefaultNativeLedgerSequencePreserved [1492.19ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject nonempty failed flags [842.45ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject wrong mode [637.57ms]
+(pass) Task10 actual post-cleanup preservation propagation > capture retains receipt and propagates falseFlag after cleanup [23.17ms]
+(pass) Task10 actual post-cleanup preservation propagation > capture retains receipt and propagates closeError after cleanup [2.11ms]
+(pass) Task10 actual post-cleanup preservation propagation > capture retains receipt and propagates readError after cleanup [0.28ms]
+(pass) Task10 actual post-cleanup preservation propagation > global-capture retains receipt and propagates falseFlag after cleanup [1.79ms]
+(pass) Task10 actual post-cleanup preservation propagation > global-capture retains receipt and propagates closeError after cleanup [0.61ms]
+(pass) Task10 actual post-cleanup preservation propagation > global-capture retains receipt and propagates readError after cleanup [1.17ms]
+(pass) Task10 actual post-cleanup preservation propagation > red retains receipt and propagates falseFlag after cleanup [44.57ms]
+(pass) Task10 actual post-cleanup preservation propagation > red retains receipt and propagates closeError after cleanup [0.69ms]
+(pass) Task10 actual post-cleanup preservation propagation > red retains receipt and propagates readError after cleanup [0.25ms]
+(pass) Task10 actual post-cleanup preservation propagation > truncate-red retains receipt and propagates falseFlag after cleanup [16.91ms]
+(pass) Task10 actual post-cleanup preservation propagation > truncate-red retains receipt and propagates closeError after cleanup [0.46ms]
+(pass) Task10 actual post-cleanup preservation propagation > truncate-red retains receipt and propagates readError after cleanup [10.01ms]
+(pass) Task10 actual post-cleanup preservation propagation > auth-component-red retains receipt and propagates falseFlag after cleanup [48.60ms]
+(pass) Task10 actual post-cleanup preservation propagation > auth-component-red retains receipt and propagates closeError after cleanup [0.50ms]
+(pass) Task10 actual post-cleanup preservation propagation > auth-component-red retains receipt and propagates readError after cleanup [0.50ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted accepts only complete fixed flags [0.76ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects false schemaParity [0.16ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects undefined schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects false fullScannerPassed [0.03ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects false catalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects undefined catalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects false normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects false templatePreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects false modernPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects inconsistent {"failedFinalFlags":["prior"]} [0.09ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects inconsistent {} [0.04ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects inconsistent {"error":"failed"} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects inconsistent {"mode":"invalid"} [0.03ms]
+(pass) Task10 actual fixed consumer contracts > capture/hosted rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > capture/modern accepts only complete fixed flags [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects false schemaParity [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects undefined schemaParity [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects false fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects undefined fullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects undefined catalogPreserved
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects false normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects false templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects undefined templatePreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects inconsistent {"error":"failed"}
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > capture/modern rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > global/hosted accepts only complete fixed flags [0.02ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined schemaParity [0.03ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false fullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false postPrefixFullScannerPassed
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined postPrefixFullScannerPassed
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined catalogPreserved
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined templatePreserved
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects inconsistent {"error":"failed"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects testExit undefined [0.10ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects testExit false [0.02ms]
+(pass) Task10 actual fixed consumer contracts > global/hosted rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > global/modern accepts only complete fixed flags [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false schemaParity [0.04ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined schemaParity [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false fullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false postPrefixFullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined postPrefixFullScannerPassed
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false catalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined catalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > global/modern rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > global/modern rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > global/modern rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > global/modern rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > global/modern rejects inconsistent {"error":"failed"}
+(pass) Task10 actual fixed consumer contracts > global/modern rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > global/modern rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > global/modern rejects testExit undefined
+(pass) Task10 actual fixed consumer contracts > global/modern rejects testExit false
+(pass) Task10 actual fixed consumer contracts > global/modern rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > red/missing accepts only complete fixed flags [0.02ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined schemaParity
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined catalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false completeMetadataPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false expectedRed
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined expectedRed
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined templatePreserved
+(pass) Task10 actual fixed consumer contracts > red/missing rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > red/missing rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > red/missing rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > red/missing rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > red/missing rejects inconsistent {"error":"failed"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/missing rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > red/missing rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > red/missing rejects testExit undefined
+(pass) Task10 actual fixed consumer contracts > red/missing rejects testExit false
+(pass) Task10 actual fixed consumer contracts > red/missing rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > red/legacy accepts only complete fixed flags
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false schemaParity [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined schemaParity
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false expectedRed
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined expectedRed
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false normalDrop
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects inconsistent {"error":"failed"}
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects testExit undefined
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects testExit false
+(pass) Task10 actual fixed consumer contracts > red/legacy rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > red/direct accepts only complete fixed flags
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false schemaParity
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined schemaParity
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false expectedRed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined expectedRed
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined templatePreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > red/direct rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > red/direct rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > red/direct rejects inconsistent {"error":"failed"}
+(pass) Task10 actual fixed consumer contracts > red/direct rejects inconsistent {"mode":"invalid"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/direct rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > red/direct rejects testExit undefined
+(pass) Task10 actual fixed consumer contracts > red/direct rejects testExit false
+(pass) Task10 actual fixed consumer contracts > red/direct rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > red/truncate accepts only complete fixed flags
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false schemaParity
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined schemaParity
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false fullScannerPassed [0.03ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined catalogPreserved
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false completeMetadataPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined completeMetadataPreserved [0.10ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false expectedRed
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined expectedRed
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false normalDrop
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects false modernPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects undefined modernPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects inconsistent {"failedFinalFlags":["prior"]} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects inconsistent {} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects inconsistent {"error":"failed"} [0.14ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects inconsistent {"mode":"invalid"} [0.03ms]
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects testExit undefined
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects testExit false
+(pass) Task10 actual fixed consumer contracts > red/truncate rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict accepts only complete fixed flags [0.03ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false fullScannerPassed [0.03ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false catalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined catalogPreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false completeMetadataPreserved [0.73ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined completeMetadataPreserved [0.04ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false expectedRed
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined expectedRed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined templatePreserved
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects inconsistent {"failedFinalFlags":["prior"]} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects inconsistent {"error":"failed"} [0.06ms]
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > truncate/hosted-restrict rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict accepts only complete fixed flags [0.01ms]
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false catalogPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined catalogPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined completeMetadataPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false expectedRed
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined expectedRed
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false normalDrop
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined normalDrop
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false templatePreserved
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined templatePreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects undefined modernPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects inconsistent {"error":"failed"}
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > truncate/modern-restrict rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > auth-component/component accepts only complete fixed flags [0.02ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false schemaParity [0.03ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined schemaParity
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined fullScannerPassed
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false baselineAccepted
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined baselineAccepted
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false completeRollback
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined completeRollback
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false allOtherHelperFacetsPreserved
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined allOtherHelperFacetsPreserved
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false otherHelpersPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined otherHelpersPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false authDefaultNativeIndexPreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined authDefaultNativeIndexPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false publicPrivateCatalogPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined publicPrivateCatalogPreserved
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false normalDrop
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined templatePreserved
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects undefined modernPreserved
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects inconsistent {"error":"failed"} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects inconsistent {"mode":"invalid"} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > auth-component/component rejects inconsistent {"receiptType":"invalid"} [0.09ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted accepts only complete fixed flags [0.11ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false schemaParity [0.24ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false fullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined fullScannerPassed [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false baselineAcceptedBeforeNegatives [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined baselineAcceptedBeforeNegatives [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false baselineRollbackPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined baselineRollbackPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false secondApplyIdempotent [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined secondApplyIdempotent [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false unaffectedCatalogPreserved [29.54ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined unaffectedCatalogPreserved [0.27ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false scopedGlobalGuardExact [0.04ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined scopedGlobalGuardExact [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false rowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined rowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false completeAuthDefaultNativeLedgerSequencePreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined completeAuthDefaultNativeLedgerSequencePreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false helpersPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined helpersPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false postTestsCatalogPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined postTestsCatalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false postTestsRowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined postTestsRowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false postTestsCompleteMetadataPreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined postTestsCompleteMetadataPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false modernPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined modernPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects false frozenInputsPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects undefined frozenInputsPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects inconsistent {"failedFinalFlags":["prior"]} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects inconsistent {"error":"failed"} [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects inconsistent {"mode":"invalid"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects inconsistent {"receiptType":"invalid"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects testExit undefined [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects testExit false [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/hosted rejects testExit 2 [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern accepts only complete fixed flags [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false fullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined fullScannerPassed [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false baselineAcceptedBeforeNegatives [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined baselineAcceptedBeforeNegatives [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false baselineRollbackPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined baselineRollbackPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false secondApplyIdempotent [0.07ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined secondApplyIdempotent [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false unaffectedCatalogPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined unaffectedCatalogPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false scopedGlobalGuardExact [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined scopedGlobalGuardExact [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false rowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined rowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false completeAuthDefaultNativeLedgerSequencePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined completeAuthDefaultNativeLedgerSequencePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false helpersPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined helpersPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false postTestsCatalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined postTestsCatalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false postTestsRowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined postTestsRowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false postTestsCompleteMetadataPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined postTestsCompleteMetadataPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined normalDrop [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false modernPreserved
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined modernPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects false frozenInputsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects undefined frozenInputsPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects inconsistent {"failedFinalFlags":["prior"]} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects inconsistent {} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects inconsistent {"error":"failed"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects testExit undefined [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects testExit false
+(pass) Task10 actual fixed consumer contracts > composition/modern rejects testExit 2 [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component accepts only complete fixed flags [0.04ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false schemaParity [0.04ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined schemaParity [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false fullScannerPassed [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined fullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false baselineAcceptedBeforeNegatives [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined baselineAcceptedBeforeNegatives [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false baselineRollbackPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined baselineRollbackPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false secondApplyIdempotent [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined secondApplyIdempotent [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false unaffectedCatalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined unaffectedCatalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false scopedGlobalGuardExact [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined scopedGlobalGuardExact [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false rowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined rowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false completeAuthDefaultNativeLedgerSequencePreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined completeAuthDefaultNativeLedgerSequencePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false helpersPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined helpersPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false postTestsCatalogPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined postTestsCatalogPreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false postTestsRowsPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined postTestsRowsPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false postTestsCompleteMetadataPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined postTestsCompleteMetadataPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined normalDrop [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false templatePreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined templatePreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false modernPreserved [0.05ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined modernPreserved [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false frozenInputsPreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined frozenInputsPreserved
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false componentOtherMetadataPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined componentOtherMetadataPreserved [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects false componentFullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects undefined componentFullScannerPassed [0.01ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects inconsistent {"failedFinalFlags":["prior"]}
+(pass) Task10 actual fixed consumer contracts > composition/component rejects inconsistent {}
+(pass) Task10 actual fixed consumer contracts > composition/component rejects inconsistent {"error":"failed"} [0.03ms]
+(pass) Task10 actual fixed consumer contracts > composition/component rejects inconsistent {"mode":"invalid"}
+(pass) Task10 actual fixed consumer contracts > composition/component rejects inconsistent {"receiptType":"invalid"}
+(pass) Task10 actual fixed consumer contracts > composition/component rejects testExit undefined
+(pass) Task10 actual fixed consumer contracts > composition/component rejects testExit false
+(pass) Task10 actual fixed consumer contracts > composition/component rejects testExit 2
+(pass) Task10 actual fixed consumer contracts > gates/local accepts only complete fixed flags [0.43ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects false frozenInputsPreserved [0.05ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects undefined frozenInputsPreserved [0.13ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects false templatePreserved [0.02ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects undefined templatePreserved [0.04ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects inconsistent {"failedFinalFlags":["prior"]} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects inconsistent {} [0.02ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects inconsistent {"error":"failed"} [0.03ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects inconsistent {"mode":"invalid"} [0.01ms]
+(pass) Task10 actual fixed consumer contracts > gates/local rejects inconsistent {"receiptType":"invalid"}
+(fail) actual generator refuses missing capture and failed diagnostic inputs before generation [6346.50ms]
+  ^ this test timed out after 5000ms.
+(pass) actual generator refuses captures cardinality 0 [4268.50ms]
+(pass) actual generator refuses captures cardinality 1 [4888.59ms]
+(pass) actual generator refuses captures cardinality 3 [1626.21ms]
+(pass) actual generator refuses globals cardinality 0 [2185.06ms]
+(pass) actual generator refuses globals cardinality 1 [2508.15ms]
+(pass) actual generator refuses globals cardinality 3 [2289.81ms]
+
+1 tests failed:
+(fail) actual generator refuses missing capture and failed diagnostic inputs before generation [6346.50ms]
+  ^ this test timed out after 5000ms.
+
+ 423 pass
+ 1 fail
+ 754 expect() calls
+Ran 424 tests across 1 file. [34.66s]

@@ -1,0 +1,1161 @@
+{
+  "allRawFilesEqual": true,
+  "originalNonOverwritten": true,
+  "files": [
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/receipt.json",
+      "rawSha256": "ed1a9686cbf99f6c7372e16b8f37664424439ccd403fdde889484645068bb738"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "0e898b950149c69d09abc2e988865e6c7da8e66d86c8e363992278a457306818"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "d8941bd7fa64af770a83fb97f47aaf266c8c0e0b40e6dd4989b4225faf7b7814"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/test.log",
+      "rawSha256": "5c696d1129cafb071dddd2df1af7344f2a456a17f5f56a3f2341ac599baa934a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/receipt.json",
+      "rawSha256": "9a777e1196b0a1641ad1a95af87ee0f12122d55728a26c38a33d37f6194f2fba"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/test.log",
+      "rawSha256": "fd03b231cdc2b13bbe8baa88dd9189ff183d4165ee9e7e02a4fd83bf10080bef"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/receipt.json",
+      "rawSha256": "4241f0c1cbd4f7419ae490a91c7928dfdd46d656f80cff6d5f5a7c5bd049ab4b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/test.log",
+      "rawSha256": "ee4837356b6ca68e7930166e92e53764f569d9e549a5e7544b6239152baea97b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/gates-1790905587965274200/build.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790905587965274200/build.log",
+      "rawSha256": "afe035fd711aaf742a64226f505b3996b09d25f9e2178499dd6a8e1b4b36b333"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/gates-1790905587965274200/lint.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790905587965274200/lint.log",
+      "rawSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/gates-1790905587965274200/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790905587965274200/receipt.json",
+      "rawSha256": "309d1421c027a0a5e6f6546a25b3ecd62ad1791db7bfe02844d603a2b9973dd1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/gates-1790905587965274200/tests.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790905587965274200/tests.log",
+      "rawSha256": "6edc2d13f454d48c69159589497cbba6cb345b6d389a6f20926d46b07e9f8024"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/gates-1790905587965274200/typecheck.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790905587965274200/typecheck.log",
+      "rawSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/receipt.json",
+      "rawSha256": "515337b0ffdb6123f4cde36a6a7fa07438a5798a11cee268f5fb2eef6771a501"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "c217a0b21da1f3dd58260b0ed8094ee99f13e85c83c191df0e77c276756555f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__http.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__http.server.ts.source",
+      "rawSha256": "c57c355d990619de788e123cdb3ebc7f1fc291c23bc584e8f6a7fb25010c31b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "1b4df814a939a759053a3ea48b79ac447622d925dadb81befccd9ef5ca0d6f7f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/receipt.json",
+      "rawSha256": "379a316b7c246134490d6f0935b19d9a09de04cb0fcad2feeb4f0dafb5b71ff7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__http.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.estate.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__http.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "bb9b19df4e3e03467db67906a006a44e89b869a39fc148a10e84d687009e349f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/receipt.json",
+      "rawSha256": "c697b76d4ea8b336499e1f8e26a828d79d93646c77ccf481dc554b0205046596"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__http.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.estate.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__http.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/test.log",
+      "rawSha256": "ab7aa8a8338c061be4379be87fa959606241b180f7ca7d9b3c082bc70c1eaa7f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/receipt.json",
+      "rawSha256": "d2a282a14a32f4356085087b1a64ff4eb654ad7dc536cfafadc397488f279eca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__http.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.estate.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__http.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/test.log",
+      "rawSha256": "844dcd8171bce387e6337591b061292a9fcbac84e62f80dfe652812d279fe022"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "00b16d6473fc1a752cb1a0ca2fbf8a8620a12c93a13cc5f6bc5c85b73fc0a72b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/receipt.json",
+      "rawSha256": "304b0cdbb13174f36a3d7f20ef740152b63f77a47546d722be572d9ecdf50b2f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "3b2eef2820bb7cbd4fd535dc60652d674c7eaaa8b1a2cf8d7cadb8f7a0ceb165"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "04dcbe2cf50ca0801ebdb46e8b0af715645a72f9b4e36654d7e7afd7aa52eec4"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/receipt.json",
+      "rawSha256": "a4fc4208df668844af53774a7bb6b377d63a21748db22dabda3d171430b6d6b5"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "96020212a0d96f48a5e969d6c2ffcd777a385cf31de58b8909df43b32b101bde"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/receipt.json",
+      "rawSha256": "3aeb330fd1b73379a5139504db3551009b31aaa14e65a830e369a5788f7a9999"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "7e1c0deda419f762b7f400866292baa0892419596a0732e1b3b105d34e06927c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/test.log",
+      "rawSha256": "089cdc6afbf8a1324630a1222a8b9b9ecdb2f63f485d6776b3c6999d183b78d8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/.gitattributes",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/.gitattributes",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/receipt.json",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/receipt.json",
+      "rawSha256": "8684ec3e2f4c60b26044e3c77a46174157ec4f94ac1667c3370e39d209ef4286"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__http.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInstructions__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.database.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.estate.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.http.test.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__http.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__repository.server.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseManifest.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseSchema.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/test.log",
+      "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/test.log",
+      "rawSha256": "0f6b7de5bb20a8c76f117fde6874679a0ab737cec2eb65e7787b3d2f7bdde723"
+    }
+  ]
+}

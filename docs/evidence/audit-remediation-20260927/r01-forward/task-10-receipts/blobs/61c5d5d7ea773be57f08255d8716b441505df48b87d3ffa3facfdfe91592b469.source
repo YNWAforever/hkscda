@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-02T14:36:59.887347+00:00",
+  "approvalRejected": true,
+  "executed": false,
+  "reason": "This edits the generator and emits a versioned migration that changes role and effective function privileges, creating potentially production-impacting security behavior; the transcript lacks trusted user authorization for this exact migration change.",
+  "migrationSha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+  "generatorSha256": "9672e0919122a8d288cd684ae8b9956a187ac3db12ac85edb79e4116f1a66779",
+  "rootNotified": true,
+  "tool": "functions.exec -> tools.exec_command",
+  "sandboxPermissions": "require_escalated",
+  "workdir": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "requestedOperationSequence": [
+    "Python stdin in-memory generator transformation followed by product generator write",
+    "bun x prettier --write docs/evidence/audit-remediation-20260927/r01-forward/task-10-generate.ts",
+    "bun docs/evidence/audit-remediation-20260927/r01-forward/task-10-generate.ts (output to task-10-fix1-source-generation.log)"
+  ],
+  "exactCallCodeLocation": "Original functions.exec tool-call transcript immediately before actual rejection; not reconstructed as a historical executable .source. Current inert v2 patch represents proposed source intent and is separately bound."
+}

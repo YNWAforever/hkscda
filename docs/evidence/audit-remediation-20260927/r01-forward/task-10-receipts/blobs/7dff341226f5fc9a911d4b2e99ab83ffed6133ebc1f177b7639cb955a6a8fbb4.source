@@ -1,0 +1,78 @@
+{
+  "mode": "green-modern",
+  "startedAt": "2026-10-01T10:21:17.648Z",
+  "productionActions": "schema/catalog reads only; no production rows or mutation",
+  "environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+  "sourceCatalogHash": "ff54a5cf4a410e0f192aad005ac5e8964fa6118f27b8adc5cd9e9c601720d27b",
+  "catalogCounts": {
+    "roles": 5,
+    "types": 334,
+    "views": 3,
+    "columns": 2218,
+    "indexes": 409,
+    "schemas": 2,
+    "defaults": 6,
+    "policies": 82,
+    "triggers": 154,
+    "functions": 387,
+    "relations": 574,
+    "extensions": 2,
+    "constraints": 824,
+    "memberships": null,
+    "databaseOwner": "postgres",
+    "extensionMembers": 136
+  },
+  "clone": "r01_clone_3eb4fe428e6345598282ac1ae7697018",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisitesHash": "482cc9eb2636bcdcc71e4217c34992570389e0c668119ef3ebe74d0a3464b00c",
+  "legacyFactsBeforeHash": "e8ba9679734307d5532ce95ddece4f06389850b2703df9ad1c0a6c2bbeeff088",
+  "migration": {
+    "file": "20261001101333_r01_payment_idempotency_forward.sql",
+    "canonicalSha256": "5c25abdd2507c102e2892db9c8ed878132301ca7aecd55c9e33f304790d230c6",
+    "firstApply": 0,
+    "secondApply": 0,
+    "secondApplyCatalogHash": "81bd8aa0301bb4ea0c735f86ae8244053d2196d35d749c3c3a0797d492a5eef0",
+    "legacyFactsPreserved": true,
+    "metadataPreserved": true,
+    "tempShadowPreserved": true,
+    "rejected": [
+      {
+        "case": "wrong-column-type",
+        "sqlState": "55000",
+        "restored": true
+      },
+      {
+        "case": "unexpected-column-default",
+        "sqlState": "55000",
+        "restored": true
+      },
+      {
+        "case": "nonunique-index",
+        "sqlState": "55000",
+        "restored": true
+      },
+      {
+        "case": "unexpected-fingerprint-constraint",
+        "sqlState": "55000",
+        "restored": true
+      },
+      {
+        "case": "invalid-existing-keyed-null",
+        "sqlState": "23514",
+        "restored": true
+      }
+    ]
+  },
+  "testCommand": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000",
+  "testExit": 0,
+  "testSummary": [
+    "\n 6 pass",
+    " 0 fail",
+    " 26 expect() calls"
+  ],
+  "legacyFactsAfterHash": "e8ba9679734307d5532ce95ddece4f06389850b2703df9ad1c0a6c2bbeeff088",
+  "result": "GREEN",
+  "cleanup": "only exact newly-created clone dropped without FORCE/session termination",
+  "completedAt": "2026-10-01T10:21:27.302Z"
+}

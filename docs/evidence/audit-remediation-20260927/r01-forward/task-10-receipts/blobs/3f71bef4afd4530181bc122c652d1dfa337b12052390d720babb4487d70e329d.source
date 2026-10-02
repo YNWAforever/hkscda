@@ -1,0 +1,272 @@
+{
+  "mode": "green",
+  "startedAt": "2026-10-01T14:03:05.335Z",
+  "productionActions": "schema/catalog reads only; zero production rows/mutations/RPC invocations",
+  "environment": "new guarded empty clone at52322; managed synthetic Auth/Storage retained; no Storage calls",
+  "testedExecutableBlobs": {
+    "src/lib/publicAdoption/uploadIntent.database.test.ts": {
+      "sha256": "a71713af45440ab232ea55a73fd9cfce1cd9e5a619d7816a1fa38dd9f9e7a49d",
+      "canonicalSha256": "a71713af45440ab232ea55a73fd9cfce1cd9e5a619d7816a1fa38dd9f9e7a49d"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionForward.ts": {
+      "sha256": "b2900257171339ab1e3c7f46b0c0851a71298b69276a63f8033ffadcc4b8c3a3",
+      "canonicalSha256": "b2900257171339ab1e3c7f46b0c0851a71298b69276a63f8033ffadcc4b8c3a3"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093",
+      "canonicalSha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef",
+      "canonicalSha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef"
+    }
+  },
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "counts": {
+    "columns": 2176,
+    "constraints": 808,
+    "databaseOwner": "string",
+    "defaults": 6,
+    "extensionMembers": 136,
+    "extensions": 2,
+    "functions": 353,
+    "indexes": 396,
+    "memberships": "object",
+    "policies": 82,
+    "relations": 557,
+    "roles": 5,
+    "schemas": 2,
+    "sequences": "object",
+    "triggers": 145,
+    "types": 326,
+    "views": 3
+  },
+  "clone": "r01_clone_ece05e2114ec4ceeb8c30f4929b82079",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "reviewedTriggerPaths": [
+    {
+      "name": "private.bump_adoption_case_bulk_row_version",
+      "hash": "4360bcbf3bdaa28be558e276bf60ea6c",
+      "catalog": {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "bodyMd5": "4360bcbf3bdaa28be558e276bf60ea6c",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": false,
+        "name": "bump_adoption_case_bulk_row_version",
+        "owner": "postgres",
+        "parallel": "u",
+        "result": "trigger",
+        "schema": "private",
+        "volatility": "v"
+      }
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7",
+      "catalog": {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definer": true,
+        "name": "enforce_current_animal_preference",
+        "owner": "postgres",
+        "parallel": "u",
+        "result": "trigger",
+        "schema": "public",
+        "volatility": "v"
+      }
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82",
+      "catalog": {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "bodyMd5": "264525288c36bf724df4dc72dcafba82",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definer": true,
+        "name": "log_animal_mutation",
+        "owner": "postgres",
+        "parallel": "u",
+        "result": "trigger",
+        "schema": "public",
+        "volatility": "v"
+      }
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714",
+      "catalog": {
+        "acl": [
+          {
+            "grantable": false,
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantable": false,
+            "grantee": "anon",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantable": false,
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantable": false,
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantable": false,
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "bodyMd5": "4d6804d5850641a33867814c9e76a714",
+        "config": null,
+        "definer": false,
+        "name": "set_updated_at",
+        "owner": "postgres",
+        "parallel": "u",
+        "result": "trigger",
+        "schema": "public",
+        "volatility": "v"
+      }
+    }
+  ],
+  "reviewedFkChildren": [
+    {
+      "child": "public.adoption_application_animal_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_detail",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_photo",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_visit_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_case",
+      "confdeltype": "n"
+    },
+    {
+      "child": "public.adoption_intake_item",
+      "confdeltype": "c"
+    }
+  ],
+  "manifestBefore": {
+    "requirements": 146,
+    "issues": 44
+  },
+  "manifestAfter": {
+    "requirements": 146,
+    "issues": 41
+  },
+  "migration": {
+    "file": "20261001134252_r01_adoption_upload_forward.sql",
+    "sha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef",
+    "canonicalSha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef",
+    "firstApply": 0,
+    "secondApply": 0,
+    "metadataPreserved": true,
+    "legacyRowsLedgerPreserved": true,
+    "tempShadowPreserved": true,
+    "modernAllCatalogPreserved": false,
+    "rejected": [
+      {
+        "case": "wrong-fingerprint-type",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong-fingerprint-check",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong-intent-index",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "public-cleanup-execute",
+        "sqlState": "55000",
+        "preserved": true
+      }
+    ]
+  },
+  "testCommand": "bun test src/lib/publicAdoption/uploadIntent.database.test.ts --timeout 30000",
+  "testExit": 0,
+  "testSummary": [
+    "\n 11 pass",
+    " 0 fail",
+    " 49 expect() calls"
+  ],
+  "result": "GREEN",
+  "originalSources": {
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d88e815f545e74aef0c0a126180f445265b72282c88737e1640319b0b2e90577",
+    "modernPreserved": true
+  },
+  "cleanup": "exact owned clone dropped normally; no FORCE/session termination",
+  "completedAt": "2026-10-01T14:04:05.013Z",
+  "testedExecutableBlobsPreserved": true
+}

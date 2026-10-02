@@ -1,0 +1,42 @@
+{
+  "bootstrap.source": {
+    "sha256": "92af4f0ce7971792df482aa3c625288b991da7d9dc7a908bcf02bfacbf8b9917",
+    "bytes": 2212
+  },
+  "commands.json": {
+    "sha256": "da3e09b2ff706797f7a3b2c037f26507663907701a4b3d2d7ca0d0fd88118099",
+    "bytes": 3595
+  },
+  "dump.stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "extensions-defaults.source": {
+    "sha256": "694cb2b3d4a9b7f8e9a72dbe8c76efead823be3b363820694ea185163f011d5e",
+    "bytes": 9989
+  },
+  "memberships.source": {
+    "sha256": "abe74c6f24be00a994973f5717dec50272002132754c8fce3f06fd76b3ca35c6",
+    "bytes": 1971
+  },
+  "receipt.json": {
+    "sha256": "20a8c64cc00f74244e62ab041cdc2e06fbe7ab2d59a88e8b0709fffe0d85fcd3",
+    "bytes": 2827179
+  },
+  "role-fixtures.source": {
+    "sha256": "9745ee2e72b4b0d3bc38b8224120bf6c329ba8ce0afac0f11bc3048606b644c2",
+    "bytes": 622
+  },
+  "scanner-adapter.source": {
+    "sha256": "f68ac57948888dcc8a5a71ec9c647565be3b2a7ff9d60b387a55277784ad98a8",
+    "bytes": 1225
+  },
+  "schema-original.source": {
+    "sha256": "ac1518328fb10c5799430947b5e6d4af81547fa4688baf8af26227b159276d78",
+    "bytes": 1433815
+  },
+  "schema-reviewed.source": {
+    "sha256": "753919886aac432514a25223129df9da74892896eb64342e054051cd287b7cca",
+    "bytes": 1172929
+  }
+}

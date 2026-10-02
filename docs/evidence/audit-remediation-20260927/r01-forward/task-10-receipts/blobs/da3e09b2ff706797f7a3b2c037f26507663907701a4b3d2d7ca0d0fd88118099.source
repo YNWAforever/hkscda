@@ -1,0 +1,127 @@
+{
+  "preExisting": "docker container inspect r01-task10-fix1-role-20261002-126d7280 must return not found before create",
+  "create": [
+    "docker",
+    "create",
+    "--pull=never",
+    "--name",
+    "r01-task10-fix1-role-20261002-126d7280",
+    "--label",
+    "r01.owner=task10-fix1",
+    "--label",
+    "r01.base=126d728028a844052537fd64d10cecb206ef6fb0",
+    "--network",
+    "none",
+    "--user",
+    "postgres",
+    "--entrypoint",
+    "/bin/bash",
+    "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+    "-c",
+    "/usr/lib/postgresql/bin/initdb -D /tmp/task10pg --auth=trust --username=postgres && exec /usr/lib/postgresql/bin/postgres -D /tmp/task10pg -c listen_addresses= -c unix_socket_directories=/tmp"
+  ],
+  "start": [
+    "docker",
+    "start",
+    "r01-task10-fix1-role-20261002-126d7280"
+  ],
+  "imageInspect": [
+    "docker",
+    "image",
+    "inspect",
+    "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9"
+  ],
+  "containerInspect": [
+    "docker",
+    "inspect",
+    "r01-task10-fix1-role-20261002-126d7280"
+  ],
+  "bootstrap": [
+    "docker",
+    "exec",
+    "-i",
+    "r01-task10-fix1-role-20261002-126d7280",
+    "psql",
+    "-X",
+    "-h",
+    "/tmp",
+    "-U",
+    "postgres",
+    "-d",
+    "postgres",
+    "-v",
+    "ON_ERROR_STOP=1"
+  ],
+  "restore": [
+    "docker",
+    "exec",
+    "-i",
+    "r01-task10-fix1-role-20261002-126d7280",
+    "psql",
+    "-X",
+    "-h",
+    "/tmp",
+    "-U",
+    "supabase_admin",
+    "-d",
+    "r01_task10_fix1",
+    "-v",
+    "ON_ERROR_STOP=1"
+  ],
+  "cleanupDatabase": [
+    "docker",
+    "exec",
+    "r01-task10-fix1-role-20261002-126d7280",
+    "psql",
+    "-X",
+    "-h",
+    "/tmp",
+    "-U",
+    "supabase_admin",
+    "-d",
+    "postgres",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-c",
+    "DROP DATABASE r01_task10_fix1"
+  ],
+  "stop": [
+    "docker",
+    "stop",
+    "--time",
+    "10",
+    "r01-task10-fix1-role-20261002-126d7280"
+  ],
+  "remove": [
+    "docker",
+    "rm",
+    "r01-task10-fix1-role-20261002-126d7280"
+  ],
+  "order": "bootstrap.source via postgres; memberships.source via supabase_admin to postgres; extensions-defaults.source then schema-reviewed.source via supabase_admin to r01_task10_fix1",
+  "scanner": "bun .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-scanner.ts",
+  "normalizations": [
+    "remove only pg_dump psql restrict/unrestrict meta directives",
+    "remove only inert dump SET transaction_timeout = 0 header (original parser rejects it)",
+    "CREATE SCHEMA -> IF NOT EXISTS and CREATE FUNCTION -> OR REPLACE for parser; stored body bytes preserved"
+  ],
+  "roles": "baseline bootstrap contains15named roles plusalterpostgres and2NOLOGINfixture roles; no passwords or role changes outside this cluster",
+  "membershipRestore": [
+    "docker",
+    "exec",
+    "-i",
+    "r01-task10-fix1-role-20261002-126d7280",
+    "psql",
+    "-X",
+    "-h",
+    "/tmp",
+    "-U",
+    "supabase_admin",
+    "-d",
+    "postgres",
+    "-v",
+    "ON_ERROR_STOP=1"
+  ],
+  "scannerSessionQualification": "Every scanner SELECT in BEGIN READ ONLY; pg_catalog scope; exact unchanged5352 code; wholly owned exclusive cluster with no concurrent mutation during metadata calls; adapter .begin preserves scanner read-only semantics across sequential metadata sessions.",
+  "actualParserStatements": 3245,
+  "roleGrantPreservation": "Exact22 role/member/admin/inherit/set options restored only ownedcluster; no shared role mutation. Original dump parser actual array.length=3245; earlier1567 message erroneouscount, not authority or execution change."
+}

@@ -1,0 +1,47 @@
+{
+  "origin": {
+    "generator.ts.proposal": {
+      "v2RawSha256": "fff59abe6dff15691db300a7bfde3ac3e8688a806f341f1f9622855472348451",
+      "v2CanonicalSha256": "36fdb143240d7d16a35dbe2c26b3587b09dbf18d51949657fdc300842e57e353",
+      "v2RawBytes": 15752,
+      "v3LFBytes": 15514
+    },
+    "migration.sql.proposal": {
+      "v2RawSha256": "7cd1f0a4e5b5c332bef654742205119d1115fb417e841a7966d07b5e9c192b9d",
+      "v2CanonicalSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "v2RawBytes": 205483,
+      "v3LFBytes": 204984
+    },
+    "current-generator.source": {
+      "v2RawSha256": "9672e0919122a8d288cd684ae8b9956a187ac3db12ac85edb79e4116f1a66779",
+      "v2CanonicalSha256": "9672e0919122a8d288cd684ae8b9956a187ac3db12ac85edb79e4116f1a66779",
+      "v2RawBytes": 13550,
+      "v3LFBytes": 13550
+    },
+    "current-migration.source": {
+      "v2RawSha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+      "v2CanonicalSha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+      "v2RawBytes": 189982,
+      "v3LFBytes": 189982
+    },
+    "unapplied.patch": {
+      "v2RawSha256": "05803ff621bed91c2f5729323d41b9d8d752a087788f4cd90e2c50725779ca72",
+      "v2CanonicalSha256": "3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1",
+      "v2RawBytes": 46607,
+      "v3LFBytes": 46491
+    },
+    "targets.json": {
+      "v2RawSha256": "6f20cdbc816bcc3607233a63742c2fd38f967b25f23c392389a01a646e3b9c6f",
+      "v2CanonicalSha256": "a7086ed1a79358abecebdafd78aa25fdc1f6ab759b98fded99b446f49af7a3a3",
+      "v2RawBytes": 136,
+      "v3LFBytes": 135
+    }
+  },
+  "checks": {
+    "fourBusinessBodiesExact": true,
+    "privateDefinitionsExact": true,
+    "existingGrantRevokeLinesExact": true,
+    "currentSQLUnchanged": true,
+    "currentGeneratorUnchanged": true
+  }
+}

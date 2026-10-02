@@ -1,0 +1,19 @@
+import pathlib,json,subprocess,datetime,hashlib,time
+root=pathlib.Path.cwd();p=root/".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-proposal5";o=p.parent/("task-10-fix1-owneddb-recreate-"+str(time.time_ns()));o.mkdir();c=json.loads((p/"commands.json").read_text());r={"at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"commands":[],"containerName":"r01-task10-fix1-role-20261002-126d7280-v2"}
+def run(args,input=None,allowed=(0,)):
+ x=subprocess.run(args,input=input,capture_output=True);i=len(r["commands"]);(o/f"{i}.stdout").write_bytes(x.stdout);(o/f"{i}.stderr").write_bytes(x.stderr);r["commands"].append({"args":args,"exit":x.returncode,"stdinSha256":hashlib.sha256(input).hexdigest() if input else None});(o/"receipt.json").write_text(json.dumps(r,indent=2)+"\n");
+ if x.returncode not in allowed:raise RuntimeError(x.stderr.decode(errors="replace"))
+ return x
+try:
+ baseline=json.loads((root/".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-cluster-create-1790948623213575900/receipt.json").read_text())
+ actual=json.loads(run(c["containerInspect"]).stdout)[0];assert actual["Id"]==baseline["containerID"] and actual["Image"]==baseline["image"]["Id"] and actual["Config"]["Labels"]==baseline["inspectedContainer"]["Config"]["Labels"];assert actual["HostConfig"]["NetworkMode"]=="none" and not actual["HostConfig"].get("PortBindings") and not actual["HostConfig"].get("Binds") and not actual.get("Mounts");r["ownedIdentity"]=actual
+ cmd=c["databaseRecreateCommand"]
+ check="begin read only;select pg_get_userbyid(datdba) from pg_database where datname='r01_task10_fix1';select count(*) from pg_stat_activity where datname='r01_task10_fix1';commit;"
+ before=run(cmd,check.encode()).stdout.decode();r["beforeOwnerSessionOutput"]=before;assert "postgres" in before
+ parity=json.loads((root/".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-parity-1790948763220/receipt.json").read_text())
+ query="begin read only;select sum(n) from ("+" union all ".join("select count(*) n from "+x[0] for x in parity["counts"])+")counts;commit;"
+ zero=run(c["restore"][:5]+["-qAt"]+c["restore"][5:],query.encode()).stdout.decode().strip();assert zero=="0";r["immediateAll189TablesZero"]=True
+ active=run(cmd[:5]+["-qAt"]+cmd[5:],b"select count(*) from pg_stat_activity where datname='r01_task10_fix1';").stdout.decode().strip();assert active=="0";r["closedOwnedConnections"]=True
+ run(cmd,(p/"database-recreate.source").read_bytes());run(c["restore"],(p/"defaults-restore.source").read_bytes());run(c["restore"],(p/"extension-bootstrap.source").read_bytes());run(c["restore"],(p/"defaults-clear.source").read_bytes());run(c["restore"],(p/"schema-reviewed.source").read_bytes());run(c["restore"],(p/"defaults-restore.source").read_bytes());r["restoreCompleted"]=True
+except Exception as e:r["error"]=str(e);print(str(e));raise
+finally:(o/"receipt.json").write_text(json.dumps(r,indent=2)+"\n");print(o)

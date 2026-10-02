@@ -1,0 +1,5 @@
+import {writeFile,mkdir} from "node:fs/promises";
+import {localSourceState} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+const phase=process.argv[2];if(!["before-gates","after-gates"].includes(phase))throw new Error("Known source-state phase required");
+const out="docs/evidence/audit-remediation-20260927/r01-forward/task-6-gate-receipts";await mkdir(out,{recursive:true});
+const states={phase,observedAt:new Date().toISOString(),template:await localSourceState("postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929"),modern:await localSourceState("postgresql://postgres:postgres@127.0.0.1:57322/postgres"),meaning:"read-only aggregate catalog/row/ledger/source hashes; no normalization or reset"};await writeFile(`${out}/${phase}-sources.json`,JSON.stringify(states,null,2)+"\n");console.log(JSON.stringify(states));

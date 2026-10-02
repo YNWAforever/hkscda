@@ -1,0 +1,171 @@
+import { completeReceipt } from "./task-10-receipt";
+/** Ruling39 exact missing prefix, owned source profiles; no full legacy replay. */
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import {
+  captureProductionSchema,
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  snapshot,
+  hash,
+  localSourceState,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {
+  fixtureScope,
+  tables,
+  dependencies,
+  functionsQuery,
+  authQuery,
+  nativeQuery,
+  indexDetailsQuery,
+  triggerDetailsQuery,
+} from "./task-10-profile";
+const mode = process.argv[2];
+if (
+  !["hosted", "modern"].includes(mode) ||
+  process.env.R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1"
+)
+  throw Error("Own Task10 prefix capture opt-in");
+const out = resolve(
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-" +
+    mode +
+    "-" +
+    Date.now(),
+);
+await mkdir(out, { recursive: true });
+const legacyPath = "supabase/migrations/20260925110000_admin_user_access_atomicity.sql",
+  legacy = (await readFile(legacyPath, "utf8")).replaceAll("\r\n", "\n"),
+  end = legacy.indexOf("create or replace function public.update_admin_user_with_audit(");
+if (end < 0) throw Error("Exact legacy prefix absent");
+const prefix = legacy.slice(0, end);
+const bindings: Record<string, unknown> = {};
+const paths = [
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json",
+  legacyPath,
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-global-capture.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+  "supabase/rls-tests/helpers/productionSchemaClone.ts",
+  ...dependencies.map(([f]) => "supabase/migrations/" + f),
+];
+for (const [i, p] of paths.entries()) {
+  const b = await readFile(p);
+  bindings[p] = {
+    rawSha256: hash(b.toString()),
+    canonicalSha256: hash(b.toString().replaceAll("\r\n", "\n")),
+    archive: "s" + i + ".source",
+  };
+  await copyFile(p, resolve(out, "s" + i + ".source"));
+}
+await writeFile(resolve(out, "executed-prefix.source"), prefix);
+const modern = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(modern),
+  cap = mode === "hosted" ? await captureProductionSchema() : await captureModernLocalSchema(),
+  c = await createProductionClone(cap),
+  db = c.sql;
+const receipt: Record<string, unknown> = {
+  mode,
+  out,
+  at: new Date().toISOString(),
+  bindings,
+  clone: c.name,
+  schemaParity: true,
+  zeroApplicationTables: c.tableCount,
+  prefixSha256: hash(prefix),
+  qualification: "Own PG17.6 exact relevant source prefix; not fullCI17.11 bootstrap",
+};
+const rowProfiles = async () => {
+  const catalog = await snapshot(db),
+    profiles: unknown[] = [];
+  for (const name of tables) {
+    const profile = Object.fromEntries(
+      ["relations", "columns", "constraints", "indexes", "triggers", "policies"].map((k) => [
+        k,
+        ((catalog[k] ?? []) as Record<string, unknown>[]).filter(
+          (x) => x.schema === "public" && (x.table ?? x.name) === name,
+        ),
+      ]),
+    );
+    const [r] =
+      await db`select jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*)from pg_rewrite r where r.ev_class=c.oid)) value from pg_class c where c.oid=${"public." + name}::regclass`;
+    Object.assign(profile, { shape: r.value });
+    const [d] = await db`select md5(${profile}::jsonb::text) md5`;
+    profiles.push({ name, md5: d.md5, profile });
+  }
+  return {
+    catalog,
+    profiles,
+    functions: await db.unsafe(functionsQuery),
+    auth: (await db.unsafe(authQuery))[0].value,
+    native: (await db.unsafe(nativeQuery))[0].value,
+    indexes: (await db.unsafe(indexDetailsQuery))[0].value,
+    triggers: (await db.unsafe(triggerDetailsQuery))[0].value,
+  };
+};
+try {
+  await assertSafeFixtureTables(db, fixtureScope);
+  receipt.fullScannerPassed = true;
+  for (const [f, h] of dependencies) {
+    const s = await readFile("supabase/migrations/" + f, "utf8");
+    if (hash(s) !== h) throw Error("Dependency differs");
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(s);
+    });
+  }
+  receipt.before = await rowProfiles();
+  if (mode === "hosted") {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(prefix);
+      // Ruling41: actual unchanged-candidate permission RED was observed first.
+      await tx`revoke truncate on public.admin_user from anon,authenticated`;
+    });
+    receipt.prefixApplied = true;
+  }
+  receipt.after = await rowProfiles();
+  await assertSafeFixtureTables(db, fixtureScope);
+  receipt.postPrefixFullScannerPassed = true;
+  const args = ["bun", "test", "--timeout", "15000", "src/lib/admin/accessFence.database.test.ts"];
+  const p = Bun.spawn(args, {
+    env: { ...process.env, R01_ADMIN_ATOMIC_TEST_DATABASE_URL: c.url },
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const [stdout, stderr, exit] = await Promise.all([
+    new Response(p.stdout).text(),
+    new Response(p.stderr).text(),
+    p.exited,
+  ]);
+  await writeFile(resolve(out, "tests.log"), stdout + stderr);
+  receipt.testCommand = args;
+  receipt.testExit = exit;
+  receipt.testSummary = (stdout + stderr)
+    .split("\n")
+    .filter((s) => /^ \d+ (pass|fail|skip|expect)/.test(s));
+  console.log(stdout + stderr);
+  if (exit) throw Error("Actual known global guard tests failed");
+  receipt.catalogPreserved =
+    hash((receipt.after as { catalog: unknown }).catalog) === hash(await snapshot(db));
+} catch (e) {
+  receipt.error = String(e);
+  process.exitCode = 1;
+} finally {
+  await c.close();
+  receipt.normalDrop = true;
+  receipt.templatePreserved = c.templatePreserved;
+  receipt.modernPreserved = modernBefore === (await localSourceState(modern));
+  if (completeReceipt(receipt, "global", mode)) process.exitCode = 1;
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+  console.log(
+    JSON.stringify({
+      out,
+      error: receipt.error,
+      testExit: receipt.testExit,
+      summary: receipt.testSummary,
+      templatePreserved: receipt.templatePreserved,
+      modernPreserved: receipt.modernPreserved,
+    }),
+  );
+}

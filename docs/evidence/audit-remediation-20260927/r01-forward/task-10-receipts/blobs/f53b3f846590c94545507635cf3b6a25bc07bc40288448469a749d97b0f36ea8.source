@@ -1,0 +1,24 @@
+import {writeFile,mkdir,readFile} from "node:fs/promises";
+import {captureModernLocalSchema,createProductionClone,assertSafeFixtureTables,schemaStatements,snapshot,hash,localSourceState} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {dependencies,fixtureScope} from "../../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile";
+const out=import.meta.dir+"/task-10-fix1-proposal";await mkdir(out,{recursive:true});
+const modern="postgresql://postgres:postgres@127.0.0.1:57322/postgres";
+const before=await localSourceState(modern);const cap=await captureModernLocalSchema();const c=await createProductionClone(cap);
+const receipt:Record<string,unknown>={at:new Date().toISOString(),clone:c.name,modernBefore:before,scannerSHA:hash(await readFile("supabase/rls-tests/helpers/productionSchemaClone.ts","utf8"))};
+try{
+ for(const [f,h] of dependencies){const s=await readFile("supabase/migrations/"+f,"utf8");if(hash(s)!==h)throw Error("dep differs");await c.sql.begin(async tx=>{await tx`set local role postgres`;await tx.unsafe(s)});}
+ await assertSafeFixtureTables(c.sql,fixtureScope);receipt.fullScannerPassed=true;
+ const roles=await c.sql`select rolname,rolsuper,rolinherit,rolcanlogin,rolbypassrls,rolcreatedb,rolcreaterole,rolreplication,rolconnlimit from pg_roles where rolname !~ '^pg_' order by rolname`;
+ const q=(s:string)=>'"'+s.replaceAll('"','""')+'"';
+ let bootstrap=roles.filter(x=>x.rolname!=="postgres").map(x=>`CREATE ROLE ${q(x.rolname)} ${x.rolsuper?'SUPERUSER':'NOSUPERUSER'} ${x.rolinherit?'INHERIT':'NOINHERIT'} ${x.rolcanlogin?'LOGIN':'NOLOGIN'} ${x.rolbypassrls?'BYPASSRLS':'NOBYPASSRLS'} ${x.rolcreatedb?'CREATEDB':'NOCREATEDB'} ${x.rolcreaterole?'CREATEROLE':'NOCREATEROLE'} ${x.rolreplication?'REPLICATION':'NOREPLICATION'} CONNECTION LIMIT ${x.rolconnlimit};`).join("\n");
+ bootstrap+='\nALTER ROLE postgres NOSUPERUSER INHERIT LOGIN BYPASSRLS CREATEDB CREATEROLE REPLICATION;\nCREATE DATABASE r01_task10_fix1 OWNER postgres;\nCREATE ROLE r01_task10_indirect NOLOGIN NOSUPERUSER NOBYPASSRLS INHERIT;\nCREATE ROLE r01_task10_setonly NOLOGIN NOSUPERUSER NOBYPASSRLS NOINHERIT;\n';
+ await writeFile(out+"/bootstrap.source",bootstrap);receipt.roles=roles;receipt.memberships=await c.sql`select pg_get_userbyid(roleid) role,pg_get_userbyid(member) member,admin_option,inherit_option,set_option from pg_auth_members where pg_get_userbyid(member) !~ '^pg_' order by 1,2`;
+ const args=["docker","exec","supabase_db_hkscda-audit-integration-fresh","pg_dump","-U","supabase_admin","-d",c.name,"--schema-only","--schema=public","--schema=private","--schema=auth","--schema=extensions","--exclude-extension=*","--no-comments","--no-security-labels","--no-publications","--no-subscriptions"];
+ const p=Bun.spawn(args,{stdout:"pipe",stderr:"pipe"});const [raw,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);await writeFile(out+"/schema-original.source",raw);await writeFile(out+"/dump.stderr",err);receipt.exportCommand=args;receipt.exportExit=exit;if(exit)throw Error(err);
+ const normalized=raw.replace(/^\\(?:un)?restrict.*$/gm,"").replace(/CREATE SCHEMA ([^;]+);/g,"CREATE SCHEMA IF NOT EXISTS $1;").replace(/CREATE FUNCTION /g,"CREATE OR REPLACE FUNCTION ");
+ const parts=schemaStatements(normalized);await writeFile(out+"/schema-reviewed.source",parts.join(";\n")+";\n");
+ const defaults=(await snapshot(c.sql)).defaults??[];const kind:Record<string,string>={r:"TABLES",S:"SEQUENCES",f:"FUNCTIONS",T:"TYPES",n:"SCHEMAS"};
+ let setup="CREATE SCHEMA IF NOT EXISTS extensions AUTHORIZATION supabase_admin;\nCREATE EXTENSION pgcrypto WITH SCHEMA extensions VERSION '1.3';\nCREATE EXTENSION citext WITH SCHEMA public VERSION '1.6';\nCREATE EXTENSION pg_trgm WITH SCHEMA public VERSION '1.6';\n";
+ for(const d of defaults)for(const e of d.entries)setup+=`ALTER DEFAULT PRIVILEGES FOR ROLE ${q(d.owner)}${d.schema?' IN SCHEMA '+q(d.schema):''} GRANT ${e.privilege} ON ${kind[d.kind]} TO ${e.grantee==='PUBLIC'?'PUBLIC':q(e.grantee)}${e.grantable?' WITH GRANT OPTION':''};\n`;
+ await writeFile(out+"/extensions-defaults.source",setup);receipt.zeroApplicationTables=c.tableCount;receipt.catalog=await snapshot(c.sql);receipt.schemaStatements=parts.length;receipt.restoreFiles=["bootstrap.source","extensions-defaults.source","schema-reviewed.source"];
+}catch(e){receipt.error=String(e);process.exitCode=1;}finally{await c.close();receipt.normalDrop=true;receipt.templatePreserved=c.templatePreserved;receipt.modernPreserved=before===await localSourceState(modern);await writeFile(out+"/receipt.json",JSON.stringify(receipt,null,2)+"\n");console.log(JSON.stringify({out,error:receipt.error,exportExit:receipt.exportExit,normalDrop:receipt.normalDrop,templatePreserved:receipt.templatePreserved,modernPreserved:receipt.modernPreserved}));}

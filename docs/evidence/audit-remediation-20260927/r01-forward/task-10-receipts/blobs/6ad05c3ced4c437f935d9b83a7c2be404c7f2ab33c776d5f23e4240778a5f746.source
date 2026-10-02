@@ -1,0 +1,23 @@
+{
+  "qualification": "Final Ruling25 executable source differs from historical a2; new final both-profile and gates prove new bytes. Earlier Ruling23 relocation check remains historical a2 only.",
+  "generatorInputs": [
+    {
+      "runtimePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v5/hosted.json",
+      "versionedMirror": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-preflight-receipts/hosted.json",
+      "rawSha256": "dcf5a24c97b4a319757b884524aa4608c50015ed15c847040c4d46d6d837f898",
+      "canonicalSha256": "dcf5a24c97b4a319757b884524aa4608c50015ed15c847040c4d46d6d837f898"
+    },
+    {
+      "runtimePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v5/modern.json",
+      "versionedMirror": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-preflight-receipts/modern.json",
+      "rawSha256": "6e015de802ea134d4513b216bc07f469171d3d17b6c887c9db42d1648a32640d",
+      "canonicalSha256": "6e015de802ea134d4513b216bc07f469171d3d17b6c887c9db42d1648a32640d"
+    }
+  ],
+  "gateReceiptRuntimePaths": [
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790908931642/receipt.json",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790909105883/receipt.json"
+  ],
+  "pathLookup": "generator reads exact ignoredv5JSON; green runner reads current SQL/source only; gates reads original hosted/modern receipt paths; all source-copy outputs *.source are output-only. All runtime paths retained. Original paths of new final rehearsals are also their packaged paths; old a2 artifacts retain prior short translation.",
+  "shortHistoricalPathsWereNotExecuted": true
+}

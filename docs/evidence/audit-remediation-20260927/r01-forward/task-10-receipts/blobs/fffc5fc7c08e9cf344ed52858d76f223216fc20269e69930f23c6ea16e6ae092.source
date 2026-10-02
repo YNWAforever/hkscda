@@ -1,0 +1,27 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\evidenceEligibility.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+10 |  n=next(n for n in ast.walk(t) if isinstance(n,ast.If) and "testExit" in ast.unparse(n.test)); c=compile(ast.Expression(n.test),str(p),"eval");pred=lambda r:eval(c,{"r":r})
+11 | r=json.loads(sys.stdin.read());print(json.dumps(pred(r)))`;
+12 | const basePath =
+13 |   ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-hosted-1790943062972/receipt.json";
+14 | const baseline = {
+15 |   ...JSON.parse(readFileSync(basePath, "utf8")),
+                     ^
+ENOENT: no such file or directory, open '.superpowers/sdd/r01-forward-schema-plan-20261001/task-10-hosted-1790943062972/receipt.json'
+    path: ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-hosted-1790943062972/receipt.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\ci10r1\src\lib\admin\evidenceEligibility.test.ts:15:17
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [94.00ms]

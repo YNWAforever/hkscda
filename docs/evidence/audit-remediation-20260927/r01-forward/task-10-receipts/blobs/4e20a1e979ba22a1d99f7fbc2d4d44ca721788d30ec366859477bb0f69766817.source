@@ -1,0 +1,12 @@
+51 |   receipt: Record<string, unknown>,
+52 |   type: ReceiptType,
+53 |   mode: string,
+54 | ): void {
+55 |   const failed = receiptFailures(receipt, type, mode);
+56 |   if (failed.length) throw Error("Task10 ineligible " + type + "/" + mode + ":" + failed.join(","));
+                                ^
+error: Task10 ineligible auth-component/component:allOtherHelperFacetsPreserved
+      at assertReceipt (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-10-receipt.ts:56:28)
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-10-generate.ts:45:1
+
+Bun v1.3.14 (Windows x64)

@@ -1,0 +1,23 @@
+{
+  "reason": "Retain copied executable source as .source after its inert execution, preventing full-suite discovery; immutable receipt/source snapshots already archived",
+  "renames": [
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\ci10r1\\src\\lib\\admin\\evidenceEligibility.test.ts",
+      "archiveName": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\ci10r1\\src\\lib\\admin\\evidenceEligibility.test.source",
+      "sha256": "a840b9077105ad3737b342d07f47e925d5e96a08b57046721edb93d62632b266",
+      "reversibleFileRenameOnly": true
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\ci10g1\\src\\lib\\admin\\evidenceEligibility.test.ts",
+      "archiveName": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\ci10g1\\src\\lib\\admin\\evidenceEligibility.test.source",
+      "sha256": "8a65f4af867474a91e7b9542e49773ebc8a81fb12e545a2108b82cb7c7d15a9e",
+      "reversibleFileRenameOnly": true
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\ci10g2\\src\\lib\\admin\\evidenceEligibility.test.ts",
+      "archiveName": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\ci10g2\\src\\lib\\admin\\evidenceEligibility.test.source",
+      "sha256": "568188c688916a362e0b1b7f1dca4bdcf44053a23d1793d7304990ce4b0ae8ae",
+      "reversibleFileRenameOnly": true
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+ERROR:  permission denied to alter role
+DETAIL:  The bootstrap superuser must have the SUPERUSER attribute.

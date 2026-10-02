@@ -1,0 +1,112 @@
+{
+  "mode": "green",
+  "startedAt": "2026-10-01T13:49:05.281Z",
+  "productionActions": "schema/catalog reads only; zero production rows/mutations/RPC invocations",
+  "environment": "new guarded empty clone at52322; managed synthetic Auth/Storage retained; no Storage calls",
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "counts": {
+    "columns": 2176,
+    "constraints": 808,
+    "databaseOwner": "string",
+    "defaults": 6,
+    "extensionMembers": 136,
+    "extensions": 2,
+    "functions": 353,
+    "indexes": 396,
+    "memberships": "object",
+    "policies": 82,
+    "relations": 557,
+    "roles": 5,
+    "schemas": 2,
+    "sequences": "object",
+    "triggers": 145,
+    "types": 326,
+    "views": 3
+  },
+  "clone": "r01_clone_0afe37f7182b468b9bb412706c4edebd",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "reviewedTriggerPaths": [
+    {
+      "name": "private.bump_adoption_case_bulk_row_version",
+      "hash": "4360bcbf3bdaa28be558e276bf60ea6c"
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7"
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714"
+    }
+  ],
+  "reviewedFkChildren": [
+    {
+      "child": "public.adoption_application_animal_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_detail",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_photo",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_visit_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_case",
+      "confdeltype": "n"
+    },
+    {
+      "child": "public.adoption_intake_item",
+      "confdeltype": "c"
+    }
+  ],
+  "manifestBefore": {
+    "requirements": 146,
+    "issues": 44
+  },
+  "unexpectedDrift": [
+    {
+      "facet": "columns",
+      "added": [
+        {
+          "schema": "public",
+          "name": "expires_at",
+          "table": "adoption_upload_intent_cleanup_idx",
+          "hash": "30ccaa060a36da65d8728b1ad801845d68c529b1a47f2b570f9dcdce60463e2d"
+        },
+        {
+          "schema": "public",
+          "name": "application_id",
+          "table": "adoption_upload_intent_pkey",
+          "hash": "4270b58377eba16af6cff5329f6ef32fe7ea94aae0ea595fbe068403f34437aa"
+        },
+        {
+          "schema": "public",
+          "name": "status_token_hash",
+          "table": "adoption_upload_intent_status_token_hash_key",
+          "hash": "d83478598e232c9513540a9acb551e41ee85824753dfc9f542e0882ebaa013c2"
+        }
+      ],
+      "removed": []
+    }
+  ],
+  "originalSources": {
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d88e815f545e74aef0c0a126180f445265b72282c88737e1640319b0b2e90577",
+    "modernPreserved": true
+  },
+  "cleanup": "exact owned clone dropped normally; no FORCE/session termination",
+  "completedAt": "2026-10-01T13:50:42.666Z"
+}
