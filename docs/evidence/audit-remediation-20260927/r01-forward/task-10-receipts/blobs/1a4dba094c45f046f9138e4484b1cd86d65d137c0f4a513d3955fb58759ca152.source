@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\accessFence.database.test.ts:
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly insert admin identities [86.66ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly update admin identities [72.93ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly delete admin identities [50.96ms]
+(pass) Task10 actual direct admin access fence > service direct bulk update cannot remove final active admins [52.96ms]
+(pass) Task10 actual direct admin access fence > service direct bulk delete cannot remove final active admins [63.84ms]
+(pass) Task10 scoped TRUNCATE browser fence > anon has no TRUNCATE privilege and RESTRICT fails42501 [52.73ms]
+(pass) Task10 scoped TRUNCATE browser fence > authenticated has no TRUNCATE privilege and RESTRICT fails42501 [71.21ms]
+
+ 7 pass
+ 0 fail
+ 11 expect() calls
+Ran 7 tests across 1 file. [743.00ms]

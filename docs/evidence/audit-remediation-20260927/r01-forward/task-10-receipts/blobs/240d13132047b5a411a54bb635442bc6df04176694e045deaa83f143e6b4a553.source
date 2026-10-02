@@ -1,0 +1,241 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\atomicForward.database.test.ts:
+PostgresError: function public.update_admin_user_with_audit(uuid, uuid, unknown) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "17",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) Task10 actual admin database contracts > update valid service command produces one audit [34.09ms]
+PostgresError: function public.invite_admin_user_with_audit(uuid, uuid, unknown, unknown, timestamp with time zone) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "17",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) Task10 actual admin database contracts > invite valid service command produces one audit [21.54ms]
+PostgresError: function public.resend_admin_invite_with_audit(uuid, uuid, timestamp with time zone) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "17",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) Task10 actual admin database contracts > resend valid service command produces one audit [19.78ms]
+PostgresError: function public.activate_admin_invite_with_audit(uuid) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "17",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) Task10 actual admin database contracts > activate valid service command produces one audit [16.05ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+     ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_actor_denied",
+- }
++ [PostgresError: function public.update_admin_user_with_audit(uuid, uuid, unknown) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at toMatchObject (unknown:1:1)
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:54:9
+      at onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > update refuses banned authenticated actor or legitimate invitee [26.58ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_actor_denied",
+- }
++ [PostgresError: function public.update_admin_user_with_audit(uuid, uuid, unknown) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > update refuses unconfirmed authenticated actor or legitimate invitee [13.36ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_actor_denied",
+- }
++ [PostgresError: function public.invite_admin_user_with_audit(uuid, uuid, unknown, unknown, timestamp with time zone) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > invite refuses banned authenticated actor or legitimate invitee [12.99ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_actor_denied",
+- }
++ [PostgresError: function public.invite_admin_user_with_audit(uuid, uuid, unknown, unknown, timestamp with time zone) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > invite refuses unconfirmed authenticated actor or legitimate invitee [16.03ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_actor_denied",
+- }
++ [PostgresError: function public.resend_admin_invite_with_audit(uuid, uuid, timestamp with time zone) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > resend refuses banned authenticated actor or legitimate invitee [14.43ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_actor_denied",
+- }
++ [PostgresError: function public.resend_admin_invite_with_audit(uuid, uuid, timestamp with time zone) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > resend refuses unconfirmed authenticated actor or legitimate invitee [14.58ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_user_not_found",
+- }
++ [PostgresError: function public.activate_admin_invite_with_audit(uuid) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > activate refuses banned authenticated actor or legitimate invitee [15.64ms]
+81 |     caught = e;
+82 |   } finally {
+83 |     await tx.unsafe("rollback to savepoint " + sp);
+84 |     await tx.unsafe("release savepoint " + sp);
+85 |   }
+86 |   expect(caught).toMatchObject({ errno: code, message });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "P0001",
+-   "message": "admin_user_not_found",
+- }
++ [PostgresError: function public.activate_admin_invite_with_audit(uuid) does not exist]
+
+- Expected  - 4
++ Received  + 1
+
+      at expectError (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:86:18)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:108:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\atomicForward.database.test.ts:44:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual admin database contracts > activate refuses unconfirmed authenticated actor or legitimate invitee [12.11ms]
+
+ 0 pass
+ 12 fail
+ 8 expect() calls
+Ran 12 tests across 1 file. [308.00ms]

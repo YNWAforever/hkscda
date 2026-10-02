@@ -1,0 +1,686 @@
+{
+  "file": "20261002111418_r01_admin_access_atomic_forward.sql",
+  "sha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+  "captures": [
+    "task-10-capture-hosted-1790938700989",
+    "task-10-capture-modern-1790938766567"
+  ],
+  "helpers": [
+    {
+      "schema": "auth",
+      "name": "uid",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "uuid",
+      "owner": "supabase_auth_admin",
+      "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "dashboard_user",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "supabase_auth_admin",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": null,
+      "definer": false,
+      "language": "sql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "s",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "772430c79a4272a214d3e200a170c0c3",
+      "definition": "5dd851706ecb5893606782fd9e2cbf83"
+    },
+    {
+      "schema": "private",
+      "name": "has_admin_role",
+      "args": "allowed_roles text[]",
+      "allargs": "allowed_roles text[]",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "boolean",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "sql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "7f630847a1abf789d61070be4bcd8ed1",
+      "definition": "5369d861219863bb6601e7fa7d4be528"
+    },
+    {
+      "schema": "public",
+      "name": "log_animal_mutation",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "schema": "public",
+      "name": "set_updated_at",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": null,
+      "definer": false,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "9b1889f56258bf9d6554213c05019c76",
+      "definition": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "schema": "private",
+      "name": "lock_admin_user_mutation",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": null,
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "35dc11b3cc5150246af05a0d954ce940",
+      "definition": "6fb4cca8ae606d99ac4858d0468ed513"
+    },
+    {
+      "schema": "private",
+      "name": "require_active_admin_user",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": null,
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "15e6194369fbe27203069acd28f0377d",
+      "definition": "98a21ca5b11cbf94c3d0302744af1a87"
+    },
+    {
+      "schema": "auth",
+      "name": "uid",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "uuid",
+      "owner": "supabase_auth_admin",
+      "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "dashboard_user",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "supabase_auth_admin",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": null,
+      "definer": false,
+      "language": "sql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "s",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "cdef18c69c4f4cbbced2eaf81e628b49",
+      "definition": "ea3b41bf29e2ad573067939329aa088e"
+    }
+  ],
+  "specs": [
+    {
+      "name": "update_admin_user_with_audit",
+      "sig": "uuid,uuid,text,text",
+      "args": "p_actor_user_id uuid,p_target_id uuid,p_role text default null,p_status text default null",
+      "known": {
+        "schema": "public",
+        "name": "update_admin_user_with_audit",
+        "args": "p_actor_user_id uuid, p_target_id uuid, p_role text, p_status text",
+        "allargs": "p_actor_user_id uuid, p_target_id uuid, p_role text DEFAULT NULL::text, p_status text DEFAULT NULL::text",
+        "defaults": 2,
+        "default_expression": "NULL::text, NULL::text",
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "e2aa6706a8c4dabd8ab207218f8b2fbc"
+      },
+      "nextKnown": {
+        "schema": "public",
+        "name": "update_admin_user_with_audit",
+        "args": "p_actor_user_id uuid, p_target_id uuid, p_role text, p_status text",
+        "allargs": "p_actor_user_id uuid, p_target_id uuid, p_role text DEFAULT NULL::text, p_status text DEFAULT NULL::text",
+        "defaults": 2,
+        "default_expression": "NULL::text, NULL::text",
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "312cdc73dbea4ee651dc575b6c4bb7b5"
+      },
+      "oldBodyMd5": "e2aa6706a8c4dabd8ab207218f8b2fbc",
+      "newBodyMd5": "312cdc73dbea4ee651dc575b6c4bb7b5"
+    },
+    {
+      "name": "invite_admin_user_with_audit",
+      "sig": "uuid,uuid,text,text,timestamptz",
+      "args": "p_actor_user_id uuid,p_auth_user_id uuid,p_email text,p_role text,p_sent_at timestamptz",
+      "known": {
+        "schema": "public",
+        "name": "invite_admin_user_with_audit",
+        "args": "p_actor_user_id uuid, p_auth_user_id uuid, p_email text, p_role text, p_sent_at timestamp with time zone",
+        "allargs": "p_actor_user_id uuid, p_auth_user_id uuid, p_email text, p_role text, p_sent_at timestamp with time zone",
+        "defaults": 0,
+        "default_expression": null,
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "015ffe484794387f19de3342c4d814fb"
+      },
+      "nextKnown": {
+        "schema": "public",
+        "name": "invite_admin_user_with_audit",
+        "args": "p_actor_user_id uuid, p_auth_user_id uuid, p_email text, p_role text, p_sent_at timestamp with time zone",
+        "allargs": "p_actor_user_id uuid, p_auth_user_id uuid, p_email text, p_role text, p_sent_at timestamp with time zone",
+        "defaults": 0,
+        "default_expression": null,
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "f88eff2b1bdba38aa30beece697acbd5"
+      },
+      "oldBodyMd5": "015ffe484794387f19de3342c4d814fb",
+      "newBodyMd5": "f88eff2b1bdba38aa30beece697acbd5"
+    },
+    {
+      "name": "resend_admin_invite_with_audit",
+      "sig": "uuid,uuid,timestamptz",
+      "args": "p_actor_user_id uuid,p_target_id uuid,p_sent_at timestamptz",
+      "known": {
+        "schema": "public",
+        "name": "resend_admin_invite_with_audit",
+        "args": "p_actor_user_id uuid, p_target_id uuid, p_sent_at timestamp with time zone",
+        "allargs": "p_actor_user_id uuid, p_target_id uuid, p_sent_at timestamp with time zone",
+        "defaults": 0,
+        "default_expression": null,
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "c4fb33e1f005e05b62f75b2471678f41"
+      },
+      "nextKnown": {
+        "schema": "public",
+        "name": "resend_admin_invite_with_audit",
+        "args": "p_actor_user_id uuid, p_target_id uuid, p_sent_at timestamp with time zone",
+        "allargs": "p_actor_user_id uuid, p_target_id uuid, p_sent_at timestamp with time zone",
+        "defaults": 0,
+        "default_expression": null,
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "e05b82dd3594c16a83d48454e79c716c"
+      },
+      "oldBodyMd5": "c4fb33e1f005e05b62f75b2471678f41",
+      "newBodyMd5": "e05b82dd3594c16a83d48454e79c716c"
+    },
+    {
+      "name": "activate_admin_invite_with_audit",
+      "sig": "uuid",
+      "args": "p_auth_user_id uuid",
+      "known": {
+        "schema": "public",
+        "name": "activate_admin_invite_with_audit",
+        "args": "p_auth_user_id uuid",
+        "allargs": "p_auth_user_id uuid",
+        "defaults": 0,
+        "default_expression": null,
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "5011a9c0c50559fb52d8762475b6b7f0"
+      },
+      "nextKnown": {
+        "schema": "public",
+        "name": "activate_admin_invite_with_audit",
+        "args": "p_auth_user_id uuid",
+        "allargs": "p_auth_user_id uuid",
+        "defaults": 0,
+        "default_expression": null,
+        "result": "public.admin_user",
+        "owner": "postgres",
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "full_acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "language": "plpgsql",
+        "kind": "f",
+        "cost": 100,
+        "rows": 0,
+        "strict": false,
+        "leakproof": false,
+        "parallel": "u",
+        "volatility": "v",
+        "support": "-",
+        "variadic": "-",
+        "modes": null,
+        "body": "bf2fb2bd1930449cf31d5b08c7fd1dbb"
+      },
+      "oldBodyMd5": "5011a9c0c50559fb52d8762475b6b7f0",
+      "newBodyMd5": "bf2fb2bd1930449cf31d5b08c7fd1dbb"
+    }
+  ]
+}

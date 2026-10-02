@@ -1,0 +1,79 @@
+{
+  "mode": "hosted-restrict",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-10-truncate-hosted-restrict-1790940196304",
+  "at": "2026-10-02T11:23:16.308Z",
+  "productionMutation": false,
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-truncate-red.ts": {
+    "rawSha256": "04b40b2bd89ed4801ab7540b31879cbe786a01942ca715af7f31d1eb6db73131",
+    "canonicalSha256": "04b40b2bd89ed4801ab7540b31879cbe786a01942ca715af7f31d1eb6db73131",
+    "archive": "s0.source"
+  },
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts": {
+    "rawSha256": "a0d0d5101a058a903ddb4a9e89d28af90b9557f83a47426ed7d2c421fe698efa",
+    "canonicalSha256": "a0d0d5101a058a903ddb4a9e89d28af90b9557f83a47426ed7d2c421fe698efa",
+    "archive": "s1.source"
+  },
+  "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+    "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+    "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+    "archive": "s2.source"
+  },
+  "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+    "rawSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+    "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+    "archive": "s3.source"
+  },
+  "truncateCascadeScope": [
+    "public.about_page_content",
+    "public.admin_user",
+    "public.adoption_guide_publish_requests",
+    "public.adoption_guide_releases",
+    "public.adoption_instruction_pages",
+    "public.adoption_instruction_publish_requests",
+    "public.adoption_instruction_revisions",
+    "public.adoption_rules",
+    "public.board_member",
+    "public.care_topics",
+    "public.checkout_admission",
+    "public.checkout_method_approval",
+    "public.checkout_policy",
+    "public.content_item",
+    "public.content_link",
+    "public.content_media",
+    "public.content_media_session",
+    "public.content_public_asset",
+    "public.content_publication_prepare",
+    "public.content_publish_request",
+    "public.content_revision",
+    "public.faq_entry",
+    "public.group_enquiries",
+    "public.payment_public_config",
+    "public.payment_public_config_publish_requests",
+    "public.recipient_notification_draft",
+    "public.rescue_story_profile",
+    "public.social_copy_variant",
+    "public.sponsorship_assignment",
+    "public.sponsorship_delivery_outbox",
+    "public.sponsorship_payment_allocation",
+    "public.sponsorship_payment_instruction_snapshot",
+    "public.sponsorship_payment_proof",
+    "public.sponsorship_payment_source",
+    "public.sponsorship_proof_submission_command",
+    "public.sponsorship_refund",
+    "public.story_update",
+    "public.volunteer_group_request"
+  ],
+  "fullScannerPassed": true,
+  "effectiveTruncate": true,
+  "authenticatedCurrentRole": {
+    "role": "authenticated",
+    "allowed": true
+  },
+  "actualTruncateResult": "0A000",
+  "expectedRed": true,
+  "catalogPreserved": true,
+  "completeMetadataPreserved": true,
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true
+}

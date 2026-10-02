@@ -1,0 +1,130 @@
+import datetime, hashlib, json, pathlib, subprocess, csv, io
+root = pathlib.Path.cwd()
+scratch = root / '.superpowers/sdd/r01-forward-schema-plan-20261001'
+evidence = root / 'docs/evidence/audit-remediation-20260927/r01-forward'
+sha = lambda b: hashlib.sha256(b).hexdigest()
+current = lambda r: all(sha((root / p).read_bytes()) == b['rawSha256'] for p, b in r['frozenInputs'].items())
+proofs = {}
+for mode in ('hosted', 'modern', 'component'):
+    candidates = []
+    for p in scratch.glob('task-10-' + mode + '-*/receipt.json'):
+        r = json.loads(p.read_text(encoding='utf-8'))
+        if r.get('testExit') == 0 and not r.get('error') and current(r) and all(r.get(f) is True for f in r['requiredFinalFlags']): candidates.append((r['at'], p, r))
+    if not candidates: raise RuntimeError('Current final proof missing:' + mode)
+    proofs[mode] = max(candidates, key=lambda c: c[0])
+frozen = proofs['hosted'][2]['frozenInputs']
+assert all(x[2]['frozenInputs'] == frozen for x in proofs.values())
+assert proofs['component'][2]['componentOtherMetadataPreserved'] is True
+assert proofs['component'][2]['componentFullScannerPassed'] is True
+gates = []
+for p in scratch.glob('task-10-gates-*/receipt.json'):
+    r = json.loads(p.read_text(encoding='utf-8'))
+    if len(r.get('gates', [])) == 4 and all(g['exit'] == 0 for g in r['gates']) and r.get('frozenInputsPreserved') is True and r.get('templatePreserved') is True and all(r['testedFinalSourceBlobs'].get(p, {}).get('sha256') == b['rawSha256'] for p, b in frozen.items()): gates.append((r['startedAt'], p, r))
+if not gates: raise RuntimeError('Current four gate GREEN missing')
+_, gate_path, gate = max(gates, key=lambda c: c[0])
+proof_lines = '\n'.join('| '+m+' | '+p.parent.name+' | 0 / 79 pass, 178 assertions | '+str(len(r['refusals']))+' | '+str(r['beforeGapCount'])+' → '+str(r['afterGapCount'])+' |' for m, (_, p, r) in proofs.items())
+gate_lines = '\n'.join('| '+g['command']+' | '+str(g['exit'])+' | '+str(g['elapsedSeconds'])+' | '+g['logSha256']+' |' for g in gate['gates'])
+prior = (scratch / 'task-10-report.md').read_text(encoding='utf-8')
+cli_stdout = (scratch / 'task-10-cli-discovery/new.stdout.log').read_text(encoding='utf-8').strip()
+if '\n## Preserved initial stage journal\n' in prior: prior = prior.split('\n## Preserved initial stage journal\n', 1)[1]
+report = f'''# Task10 source report
+
+Status: DONE_WITH_CONCERNS — locally verified source only; independent spec/quality review and five fresh individual source-HEAD CI gates remain controller gates. Scoped commits and Git bindings are recorded in task-10-source-binding.json and the final handoff below. Production/deployment/enablement remain false.
+
+## Source and environment
+
+OWN: {root.as_posix()}; branch codex/audit-r01-admin-atomic-20261002; BASE/receiptHEAD efeb25631cef34cff13f3820229d4462323efbf3. Proofs tested frozen working bytes at receiptHEAD, not that old committed source. Final48 raw domain inputs and {len(gate['testedFinalSourceBlobs'])} gate inputs bind raw/canonical SHA256, raw Git objects, exact binary *.source archives, current bytes and final committed source; ignored CRLF inputs intentionally retain raw Git objects rather than an assumed LF blob. See source-binding.json/receipts translation for exact identities. Root inspector shape/rawGit assumption errors were corrected separately; they were not source/test failures.
+
+Windows PowerShell; Bun1.3.14; Python3.14.6; PostgreSQL17.6 own loopback52322 clones; modern57322 and synthetic template52322 read-only throughout each composition. Full-suite gates use the expressly permitted existing fixture interface on modern57322/Auth52321, with build URL54329 and ci-placeholder keys, inherited feature TEST_DATABASE_URL/ALLOW_LOCAL_FIXTURES removed. Modern full-suite before/after states are separately recorded; no cross-suite read-only preservation is claimed. Template preservation and frozen raw inputs are true. Own LF Auth component reproduces independently bound17.11 source on17.6; actual fullCI17.11 is an external gate.
+
+SQL: supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql, raw=canonicalSHA89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d,189982bytes. Shared full scanner productionSchemaClone.ts remains5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519. THREE actual seed tables: auth.users,admin_user,audit_log, unchanged full call/default/constraint/trigger closure. Old “4scope” artifacts remain verbatim and are qualified as a prose label error.
+
+Task9 accepted sourceefeb / CI36995859256 attempt1 five individualSUCCESS; actual test merge checkout4e9096cde677e7d0b066f1d9e7c088ec9445ef59 differs by commit identity, tree4a219ca77e331e297a9bc95e27880528d399a89c equal. Accepted Task2–7 plus Task9 dependencies only; Task1 partialSQL and unapproved Task8 replay excluded. Production44 gaps unchanged.
+
+## Actual pinned CLI creation
+
+All three actual commands exited0, retained task-10-cli-discovery/receipt.json and separate stdout/stderr logs:
+
+- bun x supabase@2.118.0 --version →2.118.0.
+- bun x supabase@2.118.0 migration new --help →actual help retained.
+- bun x supabase@2.118.0 migration new r01_admin_access_atomic_forward at2026-10-02T11:14:19.262189Z.
+
+Actual stdout: `{cli_stdout}`. Actual stderr announced available2.119.0; pinned2.118.0 was retained. No historical CLI evidence was recreated.
+
+## Initial capture and RED before amendments
+
+Own schema-only captures hosted1790938700989/modern1790938766567 exit0 contain complete catalog/table shapes/helper25/owners/raw+effective fullACL/grant options/argument defaults/global+schema creator defaultACL/Auth columns and effective permissions/native136 origin-or-reference rows/index flags. Production metadata-only MCP at2026-10-02T10:59:05.822365Z confirmed four targets absent and Auth service table/column SELECT+UPDATE false, postgres true; no row/actor/provider query.
+
+Actual commands: R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES=1 bun docs/evidence/audit-remediation-20260927/r01-forward/task-10-capture.ts hosted|modern; task-10-red.ts missing|legacy|direct|truncate; task-10-truncate-red.ts hosted|hosted-restrict|modern-restrict; task-10-auth-component-red.ts; task-10-global-capture.ts hosted|modern. Each literal executed mode and raw bindings/logs are retained in its original receipt and translation.
+
+| RED | Actual receipt suffix | Actual outcome |
+| --- | --- | --- |
+| missing targets | missing1790938959352 | parent0/child1,0pass12fail8assert; valid four42883 |
+| exact legacy Auth fence | legacy1790938997085 | parent0/child1,4pass8fail16assert; banned/unconfirmed accepted |
+| directJWT/last-admin | direct1790939501379 | parent0/child1,0pass5fail5assert; authenticated I/U/D and bulkservice UPDATE/DELETE accepted |
+| scoped TRUNCATE unchanged candidate | truncate1790940631857 | parent0/child1,0pass2fail4assert; anon/authenticated actualgranttrue |
+| paired LF Auth component | auth-component-red1790940088423 | exit0 means expected genuine candidate55000, baselineaccepted/fullrollback; full25 pairing onlybody/definition differ |
+
+TRUNCATE RESTRICT diagnostics hosted1790940196304 current_userauthenticated/granttrue/0A000 vs modern1790940492880 grantfalse/42501, exit0 with complete preservation. CASCADE diagnostic1790939882525 exit1 blocked by unchanged full scanner at private.is_valid_adoption_instruction_content over38-table closure BEFORE TRUNCATE; CASCADE not-run, no relaxation. Ruling41 then permitted only anon/authenticated admin_user TRUNCATE revoke. Final hosted globalcapture1790941271132 exit0,7pass11assert: both permissionsfalse/RESTRICT42501, exact source/global profile and preservation.
+
+## Security semantics and compatibility
+
+Rulings36–41 govern the complete bounded repair. Exact signatures remain update_admin_user_with_audit(uuid,uuid,text,text), invite_admin_user_with_audit(uuid,uuid,text,text,timestamptz), resend_admin_invite_with_audit(uuid,uuid,timestamptz), activate_admin_invite_with_audit(uuid), returning public.admin_user. Update keeps two intentional NULL::text defaults, others zero defaults; postgresSECDEF/service-only fullACL remains exact, public targets use empty search_path. All metadata guards complete before first source mutation; unknown owner/default/fullACL/options/body/config/overload/native/index/Auth profiles55000 refuse with full rollback.
+
+Existing advisory serialization is retained; four functions lock confirmed/unbanned Auth rows FOR SHARE; three privileged mutations also lock the current active-admin actor FOR SHARE. Activation retains legitimate staff/treasurer/admin invitee behavior, active idempotent return and one transition audit, not a uniform admin-only check. P0001 existing error contracts/business/default/audit semantics remain; invitation citext comparison is explicitly public.= with public.citext under empty search_path. Unchanged repository/server session/HTTP source components are included in the frozen map; full application tests pass. No product TS callbacks were changed.
+
+Hosted global repair is a separate supplemental prerequisite outside public146: exact missing private.lock_admin_user_mutation()/private.require_active_admin_user() bodies/config/rawACL NULL plus known statement/row triggers, exact SELECT policy and anon/authenticated I/U/D/TRUNCATE clamp. Existing modern good guards are untouched. PUBLIC table TRUNCATE was captured absent and is not broadly revoked. Service/postgres/native/TRIGGER/REFERENCES/default/unrelated rights remain captured and preserved; no maintenance migration replay, grant normalization or Auth grants.
+
+AuthUID admits only coupled full25 tuples: original body772430c79a4272a214d3e200a170c0c3/definition5dd851706ecb5893606782fd9e2cbf83; ruled LF cdef18c69c4f4cbbced2eaf81e628b49/ea3b41bf29e2ad573067939329aa088e. Other23 metadata fields and all other helpers remain exact. Component fixture installs independently bound vendor definition in own clone, then unchanged full5352 scanner before actor DML.
+
+## Final database/RLS compositions
+
+Literal parent command for each mode: $env:R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES='1'; bun supabase/rls-tests/helpers/runR01AdminAtomic.ts MODE. Child command: bun test --timeout 15000 src/lib/admin/atomicForward.database.test.ts src/lib/admin/accessFence.database.test.ts (receipt arguments retain exact spaces). Parent/child exits0:
+
+| Profile | Final receipt | Exit/tests | Genuine55000/fullRollback | Actual gaps |
+| --- | --- | --- | --- | --- |
+{proof_lines}
+
+Same final48-input raw/canonical/Git map across all three profiles; two applies, required17 flags exactlytrue, failedFinalFlags[]; component additionally both required flags exactlytrue. Flags: {', '.join(proofs['hosted'][2]['requiredFinalFlags'])}. Tests exercise actor role/status/ban/confirmation, defaults/invalid transitions/duplicates, legitimate activation/retry, audit failure rollback, temporary shadows, Auth/admin row blocking/rechecks, concurrent same identity invite/activation and concurrent direct bulk last-admin refusal. Complete public/private/Auth row hashes, full unaffected catalog/helper/Auth/default/native/index/ledger/sequence metadata, exact scoped global profiles, normalDROP/template/modern read-only sources preserved.
+
+Refusals include owners/RLS/columnACL/defaults/indexes/trigger flags, schema/global/private creator ACL/options, effective Auth column SELECT/UPDATE, all captured helper fullACL/options/owner/config, unknown bodies/defaulted overloads, named outgoing admin_user_last_invited_by_fkey and incoming about_page_content_updated_by_fkey native fixtures, modern last-admin trigger/policy/TRUNCATE drift and all four target body/config/default/owner/fullACL/options/overloads. Complete original and final source archives bind each attempted map.
+
+## Mandatory final local gates
+
+Command: python docs/evidence/audit-remediation-20260927/r01-forward/task-10-gates.py. Actual final receipt {gate_path.parent.name}, parent0. Full tests3280pass470skip0fail10615assert across612files. Lint0 with52 existing baseline warnings. Every output below binds actual raw logs:
+
+| Exact child command | Exit | Seconds | OutputSHA256 |
+| --- | --- | --- | --- |
+{gate_lines}
+
+Final frozen source/template flags true. Full-suite modern fixture before/after qualification and source/archive/raw/canonical/Git/current bindings are captured in the gate receipt and final source-binding.json. No optional broad reruns followed sufficient final verification.
+
+## Failed attempts retained and qualified
+
+Pre-launch default/explicit PowerShell helper_unknown_error apply deny-read ACLs has no command exit; approved narrow require_escalated surface worked, no genuine automatic approval rejection or bypass. Expanded legacy RED readonly helper capture exited1 with output suppressed before clone/tests, original source archives retained, not behavioral RED. Auth component1790939992336 exited1 on nested scanner begin before candidate; fixed1790940088423 genuine55000 retained. Blocked CASCADE described above remains immutable. First complete hosted1790941561111 exited1 after baselineaccepted/26 real refusals because authenticatedEXECUTE already explicit on set_updated_at made the probe a no-op; corrected absent explicit fullACL recipient, no candidate policy change.
+
+Original green hosted1790941728456/modern1790942290809/component1790942422039 (79pass178assert each,60/75/75 refusals) remain bound to OLD concurrency fixture bytes. First four gate receipt1790942567627960200 parent1: typecheck0/tests0/lint1(two owned no-unsafe-finally errors plus52 baselinewarnings)/build0. After that entire frozen run exited, moved result checks afterfinally cleanup; focused eslint0 and Prettier, SQL89070 unchanged; new final three profiles and four gates above bind corrected bytes. No old GREEN is substituted for corrected sources. One documentation apply_patch hunk failed before write because placeholder context was absent; subsequent scoped append succeeded, no runtime/test failure or approval rejection.
+
+## Self-review and external gates
+
+Self-reviewed exact source guard ordering, coupled helper profiles, legacy defaults/error/audit/activation routing, no broad grants/normalization, correct Auth/admin lock and audit transaction semantics, named native origin/reference preservation, #130/#133 contracts and scoped Git paths. Shared scanner/config/default/cluster roles/engine/WSL remain unchanged. Private/native supplement appended only current plan/runbook/R01 tracker, not historical reports. Git commit explicit paths only; no push/merge/release/PR or subagent.
+
+Remaining:52 baseline lint warnings; root independent spec+quality review and five fresh individual exact source-HEAD CI17.11 gates, with actual PR test-merge vs source identities/tree equality separately reported by controller. Hosted realJWT/PostgREST/Auth internal/provider/browser/operator/full recovery UAT not-run; blocked CASCADE not-run. ProductionDDL/DML/actorRPC, real email/notifications/payments/refunds, paid branch, dbpush/reset, fake ledger, session termination/force cleanup, deployment/enablement all not-run/false. Preserve disabled checkout/new delivery/media schedules and existing webhook/reconciliation/paid-state behavior. Source completion is conditional on controller acceptance.
+
+## Preserved initial stage journal
+{prior}
+'''
+(scratch / 'task-10-report.md').write_text(report, encoding='utf-8', newline='\n')
+(evidence / 'task-10-evidence.md').write_text(report, encoding='utf-8', newline='\n')
+tracker = root / 'docs/evidence/audit-remediation-20260927/tracker.csv'
+rows = list(csv.DictReader(io.StringIO(tracker.read_text(encoding='utf-8'))))
+for row in rows:
+    if row['issue_id'] != 'R01': continue
+    addition = 'Task10 SQL89070: owned hosted/modern/component79pass178assert each;60/75/75 actual55000 fullrollback; twoapplies all17flags exactlytrue pluscomponent2; same48map; final4gates0; hosted17→13 modern+component1→1 production44; exactprivate2/native2/browserIUD/TRUNCATE supplement outside146; preserved failed26no-op and lint2/52warning attempts; raw source/CLI/archives/Git bindings task-10-evidence.md and task-10-source-binding.json; source conditional independentreview/fiveCI, noTask1/8/prod/deploy/enable'
+    if 'Task10 SQL89070:' not in row['test_evidence']: row['test_evidence'] += '; ' + addition
+    row['owner_blocker'] += '; Task10 independent spec/quality review and fresh fiveindividual exactheadCI17.11;52baselinewarnings; hosted/provider/UAT/CASCADE not-run; no production/release/enable authority'
+output = io.StringIO(newline='')
+writer = csv.DictWriter(output, fieldnames=rows[0].keys(), lineterminator='\n')
+writer.writeheader(); writer.writerows(rows)
+tracker.write_text(output.getvalue(), encoding='utf-8', newline='\n')
+print(json.dumps({'proofs': {m: p.parent.name for m, (_,p,_) in proofs.items()}, 'gate': gate_path.parent.name, 'evidence': 'task-10-evidence.md', 'report': str(scratch / 'task-10-report.md')}))

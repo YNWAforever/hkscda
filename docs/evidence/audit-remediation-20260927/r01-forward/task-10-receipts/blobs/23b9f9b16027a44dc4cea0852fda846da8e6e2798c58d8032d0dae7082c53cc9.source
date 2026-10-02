@@ -1,0 +1,41 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\accessFence.database.test.ts:
+92 |             role,
+93 |         );
+94 |         const [r] =
+95 |           await tx`select current_user role,has_table_privilege(current_user,'public.admin_user','TRUNCATE') allowed`;
+96 |         expect(r.role).toBe(role);
+97 |         expect(r.allowed).toBe(false);
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:97:27)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 scoped TRUNCATE browser fence > anon has no TRUNCATE privilege and RESTRICT fails42501 [30.84ms]
+92 |             role,
+93 |         );
+94 |         const [r] =
+95 |           await tx`select current_user role,has_table_privilege(current_user,'public.admin_user','TRUNCATE') allowed`;
+96 |         expect(r.role).toBe(role);
+97 |         expect(r.allowed).toBe(false);
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:97:27)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 scoped TRUNCATE browser fence > authenticated has no TRUNCATE privilege and RESTRICT fails42501 [10.63ms]
+
+ 0 pass
+ 5 filtered out
+ 2 fail
+ 4 expect() calls
+Ran 2 tests across 1 file. [139.00ms]

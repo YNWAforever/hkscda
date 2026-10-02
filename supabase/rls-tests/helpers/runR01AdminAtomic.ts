@@ -1,0 +1,766 @@
+/** Task10 final frozen hosted/modern/component proof. Only uniquely owned clones. */
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { resolve, dirname, relative } from "node:path";
+import { existsSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import {
+  captureProductionSchema,
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  snapshot,
+  hash,
+  localSourceState,
+  type Catalog,
+} from "./productionSchemaClone";
+import {
+  fixtureScope,
+  tables,
+  names,
+  dependencies,
+  functionsQuery,
+  authQuery,
+  nativeQuery,
+  indexDetailsQuery,
+  triggerDetailsQuery,
+} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile";
+import { checkReleaseSchema } from "../../../src/lib/operations/releaseSchema";
+import { releaseManifest } from "../../../src/lib/operations/releaseManifest";
+const root = resolve(import.meta.dir, "../../.."),
+  mode = process.argv[2];
+if (
+  !["hosted", "modern", "component"].includes(mode) ||
+  process.env.R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1"
+)
+  throw Error("Explicit Task10 own-clone opt-in required");
+const migration = "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+  evidence = "docs/evidence/audit-remediation-20260927/r01-forward/",
+  scratch = ".superpowers/sdd/r01-forward-schema-plan-20261001/";
+const componentPath = scratch + "task-10-auth-component-red-1790940088423/receipt.json",
+  vendorPath = scratch + "task-9-fix-4-helper-comparison.json";
+const paths = [
+  migration,
+  "src/lib/admin/atomicForward.database.test.ts",
+  "src/lib/admin/accessFence.database.test.ts",
+  "src/lib/admin/accessManagement.repository.server.ts",
+  "src/lib/admin/session.server.ts",
+  "src/lib/admin/accessManagement.http.server.ts",
+  "supabase/rls-tests/helpers/runR01AdminAtomic.ts",
+  "supabase/rls-tests/helpers/productionSchemaClone.ts",
+  ...[
+    "profile.ts",
+    "capture.ts",
+    "generate.ts",
+    "global-capture.ts",
+    "auth-component-red.ts",
+    "red.ts",
+    "truncate-red.ts",
+    "generated-profiles.json",
+    "gates.py",
+    "package.py",
+  ].map((p) => evidence + "task-10-" + p),
+  componentPath,
+  vendorPath,
+  scratch + "task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+  ...["hosted-1790938700989", "modern-1790938766567"].map(
+    (p) => scratch + "task-10-capture-" + p + "/receipt.json",
+  ),
+  ...["hosted-1790940420425", "modern-1790940542452"].map(
+    (p) => scratch + "task-10-global-capture-" + p + "/receipt.json",
+  ),
+  scratch + "task-10-global-final-capture.json",
+  ...dependencies.map(([f]) => "supabase/migrations/" + f),
+  "supabase/migrations/20260925110000_admin_user_access_atomicity.sql",
+  "supabase/migrations/20260925133500_atomic_admin_invite_activation.sql",
+  "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+  "src/lib/operations/releaseSchema.ts",
+  "src/lib/operations/releaseManifest.ts",
+];
+for (let i = 0; i < paths.length; i++) {
+  const p = paths[i];
+  if (!p.endsWith(".ts")) continue;
+  const s = await readFile(resolve(root, p), "utf8");
+  for (const m of s.matchAll(/(?:from\s*|import\s*\()(["'])(\.[^"']+)\1/g)) {
+    const absolute = resolve(dirname(resolve(root, p)), m[2]);
+    const found = [
+      absolute,
+      absolute + ".ts",
+      absolute + ".tsx",
+      resolve(absolute, "index.ts"),
+    ].find((f) => existsSync(f) && /\.tsx?$/.test(f));
+    if (found) {
+      const local = relative(root, found).replaceAll("\\", "/");
+      if (local.startsWith("..")) throw Error("Closure escapes assigned checkout");
+      if (!paths.includes(local)) paths.push(local);
+    }
+  }
+}
+const blobs = async () =>
+  Object.fromEntries(
+    await Promise.all(
+      paths.map(async (p) => {
+        const b = await readFile(resolve(root, p)),
+          child = Bun.spawn(["git", "hash-object", "--no-filters", p], {
+            cwd: root,
+            stdout: "pipe",
+          }),
+          gitBlob = (await new Response(child.stdout).text()).trim();
+        if (await child.exited) throw Error("Git blob failure");
+        return [
+          p,
+          {
+            rawSha256: hash(b.toString()),
+            canonicalSha256: hash(b.toString().replaceAll("\r\n", "\n")),
+            gitBlob,
+          },
+        ];
+      }),
+    ),
+  );
+const frozen = await blobs(),
+  out = resolve(root, scratch + "task-10-" + mode + "-" + Date.now());
+await mkdir(out, { recursive: true });
+for (const [i, p] of paths.entries())
+  await copyFile(resolve(root, p), resolve(out, "s" + String(i).padStart(3, "0") + ".source"));
+const receipt: Record<string, unknown> = {
+  mode,
+  out,
+  at: new Date().toISOString(),
+  sourceCommit: (
+    await new Response(
+      Bun.spawn(["git", "rev-parse", "HEAD"], { cwd: root, stdout: "pipe" }).stdout,
+    ).text()
+  ).trim(),
+  sourceBase: "efeb25631cef34cff13f3820229d4462323efbf3",
+  workingBytesMarker: "Frozen working bytes at receipt HEAD; final Git blob binding required",
+  frozenInputs: frozen,
+  archivedInputs: Object.fromEntries(
+    paths.map((p, i) => [p, "s" + String(i).padStart(3, "0") + ".source"]),
+  ),
+  fixtureScope,
+  task1Applied: false,
+  task8Applied: false,
+  productionApplied: false,
+  providerActions: false,
+  dependencyGate:
+    "Task9 acceptedefeb CI36995859256 attempt1 fiveindividualSUCCESS; testcheckout4e9096/tree4a219c equals source tree, commit identities differ",
+  environment:
+    "Windows/Bun1.3.14/PostgreSQL17.6; uniquelyowned52322clone only, modern57322/template52322 readonly, no provider/AuthAPI/email",
+};
+const modern = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(modern);
+let clone: Awaited<ReturnType<typeof createProductionClone>> | undefined;
+const required = [
+  "schemaParity",
+  "fullScannerPassed",
+  "baselineAcceptedBeforeNegatives",
+  "baselineRollbackPreserved",
+  "secondApplyIdempotent",
+  "unaffectedCatalogPreserved",
+  "scopedGlobalGuardExact",
+  "rowsPreserved",
+  "completeAuthDefaultNativeLedgerSequencePreserved",
+  "helpersPreserved",
+  "postTestsCatalogPreserved",
+  "postTestsRowsPreserved",
+  "postTestsCompleteMetadataPreserved",
+  "normalDrop",
+  "templatePreserved",
+  "modernPreserved",
+  "frozenInputsPreserved",
+];
+try {
+  const cap =
+    mode === "hosted" ? await captureProductionSchema() : await captureModernLocalSchema();
+  clone = await createProductionClone(cap);
+  const db = clone.sql;
+  receipt.clone = clone.name;
+  receipt.schemaParity = true;
+  receipt.zeroApplicationTables = clone.tableCount;
+  receipt.captureCatalogHash = hash(cap.catalog);
+  receipt.managedPrerequisites = clone.prerequisites;
+  const extra = async () => ({
+    auth: await db.unsafe(authQuery),
+    native: await db.unsafe(nativeQuery),
+    indexes: await db.unsafe(indexDetailsQuery),
+    defaultRaw:
+      await db`select to_jsonb(d) from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
+    allNative:
+      await db`select to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d)order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype)from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid)dependencies from pg_trigger t where t.tgisinternal order by t.oid`,
+    uid: await db`select to_jsonb(p) proc,pg_get_functiondef(p.oid) definition from pg_proc p where p.oid='auth.uid()'::regprocedure`,
+    ledger:
+      await db`select md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),''))hash from supabase_migrations.schema_migrations t`,
+    sequences:
+      await db`select schemaname,sequencename,last_value from pg_sequences where schemaname !~ '^pg_' order by 1,2`,
+  });
+  const rows = async () => {
+    const values: unknown[] = [];
+    for (const t of await db`select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('public','private')and c.relkind in('r','p') union all select 'auth.users' order by 1`) {
+      const [r] = await db.unsafe(
+        `select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n'order by to_jsonb(t)::text),''))hash from ${t.name} t`,
+      );
+      values.push([t.name, r]);
+    }
+    return hash(values);
+  };
+  const untouchedHelpers = async () =>
+    hash(
+      (await db.unsafe(functionsQuery)).filter(
+        (f: Record<string, unknown>) =>
+          !(f.schema === "public" && names.includes(String(f.name))) &&
+          !(
+            f.schema === "private" &&
+            ["lock_admin_user_mutation", "require_active_admin_user"].includes(String(f.name))
+          ),
+      ),
+    );
+  const unaffected = (c: Catalog) =>
+    Object.fromEntries(
+      Object.entries(c).map(([k, v]) => [
+        k,
+        Array.isArray(v)
+          ? v
+              .filter(
+                (e: Record<string, unknown>) =>
+                  !(
+                    k === "functions" &&
+                    ((e.schema === "public" && names.includes(String(e.name))) ||
+                      (e.schema === "private" &&
+                        ["lock_admin_user_mutation", "require_active_admin_user"].includes(
+                          String(e.name),
+                        )))
+                  ) &&
+                  !(
+                    k === "policies" &&
+                    e.schema === "public" &&
+                    e.table === "admin_user" &&
+                    ["admins can manage admin users", "admins can view admin users"].includes(
+                      String(e.name),
+                    )
+                  ) &&
+                  !(
+                    k === "triggers" &&
+                    e.schema === "public" &&
+                    e.table === "admin_user" &&
+                    ["lock_admin_user_mutation", "require_active_admin_user"].includes(
+                      String(e.name),
+                    )
+                  ),
+              )
+              .map((e: Record<string, unknown>) =>
+                k === "relations" && e.schema === "public" && e.name === "admin_user"
+                  ? {
+                      ...e,
+                      acl: ((e.acl ?? []) as Record<string, unknown>[]).filter(
+                        (a) =>
+                          !(
+                            ["anon", "authenticated"].includes(String(a.grantee)) &&
+                            ["INSERT", "UPDATE", "DELETE", "TRUNCATE"].includes(String(a.privilege))
+                          ),
+                      ),
+                    }
+                  : e,
+              )
+          : v,
+      ]),
+    );
+  async function gap(c: Catalog) {
+    const es = (k: string) => (c[k] ?? []) as Record<string, unknown>[];
+    const r = await checkReleaseSchema(
+      {
+        async load() {
+          return {
+            tables: es("relations")
+              .filter((e) => ["r", "p"].includes(String(e.kind)))
+              .map((e) => ({
+                schema: String(e.schema),
+                name: String(e.name),
+                rls: Boolean(e.rls),
+                columns: Object.fromEntries(
+                  es("columns")
+                    .filter((x) => x.schema === e.schema && x.table === e.name)
+                    .map((x) => [String(x.name), String(x.type)]),
+                ),
+                grants: Object.fromEntries(
+                  ["anon", "authenticated", "service_role"].map((role) => [
+                    role,
+                    ((e.acl ?? []) as { grantee: string; privilege: string }[])
+                      .filter((a) => a.grantee === role)
+                      .map((a) => a.privilege),
+                  ]),
+                ),
+              })),
+            functions: es("functions").map((e) => ({
+              schema: String(e.schema),
+              name: String(e.name),
+              arguments: String(e.args),
+              returns: String(e.result),
+              executeRoles: ((e.acl ?? []) as { grantee: string; privilege: string }[])
+                .filter((a) => a.privilege === "EXECUTE")
+                .map((a) => a.grantee),
+            })),
+            migrationVersions: [],
+          };
+        },
+      },
+      releaseManifest,
+    );
+    return r.issues.length;
+  }
+  await assertSafeFixtureTables(db, fixtureScope);
+  receipt.fullScannerPassed = true;
+  receipt.initialGapCount = await gap(cap.catalog);
+  const applied: { file: string; sha256: string; gapCount: number }[] = [];
+  for (const [f, h] of dependencies) {
+    const s = await readFile(resolve(root, "supabase/migrations/" + f), "utf8");
+    if (hash(s) !== h) throw Error("Accepted dependency raw bytes differ:" + f);
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(s);
+    });
+    applied.push({ file: f, sha256: h, gapCount: await gap(await snapshot(db)) });
+  }
+  receipt.dependencies = applied;
+  if (mode === "component") {
+    const proof = JSON.parse(await readFile(resolve(root, componentPath), "utf8")),
+      vendorRaw = await readFile(resolve(root, vendorPath), "utf8");
+    if (
+      hash(vendorRaw) !== "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77" ||
+      proof.actualCandidateResult !== "55000" ||
+      proof.allOtherHelperFacetsPreserved !== true
+    )
+      throw Error("Own ruled component provenance differs");
+    const vendor = JSON.parse(vendorRaw),
+      beforeFunctions = await db.unsafe(functionsQuery),
+      beforeMetadata = await extra(),
+      beforeCatalog = hash(await snapshot(db));
+    await db.begin(async (tx) => {
+      await tx`set local role supabase_auth_admin`;
+      await tx.unsafe(vendor.finalHelper.definition);
+    });
+    const afterFunctions = await db.unsafe(functionsQuery),
+      actual = afterFunctions.find(
+        (f: Record<string, unknown>) => f.schema === "auth" && f.name === "uid",
+      );
+    if (hash(actual) !== hash(proof.afterHelper))
+      throw Error("Own paired full25 component tuple differs");
+    const afterMetadata = await extra();
+    receipt.componentOtherMetadataPreserved =
+      hash({ ...afterMetadata, uid: beforeMetadata.uid }) === hash(beforeMetadata) &&
+      hash(await snapshot(db)) === beforeCatalog &&
+      hash(
+        beforeFunctions.filter(
+          (f: Record<string, unknown>) => !(f.schema === "auth" && f.name === "uid"),
+        ),
+      ) ===
+        hash(
+          afterFunctions.filter(
+            (f: Record<string, unknown>) => !(f.schema === "auth" && f.name === "uid"),
+          ),
+        );
+    if (receipt.componentOtherMetadataPreserved !== true)
+      throw Error("Component unrelated metadata changed");
+    await assertSafeFixtureTables(db, fixtureScope);
+    receipt.componentFullScannerPassed = true;
+    receipt.componentQualification =
+      "Own PG17.6 component, exact captured17.11/Auth LF definition; fullCI remains separate";
+  }
+  await assertSafeFixtureTables(db, fixtureScope);
+  const sentinel = randomUUID();
+  await db.begin(async (tx) => {
+    await tx`set local role postgres`;
+    await tx`insert into auth.users(id,email,email_confirmed_at)values(${sentinel}::uuid,${sentinel + "@example.invalid"},now())`;
+    await tx`insert into public.admin_user(auth_user_id,email,role,status)values(${sentinel}::uuid,${sentinel + "@example.invalid"},'admin','active')`;
+    await tx`insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)values(${sentinel}::uuid,'synthetic.preserved','task10',${sentinel},'{}'::jsonb)`;
+  });
+  const before = await snapshot(db),
+    beforeRows = await rows(),
+    beforeExtra = hash(await extra()),
+    beforeHelpers = await untouchedHelpers();
+  receipt.beforeGapCount = await gap(before);
+  receipt.beforeRowsHash = beforeRows;
+  receipt.beforeCompleteMetadataHash = beforeExtra;
+  receipt.beforeHelperHash = beforeHelpers;
+  if (mode === "hosted" && receipt.beforeGapCount !== 17)
+    throw Error("Conditional hosted baseline17 required");
+  const source = await readFile(resolve(root, migration), "utf8"),
+    apply = () =>
+      db.begin(async (tx) => {
+        await tx`set local role postgres`;
+        await tx.unsafe(source);
+      }),
+    forced = new Error("Task10 baseline rollback");
+  let accepted = false;
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(source);
+      for (const n of names)
+        if (
+          (
+            await tx`select count(*)::integer count from pg_proc where pronamespace='public'::regnamespace and proname=${n}`
+          )[0].count !== 1
+        )
+          throw Error("Missing exact target");
+      accepted = true;
+      throw forced;
+    });
+  } catch (e) {
+    if (e !== forced) throw e;
+  }
+  receipt.baselineAcceptedBeforeNegatives = accepted;
+  receipt.baselineRollbackPreserved =
+    hash(before) === hash(await snapshot(db)) &&
+    beforeRows === (await rows()) &&
+    beforeExtra === hash(await extra()) &&
+    beforeHelpers === (await untouchedHelpers());
+  if (!accepted || receipt.baselineRollbackPreserved !== true)
+    throw Error("Baseline did not preserve full rollback");
+  const refusals: { name: string; setup: string }[] = [
+    {
+      name: "table owner",
+      setup:
+        "set local role supabase_admin;alter table public.admin_user owner to supabase_admin;set local role postgres",
+    },
+    { name: "RLS", setup: "alter table public.admin_user disable row level security" },
+    { name: "column ACL", setup: "grant update(role) on public.admin_user to authenticated" },
+    {
+      name: "column default",
+      setup: "alter table public.admin_user alter column status set default 'pending'",
+    },
+    { name: "extra index", setup: "create index task10_unknown_idx on public.admin_user(role)" },
+    {
+      name: "existing trigger disabled",
+      setup: "alter table public.admin_user disable trigger set_updated_at",
+    },
+    {
+      name: "creator public recipient",
+      setup:
+        "alter default privileges for role postgres in schema public grant execute on functions to dashboard_user",
+    },
+    {
+      name: "creator public grant option",
+      setup:
+        "alter default privileges for role postgres in schema public grant execute on functions to service_role with grant option",
+    },
+    {
+      name: "creator global recipient",
+      setup: "alter default privileges for role postgres grant execute on functions to anon",
+    },
+    {
+      name: "creator private recipient",
+      setup:
+        "alter default privileges for role postgres in schema private grant execute on functions to authenticated",
+    },
+    {
+      name: "Auth effective SELECT column",
+      setup: "grant select(banned_until) on auth.users to service_role",
+    },
+    {
+      name: "Auth effective UPDATE column",
+      setup:
+        "set local role supabase_admin;grant update(banned_until)on auth.users to service_role;set local role postgres",
+    },
+  ];
+  const helperRows = (await db.unsafe(functionsQuery)).filter(
+    (f: Record<string, unknown>) => !(f.schema === "public" && names.includes(String(f.name))),
+  );
+  for (const f of helperRows) {
+    const sig =
+      f.schema +
+      "." +
+      f.name +
+      "(" +
+      String(f.args)
+        .split(",")
+        .filter(Boolean)
+        .map((s) => s.trim().split(" ").slice(1).join(" "))
+        .join(",") +
+      ")";
+    for (const [facet, setup] of [
+      [
+        "owner",
+        `set local role supabase_admin;alter function ${sig} owner to postgres;set local role postgres`,
+      ],
+      [
+        "grant option",
+        `set local role supabase_admin;grant execute on function ${sig} to service_role with grant option;set local role postgres`,
+      ],
+      [
+        "ACL",
+        `set local role supabase_admin;grant execute on function ${sig} to authenticated;set local role postgres`,
+      ],
+      [
+        "config",
+        `set local role supabase_admin;alter function ${sig} set search_path='pg_catalog';set local role postgres`,
+      ],
+    ] as const) {
+      if (f.owner === "postgres" && facet === "owner")
+        refusals.push({
+          name: sig + " owner",
+          setup: `set local role supabase_admin;alter function ${sig} owner to supabase_admin;set local role postgres`,
+        });
+      else if (facet === "ACL") {
+        const recipient = [
+          "dashboard_user",
+          "anon",
+          "authenticated",
+          "service_role",
+          "supabase_auth_admin",
+        ].find((role) => !(f.full_acl as { grantee: string }[]).some((a) => a.grantee === role));
+        if (!recipient) throw Error("No absent explicit helper ACL recipient:" + sig);
+        refusals.push({
+          name: sig + " ACL",
+          setup: `set local role supabase_admin;grant execute on function ${sig} to ${recipient};set local role postgres`,
+        });
+      } else refusals.push({ name: sig + " " + facet, setup });
+    }
+  }
+  const [uid] = await db`select pg_get_functiondef('auth.uid()'::regprocedure) definition`;
+  const changed = String(uid.definition).replace("select ", "select  ");
+  if (changed === uid.definition) throw Error("Actual helper body probe absent");
+  refusals.push(
+    {
+      name: "uid unknown body",
+      setup: "set local role supabase_auth_admin;" + changed + ";set local role postgres",
+    },
+    {
+      name: "uid default overload",
+      setup:
+        "set local role supabase_auth_admin;create function auth.uid(p_probe text default null)returns uuid language sql stable as $x$select null::uuid$x$;set local role postgres",
+    },
+  );
+  for (const f of (await db.unsafe(functionsQuery)).filter(
+    (f: Record<string, unknown>) =>
+      f.schema === "private" &&
+      ["lock_admin_user_mutation", "require_active_admin_user"].includes(String(f.name)),
+  )) {
+    const sig = "private." + f.name + "()";
+    refusals.push(
+      {
+        name: sig + " body",
+        setup: `do $d$begin execute replace(pg_get_functiondef('${sig}'::regprocedure),'begin','begin\n -- unknown');end$d$`,
+      },
+      {
+        name: sig + " default overload",
+        setup: `create function private.${f.name}(p_probe text default null)returns trigger language plpgsql as $x$begin return null;end$x$`,
+      },
+    );
+  }
+  for (const [table, constraint, own] of [
+    ["public.admin_user", "admin_user_last_invited_by_fkey", true],
+    ["public.admin_user", "about_page_content_updated_by_fkey", false],
+  ] as const) {
+    const selected = await db.unsafe(
+      `select t.oid,t.tgname,t.tgenabled,t.tgrelid::regclass::text table,c.conname,c.conrelid::regclass::text origin,c.confrelid::regclass::text referenced from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where t.tgrelid='${table}'::regclass and c.conname='${constraint}' order by t.oid limit 1`,
+    );
+    if (!selected.length) throw Error("Named native fixture absent:" + constraint);
+    const t = selected[0];
+    (receipt.nativeFixtureSelections ??= {}) as Record<string, unknown>;
+    (receipt.nativeFixtureSelections as Record<string, unknown>)[constraint] = t;
+    refusals.push({
+      name: (own ? "outgoing" : "incoming") + " native " + constraint,
+      setup: `set local role supabase_admin;alter table ${table} disable trigger "${String(t.tgname).replaceAll('"', '""')}";set local role postgres`,
+    });
+  }
+  const modernGuard = (
+    await db`select tgname from pg_trigger where tgrelid='public.admin_user'::regclass and tgname='require_active_admin_user'`
+  ).length;
+  if (modernGuard) {
+    refusals.push(
+      {
+        name: "known lastadmin trigger disabled",
+        setup: "alter table public.admin_user disable trigger require_active_admin_user",
+      },
+      {
+        name: "known view policy widened",
+        setup: 'alter policy "admins can view admin users" on public.admin_user using(true)',
+      },
+      {
+        name: "browser TRUNCATE grant",
+        setup: "grant truncate on public.admin_user to authenticated",
+      },
+    );
+  }
+  for (const [name, sig, legacy] of names.map((name, i) => [
+    name,
+    ["uuid,uuid,text,text", "uuid,uuid,text,text,timestamptz", "uuid,uuid,timestamptz", "uuid"][i],
+    i === 3
+      ? "20260925133500_atomic_admin_invite_activation.sql"
+      : "20260925110000_admin_user_access_atomicity.sql",
+  ])) {
+    const text = (
+        await readFile(resolve(root, "supabase/migrations/" + legacy), "utf8")
+      ).replaceAll("\r\n", "\n"),
+      m = text.match(
+        new RegExp("create or replace function public\\." + name + "\\([\\s\\S]*?\\$\\$;", "i"),
+      );
+    if (!m) throw Error("Legacy probe definition absent");
+    const create = m[0],
+      acl = `revoke all on function public.${name}(${sig}) from public,anon,authenticated,service_role;grant execute on function public.${name}(${sig}) to service_role;`;
+    for (const [facet, drift] of [
+      [
+        "owner",
+        `set local role supabase_admin;alter function public.${name}(${sig})owner to supabase_admin;set local role postgres`,
+      ],
+      ["ACL", `grant execute on function public.${name}(${sig})to dashboard_user`],
+      [
+        "grant option",
+        `grant execute on function public.${name}(${sig})to service_role with grant option`,
+      ],
+      ["config", `alter function public.${name}(${sig})set search_path='pg_catalog'`],
+      [
+        "body",
+        `do $d$begin execute replace(pg_get_functiondef('public.${name}(${sig})'::regprocedure),'begin','begin\n -- unknown');end$d$`,
+      ],
+      [
+        "defaults",
+        `do $d$begin execute replace(pg_get_functiondef('public.${name}(${sig})'::regprocedure),'${name === "update_admin_user_with_audit" ? "p_role text DEFAULT NULL::text" : name === "activate_admin_invite_with_audit" ? "p_auth_user_id uuid" : name === "invite_admin_user_with_audit" ? "p_sent_at timestamp with time zone" : "p_sent_at timestamp with time zone"}','${name === "update_admin_user_with_audit" ? "p_role text DEFAULT ''staff''::text" : name === "activate_admin_invite_with_audit" ? "p_auth_user_id uuid DEFAULT NULL::uuid" : "p_sent_at timestamp with time zone DEFAULT NULL::timestamptz"}');end$d$`,
+      ],
+      [
+        "overload",
+        `create function public.${name}(p_probe text)returns public.admin_user language sql as $x$select null::public.admin_user$x$`,
+      ],
+    ] as const)
+      refusals.push({
+        name: "target " + name + " " + facet,
+        setup: create + "\n" + acl + "\n" + drift,
+      });
+  }
+  const actualRefusals: { name: string; errno: string; fullRollback: boolean }[] = [];
+  receipt.refusals = actualRefusals;
+  for (const f of refusals) {
+    let errno = "success";
+    try {
+      await db.begin(async (tx) => {
+        await tx`set local role postgres`;
+        await tx.unsafe(f.setup);
+        await tx.unsafe(source);
+        throw Error("Expected55000 " + f.name);
+      });
+    } catch (e) {
+      errno = (e as { errno?: string }).errno ?? String(e);
+    }
+    if (errno !== "55000") throw Error("Wrong refusal " + f.name + ":" + errno);
+    const preserved =
+      hash(before) === hash(await snapshot(db)) &&
+      beforeRows === (await rows()) &&
+      beforeExtra === hash(await extra()) &&
+      beforeHelpers === (await untouchedHelpers());
+    actualRefusals.push({ name: f.name, errno, fullRollback: preserved });
+    if (!preserved) throw Error("Drift rollback changed " + f.name);
+  }
+  await apply();
+  const first = await snapshot(db);
+  await apply();
+  const second = await snapshot(db);
+  receipt.applies = 2;
+  receipt.secondApplyIdempotent = hash(first) === hash(second);
+  receipt.afterGapCount = await gap(second);
+  receipt.unaffectedCatalogPreserved = hash(unaffected(before)) === hash(unaffected(second));
+  receipt.rowsPreserved = beforeRows === (await rows());
+  receipt.completeAuthDefaultNativeLedgerSequencePreserved = beforeExtra === hash(await extra());
+  receipt.helpersPreserved = beforeHelpers === (await untouchedHelpers());
+  const global = JSON.parse(
+    await readFile(resolve(root, scratch + "task-10-global-final-capture.json"), "utf8"),
+  );
+  const c = await snapshot(db);
+  const allowedTables = (
+    global[mode === "hosted" ? "hosted" : "modern"] as {
+      profiles: { name: string; profile: unknown }[];
+    }
+  ).profiles;
+  const real: unknown[] = [];
+  for (const name of tables) {
+    const p = Object.fromEntries(
+      ["relations", "columns", "constraints", "indexes", "triggers", "policies"].map((k) => [
+        k,
+        ((c[k] ?? []) as Record<string, unknown>[]).filter(
+          (e) => e.schema === "public" && (e.table ?? e.name) === name,
+        ),
+      ]),
+    );
+    const [r] =
+      await db`select jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*)from pg_rewrite r where r.ev_class=c.oid))value from pg_class c where c.oid=${"public." + name}::regclass`;
+    Object.assign(p, { shape: r.value });
+    real.push({ name, profile: p });
+  }
+  receipt.scopedGlobalGuardExact =
+    hash(real) === hash(allowedTables.map((p) => ({ name: p.name, profile: p.profile })));
+  receipt.finalFunctions = await db.unsafe(functionsQuery);
+  receipt.finalTriggers = await db.unsafe(triggerDetailsQuery);
+  if (mode === "hosted" && receipt.afterGapCount !== 13)
+    throw Error("Conditional hosted after13 required");
+  for (const key of [
+    "secondApplyIdempotent",
+    "unaffectedCatalogPreserved",
+    "scopedGlobalGuardExact",
+    "rowsPreserved",
+    "completeAuthDefaultNativeLedgerSequencePreserved",
+    "helpersPreserved",
+  ])
+    if (receipt[key] !== true) throw Error("Actual preservation failed:" + key);
+  await assertSafeFixtureTables(db, fixtureScope);
+  const args = [
+      "bun",
+      "test",
+      "--timeout",
+      "15000",
+      "src/lib/admin/atomicForward.database.test.ts",
+      "src/lib/admin/accessFence.database.test.ts",
+    ],
+    env = { ...process.env, R01_ADMIN_ATOMIC_TEST_DATABASE_URL: clone.url };
+  const p = Bun.spawn(args, { cwd: root, env, stdout: "pipe", stderr: "pipe" });
+  const [stdout, stderr, exit] = await Promise.all([
+    new Response(p.stdout).text(),
+    new Response(p.stderr).text(),
+    p.exited,
+  ]);
+  await writeFile(resolve(out, "tests.log"), stdout + stderr);
+  receipt.testCommand = args;
+  receipt.testExit = exit;
+  receipt.testSummary = (stdout + stderr)
+    .split("\n")
+    .filter((s) => /^ \d+ (pass|fail|skip|expect)/.test(s));
+  console.log(stdout + stderr);
+  receipt.postTestsCatalogPreserved = hash(second) === hash(await snapshot(db));
+  receipt.postTestsRowsPreserved = beforeRows === (await rows());
+  receipt.postTestsCompleteMetadataPreserved = beforeExtra === hash(await extra());
+  if (exit) throw Error("Actual Task10 database tests failed");
+} catch (e) {
+  receipt.error = String(e);
+  process.exitCode = 1;
+} finally {
+  if (clone) {
+    await clone.close();
+    receipt.normalDrop = true;
+    receipt.templatePreserved = clone.templatePreserved;
+  }
+  receipt.modernPreserved = modernBefore === (await localSourceState(modern));
+  receipt.frozenInputsPreserved = hash(frozen) === hash(await blobs());
+  const failed = required.filter((k) => receipt[k] !== true);
+  if (mode === "component")
+    for (const k of ["componentOtherMetadataPreserved", "componentFullScannerPassed"])
+      if (receipt[k] !== true) failed.push(k);
+  receipt.requiredFinalFlags = required;
+  receipt.failedFinalFlags = failed;
+  if (failed.length) {
+    receipt.error = [receipt.error, "Required flags not exactlytrue:" + failed.join(",")]
+      .filter(Boolean)
+      .join("; ");
+    process.exitCode = 1;
+  }
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+  console.log(
+    JSON.stringify({
+      out,
+      mode,
+      error: receipt.error,
+      testExit: receipt.testExit,
+      summary: receipt.testSummary,
+      refusals: (receipt.refusals as unknown[] | undefined)?.length,
+      gaps: [receipt.beforeGapCount, receipt.afterGapCount],
+      failedFinalFlags: failed,
+    }),
+  );
+}
