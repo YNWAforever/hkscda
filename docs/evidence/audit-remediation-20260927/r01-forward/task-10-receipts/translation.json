@@ -16696,6 +16696,38 @@
       "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "bytes": 0,
       "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-final-cache-qualification.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/a3d9c9ef9776ddcf9b7e8da167ae5d83d887d62cdc9fbfa16f7959e4d7ceefc2.source",
+      "rawSha256": "a3d9c9ef9776ddcf9b7e8da167ae5d83d887d62cdc9fbfa16f7959e4d7ceefc2",
+      "canonicalSha256": "a3d9c9ef9776ddcf9b7e8da167ae5d83d887d62cdc9fbfa16f7959e4d7ceefc2",
+      "bytes": 573,
+      "gitBlob": "75c143701b2f64aa74eac3e03bc4442ee9cd3806"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-final-head-receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/c216c736949beb8032ce2ec01513d456b9bf0b562aed22e5a85f47956c44ba77.source",
+      "rawSha256": "c216c736949beb8032ce2ec01513d456b9bf0b562aed22e5a85f47956c44ba77",
+      "canonicalSha256": "c216c736949beb8032ce2ec01513d456b9bf0b562aed22e5a85f47956c44ba77",
+      "bytes": 1178,
+      "gitBlob": "c3783cf6b9caab4c7e0f6ab4279c92de5728badc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-generated-gate-cache.pyc.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/da53e82024279500a3b3aae2163c457fa1db5cad4a064c8641083e0a69941167.source",
+      "rawSha256": "da53e82024279500a3b3aae2163c457fa1db5cad4a064c8641083e0a69941167",
+      "canonicalSha256": "a70a4626cc5a036659a07492f41e316402961c95bd64dd3cce92125af3804789",
+      "bytes": 14345,
+      "gitBlob": "b6a053f8dd94c9654aaf093170f50072a1863f81"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-report.md",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/b03db241c84a87330b6628befa2fe8314aee75a3bf83a4660be296dc56e6f787.source",
+      "rawSha256": "b03db241c84a87330b6628befa2fe8314aee75a3bf83a4660be296dc56e6f787",
+      "canonicalSha256": "a6de1e949d666b17843f8975099e00cc24aa72b75d167dd58695dc082d8d6c08",
+      "bytes": 34731,
+      "gitBlob": "2a15ee611618c3e2631dea738bde1856924107fc"
     }
   ]
 }

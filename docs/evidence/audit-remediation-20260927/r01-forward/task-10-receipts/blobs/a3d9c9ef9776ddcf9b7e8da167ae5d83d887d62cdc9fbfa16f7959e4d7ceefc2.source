@@ -1,0 +1,8 @@
+{
+  "initialFinalMetadataCheckExit": 1,
+  "reason": "Clean Git status assertion caught only own Python import-generated task-10-gates.cpython-314.pyc cache; no source mutation or failed behavioral check",
+  "retainedRaw": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-generated-gate-cache.pyc.source",
+  "rawSha256": "da53e82024279500a3b3aae2163c457fa1db5cad4a064c8641083e0a69941167",
+  "cleanup": "Exact named file moved to ignored owned .source and empty exact directory removed, no recursive delete/force/shared target",
+  "candidateUnchanged": true
+}
