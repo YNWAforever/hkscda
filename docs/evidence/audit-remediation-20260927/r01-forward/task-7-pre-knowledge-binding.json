@@ -1,5 +1,5 @@
 {
-  "qualification": "Historical a2 pre-knowledge composition: all gates actually GREEN, superseded as completion proof by later actual reachable #130 knowledge RED. No claim final amended bytes tested.",
+  "qualification": "Historical a2 pre-knowledge composition: all gates actually GREEN, superseded as completion proof by later actual reachable #130 knowledge RED. No claim final amended bytes tested. Historical a2 Gate2 wrapper body is unavailable/hash-only, so its historical source map is not fully witnessed; see historicalGate2WrapperProvenance. Genuine recorded commands/environment/logs/exits remain preserved; this is not final a98 proof.",
   "base": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
   "originalCompositionReceipts": [
     {
@@ -1115,5 +1115,17 @@
   ],
   "packagingTranslation": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-packaging-path-bindings.json",
   "runtimePathCheck": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-runtime-path-check.json",
-  "shortPathsWereNotExecuted": true
+  "shortPathsWereNotExecuted": true,
+  "historicalGate2WrapperProvenance": {
+    "historicalReceipt": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c02/receipt.json",
+    "wrapperPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-gates.py",
+    "recordedRawSha256": "e4e612d3af84d84b2dde5b5aed055251e8465a13d99da946d964b201127defe0",
+    "recordedCanonicalSha256": "e4e612d3af84d84b2dde5b5aed055251e8465a13d99da946d964b201127defe0",
+    "recordedNoFiltersGitBlob": "41d4b96fa72be55999b5f1d98cbd39630f6cd7b5",
+    "immutableOriginalCopyAvailable": false,
+    "recoverableGitObjectAvailable": false,
+    "wrapperWitness": "recorded hashes only; no preserved body",
+    "historicalSourceMapFullyWitnessed": false,
+    "qualification": "Historical a2 Gate2 lacks archivedInputs and an archived wrapper body; bounded implementer/controller inspection found neither an immutable original nor a recoverable Git object. A recorded hash is not preserved source. Genuine historical command/environment/log/exit records and available receipts/maps remain unchanged, but complete historical31input raw-copy retention is not established. No original reconstructed. Final a98 four-gate proof uses its separate complete43input archive and does not reuse this historical run."
+  }
 }
