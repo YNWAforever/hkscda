@@ -1,0 +1,19 @@
+{
+  "note": "Source marker217fc22b is the product/DB commit before evidence packaging; exact frozen raw input maps are authoritative. Its migration-manifest.csv HEAD object was older than the exact frozen working content; packaging commits that unchanged tested manifest. Two ignored capture receipt Git hashes are derived content addresses, not original-path HEAD objects. All staged diffcheck returns2 for intentionally immutable raw .source archives (CRLF logs/trailing whitespace); product/source-only diffcheck returns0. These are separate actual results; no raw bytes were normalized and no all-diffcheck-zero claim is made.",
+  "checks": [
+    {
+      "name": "all-staged",
+      "command": "git diff --cached --check",
+      "exit": 2,
+      "rawLog": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-whitespace-all-staged.log",
+      "rawLogSha256": "62903f40621bcd966ea41f9145b8456a680aa46047d0b3a69e43dd551288e3fc"
+    },
+    {
+      "name": "product-source",
+      "command": "git diff --check d0403a1869ea6dead498e62aebe9723e95c3ec19 HEAD -- src/lib/adoptions supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql supabase/rls-tests/helpers/runR01AdoptionAtomic.ts docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts docs/evidence/audit-remediation-20260927/r01-forward/task-9-capture.ts docs/evidence/audit-remediation-20260927/r01-forward/task-9-generate.ts",
+      "exit": 0,
+      "rawLog": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-whitespace-product-source.log",
+      "rawLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

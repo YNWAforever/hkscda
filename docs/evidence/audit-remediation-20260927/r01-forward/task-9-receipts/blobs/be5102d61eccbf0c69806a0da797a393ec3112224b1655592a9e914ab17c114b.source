@@ -1,0 +1,132 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.database.test.ts:
+PostgresError: function public.mutate_adoption_coordinator_with_audit(uuid, unknown, unknown, uuid, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [19.20ms]
+PostgresError: function public.create_manual_adoption_case(uuid, jsonb, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [11.57ms]
+PostgresError: function public.search_manual_case_identity(unknown, integer, integer) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [19.33ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "42501",
+- }
++ [PostgresError: function public.mutate_adoption_coordinator_with_audit(uuid, unknown, unknown, uuid, jsonb) does not exist]
+
+- Expected  - 3
++ Received  + 1
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [19.22ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "42501",
+- }
++ [PostgresError: function public.mutate_adoption_coordinator_with_audit(uuid, unknown, unknown, uuid, jsonb) does not exist]
+
+- Expected  - 3
++ Received  + 1
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [11.33ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "42501",
+- }
++ [PostgresError: function public.create_manual_adoption_case(uuid, jsonb, jsonb) does not exist]
+
+- Expected  - 3
++ Received  + 1
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [11.48ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+- {
+-   "errno": "42501",
+- }
++ [PostgresError: function public.create_manual_adoption_case(uuid, jsonb, jsonb) does not exist]
+
+- Expected  - 3
++ Received  + 1
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [11.34ms]
+
+ 0 pass
+ 7 fail
+ 4 expect() calls
+Ran 7 tests across 1 file. [162.00ms]

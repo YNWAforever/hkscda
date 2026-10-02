@@ -1,0 +1,98 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.database.test.ts:
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [5.20ms]
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [0.58ms]
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [0.47ms]
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [0.48ms]
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [0.35ms]
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [0.33ms]
+166 |   let delimiter = type === "BOX" ? ";" : ",";
+167 |   return `{${values.map(arrayValueSerializer.bind(this, type, isPostgresNumericType(type), isPostgresJsonType(type))).join(delimiter)}}`;
+168 | }
+169 | function wrapPostgresError(error) {
+170 |   if (Error.isError(error))
+171 |   return new PostgresError(error.message, error);
+               ^
+PostgresError: Connection closed
+ code: "ERR_POSTGRES_CONNECTION_CLOSED"
+
+      at wrapPostgresError (internal:sql/postgres:171:10)
+      at #onClose (internal:sql/postgres:346:30)
+(fail) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [0.35ms]
+
+ 0 pass
+ 7 fail
+Ran 7 tests across 1 file. [68.00ms]

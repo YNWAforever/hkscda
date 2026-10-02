@@ -1,0 +1,38 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.http.test.ts:
+{
+  code: "42501",
+  message: "internal actor diagnostic",
+}
+4 | const actor="00000000-0000-4000-8000-000000000001";
+5 | const request=()=>new Request("https://example.invalid/coordinator/manual-case",{method:"POST",body:JSON.stringify({identity:{kind:'new_supporter'}}),headers:{'content-type':'application/json'}});
+6 | function handlers(error:unknown){return createCaseHandlers({requireCoordinator:async()=>({authUserId:actor}) as never,service:{createManualCase:async()=>{throw error;}} as never});}
+7 | test("manual actor SQLSTATE42501 returns safe403 through actual coordinator handler",async()=>{
+8 |  const r=await handlers({code:'42501',message:'internal actor diagnostic'}).createManualCase({request:request()});
+9 |  expect(r.status).toBe(403);expect(r.headers.get('cache-control')).toBe('no-store');expect(await r.json()).toEqual({error:'Forbidden'});
+                      ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.http.test.ts:9:19)
+(fail) manual actor SQLSTATE42501 returns safe403 through actual coordinator handler [6.33ms]
+(pass) coordinator permission mapping preserves Response [0.58ms]
+(pass) coordinator permission mapping preserves Zod [0.20ms]
+(pass) coordinator permission mapping preserves missing [0.16ms]
+(pass) coordinator permission mapping preserves domain conflict [0.54ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) coordinator permission mapping preserves unknown [0.25ms]
+42501
+(pass) coordinator permission mapping preserves nonobject [0.38ms]
+(pass) manual handler preserves201 IDs and task-null response [0.48ms]
+
+ 7 pass
+ 1 fail
+ 15 expect() calls
+Ran 8 tests across 1 file. [95.00ms]

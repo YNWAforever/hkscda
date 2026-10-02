@@ -1,0 +1,3 @@
+$ tsc --noEmit
+supabase/rls-tests/helpers/runR01AdoptionAtomic.ts(436,9): error TS7034: Variable 'actualRefusals' implicitly has type 'any[]' in some locations where its type cannot be determined.
+supabase/rls-tests/helpers/runR01AdoptionAtomic.ts(437,22): error TS7005: Variable 'actualRefusals' implicitly has an 'any[]' type.

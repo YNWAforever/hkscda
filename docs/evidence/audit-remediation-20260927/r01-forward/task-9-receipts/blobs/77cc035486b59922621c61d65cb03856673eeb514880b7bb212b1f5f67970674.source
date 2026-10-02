@@ -1,0 +1,86 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.database.test.ts:
+(pass) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [48.62ms]
+(pass) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [53.03ms]
+(pass) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [30.21ms]
+(pass) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [33.62ms]
+(pass) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [25.33ms]
+(pass) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [23.77ms]
+(pass) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [22.77ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual missing actor with42501 and no audit [13.92ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual disabled actor with42501 and no audit [17.50ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual treasurer actor with42501 and no audit [20.30ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual missing actor with42501 and no audit [12.25ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual disabled actor with42501 and no audit [16.01ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual treasurer actor with42501 and no audit [14.40ms]
+(pass) R01 adoption role and transaction contracts > anon cannot execute any restored service-only RPC [24.04ms]
+(pass) R01 adoption role and transaction contracts > authenticated cannot execute any restored service-only RPC [17.49ms]
+(pass) R01 adoption role and transaction contracts > staff cannot mutate statuses but may create and update audited followup tasks [26.57ms]
+(pass) R01 adoption role and transaction contracts > system status identity/deletion remain protected and normal status update/delete return audited rows [26.47ms]
+(pass) R01 adoption role and transaction contracts > missing targets and unsupported operations keep P0002/22023 without audit [22.47ms]
+(pass) R01 adoption role and transaction contracts > coordinator audit failure rolls back all identity/business writes [19.90ms]
+(pass) R01 adoption role and transaction contracts > manual audit failure rolls back all identity/business writes [19.54ms]
+(pass) R01 adoption role and transaction contracts > manual intake preserves initial task linking and actor IDs [21.78ms]
+(pass) R01 adoption role and transaction contracts > manual existing supporter retries reuse identity/role and create separate cases without inventing request idempotency [19.93ms]
+(pass) R01 adoption role and transaction contracts > manual malformed/unavailable identities preserve original refusal and no partial writes [25.09ms]
+(pass) R01 adoption role and transaction contracts > duplicate coordinator status and malformed payload are atomic refusals [18.11ms]
+(pass) R01 adoption role and transaction contracts > empty pinned public commands and preserved private helper ignore temporary table shadows [22.02ms]
+(pass) R01 adoption role and transaction contracts > existing bulk case/supporter version triggers remain unchanged during valid synthetic updates [19.71ms]
+652 |     ];
+653 |     expect(one.adopterProfileId).toBe(two.adopterProfileId);
+654 |     expect(one.caseId).not.toBe(two.caseId);
+655 |     const [row] =
+656 |       await db`select (select count(*)::integer from public.adopter_profile where supporter_id=${supporter}::uuid) profiles,(select count(*)::integer from public.supporter_role where supporter_id=${supporter}::uuid and role='adopter') roles,(select count(*)::integer from public.adoption_case where created_by=${actor}::uuid) cases,(select count(*)::integer from public.audit_log where actor_user_id=${actor}::uuid and action='adoption_case.manual_create') audits`;
+657 |     expect(row).toMatchObject({ profiles: 1, roles: 1, cases: 2, audits: 2 });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "audits": 2,
++   "audits": 0,
+    "cases": 2,
+    "profiles": 1,
+    "roles": 1,
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at concurrentIdentity (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:657:17)
+(fail) R01 adoption transaction actor locks > concurrent existing-supporter intakes wait on the existing unique identity and retain one profile/role, two cases/audits [94.60ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual disabled update then rechecks and refuses without writes [63.46ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual treasurer update then rechecks and refuses without writes [55.71ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual banned update then rechecks and refuses without writes [86.73ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual unconfirmed update then rechecks and refuses without writes [70.82ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual disabled update then rechecks and refuses without writes [67.89ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual treasurer update then rechecks and refuses without writes [70.55ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual banned update then rechecks and refuses without writes [60.69ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual unconfirmed update then rechecks and refuses without writes [63.66ms]
+(pass) R01 adoption transaction actor locks > coordinator holds actual actor admin_user row against concurrent suspension/ban until transaction ends [71.25ms]
+(pass) R01 adoption transaction actor locks > coordinator holds actual actor auth.users row against concurrent suspension/ban until transaction ends [60.84ms]
+(pass) R01 adoption transaction actor locks > manual holds actual actor admin_user row against concurrent suspension/ban until transaction ends [62.30ms]
+(pass) R01 adoption transaction actor locks > manual holds actual actor auth.users row against concurrent suspension/ban until transaction ends [58.62ms]
+
+src\lib\adoptions\atomicForward.http.test.ts:
+(pass) manual actor SQLSTATE42501 returns safe403 through actual coordinator handler [4.58ms]
+(pass) coordinator permission mapping preserves Response [0.73ms]
+(pass) coordinator permission mapping preserves Zod [0.24ms]
+(pass) coordinator permission mapping preserves missing [0.17ms]
+(pass) coordinator permission mapping preserves domain conflict [0.41ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) coordinator permission mapping preserves unknown [0.35ms]
+42501
+(pass) coordinator permission mapping preserves nonobject [0.35ms]
+(pass) manual handler preserves201 IDs and task-null response [0.71ms]
+
+1 tests failed:
+(fail) R01 adoption transaction actor locks > concurrent existing-supporter intakes wait on the existing unique identity and retain one profile/role, two cases/audits [94.60ms]
+
+ 46 pass
+ 1 fail
+ 166 expect() calls
+Ran 47 tests across 2 files. [1.60s]

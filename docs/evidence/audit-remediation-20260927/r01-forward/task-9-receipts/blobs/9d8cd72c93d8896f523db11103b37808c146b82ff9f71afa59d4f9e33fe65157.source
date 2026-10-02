@@ -1,0 +1,718 @@
+{
+  "mode": "modern",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-modern-1790918026386",
+  "at": "2026-10-02T05:13:58.806Z",
+  "sourceCommit": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+  "sourceBase": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+  "clone": "r01_clone_efafbc00f279450e818b0b48670dc01e",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisites": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "catalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "fixtureScope": [
+    "auth.users",
+    "admin_user",
+    "audit_log",
+    "coordinator_status",
+    "supporter",
+    "supporter_role",
+    "adopter_profile",
+    "adoption_case",
+    "adoption_followup",
+    "animal_match",
+    "animals",
+    "animal"
+  ],
+  "frozenInputs": {
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": {
+      "rawSha256": "6cf7beb544812a21500dff3163b9cb9201506d8df2f5d46ee526588a6ca9e296",
+      "canonicalSha256": "6cf7beb544812a21500dff3163b9cb9201506d8df2f5d46ee526588a6ca9e296",
+      "gitBlob": "b18a59c07391c42f7149a1301fa1e7edebde9b4f"
+    },
+    "src/lib/adoptions/atomicForward.database.test.ts": {
+      "rawSha256": "fa0a0b89d0d7965f3db80ba0befaa6f45e31ec41633e2cfde5c7c4a02106c3d1",
+      "canonicalSha256": "fa0a0b89d0d7965f3db80ba0befaa6f45e31ec41633e2cfde5c7c4a02106c3d1",
+      "gitBlob": "271e3f07f6ebbbc803b68195c107516419f4b8b5"
+    },
+    "src/lib/adoptions/atomicForward.http.test.ts": {
+      "rawSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "canonicalSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "gitBlob": "2c9176c0a46d3e8c3f98f515da05d2368eb94a07"
+    },
+    "src/lib/adoptions/http/shared.server.ts": {
+      "rawSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "canonicalSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "gitBlob": "a9fcbf52db3085bbd8f8f4911336b75c263e4bc1"
+    },
+    "src/lib/adoptions/http/caseHandlers.server.ts": {
+      "rawSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "canonicalSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "gitBlob": "cd4c38b9c4c653abacf43980557072ee8177a820"
+    },
+    "src/lib/adoptions/repository.server.ts": {
+      "rawSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "canonicalSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "gitBlob": "e08ead3c8fe789d06896399a28aa2f1801a29518"
+    },
+    "src/lib/adoptions/service.ts": {
+      "rawSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "canonicalSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "gitBlob": "a20d60626c64b16248f764caa543e9f3aa92f8a9"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts": {
+      "rawSha256": "7a3bf568dc57250b5c92ce577926780d94a5a1d4616a81af2d71a5d780610d6a",
+      "canonicalSha256": "7a3bf568dc57250b5c92ce577926780d94a5a1d4616a81af2d71a5d780610d6a",
+      "gitBlob": "29860510c903a5f254936d4cc6a8a80440e3b2d7"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts": {
+      "rawSha256": "c092f48200965095e7ab1ee4290d021bdd08082bd7ccbecf3f7cb40489b0bd44",
+      "canonicalSha256": "c092f48200965095e7ab1ee4290d021bdd08082bd7ccbecf3f7cb40489b0bd44",
+      "gitBlob": "ce3f7c4255cb6953e01d56cdcdb69e001a90b02c"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-capture.ts": {
+      "rawSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "canonicalSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "gitBlob": "8d7e38ddc2a290cfb8f5754a576302b5019a96e0"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generate.ts": {
+      "rawSha256": "3ee511bb079409d997f6b3ec1cd9e643a2b6d11a9287956113ff0da1446a90c9",
+      "canonicalSha256": "3ee511bb079409d997f6b3ec1cd9e643a2b6d11a9287956113ff0da1446a90c9",
+      "gitBlob": "6e8205092059a8672cd12337a1462cf8a3b76e94"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generated-profiles.json": {
+      "rawSha256": "7bb04b74942c3cdde3ad4aea74e96200f54e5660a09e29f7fb028a566f9a22fc",
+      "canonicalSha256": "7bb04b74942c3cdde3ad4aea74e96200f54e5660a09e29f7fb028a566f9a22fc",
+      "gitBlob": "a7b064d617d4ec20501deb16b6541efb6e30c9cb"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": {
+      "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "gitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    "supabase/migrations/20260925104926_atomic_adoption_coordinator_audit.sql": {
+      "rawSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "canonicalSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "gitBlob": "2c82f6410ee31f76664199aa5a7a7533e459e2b7"
+    },
+    "supabase/migrations/20260926110000_manual_case_identity_search.sql": {
+      "rawSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "canonicalSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "gitBlob": "7974f2bbd367bb64dc77f2a1791e6fc0ebd49a84"
+    },
+    "supabase/migrations/20260926133000_expose_manual_adoption_case_rpc.sql": {
+      "rawSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "canonicalSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "gitBlob": "534827f633bb40780e2cb6cf3b42f58cc543576f"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-hosted-1790916576452/receipt.json": {
+      "rawSha256": "dcee79d0cf0a269fe19ce0ace85a59d2af45710d5d2f90e303ffe1ac6a7fff6c",
+      "canonicalSha256": "dcee79d0cf0a269fe19ce0ace85a59d2af45710d5d2f90e303ffe1ac6a7fff6c",
+      "gitBlob": "2dd0f773005e7ced8c631d51b72ccac745e4fc91"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-modern-1790916801651/receipt.json": {
+      "rawSha256": "807cac8e5aaf846ff6594d418bf1f74804c047a033d3e56d186323bf36c46250",
+      "canonicalSha256": "807cac8e5aaf846ff6594d418bf1f74804c047a033d3e56d186323bf36c46250",
+      "gitBlob": "1c589e0740fbbd54a76487d63ebbfe5f030ba52f"
+    }
+  },
+  "archivedInputs": {
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": "s000.source",
+    "src/lib/adoptions/atomicForward.database.test.ts": "s001.source",
+    "src/lib/adoptions/atomicForward.http.test.ts": "s002.source",
+    "src/lib/adoptions/http/shared.server.ts": "s003.source",
+    "src/lib/adoptions/http/caseHandlers.server.ts": "s004.source",
+    "src/lib/adoptions/repository.server.ts": "s005.source",
+    "src/lib/adoptions/service.ts": "s006.source",
+    "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts": "s007.source",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "s008.source",
+    "src/lib/operations/releaseSchema.ts": "s009.source",
+    "src/lib/operations/releaseManifest.ts": "s010.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts": "s011.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-capture.ts": "s012.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generate.ts": "s013.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generated-profiles.json": "s014.source",
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": "s015.source",
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": "s016.source",
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": "s017.source",
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": "s018.source",
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": "s019.source",
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": "s020.source",
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": "s021.source",
+    "supabase/migrations/20260925104926_atomic_adoption_coordinator_audit.sql": "s022.source",
+    "supabase/migrations/20260926110000_manual_case_identity_search.sql": "s023.source",
+    "supabase/migrations/20260926133000_expose_manual_adoption_case_rpc.sql": "s024.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-hosted-1790916576452/receipt.json": "s025.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-modern-1790916801651/receipt.json": "s026.source"
+  },
+  "task1Applied": false,
+  "task8Applied": false,
+  "dependencyGate": "Task7 PR191 exactd040 CI36960650129 attempt1 five individualSUCCESS",
+  "productionActions": "schema/catalog only; no actor/rows/mutations/provider",
+  "environment": "only owned52322 clone; modern57322/template52322 readonly; no web/provider/email calls",
+  "fixtureSafety": "unchanged5352 fullscope PASS",
+  "initialGapCount": 1,
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001213914_r01_crm_atomic_forward.sql",
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gapCount": 1
+    },
+    {
+      "file": "20261002011249_r01_cms_atomic_forward.sql",
+      "sha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "gapCount": 1
+    }
+  ],
+  "beforeGapCount": 1,
+  "beforeRowsHash": "95aee151d1676d1ce463d6ffdc69dcece1bd7ceb9b9ccc07c04425a4457c5232",
+  "beforeCompleteAuthDefaultNativeLedgerSequenceHash": "2bc46006827ca1761461bbe9ecee87ce73deb5617e7ac5aff6f8f1837a8755c1",
+  "beforeHelperHash": "6e46b909980daf0d88b2c0b128bee078c13e864bff4ef894d321c9e0eee77c8a",
+  "baselineAcceptedBeforeNegatives": true,
+  "baselineRollbackPreserved": true,
+  "refusals": [
+    {
+      "name": "table owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "RLS",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "column ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "column default",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "unknown index",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "version trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator public recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator public grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator global recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "Auth effective SELECT column",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "Auth effective UPDATE column",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private helper intentional default",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "native FK trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    }
+  ],
+  "applies": 2,
+  "secondApplyIdempotent": true,
+  "afterGapCount": 1,
+  "unaffectedCatalogPreserved": true,
+  "rowsPreserved": true,
+  "completeAuthDefaultNativeLedgerSequencePreserved": true,
+  "helpersPreserved": true,
+  "finalFunctions": [
+    {
+      "schema": "public",
+      "name": "create_manual_adoption_case",
+      "args": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+      "allargs": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb",
+      "defaults": 1,
+      "default_expression": "NULL::jsonb",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "v",
+      "body": "5725edc893e1de19fce3d68905793e7e",
+      "definition": "95554b13bbff63687a02915a03ef352a"
+    },
+    {
+      "schema": "public",
+      "name": "mutate_adoption_coordinator_with_audit",
+      "args": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "allargs": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "v",
+      "body": "14b25802b9f1bb9d4916a155371cd96c",
+      "definition": "bf23274600c991e5707bcc16ce069334"
+    },
+    {
+      "schema": "public",
+      "name": "search_manual_case_identity",
+      "args": "p_query text, p_page integer, p_page_size integer",
+      "allargs": "p_query text, p_page integer DEFAULT 1, p_page_size integer DEFAULT 10",
+      "defaults": 2,
+      "default_expression": "1, 10",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "s",
+      "body": "400b3b85e6b25b16e6b3758cb536adf9",
+      "definition": "e3ef437854441afd67d6ad7d59aa8f35"
+    }
+  ],
+  "testCommand": [
+    "bun",
+    "test",
+    "--timeout",
+    "15000",
+    "src/lib/adoptions/atomicForward.database.test.ts",
+    "src/lib/adoptions/atomicForward.http.test.ts"
+  ],
+  "testExit": 1,
+  "testSummary": [
+    " 46 pass",
+    " 1 fail",
+    " 166 expect() calls"
+  ],
+  "postTestsCatalogPreserved": true,
+  "postTestsRowsPreserved": true,
+  "postTestsCompleteMetadataPreserved": true,
+  "error": "Error: Actual Task9 tests or full preservation failed",
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true
+}

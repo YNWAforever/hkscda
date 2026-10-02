@@ -1,0 +1,67 @@
+{
+  "status": "Real accepted incoming FK enabled-state drift; minimum guard ruling required. Earlier pair is not final acceptance. Failed modern exact selected OID was not captured and cannot be reconstructed; new deterministic probe is independently bound.",
+  "entries": [
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-native-red-1790919057488/receipt.json",
+      "rawSha256": "8890e3953ae0fea786a48372e562ec4872877452cf5147a44f164a3c378f419c",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/8890e3953ae0fea786a48372e562ec4872877452cf5147a44f164a3c378f419c.source",
+      "sourceCommit": null,
+      "testExit": null,
+      "error": null,
+      "actualMigrationAcceptedDrift": true,
+      "normalDrop": true,
+      "frozenInputsPreserved": null
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790918802739/receipt.json",
+      "rawSha256": "191707ff00fe56485b110b189cedfcb02004078a2d6994c0423222329a2891b5",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/191707ff00fe56485b110b189cedfcb02004078a2d6994c0423222329a2891b5.source",
+      "sourceCommit": "94ae17118e379dac44308a3e6f6ce8e17e9782f7",
+      "testExit": null,
+      "error": "Error: Wrong refusal native FK trigger disabled: Error: Expected55000 refusal native FK trigger disabled",
+      "actualMigrationAcceptedDrift": null,
+      "normalDrop": true,
+      "frozenInputsPreserved": true
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790918677487/receipt.json",
+      "rawSha256": "c94cc70ff9ac47cf29f126bc194e73f424dc36f26b0f6246fde0a5cc8190a726",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c94cc70ff9ac47cf29f126bc194e73f424dc36f26b0f6246fde0a5cc8190a726.source",
+      "sourceCommit": "94ae17118e379dac44308a3e6f6ce8e17e9782f7",
+      "testExit": 0,
+      "error": null,
+      "actualMigrationAcceptedDrift": null,
+      "normalDrop": true,
+      "frozenInputsPreserved": true
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790918404016880100/receipt.json",
+      "rawSha256": "570b30febf7ac02c2a3f3dbcefaec0a1bf9f44a48a11248a969366a1d868b31d",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/570b30febf7ac02c2a3f3dbcefaec0a1bf9f44a48a11248a969366a1d868b31d.source",
+      "sourceCommit": "6f7a30eb40cd3012e87d2aaa07367eca26ef4159",
+      "testExit": null,
+      "error": null,
+      "actualMigrationAcceptedDrift": null,
+      "normalDrop": null,
+      "frozenInputsPreserved": true
+    }
+  ],
+  "recordedStatusBeforeRuling31": "Real accepted incoming FK enabled-state drift; minimum guard ruling required. Earlier pair is not final acceptance. Failed modern exact selected OID was not captured and cannot be reconstructed; new deterministic probe is independently bound.",
+  "currentResolution": {
+    "ruling": "31",
+    "exactPredicate": "(c.conrelid in same10tables OR c.confrelid in same10tables) AND c.contype=f",
+    "sqlRawSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+    "finalDatabaseReceipts": {
+      "hosted": {
+        "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790919498462/receipt.json",
+        "rawSha256": "7da31fbd6df537bc88c0ec2b2f791ad210ff28c4692dd7a59cbaf2172c5887e5",
+        "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/7da31fbd6df537bc88c0ec2b2f791ad210ff28c4692dd7a59cbaf2172c5887e5.source"
+      },
+      "modern": {
+        "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790919651001/receipt.json",
+        "rawSha256": "909ef1c1e4f1a4c7431f70a0eb68a91b01d65939ab0ba05bee66ba3a6785fadd",
+        "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/909ef1c1e4f1a4c7431f70a0eb68a91b01d65939ab0ba05bee66ba3a6785fadd.source"
+      }
+    }
+  }
+}

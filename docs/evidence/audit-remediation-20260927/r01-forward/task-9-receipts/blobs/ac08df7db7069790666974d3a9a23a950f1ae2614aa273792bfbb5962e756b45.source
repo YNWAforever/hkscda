@@ -1,0 +1,75 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.database.test.ts:
+(pass) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [21.18ms]
+(pass) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [21.05ms]
+(pass) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [19.12ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [16.98ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [8.90ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [9.20ms]
+23 | async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+24 |  const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+25 | }
+26 | async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+27 |  const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+28 |  expect(error).toMatchObject({errno:code});
+                    ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at expectCode (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:28:16)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:57:8)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\adoptions\atomicForward.database.test.ts:17:8)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [12.31ms]
+
+ 3 pass
+ 4 fail
+ 22 expect() calls
+Ran 7 tests across 1 file. [174.00ms]
