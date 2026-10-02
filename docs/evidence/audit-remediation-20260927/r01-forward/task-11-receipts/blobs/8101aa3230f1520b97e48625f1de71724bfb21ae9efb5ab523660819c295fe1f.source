@@ -1,0 +1,92 @@
+-- Cancellations remain available after suspension; every waitlist/approval path enforces current terms and limits.
+create or replace function public.volunteer_booking_command(p_actor uuid,p_command jsonb) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare profile public.volunteer_profile%rowtype; activity public.volunteer_activity%rowtype;
+ prior public.volunteer_command_result%rowtype; registration public.volunteer_registration%rowtype;
+ p jsonb; evaluation jsonb; result jsonb; new_id uuid; terms_id uuid; acceptance uuid;
+ current_clock timestamptz; payload_hash text:=md5(p_command::text); new_status text; remarks text:=coalesce(p_command->>'remarks',''); action text:=p_command->>'action';
+begin
+ perform pg_advisory_xact_lock(hashtextextended('volunteer-domain',0));
+ current_clock:=clock_timestamp();
+ if not exists(select 1 from auth.users where id=p_actor and email_confirmed_at is not null and (banned_until is null or banned_until<=current_clock)) then raise exception 'verified_actor_required' using errcode='42501'; end if;
+ select * into profile from public.volunteer_profile where auth_user_id=p_actor;
+ if not found or (profile.status<>'active' and action<>'cancel') then return jsonb_build_object('kind','denied','reason','verified_profile_required'); end if;
+ if action not in ('book','cancel','availability','accept_terms') then raise exception 'invalid_booking_command' using errcode='22023'; end if;
+ if action<>'availability' then
+ select * into prior from public.volunteer_command_result where actor_user_id=p_actor and operation=action and idempotency_key=(p_command->>'idempotency_key')::uuid;
+ if found then if prior.payload_hash<>payload_hash then return jsonb_build_object('kind','conflict','reason','idempotency_payload_changed'); end if; return prior.result; end if;
+ end if;
+ select * into activity from public.volunteer_activity where id=(p_command->>'activity_id')::uuid for update;
+ if not found then return jsonb_build_object('kind','not_found'); end if;
+ select body into p from public.volunteer_policy_version where id=activity.policy_version_id;
+ if p is null then return jsonb_build_object('kind','denied','reason','legacy_session'); end if;
+ if action='accept_terms' then
+ select * into registration from public.volunteer_registration where activity_id=activity.id and profile_id=profile.id and status in ('pending','approved','waitlisted') for update;
+ if not found then return jsonb_build_object('kind','not_found'); end if;
+ terms_id:=(p#>>'{terms,version_id}')::uuid;
+ if terms_id is null then select id into terms_id from public.volunteer_terms_version where published_at<=current_clock order by published_at desc limit 1; end if;
+ if (p_command->>'terms_version_id')::uuid is distinct from terms_id or not exists(select 1 from public.volunteer_terms_version where id=terms_id and published_at<=current_clock) then return jsonb_build_object('kind','conflict','reason','terms_version_changed'); end if;
+ if coalesce((p_command->>'accept_terms')::boolean,false) is not true then return jsonb_build_object('kind','denied','reason','terms_required'); end if;
+ insert into public.volunteer_terms_acceptance(profile_id,version_id,source) values(profile.id,terms_id,'existing_booking_explicit_reconsent') on conflict(profile_id,version_id) do nothing;
+ new_id:=registration.id; result:=jsonb_build_object('kind','accepted','registration_id',new_id,'terms_version_id',terms_id);
+ elsif action='cancel' then
+ select * into registration from public.volunteer_registration where activity_id=activity.id and profile_id=profile.id and status in ('pending','approved','waitlisted') for update;
+ if not found then return jsonb_build_object('kind','not_found'); end if;
+ if registration.attendance_status in ('attended','completed') then return jsonb_build_object('kind','denied','reason','attendance_correction_required'); end if;
+ update public.volunteer_registration set status='cancelled',status_reason='self_cancelled' where id=registration.id;
+ new_id:=registration.id; result:=jsonb_build_object('kind','cancelled','registration_id',new_id);
+ else
+ if action='book' then perform public.volunteer_persist_releases(activity.id,current_clock);current_clock:=clock_timestamp();end if;
+ evaluation:=public.volunteer_policy_evaluate(activity.id,profile.id,coalesce(p_command->>'role','volunteer'),current_clock);
+ if action='availability' then return evaluation||jsonb_build_object('kind','availability'); end if;
+ new_status:=case when (p#>>'{booking,auto_approve}')::boolean then 'approved' else 'pending' end;
+ if not (evaluation->>'allowed')::boolean then
+  if evaluation->>'reason' in ('capacity_full','reserved_for_core_role','role_full','tier_quota_full','daily_quota_full') and (p#>>'{booking,allow_waitlist}')::boolean then
+   new_status:='waitlisted';
+   if p#>>'{booking,waitlist_limit,state}'='value' and (select count(*) from public.volunteer_registration where activity_id=activity.id and status='waitlisted')>=(p#>>'{booking,waitlist_limit,value}')::integer then return evaluation||jsonb_build_object('kind','denied','reason','waitlist_full'); end if;
+  else return evaluation||jsonb_build_object('kind','denied'); end if;
+ end if;
+ if length(remarks)>(p#>>'{remarks,max_length}')::integer or ((p#>>'{remarks,required}')::boolean and length(trim(remarks))=0) or (not (p#>>'{remarks,allow_free_text}')::boolean and remarks<>'' and not (p#>'{remarks,options}' ? remarks)) then return jsonb_build_object('kind','denied','reason','invalid_remarks'); end if;
+ terms_id:=(p#>>'{terms,version_id}')::uuid;
+ if terms_id is null then select id into terms_id from public.volunteer_terms_version where published_at<=current_clock order by published_at desc limit 1; end if;
+ if terms_id is null or not exists(select 1 from public.volunteer_terms_version where id=terms_id and published_at<=current_clock) then return jsonb_build_object('kind','denied','reason','terms_unavailable'); end if;
+ select id into acceptance from public.volunteer_terms_acceptance where profile_id=profile.id and (version_id=terms_id or p#>>'{terms,reconsent}'='existing_acceptance_valid') order by accepted_at desc limit 1;
+ if acceptance is null then
+  if (p_command->>'terms_version_id')::uuid is distinct from terms_id then return jsonb_build_object('kind','conflict','reason','terms_version_changed'); end if;
+  if coalesce((p_command->>'accept_terms')::boolean,false) is not true then return jsonb_build_object('kind','denied','reason','terms_required'); end if;
+  insert into public.volunteer_terms_acceptance(profile_id,version_id,source) values(profile.id,terms_id,'verified_volunteer_signup') on conflict(profile_id,version_id) do nothing;
+  select id into acceptance from public.volunteer_terms_acceptance where profile_id=profile.id and version_id=terms_id;
+ end if;
+ insert into public.volunteer_registration(activity_id,supporter_id,registration_type,status,status_reason,participant_count,contact_name,contact_email,contact_phone,language,notes,status_token_hash,status_token_expires_at,profile_id,duty_role,booking_policy_version_id,terms_acceptance_id)
+ values(activity.id,profile.supporter_id,'individual',new_status,case when new_status='waitlisted' then evaluation->>'reason' else 'policy_accepted' end,1,profile.display_name,(select email from auth.users where id=p_actor),'','zh-HK',remarks,encode(extensions.gen_random_bytes(32),'hex'),current_clock+interval '90 days',profile.id,coalesce(p_command->>'role','volunteer'),activity.policy_version_id,acceptance) returning id into new_id;
+ result:=jsonb_build_object('kind','booked','registration_id',new_id,'status',new_status,'policy_version_id',activity.policy_version_id);
+ end if;
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor,'volunteer_registration.'||action,'volunteer_registration',new_id::text,jsonb_build_object('policy_version_id',activity.policy_version_id,'result',result));
+ insert into public.volunteer_operation_outbox(dedup_key,kind,payload) values(action||':'||new_id::text||case when action='accept_terms' then ':'||terms_id::text else '' end,'volunteer_booking_changed',jsonb_build_object('registration_id',new_id,'actor_user_id',p_actor)) on conflict(dedup_key) do nothing;
+ insert into public.volunteer_command_result(actor_user_id,operation,idempotency_key,payload_hash,result) values(p_actor,action,(p_command->>'idempotency_key')::uuid,payload_hash,result);
+ return result;
+end $$;
+
+create or replace function public.volunteer_enforce_registration_policy() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+declare a public.volunteer_activity%rowtype; evaluation jsonb; p jsonb; required_terms uuid;
+begin
+ if tg_op='UPDATE' and old.attendance_status in ('attended','completed') and new.status<>'approved' then raise exception 'attendance_correction_required' using errcode='22023'; end if;
+ select * into a from public.volunteer_activity where id=new.activity_id;
+ if a.policy_version_id is null then return new; end if;
+ if tg_op='UPDATE' and (new.profile_id,new.booking_policy_version_id,new.terms_acceptance_id) is distinct from (old.profile_id,old.booking_policy_version_id,old.terms_acceptance_id) then raise exception 'immutable_booking_identity' using errcode='42501'; end if;
+ if new.profile_id is null or new.participant_count<>1 or new.registration_type<>'individual' then raise exception 'verified_profile_required' using errcode='42501'; end if;
+ if new.status in ('pending','approved','waitlisted') and (tg_op='INSERT' or new.status is distinct from old.status or new.activity_id is distinct from old.activity_id or new.duty_role is distinct from old.duty_role) then
+ select body into p from public.volunteer_policy_version where id=a.policy_version_id;
+ if new.status='waitlisted' then
+  if coalesce((p#>>'{booking,allow_waitlist}')::boolean,false) is not true then raise exception 'waitlist_disabled' using errcode='22023'; end if;
+  if p#>>'{booking,waitlist_limit,state}'='value' and (select count(*) from public.volunteer_registration where activity_id=a.id and status='waitlisted' and id<>new.id)>=(p#>>'{booking,waitlist_limit,value}')::integer then raise exception 'waitlist_full' using errcode='22023'; end if;
+ end if;
+ required_terms:=(p#>>'{terms,version_id}')::uuid;
+ if required_terms is null then select id into required_terms from public.volunteer_terms_version where published_at<=clock_timestamp() order by published_at desc limit 1; end if;
+ if p#>>'{terms,reconsent}'='require_current' and not exists(select 1 from public.volunteer_terms_acceptance ac join public.volunteer_terms_version tv on tv.id=ac.version_id where ac.profile_id=new.profile_id and ac.version_id=required_terms and tv.published_at<=clock_timestamp()) then raise exception 'current_terms_required' using errcode='22023'; end if;
+ perform public.volunteer_persist_releases(a.id,clock_timestamp());
+ evaluation:=public.volunteer_policy_evaluate(a.id,new.profile_id,new.duty_role,clock_timestamp(),case when tg_op='UPDATE' then new.id else null end);
+ if not (evaluation->>'allowed')::boolean and not (new.status='waitlisted' and evaluation->>'reason' in ('capacity_full','role_full','tier_quota_full','daily_quota_full','reserved_for_core_role')) then raise exception 'volunteer_policy_denied:%',evaluation->>'reason' using errcode='22023'; end if;
+ if new.terms_acceptance_id is null or not exists(select 1 from public.volunteer_terms_acceptance where id=new.terms_acceptance_id and profile_id=new.profile_id) then raise exception 'terms_required' using errcode='22023'; end if;
+ end if;
+ return new;
+end $$;

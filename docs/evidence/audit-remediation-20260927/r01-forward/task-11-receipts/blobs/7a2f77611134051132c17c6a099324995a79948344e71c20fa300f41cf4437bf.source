@@ -1,0 +1,17 @@
+{
+  "mode": "hosted",
+  "command": [
+    "bun",
+    "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-11-rehearse.ts",
+    "hosted",
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-hosted-fix3-final-1790983717764"
+  ],
+  "exit": 0,
+  "elapsedSeconds": 84.16355140000815,
+  "environment": {
+    "R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES": "1",
+    "inheritedTestDatabaseAndFixtureOptionsRemoved": true
+  },
+  "stdoutSha256": "8c690c6ce26cb430fefef7c03eab9262ba772b6f7c73cef20ddab58d8e1eb23c",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

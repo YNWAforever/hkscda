@@ -1,0 +1,60 @@
+initdb: warning: enabling "trust" authentication for local connections
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+psql:/docker-entrypoint-initdb.d/migrations/00-extension.sql:1: NOTICE:  schema "extensions" already exists, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220126121436_finer-postgrest-triggers.sql:3: NOTICE:  event trigger "api_restart" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220126121436_finer-postgrest-triggers.sql:4: NOTICE:  function extensions.notify_api_restart() does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220126121436_finer-postgrest-triggers.sql:59: NOTICE:  event trigger "pgrst_ddl_watch" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220126121436_finer-postgrest-triggers.sql:64: NOTICE:  event trigger "pgrst_drop_watch" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220317095840_pg_graphql.sql:5: NOTICE:  function graphql_public.graphql(text,text,jsonb) does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220317095840_pg_graphql.sql:90: NOTICE:  event trigger "issue_pg_graphql_access" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220317095840_pg_graphql.sql:143: NOTICE:  event trigger "issue_graphql_placeholder" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220321174452_fix-postgrest-alter-type-event-trigger.sql:3: NOTICE:  event trigger "api_restart" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220321174452_fix-postgrest-alter-type-event-trigger.sql:4: NOTICE:  function extensions.notify_api_restart() does not exist, skipping
+psql:/docker-entrypoint-initdb.d/migrations/20220404205710_pg_graphql-on-by-default.sql:142: NOTICE:  extension "pg_graphql" does not exist, skipping
+ 2026-10-02 21:18:59.623 UTC [1] LOG:  pgaudit extension initialized
+ 2026-10-02 21:18:59.627 UTC [1] LOG:  pgsodium primary server secret key loaded
+ 2026-10-02 21:18:59.630 UTC [1] LOG:  vault primary server secret key loaded
+ 2026-10-02 21:18:59.649 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit
+ 2026-10-02 21:18:59.649 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+ 2026-10-02 21:18:59.649 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+ 2026-10-02 21:18:59.652 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+ 2026-10-02 21:18:59.658 UTC [215] LOG:  database system was shut down at 2026-10-02 21:18:59 UTC
+ 2026-10-02 21:18:59.665 UTC [1] LOG:  database system is ready to accept connections
+ 2026-10-02 21:18:59.671 UTC [219] LOG:  pg_cron scheduler started
+127.0.0.1 2026-10-02 21:19:04.166 UTC [236] postgres@postgres LOG:  execute <unnamed>: CREATE TABLE IF NOT EXISTS "schema_migrations" ("version" bigint, "inserted_at" timestamp(0), PRIMARY KEY ("version"))
+127.0.0.1 2026-10-02 21:19:04.679 UTC [235] postgres@postgres LOG:  execute <unnamed>: CREATE TABLE "tenants" ("id" uuid, "name" varchar(255), "external_id" varchar(255), "jwt_secret" varchar(500), "max_concurrent_users" integer DEFAULT 10000, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"))
+127.0.0.1 2026-10-02 21:19:04.683 UTC [235] postgres@postgres LOG:  execute <unnamed>: CREATE UNIQUE INDEX "tenants_external_id_index" ON "tenants" ("external_id")
+127.0.0.1 2026-10-02 21:19:04.719 UTC [236] postgres@postgres LOG:  execute <unnamed>: CREATE TABLE "extensions" ("id" uuid, "type" varchar(255), "settings" jsonb, "tenant_external_id" varchar(255), CONSTRAINT "extensions_tenant_external_id_fkey" FOREIGN KEY ("tenant_external_id") REFERENCES "tenants"("external_id") ON DELETE CASCADE, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"))
+127.0.0.1 2026-10-02 21:19:04.721 UTC [236] postgres@postgres LOG:  execute <unnamed>: CREATE UNIQUE INDEX "extensions_tenant_external_id_type_index" ON "extensions" ("tenant_external_id", "type")
+127.0.0.1 2026-10-02 21:19:04.726 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "max_events_per_second" integer DEFAULT 10000
+127.0.0.1 2026-10-02 21:19:04.744 UTC [235] postgres@postgres LOG:  execute <unnamed>: alter table tenants add constraint uniq_external_id unique (external_id)
+127.0.0.1 2026-10-02 21:19:04.747 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "max_events_per_second" TYPE integer, ALTER COLUMN "max_events_per_second" SET NOT NULL, ALTER COLUMN "max_events_per_second" SET DEFAULT 1000
+127.0.0.1 2026-10-02 21:19:04.753 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "max_events_per_second" TYPE integer, ALTER COLUMN "max_events_per_second" SET NOT NULL, ALTER COLUMN "max_events_per_second" SET DEFAULT 100, ALTER COLUMN "max_concurrent_users" TYPE integer, ALTER COLUMN "max_concurrent_users" SET NOT NULL, ALTER COLUMN "max_concurrent_users" SET DEFAULT 200
+127.0.0.1 2026-10-02 21:19:04.756 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "postgres_cdc_default" varchar(255) DEFAULT 'postgres_cdc_rls'
+127.0.0.1 2026-10-02 21:19:04.762 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE IF EXISTS tenants DROP CONSTRAINT IF EXISTS uniq_external_id
+127.0.0.1 2026-10-02 21:19:04.765 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "max_bytes_per_second" integer DEFAULT 100000 NOT NULL, ADD COLUMN "max_channels_per_client" integer DEFAULT 100 NOT NULL, ADD COLUMN "max_joins_per_second" integer DEFAULT 500 NOT NULL
+127.0.0.1 2026-10-02 21:19:04.769 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "name" TYPE text, ALTER COLUMN "external_id" TYPE text, ALTER COLUMN "jwt_secret" TYPE text, ALTER COLUMN "postgres_cdc_default" TYPE text, ALTER COLUMN "postgres_cdc_default" SET DEFAULT 'postgres_cdc_rls'
+127.0.0.1 2026-10-02 21:19:04.773 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "extensions" ALTER COLUMN "type" TYPE text, ALTER COLUMN "tenant_external_id" TYPE text
+127.0.0.1 2026-10-02 21:19:04.776 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "suspend" boolean DEFAULT false
+127.0.0.1 2026-10-02 21:19:04.778 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "jwt_jwks" jsonb DEFAULT NULL
+127.0.0.1 2026-10-02 21:19:04.782 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "enable_authorization" boolean DEFAULT false
+127.0.0.1 2026-10-02 21:19:04.786 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" DROP COLUMN "enable_authorization"
+127.0.0.1 2026-10-02 21:19:04.789 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "notify_private_alpha" boolean DEFAULT false
+127.0.0.1 2026-10-02 21:19:04.792 UTC [236] postgres@postgres LOG:  execute <unnamed>: CREATE INDEX IF NOT EXISTS "extensions_tenant_external_id_index" ON "extensions" ("tenant_external_id")
+127.0.0.1 2026-10-02 21:19:04.794 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "private_only" boolean DEFAULT false NOT NULL
+127.0.0.1 2026-10-02 21:19:04.797 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "migrations_ran" integer DEFAULT 0
+127.0.0.1 2026-10-02 21:19:04.800 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "broadcast_adapter" varchar(255) DEFAULT 'phoenix'
+127.0.0.1 2026-10-02 21:19:04.803 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "broadcast_adapter" TYPE varchar(255), ALTER COLUMN "broadcast_adapter" SET DEFAULT 'gen_rpc'
+127.0.0.1 2026-10-02 21:19:04.806 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "max_presence_events_per_second" integer DEFAULT 10000, ADD COLUMN "max_payload_size_in_kb" integer DEFAULT 3000
+127.0.0.1 2026-10-02 21:19:04.809 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "max_presence_events_per_second" TYPE integer, ALTER COLUMN "max_presence_events_per_second" SET DEFAULT 1000
+127.0.0.1 2026-10-02 21:19:04.812 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "jwt_secret" TYPE text, ALTER COLUMN "jwt_secret" DROP NOT NULL
+127.0.0.1 2026-10-02 21:19:04.813 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD CONSTRAINT "jwt_secret_or_jwt_jwks_required" CHECK (jwt_secret IS NOT NULL OR jwt_jwks IS NOT NULL)
+127.0.0.1 2026-10-02 21:19:04.816 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ALTER COLUMN "jwt_secret" TYPE text, ALTER COLUMN "jwt_secret" DROP NOT NULL
+127.0.0.1 2026-10-02 21:19:04.819 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "max_client_presence_events_per_window" integer NULL, ADD COLUMN "client_presence_window_ms" integer NULL
+127.0.0.1 2026-10-02 21:19:04.823 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "presence_enabled" boolean DEFAULT false NOT NULL
+127.0.0.1 2026-10-02 21:19:04.826 UTC [235] postgres@postgres LOG:  execute <unnamed>: CREATE TABLE "feature_flags" ("id" uuid, "name" varchar(255) NOT NULL, "enabled" boolean DEFAULT false NOT NULL, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"))
+127.0.0.1 2026-10-02 21:19:04.827 UTC [235] postgres@postgres LOG:  execute <unnamed>: CREATE UNIQUE INDEX "feature_flags_name_index" ON "feature_flags" ("name")
+127.0.0.1 2026-10-02 21:19:04.832 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "feature_flags" jsonb DEFAULT '{}' NOT NULL
+127.0.0.1 2026-10-02 21:19:04.835 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "feature_flags" ADD COLUMN "rollout_percentage" integer DEFAULT 100 NOT NULL, ADD COLUMN "bucket_key" varchar(255)
+127.0.0.1 2026-10-02 21:19:04.837 UTC [236] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "feature_flags" ADD CONSTRAINT "rollout_percentage_must_be_between_0_and_100" CHECK (rollout_percentage >= 0 AND rollout_percentage <= 100)
+127.0.0.1 2026-10-02 21:19:04.841 UTC [235] postgres@postgres LOG:  execute <unnamed>: ALTER TABLE "tenants" ADD COLUMN "gcm_migrated_at" timestamp(0)

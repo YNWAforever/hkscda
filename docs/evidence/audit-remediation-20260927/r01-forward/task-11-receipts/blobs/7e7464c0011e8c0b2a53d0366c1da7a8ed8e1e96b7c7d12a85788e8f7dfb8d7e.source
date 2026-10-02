@@ -1,0 +1,9 @@
+{
+  "atUtc": "2026-10-02T22:28:20.563578+00:00",
+  "rulingCount": 57,
+  "original56PrefixUnchanged": true,
+  "orderedReasonCostTextsEqual": true,
+  "newRulingReasonAndCostPresent": true,
+  "sourceAdmission": "Task11 strict supplemental bound native catalog/helper correlated pair, generator/portable tests/negative integration/evidence only; no helper/grant/Auth/scanner change",
+  "productionAdmission": false
+}

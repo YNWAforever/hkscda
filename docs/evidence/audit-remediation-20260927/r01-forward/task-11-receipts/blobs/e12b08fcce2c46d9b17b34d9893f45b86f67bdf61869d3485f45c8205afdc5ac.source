@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "-- Candidate migration only. Runtime actors may append/read facts, but cannot\n-- bypass append-only row triggers through TRUNCATE. No data is removed.\ndo $$ declare target record; begin\n for target in select schemaname,tablename from pg_tables where schemaname='public'\n and (tablename like 'volunteer_%' or tablename in ('audit_log','sponsorship_payment_proof','sponsorship_period','sponsorship_payment_allocation','sponsorship_payment_source','sponsorship_refund')) loop\n  execute format('revoke truncate on table %I.%I from public,anon,authenticated,service_role',target.schemaname,target.tablename);\n end loop;\nend $$",
+    "revoke update,delete on public.audit_log from public,anon,authenticated,service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

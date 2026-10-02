@@ -1,0 +1,67 @@
+-- T22: explicit verified-email marketing preference, separate from transactional notices.
+create function public.set_supporter_marketing_email(
+  p_auth_user_id uuid,
+  p_verified_email text,
+  p_status text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_auth record;
+  v_supporter_id uuid;
+  v_previous text;
+begin
+  if p_auth_user_id is null or p_verified_email is null or
+     p_status not in ('opt_in','opt_out') then
+    raise exception 'Invalid supporter preference request' using errcode = '22023';
+  end if;
+
+  select u.email, u.email_confirmed_at, u.banned_until
+  into v_auth
+  from auth.users u
+  where u.id = p_auth_user_id
+  for share;
+  if not found or v_auth.email_confirmed_at is null or
+     v_auth.email is null or
+     lower(btrim(v_auth.email)) <> lower(btrim(p_verified_email)) or
+     (v_auth.banned_until is not null and v_auth.banned_until > now()) then
+    raise exception 'Verified identity unavailable' using errcode = '42501';
+  end if;
+
+  select s.id into v_supporter_id
+  from public.supporter s
+  where s.email = p_verified_email::public.citext and s.deleted_at is null
+  for update;
+  if not found then
+    return jsonb_build_object('status','unlinked','changed',false);
+  end if;
+
+  select c.status into v_previous
+  from public.consent c
+  where c.supporter_id = v_supporter_id and c.channel = 'email'
+  order by c."timestamp" desc, (c.status = 'opt_out') desc, c.id desc
+  limit 1;
+  if v_previous = p_status then
+    return jsonb_build_object('status',p_status,'changed',false);
+  end if;
+
+  insert into public.consent(supporter_id,channel,status,source,"timestamp")
+  values(v_supporter_id,'email',p_status,'supporter_portal_verified_email',clock_timestamp());
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
+  values(
+    p_auth_user_id,
+    'consent.supporter_portal_set_email',
+    'consent',
+    v_supporter_id::text,
+    jsonb_build_object('channel','email','status',p_status,'source','verified_email')
+  );
+  return jsonb_build_object('status',p_status,'changed',true);
+end $$;
+
+revoke all on function public.set_supporter_marketing_email(uuid,text,text)
+  from public,anon,authenticated;
+grant execute on function public.set_supporter_marketing_email(uuid,text,text)
+  to service_role;

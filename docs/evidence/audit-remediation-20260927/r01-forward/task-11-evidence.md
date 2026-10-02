@@ -190,3 +190,224 @@ Source commit `43e71b18d304322b4ad4dac86cbf63d328cbdf4c`, tree `abd2fc30d96d626e
 Final manifest binder first exit1 KeyError frozenInputs in capture mode (toolchunk0de37a): actual current producer uses bindings; no proof edit. Archived failing driver/failure.json retained. Corrected schema binder exit0/toolchunk9b9649; first successful manifest preserved as an actual raw archive. Final closing package/binder exit0/toolchunk4d46f0 binds1240 raw entries /264 unique binary raw Git archives /195250762 bytes, including final verifier archived before launch. Translation staged and subsequently committed Git object `a878f08d120a7127ff4f34c5c1af4cec6991ad36`; each raw archive has its actual Git object and archivePresentAtSourceCommit qualification in the manifest. No newly staged metadata object is claimed to have existed in the source commit.
 
 Metadata-only closing subject: `docs(r01): bind corrected finance proofs and review handoff`. Actual closing HEAD/tree, report/translation/manifest Git objects, all57 current bindings and264 raw objects, clean status and exact allowed metadata-only source-to-HEAD delta are recorded after commit by archived task-11-fix1-final-verify.py in OWN task-11-fix1-final-head-verification.json. That self-reference sidecar is explicitly owned/ignored, not claimed committed in its own HEAD. All historical reports, failed gates and executed sources remain preserved. No product bytes changed after final frozen verification; independent review/fresh five CI with actual non-skipped finance17.11 remain pending.
+
+## Fix3 current source closure — correlated full-native prerequisite pair
+
+Current status: DONE_WITH_CONCERNS for owned source verification. SAME incremental review and all five fresh actual CI jobs, including executed finance behavior on full isolated17.11, remain pending. This section supersedes earlier source-completion headlines; every earlier receipt and archive remains historical evidence.
+
+Original PR base D45; Fix3 review delta18c3c6ea..closingHEAD. Candidate1072499 LF bytes/SHA47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde. Exact five execute-definition bodies match original33a8588 SQL byte for byte; two manual actor fences, three system callback bodies, signatures/defaults/results/owners/effective grants, Auth guard, native/index/shape literals and full scanner5352 are unchanged.
+
+### Actual defect and bounded repair
+
+Actual draftPR194 run37063035577 attempt1 rls-matrix failed during finance migration bootstrap with55000 `R01 finance complete prerequisite catalog differs`; no finance behavior ran. The four other individual jobs succeeded, while finance was skipped despite the aggregate success. Actual failed raw log144667bytes/SHA46fb477560a1a954eaed574a925e4ef76fc515f4cc3252a8721ae23044e26760 is preserved.
+
+R55–R57 observed a complete fresh D45 native prerequisite, then admitted exactly one correlated complete catalogue/11-helper pair. Native catalogue selects only native helpers; historical catalogue retains only the original historical helper alternatives. Both new cross-pairs reject55000. No per-field normalization, unknown tuple admission, target/helper/Auth/ACL/role/schema/scanner amendment or held Task1/8 repair. The finite source projection remains nine public tables/15 catalogue facets/111 columns plus the separately exact Auth guard. Observed delta was16 column ACLs (five committed partialTask1 service columns plus eleven supporter columns), supporter table ACL/fingerprint constraint and exactly private.bump_supporter_edit_version body/definition. Full bootstrap applies committed partialTask1; the held five-column ACL repair is not applied.
+
+Portable source: task-11-native-profile.ts and committed task-11-native-prerequisites.json; separate task-11-native-qualify.ts wraps the immutable R56 RED without inventing absent original flags. The portable tests use committed fixtures and meaningful one-field mutations, including unknown/missing flags, identities, raw/canonical archive drift, helper ordering/ACL drift and correlated selector wiring; ignored receipts are not CI test dependencies.
+
+### Historical failures retained and qualified
+
+R55 v1 failed before launch at Windows packaging path; v2 image-tag inspection failed before create; v3 managed Realtime JWKS failed; v4 completed managed jobs but used the wrong Go/native assembly transport and BOM handling, so it is not an actualCI prerequisite or domain RED. Official pinned2.118 native parser/split/apply/template routing was subsequently bound; raw Git BOM+LF and separately executed native transport are retained. Native API UNSET is a no-op and was not replaced by Go revocations.
+
+v5 completed three managed jobs and182 migrations, but the psql-JSON adapter represented OIDs as strings. Its scanner refusal is an adapter execution failure, not an established scanner defect. Bound Bun scalar/array probes and strict R56 finite query-field uint32/null codec preserve immutable raw and separately typed data; no general recursion/conversion and no scanner changes. The earlier wrong helper-filter comparison and controller full-catalog/projection assumption are preserved and invalidated.
+
+R56 v6 baseline task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6 actually passed the unchanged full scanner on all ten tables and observed unchanged finance exit3/55000. Its before/after3341952-byte capture SHA9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603 was identical; ten rows zero and normal four-container cleanup/protected state preserved. Original receipt SHA73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798. Original combined transaction transport was not archived before execution: the supplemental derived-only transport968893bytes/SHAd412418344179e3769c047000ca471e502142196e95a3abd89378de272258178 is deterministically derived from the actually archived driver and prebound originalSQL. ON_ERROR_STOP exited before literalROLLBACK; connection close aborted the transaction. No retroactive prearchive claim.
+
+R57 native integration d774592d308c406995319b830ac9eade reached two applies then42501 SET ROLE supabase_admin; postgres is not superuser. It is incomplete, with no refusal/mix/final-row completion. R58 authorizes only fourteen fixture connections using existing supabase_admin then SET LOCAL ROLE postgres, with42 actual current_user/session_user assertions; no role/grant changes. R58 retry86d10b772bdb48dfa016dd2ebd784746 reached all14 literal55000 but Windows mixed-proof path273 failed before mixes/final rows; incomplete despite normal cleanup. R59 changes only bounded mix0/mix1 proof basenames plus authority binding and reruns the complete environment; no combined partial credit. The rehearsal source bridge added exact108-byte R58 and later108-byte R59 provenance paths; fourteen mutation source block SHA f356b15f0c8b803f385489a69a8e16cd1051ed799c254bb820e366c81b63df1b unchanged.
+
+Portable RED was exit1/73pass1fail74assert; first GREEN still failed missing canonical qualification with74pass1fail78assert; corrected GREEN exit0/75pass81assert; final focused exit0/76pass88assert. Full raw commands, stdout/stderr, actual executed archives and errors are retained in task-11-fix3-focused-* and step receipts, not rewritten as success.
+
+### Exact final proof receipts
+
+Exact focused command/outputs (each runner archived before invocation):
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-focused-final-1790981874995153900/receipt.json`: command `bun test docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts` exit0; raw stdoutSHAd6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6, stderrSHA0e76c68731bcfabe3ae9abbbcaa5f5229fcb8540a40d091bd9f8c1f7ecda3af7; actual output tail:
+
+```text
+ualification rejects wrong prerequisite {"managedKinds":["auth","storage","realtime"]} [1.36ms]
+(pass) native qualification rejects wrong prerequisite {"normalCleanupCount":3} [1.32ms]
+(pass) native qualification rejects wrong prerequisite {"fixtureScope":["auth.users"]} [1.31ms]
+(pass) native qualification rejects wrong prerequisite {"originalTransportPreArchived":true} [1.33ms]
+(pass) native qualification rejects wrong prerequisite {"CLIIdentityKnown":true} [2.50ms]
+(pass) native qualification rejects wrong prerequisite {"nativeLocalBunBehaviorRun":true} [1.76ms]
+(pass) native qualification rejects wrong prerequisite {"productionApplied":true} [1.55ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask1FiveColumnRepairApplied":true} [1.89ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask8ScannerProposalApplied":true} [1.41ms]
+(pass) unknown helper body and native catalog plus historical helper mixture reject [1.99ms]
+(pass) historical catalog plus native helper mixture and unknown ACL reject [2.71ms]
+(pass) metadata ordering is part of the exact observed pair [1.88ms]
+(pass) generator guard selects native helpers only after complete native catalogue equality [1.23ms]
+(pass) actual raw archive verifier rejects changed bytes, missing hashes and canonical drift [2.51ms]
+
+ 76 pass
+ 0 fail
+ 88 expect() calls
+Ran 76 tests across 1 file. [645.00ms]
+
+```
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-focused-green1-1790980709532431900/receipt.json`: command `bun test docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts` exit1; raw stdoutSHAd6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6, stderrSHAaf554b9d091c98c010d3be6343838df21c5603af776c624bde1b5fd5a366dd69; actual output tail:
+
+```text
+.19ms]
+(pass) historical catalog plus native helper mixture and unknown ACL reject [1.09ms]
+(pass) metadata ordering is part of the exact observed pair [1.05ms]
+69 |     canonicalSha256: createHash("sha256").update("fixture\n").digest("hex"),
+70 |     rawGitBlob: createHash("sha1").update("blob " + raw.length + "\0").update(raw).digest("hex"), bytes: raw.length,
+71 |   };
+72 |   expect(() => assertNativeArchiveBinding(raw, entry)).not.toThrow();
+73 |   expect(() => assertNativeArchiveBinding(Buffer.from("changed\r\n"), entry)).toThrow();
+74 |   for (const key of Object.keys(entry)) expect(() => assertNativeArchiveBinding(raw, { ...entry, [key]: undefined })).toThrow();
+                                                                                                                           ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-native-profile.test.ts:74:119)
+(fail) actual raw archive verifier rejects changed bytes, missing hashes and canonical drift [4.35ms]
+
+1 tests failed:
+(fail) actual raw archive verifier rejects changed bytes, missing hashes and canonical drift [4.35ms]
+
+ 74 pass
+ 1 fail
+ 78 expect() calls
+Ran 75 tests across 1 file. [226.00ms]
+
+```
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-focused-green2-1790980738046486700/receipt.json`: command `bun test docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts` exit0; raw stdoutSHAd6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6, stderrSHA551dcc6b7d0c30ae8246f09f32becb67bd68449e212d3092a7a7f8d663e4f147; actual output tail:
+
+```text
+tive qualification rejects wrong prerequisite {"baselineMigrationCount":181} [1.28ms]
+(pass) native qualification rejects wrong prerequisite {"managedKinds":["auth","storage","realtime"]} [1.27ms]
+(pass) native qualification rejects wrong prerequisite {"normalCleanupCount":3} [1.27ms]
+(pass) native qualification rejects wrong prerequisite {"fixtureScope":["auth.users"]} [1.29ms]
+(pass) native qualification rejects wrong prerequisite {"originalTransportPreArchived":true} [1.28ms]
+(pass) native qualification rejects wrong prerequisite {"CLIIdentityKnown":true} [1.29ms]
+(pass) native qualification rejects wrong prerequisite {"nativeLocalBunBehaviorRun":true} [1.00ms]
+(pass) native qualification rejects wrong prerequisite {"productionApplied":true} [0.92ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask1FiveColumnRepairApplied":true} [1.40ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask8ScannerProposalApplied":true} [0.90ms]
+(pass) unknown helper body and native catalog plus historical helper mixture reject [1.67ms]
+(pass) historical catalog plus native helper mixture and unknown ACL reject [1.18ms]
+(pass) metadata ordering is part of the exact observed pair [1.65ms]
+(pass) actual raw archive verifier rejects changed bytes, missing hashes and canonical drift [0.56ms]
+
+ 75 pass
+ 0 fail
+ 81 expect() calls
+Ran 75 tests across 1 file. [150.00ms]
+
+```
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-focused-red-1790980469207671300/receipt.json`: command `bun test docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts` exit1; raw stdoutSHAd6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6, stderrSHA077403f361a3da63633354964557c7c7fba24e5db4403edfb9f38440de43b609; actual output tail:
+
+```text
+qualification rejects wrong prerequisite {"baselineMigrationCount":181} [1.41ms]
+(pass) native qualification rejects wrong prerequisite {"managedKinds":["auth","storage","realtime"]} [1.41ms]
+(pass) native qualification rejects wrong prerequisite {"normalCleanupCount":3} [1.24ms]
+(pass) native qualification rejects wrong prerequisite {"fixtureScope":["auth.users"]} [0.90ms]
+(pass) native qualification rejects wrong prerequisite {"originalTransportPreArchived":true} [1.32ms]
+(pass) native qualification rejects wrong prerequisite {"CLIIdentityKnown":true} [1.28ms]
+(pass) native qualification rejects wrong prerequisite {"nativeLocalBunBehaviorRun":true} [1.12ms]
+(pass) native qualification rejects wrong prerequisite {"productionApplied":true} [1.21ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask1FiveColumnRepairApplied":true} [1.13ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask8ScannerProposalApplied":true} [0.91ms]
+(pass) unknown helper body and native catalog plus historical helper mixture reject [1.07ms]
+(pass) historical catalog plus native helper mixture and unknown ACL reject [0.87ms]
+(pass) metadata ordering is part of the exact observed pair [0.87ms]
+
+1 tests failed:
+(fail) separately versioned native qualification accepts the exact complete pair [2.49ms]
+
+ 73 pass
+ 1 fail
+ 74 expect() calls
+Ran 74 tests across 1 file. [133.00ms]
+
+```
+
+Exact executed step commands and environment driver source archives:
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-final-compositions-1790983716323838100/receipt.json` command `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-compositions.py` actual exit0; stdoutSHA832179f72ab0aca3498d45ca237f00566f582b616d1cf096976ef9d496176334, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-final-four-gates-1790984859324785100/receipt.json` command `python docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix1-gates.py` actual exit0; stdoutSHA8ce23dbd895b798c13ae068304d4ad1ccde137f78cb3a32d4d483f27771afe1f, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-generate-1790980975221505300/receipt.json` command `bun docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json supabase/migrations/20261002170945_r01_finance_callback_forward.sql` actual exit0; stdoutSHA43422d5063787cb1e718fd784ce57510dd983915d5adabe34f1be8ae12518e64, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-native-integration-1790981925495774900/receipt.json` command `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py` actual exit1; stdoutSHAd8b54529d2ed3f93e9fdb750bbdfcbc4fb81e66d89bc599cec9dcad03e01f602, stderrSHA1505906504fab3644e20d382162bd0f273bb0df7d883e5cb79ea57e4911b4ea5; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-native-integration-r58-1790982666607976900/receipt.json` command `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py` actual exit1; stdoutSHAa4f59d995cc066f57bedf9e8094a72e9f5cd3d6277511ff27a5d43a34a0a7ff6, stderrSHA3449178c6356ff9a9bc5d58ce07dde82c4f18be094f2e7a9cbf30854b00c5380; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-native-integration-r59-1790983365838517400/receipt.json` command `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py` actual exit0; stdoutSHA003fbbb98ec562db43e347aa637d7e05e16de7d9481b2e15e2dc9292dc783df7, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-package-after-gates-1790985148414176000/receipt.json` command `python docs/evidence/audit-remediation-20260927/r01-forward/task-11-package.py` actual exit0; stdoutSHA075fc975b087a65398dece2793337dbe2db0f76fa2899e1204bbbbe22f550cec, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-package-before-gates-1790983868423839900/receipt.json` command `python docs/evidence/audit-remediation-20260927/r01-forward/task-11-package.py` actual exit0; stdoutSHA70921ffc7ec2153cb3caf9e1997d0157b6c85f6a9f67f176355a92022f7a238d, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+`.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-step-qualify-1790980900717639800/receipt.json` command `bun docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-qualify.ts .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-native-qualification-fix3-1790980738046` actual exit0; stdoutSHAba4120de842e91a79e64b87911f63f6fb649020f5269c6ae80a498410f595d2d, stderrSHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; actual executed raw/canonical/Git bindings retained in this original step receipt.
+
+
+**native-prerequisite-qualification-v1 / full-native-d45**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-native-qualification-fix3-1790980738046/receipt.json` rawSHA9ba7f2095b4f07d62f23d7088032cf39b7692e77ded794f6ecc63265ae0b4dda; 1916 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"redReceiptBound":true,"captureBound":true,"sourceBound":true,"nativeAssemblyBound":true,"managedJobsBound":true,"migrationsBound":true,"fullScannerPassed":true,"zeroRows":true,"rollbackPreserved":true,"normalCleanup":true,"protectedSourcesPreserved":true,"prerequisitePairBound":true}`.
+
+Original RED transport qualification remains derived-only; exactCI CLI identity false/unknown.
+
+
+**generator / three-profile**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-generator-1790980976505/receipt.json` rawSHA04e836df9fcddb144f2923de49c90d65e54d7f31ae9655d5d0437944580f8f0b; 1946 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"qualifiedCaptures":true,"qualifiedNativePair":true,"correlatedNativePair":true,"exactLF":true,"frozenInputsPreserved":true}`.
+
+
+**native-metadata-integration-v1 / owned-full1711-d45-metadata**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration-2384e770021a4f95bf5d0380ef950f95/receipt.json` rawSHA1214381ca972069fb00539be793f301033ce5dc2f8cdc0c5753e94a9bd7e8140; 21 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"fullD45BaselineObserved":true,"fullScannerPassed":true,"firstApply":true,"secondApply":true,"secondApplyPreserved":true,"outsideTargetsPreserved":true,"supplementalPreserved":true,"refusalsPassed":true,"fixtureConnectionIdentity":true,"mixedRefusalsPassed":true,"zeroRowsAfter":true,"normalCleanup":true,"protectedSourcesPreserved":true,"frozenInputsPreserved":true}`.
+
+Actual runtime `"{\"user\": \"postgres\", \"owner\": \"postgres\", \"version\": \"PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit\", \"database\": \"postgres\"}"`. Image tags/digests: `{"pg": {"observedCITag": "public.ecr.aws/supabase/postgres:17.11.0.002", "exactLocalDigestReference": "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"}, "realtime": {"observedCITag": "public.ecr.aws/supabase/realtime:v2.140.3", "exactLocalDigestReference": "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"}, "storage": {"observedCITag": "public.ecr.aws/supabase/storage-api:v1.79.28", "exactLocalDigestReference": "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"}, "auth": {"observedCITag": "public.ecr.aws/supabase/gotrue:v2.197.0", "exactLocalDigestReference": "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"}}`.
+
+All18 exact pre-execution transport bindings: `[{"label": "first-apply", "archive": "first-apply.transaction.source", "rawSha256": "e6c1dcd66aa4e5dc21e443ecc730b58d1b37a41a89bc34b68bb3de8cde812ce0", "rawGitBlob": "fe455b3c1da3b3b7c0fb298c72637c1462e2bbbc", "bytes": 1072538, "preArchived": true, "connectionUser": "postgres"}, {"label": "second-apply", "archive": "second-apply.transaction.source", "rawSha256": "e6c1dcd66aa4e5dc21e443ecc730b58d1b37a41a89bc34b68bb3de8cde812ce0", "rawGitBlob": "fe455b3c1da3b3b7c0fb298c72637c1462e2bbbc", "bytes": 1072538, "preArchived": true, "connectionUser": "postgres"}, {"label": "refusal-receiptRLS", "archive": "refusal-receiptRLS.transaction.source", "rawSha256": "450af25dcd1f124cbfe02382941131a74c22ac48f3ee1ccfa2ea4b7e72acedff", "rawGitBlob": "2b74fa1aefcf6ec5f6f54ad3ff624d755b8de642", "bytes": 1107429, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-receiptDefault", "archive": "refusal-receiptDefault.transaction.source", "rawSha256": "3fda7ca87c125531a12a963e15ca1f24bbcd3acd13dbb74a152104be1137b6ef", "rawGitBlob": "68ff754da27c47c6a4d8237673b131049d6e7af0", "bytes": 1107441, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-receiptColumnGrant", "archive": "refusal-receiptColumnGrant.transaction.source", "rawSha256": "15e153d89a1781be4b21d18b695c8686beeb167a74e3cb37ae904cb6b3d745c7", "rawGitBlob": "f72f15f33fb6c0e979898cd4a68de7ad48fdaa5b", "bytes": 1107431, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-creatorDefaultACL", "archive": "refusal-creatorDefaultACL.transaction.source", "rawSha256": "357ba18de245910d46bc6ad00726b519e551f41c1ece5d82ae9e97dacb47c84e", "rawGitBlob": "138d9744d41277282ab8a8d6ee93a7d7adfd13f2", "bytes": 1107482, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-receiptIndex", "archive": "refusal-receiptIndex.transaction.source", "rawSha256": "3aa42fb95734719d3b65b815d41530e37c1f6982af94cb95ffa6dd0c90cce02d", "rawGitBlob": "81eb7787f5ef5ae727105f68d1d649a65fc4428a", "bytes": 1107441, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-nativeReceiptFK", "archive": "refusal-nativeReceiptFK.transaction.source", "rawSha256": "d948488f8b491e72bde9d0947fd42d64602ff2e55d025ecdf49a2016ad726905", "rawGitBlob": "cb0cb6758bbd307bedb8e67b450ca9b3a648e433", "bytes": 1107422, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-receiptPersistence", "archive": "refusal-receiptPersistence.transaction.source", "rawSha256": "8cb84f2b2e3daffabbe5c064da4cb5a81070da5efc3d566e2beb77eced3ed4af", "rawGitBlob": "4bab95eb70fbdb3cfe3508bfe3dd638f13956072", "bytes": 1107424, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-issueHelperCost", "archive": "refusal-issueHelperCost.transaction.source", "rawSha256": "3a4196e66a3e0ca533047f61ae4ee67f0c664b6c8accdbab6f156ab4ec2e012b", "rawGitBlob": "68643a69ce2a6d70e32f8e1968ea32478c059d37", "bytes": 1107459, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-allocatorCost", "archive": "refusal-allocatorCost.transaction.source", "rawSha256": "48487ebf1b1bc8e1ebe4960506e08bc65ed8e5c3acdecc2a0906640e38b945a5", "rawGitBlob": "15025c442421e983f9227233801335bb1af7a165", "bytes": 1107440, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-targetGrantOption", "archive": "refusal-targetGrantOption.transaction.source", "rawSha256": "1eae1cab8e1d4bdec2d95ce83c836c92434f48618288db39447ccff38149b9ad", "rawGitBlob": "9e12d08abcd370a282c2f287abe993dcd2621cd0", "bytes": 1107482, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-browserTargetExecute", "archive": "refusal-browserTargetExecute.transaction.source", "rawSha256": "6e9681b527fee18c99cf508cef913756b79ac7fb3fe9a76c9723b2831c8c6299", "rawGitBlob": "9991dc2ef7fd22bd6fa459fdebe3c7e58a364fb8", "bytes": 1107494, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-targetCost", "archive": "refusal-targetCost.transaction.source", "rawSha256": "7291f0a58a8daed1f1fdf8d487807acd0da02e384dd8f1a9fd364fd722f03b85", "rawGitBlob": "a67a43ad7a1a421fc43340e86ea1a1597b0a0c87", "bytes": 1107447, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-targetSearchPath", "archive": "refusal-targetSearchPath.transaction.source", "rawSha256": "783b7bd369e01bf989864829a0f72b2752bbf685b577bd54846f111904016994", "rawGitBlob": "3ccc2704ad24b1eae138a60a817ec30b4e02d610", "bytes": 1107468, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "refusal-targetStrict", "archive": "refusal-targetStrict.transaction.source", "rawSha256": "6ac1644c89a237083664a07fca428cea44901b57ac8578cd1158fe0bf918997f", "rawGitBlob": "99975fcbab74ab795c2bce8b256712d9af04f357", "bytes": 1107449, "preArchived": true, "connectionUser": "supabase_admin"}, {"label": "mix0", "archive": "mix0.transaction.source", "rawSha256": "ebc04a5038a5cb5b858ad89f2bbb871c0b46847a627cf263c7c8df5ed1611d6c", "rawGitBlob": "ba3c64f396c8d5f82fe2e62d97ee7f5ca9c8c216", "bytes": 420500, "preArchived": true, "connectionUser": "postgres"}, {"label": "mix1", "archive": "mix1.transaction.source", "rawSha256": "1fa006473a265df331541d5527489e75f06995c0eaec3817ece2b6d932a46d5d", "rawGitBlob": "f0f88d12c55a34ad457f7d3b0a906dae799b124b", "bytes": 417846, "preArchived": true, "connectionUser": "postgres"}]`.
+
+Both full semantic mixed directions: `[{"label": "native-catalogue-historical-helper", "proofKey": "mix0", "code": "55000", "exit": 3, "preserved": true, "qualification": "Actual PostgreSQL guard-only block, exact byte-extracted generated selector/helper guards and complete observed vectors; not a full candidate schema replay."}, {"label": "historical-catalogue-native-helper", "proofKey": "mix1", "code": "55000", "exit": 3, "preserved": true, "qualification": "Actual PostgreSQL guard-only block, exact byte-extracted generated selector/helper guards and complete observed vectors; not a full candidate schema replay."}]`.
+
+Fresh native environment `hkscda-task11-fix3-pg-2384e770021a4f95bf5d0380ef950f95`: managedJobs3, migrations182, two complete candidate applies,14 full-candidate refusals+42 faithful current_user postgres/session_user supabase_admin assertions,2 guard-only mixed-vector refusals; all ten rows0 and all four normal cleanups. No mounts/ports/network/provider credentials. Exact pre-execution transports and images/digests/native parser/GitLF+transport archives are in the complete receipt. Native-local Bun finance behavior NOT RUN.
+
+Mixed extraction: `{"candidateSha256": "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde", "selectorByteRange": [13630, 296936], "helperByteRange": [963623, 997218], "selectorSha256": "cbcd2c8ff86cf2ecde4e1d689aca1d8dc73c48c94101fe753d0b784779d53349", "helperSha256": "67ddbca8a7ff4cd2fcd5527a5f005fad7bfb4a5dce7b9a1374910b091a5cc829"}`. These two negatives execute only the byte-extracted selector/helper guard with complete observed vectors, not full-candidate schema replays or modified helpers/grants. Positive applies and14 baseline negatives execute the complete candidate.
+
+
+**composition / hosted**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-hosted-fix3-final-1790983717764/receipt.json` rawSHA8950dadc927d92ee37a05dc99a73c2dac6b4cec6842782320e6b82d9419b77c8; 37 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"schemaParity":true,"fullScannerPassed":true,"dependenciesBound":true,"firstApply":true,"secondApply":true,"secondApplyPreserved":true,"outsideTargetsPreserved":true,"supplementalPreserved":true,"refusalsPassed":true,"testPassed":true,"zeroRowsAfter":true,"catalogAfterBehaviorPreserved":true,"normalDrop":true,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}`.
+
+Actual command `bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts src/lib/donations/reconcile.server.test.ts`; test exit0; summary `[' 82 pass', ' 0 fail', ' 277 expect() calls']`;14 complete-candidate refusals; rowCountsAfter cardinality164, every count0; normal DROP; full before/after metadata and outside-target native/Auth/ACL/default/index/shape preservation in original receipt. Environment modehosted, opted-in52322/r01_clone; template52322/audit_pr135_20260929 and modern57322 unchanged for this isolated interval.
+
+
+**composition / modern**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-modern-fix3-final-1790983801931/receipt.json` rawSHA9569e4213003fa890dde2917218e4b112e5d5074715f92f63d1fb66da325832f; 37 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"schemaParity":true,"fullScannerPassed":true,"dependenciesBound":true,"firstApply":true,"secondApply":true,"secondApplyPreserved":true,"outsideTargetsPreserved":true,"supplementalPreserved":true,"refusalsPassed":true,"testPassed":true,"zeroRowsAfter":true,"catalogAfterBehaviorPreserved":true,"normalDrop":true,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}`.
+
+Actual command `bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts src/lib/donations/reconcile.server.test.ts`; test exit0; summary `[' 82 pass', ' 0 fail', ' 277 expect() calls']`;14 complete-candidate refusals; rowCountsAfter cardinality163, every count0; normal DROP; full before/after metadata and outside-target native/Auth/ACL/default/index/shape preservation in original receipt. Environment modemodern, opted-in52322/r01_clone; template52322/audit_pr135_20260929 and modern57322 unchanged for this isolated interval.
+
+
+**composition / component**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-component-fix3-final-1790983835958/receipt.json` rawSHA9b0d4b87acd2b0e3f4f68d0791ee1d22bdc941a2580271e8f98c7d8e320b6a81; 37 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"schemaParity":true,"fullScannerPassed":true,"dependenciesBound":true,"firstApply":true,"secondApply":true,"secondApplyPreserved":true,"outsideTargetsPreserved":true,"supplementalPreserved":true,"refusalsPassed":true,"testPassed":true,"zeroRowsAfter":true,"catalogAfterBehaviorPreserved":true,"normalDrop":true,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}`.
+
+Actual command `bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts src/lib/donations/reconcile.server.test.ts`; test exit0; summary `[' 82 pass', ' 0 fail', ' 277 expect() calls']`;14 complete-candidate refusals; rowCountsAfter cardinality163, every count0; normal DROP; full before/after metadata and outside-target native/Auth/ACL/default/index/shape preservation in original receipt. Environment modecomponent, opted-in52322/r01_clone; template52322/audit_pr135_20260929 and modern57322 unchanged for this isolated interval.
+
+
+**gates / local**: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-gates-1790984861232960500/receipt.json` rawSHAb0b52a915e74991720243bc4cbf9e94b676a004f52ad6204b02a9233dbd5d226; 61 actual frozen bindings. error null; failedFinalFlags []; literal flags `{"finalProfilesQualified":true,"sourceFrozen":true,"frozenInputsPreserved":true,"templatePreserved":true}`.
+
+`bun run typecheck` actual exit0, 34.87s; `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-gates-1790984861232960500/typecheck.log` rawSHA8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92; summary `[]`.
+
+`bun test --isolate --timeout 30000` actual exit0, 81.72s; `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-gates-1790984861232960500/tests.log` rawSHAd4f4310907c0e2f5bab3321339668cdc55b4602974df20ca3f13da8f52085936; summary `['\n 3954 pass', ' 540 skip', ' 0 fail', ' 11738 expect() calls']`.
+
+`bun run lint` actual exit0, 40.73s; `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-gates-1790984861232960500/lint.log` rawSHAe585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a; summary `['✖ 52 problems (0 errors, 52 warnings)']`.
+
+`bun run build` actual exit0, 64.64s; `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-gates-1790984861232960500/build.log` rawSHA727f5fc5ae727e0b673b0bcde7017f01a7fe4d7dfac089e2c4d53e01364754b5; summary `[]`.
+
+Local environment `modern57322/Auth52321; build54329 ci-placeholder; inherited feature DB options removed`. template before/after `c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6` / `c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6`; modern aggregate before/after `1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912` / `00afe2aeee6764ecae68607f362c8218cc0cc6d274b57a2ea7c7f1e0f31059e1`. Shared modern interval remains qualified by R52: no catalog/Auth/ACL/native or exclusive-data-only preservation assertion, no reset or deleted audit repair. Isolated three-profile preservation is separate.
+
+### Warning, authority, archive and external handoff
+
+Lint baseline is exactly51 react-refresh/only-export-components plus1 react-hooks/exhaustive-deps in HelpWidget.tsx:35; deferred, no unrelated cleanup. Expected callback-fixture notices and inherited bundling/build noise are separate.
+
+Complete source/captured/candidate/actual archive manifest: `docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix3-source-binding.json`, 61 current bindings and4055 actual consumed archive bindings. Each has raw/canonical/Git identity; complete metadata is retained in each original receipt and the content-addressed raw archive, not replaced by a summary. Translation `docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/translation.json` rawSHA09ff74daee82b944e2c96a7c5d695e54488fab9d3ad0be71f3443cb6cc78e2a9; current package `{'entries': 16147, 'uniqueBlobs': 1429, 'uniqueBytes': 412982923, 'original264Preserved': True}`. All original264 archives are byte/Git-identical. Historical57-input manifest remains untouched historical evidence, not a new current claim.
+
+All59 ordered original ruling texts, reasons and costs: `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-authority-59/final-rulings-report-inputs-intermediate.json`, rawSHA55b25dd8eb92f64ddce989d28efea73c25e3dc37ee4463db9641ee62f2eb3bdc; copies57/58 and all earlier52 decisions remain preserved. R59 source scope and native-only limitations remain in exact owned authority.
+
+Self-review: five runtime function definitions identical; strict correlated complete pair and unknown55000 remain; full scanner5352/ten-table closure and native unique indexes unchanged. Failed iterations retain their real exits and no incomplete native credit is combined. Binary archive declaration and slogan awaited8/NUL/UTF8/order/error/30000 semantics are unchanged. Shared original/template/modern/other stacks are not reset, roles are not mutated.
+
+External NOT RUN by worker: native-local Bun behavior; new full17.11 hosted/CI finance behavior; SAME review; push/PR/main/prod/provider/payment/email/refund/schedule/publication. Pinned2.118 owned source assembly is qualified against unknown actual CI CLI version; historical component17.6 reconstruction is not fresh full17.11. Root must run all five actual jobs and confirm the existing dedicated opt-in finance step executes on its exact CI/GITHUB_ACTIONS true + explicit opt-in URL55322/postgres, not skip.
+
+Final source and metadata-only closing HEAD/tree/raw Git addresses are written after commit in the separately owned ignored task-11-fix3-final-head-verification.json. This sidecar is not claimed to exist in its own referenced HEAD.

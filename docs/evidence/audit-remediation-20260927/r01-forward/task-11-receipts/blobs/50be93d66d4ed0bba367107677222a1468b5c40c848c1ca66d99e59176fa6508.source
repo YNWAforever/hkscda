@@ -1,0 +1,45 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "T11-F1-M1 documentary example only; actual executed commands unchanged",
+  "base": "74e5bb6ce7765dcc96d34eddea75db4c4803c911",
+  "head": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "tree": "d76af23ba1db9c908058429e61e5ec629f58f7e1",
+  "commitSubject": "docs(r01): correct component capture handoff argument",
+  "changedPaths": [
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md"
+  ],
+  "clean": true,
+  "all57CurrentSourceBindingsPreserved": true,
+  "all50FrozenGateInputsPreserved": true,
+  "all264HistoricalRawArchiveGitObjectsPreserved": true,
+  "manifestAndTranslationBytesAndGitObjectsPreserved": true,
+  "sqlUnchanged": true,
+  "scannerAndProductUnchanged": true,
+  "addresses": {
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md": {
+      "gitBlob": "c4664bc86d15ee3962f6d010575cbbe655ad99b3",
+      "rawSha256": "398bd0625a8f34a1dfa903fec29bdaca34489a81e084712023b7843862158b71",
+      "canonicalSha256": "398bd0625a8f34a1dfa903fec29bdaca34489a81e084712023b7843862158b71",
+      "bytes": 43763
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix1-source-binding.json": {
+      "gitBlob": "cc4b289cbf1f02e7bfceba13ff8d86f921402500",
+      "rawSha256": "505e1abdbabf6c78a36901a408ae0536db99fdad6d7ba9b935a14a1ba5174f6c",
+      "canonicalSha256": "505e1abdbabf6c78a36901a408ae0536db99fdad6d7ba9b935a14a1ba5174f6c",
+      "bytes": 1357108
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/translation.json": {
+      "gitBlob": "a878f08d120a7127ff4f34c5c1af4cec6991ad36",
+      "rawSha256": "7548747bfef72907e34676d9241b9ae93b0a20eb7169c38c6e68079347aa8f75",
+      "canonicalSha256": "7548747bfef72907e34676d9241b9ae93b0a20eb7169c38c6e68079347aa8f75",
+      "bytes": 707245
+    }
+  },
+  "coveringReportSha256": "398bd0625a8f34a1dfa903fec29bdaca34489a81e084712023b7843862158b71",
+  "oldFinalVerification": "Historical, unchanged",
+  "driverSha256": "64acac7e999c58308e150e6e05cab881a848febd0dfbf9ba18416ab91e8150ba",
+  "driverArchive": "task-11-fix2-document-binding.executed.source",
+  "gates": "No DB/application gates run or historical proofs regenerated",
+  "at": "2026-10-02T20:45:38.207031+00:00",
+  "external": "SAME reviewer74e5bb6..HEAD and fresh five CI/full17.11 non-skippedfinance pending controller; no push/PR/prod."
+}

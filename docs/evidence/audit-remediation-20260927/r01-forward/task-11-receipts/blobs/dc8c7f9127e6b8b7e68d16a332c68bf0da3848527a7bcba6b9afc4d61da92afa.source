@@ -1,0 +1,19 @@
+import hashlib,json,pathlib,re
+root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';out=scratch/'task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85';target=out/'offline-diagnosis';target.mkdir();inputs=[]
+def read(path):
+ raw=path.read_bytes();stem='i'+str(len(inputs)).zfill(3)+'.source';(target/stem).write_bytes(raw);inputs.append({'path':str(path.relative_to(root)).replace('\\','/'),'rawSha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw),'archive':stem});return raw
+def differences(a,b,path=''):
+ if type(a)!=type(b):return[{'path':path,'expected':a,'actual':b}]
+ if isinstance(a,dict):return sum((differences(a.get(k),b.get(k),path+'/'+k)for k in sorted(set(a)|set(b))),[])
+ if isinstance(a,list):
+  if len(a)!=len(b):return[{'path':path,'expected':a,'actual':b,'expectedCount':len(a),'actualCount':len(b)}]
+  return sum((differences(x,y,path+'/'+str(i))for i,(x,y)in enumerate(zip(a,b))),[])
+ return[]if a==b else[{'path':path,'expected':a,'actual':b}]
+read(pathlib.Path(__file__));receipt=json.loads(read(out/'receipt.json'));capture=json.loads(read(out/'d45-baseline.json'));finance=read(root/'supabase/migrations/20261002170945_r01_finance_callback_forward.sql');assert hashlib.sha256(finance).hexdigest()=='33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4'
+c=capture['catalog'];tables=['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'];glob=['schemas','defaults','roles','memberships','extensions','extensionMembers','databaseOwner','sequences'];scope=['relations','columns','constraints','indexes','triggers','policies'];actual={k:c[k]for k in glob};actual.update({k:[f for f in c[k]if f['schema']=='public'and f.get('table',f.get('name'))in tables]for k in scope});actual['types']=[f for f in c['types']if f['schema']=='public'and(f['name']in tables or f['name']in ['_'+t for t in tables]or(f['kind']!='c'and not f['name'].startswith('_')))];literal=re.search(rb"if v_before not in\(([\s\S]*?)\) then raise exception 'R01 finance complete prerequisite catalog differs'",finance).group(1);admitted=[json.loads(m.replace(b"''",b"'").decode())for m in re.findall(rb"'((?:[^']|'')*)'::jsonb",literal)];delta={'actualCompleteProjection':actual,'admittedCompleteProjections':admitted,'differences':[{'profileIndex':i,'differences':differences(p,actual)}for i,p in enumerate(admitted)]};(target/'complete-prerequisite-differences.json').write_text(json.dumps(delta,indent=2)+'\n',encoding='utf-8',newline='\n')
+reads=json.loads(read(out/'scanner-reads.json'));scannerRows=[];triggerRows=[]
+for entry in reads:
+ rows=json.loads(read(out/entry['stdout']));read(out/entry['source'])
+ scannerRows += [r for r in rows if r.get('schema')=='public'and r.get('name')=='set_updated_at'];triggerRows += [r for r in rows if r.get('function_name')=='public.set_updated_at']
+summary={'qualification':'Offline comparison of actual full managed+D45 native2.118/PG17.11 catalog; scanner failed before unchanged finance transaction. Not an observed owned finance55000 or admitted candidate.','baselineMigrations':receipt['baselineMigrationCount'],'managedJobs':len(receipt['managedJobs']),'domainRowsBefore':receipt['domainRowsBefore'],'protectedSourcesPreserved':receipt['protectedSourcesPreserved'],'all57CurrentInputsPreserved':receipt['all57CurrentInputsPreserved'],'scannerError':receipt['error'],'setUpdatedAtActualScannerRows':scannerRows,'setUpdatedAtActualTriggerRows':triggerRows,'completeDifferenceCounts':[len(p['differences'])for p in delta['differences']],'differencePaths':[[d['path']for d in p['differences']]for p in delta['differences']],'inputs':inputs}
+(target/'summary.json').write_text(json.dumps(summary,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps({k:v for k,v in summary.items()if k not in ['inputs','scannerError','domainRowsBefore']}))

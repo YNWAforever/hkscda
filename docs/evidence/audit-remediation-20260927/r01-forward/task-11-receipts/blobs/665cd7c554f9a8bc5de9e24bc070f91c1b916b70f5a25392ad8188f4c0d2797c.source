@@ -1,0 +1,20 @@
+{
+  "statements": [
+    "create index if not exists adoption_guide_publish_requests_release_id_idx\n  on public.adoption_guide_publish_requests (release_id)",
+    "create index if not exists adoption_guide_releases_archived_by_idx\n  on public.adoption_guide_releases (archived_by)",
+    "create index if not exists adoption_guide_releases_created_by_idx\n  on public.adoption_guide_releases (created_by)",
+    "create index if not exists adoption_guide_releases_en_asset_id_idx\n  on public.adoption_guide_releases (en_asset_id)",
+    "create index if not exists adoption_guide_releases_knowledge_post_id_idx\n  on public.adoption_guide_releases (knowledge_post_id)",
+    "create index if not exists adoption_guide_releases_published_by_idx\n  on public.adoption_guide_releases (published_by)",
+    "create index if not exists adoption_guide_releases_submitted_by_idx\n  on public.adoption_guide_releases (submitted_by)",
+    "create index if not exists adoption_guide_releases_updated_by_idx\n  on public.adoption_guide_releases (updated_by)",
+    "create index if not exists adoption_guide_releases_zh_hk_asset_id_idx\n  on public.adoption_guide_releases (zh_hk_asset_id)",
+    "drop policy if exists \"staff can create draft adoption guide releases\"\n  on public.adoption_guide_releases",
+    "create policy \"staff can create draft adoption guide releases\"\n  on public.adoption_guide_releases for insert\n  to authenticated\n  with check (\n    state = 'draft'\n    and private.has_admin_role(array['staff', 'admin'])\n    and exists (\n      select 1\n      from public.admin_user actor\n      where actor.id = created_by\n        and actor.id = updated_by\n        and actor.auth_user_id = (select auth.uid())\n        and actor.status = 'active'\n        and actor.role in ('staff', 'admin')\n    )\n  )",
+    "drop policy if exists \"staff can update draft adoption guide releases\"\n  on public.adoption_guide_releases",
+    "create policy \"staff can update draft adoption guide releases\"\n  on public.adoption_guide_releases for update\n  to authenticated\n  using (state = 'draft' and private.has_admin_role(array['staff', 'admin']))\n  with check (\n    state = 'draft'\n    and private.has_admin_role(array['staff', 'admin'])\n    and exists (\n      select 1\n      from public.admin_user actor\n      where actor.id = updated_by\n        and actor.auth_user_id = (select auth.uid())\n        and actor.status = 'active'\n        and actor.role in ('staff', 'admin')\n    )\n  )"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

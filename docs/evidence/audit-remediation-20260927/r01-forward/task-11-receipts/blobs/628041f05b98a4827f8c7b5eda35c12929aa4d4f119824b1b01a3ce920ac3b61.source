@@ -1,0 +1,141 @@
+BEGIN;
+-- T21: server-side public catalogue filtering, exact count and stable pagination.
+-- Strict age normalization preserves unknown legacy text; generated column backfills
+-- automatically and follows edits without changing historic age copy.
+create function private.normalize_public_animal_age(p_age text)
+returns text language plpgsql immutable strict set search_path=pg_catalog,pg_temp as $$
+declare
+  value text := lower(btrim(p_age));
+  matched text[];
+  amount numeric;
+begin
+  if length(value)>50 then return 'unknown'; end if;
+  matched := regexp_match(value,
+    '^(約[[:space:]]*|大約[[:space:]]*|about[[:space:]]+)?([0-9]+([.][0-9]+)?)[[:space:]]*(個月|个月|月|months?|mos?)([[:space:]]+old)?$');
+  if matched is not null then
+    amount := matched[2]::numeric;
+    if amount>600 then return 'unknown'; end if;
+    if amount<12 then return 'bb'; end if;
+    if amount<96 then return 'adult'; end if;
+    return 'senior';
+  end if;
+  matched := regexp_match(value,
+    '^(約[[:space:]]*|大約[[:space:]]*|about[[:space:]]+)?([0-9]+([.][0-9]+)?)[[:space:]]*(歲|岁|years?|yrs?)([[:space:]]+old)?$');
+  if matched is not null then amount := matched[2]::numeric;
+  elsif value ~ '^[0-9]+([.][0-9]+)?$' then amount := value::numeric;
+  else return 'unknown'; end if;
+  if amount>50 then return 'unknown'; end if;
+  if amount<1 then return 'bb'; end if;
+  if amount<8 then return 'adult'; end if;
+  return 'senior';
+end $$;
+revoke all on function private.normalize_public_animal_age(text) from public,anon,authenticated;
+grant execute on function private.normalize_public_animal_age(text) to service_role;
+-- The generated column is an additive backfill at migration time. Review rewrite
+-- time and locks against a data-bearing clone before applying to production.
+alter table public.animals
+  add column public_age_band text generated always as (private.normalize_public_animal_age(age)) stored;
+grant select(public_age_band) on public.animals to anon,authenticated;
+create index animals_public_listing_adoption_idx
+  on public.animals(type,created_at desc,id)
+  where publication_state='published' and status in ('available','fostered')
+    and retired_at is null and adoption_eligible;
+create index animals_public_listing_sponsor_idx
+  on public.animals(created_at desc,id)
+  where publication_state='published' and status in ('available','fostered')
+    and retired_at is null and sponsorship_eligible;
+create function public.public_animal_listing_page(p_filters jsonb)
+returns jsonb language plpgsql stable security invoker set search_path=public,pg_temp as $$
+declare
+  purpose text := p_filters->>'purpose';
+  species text := p_filters->>'species';
+  age_band text := coalesce(p_filters->>'ageBand','all');
+  sort_order text := coalesce(p_filters->>'sort','newest');
+  gender_filter text := coalesce(p_filters->>'gender','all');
+  neutered_filter text := coalesce(p_filters->>'neutered','all');
+  suitability_filter text := coalesce(p_filters->>'suitability','all');
+  has_photo boolean := coalesce((p_filters->>'hasPhoto')::boolean,false);
+  search_term text := lower(btrim(coalesce(p_filters->>'query','')));
+  requested_page integer := coalesce((p_filters->>'page')::integer,1);
+  page_size integer := coalesce((p_filters->>'pageSize')::integer,16);
+  hk_today date := (now() at time zone 'Asia/Hong_Kong')::date;
+  result jsonb;
+begin
+  if jsonb_typeof(p_filters) is distinct from 'object'
+    or purpose is null or purpose not in ('adoption','sponsorship')
+    or (purpose='adoption' and (species is null or species not in ('cat','dog')))
+    or (purpose='sponsorship' and species is not null)
+    or age_band not in ('all','bb','adult','senior')
+    or sort_order not in ('newest','oldest')
+    or gender_filter not in ('all','male','female')
+    or neutered_filter not in ('all','yes','no','unknown')
+    or suitability_filter not in ('all','newbie','experienced','unknown')
+    or length(search_term)>80 or requested_page not between 1 and 10000
+    or page_size not between 1 and 48
+    or exists(select 1 from jsonb_object_keys(p_filters) key
+      where key not in ('purpose','species','ageBand','gender','neutered',
+        'suitability','hasPhoto','query','sort','page','pageSize')) then
+    raise exception 'Invalid public listing filters' using errcode='22023';
+  end if;
+  with eligible as (
+    select a.id,a.created_at
+    from public.animals a
+    cross join lateral (select (a.public_profile->>'birthday')::date as birthday) birth
+    cross join lateral (select case
+      when birth.birthday is null then a.public_age_band
+      when birth.birthday>hk_today then 'unknown'
+      when extract(year from age(hk_today,birth.birthday))<1 then 'bb'
+      when extract(year from age(hk_today,birth.birthday))<8 then 'adult'
+      else 'senior' end as band) normalized
+    where a.publication_state='published'
+      and a.status in ('available','fostered') and a.retired_at is null
+      and ((purpose='adoption' and a.adoption_eligible and a.type=species)
+        or (purpose='sponsorship' and a.sponsorship_eligible))
+      and (age_band='all' or normalized.band=age_band)
+      and (gender_filter='all' or a.gender=gender_filter)
+      and (not has_photo or nullif(btrim(a.image_url),'') is not null)
+      and (search_term='' or strpos(lower(a.name),search_term)>0
+        or strpos(lower(coalesce(a.name_en,'')),search_term)>0
+        or strpos(lower(coalesce(a.public_profile->>'code','')),search_term)>0)
+      and (neutered_filter='all'
+        or (neutered_filter='unknown' and a.public_profile->>'neutered' is null)
+        or (neutered_filter='yes' and a.public_profile->>'neutered'='true')
+        or (neutered_filter='no' and a.public_profile->>'neutered'='false'))
+      and (suitability_filter='all'
+        or (suitability_filter='unknown' and a.public_profile->>'suitability' is null)
+        or a.public_profile->>'suitability'=suitability_filter)
+  ), page_ids as (
+    select id,created_at from eligible
+    order by case when sort_order='newest' then created_at end desc,
+      case when sort_order='oldest' then created_at end asc,id
+    limit page_size offset (requested_page-1)*page_size
+  )
+  select jsonb_build_object(
+    'total',(select count(*) from eligible),
+    'page',requested_page,
+    'items',coalesce((select jsonb_agg(
+      jsonb_build_object(
+        'id',a.id,'type',a.type,'name',a.name,'name_en',a.name_en,
+        'gender',a.gender,'age',a.age,'age_en',a.age_en,
+        'description',null,'description_en',null,
+        'status',a.status,'adoption_eligible',a.adoption_eligible,
+        'sponsorship_eligible',a.sponsorship_eligible,'retired_at',null,
+        'publication_state',a.publication_state,'image_url',a.image_url,
+        'created_at',a.created_at,'updated_at',a.updated_at,
+        'public_profile',jsonb_build_object(
+          'code',a.public_profile->>'code','birthday',a.public_profile->>'birthday',
+          'neutered',a.public_profile->'neutered',
+          'suitability',a.public_profile->>'suitability',
+          'personality',left(a.public_profile->>'personality',200),
+          'health',left(a.public_profile->>'health',200),
+          'sponsorUse',left(a.public_profile->>'sponsorUse',200),
+          'recentProgress',left(a.public_profile->>'recentProgress',200))
+      ) order by case when sort_order='newest' then page_ids.created_at end desc,
+        case when sort_order='oldest' then page_ids.created_at end asc,page_ids.id)
+      from page_ids join public.animals a on a.id=page_ids.id),'[]'::jsonb)
+  ) into result;
+  return result;
+end $$;
+revoke all on function public.public_animal_listing_page(jsonb) from public,anon,authenticated;
+grant execute on function public.public_animal_listing_page(jsonb) to anon,authenticated,service_role;
+COMMIT;

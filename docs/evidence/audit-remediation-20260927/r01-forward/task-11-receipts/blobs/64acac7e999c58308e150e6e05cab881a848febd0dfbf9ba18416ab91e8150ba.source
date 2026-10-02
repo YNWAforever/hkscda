@@ -1,0 +1,31 @@
+"""Read-only documentary Fix2 binding; no historical package regeneration."""
+import datetime,hashlib,json,pathlib,subprocess
+root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';prefix='docs/evidence/audit-remediation-20260927/r01-forward/';base='74e5bb6ce7765dcc96d34eddea75db4c4803c911';document=prefix+'task-11-evidence.md'
+def git(*args):return subprocess.check_output(['git',*args])
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def tree_objects(ref):
+ result={}
+ for entry in git('ls-tree','-r','-z',ref).split(b'\0'):
+  if entry:
+   meta,path=entry.split(b'\t',1);result[path.decode()]=meta.split()[2].decode()
+ return result
+head=git('rev-parse','HEAD').decode().strip();tree=git('rev-parse','HEAD^{tree}').decode().strip();assert not git('status','--porcelain')
+before=tree_objects(base);after=tree_objects(head);changed=git('diff','--name-only',base,head).decode().splitlines();assert changed==[document]
+manifest_path=prefix+'task-11-fix1-source-binding.json';manifest=json.loads((root/manifest_path).read_text(encoding='utf-8'));assert len(manifest['currentBindings'])==57 and len(manifest['uniqueArchiveGitBindings'])==264
+for b in manifest['currentBindings']:
+ raw=(root/b['path']).read_bytes();assert sha(raw)==b['rawSha256'] and sha(raw.replace(b'\r\n',b'\n'))==b['canonicalSha256']
+ if b['sourceTrackedAtCommit']:assert before[b['path']]==after[b['path']]==b['sourceGitBlob']
+for b in manifest['uniqueArchiveGitBindings']:
+ raw=(root/b['path']).read_bytes();assert sha(raw)==b['rawSha256'] and blob(raw)==before[b['path']]==after[b['path']]==b['archiveGitBlob']
+gate=json.loads((scratch/'task-11-fix1-gates-1790971979851361400/receipt.json').read_text(encoding='utf-8'));assert len(gate['frozenInputs'])==50 and all(sha((root/p).read_bytes())==b['rawSha256']for p,b in gate['frozenInputs'].items())
+sql=root/'supabase/migrations/20261002170945_r01_finance_callback_forward.sql';assert len(sql.read_bytes())==968852 and sha(sql.read_bytes())=='33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4'
+raw=(root/document).read_bytes();report=(scratch/'task-11-report.md').read_bytes();assert raw==report and b'task-11-component-capture.ts component OWNOUT'in raw and b'task-11-component-capture.ts OWNOUT'not in raw and blob(raw)==after[document]
+addresses={}
+for path in [document,manifest_path,prefix+'task-11-receipts/translation.json']:
+ content=(root/path).read_bytes();assert blob(content)==after[path]
+ if path!=document:assert after[path]==before[path]
+ addresses[path]={'gitBlob':after[path],'rawSha256':sha(content),'canonicalSha256':sha(content.replace(b'\r\n',b'\n')),'bytes':len(content)}
+assert addresses[prefix+'task-11-receipts/translation.json']['rawSha256']==manifest['translationBinding']['rawSha256']
+result={'status':'DONE_WITH_CONCERNS','scope':'T11-F1-M1 documentary example only; actual executed commands unchanged','base':base,'head':head,'tree':tree,'commitSubject':git('show','-s','--format=%s',head).decode().strip(),'changedPaths':changed,'clean':True,'all57CurrentSourceBindingsPreserved':True,'all50FrozenGateInputsPreserved':True,'all264HistoricalRawArchiveGitObjectsPreserved':True,'manifestAndTranslationBytesAndGitObjectsPreserved':True,'sqlUnchanged':True,'scannerAndProductUnchanged':True,'addresses':addresses,'coveringReportSha256':sha(report),'oldFinalVerification':'Historical, unchanged','driverSha256':sha(pathlib.Path(__file__).read_bytes()),'driverArchive':'task-11-fix2-document-binding.executed.source','gates':'No DB/application gates run or historical proofs regenerated','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'external':'SAME reviewer74e5bb6..HEAD and fresh five CI/full17.11 non-skippedfinance pending controller; no push/PR/prod.'}
+(scratch/'task-11-fix2-document-binding.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps(result))

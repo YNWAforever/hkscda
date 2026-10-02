@@ -1,0 +1,97 @@
+/** R57 wrapper qualifies immutable R56 RED; it does not edit the original receipt. */
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { createHash } from "node:crypto";
+import {
+  nativeFlags,
+  nativePins,
+  nativeFixtureScope,
+  sha,
+  verifyNativeRED,
+  verifyNativeQualification,
+} from "./task-11-native-profile";
+const root = process.cwd(),
+  out = resolve(process.argv[2] ?? "");
+if (
+  !out.startsWith(
+    resolve(
+      root,
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-native-qualification-",
+    ),
+  )
+)
+  throw Error("Own native qualification output required");
+await mkdir(out, { recursive: false });
+// Archive actual executable inputs before reading or producing a qualification.
+const sourcePaths = [
+  "task-11-native-profile.ts",
+  "task-11-native-qualify.ts",
+  "task-11-native-prerequisites.json",
+].map((n) => "docs/evidence/audit-remediation-20260927/r01-forward/" + n);
+const bindings: Record<string, Record<string, unknown>> = {};
+async function bind(path: string) {
+  const b = await readFile(resolve(root, path)),
+    archive = "s" + Object.keys(bindings).length + ".source";
+  await writeFile(resolve(out, archive), b);
+  bindings[path] = {
+    rawSha256: sha(b),
+    canonicalSha256: sha(b.toString().replaceAll("\r\n", "\n")),
+    rawBytes: b.length,
+    rawGitBlob: createHash("sha1")
+      .update("blob " + b.length + "\0")
+      .update(b)
+      .digest("hex"),
+    archive,
+  };
+}
+for (const path of sourcePaths) await bind(path);
+const r: Record<string, unknown> = {
+  receiptType: "native-prerequisite-qualification-v1",
+  mode: "full-native-d45",
+  at: new Date().toISOString(),
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [...nativeFlags],
+  bindings,
+};
+try {
+  const proof = await verifyNativeRED(root);
+  for (const path of proof.proofPaths) await bind(path);
+  Object.assign(r, nativePins, Object.fromEntries(nativeFlags.map((k) => [k, true])), {
+    pair: proof.pair,
+    runtime: proof.runtime,
+    financeExit: 3,
+    sqlstate: "55000",
+    prerequisiteError: "R01 finance complete prerequisite catalog differs",
+    baselineMigrationCount: 182,
+    managedKinds: ["realtime", "storage", "auth"],
+    normalCleanupCount: 4,
+    fixtureScope: nativeFixtureScope,
+    originalTransportPreArchived: false,
+    originalTransportQualification:
+      "Only post-execution derived transport exists; archived executed driver and prebound unchanged SQL determine it. Future GREEN transport must be archived before execution.",
+    CLIIdentityKnown: false,
+    CLIQualification: proof.original.CLIQualification,
+    nativeLocalBunBehaviorRun: false,
+    productionApplied: false,
+    deployed: false,
+    operationallyEnabled: false,
+    heldTask1FiveColumnRepairApplied: false,
+    heldTask8ScannerProposalApplied: false,
+    committedPartialTask1SourceApplied: true,
+  });
+  await verifyNativeQualification(r, root, out);
+} catch (error) {
+  r.error = error instanceof Error ? error.message : String(error);
+}
+r.failedFinalFlags = nativeFlags.filter((k) => r[k] !== true);
+await writeFile(resolve(out, "receipt.json"), JSON.stringify(r, null, 2) + "\n");
+console.log(
+  JSON.stringify({
+    out,
+    error: r.error,
+    failedFinalFlags: r.failedFinalFlags,
+    sourceCount: Object.keys(bindings).length,
+  }),
+);
+if (r.error !== null || (r.failedFinalFlags as string[]).length) process.exit(1);

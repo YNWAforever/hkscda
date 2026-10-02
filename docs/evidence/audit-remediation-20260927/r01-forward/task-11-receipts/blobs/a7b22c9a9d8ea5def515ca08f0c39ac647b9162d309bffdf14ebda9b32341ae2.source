@@ -1,0 +1,218 @@
+[
+    {
+        "Id": "15ac0baf431d0a292c24c67849f610b589f6b230d57178d386b900f102bbdf22",
+        "Created": "2026-10-02T23:11:14.834346995Z",
+        "Path": "/usr/bin/tini",
+        "Args": [
+            "-s",
+            "-g",
+            "--",
+            "/app/run.sh",
+            "/app/bin/realtime",
+            "eval",
+            "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+        ],
+        "State": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-02T23:11:15.246642946Z",
+            "FinishedAt": "2026-10-02T23:11:19.861290315Z"
+        },
+        "Image": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+        "ResolvConfPath": "/var/lib/docker/containers/1134d15d2f1bcbd60edd2bdf48151799238cee67015623ab110795367948ae6d/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/1134d15d2f1bcbd60edd2bdf48151799238cee67015623ab110795367948ae6d/hostname",
+        "HostsPath": "/var/lib/docker/containers/1134d15d2f1bcbd60edd2bdf48151799238cee67015623ab110795367948ae6d/hosts",
+        "LogPath": "/var/lib/docker/containers/15ac0baf431d0a292c24c67849f610b589f6b230d57178d386b900f102bbdf22/15ac0baf431d0a292c24c67849f610b589f6b230d57178d386b900f102bbdf22-json.log",
+        "Name": "/hkscda-task11-fix3-realtime-86d10b772bdb48dfa016dd2ebd784746",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "container:1134d15d2f1bcbd60edd2bdf48151799238cee67015623ab110795367948ae6d",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 1073741824,
+            "NanoCpus": 1000000000,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 2147483648,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "1134d15d2f1b",
+            "Domainname": "",
+            "User": "nobody",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "RUN_JANITOR=true",
+                "DB_NAME=postgres",
+                "DB_ENC_KEY=supabaserealtime",
+                "API_JWT_JWKS={\"keys\":[{\"kty\":\"EC\",\"kid\":\"b81269f1-21d8-4f2e-b719-c2240a840d90\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"alg\":\"ES256\",\"ext\":true,\"crv\":\"P-256\",\"x\":\"M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4\",\"y\":\"P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ\"},{\"kty\":\"oct\",\"k\":\"dGFzazExLXI1NS1vd25lZC1zeW50aGV0aWMtand0LXNlY3JldC0wMDAwMDAwMDAw\"}]}",
+                "ERL_AFLAGS=-proto_dist inet_tcp",
+                "PORT=4000",
+                "DB_HOST=127.0.0.1",
+                "DB_PORT=5432",
+                "DB_AFTER_CONNECT_QUERY=SET search_path TO _realtime",
+                "APP_NAME=realtime",
+                "DNS_NODES=''",
+                "SEED_SELF_HOST=true",
+                "MAX_HEADER_LENGTH=4096",
+                "METRICS_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+                "DB_USER=supabase_admin",
+                "DB_PASSWORD=postgres",
+                "API_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+                "SECRET_KEY_BASE=EAx3IQ/wRG1v47ZD4NE4/9RzBI8Jmil3x0yhcW4V2NHBP6c2iPIzwjofi2Ep4HIG",
+                "RLIMIT_NOFILE=",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "SLOT_NAME_SUFFIX=",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "MIX_ENV=prod",
+                "ECTO_IPV6=true"
+            ],
+            "Cmd": [
+                "/app/bin/realtime",
+                "eval",
+                "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "NONE"
+                ]
+            },
+            "Image": "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": [
+                "/usr/bin/tini",
+                "-s",
+                "-g",
+                "--",
+                "/app/run.sh"
+            ],
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "SandboxID": "",
+            "SandboxKey": "",
+            "Ports": {},
+            "Networks": {}
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "digest": "sha256:c1f11db3fd2afbed8657af3bb473cf49dc417bb8d1e30714ce863b1d039baa67",
+            "size": 2829,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

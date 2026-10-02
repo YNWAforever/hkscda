@@ -1,0 +1,1085 @@
+﻿2026-10-02T20:51:46.4395033Z Current runner version: '2.337.0'
+2026-10-02T20:51:46.4435694Z ##[group]Runner Image Provisioner
+2026-10-02T20:51:46.4437182Z Hosted Compute Agent
+2026-10-02T20:51:46.4438494Z Version: 20260901.588
+2026-10-02T20:51:46.4439884Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-02T20:51:46.4441233Z Build Date: 2026-09-01T19:56:44Z
+2026-10-02T20:51:46.4442604Z Worker ID: {60e3fb0e-4ba9-498a-8fe0-4b27b3d12d39}
+2026-10-02T20:51:46.4444025Z Azure Region: eastus2
+2026-10-02T20:51:46.4445044Z ##[endgroup]
+2026-10-02T20:51:46.4449109Z ##[group]Operating System
+2026-10-02T20:51:46.4450256Z Ubuntu
+2026-10-02T20:51:46.4451370Z 24.04.5
+2026-10-02T20:51:46.4452329Z LTS
+2026-10-02T20:51:46.4453262Z ##[endgroup]
+2026-10-02T20:51:46.4454378Z ##[group]Runner Image
+2026-10-02T20:51:46.4455684Z Image: ubuntu-24.04
+2026-10-02T20:51:46.4456965Z Version: 20260927.320.1
+2026-10-02T20:51:46.4459526Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-02T20:51:46.4462542Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+2026-10-02T20:51:46.4464322Z ##[endgroup]
+2026-10-02T20:51:46.4466663Z ##[group]GITHUB_TOKEN Permissions
+2026-10-02T20:51:46.4470243Z Contents: read
+2026-10-02T20:51:46.4471317Z Metadata: read
+2026-10-02T20:51:46.4472355Z Packages: read
+2026-10-02T20:51:46.4473287Z ##[endgroup]
+2026-10-02T20:51:46.4476353Z Secret source: Actions
+2026-10-02T20:51:46.4478317Z Cache mode: write
+2026-10-02T20:51:46.4480241Z Prepare workflow directory
+2026-10-02T20:51:46.4974686Z Prepare all required actions
+2026-10-02T20:51:46.5047126Z Getting action download info
+2026-10-02T20:51:46.7450119Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-02T20:51:46.8363584Z Download action repository 'oven-sh/setup-bun@v2' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-10-02T20:51:47.1085181Z Complete job name: rls-matrix
+2026-10-02T20:51:47.1996138Z ##[group]Run actions/checkout@v4
+2026-10-02T20:51:47.1997069Z with:
+2026-10-02T20:51:47.1997756Z   repository: YNWAforever/hkscda
+2026-10-02T20:51:47.2001486Z   token: ***
+2026-10-02T20:51:47.2001914Z   ssh-strict: true
+2026-10-02T20:51:47.2002348Z   ssh-user: git
+2026-10-02T20:51:47.2002783Z   persist-credentials: true
+2026-10-02T20:51:47.2003267Z   clean: true
+2026-10-02T20:51:47.2003715Z   sparse-checkout-cone-mode: true
+2026-10-02T20:51:47.2004237Z   fetch-depth: 1
+2026-10-02T20:51:47.2004661Z   fetch-tags: false
+2026-10-02T20:51:47.2005094Z   show-progress: true
+2026-10-02T20:51:47.2005545Z   lfs: false
+2026-10-02T20:51:47.2005955Z   submodules: false
+2026-10-02T20:51:47.2006400Z   set-safe-directory: true
+2026-10-02T20:51:47.2006909Z   allow-unsafe-pr-checkout: false
+2026-10-02T20:51:47.2007884Z ##[endgroup]
+2026-10-02T20:51:47.3114029Z Syncing repository: YNWAforever/hkscda
+2026-10-02T20:51:47.3117154Z ##[group]Getting Git version info
+2026-10-02T20:51:47.3118625Z Working directory is '/home/runner/work/hkscda/hkscda'
+2026-10-02T20:51:47.3120300Z [command]/usr/bin/git version
+2026-10-02T20:51:47.3198389Z git version 2.55.0
+2026-10-02T20:51:47.3233455Z ##[endgroup]
+2026-10-02T20:51:47.3243165Z Temporarily overriding HOME='/home/runner/work/_temp/32155895-4f1f-4909-890b-bdafe6c89d36' before making global git config changes
+2026-10-02T20:51:47.3245804Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-02T20:51:47.3248094Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hkscda/hkscda
+2026-10-02T20:51:47.3308589Z Deleting the contents of '/home/runner/work/hkscda/hkscda'
+2026-10-02T20:51:47.3321246Z ##[group]Initializing the repository
+2026-10-02T20:51:47.3322054Z [command]/usr/bin/git init /home/runner/work/hkscda/hkscda
+2026-10-02T20:51:47.3442937Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-02T20:51:47.3455876Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-02T20:51:47.3458156Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-02T20:51:47.3459419Z hint: call:
+2026-10-02T20:51:47.3460435Z hint:
+2026-10-02T20:51:47.3461255Z hint: 	git config --global init.defaultBranch <name>
+2026-10-02T20:51:47.3462226Z hint:
+2026-10-02T20:51:47.3463136Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-02T20:51:47.3464914Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-02T20:51:47.3466111Z hint:
+2026-10-02T20:51:47.3466753Z hint: 	git branch -m <name>
+2026-10-02T20:51:47.3467719Z hint:
+2026-10-02T20:51:47.3468722Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-02T20:51:47.3470330Z Initialized empty Git repository in /home/runner/work/hkscda/hkscda/.git/
+2026-10-02T20:51:47.3472994Z [command]/usr/bin/git remote add origin https://github.com/YNWAforever/hkscda
+2026-10-02T20:51:47.3513615Z ##[endgroup]
+2026-10-02T20:51:47.3514949Z ##[group]Disabling automatic garbage collection
+2026-10-02T20:51:47.3519474Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-02T20:51:47.3560593Z ##[endgroup]
+2026-10-02T20:51:47.3562248Z ##[group]Setting up auth
+2026-10-02T20:51:47.3569346Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-02T20:51:47.3612726Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-02T20:51:47.4021622Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-02T20:51:47.4066894Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-02T20:51:47.4313213Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-02T20:51:47.4357299Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-02T20:51:47.4627063Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-02T20:51:47.4683938Z ##[endgroup]
+2026-10-02T20:51:47.4685491Z ##[group]Fetching the repository
+2026-10-02T20:51:47.4696077Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b63aef500fd9ebef083d387f2139d8ead6ebc3b1:refs/remotes/pull/194/merge
+2026-10-02T20:51:52.8616004Z From https://github.com/YNWAforever/hkscda
+2026-10-02T20:51:52.8618415Z  * [new ref]         b63aef500fd9ebef083d387f2139d8ead6ebc3b1 -> pull/194/merge
+2026-10-02T20:51:52.8623720Z ##[endgroup]
+2026-10-02T20:51:52.8625255Z ##[group]Determining the checkout info
+2026-10-02T20:51:52.8627201Z ##[endgroup]
+2026-10-02T20:51:52.8632850Z [command]/usr/bin/git sparse-checkout disable
+2026-10-02T20:51:52.8706577Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-02T20:51:52.8746635Z ##[group]Checking out the ref
+2026-10-02T20:51:52.8751413Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/194/merge
+2026-10-02T20:51:53.8862003Z Updating files:  74% (3977/5359)
+2026-10-02T20:51:53.8890757Z Updating files:  75% (4020/5359)
+2026-10-02T20:51:53.8925325Z Updating files:  76% (4073/5359)
+2026-10-02T20:51:53.8951925Z Updating files:  77% (4127/5359)
+2026-10-02T20:51:53.8979788Z Updating files:  78% (4181/5359)
+2026-10-02T20:51:53.9012083Z Updating files:  79% (4234/5359)
+2026-10-02T20:51:53.9044648Z Updating files:  80% (4288/5359)
+2026-10-02T20:51:53.9073874Z Updating files:  81% (4341/5359)
+2026-10-02T20:51:53.9104842Z Updating files:  82% (4395/5359)
+2026-10-02T20:51:53.9133496Z Updating files:  83% (4448/5359)
+2026-10-02T20:51:53.9163111Z Updating files:  84% (4502/5359)
+2026-10-02T20:51:53.9194903Z Updating files:  85% (4556/5359)
+2026-10-02T20:51:53.9226559Z Updating files:  86% (4609/5359)
+2026-10-02T20:51:53.9253670Z Updating files:  87% (4663/5359)
+2026-10-02T20:51:53.9288833Z Updating files:  88% (4716/5359)
+2026-10-02T20:51:53.9311608Z Updating files:  89% (4770/5359)
+2026-10-02T20:51:53.9341165Z Updating files:  90% (4824/5359)
+2026-10-02T20:51:53.9368271Z Updating files:  91% (4877/5359)
+2026-10-02T20:51:53.9397817Z Updating files:  92% (4931/5359)
+2026-10-02T20:51:53.9425274Z Updating files:  93% (4984/5359)
+2026-10-02T20:51:53.9455809Z Updating files:  94% (5038/5359)
+2026-10-02T20:51:53.9493119Z Updating files:  95% (5092/5359)
+2026-10-02T20:51:53.9528892Z Updating files:  96% (5145/5359)
+2026-10-02T20:51:53.9566802Z Updating files:  97% (5199/5359)
+2026-10-02T20:51:53.9598346Z Updating files:  98% (5252/5359)
+2026-10-02T20:51:53.9658847Z Updating files:  99% (5306/5359)
+2026-10-02T20:51:53.9661274Z Updating files: 100% (5359/5359)
+2026-10-02T20:51:53.9663544Z Updating files: 100% (5359/5359), done.
+2026-10-02T20:51:53.9719383Z Note: switching to 'refs/remotes/pull/194/merge'.
+2026-10-02T20:51:53.9720474Z 
+2026-10-02T20:51:53.9721317Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-02T20:51:53.9723264Z changes and commit them, and you can discard any commits you make in this
+2026-10-02T20:51:53.9725155Z state without impacting any branches by switching back to a branch.
+2026-10-02T20:51:53.9726242Z 
+2026-10-02T20:51:53.9727005Z If you want to create a new branch to retain commits you create, you may
+2026-10-02T20:51:53.9729271Z do so (now or later) by using -c with the switch command. Example:
+2026-10-02T20:51:53.9730387Z 
+2026-10-02T20:51:53.9730874Z   git switch -c <new-branch-name>
+2026-10-02T20:51:53.9731647Z 
+2026-10-02T20:51:53.9732118Z Or undo this operation with:
+2026-10-02T20:51:53.9732883Z 
+2026-10-02T20:51:53.9733313Z   git switch -
+2026-10-02T20:51:53.9733853Z 
+2026-10-02T20:51:53.9734770Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-02T20:51:53.9736330Z 
+2026-10-02T20:51:53.9738124Z HEAD is now at b63aef5 Merge 18c3c6ea06a25292b6e172e99cd381ed7d4409dc into d45b849d300f76700efcf5450a9b426e32cc372f
+2026-10-02T20:51:53.9775395Z ##[endgroup]
+2026-10-02T20:51:53.9833043Z [command]/usr/bin/git log -1 --format=%H
+2026-10-02T20:51:53.9863997Z b63aef500fd9ebef083d387f2139d8ead6ebc3b1
+2026-10-02T20:51:54.0327839Z ##[group]Run oven-sh/setup-bun@v2
+2026-10-02T20:51:54.0329069Z with:
+2026-10-02T20:51:54.0329856Z   bun-version: 1.3.14
+2026-10-02T20:51:54.0330772Z   no-cache: false
+2026-10-02T20:51:54.0340923Z   token: ***
+2026-10-02T20:51:54.0341770Z ##[endgroup]
+2026-10-02T20:51:54.2998490Z Cache hit for: bun-fR4r1tsFeXfPQkusQwkKD2kGnsE=
+2026-10-02T20:51:54.6886208Z Received 33843767 of 33843767 (100.0%), 93.8 MBs/sec
+2026-10-02T20:51:54.6887193Z Cache Size: ~32 MB (33843767 B)
+2026-10-02T20:51:54.6924557Z [command]/usr/bin/tar -xf /home/runner/work/_temp/ad731194-8a68-483b-b4e5-b94a52e717b6/cache.tzst -P -C /home/runner/work/hkscda/hkscda --use-compress-program unzstd
+2026-10-02T20:51:54.8548907Z Cache restored successfully
+2026-10-02T20:51:54.8573475Z [command]/home/runner/.bun/bin/bun --revision
+2026-10-02T20:51:54.8630444Z 1.3.14+0d9b296af
+2026-10-02T20:51:54.8639536Z Using a cached version of Bun: 1.3.14+0d9b296af
+2026-10-02T20:51:54.8819175Z ##[group]Run bun install --frozen-lockfile
+2026-10-02T20:51:54.8819662Z [36;1mbun install --frozen-lockfile[0m
+2026-10-02T20:51:54.9076012Z shell: /usr/bin/bash -e {0}
+2026-10-02T20:51:54.9076396Z ##[endgroup]
+2026-10-02T20:51:54.9221962Z bun install v1.3.14 (0d9b296a)
+2026-10-02T20:51:57.9334604Z 
+2026-10-02T20:51:57.9335616Z + @axe-core/playwright@4.13.0
+2026-10-02T20:51:57.9336436Z + @eslint/js@9.39.4
+2026-10-02T20:51:57.9336938Z + @lovable.dev/vite-tanstack-config@2.3.2
+2026-10-02T20:51:57.9337780Z + @types/node@22.19.17
+2026-10-02T20:51:57.9338252Z + @types/react@19.2.14
+2026-10-02T20:51:57.9338684Z + @types/react-dom@19.2.3
+2026-10-02T20:51:57.9339141Z + @vitejs/plugin-react@5.2.0
+2026-10-02T20:51:57.9339588Z + bun-types@1.3.14
+2026-10-02T20:51:57.9340538Z + eslint@9.39.4
+2026-10-02T20:51:57.9340958Z + eslint-config-prettier@10.1.8
+2026-10-02T20:51:57.9341448Z + eslint-plugin-prettier@5.5.5
+2026-10-02T20:51:57.9341911Z + eslint-plugin-react-hooks@5.2.0
+2026-10-02T20:51:57.9342448Z + eslint-plugin-react-refresh@0.4.26
+2026-10-02T20:51:57.9342928Z + globals@15.15.0
+2026-10-02T20:51:57.9343293Z + nitro@3.0.260603-beta
+2026-10-02T20:51:57.9343685Z + playwright@1.60.0
+2026-10-02T20:51:57.9344099Z + playwright-lighthouse@4.0.0
+2026-10-02T20:51:57.9344513Z + prettier@3.8.3
+2026-10-02T20:51:57.9344900Z + typescript@5.9.3
+2026-10-02T20:51:57.9345263Z + typescript-eslint@8.59.0
+2026-10-02T20:51:57.9345707Z + vite@7.3.2
+2026-10-02T20:51:57.9346090Z + @hookform/resolvers@5.2.2
+2026-10-02T20:51:57.9346564Z + @pdf-lib/fontkit@1.1.1
+2026-10-02T20:51:57.9346996Z + @radix-ui/react-accordion@1.2.12
+2026-10-02T20:51:57.9347783Z + @radix-ui/react-alert-dialog@1.1.15
+2026-10-02T20:51:57.9348266Z + @radix-ui/react-aspect-ratio@1.1.8
+2026-10-02T20:51:57.9348706Z + @radix-ui/react-avatar@1.1.11
+2026-10-02T20:51:57.9349195Z + @radix-ui/react-checkbox@1.3.3
+2026-10-02T20:51:57.9349629Z + @radix-ui/react-collapsible@1.1.12
+2026-10-02T20:51:57.9350125Z + @radix-ui/react-context-menu@2.2.16
+2026-10-02T20:51:57.9350606Z + @radix-ui/react-dialog@1.1.15
+2026-10-02T20:51:57.9351069Z + @radix-ui/react-dropdown-menu@2.1.16
+2026-10-02T20:51:57.9351535Z + @radix-ui/react-hover-card@1.1.15
+2026-10-02T20:51:57.9351988Z + @radix-ui/react-label@2.1.8
+2026-10-02T20:51:57.9352489Z + @radix-ui/react-menubar@1.1.16
+2026-10-02T20:51:57.9352958Z + @radix-ui/react-navigation-menu@1.2.14
+2026-10-02T20:51:57.9353455Z + @radix-ui/react-popover@1.1.15
+2026-10-02T20:51:57.9353910Z + @radix-ui/react-progress@1.1.8
+2026-10-02T20:51:57.9354373Z + @radix-ui/react-radio-group@1.3.8
+2026-10-02T20:51:57.9354849Z + @radix-ui/react-scroll-area@1.2.10
+2026-10-02T20:51:57.9355314Z + @radix-ui/react-select@2.2.6
+2026-10-02T20:51:57.9355763Z + @radix-ui/react-separator@1.1.8
+2026-10-02T20:51:57.9356237Z + @radix-ui/react-slider@1.3.6
+2026-10-02T20:51:57.9356687Z + @radix-ui/react-slot@1.2.4
+2026-10-02T20:51:57.9357115Z + @radix-ui/react-switch@1.2.6
+2026-10-02T20:51:57.9357957Z + @radix-ui/react-tabs@1.1.13
+2026-10-02T20:51:57.9358421Z + @radix-ui/react-toggle@1.1.10
+2026-10-02T20:51:57.9359023Z + @radix-ui/react-toggle-group@1.1.11
+2026-10-02T20:51:57.9359509Z + @radix-ui/react-tooltip@1.2.8
+2026-10-02T20:51:57.9359939Z + @supabase/supabase-js@2.108.1
+2026-10-02T20:51:57.9360368Z + @tailwindcss/vite@4.2.4
+2026-10-02T20:51:57.9360783Z + @tanstack/react-query@5.100.1
+2026-10-02T20:51:57.9361222Z + @tanstack/react-router@1.168.25
+2026-10-02T20:51:57.9361675Z + @tanstack/react-start@1.167.50
+2026-10-02T20:51:57.9362122Z + @tanstack/router-plugin@1.167.28
+2026-10-02T20:51:57.9362590Z + @upstash/ratelimit@2.0.8
+2026-10-02T20:51:57.9363003Z + @upstash/redis@1.38.0
+2026-10-02T20:51:57.9363424Z + class-variance-authority@0.7.1
+2026-10-02T20:51:57.9363849Z + clsx@2.1.1
+2026-10-02T20:51:57.9364188Z + cmdk@1.1.1
+2026-10-02T20:51:57.9364527Z + date-fns@4.1.0
+2026-10-02T20:51:57.9364863Z + embla-carousel-react@8.6.0
+2026-10-02T20:51:57.9365246Z + input-otp@1.4.2
+2026-10-02T20:51:57.9365587Z + lucide-react@0.575.0
+2026-10-02T20:51:57.9365949Z + pdf-lib@1.17.1
+2026-10-02T20:51:57.9366684Z + react@19.2.5
+2026-10-02T20:51:57.9367119Z + react-day-picker@9.14.0
+2026-10-02T20:51:57.9367725Z + react-dom@19.2.5
+2026-10-02T20:51:57.9368096Z + react-hook-form@7.73.1
+2026-10-02T20:51:57.9368521Z + react-resizable-panels@4.10.0
+2026-10-02T20:51:57.9368940Z + recharts@2.15.4
+2026-10-02T20:51:57.9369280Z + resend@6.12.4
+2026-10-02T20:51:57.9369614Z + sonner@2.0.7
+2026-10-02T20:51:57.9369945Z + stripe@22.2.2
+2026-10-02T20:51:57.9370286Z + tailwind-merge@3.5.0
+2026-10-02T20:51:57.9370650Z + tailwindcss@4.2.4
+2026-10-02T20:51:57.9371012Z + tw-animate-css@1.4.0
+2026-10-02T20:51:57.9371361Z + vaul@1.1.2
+2026-10-02T20:51:57.9371709Z + vite-tsconfig-paths@6.1.1
+2026-10-02T20:51:57.9372096Z + web-vitals@5.1.0
+2026-10-02T20:51:57.9372467Z + zod@3.25.76
+2026-10-02T20:51:57.9372974Z 
+2026-10-02T20:51:57.9373146Z 612 packages installed [3.01s]
+2026-10-02T20:51:57.9500221Z ##[group]Run bunx supabase start
+2026-10-02T20:51:57.9500592Z [36;1mbunx supabase start[0m
+2026-10-02T20:51:57.9576608Z shell: /usr/bin/bash -e {0}
+2026-10-02T20:51:57.9576942Z ##[endgroup]
+2026-10-02T20:51:57.9749352Z Resolving dependencies
+2026-10-02T20:51:58.9581317Z Resolved, downloaded and extracted [46]
+2026-10-02T20:51:58.9697284Z Saved lockfile
+2026-10-02T20:52:00.8580741Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.8590124Z Retrying after 4s: public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-02T20:52:00.8592539Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.8597778Z Retrying after 4s: public.ecr.aws/supabase/kong:2.8.1
+2026-10-02T20:52:00.9028893Z v1.79.28: Pulling from supabase/storage-api
+2026-10-02T20:52:00.9325235Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.9343086Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.9350972Z Retrying after 4s: public.ecr.aws/supabase/vector:0.58.0-alpine
+2026-10-02T20:52:00.9366993Z Retrying after 4s: public.ecr.aws/supabase/postgrest:v16.4
+2026-10-02T20:52:00.9395312Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.9419270Z Retrying after 4s: public.ecr.aws/supabase/postgres-meta:v0.99.0
+2026-10-02T20:52:00.9445311Z v2.140.3: Pulling from supabase/realtime
+2026-10-02T20:52:00.9527913Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.9560471Z Retrying after 4s: public.ecr.aws/supabase/gotrue:v2.197.0
+2026-10-02T20:52:00.9672467Z 1.50.15: Pulling from supabase/logflare
+2026-10-02T20:52:00.9772184Z toomanyrequests: Rate exceeded
+2026-10-02T20:52:00.9793445Z Retrying after 4s: public.ecr.aws/supabase/realtime:v2.140.3
+2026-10-02T20:52:00.9857078Z v1.31.3: Pulling from supabase/mailpit
+2026-10-02T20:52:00.9961186Z d0c1d894c237: Pulling fs layer
+2026-10-02T20:52:00.9961791Z f0bff0b17bb6: Pulling fs layer
+2026-10-02T20:52:00.9962272Z bf5074c0b7fa: Pulling fs layer
+2026-10-02T20:52:00.9962701Z 76bc8d85aed0: Pulling fs layer
+2026-10-02T20:52:00.9963151Z 8039b21a00ac: Pulling fs layer
+2026-10-02T20:52:00.9963603Z 0c91f59dd719: Pulling fs layer
+2026-10-02T20:52:00.9964017Z b3906d47c2de: Pulling fs layer
+2026-10-02T20:52:00.9964443Z ff3f1422973f: Pulling fs layer
+2026-10-02T20:52:00.9964895Z 9851544581cc: Pulling fs layer
+2026-10-02T20:52:00.9965344Z b64e840f12f0: Pulling fs layer
+2026-10-02T20:52:00.9965722Z e568217ef856: Pulling fs layer
+2026-10-02T20:52:00.9966134Z 11fed3630d94: Pulling fs layer
+2026-10-02T20:52:00.9966558Z afa03ed6b259: Pulling fs layer
+2026-10-02T20:52:00.9967000Z 24eea9e7dbd7: Pulling fs layer
+2026-10-02T20:52:00.9967691Z 0c91f59dd719: Waiting
+2026-10-02T20:52:00.9968146Z 9851544581cc: Waiting
+2026-10-02T20:52:00.9968536Z b3906d47c2de: Waiting
+2026-10-02T20:52:00.9968908Z ff3f1422973f: Waiting
+2026-10-02T20:52:00.9969163Z b64e840f12f0: Waiting
+2026-10-02T20:52:00.9969396Z e568217ef856: Waiting
+2026-10-02T20:52:00.9969766Z 11fed3630d94: Waiting
+2026-10-02T20:52:00.9969978Z afa03ed6b259: Waiting
+2026-10-02T20:52:00.9970201Z 24eea9e7dbd7: Waiting
+2026-10-02T20:52:00.9970411Z 8039b21a00ac: Waiting
+2026-10-02T20:52:00.9970625Z 76bc8d85aed0: Waiting
+2026-10-02T20:52:00.9971035Z v1.77.1: Pulling from supabase/edge-runtime
+2026-10-02T20:52:01.0336387Z 2026.09.28-sha-5e59b60: Pulling from supabase/studio
+2026-10-02T20:52:01.0615780Z 119d43eec815: Pulling fs layer
+2026-10-02T20:52:01.0616614Z a54a651cf647: Pulling fs layer
+2026-10-02T20:52:01.0617265Z 8de6758ae3cd: Pulling fs layer
+2026-10-02T20:52:01.0617669Z 6f529730c983: Pulling fs layer
+2026-10-02T20:52:01.0617990Z f7be8c0cae2a: Pulling fs layer
+2026-10-02T20:52:01.0618568Z 5d1c897c38a0: Pulling fs layer
+2026-10-02T20:52:01.0618849Z 07e700c802b2: Pulling fs layer
+2026-10-02T20:52:01.0619128Z 03c1d40cdb55: Pulling fs layer
+2026-10-02T20:52:01.0619391Z 119d43eec815: Waiting
+2026-10-02T20:52:01.0619641Z f7be8c0cae2a: Waiting
+2026-10-02T20:52:01.0620210Z 4f4fb700ef54: Pulling fs layer
+2026-10-02T20:52:01.0620719Z a54a651cf647: Waiting
+2026-10-02T20:52:01.0620959Z 8de6758ae3cd: Waiting
+2026-10-02T20:52:01.0621187Z 5d1c897c38a0: Waiting
+2026-10-02T20:52:01.0621411Z 6f529730c983: Waiting
+2026-10-02T20:52:01.0621636Z 07e700c802b2: Waiting
+2026-10-02T20:52:01.0621876Z 03c1d40cdb55: Waiting
+2026-10-02T20:52:01.0622103Z 4f4fb700ef54: Waiting
+2026-10-02T20:52:01.0622344Z b03f939add7f: Pulling fs layer
+2026-10-02T20:52:01.0622604Z b03f939add7f: Waiting
+2026-10-02T20:52:01.0652245Z toomanyrequests: Rate exceeded
+2026-10-02T20:52:01.0672211Z Retrying after 4s: public.ecr.aws/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-02T20:52:01.0731273Z e2de96513ba9: Already exists
+2026-10-02T20:52:01.0753361Z 0a0b1cce89bf: Pulling fs layer
+2026-10-02T20:52:01.0753771Z 6c11b30372ef: Pulling fs layer
+2026-10-02T20:52:01.0754079Z 0a0b1cce89bf: Waiting
+2026-10-02T20:52:01.0754356Z 6c11b30372ef: Waiting
+2026-10-02T20:52:01.0877749Z 774043ccc8cc: Pulling fs layer
+2026-10-02T20:52:01.0878485Z 8a4221b43423: Pulling fs layer
+2026-10-02T20:52:01.0878830Z 6b96467f84f7: Pulling fs layer
+2026-10-02T20:52:01.0879126Z b6a94ebfb5d3: Pulling fs layer
+2026-10-02T20:52:01.0879425Z d6df31423628: Pulling fs layer
+2026-10-02T20:52:01.0879717Z 911b0bac1c2c: Pulling fs layer
+2026-10-02T20:52:01.0879995Z 774043ccc8cc: Waiting
+2026-10-02T20:52:01.0880252Z d6df31423628: Waiting
+2026-10-02T20:52:01.0880503Z 8a4221b43423: Waiting
+2026-10-02T20:52:01.0880755Z 6b96467f84f7: Waiting
+2026-10-02T20:52:01.0880999Z b6a94ebfb5d3: Waiting
+2026-10-02T20:52:01.0881245Z 911b0bac1c2c: Waiting
+2026-10-02T20:52:01.1742045Z bf5074c0b7fa: Verifying Checksum
+2026-10-02T20:52:01.1742841Z bf5074c0b7fa: Download complete
+2026-10-02T20:52:01.1934895Z d0c1d894c237: Verifying Checksum
+2026-10-02T20:52:01.1935608Z d0c1d894c237: Download complete
+2026-10-02T20:52:01.2371223Z 76bc8d85aed0: Verifying Checksum
+2026-10-02T20:52:01.2371876Z 76bc8d85aed0: Download complete
+2026-10-02T20:52:01.3049974Z 0c91f59dd719: Verifying Checksum
+2026-10-02T20:52:01.3051074Z 0c91f59dd719: Download complete
+2026-10-02T20:52:01.3631997Z d0c1d894c237: Pull complete
+2026-10-02T20:52:01.3787238Z f0bff0b17bb6: Verifying Checksum
+2026-10-02T20:52:01.3789109Z f0bff0b17bb6: Download complete
+2026-10-02T20:52:01.3960939Z b3906d47c2de: Verifying Checksum
+2026-10-02T20:52:01.3961911Z b3906d47c2de: Download complete
+2026-10-02T20:52:01.4428501Z ff3f1422973f: Verifying Checksum
+2026-10-02T20:52:01.4429637Z ff3f1422973f: Download complete
+2026-10-02T20:52:01.5066517Z b64e840f12f0: Verifying Checksum
+2026-10-02T20:52:01.5069578Z b64e840f12f0: Download complete
+2026-10-02T20:52:01.5593223Z 9851544581cc: Verifying Checksum
+2026-10-02T20:52:01.5593816Z 9851544581cc: Download complete
+2026-10-02T20:52:01.6960110Z 11fed3630d94: Download complete
+2026-10-02T20:52:01.6962378Z 8039b21a00ac: Verifying Checksum
+2026-10-02T20:52:01.6963330Z 8039b21a00ac: Download complete
+2026-10-02T20:52:01.7588923Z 24eea9e7dbd7: Verifying Checksum
+2026-10-02T20:52:01.7591218Z 24eea9e7dbd7: Download complete
+2026-10-02T20:52:01.7717370Z afa03ed6b259: Download complete
+2026-10-02T20:52:01.8313705Z e568217ef856: Verifying Checksum
+2026-10-02T20:52:01.8315087Z e568217ef856: Download complete
+2026-10-02T20:52:01.9403142Z 8de6758ae3cd: Verifying Checksum
+2026-10-02T20:52:01.9404527Z 8de6758ae3cd: Download complete
+2026-10-02T20:52:01.9729467Z a54a651cf647: Verifying Checksum
+2026-10-02T20:52:01.9730566Z a54a651cf647: Download complete
+2026-10-02T20:52:01.9871774Z 119d43eec815: Verifying Checksum
+2026-10-02T20:52:01.9872776Z 119d43eec815: Download complete
+2026-10-02T20:52:02.0325873Z f7be8c0cae2a: Verifying Checksum
+2026-10-02T20:52:02.0326826Z f7be8c0cae2a: Download complete
+2026-10-02T20:52:02.2840181Z 5d1c897c38a0: Verifying Checksum
+2026-10-02T20:52:02.2869105Z 5d1c897c38a0: Download complete
+2026-10-02T20:52:02.3917229Z 03c1d40cdb55: Verifying Checksum
+2026-10-02T20:52:02.3931756Z 03c1d40cdb55: Download complete
+2026-10-02T20:52:02.3975416Z 07e700c802b2: Verifying Checksum
+2026-10-02T20:52:02.4022014Z 07e700c802b2: Download complete
+2026-10-02T20:52:02.4259014Z 4f4fb700ef54: Verifying Checksum
+2026-10-02T20:52:02.4259852Z 4f4fb700ef54: Download complete
+2026-10-02T20:52:02.4752553Z b03f939add7f: Verifying Checksum
+2026-10-02T20:52:02.4760240Z b03f939add7f: Download complete
+2026-10-02T20:52:02.5438052Z 6c11b30372ef: Verifying Checksum
+2026-10-02T20:52:02.5438666Z 6c11b30372ef: Download complete
+2026-10-02T20:52:02.5773995Z 6f529730c983: Verifying Checksum
+2026-10-02T20:52:02.5774785Z 6f529730c983: Download complete
+2026-10-02T20:52:02.5835283Z 0a0b1cce89bf: Verifying Checksum
+2026-10-02T20:52:02.5835865Z 0a0b1cce89bf: Download complete
+2026-10-02T20:52:02.8065325Z 6b96467f84f7: Download complete
+2026-10-02T20:52:02.9679727Z 774043ccc8cc: Verifying Checksum
+2026-10-02T20:52:02.9681228Z 774043ccc8cc: Download complete
+2026-10-02T20:52:03.0574045Z 8a4221b43423: Verifying Checksum
+2026-10-02T20:52:03.0579058Z 8a4221b43423: Download complete
+2026-10-02T20:52:03.2572437Z b6a94ebfb5d3: Verifying Checksum
+2026-10-02T20:52:03.2577666Z b6a94ebfb5d3: Download complete
+2026-10-02T20:52:03.3231971Z 911b0bac1c2c: Verifying Checksum
+2026-10-02T20:52:03.3239280Z 911b0bac1c2c: Download complete
+2026-10-02T20:52:03.5348386Z 0a0b1cce89bf: Pull complete
+2026-10-02T20:52:04.4158651Z d6df31423628: Verifying Checksum
+2026-10-02T20:52:04.4175116Z d6df31423628: Download complete
+2026-10-02T20:52:05.7738484Z 17.11.0.002: Pulling from supabase/postgres
+2026-10-02T20:52:05.9327074Z 0.58.0-alpine: Pulling from supabase/vector
+2026-10-02T20:52:05.9710267Z v16.4: Pulling from supabase/postgrest
+2026-10-02T20:52:05.9793325Z v2.197.0: Pulling from supabase/gotrue
+2026-10-02T20:52:05.9869187Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:05.9894713Z v2.140.3: Pulling from supabase/realtime
+2026-10-02T20:52:05.9901842Z Retrying after 8s: public.ecr.aws/supabase/postgres-meta:v0.99.0
+2026-10-02T20:52:06.0261242Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:06.0308568Z Retrying after 8s: public.ecr.aws/supabase/kong:2.8.1
+2026-10-02T20:52:06.0354765Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:06.0394175Z Retrying after 8s: public.ecr.aws/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-02T20:52:06.0741183Z toomanyrequests: Rate exceeded
+2026-10-02T20:52:06.0774778Z Retrying after 8s: public.ecr.aws/supabase/vector:0.58.0-alpine
+2026-10-02T20:52:06.0820717Z d0c1d894c237: Already exists
+2026-10-02T20:52:06.1249204Z 61adb98c1ee5: Pulling fs layer
+2026-10-02T20:52:06.1250077Z 0bd435952039: Pulling fs layer
+2026-10-02T20:52:06.1250584Z 583ec90c6715: Pulling fs layer
+2026-10-02T20:52:06.1251245Z 5ed2e2ddfb89: Pulling fs layer
+2026-10-02T20:52:06.1251902Z e80f8e2e99d6: Pulling fs layer
+2026-10-02T20:52:06.1252431Z 232deb54e13d: Pulling fs layer
+2026-10-02T20:52:06.1252951Z 0f473b3071cf: Pulling fs layer
+2026-10-02T20:52:06.1253481Z 75d1eb89a82b: Pulling fs layer
+2026-10-02T20:52:06.1254060Z b19532946444: Pulling fs layer
+2026-10-02T20:52:06.1279325Z 2240af07ff04: Pulling fs layer
+2026-10-02T20:52:06.1280558Z a45c069d14ec: Pulling fs layer
+2026-10-02T20:52:06.1282282Z 0ba5f2e703c2: Pulling fs layer
+2026-10-02T20:52:06.1301750Z 2647d19058a7: Pulling fs layer
+2026-10-02T20:52:06.1302860Z dc33104fda30: Pulling fs layer
+2026-10-02T20:52:06.1318169Z b79880533e0a: Pulling fs layer
+2026-10-02T20:52:06.1319643Z 0e2d5cb5dee4: Pulling fs layer
+2026-10-02T20:52:06.1320390Z 949763475ae7: Pulling fs layer
+2026-10-02T20:52:06.1321125Z 4197ef27502e: Pulling fs layer
+2026-10-02T20:52:06.1321869Z cecab6d00c31: Pulling fs layer
+2026-10-02T20:52:06.1322591Z 22e811bdd64a: Pulling fs layer
+2026-10-02T20:52:06.1323298Z b0b708853afb: Pulling fs layer
+2026-10-02T20:52:06.1324042Z 5ab47e19d7ba: Pulling fs layer
+2026-10-02T20:52:06.1324785Z dd1bf2fa4fa2: Pulling fs layer
+2026-10-02T20:52:06.1325513Z adf6436fcbd6: Pulling fs layer
+2026-10-02T20:52:06.1326247Z 250c68ac8298: Pulling fs layer
+2026-10-02T20:52:06.1331213Z ea69d2e3c12d: Pulling fs layer
+2026-10-02T20:52:06.1332341Z 4b82e8682a19: Pulling fs layer
+2026-10-02T20:52:06.1333400Z 90c1869f70bf: Pulling fs layer
+2026-10-02T20:52:06.1334160Z e80f8e2e99d6: Waiting
+2026-10-02T20:52:06.1334834Z 232deb54e13d: Waiting
+2026-10-02T20:52:06.1335471Z 0f473b3071cf: Waiting
+2026-10-02T20:52:06.1336147Z 75d1eb89a82b: Waiting
+2026-10-02T20:52:06.1336796Z b19532946444: Waiting
+2026-10-02T20:52:06.1338059Z 2240af07ff04: Waiting
+2026-10-02T20:52:06.1350014Z 5ed2e2ddfb89: Waiting
+2026-10-02T20:52:06.1351598Z 22e811bdd64a: Waiting
+2026-10-02T20:52:06.1352422Z 0e2d5cb5dee4: Waiting
+2026-10-02T20:52:06.1353772Z 949763475ae7: Waiting
+2026-10-02T20:52:06.1354607Z b0b708853afb: Waiting
+2026-10-02T20:52:06.1355713Z 4197ef27502e: Waiting
+2026-10-02T20:52:06.1356709Z 5ab47e19d7ba: Waiting
+2026-10-02T20:52:06.1357343Z cecab6d00c31: Waiting
+2026-10-02T20:52:06.1358356Z dd1bf2fa4fa2: Waiting
+2026-10-02T20:52:06.1360107Z adf6436fcbd6: Waiting
+2026-10-02T20:52:06.1360968Z 250c68ac8298: Waiting
+2026-10-02T20:52:06.1361687Z ea69d2e3c12d: Waiting
+2026-10-02T20:52:06.1362673Z 4b82e8682a19: Waiting
+2026-10-02T20:52:06.1363262Z 90c1869f70bf: Waiting
+2026-10-02T20:52:06.1363995Z 0ba5f2e703c2: Waiting
+2026-10-02T20:52:06.1364563Z 2647d19058a7: Waiting
+2026-10-02T20:52:06.1365151Z dc33104fda30: Waiting
+2026-10-02T20:52:06.1365739Z b79880533e0a: Waiting
+2026-10-02T20:52:06.1656614Z 9d7a4870f477: Pulling fs layer
+2026-10-02T20:52:06.1658548Z 9d7a4870f477: Waiting
+2026-10-02T20:52:06.1759782Z 55afa1ecc21d: Already exists
+2026-10-02T20:52:06.1826777Z 0bd435952039: Verifying Checksum
+2026-10-02T20:52:06.1827956Z 0bd435952039: Download complete
+2026-10-02T20:52:06.2200716Z 062e450697fa: Pulling fs layer
+2026-10-02T20:52:06.2201496Z f372fa8cfc9c: Pulling fs layer
+2026-10-02T20:52:06.2201950Z 67a16200f65d: Pulling fs layer
+2026-10-02T20:52:06.2202437Z a58f068d2d7a: Pulling fs layer
+2026-10-02T20:52:06.2202811Z 049cea4edf36: Pulling fs layer
+2026-10-02T20:52:06.2203529Z 6043e85c60a3: Pulling fs layer
+2026-10-02T20:52:06.2203999Z f1ffadb0c9ec: Pulling fs layer
+2026-10-02T20:52:06.2217046Z fe4c2b07afe1: Pulling fs layer
+2026-10-02T20:52:06.2217813Z 87dc5681ef25: Pulling fs layer
+2026-10-02T20:52:06.2220750Z 8ed24ba27cff: Pulling fs layer
+2026-10-02T20:52:06.2221226Z 78a53c0cbd41: Pulling fs layer
+2026-10-02T20:52:06.2224230Z 4d4189eeb96e: Pulling fs layer
+2026-10-02T20:52:06.2224691Z 062e450697fa: Waiting
+2026-10-02T20:52:06.2225092Z f372fa8cfc9c: Waiting
+2026-10-02T20:52:06.2225473Z 67a16200f65d: Waiting
+2026-10-02T20:52:06.2225829Z a58f068d2d7a: Waiting
+2026-10-02T20:52:06.2226191Z 049cea4edf36: Waiting
+2026-10-02T20:52:06.2226549Z 6043e85c60a3: Waiting
+2026-10-02T20:52:06.2226911Z f1ffadb0c9ec: Waiting
+2026-10-02T20:52:06.2227264Z fe4c2b07afe1: Waiting
+2026-10-02T20:52:06.2227838Z 87dc5681ef25: Waiting
+2026-10-02T20:52:06.2228194Z 8ed24ba27cff: Waiting
+2026-10-02T20:52:06.2228550Z 78a53c0cbd41: Waiting
+2026-10-02T20:52:06.2228909Z 4d4189eeb96e: Waiting
+2026-10-02T20:52:06.2229300Z 71eb50013731: Pulling fs layer
+2026-10-02T20:52:06.2229682Z 74c409e3506a: Pulling fs layer
+2026-10-02T20:52:06.2230091Z e5d190db8191: Pulling fs layer
+2026-10-02T20:52:06.2230562Z f30f4fcb85f4: Pulling fs layer
+2026-10-02T20:52:06.2238203Z c0cb7126d877: Pulling fs layer
+2026-10-02T20:52:06.2238656Z e5d190db8191: Waiting
+2026-10-02T20:52:06.2239048Z 71eb50013731: Waiting
+2026-10-02T20:52:06.2239412Z 74c409e3506a: Waiting
+2026-10-02T20:52:06.2239754Z c0cb7126d877: Waiting
+2026-10-02T20:52:06.2240093Z f30f4fcb85f4: Waiting
+2026-10-02T20:52:06.2240472Z 119d43eec815: Pull complete
+2026-10-02T20:52:06.2470802Z 61adb98c1ee5: Verifying Checksum
+2026-10-02T20:52:06.2475011Z 61adb98c1ee5: Download complete
+2026-10-02T20:52:06.2565717Z 5ed2e2ddfb89: Verifying Checksum
+2026-10-02T20:52:06.2566366Z 5ed2e2ddfb89: Download complete
+2026-10-02T20:52:06.3412446Z 232deb54e13d: Verifying Checksum
+2026-10-02T20:52:06.3413044Z 232deb54e13d: Download complete
+2026-10-02T20:52:06.4059380Z 0f473b3071cf: Verifying Checksum
+2026-10-02T20:52:06.4059797Z 0f473b3071cf: Download complete
+2026-10-02T20:52:06.4350014Z e80f8e2e99d6: Verifying Checksum
+2026-10-02T20:52:06.4352491Z e80f8e2e99d6: Download complete
+2026-10-02T20:52:06.4874620Z 75d1eb89a82b: Verifying Checksum
+2026-10-02T20:52:06.4875191Z 75d1eb89a82b: Download complete
+2026-10-02T20:52:06.5095662Z b19532946444: Verifying Checksum
+2026-10-02T20:52:06.5096529Z b19532946444: Download complete
+2026-10-02T20:52:06.5781137Z a45c069d14ec: Verifying Checksum
+2026-10-02T20:52:06.5781572Z a45c069d14ec: Download complete
+2026-10-02T20:52:06.5883873Z 2240af07ff04: Verifying Checksum
+2026-10-02T20:52:06.5884422Z 2240af07ff04: Download complete
+2026-10-02T20:52:06.6777470Z 0ba5f2e703c2: Verifying Checksum
+2026-10-02T20:52:06.6778856Z 0ba5f2e703c2: Download complete
+2026-10-02T20:52:06.6961887Z 2647d19058a7: Download complete
+2026-10-02T20:52:06.7631691Z b79880533e0a: Verifying Checksum
+2026-10-02T20:52:06.7632582Z b79880533e0a: Download complete
+2026-10-02T20:52:06.7646822Z dc33104fda30: Verifying Checksum
+2026-10-02T20:52:06.7650122Z dc33104fda30: Download complete
+2026-10-02T20:52:06.8563640Z 0e2d5cb5dee4: Verifying Checksum
+2026-10-02T20:52:06.8564248Z 0e2d5cb5dee4: Download complete
+2026-10-02T20:52:06.8699808Z 949763475ae7: Verifying Checksum
+2026-10-02T20:52:06.8702197Z 949763475ae7: Download complete
+2026-10-02T20:52:06.9296404Z 4197ef27502e: Download complete
+2026-10-02T20:52:06.9339756Z cecab6d00c31: Verifying Checksum
+2026-10-02T20:52:06.9344813Z cecab6d00c31: Download complete
+2026-10-02T20:52:06.9907204Z b0b708853afb: Download complete
+2026-10-02T20:52:06.9975881Z 22e811bdd64a: Verifying Checksum
+2026-10-02T20:52:06.9976576Z 22e811bdd64a: Download complete
+2026-10-02T20:52:07.0517030Z 5ab47e19d7ba: Download complete
+2026-10-02T20:52:07.0694766Z dd1bf2fa4fa2: Verifying Checksum
+2026-10-02T20:52:07.0699093Z dd1bf2fa4fa2: Download complete
+2026-10-02T20:52:07.1332711Z adf6436fcbd6: Verifying Checksum
+2026-10-02T20:52:07.1333691Z adf6436fcbd6: Download complete
+2026-10-02T20:52:07.1601104Z 250c68ac8298: Verifying Checksum
+2026-10-02T20:52:07.1602187Z 250c68ac8298: Download complete
+2026-10-02T20:52:07.2148489Z ea69d2e3c12d: Verifying Checksum
+2026-10-02T20:52:07.2149375Z ea69d2e3c12d: Download complete
+2026-10-02T20:52:07.2439131Z 4b82e8682a19: Download complete
+2026-10-02T20:52:07.2855815Z 90c1869f70bf: Verifying Checksum
+2026-10-02T20:52:07.2856656Z 90c1869f70bf: Download complete
+2026-10-02T20:52:07.5541023Z 9d7a4870f477: Verifying Checksum
+2026-10-02T20:52:07.5541927Z 9d7a4870f477: Download complete
+2026-10-02T20:52:07.8176128Z 062e450697fa: Verifying Checksum
+2026-10-02T20:52:07.8179596Z 062e450697fa: Download complete
+2026-10-02T20:52:07.9002458Z 583ec90c6715: Verifying Checksum
+2026-10-02T20:52:07.9004451Z 583ec90c6715: Download complete
+2026-10-02T20:52:07.9824003Z a58f068d2d7a: Verifying Checksum
+2026-10-02T20:52:07.9828032Z a58f068d2d7a: Download complete
+2026-10-02T20:52:08.0427771Z 67a16200f65d: Verifying Checksum
+2026-10-02T20:52:08.0428336Z 67a16200f65d: Download complete
+2026-10-02T20:52:08.0796042Z 049cea4edf36: Verifying Checksum
+2026-10-02T20:52:08.0796999Z 049cea4edf36: Download complete
+2026-10-02T20:52:08.1078686Z f372fa8cfc9c: Verifying Checksum
+2026-10-02T20:52:08.1079110Z f372fa8cfc9c: Download complete
+2026-10-02T20:52:08.1703452Z fe4c2b07afe1: Verifying Checksum
+2026-10-02T20:52:08.1703882Z fe4c2b07afe1: Download complete
+2026-10-02T20:52:08.3666723Z 87dc5681ef25: Verifying Checksum
+2026-10-02T20:52:08.3667382Z 87dc5681ef25: Download complete
+2026-10-02T20:52:08.4147165Z 6043e85c60a3: Verifying Checksum
+2026-10-02T20:52:08.4148742Z 6043e85c60a3: Download complete
+2026-10-02T20:52:08.4805432Z 78a53c0cbd41: Verifying Checksum
+2026-10-02T20:52:08.4817938Z f1ffadb0c9ec: Verifying Checksum
+2026-10-02T20:52:08.4818499Z f1ffadb0c9ec: Download complete
+2026-10-02T20:52:08.4818948Z 78a53c0cbd41: Download complete
+2026-10-02T20:52:08.4842269Z 9d7a4870f477: Pull complete
+2026-10-02T20:52:08.4927912Z Digest: sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df
+2026-10-02T20:52:08.4928963Z Status: Downloaded newer image for public.ecr.aws/supabase/postgrest:v16.4
+2026-10-02T20:52:08.4948193Z public.ecr.aws/supabase/postgrest:v16.4
+2026-10-02T20:52:08.5494633Z 71eb50013731: Verifying Checksum
+2026-10-02T20:52:08.5495269Z 71eb50013731: Download complete
+2026-10-02T20:52:08.5542630Z 4d4189eeb96e: Verifying Checksum
+2026-10-02T20:52:08.5543298Z 4d4189eeb96e: Download complete
+2026-10-02T20:52:08.5952842Z 8ed24ba27cff: Verifying Checksum
+2026-10-02T20:52:08.5954503Z 8ed24ba27cff: Download complete
+2026-10-02T20:52:08.7138625Z f30f4fcb85f4: Download complete
+2026-10-02T20:52:08.8234891Z 74c409e3506a: Verifying Checksum
+2026-10-02T20:52:08.8237839Z 74c409e3506a: Download complete
+2026-10-02T20:52:08.8253916Z c0cb7126d877: Verifying Checksum
+2026-10-02T20:52:08.8254908Z c0cb7126d877: Download complete
+2026-10-02T20:52:08.8726524Z 774043ccc8cc: Pull complete
+2026-10-02T20:52:09.0174147Z 6c11b30372ef: Pull complete
+2026-10-02T20:52:09.0248784Z Digest: sha256:ed9b00c609e77e99c79b93f1178255ebc271868920f2c69a8d166bd5634ed10d
+2026-10-02T20:52:09.0683912Z Status: Downloaded newer image for public.ecr.aws/supabase/mailpit:v1.31.3
+2026-10-02T20:52:09.0705558Z public.ecr.aws/supabase/mailpit:v1.31.3
+2026-10-02T20:52:09.1425259Z 71eb50013731: Pull complete
+2026-10-02T20:52:09.1426743Z f0bff0b17bb6: Pull complete
+2026-10-02T20:52:09.1437220Z 61adb98c1ee5: Pull complete
+2026-10-02T20:52:09.2152489Z 0bd435952039: Pull complete
+2026-10-02T20:52:09.2889142Z bf5074c0b7fa: Pull complete
+2026-10-02T20:52:09.3269013Z 76bc8d85aed0: Pull complete
+2026-10-02T20:52:09.4311037Z 74c409e3506a: Pull complete
+2026-10-02T20:52:09.4849300Z e5d190db8191: Verifying Checksum
+2026-10-02T20:52:09.4856692Z e5d190db8191: Download complete
+2026-10-02T20:52:10.9365492Z e5d190db8191: Pull complete
+2026-10-02T20:52:11.0754285Z f30f4fcb85f4: Pull complete
+2026-10-02T20:52:11.1129814Z a54a651cf647: Pull complete
+2026-10-02T20:52:11.1360667Z c0cb7126d877: Pull complete
+2026-10-02T20:52:11.1490661Z Digest: sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b
+2026-10-02T20:52:11.1514337Z Status: Downloaded newer image for public.ecr.aws/supabase/gotrue:v2.197.0
+2026-10-02T20:52:11.1524313Z public.ecr.aws/supabase/gotrue:v2.197.0
+2026-10-02T20:52:11.1947177Z 8de6758ae3cd: Pull complete
+2026-10-02T20:52:11.7493284Z 8a4221b43423: Pull complete
+2026-10-02T20:52:11.7928273Z 062e450697fa: Pull complete
+2026-10-02T20:52:11.7939271Z 6b96467f84f7: Pull complete
+2026-10-02T20:52:14.5205551Z v0.99.0: Pulling from supabase/postgres-meta
+2026-10-02T20:52:14.5277998Z 0.58.0-alpine: Pulling from supabase/vector
+2026-10-02T20:52:14.5285980Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-02T20:52:14.6169590Z toomanyrequests: Rate exceeded
+2026-10-02T20:52:14.6218695Z 2.8.1: Pulling from supabase/kong
+2026-10-02T20:52:14.6872350Z 55afa1ecc21d: Already exists
+2026-10-02T20:52:14.7328030Z 921bfecda4c1: Pulling fs layer
+2026-10-02T20:52:14.7328744Z 80af27af8935: Pulling fs layer
+2026-10-02T20:52:14.7331295Z 30fdcf1539bd: Pulling fs layer
+2026-10-02T20:52:14.7332080Z 7c115bed1203: Pulling fs layer
+2026-10-02T20:52:14.7332610Z 4f4fb700ef54: Pulling fs layer
+2026-10-02T20:52:14.7333050Z 7c115bed1203: Waiting
+2026-10-02T20:52:14.7334982Z 4f4fb700ef54: Waiting
+2026-10-02T20:52:14.7428188Z 213ec9aee27d: Pulling fs layer
+2026-10-02T20:52:14.7429311Z a70653f7a2d5: Pulling fs layer
+2026-10-02T20:52:14.7430468Z 531e3bd93090: Pulling fs layer
+2026-10-02T20:52:14.7431113Z 814dd06d26c7: Pulling fs layer
+2026-10-02T20:52:14.7431772Z 213ec9aee27d: Waiting
+2026-10-02T20:52:14.7432740Z a70653f7a2d5: Waiting
+2026-10-02T20:52:14.7433378Z 531e3bd93090: Waiting
+2026-10-02T20:52:14.7433994Z 814dd06d26c7: Waiting
+2026-10-02T20:52:14.8001483Z 30fdcf1539bd: Verifying Checksum
+2026-10-02T20:52:14.8003697Z 30fdcf1539bd: Download complete
+2026-10-02T20:52:14.8649429Z 921bfecda4c1: Verifying Checksum
+2026-10-02T20:52:14.8652074Z 921bfecda4c1: Download complete
+2026-10-02T20:52:14.8972119Z 7c115bed1203: Verifying Checksum
+2026-10-02T20:52:14.8973181Z 7c115bed1203: Download complete
+2026-10-02T20:52:14.9004326Z 4f4fb700ef54: Verifying Checksum
+2026-10-02T20:52:14.9005876Z 4f4fb700ef54: Download complete
+2026-10-02T20:52:14.9180072Z 2026.09.28-sha-5e59b60: Pulling from supabase/studio
+2026-10-02T20:52:14.9711856Z a70653f7a2d5: Verifying Checksum
+2026-10-02T20:52:14.9712492Z a70653f7a2d5: Download complete
+2026-10-02T20:52:15.0335082Z v0.99.0: Pulling from supabase/postgres-meta
+2026-10-02T20:52:15.1345298Z 774043ccc8cc: Already exists
+2026-10-02T20:52:15.1708951Z 8ab8fd6c9445: Pulling fs layer
+2026-10-02T20:52:15.1710014Z 61592f5b6030: Pulling fs layer
+2026-10-02T20:52:15.1710725Z 8d9d84ee3188: Pulling fs layer
+2026-10-02T20:52:15.1711349Z dc40c63c08b5: Pulling fs layer
+2026-10-02T20:52:15.1712870Z 380d67659cd5: Pulling fs layer
+2026-10-02T20:52:15.1713591Z dc1fc1d6f98f: Pulling fs layer
+2026-10-02T20:52:15.1714300Z 75a5c7dfb5a4: Pulling fs layer
+2026-10-02T20:52:15.1714996Z 9fedd65dec7f: Pulling fs layer
+2026-10-02T20:52:15.1715948Z 8ab8fd6c9445: Waiting
+2026-10-02T20:52:15.1717082Z 61592f5b6030: Waiting
+2026-10-02T20:52:15.1717990Z 8d9d84ee3188: Waiting
+2026-10-02T20:52:15.1718598Z dc40c63c08b5: Waiting
+2026-10-02T20:52:15.1719945Z 380d67659cd5: Waiting
+2026-10-02T20:52:15.1720410Z dc1fc1d6f98f: Waiting
+2026-10-02T20:52:15.1727066Z 75a5c7dfb5a4: Waiting
+2026-10-02T20:52:15.1728003Z 9fedd65dec7f: Waiting
+2026-10-02T20:52:15.1728572Z 213ec9aee27d: Verifying Checksum
+2026-10-02T20:52:15.1729029Z 213ec9aee27d: Download complete
+2026-10-02T20:52:15.2372966Z 814dd06d26c7: Verifying Checksum
+2026-10-02T20:52:15.2376055Z 814dd06d26c7: Download complete
+2026-10-02T20:52:15.2664198Z a8ac7f6c67ab: Pulling fs layer
+2026-10-02T20:52:15.2667137Z cea7eb9bbe80: Pulling fs layer
+2026-10-02T20:52:15.2668364Z 51c53f95c2ca: Pulling fs layer
+2026-10-02T20:52:15.2688435Z 3cddab114eda: Pulling fs layer
+2026-10-02T20:52:15.2689602Z 0282d618b52c: Pulling fs layer
+2026-10-02T20:52:15.2696815Z 3d9090abcf25: Pulling fs layer
+2026-10-02T20:52:15.2697706Z 2f3356853560: Pulling fs layer
+2026-10-02T20:52:15.2698397Z bb8f02002931: Pulling fs layer
+2026-10-02T20:52:15.2699475Z 45dd7940c54d: Pulling fs layer
+2026-10-02T20:52:15.2700459Z e969b0bb2c88: Pulling fs layer
+2026-10-02T20:52:15.2701271Z a8ac7f6c67ab: Waiting
+2026-10-02T20:52:15.2702018Z cea7eb9bbe80: Waiting
+2026-10-02T20:52:15.2702618Z 51c53f95c2ca: Waiting
+2026-10-02T20:52:15.2703504Z 3cddab114eda: Waiting
+2026-10-02T20:52:15.2704557Z 0282d618b52c: Waiting
+2026-10-02T20:52:15.2705143Z 3d9090abcf25: Waiting
+2026-10-02T20:52:15.2706348Z 2f3356853560: Waiting
+2026-10-02T20:52:15.2707059Z bb8f02002931: Waiting
+2026-10-02T20:52:15.2708326Z 45dd7940c54d: Waiting
+2026-10-02T20:52:15.2708979Z e969b0bb2c88: Waiting
+2026-10-02T20:52:15.3524370Z 8ab8fd6c9445: Verifying Checksum
+2026-10-02T20:52:15.3525173Z 8ab8fd6c9445: Download complete
+2026-10-02T20:52:15.4718141Z 80af27af8935: Verifying Checksum
+2026-10-02T20:52:15.4718807Z 80af27af8935: Download complete
+2026-10-02T20:52:15.5967042Z 8d9d84ee3188: Download complete
+2026-10-02T20:52:15.7264911Z 531e3bd93090: Verifying Checksum
+2026-10-02T20:52:15.7267012Z 531e3bd93090: Download complete
+2026-10-02T20:52:15.7707235Z dc40c63c08b5: Verifying Checksum
+2026-10-02T20:52:15.7709698Z dc40c63c08b5: Download complete
+2026-10-02T20:52:15.9108604Z 61592f5b6030: Verifying Checksum
+2026-10-02T20:52:15.9109146Z 61592f5b6030: Download complete
+2026-10-02T20:52:16.0119312Z dc1fc1d6f98f: Verifying Checksum
+2026-10-02T20:52:16.0120237Z dc1fc1d6f98f: Download complete
+2026-10-02T20:52:16.0182750Z 75a5c7dfb5a4: Verifying Checksum
+2026-10-02T20:52:16.0185214Z 75a5c7dfb5a4: Download complete
+2026-10-02T20:52:16.0301663Z b6a94ebfb5d3: Pull complete
+2026-10-02T20:52:16.5144066Z 213ec9aee27d: Pull complete
+2026-10-02T20:52:16.5199991Z 8039b21a00ac: Pull complete
+2026-10-02T20:52:16.6506710Z a8ac7f6c67ab: Verifying Checksum
+2026-10-02T20:52:16.6507535Z a8ac7f6c67ab: Download complete
+2026-10-02T20:52:16.7556845Z 8ab8fd6c9445: Pull complete
+2026-10-02T20:52:16.8246607Z 0c91f59dd719: Pull complete
+2026-10-02T20:52:16.8441473Z cea7eb9bbe80: Verifying Checksum
+2026-10-02T20:52:16.8473971Z cea7eb9bbe80: Download complete
+2026-10-02T20:52:16.8479899Z a70653f7a2d5: Pull complete
+2026-10-02T20:52:16.9778595Z b3906d47c2de: Pull complete
+2026-10-02T20:52:16.9938246Z 380d67659cd5: Verifying Checksum
+2026-10-02T20:52:16.9938817Z 380d67659cd5: Download complete
+2026-10-02T20:52:17.0761027Z ff3f1422973f: Pull complete
+2026-10-02T20:52:17.0861827Z 921bfecda4c1: Pull complete
+2026-10-02T20:52:17.2514190Z 3cddab114eda: Verifying Checksum
+2026-10-02T20:52:17.2515146Z 3cddab114eda: Download complete
+2026-10-02T20:52:17.2975756Z 9fedd65dec7f: Verifying Checksum
+2026-10-02T20:52:17.2976340Z 9fedd65dec7f: Download complete
+2026-10-02T20:52:17.3814661Z 0282d618b52c: Verifying Checksum
+2026-10-02T20:52:17.3815854Z 0282d618b52c: Download complete
+2026-10-02T20:52:17.4923187Z 2f3356853560: Verifying Checksum
+2026-10-02T20:52:17.4924151Z 2f3356853560: Download complete
+2026-10-02T20:52:17.6867364Z 3d9090abcf25: Verifying Checksum
+2026-10-02T20:52:17.6868238Z 3d9090abcf25: Download complete
+2026-10-02T20:52:17.7215229Z 51c53f95c2ca: Verifying Checksum
+2026-10-02T20:52:17.7216368Z 51c53f95c2ca: Download complete
+2026-10-02T20:52:17.8026530Z 45dd7940c54d: Verifying Checksum
+2026-10-02T20:52:17.8027662Z 45dd7940c54d: Download complete
+2026-10-02T20:52:17.8352329Z e969b0bb2c88: Verifying Checksum
+2026-10-02T20:52:17.8353219Z e969b0bb2c88: Download complete
+2026-10-02T20:52:18.4708047Z bb8f02002931: Verifying Checksum
+2026-10-02T20:52:18.4708791Z bb8f02002931: Download complete
+2026-10-02T20:52:22.0220074Z 80af27af8935: Pull complete
+2026-10-02T20:52:22.4293890Z 9851544581cc: Pull complete
+2026-10-02T20:52:22.6294250Z 30fdcf1539bd: Pull complete
+2026-10-02T20:52:22.6675800Z b64e840f12f0: Pull complete
+2026-10-02T20:52:22.6696277Z 7c115bed1203: Pull complete
+2026-10-02T20:52:22.6937984Z 4f4fb700ef54: Pull complete
+2026-10-02T20:52:22.8202385Z Digest: sha256:5dcf67db0ee378caa87f3395cb9484ebe3e97bb0334d119f2ac33116e00c5773
+2026-10-02T20:52:22.8203753Z Status: Downloaded newer image for public.ecr.aws/supabase/vector:0.58.0-alpine
+2026-10-02T20:52:22.8495722Z public.ecr.aws/supabase/vector:0.58.0-alpine
+2026-10-02T20:52:23.5253991Z a8ac7f6c67ab: Pull complete
+2026-10-02T20:52:23.7303763Z cea7eb9bbe80: Pull complete
+2026-10-02T20:52:24.2593962Z 61592f5b6030: Pull complete
+2026-10-02T20:52:24.5423000Z 8d9d84ee3188: Pull complete
+2026-10-02T20:52:24.5702376Z dc40c63c08b5: Pull complete
+2026-10-02T20:52:25.1609850Z 531e3bd93090: Pull complete
+2026-10-02T20:52:25.3390829Z 814dd06d26c7: Pull complete
+2026-10-02T20:52:25.3582565Z Digest: sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d
+2026-10-02T20:52:25.3640707Z Status: Downloaded newer image for public.ecr.aws/supabase/kong:2.8.1
+2026-10-02T20:52:25.3689974Z public.ecr.aws/supabase/kong:2.8.1
+2026-10-02T20:52:26.1402911Z d6df31423628: Pull complete
+2026-10-02T20:52:26.5098624Z f372fa8cfc9c: Pull complete
+2026-10-02T20:52:27.6060192Z 6f529730c983: Pull complete
+2026-10-02T20:52:27.6102522Z 911b0bac1c2c: Pull complete
+2026-10-02T20:52:27.6442052Z Digest: sha256:645d0e45446181f3e9d87efeef637b494615f32365befff00e2d2b0fe8535fef
+2026-10-02T20:52:27.6443172Z Status: Downloaded newer image for public.ecr.aws/supabase/edge-runtime:v1.77.1
+2026-10-02T20:52:27.6494950Z public.ecr.aws/supabase/edge-runtime:v1.77.1
+2026-10-02T20:52:27.6780528Z f7be8c0cae2a: Pull complete
+2026-10-02T20:52:27.8341159Z 67a16200f65d: Pull complete
+2026-10-02T20:52:27.8650962Z a58f068d2d7a: Pull complete
+2026-10-02T20:52:27.9026661Z 049cea4edf36: Pull complete
+2026-10-02T20:52:27.9912568Z 6043e85c60a3: Pull complete
+2026-10-02T20:52:28.0573266Z f1ffadb0c9ec: Pull complete
+2026-10-02T20:52:28.0726551Z fe4c2b07afe1: Pull complete
+2026-10-02T20:52:28.0913765Z 87dc5681ef25: Pull complete
+2026-10-02T20:52:28.6026697Z 51c53f95c2ca: Pull complete
+2026-10-02T20:52:28.7804039Z 3cddab114eda: Pull complete
+2026-10-02T20:52:28.8154590Z 0282d618b52c: Pull complete
+2026-10-02T20:52:29.3603070Z 3d9090abcf25: Pull complete
+2026-10-02T20:52:29.3814853Z 2f3356853560: Pull complete
+2026-10-02T20:52:29.6275121Z 5d1c897c38a0: Pull complete
+2026-10-02T20:52:30.4620877Z 8ed24ba27cff: Pull complete
+2026-10-02T20:52:30.4827665Z 78a53c0cbd41: Pull complete
+2026-10-02T20:52:30.5015449Z 4d4189eeb96e: Pull complete
+2026-10-02T20:52:30.5149378Z Digest: sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999
+2026-10-02T20:52:30.5150676Z Status: Downloaded newer image for public.ecr.aws/supabase/realtime:v2.140.3
+2026-10-02T20:52:30.5158453Z public.ecr.aws/supabase/realtime:v2.140.3
+2026-10-02T20:52:31.7063114Z 07e700c802b2: Pull complete
+2026-10-02T20:52:31.7490654Z 03c1d40cdb55: Pull complete
+2026-10-02T20:52:31.7733873Z 4f4fb700ef54: Pull complete
+2026-10-02T20:52:31.7953704Z b03f939add7f: Pull complete
+2026-10-02T20:52:31.8047372Z Digest: sha256:a82f96c8845c1bcab128cfe17b4e325943ab949b657e9629a0bcc66f1d363179
+2026-10-02T20:52:31.8048731Z Status: Downloaded newer image for public.ecr.aws/supabase/logflare:1.50.15
+2026-10-02T20:52:31.8064242Z public.ecr.aws/supabase/logflare:1.50.15
+2026-10-02T20:52:33.5356391Z 380d67659cd5: Pull complete
+2026-10-02T20:52:35.0035468Z dc1fc1d6f98f: Pull complete
+2026-10-02T20:52:35.0221743Z 75a5c7dfb5a4: Pull complete
+2026-10-02T20:52:35.2473312Z bb8f02002931: Pull complete
+2026-10-02T20:52:35.4249160Z 45dd7940c54d: Pull complete
+2026-10-02T20:52:35.4411083Z e969b0bb2c88: Pull complete
+2026-10-02T20:52:35.4452180Z Digest: sha256:9a079ac1c94d89629262822a4bd1902d5b1be4adb464e5a0a8fd078aaed72158
+2026-10-02T20:52:35.4453293Z Status: Downloaded newer image for ghcr.io/supabase/postgres-meta:v0.99.0
+2026-10-02T20:52:35.4464421Z ghcr.io/supabase/postgres-meta:v0.99.0
+2026-10-02T20:52:42.6819650Z 583ec90c6715: Pull complete
+2026-10-02T20:52:42.7276470Z 5ed2e2ddfb89: Pull complete
+2026-10-02T20:52:42.7590021Z e80f8e2e99d6: Pull complete
+2026-10-02T20:52:42.7747693Z 232deb54e13d: Pull complete
+2026-10-02T20:52:42.8184132Z 0f473b3071cf: Pull complete
+2026-10-02T20:52:42.8383354Z 75d1eb89a82b: Pull complete
+2026-10-02T20:52:42.8836079Z b19532946444: Pull complete
+2026-10-02T20:52:42.8949151Z 2240af07ff04: Pull complete
+2026-10-02T20:52:42.9062804Z a45c069d14ec: Pull complete
+2026-10-02T20:52:42.9188632Z 0ba5f2e703c2: Pull complete
+2026-10-02T20:52:42.9360627Z 2647d19058a7: Pull complete
+2026-10-02T20:52:42.9494241Z dc33104fda30: Pull complete
+2026-10-02T20:52:42.9608746Z b79880533e0a: Pull complete
+2026-10-02T20:52:42.9795041Z 0e2d5cb5dee4: Pull complete
+2026-10-02T20:52:42.9925954Z 949763475ae7: Pull complete
+2026-10-02T20:52:43.0042006Z 4197ef27502e: Pull complete
+2026-10-02T20:52:43.0160582Z cecab6d00c31: Pull complete
+2026-10-02T20:52:43.0282465Z 22e811bdd64a: Pull complete
+2026-10-02T20:52:43.0408102Z b0b708853afb: Pull complete
+2026-10-02T20:52:43.0527783Z 5ab47e19d7ba: Pull complete
+2026-10-02T20:52:43.0669434Z dd1bf2fa4fa2: Pull complete
+2026-10-02T20:52:43.0992730Z adf6436fcbd6: Pull complete
+2026-10-02T20:52:43.1111101Z 250c68ac8298: Pull complete
+2026-10-02T20:52:43.1230797Z ea69d2e3c12d: Pull complete
+2026-10-02T20:52:43.1380358Z 4b82e8682a19: Pull complete
+2026-10-02T20:52:43.1522613Z 90c1869f70bf: Pull complete
+2026-10-02T20:52:43.1564931Z Digest: sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53
+2026-10-02T20:52:43.1580929Z Status: Downloaded newer image for public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-02T20:52:43.1591889Z public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-02T20:52:45.2771703Z 9fedd65dec7f: Pull complete
+2026-10-02T20:52:45.2809503Z Digest: sha256:e4b6110f496ddcd3b3ceb8a23caf59016586a23b5cd363099fbc7b224152ebbc
+2026-10-02T20:52:45.2822146Z Status: Downloaded newer image for ghcr.io/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-02T20:52:45.2836788Z ghcr.io/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-02T20:52:50.0294953Z e568217ef856: Pull complete
+2026-10-02T20:52:50.3680099Z 11fed3630d94: Pull complete
+2026-10-02T20:52:50.3921915Z afa03ed6b259: Pull complete
+2026-10-02T20:52:50.3995557Z 24eea9e7dbd7: Pull complete
+2026-10-02T20:52:50.4027266Z Digest: sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96
+2026-10-02T20:52:50.4038431Z Status: Downloaded newer image for public.ecr.aws/supabase/storage-api:v1.79.28
+2026-10-02T20:52:50.4047359Z public.ecr.aws/supabase/storage-api:v1.79.28
+2026-10-02T20:52:50.4300005Z Starting database...
+2026-10-02T20:53:01.0501725Z Initialising schema...
+2026-10-02T20:53:06.4992420Z Seeding globals from roles.sql...
+2026-10-02T20:53:06.5342132Z Applying migration 20260611162942_create_animals_table.sql...
+2026-10-02T20:53:06.5549011Z Applying migration 20260611162956_create_adoption_applications_table.sql...
+2026-10-02T20:53:06.5615466Z Applying migration 20260623160506_phase_2_donations_mvp.sql...
+2026-10-02T20:53:06.6390436Z Applying migration 20260623183933_donor_ops_crm_foundation.sql...
+2026-10-02T20:53:06.6700313Z Applying migration 20260626140914_adoption_coordinator_foundation.sql...
+2026-10-02T20:53:06.7464232Z Applying migration 20260626144836_adoption_coordinator_workflow_rpcs.sql...
+2026-10-02T20:53:06.7520414Z Applying migration 20260626201620_secure_adoption_applications_policy.sql...
+2026-10-02T20:53:06.7561230Z Applying migration 20260626202523_harden_webhook_event_processing.sql...
+2026-10-02T20:53:06.7592617Z Applying migration 20260627091500_tighten_animals_admin_policy.sql...
+2026-10-02T20:53:06.7626665Z Applying migration 20260627110000_coordinator_task_timeline.sql...
+2026-10-02T20:53:06.7712170Z Applying migration 20260628120000_harden_receipt_and_payment_lifecycle.sql...
+2026-10-02T20:53:06.7767618Z Applying migration 20260628130000_harden_role_grants_drop_stale_policy.sql...
+2026-10-02T20:53:06.7812125Z Applying migration 20260628140000_revoke_residual_anon_grants.sql...
+2026-10-02T20:53:06.7849895Z Applying migration 20260628143000_coordinator_ops_workbench.sql...
+2026-10-02T20:53:06.7935479Z Applying migration 20260628150000_revoke_residual_anon_write_grants.sql...
+2026-10-02T20:53:06.7968382Z Applying migration 20260628160000_validate_rpc_actor.sql...
+2026-10-02T20:53:06.8016372Z Applying migration 20260630120000_donation_lifecycle_integrity.sql...
+2026-10-02T20:53:06.8095351Z Applying migration 20260630154259_add_animal_english_content_fields.sql...
+2026-10-02T20:53:06.8127818Z Applying migration 20260701105726_admin_access_management.sql...
+2026-10-02T20:53:06.8171220Z Applying migration 20260701185227_public_adoption_journey_phase_1.sql...
+2026-10-02T20:53:06.8478452Z Applying migration 20260702130000_sponsorship_pledge_phase_2.sql...
+2026-10-02T20:53:06.8654977Z Applying migration 20260704165600_volunteer_activity_management_v1.sql...
+2026-10-02T20:53:06.8842965Z Applying migration 20260705120000_story_promotion_center.sql...
+2026-10-02T20:53:06.9193824Z Applying migration 20260716120000_contextual_donation_attribution.sql...
+2026-10-02T20:53:06.9251509Z Applying migration 20260718100000_public_documents_and_donation_purpose.sql...
+2026-10-02T20:53:06.9448528Z Applying migration 20260718110000_adoption_information.sql...
+2026-10-02T20:53:06.9559179Z Applying migration 20260718111000_correct_adult_cat_copy.sql...
+2026-10-02T20:53:06.9606008Z Applying migration 20260718120000_group_enquiries_and_knowledge.sql...
+2026-10-02T20:53:06.9736134Z Applying migration 20260718121000_seed_knowledge_guides.sql...
+2026-10-02T20:53:06.9787977Z Applying migration 20260718122000_correct_service_slogan.sql...
+2026-10-02T20:53:06.9810942Z Applying migration 20260719120000_document_admin_mutation_hardening.sql...
+2026-10-02T20:53:06.9885049Z Applying migration 20260719223000_public_document_read_policies.sql...
+2026-10-02T20:53:06.9938605Z Applying migration 20260720100000_cod_alipayhk_payment_support.sql...
+2026-10-02T20:53:06.9996467Z Applying migration 20260731120000_adoption_guide_release_cms.sql...
+2026-10-02T20:53:07.0227769Z Applying migration 20260801180000_adoption_guide_release_cms_advisor_fixes.sql...
+2026-10-02T20:53:07.0334177Z Applying migration 20260803120000_audit_animal_mutations.sql...
+2026-10-02T20:53:07.0381020Z Applying migration 20260805120000_animal_mutation_audit_atomicity.sql...
+2026-10-02T20:53:07.0485899Z Applying migration 20260816120000_cod_payment_order_reference.sql...
+2026-10-02T20:53:07.0514204Z Applying migration 20260829120000_governance_board_members.sql...
+2026-10-02T20:53:07.0572605Z Applying migration 20260829180000_sponsorship_pledge_admin_review.sql...
+2026-10-02T20:53:07.0790487Z Applying migration 20260830120000_faq_entry.sql...
+2026-10-02T20:53:07.0890398Z Applying migration 20260830130000_adoption_rules_care_topics.sql...
+2026-10-02T20:53:07.1029502Z Applying migration 20260830140000_about_page_content.sql...
+2026-10-02T20:53:07.1097398Z Applying migration 20260831120000_payment_public_config.sql...
+2026-10-02T20:53:07.1265596Z Applying migration 20260831160000_content_media_storage_bucket.sql...
+2026-10-02T20:53:07.1292702Z Applying migration 20260905144848_public_supporter_identity_claims.sql...
+2026-10-02T20:53:07.1452899Z Applying migration 20260905150012_content_revision_lifecycle.sql...
+2026-10-02T20:53:07.1694185Z Applying migration 20260905155357_crm_manual_gift_delivery_jobs.sql...
+2026-10-02T20:53:07.1855158Z Applying migration 20260905155426_content_private_media_sessions.sql...
+2026-10-02T20:53:07.2051666Z Applying migration 20260905162615_crm_complete_read_models.sql...
+2026-10-02T20:53:07.2115566Z Applying migration 20260905163559_content_bounded_authoring_reads.sql...
+2026-10-02T20:53:07.2159519Z Applying migration 20260905163900_volunteer_atomic_approval.sql...
+2026-10-02T20:53:07.2203575Z Applying migration 20260906162436_animal_catalog_membership.sql...
+2026-10-02T20:53:07.2303585Z Applying migration 20260906181657_animal_public_profile.sql...
+2026-10-02T20:53:07.2355096Z Applying migration 20260911120000_sponsorship_public_identity_protection.sql...
+2026-10-02T20:53:07.2429573Z Applying migration 20260911130000_animal_images_bucket.sql...
+2026-10-02T20:53:07.2453427Z Applying migration 20260911140000_animal_publication_state.sql...
+2026-10-02T20:53:07.2497733Z Applying migration 20260911150000_preserve_eligibility_on_species_change.sql...
+2026-10-02T20:53:07.2525806Z Applying migration 20260911160000_correct_legacy_sponsor_species.sql...
+2026-10-02T20:53:07.2581506Z Applying migration 20260911170000_publish_fostered_animals.sql...
+2026-10-02T20:53:07.2622066Z Applying migration 20260911180000_sponsorship_second_month.sql...
+2026-10-02T20:53:07.2663560Z Applying migration 20260911190000_sponsorship_monthly_ledger.sql...
+2026-10-02T20:53:07.2865038Z Applying migration 20260912120000_sponsorship_assignments.sql...
+2026-10-02T20:53:07.3010639Z Applying migration 20260913060000_verified_baseline_compatibility.sql...
+2026-10-02T20:53:07.3351756Z Applying migration 20260913062837_volunteer_versioned_policy.sql...
+2026-10-02T20:53:07.3902456Z Applying migration 20260913062952_volunteer_atomic_attendance.sql...
+2026-10-02T20:53:07.4011759Z Applying migration 20260913064921_volunteer_profile_commands.sql...
+2026-10-02T20:53:07.4094338Z Applying migration 20260913065257_volunteer_policy_validation.sql...
+2026-10-02T20:53:07.4166159Z Applying migration 20260913065833_volunteer_daily_policy.sql...
+2026-10-02T20:53:07.4335216Z Applying migration 20260913070057_volunteer_initial_policy_catalogue.sql...
+2026-10-02T20:53:07.4397337Z Applying migration 20260913070128_volunteer_monthly_assessments.sql...
+2026-10-02T20:53:07.4554753Z Applying migration 20260913071632_animal_public_column_boundary.sql...
+2026-10-02T20:53:07.4609611Z Applying migration 20260913071639_volunteer_runtime_jobs.sql...
+2026-10-02T20:53:07.4677079Z Applying migration 20260913071927_sponsorship_exact_proof_review.sql...
+2026-10-02T20:53:07.4778177Z Applying migration 20260913072235_volunteer_booking_enforcement.sql...
+2026-10-02T20:53:07.4828429Z Applying migration 20260913072454_veterinary_internship_workflow.sql...
+2026-10-02T20:53:07.5041512Z Applying migration 20260913072851_volunteer_group_operations.sql...
+2026-10-02T20:53:07.5247731Z Applying migration 20260913073012_sponsorship_financial_closure.sql...
+2026-10-02T20:53:07.5560465Z Applying migration 20260913073314_animal_publication_lifecycle.sql...
+2026-10-02T20:53:07.5724833Z Applying migration 20260913075040_volunteer_verified_service_history.sql...
+2026-10-02T20:53:07.5777059Z Applying migration 20260913075643_volunteer_release_transitions.sql...
+2026-10-02T20:53:07.5893172Z Applying migration 20260913075913_sponsorship_contact_verification.sql...
+2026-10-02T20:53:07.5968610Z Applying migration 20260913080143_volunteer_immutable_qualification_evidence.sql...
+2026-10-02T20:53:07.6013032Z Applying migration 20260913080152_sponsorship_role_handoff.sql...
+2026-10-02T20:53:07.6081258Z Applying migration 20260913080537_volunteer_policy_simulation.sql...
+2026-10-02T20:53:07.6113627Z Applying migration 20260913080838_sponsorship_allocation_retry.sql...
+2026-10-02T20:53:07.6167589Z Applying migration 20260913081521_sponsorship_partial_refunds.sql...
+2026-10-02T20:53:07.6299626Z Applying migration 20260913081533_volunteer_policy_sources.sql...
+2026-10-02T20:53:07.6540766Z Applying migration 20260913081720_volunteer_legacy_identity_reconciliation.sql...
+2026-10-02T20:53:07.6622902Z Applying migration 20260913082300_atomic_animal_preference_eligibility.sql...
+2026-10-02T20:53:07.6664469Z Applying migration 20260913083120_volunteer_public_availability_summary.sql...
+2026-10-02T20:53:07.6701099Z Applying migration 20260913083503_sponsorship_refund_read_models.sql...
+2026-10-02T20:53:07.6744762Z Applying migration 20260913084120_volunteer_notification_claim_fencing.sql...
+2026-10-02T20:53:07.6808755Z Applying migration 20260913084247_volunteer_booking_shape_guard.sql...
+2026-10-02T20:53:07.6834344Z Applying migration 20260913084717_factual_history_runtime_privileges.sql...
+2026-10-02T20:53:07.6883166Z Applying migration 20260913084920_volunteer_operational_tasks.sql...
+2026-10-02T20:53:07.6968792Z Applying migration 20260913085252_volunteer_promotion_review_tasks.sql...
+2026-10-02T20:53:07.7004824Z Applying migration 20260913085500_volunteer_tier_candidates.sql...
+2026-10-02T20:53:07.7098390Z Applying migration 20260913090746_volunteer_schedule_integrity.sql...
+2026-10-02T20:53:07.7145272Z Applying migration 20260913092132_restrict_receipt_issuance_rpc.sql...
+2026-10-02T20:53:07.7183188Z Applying migration 20260913113000_mail_delivery_evidence.sql...
+2026-10-02T20:53:07.7305307Z Applying migration 20260913180745_volunteer_admin_directory_read.sql...
+2026-10-02T20:53:07.7350135Z Applying migration 20260913182552_volunteer_legacy_list_alias_fix.sql...
+2026-10-02T20:53:07.7383989Z Applying migration 20260914160716_volunteer_member_booking_correctness.sql...
+2026-10-02T20:53:07.7499718Z Applying migration 20260914160736_volunteer_bulk_operations.sql...
+2026-10-02T20:53:07.7655704Z Applying migration 20260914161341_admin_content_quality_review.sql...
+2026-10-02T20:53:07.7754917Z Applying migration 20260914162305_animal_nonpublic_review_transition.sql...
+2026-10-02T20:53:07.7779694Z Applying migration 20260914163506_volunteer_policy_read_summary.sql...
+2026-10-02T20:53:07.7804893Z Applying migration 20260914164558_editorial_verified_actor.sql...
+2026-10-02T20:53:07.7847035Z Applying migration 20260915120000_content_admin_filters.sql...
+2026-10-02T20:53:07.7889203Z Applying migration 20260925040818_featured_public_story_filter.sql...
+2026-10-02T20:53:07.7926997Z Applying migration 20260925053245_cms_promotion_atomicity.sql...
+2026-10-02T20:53:07.8019649Z Applying migration 20260925103900_atomic_admin_content_audit.sql...
+2026-10-02T20:53:07.8061168Z Applying migration 20260925103937_atomic_crm_supporter_audit.sql...
+2026-10-02T20:53:07.8105425Z Applying migration 20260925104012_donation_checkout_idempotency.sql...
+2026-10-02T20:53:07.8146411Z Applying migration 20260925104051_volunteer_public_registration_idempotency.sql...
+2026-10-02T20:53:07.8192123Z Applying migration 20260925104926_atomic_adoption_coordinator_audit.sql...
+2026-10-02T20:53:07.8235097Z Applying migration 20260925110000_admin_user_access_atomicity.sql...
+2026-10-02T20:53:07.8301992Z Applying migration 20260925123000_adoption_upload_intents.sql...
+2026-10-02T20:53:07.8347749Z Applying migration 20260925133500_atomic_admin_invite_activation.sql...
+2026-10-02T20:53:07.8375053Z Applying migration 20260925141325_animal_archive_atomic_audit.sql...
+2026-10-02T20:53:07.8399041Z Applying migration 20260925143941_guarded_provider_denial.sql...
+2026-10-02T20:53:07.8425973Z Applying migration 20260925144915_guarded_provider_refund.sql...
+2026-10-02T20:53:07.8452964Z Applying migration 20260925150722_revoke_public_role_maintenance_privileges.sql...
+2026-10-02T20:53:07.8536426Z Applying migration 20260926060314_atomic_group_enquiry_audit.sql...
+2026-10-02T20:53:07.8566116Z Applying migration 20260926070652_sponsorship_proof_upload_cleanup.sql...
+2026-10-02T20:53:07.8643915Z Applying migration 20260926074203_internship_attachment_upload_cleanup.sql...
+2026-10-02T20:53:07.8720694Z Applying migration 20260926082239_atomic_receipt_void_audit.sql...
+2026-10-02T20:53:07.8763298Z Applying migration 20260926083940_atomic_manual_receipt_issue_audit.sql...
+2026-10-02T20:53:07.8799825Z Applying migration 20260926091057_staff_sponsorship_proof_upload_cleanup.sql...
+2026-10-02T20:53:07.8871635Z Applying migration 20260926100000_public_submission_retry_fingerprints.sql...
+2026-10-02T20:53:07.8895445Z Applying migration 20260926110000_manual_case_identity_search.sql...
+2026-10-02T20:53:07.8925281Z Applying migration 20260926120000_volunteer_notification_exhausted_claim_recovery.sql...
+2026-10-02T20:53:07.8951682Z Applying migration 20260926130000_atomic_adoption_case_status_validation.sql...
+2026-10-02T20:53:07.8978410Z Applying migration 20260926133000_expose_manual_adoption_case_rpc.sql...
+2026-10-02T20:53:07.9006463Z Applying migration 20260926140000_cleanup_expired_adoption_applications.sql...
+2026-10-02T20:53:07.9034312Z Applying migration 20260926143000_atomic_public_sponsorship_pledge.sql...
+2026-10-02T20:53:07.9064688Z Applying migration 20260926150000_guard_published_document_slots.sql...
+2026-10-02T20:53:07.9114059Z Applying migration 20260926152438_adoption_instruction_page_cms.sql...
+2026-10-02T20:53:07.9410271Z Applying migration 20260926160000_animal_draft_upload_cleanup.sql...
+2026-10-02T20:53:07.9489022Z Applying migration 20260926170000_animal_publication_media_copy.sql...
+2026-10-02T20:53:07.9571031Z Applying migration 20260926180000_animal_publication_publish_receipt.sql...
+2026-10-02T20:53:07.9627829Z Applying migration 20260926190000_content_publication_media_after_commit.sql...
+2026-10-02T20:53:07.9687441Z Applying migration 20260927090000_crm_private_export_jobs.sql...
+2026-10-02T20:53:07.9830195Z Applying migration 20260927110000_crm_supporter_edit_version.sql...
+2026-10-02T20:53:07.9890453Z Applying migration 20260927120000_checkout_policy_gate.sql...
+2026-10-02T20:53:08.0034988Z Applying migration 20260927120500_estate_versioned_commands.sql...
+2026-10-02T20:53:08.0086920Z Applying migration 20260927122000_content_publication_eligibility.sql...
+2026-10-02T20:53:08.0140403Z Applying migration 20260927130000_payment_instruction_snapshots.sql...
+2026-10-02T20:53:08.0224353Z Applying migration 20260927130500_atomic_adoption_fee_reorder.sql...
+2026-10-02T20:53:08.0276760Z Applying migration 20260927130600_sponsor_public_profile_fields.sql...
+2026-10-02T20:53:08.0302563Z Applying migration 20260927140000_donation_delivery_recovery.sql...
+2026-10-02T20:53:08.0343530Z Applying migration 20260927140500_media_repair_retry_schedule.sql...
+2026-10-02T20:53:08.0506888Z Applying migration 20260927143710_public_animal_listing_page.sql...
+2026-10-02T20:53:08.0598213Z Applying migration 20260927150000_sponsorship_terms_document_kind.sql...
+2026-10-02T20:53:08.0626286Z Applying migration 20260927163302_supporter_marketing_preference.sql...
+2026-10-02T20:53:08.0651130Z Applying migration 20260927172030_crm_tag_bulk.sql...
+2026-10-02T20:53:08.0775508Z Applying migration 20260927181701_volunteer_review_bulk.sql...
+2026-10-02T20:53:08.0923540Z Applying migration 20260927183000_adoption_assignment_bulk.sql...
+2026-10-02T20:53:08.1065870Z Applying migration 20260927184500_animal_review_bulk.sql...
+2026-10-02T20:53:08.1177880Z Applying migration 20260927190000_cms_review_bulk.sql...
+2026-10-02T20:53:08.1291189Z Applying migration 20260927201916_manual_payment_atomic_reference.sql...
+2026-10-02T20:53:08.1334960Z Applying migration 20260927211801_editorial_quality_queue.sql...
+2026-10-02T20:53:08.1374505Z Applying migration 20260928073000_sponsorship_followup_assignment.sql...
+2026-10-02T20:53:08.1431321Z Applying migration 20260928080000_sponsorship_followup_bulk.sql...
+2026-10-02T20:53:08.1539810Z Applying migration 20260928090000_finance_bank_dryrun.sql...
+2026-10-02T20:53:08.1575296Z Applying migration 20260928100000_finance_delivery_retry_guard.sql...
+2026-10-02T20:53:08.1614327Z Applying migration 20260928110000_finance_bank_match_confirmation.sql...
+2026-10-02T20:53:08.1740479Z Applying migration 20260928113000_crm_supporter_version_fence.sql...
+2026-10-02T20:53:08.1761974Z Applying migration 20260928120000_crm_assignment_bulk.sql...
+2026-10-02T20:53:08.1903576Z Applying migration 20260930120000_supporter_recovery_single_use.sql...
+2026-10-02T20:53:08.1981001Z Applying migration 20261001080000_service_readonly_evidence_privileges.sql...
+2026-10-02T20:53:08.2026156Z Applying migration 20261001101333_r01_payment_idempotency_forward.sql...
+2026-10-02T20:53:08.2101929Z Applying migration 20261001134252_r01_adoption_upload_forward.sql...
+2026-10-02T20:53:08.2200791Z Applying migration 20261001150925_r01_sponsorship_submission_forward.sql...
+2026-10-02T20:53:08.2357330Z Applying migration 20261001154743_r01_animal_preference_record_fields.sql...
+2026-10-02T20:53:08.2403753Z Applying migration 20261001175310_r01_internship_upload_forward.sql...
+2026-10-02T20:53:08.2510782Z Applying migration 20261001193722_r01_animal_draft_archive_forward.sql...
+2026-10-02T20:53:08.2670268Z Applying migration 20261001213914_r01_crm_atomic_forward.sql...
+2026-10-02T20:53:08.4556742Z Applying migration 20261002011249_r01_cms_atomic_forward.sql...
+2026-10-02T20:53:08.6745508Z Applying migration 20261002045253_r01_adoption_atomic_forward.sql...
+2026-10-02T20:53:08.9125134Z Applying migration 20261002111418_r01_admin_access_atomic_forward.sql...
+2026-10-02T20:53:09.2563604Z Applying migration 20261002170945_r01_finance_callback_forward.sql...
+2026-10-02T20:53:09.4934755Z Stopping containers...
+2026-10-02T20:53:11.9886383Z ERROR: R01 finance complete prerequisite catalog differs (SQLSTATE 55000)
+2026-10-02T20:53:11.9887317Z At statement: 1
+2026-10-02T20:53:11.9888050Z do $migration$
+2026-10-02T20:53:11.9888610Z declare v_catalog jsonb;v_actual jsonb;v_before jsonb;v_fn oid;
+2026-10-02T20:53:11.9889348Z begin
+2026-10-02T20:53:11.9890357Z  if current_user<>'postgres' then raise exception 'R01 finance owner context differs' using errcode='55000';end if;
+2026-10-02T20:53:11.9891942Z  select catalog into v_catalog from (with pinned as materialized (select pg_catalog.set_config('search_path','',true)) select jsonb_build_object(
+2026-10-02T20:53:11.9903867Z  'schemas',(select jsonb_agg(jsonb_build_object('name',nspname,'owner',pg_get_userbyid(nspowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(nspacl,acldefault('n',nspowner))) x)) order by nspname) from pg_namespace where nspname in ('public','private')),
+2026-10-02T20:53:11.9923174Z  'relations',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'kind',c.relkind,'owner',pg_get_userbyid(c.relowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(c.relacl,acldefault(case when c.relkind='S' then 's'::"char" else 'r'::"char" end,c.relowner))) x),'rls',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'options',c.reloptions,'replicaIdentity',c.relreplident) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-02T20:53:11.9934454Z  'columns',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',a.attname,'position',a.attnum,'type',format_type(a.atttypid,a.atttypmod),'collation',(select cn.nspname||'.'||co.collname from pg_collation co join pg_namespace cn on cn.oid=co.collnamespace where co.oid=a.attcollation),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(a.attacl) x),'default',pg_get_expr(d.adbin,d.adrelid)) order by n.nspname,c.relname,a.attnum) from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname in ('public','private') and a.attnum>0 and not a.attisdropped),
+2026-10-02T20:53:11.9945747Z  'sequences',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'type',format_type(s.seqtypid,-1),'start',s.seqstart::text,'increment',s.seqincrement::text,'min',s.seqmin::text,'max',s.seqmax::text,'cache',s.seqcache::text,'cycle',s.seqcycle,'ownedBy',(select jsonb_build_object('schema',tn.nspname,'table',tc.relname,'column',a.attname,'dependency',d.deptype) from pg_depend d join pg_class tc on tc.oid=d.refobjid join pg_namespace tn on tn.oid=tc.relnamespace join pg_attribute a on a.attrelid=tc.oid and a.attnum=d.refobjsubid where d.classid='pg_class'::regclass and d.objid=c.oid and d.refclassid='pg_class'::regclass and d.deptype in ('a','i'))) order by n.nspname,c.relname) from pg_sequence s join pg_class c on c.oid=s.seqrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-02T20:53:11.9956464Z  'functions',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'args',pg_get_function_identity_arguments(p.oid),'result',pg_get_function_result(p.oid),'owner',pg_get_userbyid(p.proowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x),'config',p.proconfig,'definer',p.prosecdef,'volatility',p.provolatile,'parallel',p.proparallel,'bodyMd5',md5(pg_get_functiondef(p.oid))) order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private') and p.prokind in ('f','p')),
+2026-10-02T20:53:11.9964578Z  'constraints',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',con.conname,'type',con.contype,'validated',con.convalidated,'definition',pg_get_constraintdef(con.oid,true)) order by n.nspname,c.relname,con.conname) from pg_constraint con join pg_namespace n on n.oid=con.connamespace left join pg_class c on c.oid=con.conrelid where n.nspname in ('public','private')),
+2026-10-02T20:53:11.9969141Z  'indexes',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'definition',pg_get_indexdef(i.indexrelid),'valid',i.indisvalid,'ready',i.indisready,'unique',i.indisunique) order by n.nspname,c.relname,pg_get_indexdef(i.indexrelid)) from pg_index i join pg_class c on c.oid=i.indrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-02T20:53:11.9973935Z  'triggers',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',t.tgname,'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid,true)) order by n.nspname,c.relname,t.tgname) from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and not t.tgisinternal),
+2026-10-02T20:53:11.9979145Z  'policies',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',p.polname,'command',p.polcmd,'permissive',p.polpermissive,'roles',(select jsonb_agg(case when r=0 then 'PUBLIC' else pg_get_userbyid(r) end order by case when r=0 then 'PUBLIC' else pg_get_userbyid(r) end) from unnest(p.polroles) r),'using',pg_get_expr(p.polqual,p.polrelid),'check',pg_get_expr(p.polwithcheck,p.polrelid)) order by n.nspname,c.relname,p.polname) from pg_policy p join pg_class c on c.oid=p.polrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-02T20:53:11.9986160Z  'defaults',(select jsonb_agg(jsonb_build_object('owner',pg_get_userbyid(d.defaclrole),'schema',coalesce(n.nspname,''),'kind',d.defaclobjtype,'entries',(select jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(a.grantor),'grantee',case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,'privilege',a.privilege_type,'grantable',a.is_grantable) order by pg_get_userbyid(a.grantor),case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,a.privilege_type) from aclexplode(d.defaclacl) a)) order by pg_get_userbyid(d.defaclrole),coalesce(n.nspname,''),d.defaclobjtype) from pg_default_acl d left join pg_namespace n on n.oid=d.defaclnamespace where d.defaclnamespace=0 or n.nspname in ('public','private')),
+2026-10-02T20:53:11.9994871Z  'types',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',t.typname,'kind',t.typtype,'owner',pg_get_userbyid(t.typowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(t.typacl,acldefault('T',t.typowner))) x),'enum',(select jsonb_agg(e.enumlabel order by e.enumsortorder) from pg_enum e where e.enumtypid=t.oid)) order by n.nspname,t.typname) from pg_type t join pg_namespace n on n.oid=t.typnamespace where n.nspname in ('public','private')),
+2026-10-02T20:53:12.0001175Z  'views',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'definitionMd5',md5(pg_get_viewdef(c.oid,true))) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('v','m')),
+2026-10-02T20:53:12.0004341Z  'extensions',(select jsonb_agg(jsonb_build_object('name',e.extname,'version',e.extversion,'schema',n.nspname,'owner',pg_get_userbyid(e.extowner)) order by e.extname) from pg_extension e join pg_namespace n on n.oid=e.extnamespace where n.nspname in ('public','private')),
+2026-10-02T20:53:12.0008476Z  'extensionMembers',(select jsonb_agg(jsonb_build_object('extension',e.extname,'object',pg_describe_object(d.classid,d.objid,d.objsubid)) order by e.extname,pg_describe_object(d.classid,d.objid,d.objsubid)) from pg_depend d join pg_extension e on e.oid=d.refobjid join pg_namespace n on n.oid=e.extnamespace where d.refclassid='pg_extension'::regclass and d.deptype='e' and n.nspname in ('public','private')),
+2026-10-02T20:53:12.0011277Z  'databaseOwner',(select pg_get_userbyid(datdba) from pg_database where datname=current_database()),
+2026-10-02T20:53:12.0013399Z  'roles',(select jsonb_agg(jsonb_build_object('name',rolname,'super',rolsuper,'inherit',rolinherit,'login',rolcanlogin,'bypassRls',rolbypassrls) order by rolname) from pg_roles where rolname in ('anon','authenticated','service_role','postgres','supabase_admin')),
+2026-10-02T20:53:12.0017670Z  'memberships',(select jsonb_agg(jsonb_build_object('role',pg_get_userbyid(roleid),'member',pg_get_userbyid(member),'grantor',pg_get_userbyid(grantor),'admin',admin_option,'inherit',inherit_option,'set',set_option) order by pg_get_userbyid(roleid),pg_get_userbyid(member),pg_get_userbyid(grantor)) from pg_auth_members where pg_get_userbyid(member) in ('anon','authenticated','service_role'))
+2026-10-02T20:53:12.0020152Z ) catalog from pinned) captured;
+2026-10-02T20:53:12.0040611Z  v_before:=pg_catalog.jsonb_build_object('schemas',v_catalog->'schemas','defaults',v_catalog->'defaults','roles',v_catalog->'roles','memberships',v_catalog->'memberships','extensions',v_catalog->'extensions','extensionMembers',v_catalog->'extensionMembers','databaseOwner',v_catalog->'databaseOwner','sequences',v_catalog->'sequences','relations',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'relations') with ordinality f(value,ordinality) where f.value->>'schema'='public' and coalesce(f.value->>'table',f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'])),'columns',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'columns') with ordinality f(value,ordinality) where f.value->>'schema'='public' and coalesce(f.value->>'table',f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'])),'constraints',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'constraints') with ordinality f(value,ordinality) where f.value->>'schema'='public' and coalesce(f.value->>'table',f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'])),'indexes',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'indexes') with ordinality f(value,ordinality) where f.value->>'schema'='public' and coalesce(f.value->>'table',f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'])),'triggers',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'triggers') with ordinality f(value,ordinality) where f.value->>'schema'='public' and coalesce(f.value->>'table',f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'])),'policies',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'policies') with ordinality f(value,ordinality) where f.value->>'schema'='public' and coalesce(f.value->>'table',f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'])),'types',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'types') with ordinality f(value,ordinality) where f.value->>'schema'='public' and ((f.value->>'name')=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job']) or substring(f.value->>'name' from 2)=any(array['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job']) and left(f.value->>'name',1)='_' or f.value->>'kind'<>'c' and left(f.value->>'name',1)<>'_')));
+2026-10-02T20:53:12.0311452Z  if v_before not in('{"schemas":[{"acl":[{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"USAGE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"CREATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"USAGE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"USAGE"}],"name":"private","owner":"postgres"},{"acl":[{"grantee":"PUBLIC","grantor":"pg_database_owner","grantable":false,"privilege":"USAGE"},{"grantee":"anon","grantor":"pg_database_owner","grantable":false,"privilege":"USAGE"},{"grantee":"authenticated","grantor":"pg_database_owner","grantable":false,"privilege":"USAGE"},{"grantee":"pg_database_owner","grantor":"pg_database_owner","grantable":false,"privilege":"CREATE"},{"grantee":"pg_database_owner","grantor":"pg_database_owner","grantable":false,"privilege":"USAGE"},{"grantee":"postgres","grantor":"pg_database_owner","grantable":false,"privilege":"USAGE"},{"grantee":"service_role","grantor":"pg_database_owner","grantable":false,"privilege":"USAGE"}],"name":"public","owner":"pg_database_owner"}],"defaults":[{"kind":"S","owner":"postgres","schema":"public","entries":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"USAGE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"USAGE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"USAGE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"USAGE"}]},{"kind":"f","owner":"postgres","schema":"public","entries":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"EXECUTE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"EXECUTE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"EXECUTE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"EXECUTE"}]},{"kind":"r","owner":"postgres","schema":"public","entries":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}]},{"kind":"S","owner":"supabase_admin","schema":"public","entries":[{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"USAGE"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"USAGE"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"USAGE"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"USAGE"}]},{"kind":"f","owner":"supabase_admin","schema":"public","entries":[{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"EXECUTE"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"EXECUTE"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"EXECUTE"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"EXECUTE"}]},{"kind":"r","owner":"supabase_admin","schema":"public","entries":[{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"DELETE"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"INSERT"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"MAINTAIN"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"REFERENCES"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"TRIGGER"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"TRUNCATE"},{"grantee":"anon","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"DELETE"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"INSERT"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"TRUNCATE"},{"grantee":"authenticated","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"supabase_admin","grantable":false,"privilege":"UPDATE"}]}],"roles":[{"name":"anon","login":false,"super":false,"inherit":true,"bypassRls":false},{"name":"authenticated","login":false,"super":false,"inherit":true,"bypassRls":false},{"name":"postgres","login":true,"super":false,"inherit":true,"bypassRls":true},{"name":"service_role","login":false,"super":false,"inherit":true,"bypassRls":true},{"name":"supabase_admin","login":true,"super":true,"inherit":true,"bypassRls":true}],"memberships":null,"extensions":[{"name":"citext","owner":"supabase_admin","schema":"public","version":"1.6"},{"name":"pg_trgm","owner":"supabase_admin","schema":"public","version":"1.6"}],"extensionMembers":[{"object":"cast from boolean to public.citext","extension":"citext"},{"object":"cast from character to public.citext","extension":"citext"},{"object":"cast from character varying to public.citext","extension":"citext"},{"object":"cast from inet to public.citext","extension":"citext"},{"object":"cast from public.citext to character","extension":"citext"},{"object":"cast from public.citext to character varying","extension":"citext"},{"object":"cast from public.citext to text","extension":"citext"},{"object":"cast from text to public.citext","extension":"citext"},{"object":"function public.citext_cmp(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_eq(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_ge(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_gt(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_hash_extended(public.citext,bigint)","extension":"citext"},{"object":"function public.citext_hash(public.citext)","extension":"citext"},{"object":"function public.citext_larger(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_le(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_lt(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_ne(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_pattern_cmp(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_pattern_ge(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_pattern_gt(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_pattern_le(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_pattern_lt(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext_smaller(public.citext,public.citext)","extension":"citext"},{"object":"function public.citext(boolean)","extension":"citext"},{"object":"function public.citext(character)","extension":"citext"},{"object":"function public.citext(inet)","extension":"citext"},{"object":"function public.citextin(cstring)","extension":"citext"},{"object":"function public.citextout(public.citext)","extension":"citext"},{"object":"function public.citextrecv(internal)","extension":"citext"},{"object":"function public.citextsend(public.citext)","extension":"citext"},{"object":"function public.max(public.citext)","extension":"citext"},{"object":"function public.min(public.citext)","extension":"citext"},{"object":"function public.regexp_match(public.citext,public.citext,text)","extension":"citext"},{"object":"function public.regexp_match(public.citext,public.citext)","extension":"citext"},{"object":"function public.regexp_matches(public.citext,public.citext,text)","extension":"citext"},{"object":"function public.regexp_matches(public.citext,public.citext)","extension":"citext"},{"object":"function public.regexp_replace(public.citext,public.citext,text,text)","extension":"citext"},{"object":"function public.regexp_replace(public.citext,public.citext,text)","extension":"citext"},{"object":"function public.regexp_split_to_array(public.citext,public.citext,text)","extension":"citext"},{"object":"function public.regexp_split_to_array(public.citext,public.citext)","extension":"citext"},{"object":"function public.regexp_split_to_table(public.citext,public.citext,text)","extension":"citext"},{"object":"function public.regexp_split_to_table(public.citext,public.citext)","extension":"citext"},{"object":"function public.replace(public.citext,public.citext,public.citext)","extension":"citext"},{"object":"function public.split_part(public.citext,public.citext,integer)","extension":"citext"},{"object":"function public.strpos(public.citext,public.citext)","extension":"citext"},{"object":"function public.texticlike(public.citext,public.citext)","extension":"citext"},{"object":"function public.texticlike(public.citext,text)","extension":"citext"},{"object":"function public.texticnlike(public.citext,public.citext)","extension":"citext"},{"object":"function public.texticnlike(public.citext,text)","extension":"citext"},{"object":"function public.texticregexeq(public.citext,public.citext)","extension":"citext"},{"object":"function public.texticregexeq(public.citext,text)","extension":"citext"},{"object":"function public.texticregexne(public.citext,public.citext)","extension":"citext"},{"object":"function public.texticregexne(public.citext,text)","extension":"citext"},{"object":"function public.translate(public.citext,public.citext,text)","extension":"citext"},{"object":"operator class public.citext_ops for access method btree","extension":"citext"},{"object":"operator class public.citext_ops for access method hash","extension":"citext"},{"object":"operator class public.citext_pattern_ops for access method btree","extension":"citext"},{"object":"operator family public.citext_ops for access method btree","extension":"citext"},{"object":"operator family public.citext_ops for access method hash","extension":"citext"},{"object":"operator family public.citext_pattern_ops for access method btree","extension":"citext"},{"object":"operator public.!~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.!~(public.citext,text)","extension":"citext"},{"object":"operator public.!~*(public.citext,public.citext)","extension":"citext"},{"object":"operator public.!~*(public.citext,text)","extension":"citext"},{"object":"operator public.!~~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.!~~(public.citext,text)","extension":"citext"},{"object":"operator public.!~~*(public.citext,public.citext)","extension":"citext"},{"object":"operator public.!~~*(public.citext,text)","extension":"citext"},{"object":"operator public.<(public.citext,public.citext)","extension":"citext"},{"object":"operator public.<=(public.citext,public.citext)","extension":"citext"},{"object":"operator public.<>(public.citext,public.citext)","extension":"citext"},{"object":"operator public.=(public.citext,public.citext)","extension":"citext"},{"object":"operator public.>(public.citext,public.citext)","extension":"citext"},{"object":"operator public.>=(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~(public.citext,text)","extension":"citext"},{"object":"operator public.~*(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~*(public.citext,text)","extension":"citext"},{"object":"operator public.~<=~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~<~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~>=~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~>~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~~(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~~(public.citext,text)","extension":"citext"},{"object":"operator public.~~*(public.citext,public.citext)","extension":"citext"},{"object":"operator public.~~*(public.citext,text)","extension":"citext"},{"object":"type public.citext","extension":"citext"},{"object":"type public.citext[]","extension":"citext"},{"object":"function public.gin_extract_query_trgm(text,internal,smallint,internal,internal,internal,internal)","extension":"pg_trgm"},{"object":"function public.gin_extract_value_trgm(text,internal)","extension":"pg_trgm"},{"object":"function public.gin_trgm_consistent(internal,smallint,text,integer,internal,internal,internal,internal)","extension":"pg_trgm"},{"object":"function public.gin_trgm_triconsistent(internal,smallint,text,integer,internal,internal,internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_compress(internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_consistent(internal,text,smallint,oid,internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_decompress(internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_distance(internal,text,smallint,oid,internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_in(cstring)","extension":"pg_trgm"},{"object":"function public.gtrgm_options(internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_out(public.gtrgm)","extension":"pg_trgm"},{"object":"function public.gtrgm_penalty(internal,internal,internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_picksplit(internal,internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_same(public.gtrgm,public.gtrgm,internal)","extension":"pg_trgm"},{"object":"function public.gtrgm_union(internal,internal)","extension":"pg_trgm"},{"object":"function public.set_limit(real)","extension":"pg_trgm"},{"object":"function public.show_limit()","extension":"pg_trgm"},{"object":"function public.show_trgm(text)","extension":"pg_trgm"},{"object":"function public.similarity_dist(text,text)","extension":"pg_trgm"},{"object":"function public.similarity_op(text,text)","extension":"pg_trgm"},{"object":"function public.similarity(text,text)","extension":"pg_trgm"},{"object":"function public.strict_word_similarity_commutator_op(text,text)","extension":"pg_trgm"},{"object":"function public.strict_word_similarity_dist_commutator_op(text,text)","extension":"pg_trgm"},{"object":"function public.strict_word_similarity_dist_op(text,text)","extension":"pg_trgm"},{"object":"function public.strict_word_similarity_op(text,text)","extension":"pg_trgm"},{"object":"function public.strict_word_similarity(text,text)","extension":"pg_trgm"},{"object":"function public.word_similarity_commutator_op(text,text)","extension":"pg_trgm"},{"object":"function public.word_similarity_dist_commutator_op(text,text)","extension":"pg_trgm"},{"object":"function public.word_similarity_dist_op(text,text)","extension":"pg_trgm"},{"object":"function public.word_similarity_op(text,text)","extension":"pg_trgm"},{"object":"function public.word_similarity(text,text)","extension":"pg_trgm"},{"object":"operator class public.gin_trgm_ops for access method gin","extension":"pg_trgm"},{"object":"operator class public.gist_trgm_ops for access method gist","extension":"pg_trgm"},{"object":"operator family public.gin_trgm_ops for access method gin","extension":"pg_trgm"},{"object":"operator family public.gist_trgm_ops for access method gist","extension":"pg_trgm"},{"object":"operator public.%(text,text)","extension":"pg_trgm"},{"object":"operator public.%>(text,text)","extension":"pg_trgm"},{"object":"operator public.%>>(text,text)","extension":"pg_trgm"},{"object":"operator public.<->(text,text)","extension":"pg_trgm"},{"object":"operator public.<->>(text,text)","extension":"pg_trgm"},{"object":"operator public.<->>>(text,text)","extension":"pg_trgm"},{"object":"operator public.<%(text,text)","extension":"pg_trgm"},{"object":"operator public.<<->(text,text)","extension":"pg_trgm"},{"object":"operator public.<<%(text,text)","extension":"pg_trgm"},{"object":"operator public.<<<->(text,text)","extension":"pg_trgm"},{"object":"type public.gtrgm","extension":"pg_trgm"},{"object":"type public.gtrgm[]","extension":"pg_trgm"}],"databaseOwner":"postgres","sequences":null,"relations":[{"acl":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"admin_user","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"}],"rls":true,"kind":"r","name":"audit_log","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"donation","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"donation_delivery_job","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"payment","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"receipt","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"anon","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"receipt_sequence","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"authenticated","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"supporter","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"},{"acl":[{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"postgres","grantor":"postgres","grantable":false,"privilege":"UPDATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"DELETE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"INSERT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"MAINTAIN"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"REFERENCES"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"SELECT"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRIGGER"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"TRUNCATE"},{"grantee":"service_role","grantor":"postgres","grantable":false,"privilege":"UPDATE"}],"rls":true,"kind":"r","name":"supporter_consent_intent","owner":"postgres","schema":"public","options":null,"forceRls":false,"replicaIdentity":"d"}],"columns":[{"acl":[],"name":"id","type":"uuid","table":"admin_user","schema":"public","default":"gen_random_uuid()","notNull":true,"identity":"","position":1,"collation":null,"generated":""},{"acl":[],"name":"auth_user_id","type":"uuid","table":"admin_user","schema":"public","default":null,"notNull":true,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"email","type":"public.citext","table":"admin_user","schema":"public","default":null,"notNull":true,"identity":"","position":3,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"role","type":"text","table":"admin_user","schema":"public","default":null,"notNull":true,"identity":"","position":4,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"status","type":"text","table":"admin_user","schema":"public","default":"''active''::text","notNull":true,"identity":"","position":5,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"created_at","type":"timestamp with time zone","table":"admin_user","schema":"public","default":"now()","notNull":true,"identity":"","position":6,"collation":null,"generated":""},{"acl":[],"name":"updated_at","type":"timestamp with time zone","table":"admin_user","schema":"public","default":"now()","notNull":true,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"invited_at","type":"timestamp with time zone","table":"admin_user","schema":"public","default":null,"notNull":false,"identity":"","position":8,"collation":null,"generated":""},{"acl":[],"name":"invite_sent_at","type":"timestamp with time zone","table":"admin_user","schema":"public","default":null,"notNull":false,"identity":"","position":9,"collation":null,"generated":""},{"acl":[],"name":"invite_accepted_at","type":"timestamp with time zone","table":"admin_user","schema":"public","default":null,"notNull":false,"identity":"","position":10,"collation":null,"generated":""},{"acl":[],"name":"last_invited_by","type":"uuid","table":"admin_user","schema":"public","default":null,"notNull":false,"identity":"","position":11,"collation":null,"generated":""},{"acl":[],"name":"id","type":"uuid","table":"audit_log","schema":"public","default":"gen_random_uuid()","notNull":true,"identity":"","position":1,"collation":null,"generated":""},{"acl":[],"name":"actor_user_id","type":"uuid","table":"audit_log","schema":"public","default":null,"notNull":false,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"action","type":"text","table":"audit_log","schema":"public","default":null,"notNull":true,"identity":"","position":3,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"entity","type":"text","table":"audit_log","schema":"public","default":null,"notNull":true,"identity":"","position":4,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"entity_id","type":"text","table":"audit_log","schema":"public","default":null,"notNull":true,"identity":"","position":5,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"timestamp","type":"timestamp with time zone","table":"audit_log","schema":"public","default":"now()","notNull":true,"identity":"","position":6,"collation":null,"generated":""},{"acl":[],"name":"detail","type":"jsonb","table":"audit_log","schema":"public","default":"''{}''::jsonb","notNull":true,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"created_at","type":"timestamp with time zone","table":"audit_log","schema":"public","default":"now()","notNull":true,"identity":"","position":8,"collation":null,"generated":""},{"acl":[],"name":"updated_at","type":"timestamp with time zone","table":"audit_log","schema":"public","default":"now()","notNull":true,"identity":"","position":9,"collation":null,"generated":""},{"acl":[],"name":"id","type":"uuid","table":"donation","schema":"public","default":"gen_random_uuid()","notNull":true,"identity":"","position":1,"collation":null,"generated":""},{"acl":[],"name":"supporter_id","type":"uuid","table":"donation","schema":"public","default":null,"notNull":true,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"amount_cents","type":"integer","table":"donation","schema":"public","default":null,"notNull":true,"identity":"","position":3,"collation":null,"generated":""},{"acl":[],"name":"currency","type":"text","table":"donation","schema":"public","default":"''HKD''::text","notNull":true,"identity":"","position":4,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"purpose","type":"text","table":"donation","schema":"public","default":null,"notNull":true,"identity":"","position":5,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"type","type":"text","table":"donation","schema":"public","default":"''one_time''::text","notNull":true,"identity":"","position":6,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"recurring_id","type":"uuid","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"status","type":"text","table":"donation","schema":"public","default":"''pending''::text","notNull":true,"identity":"","position":8,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"method","type":"text","table":"donation","schema":"public","default":null,"notNull":true,"identity":"","position":9,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"receipt_requested","type":"boolean","table":"donation","schema":"public","default":"false","notNull":true,"identity":"","position":10,"collation":null,"generated":""},{"acl":[],"name":"created_at","type":"timestamp with time zone","table":"donation","schema":"public","default":"now()","notNull":true,"identity":"","position":11,"collation":null,"generated":""},{"acl":[],"name":"updated_at","type":"timestamp with time zone","table":"donation","schema":"public","default":"now()","notNull":true,"identity":"","position":12,"collation":null,"generated":""},{"acl":[],"name":"custom_purpose","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":13,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"contact_name","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":14,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"contact_email","type":"public.citext","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":15,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"contact_phone","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":16,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"contact_language","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":17,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"consent_email_requested","type":"boolean","table":"donation","schema":"public","default":"false","notNull":true,"identity":"","position":18,"collation":null,"generated":""},{"acl":[],"name":"consent_whatsapp_requested","type":"boolean","table":"donation","schema":"public","default":"false","notNull":true,"identity":"","position":19,"collation":null,"generated":""},{"acl":[],"name":"acquisition_source","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":20,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"acquisition_context","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":21,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"acquisition_placement","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":22,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"acquisition_trigger","type":"text","table":"donation","schema":"public","default":null,"notNull":false,"identity":"","position":23,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"refunded_cents","type":"integer","table":"donation","schema":"public","default":"0","notNull":true,"identity":"","position":24,"collation":null,"generated":""},{"acl":[],"name":"id","type":"uuid","table":"donation_delivery_job","schema":"public","default":"gen_random_uuid()","notNull":true,"identity":"","position":1,"collation":null,"generated":""},{"acl":[],"name":"donation_id","type":"uuid","table":"donation_delivery_job","schema":"public","default":null,"notNull":true,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"payment_id","type":"uuid","table":"donation_delivery_job","schema":"public","default":null,"notNull":true,"identity":"","position":3,"collation":null,"generated":""},{"acl":[],"name":"status","type":"text","table":"donation_delivery_job","schema":"public","default":"''pending''::text","notNull":true,"identity":"","position":4,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"attempts","type":"integer","table":"donation_delivery_job","schema":"public","default":"0","notNull":true,"identity":"","position":5,"collation":null,"generated":""},{"acl":[],"name":"lease_owner","type":"uuid","table":"donation_delivery_job","schema":"public","default":null,"notNull":false,"identity":"","position":6,"collation":null,"generated":""},{"acl":[],"name":"lease_until","type":"timestamp with time zone","table":"donation_delivery_job","schema":"public","default":null,"notNull":false,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"next_attempt_at","type":"timestamp with time zone","table":"donation_delivery_job","schema":"public","default":null,"notNull":false,"identity":"","position":8,"collation":null,"generated":""},{"acl":[],"name":"error_code","type":"text","table":"donation_delivery_job","schema":"public","default":null,"notNull":false,"identity":"","position":9,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"created_at","type":"timestamp with time zone","table":"donation_delivery_job","schema":"public","default":"now()","notNull":true,"identity":"","position":10,"collation":null,"generated":""},{"acl":[],"name":"updated_at","type":"timestamp with time zone","table":"donation_delivery_job","schema":"public","default":"now()","notNull":true,"identity":"","position":11,"collation":null,"generated":""},{"acl":[],"name":"id","type":"uuid","table":"payment","schema":"public","default":"gen_random_uuid()","notNull":true,"identity":"","position":1,"collation":null,"generated":""},{"acl":[],"name":"donation_id","type":"uuid","table":"payment","schema":"public","default":null,"notNull":true,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"provider","type":"text","table":"payment","schema":"public","default":null,"notNull":true,"identity":"","position":3,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"provider_ref","type":"text","table":"payment","schema":"public","default":null,"notNull":false,"identity":"","position":4,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"amount_cents","type":"integer","table":"payment","schema":"public","default":null,"notNull":true,"identity":"","position":5,"collation":null,"generated":""},{"acl":[],"name":"status","type":"text","table":"payment","schema":"public","default":"''pending''::text","notNull":true,"identity":"","position":6,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"received_at","type":"timestamp with time zone","table":"payment","schema":"public","default":null,"notNull":false,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"reconciled_by","type":"uuid","table":"payment","schema":"public","default":null,"notNull":false,"identity":"","position":8,"collation":null,"generated":""},{"acl":[],"name":"bank_reference","type":"text","table":"payment","schema":"public","default":null,"notNull":false,"identity":"","position":9,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"created_at","type":"timestamp with time zone","table":"payment","schema":"public","default":"now()","notNull":true,"identity":"","position":10,"collation":null,"generated":""},{"acl":[],"name":"updated_at","type":"timestamp with time zone","table":"payment","schema":"public","default":"now()","notNull":true,"identity":"","position":11,"collation":null,"generated":""},{"acl":[],"name":"provider_order_ref","type":"text","table":"payment","schema":"public","default":null,"notNull":false,"identity":"","position":12,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"refunded_cents","type":"integer","table":"payment","schema":"public","default":"0","notNull":true,"identity":"","position":13,"collation":null,"generated":""},{"acl":[],"name":"id","type":"uuid","table":"receipt","schema":"public","default":"gen_random_uuid()","notNull":true,"identity":"","position":1,"collation":null,"generated":""},{"acl":[],"name":"supporter_id","type":"uuid","table":"receipt","schema":"public","default":null,"notNull":true,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"receipt_no","type":"text","table":"receipt","schema":"public","default":null,"notNull":true,"identity":"","position":3,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"donation_ids","type":"uuid[]","table":"receipt","schema":"public","default":null,"notNull":true,"identity":"","position":4,"collation":null,"generated":""},{"acl":[],"name":"total_amount_cents","type":"integer","table":"receipt","schema":"public","default":null,"notNull":true,"identity":"","position":5,"collation":null,"generated":""},{"acl":[],"name":"tax_year","type":"integer","table":"receipt","schema":"public","default":null,"notNull":true,"identity":"","position":6,"collation":null,"generated":""},{"acl":[],"name":"issued_at","type":"timestamp with time zone","table":"receipt","schema":"public","default":"now()","notNull":true,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"pdf_url","type":"text","table":"receipt","schema":"public","default":null,"notNull":false,"identity":"","position":8,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"status","type":"text","table":"receipt","schema":"public","default":"''issued''::text","notNull":true,"identity":"","position":9,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"voided_at","type":"timestamp with time zone","table":"receipt","schema":"public","default":null,"notNull":false,"identity":"","position":10,"collation":null,"generated":""},{"acl":[],"name":"voided_by","type":"uuid","table":"receipt","
+2026-10-02T20:53:12.0496662Z ##[error]Process completed with exit code 1.
+2026-10-02T20:53:12.0614277Z ##[group]Run bunx supabase stop
+2026-10-02T20:53:12.0614603Z [36;1mbunx supabase stop[0m
+2026-10-02T20:53:12.0679435Z shell: /usr/bin/bash -e {0}
+2026-10-02T20:53:12.0679714Z ##[endgroup]
+2026-10-02T20:53:12.5783334Z Stopping containers...
+2026-10-02T20:53:12.6345314Z Stopped supabase local development setup.
+2026-10-02T20:53:13.0313684Z Post job cleanup.
+2026-10-02T20:53:13.1213988Z [command]/usr/bin/git version
+2026-10-02T20:53:13.1262857Z git version 2.55.0
+2026-10-02T20:53:13.1304618Z Temporarily overriding HOME='/home/runner/work/_temp/75965810-8cc3-44ea-97d8-09e2a0600c73' before making global git config changes
+2026-10-02T20:53:13.1306151Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-02T20:53:13.1311402Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hkscda/hkscda
+2026-10-02T20:53:13.1355629Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-02T20:53:13.1394493Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-02T20:53:13.1741608Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-02T20:53:13.1774242Z http.https://github.com/.extraheader
+2026-10-02T20:53:13.1790753Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-02T20:53:13.1840753Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-02T20:53:13.2202414Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-02T20:53:13.2258398Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-02T20:53:13.2823498Z Cleaning up orphan processes
+2026-10-02T20:53:13.3292234Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

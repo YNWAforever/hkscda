@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 153, in <module>
+    integration( finance, before, counts )
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 100, in integration
+    mixedBefore=capture('before-mixed-'+label);assert mixedBefore==second
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 33, in capture
+    sql='begin read only;set local search_path=pg_catalog;select coalesce(jsonb_agg(to_jsonb(q)),\'[]\'::jsonb) from ('+q+')q;rollback;\n';(out/(label+'-'+key+'.sql.source')).write_text(sql,encoding='utf-8',newline='\n');rows=json.loads(psql(sql).stdout);value[key]=rows[0]['catalog']if key=='catalog'else rows[0]['value']if key in ['auth','native','indexes','shapes']else rows
+                                                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 809, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-native-integration-86d10b772bdb48dfa016dd2ebd784746\\before-mixed-native-catalogue-historical-helper-catalog.sql.source'

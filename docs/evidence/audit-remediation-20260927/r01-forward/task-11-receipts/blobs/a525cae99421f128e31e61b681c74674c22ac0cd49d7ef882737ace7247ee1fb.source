@@ -1,0 +1,208 @@
+BEGIN;
+-- Atomic coordinator status, follow-up task, and match mutations.
+create or replace function public.mutate_adoption_coordinator_with_audit(
+  p_actor_user_id uuid,
+  p_entity text,
+  p_operation text,
+  p_id uuid,
+  p_payload jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  actor public.admin_user%rowtype;
+  current_status public.coordinator_status%rowtype;
+  desired_status public.coordinator_status%rowtype;
+  current_task public.adoption_followup%rowtype;
+  desired_task public.adoption_followup%rowtype;
+  linked_status public.coordinator_status%rowtype;
+  result jsonb;
+  action_name text;
+  audit_detail jsonb := '{}'::jsonb;
+begin
+  select * into actor
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+  if not found then
+    raise exception 'Active staff or admin actor required' using errcode = '42501';
+  end if;
+  if p_entity = 'coordinator_status' and actor.role <> 'admin' then
+    raise exception 'Admin actor required for status mutation' using errcode = '42501';
+  end if;
+
+  if p_entity = 'coordinator_status' and p_operation = 'create' then
+    insert into public.coordinator_status (
+      category, key, label_zh, label_en, sort_order, color,
+      is_active, is_closing, is_final
+    ) values (
+      p_payload->>'category', p_payload->>'key',
+      p_payload->>'label_zh', p_payload->>'label_en',
+      (p_payload->>'sort_order')::integer, p_payload->>'color',
+      (p_payload->>'is_active')::boolean,
+      (p_payload->>'is_closing')::boolean,
+      (p_payload->>'is_final')::boolean
+    )
+    returning to_jsonb(coordinator_status.*) into result;
+    action_name := 'coordinator_status.create';
+    audit_detail := jsonb_build_object('category', result->>'category', 'key', result->>'key');
+
+  elsif p_entity = 'coordinator_status' and p_operation in ('update', 'delete') then
+    select * into current_status from public.coordinator_status
+    where id = p_id for update;
+    if not found then
+      raise exception 'Status not found' using errcode = 'P0002';
+    end if;
+    if p_operation = 'delete' then
+      if current_status.is_system then
+        raise exception 'System statuses cannot be deleted' using errcode = '23514';
+      end if;
+      delete from public.coordinator_status where id = p_id
+      returning to_jsonb(coordinator_status.*) into result;
+      action_name := 'coordinator_status.delete';
+      audit_detail := jsonb_build_object('category', current_status.category, 'key', current_status.key);
+    else
+      select * into desired_status
+      from jsonb_populate_record(current_status, p_payload);
+      if current_status.is_system and
+         (desired_status.key <> current_status.key or desired_status.category <> current_status.category) then
+        raise exception 'System status identity cannot be changed' using errcode = '23514';
+      end if;
+      update public.coordinator_status set
+        category = desired_status.category,
+        key = desired_status.key,
+        label_zh = desired_status.label_zh,
+        label_en = desired_status.label_en,
+        sort_order = desired_status.sort_order,
+        color = desired_status.color,
+        is_active = desired_status.is_active,
+        is_closing = desired_status.is_closing,
+        is_final = desired_status.is_final
+      where id = p_id
+      returning to_jsonb(coordinator_status.*) into result;
+      action_name := 'coordinator_status.update';
+      audit_detail := p_payload;
+    end if;
+
+  elsif p_entity = 'adoption_followup' and p_operation = 'create' then
+    select * into desired_task
+    from jsonb_populate_record(null::public.adoption_followup, p_payload);
+    select * into linked_status from public.coordinator_status
+    where id = desired_task.status_id and category = 'followup' and is_active;
+    if not found then
+      raise exception 'Active followup status required' using errcode = '23514';
+    end if;
+    insert into public.adoption_followup (
+      adoption_case_id, adopter_profile_id, animal_id, status_id,
+      title, task_type, priority, due_at, scheduled_at, completed_at,
+      assigned_to, volunteer, contact_channel, outcome, next_step_at, remarks,
+      has_window_net, environment, score, created_by, updated_by
+    ) values (
+      desired_task.adoption_case_id, desired_task.adopter_profile_id,
+      desired_task.animal_id, desired_task.status_id,
+      desired_task.title, desired_task.task_type, desired_task.priority,
+      desired_task.due_at, desired_task.scheduled_at, desired_task.completed_at,
+      desired_task.assigned_to, desired_task.volunteer, desired_task.contact_channel,
+      desired_task.outcome, desired_task.next_step_at, desired_task.remarks,
+      desired_task.has_window_net, desired_task.environment, desired_task.score,
+      p_actor_user_id, p_actor_user_id
+    )
+    returning to_jsonb(adoption_followup.*) into result;
+    action_name := 'coordinator_task.create';
+    audit_detail := jsonb_build_object(
+      'adoptionCaseId', desired_task.adoption_case_id,
+      'adopterProfileId', desired_task.adopter_profile_id,
+      'animalId', desired_task.animal_id,
+      'statusId', desired_task.status_id,
+      'priority', desired_task.priority,
+      'dueAt', desired_task.due_at
+    );
+
+  elsif p_entity = 'adoption_followup' and p_operation = 'update' then
+    select * into current_task from public.adoption_followup
+    where id = p_id for update;
+    if not found then
+      raise exception 'Task not found' using errcode = 'P0002';
+    end if;
+    select * into desired_task
+    from jsonb_populate_record(current_task, p_payload);
+    select * into linked_status from public.coordinator_status
+    where id = desired_task.status_id and category = 'followup'
+      and (is_active or not (p_payload ? 'status_id'));
+    if not found then
+      raise exception 'Active followup status required' using errcode = '23514';
+    end if;
+    update public.adoption_followup set
+      adoption_case_id = desired_task.adoption_case_id,
+      adopter_profile_id = desired_task.adopter_profile_id,
+      animal_id = desired_task.animal_id,
+      status_id = desired_task.status_id,
+      title = desired_task.title,
+      task_type = desired_task.task_type,
+      priority = desired_task.priority,
+      due_at = desired_task.due_at,
+      scheduled_at = desired_task.scheduled_at,
+      completed_at = desired_task.completed_at,
+      assigned_to = desired_task.assigned_to,
+      volunteer = desired_task.volunteer,
+      contact_channel = desired_task.contact_channel,
+      outcome = desired_task.outcome,
+      next_step_at = desired_task.next_step_at,
+      remarks = desired_task.remarks,
+      has_window_net = desired_task.has_window_net,
+      environment = desired_task.environment,
+      score = desired_task.score,
+      updated_by = p_actor_user_id
+    where id = p_id
+    returning to_jsonb(adoption_followup.*) into result;
+    action_name := case
+      when p_payload ? 'status_id' and linked_status.key = 'completed' then 'coordinator_task.complete'
+      when p_payload ? 'status_id' and linked_status.key = 'cancelled' then 'coordinator_task.cancel'
+      else 'coordinator_task.update'
+    end;
+    audit_detail := p_payload - 'updated_by';
+
+  elsif p_entity = 'animal_match' and p_operation = 'create' then
+    select * into linked_status from public.coordinator_status
+    where id = (p_payload->>'status_id')::uuid and category = 'match' and is_active;
+    if not found then
+      raise exception 'Active match status required' using errcode = '23514';
+    end if;
+    insert into public.animal_match (
+      adoption_case_id, animal_id, status_id, is_approved,
+      notes, created_by, updated_by
+    ) values (
+      (p_payload->>'adoption_case_id')::uuid,
+      (p_payload->>'animal_id')::uuid,
+      linked_status.id,
+      linked_status.key = 'approved',
+      p_payload->>'notes',
+      p_actor_user_id, p_actor_user_id
+    )
+    returning to_jsonb(animal_match.*) into result;
+    action_name := 'animal_match.create';
+    audit_detail := jsonb_build_object(
+      'adoptionCaseId', result->>'adoption_case_id',
+      'animalId', result->>'animal_id',
+      'statusId', result->>'status_id',
+      'isApproved', result->'is_approved'
+    );
+
+  else
+    raise exception 'Unsupported adoption coordinator mutation' using errcode = '22023';
+  end if;
+
+  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+  values (p_actor_user_id, action_name, p_entity, result->>'id', audit_detail);
+  return result;
+end;
+$$;
+revoke all on function public.mutate_adoption_coordinator_with_audit(uuid, text, text, uuid, jsonb)
+  from public, anon, authenticated;
+grant execute on function public.mutate_adoption_coordinator_with_audit(uuid, text, text, uuid, jsonb)
+  to service_role;
+COMMIT;

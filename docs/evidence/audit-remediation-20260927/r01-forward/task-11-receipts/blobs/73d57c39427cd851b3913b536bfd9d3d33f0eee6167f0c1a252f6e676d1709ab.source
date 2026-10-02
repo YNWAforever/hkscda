@@ -1,0 +1,4177 @@
+{
+  "mode": "owned-full1711-d45-diagnostic",
+  "authority": "Ruling55",
+  "sourceHead": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "baselineSource": "d45b849d300f76700efcf5450a9b426e32cc372f",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-9c291d811f4c4b04bcfb3910526c27a4",
+  "pg": "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+  "CLIQualification": "Intended pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Full managed+D45 PG17.11 baseline credit requires all three observed managed jobs, complete migration application and actual catalog capture.",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "command-0000.stdout.log",
+      "stderr": "command-0000.stderr.log",
+      "stdoutSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stdout": "command-0001.stdout.log",
+      "stderr": "command-0001.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "d45b849d300f76700efcf5450a9b426e32cc372f:supabase/config.toml"
+      ],
+      "exit": 0,
+      "stdout": "command-0002.stdout.log",
+      "stderr": "command-0002.stderr.log",
+      "stdoutSha256": "f3f83ee5d39cad1c6d7772ea257c079fa91f23dab1d343c1fa65ff6c4a7e5d1a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "d45b849d300f76700efcf5450a9b426e32cc372f",
+        "--",
+        "supabase/roles.sql",
+        "supabase/.temp"
+      ],
+      "exit": 0,
+      "stdout": "command-0003.stdout.log",
+      "stderr": "command-0003.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"
+      ],
+      "exit": 0,
+      "stdout": "command-0004.stdout.log",
+      "stderr": "command-0004.stderr.log",
+      "stdoutSha256": "b72b2954f270f915e454009c84b8983366066f5e276b5715f9497f6cb4d32592",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+      ],
+      "exit": 0,
+      "stdout": "command-0005.stdout.log",
+      "stderr": "command-0005.stderr.log",
+      "stdoutSha256": "26a99f54a52cb2685c88bf469bb752df77c8e06369afcb02cb6090219c60086b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+      ],
+      "exit": 0,
+      "stdout": "command-0006.stdout.log",
+      "stderr": "command-0006.stderr.log",
+      "stdoutSha256": "99a25c790ac04b904ee56afe565df0ca2d0e699b972a28bfaac643bced3ad1ed",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+      ],
+      "exit": 0,
+      "stdout": "command-0007.stdout.log",
+      "stderr": "command-0007.stderr.log",
+      "stdoutSha256": "74b7b7c5552ad99188fa8ba1d38ede91d8bba81657d4179a098c752e0363b6a0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-queries.ts",
+        "states",
+        "unused",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0008.stdout.log",
+      "stderr": "command-0008.stderr.log",
+      "stdoutSha256": "3801efb0c9c131fe4a9aec03ba214128d3f5289b51212a4c71cf0fa911eff50a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "create",
+        "--name",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "--network",
+        "none",
+        "--cpus",
+        "1",
+        "--memory",
+        "1g",
+        "--no-healthcheck",
+        "-e",
+        "POSTGRES_PASSWORD=postgres",
+        "-e",
+        "JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "-e",
+        "JWT_EXP=3600",
+        "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"
+      ],
+      "exit": 0,
+      "stdout": "command-0009.stdout.log",
+      "stderr": "command-0009.stderr.log",
+      "stdoutSha256": "802376a76fca00b4f31c3c8ece679253fda9bbfc15759d02742207359761bf30",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0010.stdout.log",
+      "stderr": "command-0010.stderr.log",
+      "stdoutSha256": "c23cb303a9c4e74f889e8acb9bf3445271af58cf9a1c6b5aeae51a472251ca3c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "cp",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-9c291d811f4c4b04bcfb3910526c27a4\\init.sql.source",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4:/etc/postgresql.schema.sql"
+      ],
+      "exit": 0,
+      "stdout": "command-0011.stdout.log",
+      "stderr": "command-0011.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0012.stdout.log",
+      "stderr": "command-0012.stderr.log",
+      "stdoutSha256": "cb37774b6354655c0a51e0a66f7d71df6e14b2f61f479ee6598acb952af4ce86",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0013.stdout.log",
+      "stderr": "command-0013.stderr.log",
+      "stdoutSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0014.stdout.log",
+      "stderr": "command-0014.stderr.log",
+      "stdoutSha256": "73b251fb0c55034ce47ce1c80d7f6ddd9e37e754663864062b25dd507cbb400c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "pg_isready",
+        "-U",
+        "postgres"
+      ],
+      "exit": 2,
+      "stdout": "command-0015.stdout.log",
+      "stderr": "command-0015.stderr.log",
+      "stdoutSha256": "f9d6589c981d20c4491cb1ede0b7473bc8a69d490a53e10cf0a4591ff237252b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0016.stdout.log",
+      "stderr": "command-0016.stderr.log",
+      "stdoutSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0017.stdout.log",
+      "stderr": "command-0017.stderr.log",
+      "stdoutSha256": "b0b332e6e145fbb48b2eeeac179fce62568c422c796548e5eb78fa41982479f5",
+      "stderrSha256": "69f59d6126ea35d58fd0b3c79df4aa13e84dc4cdd34bd26883e34a84d46a67d7"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "pg_isready",
+        "-U",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0018.stdout.log",
+      "stderr": "command-0018.stderr.log",
+      "stdoutSha256": "2427579984ed6e8b4918f895553a561e753880ff77e3722a975cc18033488a50",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0019.stdout.log",
+      "stderr": "command-0019.stderr.log",
+      "stdoutSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0020.stdout.log",
+      "stderr": "command-0020.stderr.log",
+      "stdoutSha256": "cc9c72de6ac0d0f5e8b3b16a75248c94cf84ee536ab699462d7cc6931098f5ba",
+      "stderrSha256": "24727b1172f90181e208c737957928393f48c0619b88e8d491b41bde9ca396cd"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "pg_isready",
+        "-U",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0021.stdout.log",
+      "stderr": "command-0021.stderr.log",
+      "stdoutSha256": "2427579984ed6e8b4918f895553a561e753880ff77e3722a975cc18033488a50",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0022.stdout.log",
+      "stderr": "command-0022.stderr.log",
+      "stdoutSha256": "24ad29b540541d6040ecad19e66d860ec949e9ff0097ffb7208bbbb8c6f6556c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "create",
+        "--name",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4",
+        "--network",
+        "container:hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "--cpus",
+        "1",
+        "--memory",
+        "1g",
+        "--no-healthcheck",
+        "-e",
+        "PORT=4000",
+        "-e",
+        "DB_HOST=127.0.0.1",
+        "-e",
+        "DB_PORT=5432",
+        "-e",
+        "DB_USER=postgres",
+        "-e",
+        "DB_PASSWORD=postgres",
+        "-e",
+        "DB_NAME=postgres",
+        "-e",
+        "DB_AFTER_CONNECT_QUERY=SET search_path TO _realtime",
+        "-e",
+        "DB_ENC_KEY=supabaserealtime",
+        "-e",
+        "API_JWT_JWKS={\"keys\":[{\"kty\":\"EC\",\"kid\":\"b81269f1-21d8-4f2e-b719-c2240a840d90\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"alg\":\"ES256\",\"ext\":true,\"crv\":\"P-256\",\"x\":\"M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4\",\"y\":\"P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ\"},{\"kty\":\"oct\",\"k\":\"dGFzazExLXI1NS1vd25lZC1zeW50aGV0aWMtand0LXNlY3JldC0wMDAwMDAwMDAw\"}]}",
+        "-e",
+        "API_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "-e",
+        "METRICS_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "-e",
+        "APP_NAME=realtime",
+        "-e",
+        "SECRET_KEY_BASE=EAx3IQ/wRG1v47ZD4NE4/9RzBI8Jmil3x0yhcW4V2NHBP6c2iPIzwjofi2Ep4HIG",
+        "-e",
+        "ERL_AFLAGS=-proto_dist inet_tcp",
+        "-e",
+        "DNS_NODES=''",
+        "-e",
+        "RLIMIT_NOFILE=",
+        "-e",
+        "SEED_SELF_HOST=true",
+        "-e",
+        "RUN_JANITOR=true",
+        "-e",
+        "MAX_HEADER_LENGTH=4096",
+        "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+        "/app/bin/realtime",
+        "eval",
+        "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+      ],
+      "exit": 0,
+      "stdout": "command-0023.stdout.log",
+      "stderr": "command-0023.stderr.log",
+      "stdoutSha256": "a23ad40026b6726fc01e77ed369742fa9939d7c501a79caf5e3fda4a1eb3e41c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0024.stdout.log",
+      "stderr": "command-0024.stderr.log",
+      "stdoutSha256": "0407547924b51427641fb2f636b3a1bdb7bc6b55a9325729b37b2bc882a93296",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "-a",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0025.stdout.log",
+      "stderr": "command-0025.stderr.log",
+      "stdoutSha256": "17216442453ca1b334bbdb1e1653162fa703ea01497447197e525a94a9a68651",
+      "stderrSha256": "90f27b29da7cc6a8daa92ef28009c3f1c490bcbcc4d1834fe4dd204e9a732255"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0026.stdout.log",
+      "stderr": "command-0026.stderr.log",
+      "stdoutSha256": "b724dfaf6fb3bbe72351dd25faec8d804cd57e537a2cccf4b38c1ea75cf188fa",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "create",
+        "--name",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4",
+        "--network",
+        "container:hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "--cpus",
+        "1",
+        "--memory",
+        "512m",
+        "--no-healthcheck",
+        "-e",
+        "DB_INSTALL_ROLES=false",
+        "-e",
+        "DB_MIGRATIONS_FREEZE_AT=",
+        "-e",
+        "ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogImFub24iLCAiaWF0IjogMTYwMDAwMDAwMCwgImV4cCI6IDIwMDAwMDAwMDB9.v5i7KIYptX5v9eTpU587RfmpRJ1XepDJqidgXdbIT7I",
+        "-e",
+        "SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpYXQiOiAxNjAwMDAwMDAwLCAiZXhwIjogMjAwMDAwMDAwMH0.T5dbZwo6cSM9BhLc7GB5KDyOAvLxNurNnFd8Ex0K9PY",
+        "-e",
+        "PGRST_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "-e",
+        "DATABASE_URL=postgresql://supabase_storage_admin:postgres@127.0.0.1:5432/postgres",
+        "-e",
+        "FILE_SIZE_LIMIT=52428800",
+        "-e",
+        "STORAGE_BACKEND=file",
+        "-e",
+        "STORAGE_FILE_BACKEND_PATH=/mnt",
+        "-e",
+        "TENANT_ID=stub",
+        "-e",
+        "REGION=stub",
+        "-e",
+        "GLOBAL_S3_BUCKET=stub",
+        "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+        "node",
+        "dist/scripts/migrate-call.js"
+      ],
+      "exit": 0,
+      "stdout": "command-0027.stdout.log",
+      "stderr": "command-0027.stderr.log",
+      "stdoutSha256": "132e7283606738c047c124e96bfb9af04eba41b6e1280d28f0dab67fad646938",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0028.stdout.log",
+      "stderr": "command-0028.stderr.log",
+      "stdoutSha256": "235c08f32f55a28c5715e35065c5cfb23734f4d840f9eeb0c1c69fccc702201a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "-a",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0029.stdout.log",
+      "stderr": "command-0029.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0030.stdout.log",
+      "stderr": "command-0030.stderr.log",
+      "stdoutSha256": "7cad7d6ee28362d7fafad60b5bfe80e9ae3be383ef6f04dee7a6d7bc48346eab",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "create",
+        "--name",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4",
+        "--network",
+        "container:hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "--cpus",
+        "1",
+        "--memory",
+        "512m",
+        "--no-healthcheck",
+        "-e",
+        "API_EXTERNAL_URL=http://127.0.0.1:9999",
+        "-e",
+        "GOTRUE_LOG_LEVEL=error",
+        "-e",
+        "GOTRUE_DB_DRIVER=postgres",
+        "-e",
+        "GOTRUE_DB_DATABASE_URL=postgresql://supabase_auth_admin:postgres@127.0.0.1:5432/postgres",
+        "-e",
+        "GOTRUE_SITE_URL=http://127.0.0.1:3000",
+        "-e",
+        "GOTRUE_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+        "gotrue",
+        "migrate"
+      ],
+      "exit": 0,
+      "stdout": "command-0031.stdout.log",
+      "stderr": "command-0031.stderr.log",
+      "stdoutSha256": "3a8d3ebee8ad9ea22b14940499121590d4e1f29f4f2c5788262afcb19f426763",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0032.stdout.log",
+      "stderr": "command-0032.stderr.log",
+      "stdoutSha256": "2f49ab289eb526aa5c3bc99fb8cebf8ea4236161f5283dd9de579420032f7148",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "start",
+        "-a",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0033.stdout.log",
+      "stderr": "command-0033.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0034.stdout.log",
+      "stderr": "command-0034.stderr.log",
+      "stdoutSha256": "74875f7db7e44ba1e3f0a60b824be33cbb534ac45118593dd9552e3c333a7106",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0035.stdout.log",
+      "stderr": "command-0035.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "d45b849d300f76700efcf5450a9b426e32cc372f",
+        "--",
+        "supabase/migrations"
+      ],
+      "exit": 0,
+      "stdout": "command-0036.stdout.log",
+      "stderr": "command-0036.stderr.log",
+      "stdoutSha256": "6a07ef4391a598ae690115e417c7074ebbd018423c700c910c432cae32c811a7",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "ed3a5ebd3ea0fe22e93b6fa44649758d6aa6c017"
+      ],
+      "exit": 0,
+      "stdout": "command-0037.stdout.log",
+      "stderr": "command-0037.stderr.log",
+      "stdoutSha256": "4b65bc3665a46ad38bd3ee5fc0a3432faaf618ae5b6e857a1803ed5f81c4716f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0038.stdout.log",
+      "stderr": "command-0038.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "ada0cc4c1a60860c526536eaa951d4ca52bdfc52"
+      ],
+      "exit": 0,
+      "stdout": "command-0039.stdout.log",
+      "stderr": "command-0039.stderr.log",
+      "stdoutSha256": "41b25a75799f0fe4b5b54f43ebf14a7dd3f86fb91f33f7d5976f7d1e4e2bddc0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0040.stdout.log",
+      "stderr": "command-0040.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "8298ff8d908d265dfebc53b98c7b001347c41420"
+      ],
+      "exit": 0,
+      "stdout": "command-0041.stdout.log",
+      "stderr": "command-0041.stderr.log",
+      "stdoutSha256": "ce4831774402e83ef42a3bfcb10bb40ce66b39f94e9ce5b656b9e45327cbd7b2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0042.stdout.log",
+      "stderr": "command-0042.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "6116004e60660668d311bc55d7ae18d77c0181a1a84cc3d29e698fbc0ac1e7af"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "89afa1c70c7e2e4a25e341e773f9505564b34b99"
+      ],
+      "exit": 0,
+      "stdout": "command-0043.stdout.log",
+      "stderr": "command-0043.stderr.log",
+      "stdoutSha256": "276318d24d46c45b56134419c1a89ab958ce4e76c95668c9e21f9a17d98a0677",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0044.stdout.log",
+      "stderr": "command-0044.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "6dbfcb1586f40d8534ed743a7c7dbedc1943f956"
+      ],
+      "exit": 0,
+      "stdout": "command-0045.stdout.log",
+      "stderr": "command-0045.stderr.log",
+      "stdoutSha256": "9bae070730b83cc9af0eea3e4083b806bdc75e6acf72619214c4345c193e1014",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0046.stdout.log",
+      "stderr": "command-0046.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "72b8a4c3c97ed6b18609e732ef14b5511b4515ec63203fbc51c978019cc8842b"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "3c83f1238d6913c0d900b234dedea7edd3c9f75c"
+      ],
+      "exit": 0,
+      "stdout": "command-0047.stdout.log",
+      "stderr": "command-0047.stderr.log",
+      "stdoutSha256": "553ac17d565d19834900bf18732178c00da9b25a710dea17e5ae4aee75da621c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0048.stdout.log",
+      "stderr": "command-0048.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "5af01c6056a78d90a62472cec3f66dbf199e4589"
+      ],
+      "exit": 0,
+      "stdout": "command-0049.stdout.log",
+      "stderr": "command-0049.stderr.log",
+      "stdoutSha256": "6d8d62ed8a538487ad0517ed72d23a1e3df6315e72dbb4cbfd1fa45f64517e92",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0050.stdout.log",
+      "stderr": "command-0050.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "a7b582e1778fa96903eab600164be32f96ba5c98c28dcad17ef9433effc2eb81"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "37b6e343929354d1d420aaea365ca2db461453f3"
+      ],
+      "exit": 0,
+      "stdout": "command-0051.stdout.log",
+      "stderr": "command-0051.stderr.log",
+      "stdoutSha256": "c30fab4cd90f037eafc961cd1c9f6212f729cf2b87390eb9dfa707d1c23e1800",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0052.stdout.log",
+      "stderr": "command-0052.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "dad59fad82bc9f26450c9d42e659d35bce99dd42"
+      ],
+      "exit": 0,
+      "stdout": "command-0053.stdout.log",
+      "stderr": "command-0053.stderr.log",
+      "stdoutSha256": "b730609f43af3c6ff855f10ee7952333618a95ba1063d9ed49391e090f65c849",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0054.stdout.log",
+      "stderr": "command-0054.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "ae02b82210516161547ecd4681ebfa9e0715ec7c20c67a193ee58a79bf34cc61"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "aa8a9551cebb0018c0ed3fe86a0a15dc344dbbd2"
+      ],
+      "exit": 0,
+      "stdout": "command-0055.stdout.log",
+      "stderr": "command-0055.stderr.log",
+      "stdoutSha256": "9079733451744975ea02383b2f4dca06d1ae590774010f76c69bb75c5bcfb8f0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0056.stdout.log",
+      "stderr": "command-0056.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "9251cfdda503638938206598429f9208c23b39489b366217126fbc38d8bb7e6b"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "2aca804c5fb2883bf1d1d1d381497ec8e04aae7f"
+      ],
+      "exit": 0,
+      "stdout": "command-0057.stdout.log",
+      "stderr": "command-0057.stderr.log",
+      "stdoutSha256": "6aa54ede558769e7a05700f9717d3275eec03d45806a0f4423be8541bd250174",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0058.stdout.log",
+      "stderr": "command-0058.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "7b4838832a2c7a994c1daf87b14675416180d2e7"
+      ],
+      "exit": 0,
+      "stdout": "command-0059.stdout.log",
+      "stderr": "command-0059.stderr.log",
+      "stdoutSha256": "56656cb5abb219143bb650191568294530308c3621292e7d34bbf8bc4a360f45",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0060.stdout.log",
+      "stderr": "command-0060.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "9eb7d8d122b3c9d9c0d97f5acc23a21673d48f76"
+      ],
+      "exit": 0,
+      "stdout": "command-0061.stdout.log",
+      "stderr": "command-0061.stderr.log",
+      "stdoutSha256": "5748c9db5402751b8a7702c546c8aa3c995d3d7affde77e02578c66c51450bb7",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0062.stdout.log",
+      "stderr": "command-0062.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "56cf70df87f9b68b99003d424b09a183ef13ba6a"
+      ],
+      "exit": 0,
+      "stdout": "command-0063.stdout.log",
+      "stderr": "command-0063.stderr.log",
+      "stdoutSha256": "0842bebd2d7cdd33cd930b0580e5118d18523f1fd76f798b12f9d554482f373d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0064.stdout.log",
+      "stderr": "command-0064.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "b53504b4e824b008540da620121bb88f4a7efdc78c951895f6f85e5e5eca0be5"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "b982bf1ee13bc88aeabaa692d2ab021b1afc9ab4"
+      ],
+      "exit": 0,
+      "stdout": "command-0065.stdout.log",
+      "stderr": "command-0065.stderr.log",
+      "stdoutSha256": "ad5b288120b62647f2ea2161d062c3f891619b98c8811068cea8372748aafb00",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0066.stdout.log",
+      "stderr": "command-0066.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "54696673b1b93b8e6794cf1cdb29ca9edd7c9d81"
+      ],
+      "exit": 0,
+      "stdout": "command-0067.stdout.log",
+      "stderr": "command-0067.stderr.log",
+      "stdoutSha256": "02f0cf5badc501e3cbdb91c6f6a87a421fbeb19e7efa8012032683fef4156ce3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0068.stdout.log",
+      "stderr": "command-0068.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "2642dc76448e59c998696ccb54a7c523641f7e45"
+      ],
+      "exit": 0,
+      "stdout": "command-0069.stdout.log",
+      "stderr": "command-0069.stderr.log",
+      "stdoutSha256": "83b58ce6b4bf55810e1e087b70a743a84e920a0fcaa938380a3f5161361bd70f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0070.stdout.log",
+      "stderr": "command-0070.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "dcfde05101b57c64988f4477b50ad3395581ff2eedd956e5b434e00370b27a29"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "5cc6a16eddcdbbe5c18204ff5b650ebdfb220f7c"
+      ],
+      "exit": 0,
+      "stdout": "command-0071.stdout.log",
+      "stderr": "command-0071.stderr.log",
+      "stdoutSha256": "842d7a0768140d74968e64f5506edf1d26dd6fc892d9a1faa1a8842281d7b22e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0072.stdout.log",
+      "stderr": "command-0072.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "0d684db04550ee7b63728342ee8c78699beae411"
+      ],
+      "exit": 0,
+      "stdout": "command-0073.stdout.log",
+      "stderr": "command-0073.stderr.log",
+      "stdoutSha256": "1486a804436932531721e39aa76c87959cd047e37960fce8b2baf5082f7ae2da",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0074.stdout.log",
+      "stderr": "command-0074.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "1dea932bb41afd81cfea0883b69e97ca99caf35a"
+      ],
+      "exit": 0,
+      "stdout": "command-0075.stdout.log",
+      "stderr": "command-0075.stderr.log",
+      "stdoutSha256": "e4bcb883624bf840a356279ec22e5663a8bc1318f5a3f1eb6c8f00a1f6cfe584",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0076.stdout.log",
+      "stderr": "command-0076.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "4c5578d08db8b41535131d505030018fd51bad0f48a15159a2bafcdf65e6f7b5"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "a9794340bbdaea592e0504b1728140b222886065"
+      ],
+      "exit": 0,
+      "stdout": "command-0077.stdout.log",
+      "stderr": "command-0077.stderr.log",
+      "stdoutSha256": "43ba52c2e67681f25dd712244b4434e751e2e452e7d431775c8fa26f32ab5309",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0078.stdout.log",
+      "stderr": "command-0078.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "b54bd0c0e97ef0340fed49face64b5e4d63a5ae63aa23ab02ff65f44da758a49"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "0aabaabd9c44cad88887d99c498a2ba6787e2d53"
+      ],
+      "exit": 0,
+      "stdout": "command-0079.stdout.log",
+      "stderr": "command-0079.stderr.log",
+      "stdoutSha256": "1eb78bd001db62103bb60cae30166b2943898aa4263efc4009d2d09b84a53c2a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0080.stdout.log",
+      "stderr": "command-0080.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "edc588e2752c46cb0c4201bf0481df05070788d2ed5ad7bbd943f4d73f5208c9"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "03996ba66b831a99a5c018f2d94582e0af8d8f40"
+      ],
+      "exit": 0,
+      "stdout": "command-0081.stdout.log",
+      "stderr": "command-0081.stderr.log",
+      "stdoutSha256": "49131417a7067bbac90d04bf26491dd4e36ddaadf12ac1adefe22211319b6467",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0082.stdout.log",
+      "stderr": "command-0082.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "1be630cb273dab54e0cd13eb59402a1a6ae70a556a3ffef401889747503f7012"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "5a506354653e10ecad53c08df41bda0b2424b11a"
+      ],
+      "exit": 0,
+      "stdout": "command-0083.stdout.log",
+      "stderr": "command-0083.stderr.log",
+      "stdoutSha256": "8f8b4edb906b76af03fe05a3e96f76120b21c5b4f2e4fe4ba980c01aa7056891",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0084.stdout.log",
+      "stderr": "command-0084.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "ac7aca4118cb34aedc2c52a9750e730471604847411b10e3490b675017554d12"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "9e9e2837bdbb58e8423ef87caf5ed368dd109aef"
+      ],
+      "exit": 0,
+      "stdout": "command-0085.stdout.log",
+      "stderr": "command-0085.stderr.log",
+      "stdoutSha256": "aff0651a938c4606469d684af15bb4f7987d81db4001aac1a5a362832b3b95c8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0086.stdout.log",
+      "stderr": "command-0086.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "b72a1126fdc91edd7297316752e4892b2fc0ffca9fe3b80c12331a6a62ac5145"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "f6c187e256a98642077578c4dbec63379e7a9188"
+      ],
+      "exit": 0,
+      "stdout": "command-0087.stdout.log",
+      "stderr": "command-0087.stderr.log",
+      "stdoutSha256": "a81d0c3fa8b47e2f209366abfe75a310274d482790117b0d6ba21c98b5b9d7b5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0088.stdout.log",
+      "stderr": "command-0088.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "38ff1210894b6435208c000cb0278cfdf8fbc38895c60ff1080ddd4249dd18c9"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "77424332744d73c0028888d15ac5a9b808599f1c"
+      ],
+      "exit": 0,
+      "stdout": "command-0089.stdout.log",
+      "stderr": "command-0089.stderr.log",
+      "stdoutSha256": "593631c5df950e7b8f425ae3432d346fca80705297f649368e3032ff6053bca3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdout": "command-0090.stdout.log",
+      "stderr": "command-0090.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "eb86582054912258b19f0e23f3b43b17a06382a2"
+      ],
+      "exit": 0,
+      "stdout": "command-0091.stdout.log",
+      "stderr": "command-0091.stderr.log",
+      "stdoutSha256": "052078df1028b0af17086e45071c72a3f4b0d3b9bab35fc74f8b5ebe59e69f2b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 3,
+      "stdout": "command-0092.stdout.log",
+      "stderr": "command-0092.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "6ec3dc92fe55b4538b0cdc8e4b21bdc85b8ddd04301223196948a67a0af7ed89"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0093.stdout.log",
+      "stderr": "command-0093.stderr.log",
+      "stdoutSha256": "74875f7db7e44ba1e3f0a60b824be33cbb534ac45118593dd9552e3c333a7106",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0094.stdout.log",
+      "stderr": "command-0094.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0095.stdout.log",
+      "stderr": "command-0095.stderr.log",
+      "stdoutSha256": "74875f7db7e44ba1e3f0a60b824be33cbb534ac45118593dd9552e3c333a7106",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-v",
+        "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0096.stdout.log",
+      "stderr": "command-0096.stderr.log",
+      "stdoutSha256": "d7231d9b134045094199ce9688663e06b6db58884d3165b47c992c80dba23951",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=^/hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4$",
+        "--format",
+        "{{.ID}}"
+      ],
+      "exit": 0,
+      "stdout": "command-0097.stdout.log",
+      "stderr": "command-0097.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0098.stdout.log",
+      "stderr": "command-0098.stderr.log",
+      "stdoutSha256": "7cad7d6ee28362d7fafad60b5bfe80e9ae3be383ef6f04dee7a6d7bc48346eab",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0099.stdout.log",
+      "stderr": "command-0099.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0100.stdout.log",
+      "stderr": "command-0100.stderr.log",
+      "stdoutSha256": "7cad7d6ee28362d7fafad60b5bfe80e9ae3be383ef6f04dee7a6d7bc48346eab",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-v",
+        "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0101.stdout.log",
+      "stderr": "command-0101.stderr.log",
+      "stdoutSha256": "ca7111d95981447fc691756edb6c4b791af4c80a2510fcc0f6916005c233aa03",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=^/hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4$",
+        "--format",
+        "{{.ID}}"
+      ],
+      "exit": 0,
+      "stdout": "command-0102.stdout.log",
+      "stderr": "command-0102.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0103.stdout.log",
+      "stderr": "command-0103.stderr.log",
+      "stdoutSha256": "b724dfaf6fb3bbe72351dd25faec8d804cd57e537a2cccf4b38c1ea75cf188fa",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0104.stdout.log",
+      "stderr": "command-0104.stderr.log",
+      "stdoutSha256": "17216442453ca1b334bbdb1e1653162fa703ea01497447197e525a94a9a68651",
+      "stderrSha256": "90f27b29da7cc6a8daa92ef28009c3f1c490bcbcc4d1834fe4dd204e9a732255"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0105.stdout.log",
+      "stderr": "command-0105.stderr.log",
+      "stdoutSha256": "b724dfaf6fb3bbe72351dd25faec8d804cd57e537a2cccf4b38c1ea75cf188fa",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-v",
+        "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0106.stdout.log",
+      "stderr": "command-0106.stderr.log",
+      "stdoutSha256": "e03909244fe5196c10ac23e026f439ceb55f12f1370ef22ffbb574b43d7a4be8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=^/hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4$",
+        "--format",
+        "{{.ID}}"
+      ],
+      "exit": 0,
+      "stdout": "command-0107.stdout.log",
+      "stderr": "command-0107.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0108.stdout.log",
+      "stderr": "command-0108.stderr.log",
+      "stdoutSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "logs",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0109.stdout.log",
+      "stderr": "command-0109.stderr.log",
+      "stdoutSha256": "cc9c72de6ac0d0f5e8b3b16a75248c94cf84ee536ab699462d7cc6931098f5ba",
+      "stderrSha256": "576587f877a5155c6d82f74aa08780d04a4cc1b244b7a78a19f9640d06af16a9"
+    },
+    {
+      "command": [
+        "docker",
+        "stop",
+        "--signal",
+        "SIGINT",
+        "--timeout",
+        "-1",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0110.stdout.log",
+      "stderr": "command-0110.stderr.log",
+      "stdoutSha256": "cb37774b6354655c0a51e0a66f7d71df6e14b2f61f479ee6598acb952af4ce86",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0111.stdout.log",
+      "stderr": "command-0111.stderr.log",
+      "stdoutSha256": "ad5833f717960a9c3f40d53d9769157012dba1f3dff18b51d89f609579dd6f1e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-v",
+        "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0112.stdout.log",
+      "stderr": "command-0112.stderr.log",
+      "stdoutSha256": "cb37774b6354655c0a51e0a66f7d71df6e14b2f61f479ee6598acb952af4ce86",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=^/hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4$",
+        "--format",
+        "{{.ID}}"
+      ],
+      "exit": 0,
+      "stdout": "command-0113.stdout.log",
+      "stderr": "command-0113.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-queries.ts",
+        "states",
+        "unused",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-9c291d811f4c4b04bcfb3910526c27a4"
+      ],
+      "exit": 0,
+      "stdout": "command-0114.stdout.log",
+      "stderr": "command-0114.stderr.log",
+      "stdoutSha256": "3801efb0c9c131fe4a9aec03ba214128d3f5289b51212a4c71cf0fa911eff50a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "images": {
+    "pg": {
+      "observedCITag": "public.ecr.aws/supabase/postgres:17.11.0.002",
+      "exactLocalDigestReference": "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53",
+      "digest": "0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53",
+      "id": "sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53",
+      "metadata": {
+        "Id": "sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53",
+        "RepoTags": [
+          "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"
+        ],
+        "RepoDigests": [
+          "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-29T12:33:10.971025344Z",
+        "Config": {
+          "ExposedPorts": {
+            "5432/tcp": {}
+          },
+          "Env": [
+            "PATH=/nix/var/nix/profiles/default/bin:/usr/lib/postgresql/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "PGDATA=/var/lib/postgresql/data",
+            "POSTGRES_HOST=/var/run/postgresql",
+            "POSTGRES_USER=supabase_admin",
+            "POSTGRES_DB=postgres",
+            "POSTGRES_INITDB_ARGS=--allow-group-access --locale-provider=icu --encoding=UTF-8 --icu-locale=en_US.UTF-8",
+            "LANG=en_US.UTF-8",
+            "LANGUAGE=en_US:en",
+            "LC_ALL=en_US.UTF-8",
+            "GRN_PLUGINS_DIR=/usr/lib/groonga/plugins",
+            "LOCALE_ARCHIVE=/nix/var/nix/profiles/default/lib/locale/locale-archive"
+          ],
+          "Entrypoint": [
+            "docker-entrypoint.sh"
+          ],
+          "Cmd": [
+            "postgres",
+            "-D",
+            "/etc/postgresql"
+          ],
+          "WorkingDir": "/",
+          "StopSignal": "SIGINT",
+          "ArgsEscaped": true,
+          "Healthcheck": {
+            "Test": [
+              "CMD-SHELL",
+              "pg_isready -U postgres -h localhost"
+            ],
+            "Interval": 2000000000,
+            "Timeout": 2000000000,
+            "Retries": 10
+          }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 368332137,
+        "RootFS": {
+          "Type": "layers",
+          "Layers": [
+            "sha256:e63b02c2b5c761df2cb95e657d744f27d95da4e051235a13c80b88cd68eab188",
+            "sha256:ca452ea5913985d7b32e342158219dab1da06c40ec24807cd2fb18d764fe8eec",
+            "sha256:f301aed3f6465d2b38b7d5efa78ce5e216c4a3df879a44bef8780979131596b2",
+            "sha256:49378109d20138a2df61c3564ae0b52ff3374398c5ee7e488f0fd115108dcb45",
+            "sha256:86abf1e640edf2390eae2f8ec841fd98b681a18e1e2e119d411695014573b1d4",
+            "sha256:1e948bbc805ef48fe631b31e57c5b2828fd994e297583f0953b059271b6a7893",
+            "sha256:54356e964cdabfffcfdb27f5dcad7cd3d7e21ce6c3ae2ee5e4621cb208f3a2e9",
+            "sha256:3e54fceac6c59df80ab1f2bd32530433dc6bbb9dde9414d8fd2c4473d206e197",
+            "sha256:bf5e3faf16db338d479a87a8c630c8713f0e356f37ce90a9fadad040c8bc3711",
+            "sha256:673a7494ba01ec4116379c5454f290ae00e46866389fc95da6c756ae914eb3f3",
+            "sha256:596d00411b608388288d11c1c7e73d092ef2892f8cce3a0d7dab8bc485d1e5a0",
+            "sha256:b8bffb2b5f4d6c2c7ea4bd35387053bae06767fb83e7f36ecf8246fd24e12bdf",
+            "sha256:cdfa8a1435a960b2c642376bbde6266ec9b5bd39410b899133d4663918ed961c",
+            "sha256:67d906ea5a97e36ae75b742b922265afa69cb12b92fcf6e070e9620615db1fb6",
+            "sha256:52a054a2ecfd216ba55e385c1dcc6870ac34e79fe515c856236acc64e38ec478",
+            "sha256:018ef1e6d201444bbfe77c266998a36dabd0bf31b2b55269a53209db2311b278",
+            "sha256:7a958a5d5b81961ea0cd848a6678b57ede2f32bceea12585d4f650c29626c53d",
+            "sha256:b821cc1fd370da4a41d56f948f6353d44a6a44f0ee9d3543712081417b7c3d1d",
+            "sha256:5c28bf1c562912bea111fae40275ee23ae81644b25c9de6c77ae49b6a39f6372",
+            "sha256:f7927b98fc10813c79e8c516aee8de0e99eff93d64a47a812e815862cac87d60",
+            "sha256:42f967ad3d4a7bc13f2062d0c923e6ce587253a8c97a6529c4a75a370f74e799",
+            "sha256:22a9ae4afd7ac8a764e8768fc17b69c5217a4004048a4fb21e1e7893a883ec2a",
+            "sha256:3c8f49b0e13b9ff71d1841944e4dd328d2a498dda66fc4aae9ab322feac42bf9",
+            "sha256:e682721b0688f9e2a8c3f1b2ed652b26f333533a54c5ea5cd74a4848a30d042c",
+            "sha256:ef1e0f431150ce457cf59096c8f6dc454d45649879875226de50de8ab92d822c",
+            "sha256:24a39fa70c3e035145055649082c8a9d5fbbd68d760e9c7594a158e8343bd466",
+            "sha256:46604c01412001aded35bfeec16744bc3bc888c3554c9afcc0d5f6408cda7a1f",
+            "sha256:f0ca1166e8c61143145be71eaf9cb44e9be2f699cdea02b41f641e549029ff20",
+            "sha256:470fdf79e085ec14ec45fa57a449b454bbb40d15ba412d6076cc02124903c2f1"
+          ]
+        },
+        "Metadata": {
+          "LastTagTime": "2026-10-02T09:06:21.571708371Z"
+        },
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53",
+          "size": 1609
+        },
+        "Identity": {
+          "Pull": [
+            {
+              "Repository": "public.ecr.aws/supabase/postgres"
+            }
+          ]
+        }
+      }
+    },
+    "realtime": {
+      "observedCITag": "public.ecr.aws/supabase/realtime:v2.140.3",
+      "exactLocalDigestReference": "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+      "digest": "f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+      "id": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+      "metadata": {
+        "Id": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+        "RepoTags": [
+          "public.ecr.aws/supabase/realtime:v2.140.3"
+        ],
+        "RepoDigests": [
+          "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-29T21:33:14.266811704Z",
+        "Config": {
+          "User": "nobody",
+          "Env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "SLOT_NAME_SUFFIX=",
+            "LANG=en_US.UTF-8",
+            "LANGUAGE=en_US:en",
+            "LC_ALL=en_US.UTF-8",
+            "MIX_ENV=prod",
+            "ECTO_IPV6=true",
+            "ERL_AFLAGS=-proto_dist inet6_tcp"
+          ],
+          "Entrypoint": [
+            "/usr/bin/tini",
+            "-s",
+            "-g",
+            "--",
+            "/app/run.sh"
+          ],
+          "Cmd": [
+            "/app/bin/server"
+          ],
+          "WorkingDir": "/app",
+          "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 133516582,
+        "RootFS": {
+          "Type": "layers",
+          "Layers": [
+            "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+            "sha256:96de13c0856529e1d2992601f591f0a5a8c6ba7919103c35b9cb7cb9951d755f",
+            "sha256:29dc9f9bef67f666a87e8c38bf26e52290af0944d3eb42b9d998a59bb91f6560",
+            "sha256:d9cfc1e95f27dbdd8208aae7f9f24aaed28408481831975cf2426dce51035b16",
+            "sha256:1cfb39da48745d925d3f54fbb37f84a56ee4b8db82d7e41dedd5b7a711d5e7ab",
+            "sha256:19b1def79e26ad23a671b41104221fb2d65f12a0a5fc6494b126cc4a7a1a4295",
+            "sha256:b0e79b1b8eb27c5f3c8fefaad5cca42693f04cb2adce9d08ff4f6d4990ae2a7e",
+            "sha256:e1f34d34d0ee141a6e487f4c76af04488f8b8d4cd7295e4fac713190840cfbdf",
+            "sha256:e8657d088f00e96a20bde4e442c48cdc4f97d42e133149c953cc24e13da784d0",
+            "sha256:b16cb3ffc0b8096bdac63e64a1614690c6a9861d9b53b0ac9555dc9066da4ec5",
+            "sha256:42afb67734536957980461af19cd3f6f69f991bbe85dc0ed6e4f1cfc663db743",
+            "sha256:1e052bc164dc437a0273fca54e19208db1c448918c49b78e5f8785f478603ccb"
+          ]
+        },
+        "Metadata": {
+          "LastTagTime": "2026-10-02T21:04:14.629104798Z"
+        },
+        "Descriptor": {
+          "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+          "digest": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+          "size": 685
+        },
+        "Identity": {
+          "Pull": [
+            {
+              "Repository": "public.ecr.aws/supabase/realtime"
+            }
+          ]
+        }
+      }
+    },
+    "storage": {
+      "observedCITag": "public.ecr.aws/supabase/storage-api:v1.79.28",
+      "exactLocalDigestReference": "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+      "digest": "1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+      "id": "sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+      "metadata": {
+        "Id": "sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+        "RepoTags": [
+          "public.ecr.aws/supabase/storage-api:v1.79.28"
+        ],
+        "RepoDigests": [
+          "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-30T15:50:58.693845218Z",
+        "Config": {
+          "ExposedPorts": {
+            "5000/tcp": {}
+          },
+          "Env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "NODE_VERSION=24.21.0",
+            "YARN_VERSION=1.22.22",
+            "VERSION=1.79.28"
+          ],
+          "Entrypoint": [
+            "docker-entrypoint.sh"
+          ],
+          "Cmd": [
+            "node",
+            "dist/start/server.js"
+          ],
+          "WorkingDir": "/app",
+          "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 241757946,
+        "RootFS": {
+          "Type": "layers",
+          "Layers": [
+            "sha256:e63b02c2b5c761df2cb95e657d744f27d95da4e051235a13c80b88cd68eab188",
+            "sha256:3e3cca1d6d714685487d42af6adeaca4d2d52651fad7335853154b66755933b4",
+            "sha256:ef9c3bd6ce3f3a3714c643c5c9e93580ca138c14dc5333540cf5925fa505f99d",
+            "sha256:7c9a72471da31c8d796a6123d6453670cf9ff1ab2166fe082bd28829fb29748d",
+            "sha256:5d2d786ef552853540c11d9361b06db5a038bf3fe8e278d8c14194e5209e73b4",
+            "sha256:521d33d873dcb9bb2527b628b614072d61e7b408edc0a6e97db7d2cf0c032b1a",
+            "sha256:21202b5177f0d998193596a21dd00702b86e8bac13af9510304c9f6bf0cf9826",
+            "sha256:fdb67aae088dd6ee21c9f5a8bf8c9eae9551755f1c1e5236c3474241eea3f965",
+            "sha256:701935e79e695bead38f645eac846d33f4d7a40e3b8e4d4f1c1cd64bec563333",
+            "sha256:d4f165255ff49b7ccb24702ebdbe6b59490791950965f0423c235522b89867c3",
+            "sha256:8d78fe87cfa9772d066f07449649ee6ff946d4005b6bf237945f633868febe3e",
+            "sha256:e97dc42c77e567a4670fb1ca46f1eb62629f6c478199ca3b58f4ee1f256c34be",
+            "sha256:9998c09b27e235e7d57cf86bcabb0d1e22afd4be20c68beaedceb0827e5a84e1",
+            "sha256:87c6d8ab3d95939a679cced8dd9129a15ccf8d13a5017f395b37a03663be821f"
+          ]
+        },
+        "Metadata": {
+          "LastTagTime": "2026-10-02T21:04:21.917749543Z"
+        },
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+          "size": 1609
+        },
+        "Identity": {
+          "Pull": [
+            {
+              "Repository": "public.ecr.aws/supabase/storage-api"
+            }
+          ]
+        }
+      }
+    },
+    "auth": {
+      "observedCITag": "public.ecr.aws/supabase/gotrue:v2.197.0",
+      "exactLocalDigestReference": "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+      "digest": "1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+      "id": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+      "metadata": {
+        "Id": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+        "RepoTags": [
+          "public.ecr.aws/supabase/gotrue:v2.197.0"
+        ],
+        "RepoDigests": [
+          "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-09T15:34:47.361073768Z",
+        "Config": {
+          "User": "supabase",
+          "Env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "GOTRUE_DB_MIGRATIONS_PATH=/usr/local/etc/auth/migrations"
+          ],
+          "Cmd": [
+            "auth"
+          ],
+          "WorkingDir": "/",
+          "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 30448532,
+        "RootFS": {
+          "Type": "layers",
+          "Layers": [
+            "sha256:34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c",
+            "sha256:8370e7cf6735d16303bda920754d65945c1e424318a392da69a50148b36403e4",
+            "sha256:018f16b76b268374654847a5986c61a3c5e4fbb6351bd6957b0001b9a560c791",
+            "sha256:2702dd875913bbabd0e8d87c13ca4fe791eb0e5d505bf91841c4c2b27db79685",
+            "sha256:5bd184afc51ff1ba4c007ad9ae440623e505848bf2a986d17bd220fef2d8c49d",
+            "sha256:691149aaee259a37d7419c279e4c5e3d75b69a25acb2cd78cc0e7eed825f0efb"
+          ]
+        },
+        "Metadata": {
+          "LastTagTime": "2026-09-26T18:37:34.628420644Z"
+        },
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+          "size": 1609
+        },
+        "Identity": {
+          "Pull": [
+            {
+              "Repository": "public.ecr.aws/supabase/gotrue"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "inputBindings": [
+    {
+      "label": "executed-driver",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline.py",
+      "rawSha256": "b610ab2ea17b32aaebc0bdbf68ca894f7e68c96614fa308b6efb15c8b6f7b94b",
+      "canonicalSha256": "b610ab2ea17b32aaebc0bdbf68ca894f7e68c96614fa308b6efb15c8b6f7b94b",
+      "rawGitBlob": "294adeca88aefd30518aca931fb0d511be72add1",
+      "bytes": 16241,
+      "archive": "i000.source"
+    },
+    {
+      "label": "query-reader",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-queries.ts",
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "canonicalSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "rawGitBlob": "4418915ccb9a7ef3f9a321276967ad273a2e4479",
+      "bytes": 3502,
+      "archive": "i001.source"
+    },
+    {
+      "label": "authority",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling55.source",
+      "rawSha256": "fc8dfb9a88872fa58d6bf1b22c49df18fd35600109b67750ac6d7b7199849b21",
+      "canonicalSha256": "1d92acc670c4f5e2c48acdcb886b81814ac25005bfb6fc444dc5cd4fbd65a9bd",
+      "rawGitBlob": "b5bec5e34d0bd46dc8243498dc78b726fe630918",
+      "bytes": 2020,
+      "archive": "i002.source"
+    },
+    {
+      "label": "unchanged-full-scanner",
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a",
+      "bytes": 43142,
+      "archive": "i003.source"
+    },
+    {
+      "label": "profile-query-source",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "canonicalSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67",
+      "bytes": 6391,
+      "archive": "i004.source"
+    },
+    {
+      "label": "actual-queries",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/queries.json",
+      "rawSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "canonicalSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "rawGitBlob": "24756524f6ebd29e23cf140dc96195a2abc1c2d5",
+      "bytes": 16923,
+      "archive": "i005.source"
+    },
+    {
+      "label": "vendor-apikeys.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/apikeys.source",
+      "rawSha256": "430474507e191be7d71736668e4be53841d988f89b18042db5741f87fcd64b61",
+      "canonicalSha256": "430474507e191be7d71736668e4be53841d988f89b18042db5741f87fcd64b61",
+      "rawGitBlob": "cb1b457cabc1ccb8be39c5e2db84269c0508e009",
+      "bytes": 6070,
+      "archive": "i006.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_start.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_start.go.source",
+      "rawSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "canonicalSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "rawGitBlob": "dc8327c816d5bf9ff773d9901954cdd9f16137b8",
+      "bytes": 14962,
+      "archive": "i007.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_templates__supabase.sql.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_templates__supabase.sql.source",
+      "rawSha256": "ced0d2dd073c86f402e409ff540ecda07455997e6a0a1e8a738c154c6b962a20",
+      "canonicalSha256": "ced0d2dd073c86f402e409ff540ecda07455997e6a0a1e8a738c154c6b962a20",
+      "rawGitBlob": "6e5d8487bad85c83a9ebdf18629bdbf9996c376c",
+      "bytes": 421,
+      "archive": "i008.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_templates_schema.sql.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_templates_schema.sql.source",
+      "rawSha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f",
+      "canonicalSha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f",
+      "rawGitBlob": "dee166ae58a4b1f77b650d8e72f8a249e5918ce5",
+      "bytes": 702,
+      "archive": "i009.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_templates_webhook.sql.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_templates_webhook.sql.source",
+      "rawSha256": "aa956b7b1f205284a524882fe0d580c72d86374aea9c9c2e93ac398df5e07d0b",
+      "canonicalSha256": "aa956b7b1f205284a524882fe0d580c72d86374aea9c9c2e93ac398df5e07d0b",
+      "rawGitBlob": "52cd0974730ae10f04cc50d5915c167cbe1b064c",
+      "bytes": 8399,
+      "archive": "i010.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_auth.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_auth.go.source",
+      "rawSha256": "3992d0d7fadcc9067a528619f6936807b3d4d4158cd4f626c9e5c1fbdc7cf823",
+      "canonicalSha256": "3992d0d7fadcc9067a528619f6936807b3d4d4158cd4f626c9e5c1fbdc7cf823",
+      "rawGitBlob": "75bbf609c375f6e793467177e338d7d5d8662f4e",
+      "bytes": 69288,
+      "archive": "i011.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_config.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_config.go.source",
+      "rawSha256": "5d7cfad5954c97252dcef67ff16b8e46fec753d91f5a1f9eca03fe10f14cc31e",
+      "canonicalSha256": "5d7cfad5954c97252dcef67ff16b8e46fec753d91f5a1f9eca03fe10f14cc31e",
+      "rawGitBlob": "01c426edd81e3539ff7c1c74181ea019a815b91d",
+      "bytes": 59440,
+      "archive": "i012.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_constants.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_constants.go.source",
+      "rawSha256": "6bccac7527677c3e5f13f2fb3fe62a758421f12238a4647db9d93400e36b7c71",
+      "canonicalSha256": "6bccac7527677c3e5f13f2fb3fe62a758421f12238a4647db9d93400e36b7c71",
+      "rawGitBlob": "08d572d2dac04745d646782f9c6389e2e8c7b977",
+      "bytes": 1888,
+      "archive": "i013.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_storage.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_storage.go.source",
+      "rawSha256": "af2095d9665d796097f2e590159d4458d44c798b16865f8cf8540659af057ab2",
+      "canonicalSha256": "af2095d9665d796097f2e590159d4458d44c798b16865f8cf8540659af057ab2",
+      "rawGitBlob": "a5d39ef08012ed3cfd696589ea68b86243695d34",
+      "bytes": 6347,
+      "archive": "i014.source"
+    },
+    {
+      "label": "vendor-v2.119.0-internal_db_start_start.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.119.0-internal_db_start_start.go.source",
+      "rawSha256": "e1151dd98aead97d890d6a66298e928593b12a75c1a57888d5115b32f0d0ddcc",
+      "canonicalSha256": "e1151dd98aead97d890d6a66298e928593b12a75c1a57888d5115b32f0d0ddcc",
+      "rawGitBlob": "d4c97ba1d51bc5764ab16c2cec1a53a921675db3",
+      "bytes": 14952,
+      "archive": "i015.source"
+    }
+  ],
+  "migrationInventory": [
+    {
+      "path": "supabase/migrations/20260611162942_create_animals_table.sql",
+      "gitBlob": "ed3a5ebd3ea0fe22e93b6fa44649758d6aa6c017",
+      "rawSha256": "4b65bc3665a46ad38bd3ee5fc0a3432faaf618ae5b6e857a1803ed5f81c4716f",
+      "bytes": 853,
+      "archive": "m0000.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260611162956_create_adoption_applications_table.sql",
+      "gitBlob": "ada0cc4c1a60860c526536eaa951d4ca52bdfc52",
+      "rawSha256": "41b25a75799f0fe4b5b54f43ebf14a7dd3f86fb91f33f7d5976f7d1e4e2bddc0",
+      "bytes": 962,
+      "archive": "m0001.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260623160506_phase_2_donations_mvp.sql",
+      "gitBlob": "8298ff8d908d265dfebc53b98c7b001347c41420",
+      "rawSha256": "ce4831774402e83ef42a3bfcb10bb40ce66b39f94e9ce5b656b9e45327cbd7b2",
+      "bytes": 13500,
+      "archive": "m0002.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260623183933_donor_ops_crm_foundation.sql",
+      "gitBlob": "89afa1c70c7e2e4a25e341e773f9505564b34b99",
+      "rawSha256": "276318d24d46c45b56134419c1a89ab958ce4e76c95668c9e21f9a17d98a0677",
+      "bytes": 2107,
+      "archive": "m0003.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260626140914_adoption_coordinator_foundation.sql",
+      "gitBlob": "6dbfcb1586f40d8534ed743a7c7dbedc1943f956",
+      "rawSha256": "9bae070730b83cc9af0eea3e4083b806bdc75e6acf72619214c4345c193e1014",
+      "bytes": 21995,
+      "archive": "m0004.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260626144836_adoption_coordinator_workflow_rpcs.sql",
+      "gitBlob": "3c83f1238d6913c0d900b234dedea7edd3c9f75c",
+      "rawSha256": "553ac17d565d19834900bf18732178c00da9b25a710dea17e5ae4aee75da621c",
+      "bytes": 5424,
+      "archive": "m0005.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260626201620_secure_adoption_applications_policy.sql",
+      "gitBlob": "5af01c6056a78d90a62472cec3f66dbf199e4589",
+      "rawSha256": "6d8d62ed8a538487ad0517ed72d23a1e3df6315e72dbb4cbfd1fa45f64517e92",
+      "bytes": 952,
+      "archive": "m0006.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260626202523_harden_webhook_event_processing.sql",
+      "gitBlob": "37b6e343929354d1d420aaea365ca2db461453f3",
+      "rawSha256": "c30fab4cd90f037eafc961cd1c9f6212f729cf2b87390eb9dfa707d1c23e1800",
+      "bytes": 358,
+      "archive": "m0007.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260627091500_tighten_animals_admin_policy.sql",
+      "gitBlob": "dad59fad82bc9f26450c9d42e659d35bce99dd42",
+      "rawSha256": "b730609f43af3c6ff855f10ee7952333618a95ba1063d9ed49391e090f65c849",
+      "bytes": 414,
+      "archive": "m0008.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260627110000_coordinator_task_timeline.sql",
+      "gitBlob": "aa8a9551cebb0018c0ed3fe86a0a15dc344dbbd2",
+      "rawSha256": "9079733451744975ea02383b2f4dca06d1ae590774010f76c69bb75c5bcfb8f0",
+      "bytes": 2257,
+      "archive": "m0009.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260628120000_harden_receipt_and_payment_lifecycle.sql",
+      "gitBlob": "2aca804c5fb2883bf1d1d1d381497ec8e04aae7f",
+      "rawSha256": "6aa54ede558769e7a05700f9717d3275eec03d45806a0f4423be8541bd250174",
+      "bytes": 4793,
+      "archive": "m0010.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260628130000_harden_role_grants_drop_stale_policy.sql",
+      "gitBlob": "7b4838832a2c7a994c1daf87b14675416180d2e7",
+      "rawSha256": "56656cb5abb219143bb650191568294530308c3621292e7d34bbf8bc4a360f45",
+      "bytes": 3682,
+      "archive": "m0011.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260628140000_revoke_residual_anon_grants.sql",
+      "gitBlob": "9eb7d8d122b3c9d9c0d97f5acc23a21673d48f76",
+      "rawSha256": "5748c9db5402751b8a7702c546c8aa3c995d3d7affde77e02578c66c51450bb7",
+      "bytes": 1333,
+      "archive": "m0012.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260628143000_coordinator_ops_workbench.sql",
+      "gitBlob": "56cf70df87f9b68b99003d424b09a183ef13ba6a",
+      "rawSha256": "0842bebd2d7cdd33cd930b0580e5118d18523f1fd76f798b12f9d554482f373d",
+      "bytes": 7454,
+      "archive": "m0013.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260628150000_revoke_residual_anon_write_grants.sql",
+      "gitBlob": "b982bf1ee13bc88aeabaa692d2ab021b1afc9ab4",
+      "rawSha256": "ad5b288120b62647f2ea2161d062c3f891619b98c8811068cea8372748aafb00",
+      "bytes": 1264,
+      "archive": "m0014.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260628160000_validate_rpc_actor.sql",
+      "gitBlob": "54696673b1b93b8e6794cf1cdb29ca9edd7c9d81",
+      "rawSha256": "02f0cf5badc501e3cbdb91c6f6a87a421fbeb19e7efa8012032683fef4156ce3",
+      "bytes": 7137,
+      "archive": "m0015.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260630120000_donation_lifecycle_integrity.sql",
+      "gitBlob": "2642dc76448e59c998696ccb54a7c523641f7e45",
+      "rawSha256": "83b58ce6b4bf55810e1e087b70a743a84e920a0fcaa938380a3f5161361bd70f",
+      "bytes": 1930,
+      "archive": "m0016.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260630154259_add_animal_english_content_fields.sql",
+      "gitBlob": "5cc6a16eddcdbbe5c18204ff5b650ebdfb220f7c",
+      "rawSha256": "842d7a0768140d74968e64f5506edf1d26dd6fc892d9a1faa1a8842281d7b22e",
+      "bytes": 506,
+      "archive": "m0017.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260701105726_admin_access_management.sql",
+      "gitBlob": "0d684db04550ee7b63728342ee8c78699beae411",
+      "rawSha256": "1486a804436932531721e39aa76c87959cd047e37960fce8b2baf5082f7ae2da",
+      "bytes": 717,
+      "archive": "m0018.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260701185227_public_adoption_journey_phase_1.sql",
+      "gitBlob": "1dea932bb41afd81cfea0883b69e97ca99caf35a",
+      "rawSha256": "e4bcb883624bf840a356279ec22e5663a8bc1318f5a3f1eb6c8f00a1f6cfe584",
+      "bytes": 8700,
+      "archive": "m0019.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260702130000_sponsorship_pledge_phase_2.sql",
+      "gitBlob": "a9794340bbdaea592e0504b1728140b222886065",
+      "rawSha256": "43ba52c2e67681f25dd712244b4434e751e2e452e7d431775c8fa26f32ab5309",
+      "bytes": 5067,
+      "archive": "m0020.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260704165600_volunteer_activity_management_v1.sql",
+      "gitBlob": "0aabaabd9c44cad88887d99c498a2ba6787e2d53",
+      "rawSha256": "1eb78bd001db62103bb60cae30166b2943898aa4263efc4009d2d09b84a53c2a",
+      "bytes": 9723,
+      "archive": "m0021.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260705120000_story_promotion_center.sql",
+      "gitBlob": "03996ba66b831a99a5c018f2d94582e0af8d8f40",
+      "rawSha256": "49131417a7067bbac90d04bf26491dd4e36ddaadf12ac1adefe22211319b6467",
+      "bytes": 11361,
+      "archive": "m0022.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260716120000_contextual_donation_attribution.sql",
+      "gitBlob": "5a506354653e10ecad53c08df41bda0b2424b11a",
+      "rawSha256": "8f8b4edb906b76af03fe05a3e96f76120b21c5b4f2e4fe4ba980c01aa7056891",
+      "bytes": 1312,
+      "archive": "m0023.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260718100000_public_documents_and_donation_purpose.sql",
+      "gitBlob": "9e9e2837bdbb58e8423ef87caf5ed368dd109aef",
+      "rawSha256": "aff0651a938c4606469d684af15bb4f7987d81db4001aac1a5a362832b3b95c8",
+      "bytes": 5565,
+      "archive": "m0024.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260718110000_adoption_information.sql",
+      "gitBlob": "f6c187e256a98642077578c4dbec63379e7a9188",
+      "rawSha256": "a81d0c3fa8b47e2f209366abfe75a310274d482790117b0d6ba21c98b5b9d7b5",
+      "bytes": 3328,
+      "archive": "m0025.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260718111000_correct_adult_cat_copy.sql",
+      "gitBlob": "77424332744d73c0028888d15ac5a9b808599f1c",
+      "rawSha256": "593631c5df950e7b8f425ae3432d346fca80705297f649368e3032ff6053bca3",
+      "bytes": 279,
+      "archive": "m0026.source",
+      "exit": 0
+    },
+    {
+      "path": "supabase/migrations/20260718120000_group_enquiries_and_knowledge.sql",
+      "gitBlob": "eb86582054912258b19f0e23f3b43b17a06382a2",
+      "rawSha256": "052078df1028b0af17086e45071c72a3f4b0d3b9bab35fc74f8b5ebe59e69f2b",
+      "bytes": 4842,
+      "archive": "m0027.source",
+      "exit": null
+    }
+  ],
+  "managedJobs": [
+    {
+      "kind": "realtime",
+      "name": "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4",
+      "command": [
+        "/app/bin/realtime",
+        "eval",
+        "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+      ],
+      "environment": [
+        "PORT=4000",
+        "DB_HOST=127.0.0.1",
+        "DB_PORT=5432",
+        "DB_USER=postgres",
+        "DB_PASSWORD=postgres",
+        "DB_NAME=postgres",
+        "DB_AFTER_CONNECT_QUERY=SET search_path TO _realtime",
+        "DB_ENC_KEY=supabaserealtime",
+        "API_JWT_JWKS={\"keys\":[{\"kty\":\"EC\",\"kid\":\"b81269f1-21d8-4f2e-b719-c2240a840d90\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"alg\":\"ES256\",\"ext\":true,\"crv\":\"P-256\",\"x\":\"M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4\",\"y\":\"P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ\"},{\"kty\":\"oct\",\"k\":\"dGFzazExLXI1NS1vd25lZC1zeW50aGV0aWMtand0LXNlY3JldC0wMDAwMDAwMDAw\"}]}",
+        "API_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "METRICS_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "APP_NAME=realtime",
+        "SECRET_KEY_BASE=EAx3IQ/wRG1v47ZD4NE4/9RzBI8Jmil3x0yhcW4V2NHBP6c2iPIzwjofi2Ep4HIG",
+        "ERL_AFLAGS=-proto_dist inet_tcp",
+        "DNS_NODES=''",
+        "RLIMIT_NOFILE=",
+        "SEED_SELF_HOST=true",
+        "RUN_JANITOR=true",
+        "MAX_HEADER_LENGTH=4096"
+      ],
+      "exit": 0,
+      "imageDigest": "f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+    },
+    {
+      "kind": "storage",
+      "name": "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4",
+      "command": [
+        "node",
+        "dist/scripts/migrate-call.js"
+      ],
+      "environment": [
+        "DB_INSTALL_ROLES=false",
+        "DB_MIGRATIONS_FREEZE_AT=",
+        "ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogImFub24iLCAiaWF0IjogMTYwMDAwMDAwMCwgImV4cCI6IDIwMDAwMDAwMDB9.v5i7KIYptX5v9eTpU587RfmpRJ1XepDJqidgXdbIT7I",
+        "SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpYXQiOiAxNjAwMDAwMDAwLCAiZXhwIjogMjAwMDAwMDAwMH0.T5dbZwo6cSM9BhLc7GB5KDyOAvLxNurNnFd8Ex0K9PY",
+        "PGRST_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "DATABASE_URL=postgresql://supabase_storage_admin:postgres@127.0.0.1:5432/postgres",
+        "FILE_SIZE_LIMIT=52428800",
+        "STORAGE_BACKEND=file",
+        "STORAGE_FILE_BACKEND_PATH=/mnt",
+        "TENANT_ID=stub",
+        "REGION=stub",
+        "GLOBAL_S3_BUCKET=stub"
+      ],
+      "exit": 0,
+      "imageDigest": "1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+    },
+    {
+      "kind": "auth",
+      "name": "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4",
+      "command": [
+        "gotrue",
+        "migrate"
+      ],
+      "environment": [
+        "API_EXTERNAL_URL=http://127.0.0.1:9999",
+        "GOTRUE_LOG_LEVEL=error",
+        "GOTRUE_DB_DRIVER=postgres",
+        "GOTRUE_DB_DATABASE_URL=postgresql://supabase_auth_admin:postgres@127.0.0.1:5432/postgres",
+        "GOTRUE_SITE_URL=http://127.0.0.1:3000",
+        "GOTRUE_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000"
+      ],
+      "exit": 0,
+      "imageDigest": "1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+    }
+  ],
+  "managedJobAttempts": [
+    {
+      "kind": "realtime",
+      "command": [
+        "/app/bin/realtime",
+        "eval",
+        "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+      ],
+      "environment": [
+        "PORT=4000",
+        "DB_HOST=127.0.0.1",
+        "DB_PORT=5432",
+        "DB_USER=postgres",
+        "DB_PASSWORD=postgres",
+        "DB_NAME=postgres",
+        "DB_AFTER_CONNECT_QUERY=SET search_path TO _realtime",
+        "DB_ENC_KEY=supabaserealtime",
+        "API_JWT_JWKS={\"keys\":[{\"kty\":\"EC\",\"kid\":\"b81269f1-21d8-4f2e-b719-c2240a840d90\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"alg\":\"ES256\",\"ext\":true,\"crv\":\"P-256\",\"x\":\"M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4\",\"y\":\"P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ\"},{\"kty\":\"oct\",\"k\":\"dGFzazExLXI1NS1vd25lZC1zeW50aGV0aWMtand0LXNlY3JldC0wMDAwMDAwMDAw\"}]}",
+        "API_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "METRICS_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "APP_NAME=realtime",
+        "SECRET_KEY_BASE=EAx3IQ/wRG1v47ZD4NE4/9RzBI8Jmil3x0yhcW4V2NHBP6c2iPIzwjofi2Ep4HIG",
+        "ERL_AFLAGS=-proto_dist inet_tcp",
+        "DNS_NODES=''",
+        "RLIMIT_NOFILE=",
+        "SEED_SELF_HOST=true",
+        "RUN_JANITOR=true",
+        "MAX_HEADER_LENGTH=4096"
+      ],
+      "imageDigest": "f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+    },
+    {
+      "kind": "storage",
+      "command": [
+        "node",
+        "dist/scripts/migrate-call.js"
+      ],
+      "environment": [
+        "DB_INSTALL_ROLES=false",
+        "DB_MIGRATIONS_FREEZE_AT=",
+        "ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogImFub24iLCAiaWF0IjogMTYwMDAwMDAwMCwgImV4cCI6IDIwMDAwMDAwMDB9.v5i7KIYptX5v9eTpU587RfmpRJ1XepDJqidgXdbIT7I",
+        "SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpYXQiOiAxNjAwMDAwMDAwLCAiZXhwIjogMjAwMDAwMDAwMH0.T5dbZwo6cSM9BhLc7GB5KDyOAvLxNurNnFd8Ex0K9PY",
+        "PGRST_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+        "DATABASE_URL=postgresql://supabase_storage_admin:postgres@127.0.0.1:5432/postgres",
+        "FILE_SIZE_LIMIT=52428800",
+        "STORAGE_BACKEND=file",
+        "STORAGE_FILE_BACKEND_PATH=/mnt",
+        "TENANT_ID=stub",
+        "REGION=stub",
+        "GLOBAL_S3_BUCKET=stub"
+      ],
+      "imageDigest": "1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+    },
+    {
+      "kind": "auth",
+      "command": [
+        "gotrue",
+        "migrate"
+      ],
+      "environment": [
+        "API_EXTERNAL_URL=http://127.0.0.1:9999",
+        "GOTRUE_LOG_LEVEL=error",
+        "GOTRUE_DB_DRIVER=postgres",
+        "GOTRUE_DB_DATABASE_URL=postgresql://supabase_auth_admin:postgres@127.0.0.1:5432/postgres",
+        "GOTRUE_SITE_URL=http://127.0.0.1:3000",
+        "GOTRUE_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000"
+      ],
+      "imageDigest": "1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+    }
+  ],
+  "error": "Owned command failed ['docker', 'exec', '-i', 'hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4', 'psql', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'postgres'] stderr=ERROR:  syntax error at or near \"\ufeffcreate\"\nLINE 1: \ufeffcreate table if not exists public.group_enquiries (\n        ^\n",
+  "cleanup": [
+    {
+      "name": "hkscda-task11-fix3-auth-9c291d811f4c4b04bcfb3910526c27a4",
+      "normalRemoved": true
+    },
+    {
+      "name": "hkscda-task11-fix3-storage-9c291d811f4c4b04bcfb3910526c27a4",
+      "normalRemoved": true
+    },
+    {
+      "name": "hkscda-task11-fix3-realtime-9c291d811f4c4b04bcfb3910526c27a4",
+      "normalRemoved": true
+    },
+    {
+      "name": "hkscda-task11-fix3-pg-9c291d811f4c4b04bcfb3910526c27a4",
+      "normalRemoved": true
+    }
+  ],
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "heldTask1FiveColumnRepairApplied": false,
+  "heldTask8ScannerProposalApplied": false,
+  "protectedBefore": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912"
+  },
+  "pgId": "e0265d4f95dfeb51a7dcc5ee253e332e15c4816a42c884fcd22f4e706d2cd9cf",
+  "runtime": "{\"user\": \"postgres\", \"owner\": \"postgres\", \"version\": \"PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit\", \"database\": \"postgres\"}",
+  "resolvedSyntheticJWKS": {
+    "keys": [
+      {
+        "kty": "EC",
+        "kid": "b81269f1-21d8-4f2e-b719-c2240a840d90",
+        "use": "sig",
+        "key_ops": [
+          "verify"
+        ],
+        "alg": "ES256",
+        "ext": true,
+        "crv": "P-256",
+        "x": "M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4",
+        "y": "P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ"
+      },
+      {
+        "kty": "oct",
+        "k": "dGFzazExLXI1NS1vd25lZC1zeW50aGV0aWMtand0LXNlY3JldC0wMDAwMDAwMDAw"
+      }
+    ]
+  },
+  "officialApplyApiPrivileges": "Actual unmodified pinned2.118 unset-flag native bootstrap. No normalization to captured/admitted ACL.",
+  "protectedAfter": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912"
+  },
+  "protectedSourcesPreserved": true,
+  "all57CurrentInputsPreserved": true,
+  "files": {
+    "api.sql.source": {
+      "rawSha256": "438b7e8bf360f0d66c629c5ff102a9fb52584758be94be722d6cb490b216dacc",
+      "bytes": 417,
+      "rawGitBlob": "520bc7005a3072aa272f8baa95f925435599df9e"
+    },
+    "command-0000.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0000.stdout.log": {
+      "rawSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "bytes": 41,
+      "rawGitBlob": "d75c8cebbdd19b4bc5d2caf582ca3b3cf80efd80"
+    },
+    "command-0001.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0001.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0002.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0002.stdout.log": {
+      "rawSha256": "f3f83ee5d39cad1c6d7772ea257c079fa91f23dab1d343c1fa65ff6c4a7e5d1a",
+      "bytes": 16389,
+      "rawGitBlob": "63668befb0a2bcab5251b80a46613d042acd4dca"
+    },
+    "command-0003.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0003.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0004.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0004.stdout.log": {
+      "rawSha256": "b72b2954f270f915e454009c84b8983366066f5e276b5715f9497f6cb4d32592",
+      "bytes": 5274,
+      "rawGitBlob": "6e2a025d44680b3ffbb93d4648f6d7ac65cc47e3"
+    },
+    "command-0005.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0005.stdout.log": {
+      "rawSha256": "26a99f54a52cb2685c88bf469bb752df77c8e06369afcb02cb6090219c60086b",
+      "bytes": 2983,
+      "rawGitBlob": "2554054ad431342c690c2427316c64ffe3171c6c"
+    },
+    "command-0006.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0006.stdout.log": {
+      "rawSha256": "99a25c790ac04b904ee56afe565df0ca2d0e699b972a28bfaac643bced3ad1ed",
+      "bytes": 2991,
+      "rawGitBlob": "4deb3c41e3102f5626dcf3d767a833e0d702fc83"
+    },
+    "command-0007.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0007.stdout.log": {
+      "rawSha256": "74b7b7c5552ad99188fa8ba1d38ede91d8bba81657d4179a098c752e0363b6a0",
+      "bytes": 2039,
+      "rawGitBlob": "e10926710a2e6e0997e39917486feacec27c6c77"
+    },
+    "command-0008.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0008.stdout.log": {
+      "rawSha256": "3801efb0c9c131fe4a9aec03ba214128d3f5289b51212a4c71cf0fa911eff50a",
+      "bytes": 156,
+      "rawGitBlob": "fc45dd5e07f9f5432af5a7ca9423a4c7fa2dd799"
+    },
+    "command-0009.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0009.stdout.log": {
+      "rawSha256": "802376a76fca00b4f31c3c8ece679253fda9bbfc15759d02742207359761bf30",
+      "bytes": 65,
+      "rawGitBlob": "71b5f18594ac386f990d84f25093fe5a228b4c0c"
+    },
+    "command-0010.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0010.stdout.log": {
+      "rawSha256": "c23cb303a9c4e74f889e8acb9bf3445271af58cf9a1c6b5aeae51a472251ca3c",
+      "bytes": 7329,
+      "rawGitBlob": "e9ef74f37fbcb52bcd35d4247fecf89926c0313a"
+    },
+    "command-0011.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0011.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0012.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0012.stdout.log": {
+      "rawSha256": "cb37774b6354655c0a51e0a66f7d71df6e14b2f61f479ee6598acb952af4ce86",
+      "bytes": 55,
+      "rawGitBlob": "1c088b73acf3c13dea7ff8b237ba1f2cf1d4df2f"
+    },
+    "command-0013.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0013.stdout.log": {
+      "rawSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "bytes": 8032,
+      "rawGitBlob": "8913f13ed0754da31925134d69f51420992841e7"
+    },
+    "command-0014.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0014.stdout.log": {
+      "rawSha256": "73b251fb0c55034ce47ce1c80d7f6ddd9e37e754663864062b25dd507cbb400c",
+      "bytes": 921,
+      "rawGitBlob": "2d58e55569f2312362f3d7053e768441c6d666e1"
+    },
+    "command-0015.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0015.stdout.log": {
+      "rawSha256": "f9d6589c981d20c4491cb1ede0b7473bc8a69d490a53e10cf0a4591ff237252b",
+      "bytes": 35,
+      "rawGitBlob": "80f0f3eb855bbc52569b5060a8e43175e887494c"
+    },
+    "command-0016.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0016.stdout.log": {
+      "rawSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "bytes": 8032,
+      "rawGitBlob": "8913f13ed0754da31925134d69f51420992841e7"
+    },
+    "command-0017.stderr.log": {
+      "rawSha256": "69f59d6126ea35d58fd0b3c79df4aa13e84dc4cdd34bd26883e34a84d46a67d7",
+      "bytes": 1933,
+      "rawGitBlob": "f55934a9c15a95a827c9b8cbfa2ef7c76cc38978"
+    },
+    "command-0017.stdout.log": {
+      "rawSha256": "b0b332e6e145fbb48b2eeeac179fce62568c422c796548e5eb78fa41982479f5",
+      "bytes": 66027,
+      "rawGitBlob": "d9267660e62a5ebb6bb7e20c6087535f1ab72b1f"
+    },
+    "command-0018.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0018.stdout.log": {
+      "rawSha256": "2427579984ed6e8b4918f895553a561e753880ff77e3722a975cc18033488a50",
+      "bytes": 45,
+      "rawGitBlob": "786e15d0c202cfb13be0222742c7421c25833955"
+    },
+    "command-0019.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0019.stdout.log": {
+      "rawSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "bytes": 8032,
+      "rawGitBlob": "8913f13ed0754da31925134d69f51420992841e7"
+    },
+    "command-0020.stderr.log": {
+      "rawSha256": "24727b1172f90181e208c737957928393f48c0619b88e8d491b41bde9ca396cd",
+      "bytes": 2805,
+      "rawGitBlob": "7dd5094f5c2a8958225c23ee66fdd110524e5ec9"
+    },
+    "command-0020.stdout.log": {
+      "rawSha256": "cc9c72de6ac0d0f5e8b3b16a75248c94cf84ee536ab699462d7cc6931098f5ba",
+      "bytes": 66469,
+      "rawGitBlob": "9f26886a5abf750dc8094202befa185702d959f3"
+    },
+    "command-0021.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0021.stdout.log": {
+      "rawSha256": "2427579984ed6e8b4918f895553a561e753880ff77e3722a975cc18033488a50",
+      "bytes": 45,
+      "rawGitBlob": "786e15d0c202cfb13be0222742c7421c25833955"
+    },
+    "command-0022.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0022.stdout.log": {
+      "rawSha256": "24ad29b540541d6040ecad19e66d860ec949e9ff0097ffb7208bbbb8c6f6556c",
+      "bytes": 158,
+      "rawGitBlob": "854148b73ff99760d2ba2b216109ecec4f1fab19"
+    },
+    "command-0023.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0023.stdout.log": {
+      "rawSha256": "a23ad40026b6726fc01e77ed369742fa9939d7c501a79caf5e3fda4a1eb3e41c",
+      "bytes": 65,
+      "rawGitBlob": "1440e5e30bafddc7bdf88a3d0ef71cfcb5ad58b0"
+    },
+    "command-0024.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0024.stdout.log": {
+      "rawSha256": "0407547924b51427641fb2f636b3a1bdb7bc6b55a9325729b37b2bc882a93296",
+      "bytes": 7638,
+      "rawGitBlob": "1a09acb711689577c6f741e931747842b4d6473b"
+    },
+    "command-0025.stderr.log": {
+      "rawSha256": "90f27b29da7cc6a8daa92ef28009c3f1c490bcbcc4d1834fe4dd204e9a732255",
+      "bytes": 738,
+      "rawGitBlob": "feaf1e68d51b646e7160bb831757586aff9c2546"
+    },
+    "command-0025.stdout.log": {
+      "rawSha256": "17216442453ca1b334bbdb1e1653162fa703ea01497447197e525a94a9a68651",
+      "bytes": 18397,
+      "rawGitBlob": "b7b25457405953b0d6e22e9f1eb107b23c506ae7"
+    },
+    "command-0026.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0026.stdout.log": {
+      "rawSha256": "b724dfaf6fb3bbe72351dd25faec8d804cd57e537a2cccf4b38c1ea75cf188fa",
+      "bytes": 8121,
+      "rawGitBlob": "3f5ecb0c5bcc552362b4193ed7b0a8bd432c427e"
+    },
+    "command-0027.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0027.stdout.log": {
+      "rawSha256": "132e7283606738c047c124e96bfb9af04eba41b6e1280d28f0dab67fad646938",
+      "bytes": 65,
+      "rawGitBlob": "432d27123cd86a1ff6def9ccfbaa679789fbbf02"
+    },
+    "command-0028.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0028.stdout.log": {
+      "rawSha256": "235c08f32f55a28c5715e35065c5cfb23734f4d840f9eeb0c1c69fccc702201a",
+      "bytes": 6881,
+      "rawGitBlob": "979858dc153af30d1c3cc96b479b0dbe07f188a0"
+    },
+    "command-0029.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0029.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0030.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0030.stdout.log": {
+      "rawSha256": "7cad7d6ee28362d7fafad60b5bfe80e9ae3be383ef6f04dee7a6d7bc48346eab",
+      "bytes": 7364,
+      "rawGitBlob": "a6655ef741de86cb9ab295b5b991aa81a4a4b896"
+    },
+    "command-0031.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0031.stdout.log": {
+      "rawSha256": "3a8d3ebee8ad9ea22b14940499121590d4e1f29f4f2c5788262afcb19f426763",
+      "bytes": 65,
+      "rawGitBlob": "422b8b63f7a1425ffa054a22a7d6eb34700b78ce"
+    },
+    "command-0032.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0032.stdout.log": {
+      "rawSha256": "2f49ab289eb526aa5c3bc99fb8cebf8ea4236161f5283dd9de579420032f7148",
+      "bytes": 6081,
+      "rawGitBlob": "bb2b7d9e48ef03f2f3350184b3a99106878d2e12"
+    },
+    "command-0033.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0033.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0034.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0034.stdout.log": {
+      "rawSha256": "74875f7db7e44ba1e3f0a60b824be33cbb534ac45118593dd9552e3c333a7106",
+      "bytes": 6562,
+      "rawGitBlob": "67bc5ffc29cf63c5f84e62d048f602e675e6dbb3"
+    },
+    "command-0035.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0035.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0036.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0036.stdout.log": {
+      "rawSha256": "6a07ef4391a598ae690115e417c7074ebbd018423c700c910c432cae32c811a7",
+      "bytes": 22073,
+      "rawGitBlob": "4e927a803be7bc48226213146b32bb28f8b75f04"
+    },
+    "command-0037.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0037.stdout.log": {
+      "rawSha256": "4b65bc3665a46ad38bd3ee5fc0a3432faaf618ae5b6e857a1803ed5f81c4716f",
+      "bytes": 853,
+      "rawGitBlob": "ed3a5ebd3ea0fe22e93b6fa44649758d6aa6c017"
+    },
+    "command-0038.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0038.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0039.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0039.stdout.log": {
+      "rawSha256": "41b25a75799f0fe4b5b54f43ebf14a7dd3f86fb91f33f7d5976f7d1e4e2bddc0",
+      "bytes": 962,
+      "rawGitBlob": "ada0cc4c1a60860c526536eaa951d4ca52bdfc52"
+    },
+    "command-0040.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0040.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0041.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0041.stdout.log": {
+      "rawSha256": "ce4831774402e83ef42a3bfcb10bb40ce66b39f94e9ce5b656b9e45327cbd7b2",
+      "bytes": 13500,
+      "rawGitBlob": "8298ff8d908d265dfebc53b98c7b001347c41420"
+    },
+    "command-0042.stderr.log": {
+      "rawSha256": "6116004e60660668d311bc55d7ae18d77c0181a1a84cc3d29e698fbc0ac1e7af",
+      "bytes": 1261,
+      "rawGitBlob": "76f84b42eea2ee403f986fd821a7a3b7fe09d29b"
+    },
+    "command-0042.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0043.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0043.stdout.log": {
+      "rawSha256": "276318d24d46c45b56134419c1a89ab958ce4e76c95668c9e21f9a17d98a0677",
+      "bytes": 2107,
+      "rawGitBlob": "89afa1c70c7e2e4a25e341e773f9505564b34b99"
+    },
+    "command-0044.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0044.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0045.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0045.stdout.log": {
+      "rawSha256": "9bae070730b83cc9af0eea3e4083b806bdc75e6acf72619214c4345c193e1014",
+      "bytes": 21995,
+      "rawGitBlob": "6dbfcb1586f40d8534ed743a7c7dbedc1943f956"
+    },
+    "command-0046.stderr.log": {
+      "rawSha256": "72b8a4c3c97ed6b18609e732ef14b5511b4515ec63203fbc51c978019cc8842b",
+      "bytes": 1126,
+      "rawGitBlob": "f7c858c67c835f51a1c9a38b85467afc9a7f5d69"
+    },
+    "command-0046.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0047.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0047.stdout.log": {
+      "rawSha256": "553ac17d565d19834900bf18732178c00da9b25a710dea17e5ae4aee75da621c",
+      "bytes": 5424,
+      "rawGitBlob": "3c83f1238d6913c0d900b234dedea7edd3c9f75c"
+    },
+    "command-0048.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0048.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0049.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0049.stdout.log": {
+      "rawSha256": "6d8d62ed8a538487ad0517ed72d23a1e3df6315e72dbb4cbfd1fa45f64517e92",
+      "bytes": 952,
+      "rawGitBlob": "5af01c6056a78d90a62472cec3f66dbf199e4589"
+    },
+    "command-0050.stderr.log": {
+      "rawSha256": "a7b582e1778fa96903eab600164be32f96ba5c98c28dcad17ef9433effc2eb81",
+      "bytes": 376,
+      "rawGitBlob": "36b8335030248fa0a5e258f1228a3383b1db5707"
+    },
+    "command-0050.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0051.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0051.stdout.log": {
+      "rawSha256": "c30fab4cd90f037eafc961cd1c9f6212f729cf2b87390eb9dfa707d1c23e1800",
+      "bytes": 358,
+      "rawGitBlob": "37b6e343929354d1d420aaea365ca2db461453f3"
+    },
+    "command-0052.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0052.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0053.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0053.stdout.log": {
+      "rawSha256": "b730609f43af3c6ff855f10ee7952333618a95ba1063d9ed49391e090f65c849",
+      "bytes": 414,
+      "rawGitBlob": "dad59fad82bc9f26450c9d42e659d35bce99dd42"
+    },
+    "command-0054.stderr.log": {
+      "rawSha256": "ae02b82210516161547ecd4681ebfa9e0715ec7c20c67a193ee58a79bf34cc61",
+      "bytes": 98,
+      "rawGitBlob": "9b04f551edececbecd11c22abd2e462d23396b09"
+    },
+    "command-0054.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0055.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0055.stdout.log": {
+      "rawSha256": "9079733451744975ea02383b2f4dca06d1ae590774010f76c69bb75c5bcfb8f0",
+      "bytes": 2257,
+      "rawGitBlob": "aa8a9551cebb0018c0ed3fe86a0a15dc344dbbd2"
+    },
+    "command-0056.stderr.log": {
+      "rawSha256": "9251cfdda503638938206598429f9208c23b39489b366217126fbc38d8bb7e6b",
+      "bytes": 465,
+      "rawGitBlob": "04a0f1d2025b8e2820eb02bef3bfc8a9568ae3c6"
+    },
+    "command-0056.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0057.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0057.stdout.log": {
+      "rawSha256": "6aa54ede558769e7a05700f9717d3275eec03d45806a0f4423be8541bd250174",
+      "bytes": 4793,
+      "rawGitBlob": "2aca804c5fb2883bf1d1d1d381497ec8e04aae7f"
+    },
+    "command-0058.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0058.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0059.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0059.stdout.log": {
+      "rawSha256": "56656cb5abb219143bb650191568294530308c3621292e7d34bbf8bc4a360f45",
+      "bytes": 3682,
+      "rawGitBlob": "7b4838832a2c7a994c1daf87b14675416180d2e7"
+    },
+    "command-0060.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0060.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0061.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0061.stdout.log": {
+      "rawSha256": "5748c9db5402751b8a7702c546c8aa3c995d3d7affde77e02578c66c51450bb7",
+      "bytes": 1333,
+      "rawGitBlob": "9eb7d8d122b3c9d9c0d97f5acc23a21673d48f76"
+    },
+    "command-0062.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0062.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0063.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0063.stdout.log": {
+      "rawSha256": "0842bebd2d7cdd33cd930b0580e5118d18523f1fd76f798b12f9d554482f373d",
+      "bytes": 7454,
+      "rawGitBlob": "56cf70df87f9b68b99003d424b09a183ef13ba6a"
+    },
+    "command-0064.stderr.log": {
+      "rawSha256": "b53504b4e824b008540da620121bb88f4a7efdc78c951895f6f85e5e5eca0be5",
+      "bytes": 102,
+      "rawGitBlob": "d7842eeac64e6b40ea9ae05c25d84e7fd8ce9094"
+    },
+    "command-0064.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0065.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0065.stdout.log": {
+      "rawSha256": "ad5b288120b62647f2ea2161d062c3f891619b98c8811068cea8372748aafb00",
+      "bytes": 1264,
+      "rawGitBlob": "b982bf1ee13bc88aeabaa692d2ab021b1afc9ab4"
+    },
+    "command-0066.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0066.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0067.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0067.stdout.log": {
+      "rawSha256": "02f0cf5badc501e3cbdb91c6f6a87a421fbeb19e7efa8012032683fef4156ce3",
+      "bytes": 7137,
+      "rawGitBlob": "54696673b1b93b8e6794cf1cdb29ca9edd7c9d81"
+    },
+    "command-0068.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0068.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0069.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0069.stdout.log": {
+      "rawSha256": "83b58ce6b4bf55810e1e087b70a743a84e920a0fcaa938380a3f5161361bd70f",
+      "bytes": 1930,
+      "rawGitBlob": "2642dc76448e59c998696ccb54a7c523641f7e45"
+    },
+    "command-0070.stderr.log": {
+      "rawSha256": "dcfde05101b57c64988f4477b50ad3395581ff2eedd956e5b434e00370b27a29",
+      "bytes": 99,
+      "rawGitBlob": "6cc043f483d68492911cc53b20270bfc06312f8e"
+    },
+    "command-0070.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0071.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0071.stdout.log": {
+      "rawSha256": "842d7a0768140d74968e64f5506edf1d26dd6fc892d9a1faa1a8842281d7b22e",
+      "bytes": 506,
+      "rawGitBlob": "5cc6a16eddcdbbe5c18204ff5b650ebdfb220f7c"
+    },
+    "command-0072.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0072.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0073.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0073.stdout.log": {
+      "rawSha256": "1486a804436932531721e39aa76c87959cd047e37960fce8b2baf5082f7ae2da",
+      "bytes": 717,
+      "rawGitBlob": "0d684db04550ee7b63728342ee8c78699beae411"
+    },
+    "command-0074.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0074.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0075.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0075.stdout.log": {
+      "rawSha256": "e4bcb883624bf840a356279ec22e5663a8bc1318f5a3f1eb6c8f00a1f6cfe584",
+      "bytes": 8700,
+      "rawGitBlob": "1dea932bb41afd81cfea0883b69e97ca99caf35a"
+    },
+    "command-0076.stderr.log": {
+      "rawSha256": "4c5578d08db8b41535131d505030018fd51bad0f48a15159a2bafcdf65e6f7b5",
+      "bytes": 266,
+      "rawGitBlob": "907640ad563ecfb9d15f6da4152a595b5f0ad293"
+    },
+    "command-0076.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0077.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0077.stdout.log": {
+      "rawSha256": "43ba52c2e67681f25dd712244b4434e751e2e452e7d431775c8fa26f32ab5309",
+      "bytes": 5067,
+      "rawGitBlob": "a9794340bbdaea592e0504b1728140b222886065"
+    },
+    "command-0078.stderr.log": {
+      "rawSha256": "b54bd0c0e97ef0340fed49face64b5e4d63a5ae63aa23ab02ff65f44da758a49",
+      "bytes": 100,
+      "rawGitBlob": "6f78f0e4f29d39a8c28ea866d40f88ec10039016"
+    },
+    "command-0078.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0079.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0079.stdout.log": {
+      "rawSha256": "1eb78bd001db62103bb60cae30166b2943898aa4263efc4009d2d09b84a53c2a",
+      "bytes": 9723,
+      "rawGitBlob": "0aabaabd9c44cad88887d99c498a2ba6787e2d53"
+    },
+    "command-0080.stderr.log": {
+      "rawSha256": "edc588e2752c46cb0c4201bf0481df05070788d2ed5ad7bbd943f4d73f5208c9",
+      "bytes": 582,
+      "rawGitBlob": "9813fc47c3ab2418f8a9c0f7f07e575474d4cda6"
+    },
+    "command-0080.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0081.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0081.stdout.log": {
+      "rawSha256": "49131417a7067bbac90d04bf26491dd4e36ddaadf12ac1adefe22211319b6467",
+      "bytes": 11361,
+      "rawGitBlob": "03996ba66b831a99a5c018f2d94582e0af8d8f40"
+    },
+    "command-0082.stderr.log": {
+      "rawSha256": "1be630cb273dab54e0cd13eb59402a1a6ae70a556a3ffef401889747503f7012",
+      "bytes": 1618,
+      "rawGitBlob": "28cb24f2370478baec8ca7ec4ac3f4946060d00d"
+    },
+    "command-0082.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0083.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0083.stdout.log": {
+      "rawSha256": "8f8b4edb906b76af03fe05a3e96f76120b21c5b4f2e4fe4ba980c01aa7056891",
+      "bytes": 1312,
+      "rawGitBlob": "5a506354653e10ecad53c08df41bda0b2424b11a"
+    },
+    "command-0084.stderr.log": {
+      "rawSha256": "ac7aca4118cb34aedc2c52a9750e730471604847411b10e3490b675017554d12",
+      "bytes": 421,
+      "rawGitBlob": "e6803e2e345d50f87cf63f079e3dd3436848fd03"
+    },
+    "command-0084.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0085.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0085.stdout.log": {
+      "rawSha256": "aff0651a938c4606469d684af15bb4f7987d81db4001aac1a5a362832b3b95c8",
+      "bytes": 5565,
+      "rawGitBlob": "9e9e2837bdbb58e8423ef87caf5ed368dd109aef"
+    },
+    "command-0086.stderr.log": {
+      "rawSha256": "b72a1126fdc91edd7297316752e4892b2fc0ffca9fe3b80c12331a6a62ac5145",
+      "bytes": 948,
+      "rawGitBlob": "fff9f3dc6422ffcbf0831dbe96a32dc2677d99cd"
+    },
+    "command-0086.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0087.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0087.stdout.log": {
+      "rawSha256": "a81d0c3fa8b47e2f209366abfe75a310274d482790117b0d6ba21c98b5b9d7b5",
+      "bytes": 3328,
+      "rawGitBlob": "f6c187e256a98642077578c4dbec63379e7a9188"
+    },
+    "command-0088.stderr.log": {
+      "rawSha256": "38ff1210894b6435208c000cb0278cfdf8fbc38895c60ff1080ddd4249dd18c9",
+      "bytes": 197,
+      "rawGitBlob": "362a5894fb4b9f8a4609d41210d26563d8db24e8"
+    },
+    "command-0088.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0089.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0089.stdout.log": {
+      "rawSha256": "593631c5df950e7b8f425ae3432d346fca80705297f649368e3032ff6053bca3",
+      "bytes": 279,
+      "rawGitBlob": "77424332744d73c0028888d15ac5a9b808599f1c"
+    },
+    "command-0090.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0090.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0091.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0091.stdout.log": {
+      "rawSha256": "052078df1028b0af17086e45071c72a3f4b0d3b9bab35fc74f8b5ebe59e69f2b",
+      "bytes": 4842,
+      "rawGitBlob": "eb86582054912258b19f0e23f3b43b17a06382a2"
+    },
+    "command-0092.stderr.log": {
+      "rawSha256": "6ec3dc92fe55b4538b0cdc8e4b21bdc85b8ddd04301223196948a67a0af7ed89",
+      "bytes": 117,
+      "rawGitBlob": "ccfe5616df9e443298ba99791be73b0dc9bdffe1"
+    },
+    "command-0092.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0093.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0093.stdout.log": {
+      "rawSha256": "74875f7db7e44ba1e3f0a60b824be33cbb534ac45118593dd9552e3c333a7106",
+      "bytes": 6562,
+      "rawGitBlob": "67bc5ffc29cf63c5f84e62d048f602e675e6dbb3"
+    },
+    "command-0094.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0094.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0095.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0095.stdout.log": {
+      "rawSha256": "74875f7db7e44ba1e3f0a60b824be33cbb534ac45118593dd9552e3c333a7106",
+      "bytes": 6562,
+      "rawGitBlob": "67bc5ffc29cf63c5f84e62d048f602e675e6dbb3"
+    },
+    "command-0096.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0096.stdout.log": {
+      "rawSha256": "d7231d9b134045094199ce9688663e06b6db58884d3165b47c992c80dba23951",
+      "bytes": 57,
+      "rawGitBlob": "84595641d622070dc93554987ee275fe3e0ceb30"
+    },
+    "command-0097.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0097.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0098.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0098.stdout.log": {
+      "rawSha256": "7cad7d6ee28362d7fafad60b5bfe80e9ae3be383ef6f04dee7a6d7bc48346eab",
+      "bytes": 7364,
+      "rawGitBlob": "a6655ef741de86cb9ab295b5b991aa81a4a4b896"
+    },
+    "command-0099.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0099.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0100.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0100.stdout.log": {
+      "rawSha256": "7cad7d6ee28362d7fafad60b5bfe80e9ae3be383ef6f04dee7a6d7bc48346eab",
+      "bytes": 7364,
+      "rawGitBlob": "a6655ef741de86cb9ab295b5b991aa81a4a4b896"
+    },
+    "command-0101.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0101.stdout.log": {
+      "rawSha256": "ca7111d95981447fc691756edb6c4b791af4c80a2510fcc0f6916005c233aa03",
+      "bytes": 60,
+      "rawGitBlob": "c6235f5fa817a27eff5132c70bbc8671c74dbde3"
+    },
+    "command-0102.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0102.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0103.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0103.stdout.log": {
+      "rawSha256": "b724dfaf6fb3bbe72351dd25faec8d804cd57e537a2cccf4b38c1ea75cf188fa",
+      "bytes": 8121,
+      "rawGitBlob": "3f5ecb0c5bcc552362b4193ed7b0a8bd432c427e"
+    },
+    "command-0104.stderr.log": {
+      "rawSha256": "90f27b29da7cc6a8daa92ef28009c3f1c490bcbcc4d1834fe4dd204e9a732255",
+      "bytes": 738,
+      "rawGitBlob": "feaf1e68d51b646e7160bb831757586aff9c2546"
+    },
+    "command-0104.stdout.log": {
+      "rawSha256": "17216442453ca1b334bbdb1e1653162fa703ea01497447197e525a94a9a68651",
+      "bytes": 18397,
+      "rawGitBlob": "b7b25457405953b0d6e22e9f1eb107b23c506ae7"
+    },
+    "command-0105.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0105.stdout.log": {
+      "rawSha256": "b724dfaf6fb3bbe72351dd25faec8d804cd57e537a2cccf4b38c1ea75cf188fa",
+      "bytes": 8121,
+      "rawGitBlob": "3f5ecb0c5bcc552362b4193ed7b0a8bd432c427e"
+    },
+    "command-0106.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0106.stdout.log": {
+      "rawSha256": "e03909244fe5196c10ac23e026f439ceb55f12f1370ef22ffbb574b43d7a4be8",
+      "bytes": 61,
+      "rawGitBlob": "140494dda8d99ce24123c60f9489fa14eb75cb31"
+    },
+    "command-0107.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0107.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0108.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0108.stdout.log": {
+      "rawSha256": "e732d0ca579f6d5234888ef9a4d3ec390181c43e5fd9b067b7ac1d387ff0d47f",
+      "bytes": 8032,
+      "rawGitBlob": "8913f13ed0754da31925134d69f51420992841e7"
+    },
+    "command-0109.stderr.log": {
+      "rawSha256": "576587f877a5155c6d82f74aa08780d04a4cc1b244b7a78a19f9640d06af16a9",
+      "bytes": 295999,
+      "rawGitBlob": "f87c16d00e3fa6e1cc07fa647918bf6061b000a6"
+    },
+    "command-0109.stdout.log": {
+      "rawSha256": "cc9c72de6ac0d0f5e8b3b16a75248c94cf84ee536ab699462d7cc6931098f5ba",
+      "bytes": 66469,
+      "rawGitBlob": "9f26886a5abf750dc8094202befa185702d959f3"
+    },
+    "command-0110.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0110.stdout.log": {
+      "rawSha256": "cb37774b6354655c0a51e0a66f7d71df6e14b2f61f479ee6598acb952af4ce86",
+      "bytes": 55,
+      "rawGitBlob": "1c088b73acf3c13dea7ff8b237ba1f2cf1d4df2f"
+    },
+    "command-0111.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0111.stdout.log": {
+      "rawSha256": "ad5833f717960a9c3f40d53d9769157012dba1f3dff18b51d89f609579dd6f1e",
+      "bytes": 7876,
+      "rawGitBlob": "d9ca547df4333ece2ec5394f3341111ef8a12ae9"
+    },
+    "command-0112.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0112.stdout.log": {
+      "rawSha256": "cb37774b6354655c0a51e0a66f7d71df6e14b2f61f479ee6598acb952af4ce86",
+      "bytes": 55,
+      "rawGitBlob": "1c088b73acf3c13dea7ff8b237ba1f2cf1d4df2f"
+    },
+    "command-0113.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0113.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0114.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0114.stdout.log": {
+      "rawSha256": "3801efb0c9c131fe4a9aec03ba214128d3f5289b51212a4c71cf0fa911eff50a",
+      "bytes": 156,
+      "rawGitBlob": "fc45dd5e07f9f5432af5a7ca9423a4c7fa2dd799"
+    },
+    "d45-config.toml.source": {
+      "rawSha256": "f3f83ee5d39cad1c6d7772ea257c079fa91f23dab1d343c1fa65ff6c4a7e5d1a",
+      "bytes": 16389,
+      "rawGitBlob": "63668befb0a2bcab5251b80a46613d042acd4dca"
+    },
+    "i000.source": {
+      "rawSha256": "b610ab2ea17b32aaebc0bdbf68ca894f7e68c96614fa308b6efb15c8b6f7b94b",
+      "bytes": 16241,
+      "rawGitBlob": "294adeca88aefd30518aca931fb0d511be72add1"
+    },
+    "i001.source": {
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "bytes": 3502,
+      "rawGitBlob": "4418915ccb9a7ef3f9a321276967ad273a2e4479"
+    },
+    "i002.source": {
+      "rawSha256": "fc8dfb9a88872fa58d6bf1b22c49df18fd35600109b67750ac6d7b7199849b21",
+      "bytes": 2020,
+      "rawGitBlob": "b5bec5e34d0bd46dc8243498dc78b726fe630918"
+    },
+    "i003.source": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142,
+      "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "i004.source": {
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "bytes": 6391,
+      "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+    },
+    "i005.source": {
+      "rawSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "bytes": 16923,
+      "rawGitBlob": "24756524f6ebd29e23cf140dc96195a2abc1c2d5"
+    },
+    "i006.source": {
+      "rawSha256": "430474507e191be7d71736668e4be53841d988f89b18042db5741f87fcd64b61",
+      "bytes": 6070,
+      "rawGitBlob": "cb1b457cabc1ccb8be39c5e2db84269c0508e009"
+    },
+    "i007.source": {
+      "rawSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "bytes": 14962,
+      "rawGitBlob": "dc8327c816d5bf9ff773d9901954cdd9f16137b8"
+    },
+    "i008.source": {
+      "rawSha256": "ced0d2dd073c86f402e409ff540ecda07455997e6a0a1e8a738c154c6b962a20",
+      "bytes": 421,
+      "rawGitBlob": "6e5d8487bad85c83a9ebdf18629bdbf9996c376c"
+    },
+    "i009.source": {
+      "rawSha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f",
+      "bytes": 702,
+      "rawGitBlob": "dee166ae58a4b1f77b650d8e72f8a249e5918ce5"
+    },
+    "i010.source": {
+      "rawSha256": "aa956b7b1f205284a524882fe0d580c72d86374aea9c9c2e93ac398df5e07d0b",
+      "bytes": 8399,
+      "rawGitBlob": "52cd0974730ae10f04cc50d5915c167cbe1b064c"
+    },
+    "i011.source": {
+      "rawSha256": "3992d0d7fadcc9067a528619f6936807b3d4d4158cd4f626c9e5c1fbdc7cf823",
+      "bytes": 69288,
+      "rawGitBlob": "75bbf609c375f6e793467177e338d7d5d8662f4e"
+    },
+    "i012.source": {
+      "rawSha256": "5d7cfad5954c97252dcef67ff16b8e46fec753d91f5a1f9eca03fe10f14cc31e",
+      "bytes": 59440,
+      "rawGitBlob": "01c426edd81e3539ff7c1c74181ea019a815b91d"
+    },
+    "i013.source": {
+      "rawSha256": "6bccac7527677c3e5f13f2fb3fe62a758421f12238a4647db9d93400e36b7c71",
+      "bytes": 1888,
+      "rawGitBlob": "08d572d2dac04745d646782f9c6389e2e8c7b977"
+    },
+    "i014.source": {
+      "rawSha256": "af2095d9665d796097f2e590159d4458d44c798b16865f8cf8540659af057ab2",
+      "bytes": 6347,
+      "rawGitBlob": "a5d39ef08012ed3cfd696589ea68b86243695d34"
+    },
+    "i015.source": {
+      "rawSha256": "e1151dd98aead97d890d6a66298e928593b12a75c1a57888d5115b32f0d0ddcc",
+      "bytes": 14952,
+      "rawGitBlob": "d4c97ba1d51bc5764ab16c2cec1a53a921675db3"
+    },
+    "init.sql.source": {
+      "rawSha256": "a5b4232f2b72117289feb59ce86a1e463113a12428da079a08275c095fbe7036",
+      "bytes": 9522,
+      "rawGitBlob": "91230749d01eaa9c52e5f143b7f3aaa952b0bd92"
+    },
+    "m0000.source": {
+      "rawSha256": "4b65bc3665a46ad38bd3ee5fc0a3432faaf618ae5b6e857a1803ed5f81c4716f",
+      "bytes": 853,
+      "rawGitBlob": "ed3a5ebd3ea0fe22e93b6fa44649758d6aa6c017"
+    },
+    "m0001.source": {
+      "rawSha256": "41b25a75799f0fe4b5b54f43ebf14a7dd3f86fb91f33f7d5976f7d1e4e2bddc0",
+      "bytes": 962,
+      "rawGitBlob": "ada0cc4c1a60860c526536eaa951d4ca52bdfc52"
+    },
+    "m0002.source": {
+      "rawSha256": "ce4831774402e83ef42a3bfcb10bb40ce66b39f94e9ce5b656b9e45327cbd7b2",
+      "bytes": 13500,
+      "rawGitBlob": "8298ff8d908d265dfebc53b98c7b001347c41420"
+    },
+    "m0003.source": {
+      "rawSha256": "276318d24d46c45b56134419c1a89ab958ce4e76c95668c9e21f9a17d98a0677",
+      "bytes": 2107,
+      "rawGitBlob": "89afa1c70c7e2e4a25e341e773f9505564b34b99"
+    },
+    "m0004.source": {
+      "rawSha256": "9bae070730b83cc9af0eea3e4083b806bdc75e6acf72619214c4345c193e1014",
+      "bytes": 21995,
+      "rawGitBlob": "6dbfcb1586f40d8534ed743a7c7dbedc1943f956"
+    },
+    "m0005.source": {
+      "rawSha256": "553ac17d565d19834900bf18732178c00da9b25a710dea17e5ae4aee75da621c",
+      "bytes": 5424,
+      "rawGitBlob": "3c83f1238d6913c0d900b234dedea7edd3c9f75c"
+    },
+    "m0006.source": {
+      "rawSha256": "6d8d62ed8a538487ad0517ed72d23a1e3df6315e72dbb4cbfd1fa45f64517e92",
+      "bytes": 952,
+      "rawGitBlob": "5af01c6056a78d90a62472cec3f66dbf199e4589"
+    },
+    "m0007.source": {
+      "rawSha256": "c30fab4cd90f037eafc961cd1c9f6212f729cf2b87390eb9dfa707d1c23e1800",
+      "bytes": 358,
+      "rawGitBlob": "37b6e343929354d1d420aaea365ca2db461453f3"
+    },
+    "m0008.source": {
+      "rawSha256": "b730609f43af3c6ff855f10ee7952333618a95ba1063d9ed49391e090f65c849",
+      "bytes": 414,
+      "rawGitBlob": "dad59fad82bc9f26450c9d42e659d35bce99dd42"
+    },
+    "m0009.source": {
+      "rawSha256": "9079733451744975ea02383b2f4dca06d1ae590774010f76c69bb75c5bcfb8f0",
+      "bytes": 2257,
+      "rawGitBlob": "aa8a9551cebb0018c0ed3fe86a0a15dc344dbbd2"
+    },
+    "m0010.source": {
+      "rawSha256": "6aa54ede558769e7a05700f9717d3275eec03d45806a0f4423be8541bd250174",
+      "bytes": 4793,
+      "rawGitBlob": "2aca804c5fb2883bf1d1d1d381497ec8e04aae7f"
+    },
+    "m0011.source": {
+      "rawSha256": "56656cb5abb219143bb650191568294530308c3621292e7d34bbf8bc4a360f45",
+      "bytes": 3682,
+      "rawGitBlob": "7b4838832a2c7a994c1daf87b14675416180d2e7"
+    },
+    "m0012.source": {
+      "rawSha256": "5748c9db5402751b8a7702c546c8aa3c995d3d7affde77e02578c66c51450bb7",
+      "bytes": 1333,
+      "rawGitBlob": "9eb7d8d122b3c9d9c0d97f5acc23a21673d48f76"
+    },
+    "m0013.source": {
+      "rawSha256": "0842bebd2d7cdd33cd930b0580e5118d18523f1fd76f798b12f9d554482f373d",
+      "bytes": 7454,
+      "rawGitBlob": "56cf70df87f9b68b99003d424b09a183ef13ba6a"
+    },
+    "m0014.source": {
+      "rawSha256": "ad5b288120b62647f2ea2161d062c3f891619b98c8811068cea8372748aafb00",
+      "bytes": 1264,
+      "rawGitBlob": "b982bf1ee13bc88aeabaa692d2ab021b1afc9ab4"
+    },
+    "m0015.source": {
+      "rawSha256": "02f0cf5badc501e3cbdb91c6f6a87a421fbeb19e7efa8012032683fef4156ce3",
+      "bytes": 7137,
+      "rawGitBlob": "54696673b1b93b8e6794cf1cdb29ca9edd7c9d81"
+    },
+    "m0016.source": {
+      "rawSha256": "83b58ce6b4bf55810e1e087b70a743a84e920a0fcaa938380a3f5161361bd70f",
+      "bytes": 1930,
+      "rawGitBlob": "2642dc76448e59c998696ccb54a7c523641f7e45"
+    },
+    "m0017.source": {
+      "rawSha256": "842d7a0768140d74968e64f5506edf1d26dd6fc892d9a1faa1a8842281d7b22e",
+      "bytes": 506,
+      "rawGitBlob": "5cc6a16eddcdbbe5c18204ff5b650ebdfb220f7c"
+    },
+    "m0018.source": {
+      "rawSha256": "1486a804436932531721e39aa76c87959cd047e37960fce8b2baf5082f7ae2da",
+      "bytes": 717,
+      "rawGitBlob": "0d684db04550ee7b63728342ee8c78699beae411"
+    },
+    "m0019.source": {
+      "rawSha256": "e4bcb883624bf840a356279ec22e5663a8bc1318f5a3f1eb6c8f00a1f6cfe584",
+      "bytes": 8700,
+      "rawGitBlob": "1dea932bb41afd81cfea0883b69e97ca99caf35a"
+    },
+    "m0020.source": {
+      "rawSha256": "43ba52c2e67681f25dd712244b4434e751e2e452e7d431775c8fa26f32ab5309",
+      "bytes": 5067,
+      "rawGitBlob": "a9794340bbdaea592e0504b1728140b222886065"
+    },
+    "m0021.source": {
+      "rawSha256": "1eb78bd001db62103bb60cae30166b2943898aa4263efc4009d2d09b84a53c2a",
+      "bytes": 9723,
+      "rawGitBlob": "0aabaabd9c44cad88887d99c498a2ba6787e2d53"
+    },
+    "m0022.source": {
+      "rawSha256": "49131417a7067bbac90d04bf26491dd4e36ddaadf12ac1adefe22211319b6467",
+      "bytes": 11361,
+      "rawGitBlob": "03996ba66b831a99a5c018f2d94582e0af8d8f40"
+    },
+    "m0023.source": {
+      "rawSha256": "8f8b4edb906b76af03fe05a3e96f76120b21c5b4f2e4fe4ba980c01aa7056891",
+      "bytes": 1312,
+      "rawGitBlob": "5a506354653e10ecad53c08df41bda0b2424b11a"
+    },
+    "m0024.source": {
+      "rawSha256": "aff0651a938c4606469d684af15bb4f7987d81db4001aac1a5a362832b3b95c8",
+      "bytes": 5565,
+      "rawGitBlob": "9e9e2837bdbb58e8423ef87caf5ed368dd109aef"
+    },
+    "m0025.source": {
+      "rawSha256": "a81d0c3fa8b47e2f209366abfe75a310274d482790117b0d6ba21c98b5b9d7b5",
+      "bytes": 3328,
+      "rawGitBlob": "f6c187e256a98642077578c4dbec63379e7a9188"
+    },
+    "m0026.source": {
+      "rawSha256": "593631c5df950e7b8f425ae3432d346fca80705297f649368e3032ff6053bca3",
+      "bytes": 279,
+      "rawGitBlob": "77424332744d73c0028888d15ac5a9b808599f1c"
+    },
+    "m0027.source": {
+      "rawSha256": "052078df1028b0af17086e45071c72a3f4b0d3b9bab35fc74f8b5ebe59e69f2b",
+      "bytes": 4842,
+      "rawGitBlob": "eb86582054912258b19f0e23f3b43b17a06382a2"
+    }
+  }
+}

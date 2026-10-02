@@ -1,0 +1,367 @@
+{
+  "mode": "owned-full1711-d45-diagnostic",
+  "authority": "Ruling55",
+  "sourceHead": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "baselineSource": "d45b849d300f76700efcf5450a9b426e32cc372f",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-b19aa2b7ff644e6ea62c1874bd34f16b",
+  "pg": "hkscda-task11-fix3-pg-b19aa2b7ff644e6ea62c1874bd34f16b",
+  "CLIQualification": "Pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Fresh actual PG17.11 full managed+D45 catalog, not Task9 reconstruction.",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "command-0000.stdout.log",
+      "stderr": "command-0000.stderr.log",
+      "stdoutSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stdout": "command-0001.stdout.log",
+      "stderr": "command-0001.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "d45b849d300f76700efcf5450a9b426e32cc372f:supabase/config.toml"
+      ],
+      "exit": 0,
+      "stdout": "command-0002.stdout.log",
+      "stderr": "command-0002.stderr.log",
+      "stdoutSha256": "f3f83ee5d39cad1c6d7772ea257c079fa91f23dab1d343c1fa65ff6c4a7e5d1a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "d45b849d300f76700efcf5450a9b426e32cc372f",
+        "--",
+        "supabase/roles.sql",
+        "supabase/.temp"
+      ],
+      "exit": 0,
+      "stdout": "command-0003.stdout.log",
+      "stderr": "command-0003.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "public.ecr.aws/supabase/postgres:17.11.0.002"
+      ],
+      "exit": 1,
+      "stdout": "command-0004.stdout.log",
+      "stderr": "command-0004.stderr.log",
+      "stdoutSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderrSha256": "c6f8c881a0d633506e676fc687216ea43f248e962d0a90e8cba4e3fa9422d4cd"
+    }
+  ],
+  "images": {},
+  "inputBindings": [
+    {
+      "label": "executed-driver",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline.py",
+      "rawSha256": "adaff9d9a4fc39fdabc92be7e6e24c4e7ae4983b7697a1a3ec20ff5b5da19f66",
+      "canonicalSha256": "adaff9d9a4fc39fdabc92be7e6e24c4e7ae4983b7697a1a3ec20ff5b5da19f66",
+      "rawGitBlob": "cc08e18c89558ab750df51fbbc2b6fb72000918a",
+      "bytes": 15528,
+      "archive": "i000.source"
+    },
+    {
+      "label": "query-reader",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-queries.ts",
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "canonicalSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "rawGitBlob": "4418915ccb9a7ef3f9a321276967ad273a2e4479",
+      "bytes": 3502,
+      "archive": "i001.source"
+    },
+    {
+      "label": "authority",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling55.source",
+      "rawSha256": "fc8dfb9a88872fa58d6bf1b22c49df18fd35600109b67750ac6d7b7199849b21",
+      "canonicalSha256": "1d92acc670c4f5e2c48acdcb886b81814ac25005bfb6fc444dc5cd4fbd65a9bd",
+      "rawGitBlob": "b5bec5e34d0bd46dc8243498dc78b726fe630918",
+      "bytes": 2020,
+      "archive": "i002.source"
+    },
+    {
+      "label": "unchanged-full-scanner",
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a",
+      "bytes": 43142,
+      "archive": "i003.source"
+    },
+    {
+      "label": "profile-query-source",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "canonicalSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67",
+      "bytes": 6391,
+      "archive": "i004.source"
+    },
+    {
+      "label": "actual-queries",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/queries.json",
+      "rawSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "canonicalSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "rawGitBlob": "24756524f6ebd29e23cf140dc96195a2abc1c2d5",
+      "bytes": 16923,
+      "archive": "i005.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_start.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_start.go.source",
+      "rawSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "canonicalSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "rawGitBlob": "dc8327c816d5bf9ff773d9901954cdd9f16137b8",
+      "bytes": 14962,
+      "archive": "i006.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_templates__supabase.sql.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_templates__supabase.sql.source",
+      "rawSha256": "ced0d2dd073c86f402e409ff540ecda07455997e6a0a1e8a738c154c6b962a20",
+      "canonicalSha256": "ced0d2dd073c86f402e409ff540ecda07455997e6a0a1e8a738c154c6b962a20",
+      "rawGitBlob": "6e5d8487bad85c83a9ebdf18629bdbf9996c376c",
+      "bytes": 421,
+      "archive": "i007.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_templates_schema.sql.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_templates_schema.sql.source",
+      "rawSha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f",
+      "canonicalSha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f",
+      "rawGitBlob": "dee166ae58a4b1f77b650d8e72f8a249e5918ce5",
+      "bytes": 702,
+      "archive": "i008.source"
+    },
+    {
+      "label": "vendor-v2.118.0-internal_db_start_templates_webhook.sql.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_templates_webhook.sql.source",
+      "rawSha256": "aa956b7b1f205284a524882fe0d580c72d86374aea9c9c2e93ac398df5e07d0b",
+      "canonicalSha256": "aa956b7b1f205284a524882fe0d580c72d86374aea9c9c2e93ac398df5e07d0b",
+      "rawGitBlob": "52cd0974730ae10f04cc50d5915c167cbe1b064c",
+      "bytes": 8399,
+      "archive": "i009.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_auth.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_auth.go.source",
+      "rawSha256": "3992d0d7fadcc9067a528619f6936807b3d4d4158cd4f626c9e5c1fbdc7cf823",
+      "canonicalSha256": "3992d0d7fadcc9067a528619f6936807b3d4d4158cd4f626c9e5c1fbdc7cf823",
+      "rawGitBlob": "75bbf609c375f6e793467177e338d7d5d8662f4e",
+      "bytes": 69288,
+      "archive": "i010.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_config.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_config.go.source",
+      "rawSha256": "5d7cfad5954c97252dcef67ff16b8e46fec753d91f5a1f9eca03fe10f14cc31e",
+      "canonicalSha256": "5d7cfad5954c97252dcef67ff16b8e46fec753d91f5a1f9eca03fe10f14cc31e",
+      "rawGitBlob": "01c426edd81e3539ff7c1c74181ea019a815b91d",
+      "bytes": 59440,
+      "archive": "i011.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_constants.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_constants.go.source",
+      "rawSha256": "6bccac7527677c3e5f13f2fb3fe62a758421f12238a4647db9d93400e36b7c71",
+      "canonicalSha256": "6bccac7527677c3e5f13f2fb3fe62a758421f12238a4647db9d93400e36b7c71",
+      "rawGitBlob": "08d572d2dac04745d646782f9c6389e2e8c7b977",
+      "bytes": 1888,
+      "archive": "i012.source"
+    },
+    {
+      "label": "vendor-v2.118.0-pkg_config_storage.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-pkg_config_storage.go.source",
+      "rawSha256": "af2095d9665d796097f2e590159d4458d44c798b16865f8cf8540659af057ab2",
+      "canonicalSha256": "af2095d9665d796097f2e590159d4458d44c798b16865f8cf8540659af057ab2",
+      "rawGitBlob": "a5d39ef08012ed3cfd696589ea68b86243695d34",
+      "bytes": 6347,
+      "archive": "i013.source"
+    },
+    {
+      "label": "vendor-v2.119.0-internal_db_start_start.go.source",
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.119.0-internal_db_start_start.go.source",
+      "rawSha256": "e1151dd98aead97d890d6a66298e928593b12a75c1a57888d5115b32f0d0ddcc",
+      "canonicalSha256": "e1151dd98aead97d890d6a66298e928593b12a75c1a57888d5115b32f0d0ddcc",
+      "rawGitBlob": "d4c97ba1d51bc5764ab16c2cec1a53a921675db3",
+      "bytes": 14952,
+      "archive": "i014.source"
+    }
+  ],
+  "migrationInventory": [],
+  "managedJobs": [],
+  "error": "Owned command failed ['docker', 'image', 'inspect', 'public.ecr.aws/supabase/postgres:17.11.0.002'] stderr=Error response from daemon: No such image: public.ecr.aws/supabase/postgres:17.11.0.002\n",
+  "cleanup": [],
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "heldTask1FiveColumnRepairApplied": false,
+  "heldTask8ScannerProposalApplied": false,
+  "all57CurrentInputsPreserved": true,
+  "files": {
+    "api.sql.source": {
+      "rawSha256": "438b7e8bf360f0d66c629c5ff102a9fb52584758be94be722d6cb490b216dacc",
+      "bytes": 417,
+      "rawGitBlob": "520bc7005a3072aa272f8baa95f925435599df9e"
+    },
+    "command-0000.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0000.stdout.log": {
+      "rawSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "bytes": 41,
+      "rawGitBlob": "d75c8cebbdd19b4bc5d2caf582ca3b3cf80efd80"
+    },
+    "command-0001.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0001.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0002.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0002.stdout.log": {
+      "rawSha256": "f3f83ee5d39cad1c6d7772ea257c079fa91f23dab1d343c1fa65ff6c4a7e5d1a",
+      "bytes": 16389,
+      "rawGitBlob": "63668befb0a2bcab5251b80a46613d042acd4dca"
+    },
+    "command-0003.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0003.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0004.stderr.log": {
+      "rawSha256": "c6f8c881a0d633506e676fc687216ea43f248e962d0a90e8cba4e3fa9422d4cd",
+      "bytes": 88,
+      "rawGitBlob": "4a0ab0c62451d254e1020b05d205c9482a94a737"
+    },
+    "command-0004.stdout.log": {
+      "rawSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "rawGitBlob": "fe51488c7066f6687ef680d6bfaa4f7768ef205c"
+    },
+    "d45-config.toml.source": {
+      "rawSha256": "f3f83ee5d39cad1c6d7772ea257c079fa91f23dab1d343c1fa65ff6c4a7e5d1a",
+      "bytes": 16389,
+      "rawGitBlob": "63668befb0a2bcab5251b80a46613d042acd4dca"
+    },
+    "i000.source": {
+      "rawSha256": "adaff9d9a4fc39fdabc92be7e6e24c4e7ae4983b7697a1a3ec20ff5b5da19f66",
+      "bytes": 15528,
+      "rawGitBlob": "cc08e18c89558ab750df51fbbc2b6fb72000918a"
+    },
+    "i001.source": {
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "bytes": 3502,
+      "rawGitBlob": "4418915ccb9a7ef3f9a321276967ad273a2e4479"
+    },
+    "i002.source": {
+      "rawSha256": "fc8dfb9a88872fa58d6bf1b22c49df18fd35600109b67750ac6d7b7199849b21",
+      "bytes": 2020,
+      "rawGitBlob": "b5bec5e34d0bd46dc8243498dc78b726fe630918"
+    },
+    "i003.source": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142,
+      "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "i004.source": {
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "bytes": 6391,
+      "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+    },
+    "i005.source": {
+      "rawSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "bytes": 16923,
+      "rawGitBlob": "24756524f6ebd29e23cf140dc96195a2abc1c2d5"
+    },
+    "i006.source": {
+      "rawSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "bytes": 14962,
+      "rawGitBlob": "dc8327c816d5bf9ff773d9901954cdd9f16137b8"
+    },
+    "i007.source": {
+      "rawSha256": "ced0d2dd073c86f402e409ff540ecda07455997e6a0a1e8a738c154c6b962a20",
+      "bytes": 421,
+      "rawGitBlob": "6e5d8487bad85c83a9ebdf18629bdbf9996c376c"
+    },
+    "i008.source": {
+      "rawSha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f",
+      "bytes": 702,
+      "rawGitBlob": "dee166ae58a4b1f77b650d8e72f8a249e5918ce5"
+    },
+    "i009.source": {
+      "rawSha256": "aa956b7b1f205284a524882fe0d580c72d86374aea9c9c2e93ac398df5e07d0b",
+      "bytes": 8399,
+      "rawGitBlob": "52cd0974730ae10f04cc50d5915c167cbe1b064c"
+    },
+    "i010.source": {
+      "rawSha256": "3992d0d7fadcc9067a528619f6936807b3d4d4158cd4f626c9e5c1fbdc7cf823",
+      "bytes": 69288,
+      "rawGitBlob": "75bbf609c375f6e793467177e338d7d5d8662f4e"
+    },
+    "i011.source": {
+      "rawSha256": "5d7cfad5954c97252dcef67ff16b8e46fec753d91f5a1f9eca03fe10f14cc31e",
+      "bytes": 59440,
+      "rawGitBlob": "01c426edd81e3539ff7c1c74181ea019a815b91d"
+    },
+    "i012.source": {
+      "rawSha256": "6bccac7527677c3e5f13f2fb3fe62a758421f12238a4647db9d93400e36b7c71",
+      "bytes": 1888,
+      "rawGitBlob": "08d572d2dac04745d646782f9c6389e2e8c7b977"
+    },
+    "i013.source": {
+      "rawSha256": "af2095d9665d796097f2e590159d4458d44c798b16865f8cf8540659af057ab2",
+      "bytes": 6347,
+      "rawGitBlob": "a5d39ef08012ed3cfd696589ea68b86243695d34"
+    },
+    "i014.source": {
+      "rawSha256": "e1151dd98aead97d890d6a66298e928593b12a75c1a57888d5115b32f0d0ddcc",
+      "bytes": 14952,
+      "rawGitBlob": "d4c97ba1d51bc5764ab16c2cec1a53a921675db3"
+    },
+    "init.sql.source": {
+      "rawSha256": "a5b4232f2b72117289feb59ce86a1e463113a12428da079a08275c095fbe7036",
+      "bytes": 9522,
+      "rawGitBlob": "91230749d01eaa9c52e5f143b7f3aaa952b0bd92"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli-go/pkg/config/apikeys.go?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "cb1b457cabc1ccb8be39c5e2db84269c0508e009",
+  "rawSha256": "430474507e191be7d71736668e4be53841d988f89b18042db5741f87fcd64b61",
+  "bytes": 6070
+}

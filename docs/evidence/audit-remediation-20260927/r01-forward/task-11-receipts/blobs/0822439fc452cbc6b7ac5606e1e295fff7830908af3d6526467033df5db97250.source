@@ -1,0 +1,3 @@
+NOTICE:  policy "public can read published document assets" for relation "public.document_assets" does not exist, skipping
+NOTICE:  policy "public can read published document slots" for relation "public.site_document_slots" does not exist, skipping
+NOTICE:  policy "public can read published annual reports" for relation "public.annual_reports" does not exist, skipping

@@ -1,0 +1,483 @@
+{
+  "mode": "independent-concrete-native-pair-proposal-binding",
+  "atUtc": "2026-10-02T22:25:37.419172+00:00",
+  "head": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "bindings": [
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-v6-profile-proposal\\proposal.json",
+      "sha256": "a9eeae3a19a1480424d177a68b4cf696528f79e0550913ed98c431f8687e477d",
+      "bytes": 8109
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\receipt.json",
+      "sha256": "73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798",
+      "bytes": 1028325
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\d45-baseline.json",
+      "sha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "bytes": 3341952
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\after-rollback.json",
+      "sha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "bytes": 3341952
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\command-0603.stderr.log",
+      "sha256": "599224c390c5484bdac74983ec012ec05c2b5cddee3bb8cc855256bdf73293da",
+      "bytes": 171
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-v6-profile-proposal\\finance-transaction.postexecution-derived.source",
+      "sha256": "d412418344179e3769c047000ca471e502142196e95a3abd89378de272258178",
+      "bytes": 968893
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\i000.source",
+      "sha256": "40e12c4d6e88cbd6ebc710684b3633be2109b2ebd3b233175ecc2947fbd3e7dd",
+      "bytes": 17200
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\i040.source",
+      "sha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "bytes": 968852
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-v6-profile-proposal\\proposed-complete-native-prerequisites.json",
+      "sha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+      "bytes": 167255
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-v6-profile-proposal\\finance-transaction.postexecution-derived.source",
+      "sha256": "d412418344179e3769c047000ca471e502142196e95a3abd89378de272258178",
+      "bytes": 968893
+    },
+    {
+      "path": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6\\i040.source",
+      "sha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "bytes": 968852
+    }
+  ],
+  "completeCatalogExactCaptured15Facets": true,
+  "helpersExactCaptured11CompleteTuples": true,
+  "observedColumnACLChanges": 16,
+  "columnKeys": [
+    [
+      "public",
+      "donation",
+      "idempotency_fingerprint",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "donation",
+      "idempotency_key",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "payment",
+      "checkout_attempted_at",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "payment",
+      "checkout_url",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "payment",
+      "idempotency_key",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "created_at",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "deleted_at",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "edit_version",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "email",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "id",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "language",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "name",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "phone",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "source",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "tags",
+      "",
+      ""
+    ],
+    [
+      "public",
+      "supporter",
+      "updated_at",
+      "",
+      ""
+    ]
+  ],
+  "relationChanges": [
+    {
+      "key": [
+        "public",
+        "",
+        "supporter",
+        "",
+        ""
+      ],
+      "fields": {
+        "acl": {
+          "expected": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "actual": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "constraintChanges": [
+    {
+      "key": [
+        "public",
+        "donation",
+        "donation_idempotency_fingerprint_check",
+        "",
+        ""
+      ],
+      "fields": {
+        "definition": {
+          "expected": "CHECK (idempotency_key IS NULL AND idempotency_fingerprint IS NULL OR idempotency_key IS NOT NULL AND idempotency_fingerprint ~ '^[0-9a-f]{64}$'::text)",
+          "actual": "CHECK (idempotency_key IS NULL AND idempotency_fingerprint IS NULL OR idempotency_key IS NOT NULL AND idempotency_fingerprint IS NOT NULL AND idempotency_fingerprint ~ '^[0-9a-f]{64}$'::text)"
+        }
+      }
+    }
+  ],
+  "helperChanges": [
+    {
+      "key": [
+        "private",
+        "",
+        "bump_supporter_edit_version",
+        "",
+        ""
+      ],
+      "fields": {
+        "body": {
+          "expected": "ce77bf772b703ab19ea00a56121ff227",
+          "actual": "a0e6f99eb6b19341f4f1d89cb9c7f92c"
+        },
+        "definition": {
+          "expected": "08619e0337db72d3d685130718c47538",
+          "actual": "d1fd0a986ef9bb089e9d5025e4177a49"
+        }
+      }
+    }
+  ],
+  "mixedPairAdmission": "not admitted; any source implementation must correlate supplemental catalog/helper as one exact observed pair and reject new mixed combinations",
+  "transportOriginalArchiveExists": false,
+  "sourceAmendmentAdmitted": false,
+  "errors": [],
+  "exitCode": 0,
+  "catalogScopeQualification": "Unchanged nine-public-table Task11 prerequisite projection: relations/columns/constraints/indexes/triggers/policies filtered only by exact table names; schemas/defaults/full-role/memberships/extension/native members/databaseOwner/sequences raw facets unchanged; types20 exact prior admitted modern facet and all raw rows present. Auth.users remains separate complete guard. Entire raw baseline before/rollback is still byte-identical.",
+  "preservedFirstFailure": "task-11-controller-fix3-native-pair-proposal-binding-first-failed.json"
+}

@@ -1,0 +1,106 @@
+BEGIN;
+-- Keep every receipt void and its audit fact in the same database transaction.
+create function public.void_receipt_with_audit(
+  p_receipt_id uuid,
+  p_actor uuid,
+  p_supporter_id uuid default null
+)
+returns table (receipt_id uuid, pdf_url text)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_receipt public.receipt%rowtype;
+  v_voided_at timestamptz;
+begin
+  if not exists (
+    select 1 from public.admin_user
+    where auth_user_id = p_actor
+      and status = 'active'
+      and role in ('treasurer', 'admin')
+  ) then
+    raise exception 'receipt_void_admin_required' using errcode = '42501';
+  end if;
+
+  select * into v_receipt
+  from public.receipt
+  where id = p_receipt_id
+  for update;
+  if not found or v_receipt.status <> 'issued' then
+    raise exception 'receipt_not_issued' using errcode = '22023';
+  end if;
+  if p_supporter_id is not null and p_supporter_id <> v_receipt.supporter_id then
+    raise exception 'receipt_supporter_mismatch' using errcode = '22023';
+  end if;
+
+  v_voided_at := pg_catalog.clock_timestamp();
+  update public.receipt
+  set status = 'void', voided_at = v_voided_at, voided_by = p_actor
+  where id = v_receipt.id;
+
+  insert into public.audit_log(actor_user_id, action, entity, entity_id, detail)
+  values (
+    p_actor, 'receipt.void', 'receipt', v_receipt.id::text,
+    pg_catalog.jsonb_build_object(
+      'voidedAt', v_voided_at,
+      'supporterId', v_receipt.supporter_id,
+      'reason', 'manual'
+    )
+  );
+
+  return query select v_receipt.id, v_receipt.pdf_url;
+end;
+$$;
+revoke all on function public.void_receipt_with_audit(uuid, uuid, uuid)
+  from public, anon, authenticated;
+grant execute on function public.void_receipt_with_audit(uuid, uuid, uuid)
+  to service_role;
+create function public.void_donation_receipts_with_audit(
+  p_donation_id uuid,
+  p_reason text default 'refund'
+)
+returns table (receipt_id uuid, pdf_url text)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_receipt public.receipt%rowtype;
+  v_voided_at timestamptz;
+begin
+  if p_donation_id is null or p_reason is null or pg_catalog.length(pg_catalog.btrim(p_reason)) = 0 then
+    raise exception 'invalid_receipt_void_request' using errcode = '22023';
+  end if;
+
+  for v_receipt in
+    select * from public.receipt
+    where donation_ids @> array[p_donation_id]
+      and status = 'issued'
+    order by id
+    for update
+  loop
+    v_voided_at := pg_catalog.clock_timestamp();
+    update public.receipt
+    set status = 'void', voided_at = v_voided_at, voided_by = null
+    where id = v_receipt.id;
+
+    insert into public.audit_log(actor_user_id, action, entity, entity_id, detail)
+    values (
+      null, 'receipt.void', 'receipt', v_receipt.id::text,
+      pg_catalog.jsonb_build_object(
+        'voidedAt', v_voided_at,
+        'donationId', p_donation_id,
+        'reason', p_reason
+      )
+    );
+
+    return query select v_receipt.id, v_receipt.pdf_url;
+  end loop;
+end;
+$$;
+revoke all on function public.void_donation_receipts_with_audit(uuid, text)
+  from public, anon, authenticated;
+grant execute on function public.void_donation_receipts_with_audit(uuid, text)
+  to service_role;
+COMMIT;

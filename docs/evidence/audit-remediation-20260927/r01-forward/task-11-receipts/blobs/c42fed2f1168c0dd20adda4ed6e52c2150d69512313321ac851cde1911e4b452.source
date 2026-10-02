@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-02T23:07:42.454191+00:00",
+  "rulingCount": 58,
+  "previousAudit": "controller-rulings-audit-v25.json",
+  "oldPrefixOrdinalTextUnchanged": true,
+  "ledgerFinalTextsEqual": true,
+  "originalReasonCostTextsPreserved": true,
+  "newRulingReasonAndCostPresent": true,
+  "beforeLedgerSha256": "465e8137e0b75c70c66b06144eb4f93c85b380bb66440817408b4311f73c0be8",
+  "beforeFinalInputsSha256": "c462a0f7f902722ab16b82c978c67a6a72c2620032c84cde1bbcc1eea80e33b2",
+  "newRulingEvidence": "task-11-native-fixture-connection-ruling58.md"
+}

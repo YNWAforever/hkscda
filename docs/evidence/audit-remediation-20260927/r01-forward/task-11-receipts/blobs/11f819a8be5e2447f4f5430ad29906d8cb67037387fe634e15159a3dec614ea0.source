@@ -1,0 +1,700 @@
+-- Monthly periods and payment allocations for sponsorship.
+--
+-- Phase 3 §6.2 separates four things the single `sponsorship_pledge.status`
+-- column ran together, and names what each must NOT become:
+--
+--   pledge      an intention      -- not received payment, not a debit mandate
+--   period      one month's commitment
+--   payment     money that moved  -- evidenced by an APPROVED proof
+--   allocation  attribution of one existing payment to one or more months
+--
+-- The sponsorship domain had no period and no allocation at all:
+-- `sponsorship_payment_proof.payment_date` is the date money moved, not the
+-- month it pays for, so which month a payment settled was neither stored nor
+-- derivable. Two proofs in September could equally be September twice or
+-- September and October, and nothing could tell them apart.
+--
+-- An allocation is ATTRIBUTION, NEVER REVENUE. The payment remains the single
+-- accounting record; allocating HK$100 across two months must not become HK$200
+-- of income. That is what "monthly allocations reference existing payments
+-- without duplicate accounting" requires, and it is why this migration adds no
+-- amount column that could be mistaken for a second set of books.
+--
+-- Invariants enforced here rather than trusted to callers:
+--
+--   1. Only an APPROVED proof may be allocated. "Treating proof upload as
+--      confirmed receipt of payment" is the named failure.
+--   2. The total allocated from a payment may never exceed that payment.
+--   3. A payment may only be allocated to months of its OWN pledge -- the
+--      guard behind "do not silently move payments to another animal".
+--   4. The ledger is append-only. Revisions go in as reversal rows that name
+--      what they reverse, because §6.2 requires traceable adjustments rather
+--      than overwriting a past record of payment.
+--   5. A period is a calendar month, stored as its first day.
+--
+-- Additive and reversible: no existing table, column or row is touched, and the
+-- deployed application does not reference these tables. Idempotent: guarded
+-- creates throughout.
+
+create table if not exists public.sponsorship_period (
+  id uuid primary key default gen_random_uuid(),
+  pledge_id uuid not null references public.sponsorship_pledge(id) on delete cascade,
+  -- The month itself, normalised to its first day so that "September 2026" has
+  -- exactly one representation and unique (pledge_id, period_month) can hold.
+  period_month date not null,
+  -- What this month asked for, captured when the month is opened. Held per
+  -- period on purpose: if the supporter later changes tier, history must not be
+  -- silently rewritten to the new amount.
+  committed_cents integer not null check (committed_cents > 0),
+  note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint sponsorship_period_month_is_month_start
+    check (period_month = date_trunc('month', period_month)::date),
+  constraint sponsorship_period_unique_month unique (pledge_id, period_month)
+);
+
+create index if not exists sponsorship_period_pledge_idx
+  on public.sponsorship_period (pledge_id, period_month);
+
+create table if not exists public.sponsorship_payment_allocation (
+  id uuid primary key default gen_random_uuid(),
+  period_id uuid not null references public.sponsorship_period(id) on delete cascade,
+  -- The verified payment this attribution draws on. `restrict` because an
+  -- allocation without its payment is an orphaned financial claim.
+  proof_id uuid not null references public.sponsorship_payment_proof(id) on delete restrict,
+  amount_cents integer not null,
+  -- Set only on a reversal, naming the allocation being undone.
+  reverses_allocation_id uuid references public.sponsorship_payment_allocation(id) on delete restrict,
+  note text,
+  created_by uuid references public.admin_user(id),
+  created_at timestamptz not null default now(),
+  -- A normal allocation adds; a reversal subtracts and must say what it
+  -- reverses. Zero is meaningless either way.
+  constraint sponsorship_payment_allocation_direction check (
+    (amount_cents > 0 and reverses_allocation_id is null)
+    or (amount_cents < 0 and reverses_allocation_id is not null)
+  )
+);
+
+create index if not exists sponsorship_payment_allocation_period_idx
+  on public.sponsorship_payment_allocation (period_id);
+create index if not exists sponsorship_payment_allocation_proof_idx
+  on public.sponsorship_payment_allocation (proof_id);
+
+do $$
+begin
+  execute 'drop trigger if exists set_updated_at on public.sponsorship_period';
+  execute 'create trigger set_updated_at before update on public.sponsorship_period '
+       || 'for each row execute function public.set_updated_at()';
+end;
+$$;
+
+-- Invariants 1-3, plus the arithmetic that stops a payment being over-spent.
+create or replace function private.assert_sponsorship_allocation_valid()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_period public.sponsorship_period%rowtype;
+  v_original public.sponsorship_payment_allocation%rowtype;
+  v_already_allocated integer;
+begin
+  -- Lock the payment first: two concurrent allocations of the same proof must
+  -- not each see the other's "already allocated" total as absent and together
+  -- exceed it.
+  select * into v_proof
+  from public.sponsorship_payment_proof
+  where id = new.proof_id
+  for update;
+  if not found then
+    raise exception 'Payment proof % not found', new.proof_id;
+  end if;
+
+  if v_proof.review_status <> 'approved' then
+    raise exception
+      'Payment proof % is not approved; only a verified payment may be allocated to a month',
+      new.proof_id;
+  end if;
+
+  select * into v_period from public.sponsorship_period where id = new.period_id;
+  if not found then
+    raise exception 'Sponsorship period % not found', new.period_id;
+  end if;
+
+  if v_period.pledge_id <> v_proof.pledge_id then
+    raise exception
+      'Allocation would attribute a payment from pledge % to a month of pledge %',
+      v_proof.pledge_id, v_period.pledge_id;
+  end if;
+
+  if new.reverses_allocation_id is not null then
+    select * into v_original
+    from public.sponsorship_payment_allocation
+    where id = new.reverses_allocation_id;
+    if not found then
+      raise exception 'Allocation % being reversed does not exist', new.reverses_allocation_id;
+    end if;
+    if v_original.reverses_allocation_id is not null then
+      raise exception 'A reversal cannot itself be reversed; record a fresh allocation instead';
+    end if;
+    -- A reversal that pointed at a different month or payment would move money
+    -- rather than undo an entry.
+    if v_original.proof_id <> new.proof_id or v_original.period_id <> new.period_id then
+      raise exception 'A reversal must name the same payment and month as the allocation it undoes';
+    end if;
+  end if;
+
+  select coalesce(sum(amount_cents), 0) into v_already_allocated
+  from public.sponsorship_payment_allocation
+  where proof_id = new.proof_id;
+
+  -- Invariant 2, the one the plan states outright: "The total allocated to
+  -- months must not exceed the verified payment amount available for
+  -- allocation."
+  if v_already_allocated + new.amount_cents > v_proof.amount_cents then
+    raise exception
+      'Allocating % cents would exceed payment % (amount % cents, already allocated % cents)',
+      new.amount_cents, new.proof_id, v_proof.amount_cents, v_already_allocated;
+  end if;
+
+  if v_already_allocated + new.amount_cents < 0 then
+    raise exception 'Reversing % cents would take payment % below zero allocated',
+      new.amount_cents, new.proof_id;
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function private.assert_sponsorship_allocation_valid() from public;
+
+drop trigger if exists assert_sponsorship_allocation_valid
+  on public.sponsorship_payment_allocation;
+create trigger assert_sponsorship_allocation_valid
+  before insert on public.sponsorship_payment_allocation
+  for each row execute function private.assert_sponsorship_allocation_valid();
+
+-- Invariant 4: append-only. Correcting an allocation by editing or deleting it
+-- would erase the evidence of what was originally recorded.
+create or replace function private.reject_sponsorship_allocation_rewrite()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  raise exception
+    'sponsorship_payment_allocation is append-only (attempted %); record a reversal row instead',
+    lower(tg_op);
+end;
+$$;
+
+revoke all on function private.reject_sponsorship_allocation_rewrite() from public;
+
+drop trigger if exists reject_sponsorship_allocation_rewrite
+  on public.sponsorship_payment_allocation;
+create trigger reject_sponsorship_allocation_rewrite
+  before update or delete on public.sponsorship_payment_allocation
+  for each row execute function private.reject_sponsorship_allocation_rewrite();
+
+alter table public.sponsorship_period enable row level security;
+alter table public.sponsorship_payment_allocation enable row level security;
+
+-- Read access mirrors the existing sponsorship tables, plus treasurer: §6.3
+-- records that treasurers read payments but do not review sponsorship. Reading
+-- the ledger is exactly that. No insert/update/delete policy exists for anyone
+-- -- every write goes through the audited RPC below under service_role.
+drop policy if exists "staff can read sponsorship periods" on public.sponsorship_period;
+create policy "staff can read sponsorship periods"
+  on public.sponsorship_period for select
+  to authenticated
+  using (private.has_admin_role(array['staff', 'admin', 'treasurer']));
+
+drop policy if exists "staff can read sponsorship allocations"
+  on public.sponsorship_payment_allocation;
+create policy "staff can read sponsorship allocations"
+  on public.sponsorship_payment_allocation for select
+  to authenticated
+  using (private.has_admin_role(array['staff', 'admin', 'treasurer']));
+
+grant select on public.sponsorship_period to authenticated;
+grant select on public.sponsorship_payment_allocation to authenticated;
+
+-- Applies a planned allocation of ONE verified payment across months, opening
+-- any month that does not exist yet.
+--
+-- Private and unaudited on purpose: it is the shared body used both by the
+-- audited standalone RPC below and by review_sponsorship_payment_proof, so the
+-- rule for attributing a payment exists once. Each caller verifies the actor
+-- and writes its own audit row, in its own transaction.
+--
+-- Months are named by date, not by id: the caller plans against what it read,
+-- and a month created in between would otherwise make the plan stale. Resolving
+-- each month inside the transaction removes that race.
+--
+-- Idempotent by claim. A payment that already has allocations is not allocated
+-- twice; the existing attribution is reported instead. That is what makes a
+-- retry after a lost response safe -- section 6.4: "Retries must not duplicate
+-- accounting entries, relationships, or receipts."
+create or replace function private.apply_sponsorship_allocations(
+  p_proof_id uuid,
+  p_actor_admin_id uuid,
+  p_allocations jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_entry jsonb;
+  v_month date;
+  v_amount integer;
+  v_period_id uuid;
+  v_existing integer;
+  v_applied jsonb := '[]'::jsonb;
+  v_total integer := 0;
+begin
+  select * into v_proof
+  from public.sponsorship_payment_proof
+  where id = p_proof_id
+  for update;
+  if not found then
+    raise exception 'Payment proof % not found', p_proof_id;
+  end if;
+
+  if v_proof.review_status <> 'approved' then
+    raise exception
+      'Payment proof % is not approved; only a verified payment may be allocated to a month',
+      p_proof_id;
+  end if;
+
+  select count(*) into v_existing
+  from public.sponsorship_payment_allocation
+  where proof_id = p_proof_id;
+
+  if v_existing > 0 then
+    select coalesce(
+      jsonb_agg(
+        jsonb_build_object(
+          'periodMonth', p.period_month,
+          'amountCents', a.amount_cents,
+          'allocationId', a.id
+        )
+        order by p.period_month
+      ),
+      '[]'::jsonb
+    )
+    into v_applied
+    from public.sponsorship_payment_allocation a
+    join public.sponsorship_period p on p.id = a.period_id
+    where a.proof_id = p_proof_id;
+
+    return jsonb_build_object(
+      'status', 'already_allocated',
+      'proofId', p_proof_id,
+      'allocations', v_applied
+    );
+  end if;
+
+  if p_allocations is null or jsonb_array_length(p_allocations) = 0 then
+    -- Nothing planned. The payment stands as received but unattributed, which
+    -- the ledger shows as an outstanding month rather than hiding.
+    return jsonb_build_object('status', 'skipped', 'proofId', p_proof_id, 'allocatedCents', 0);
+  end if;
+
+  select * into v_pledge
+  from public.sponsorship_pledge
+  where id = v_proof.pledge_id
+  for update;
+  if not found then
+    raise exception 'Sponsorship pledge % not found', v_proof.pledge_id;
+  end if;
+
+  for v_entry in select * from jsonb_array_elements(p_allocations)
+  loop
+    v_month := (v_entry ->> 'periodMonth')::date;
+    v_amount := (v_entry ->> 'amountCents')::integer;
+
+    if v_month is null or v_amount is null then
+      raise exception 'Each allocation needs periodMonth and amountCents, received %', v_entry;
+    end if;
+    if v_month <> date_trunc('month', v_month)::date then
+      raise exception 'periodMonth % must be the first day of a month', v_month;
+    end if;
+    if v_amount <= 0 then
+      raise exception 'Allocation amount must be positive, received %', v_amount;
+    end if;
+
+    -- Open the month if it is new. `committed_cents` comes from the pledge, not
+    -- from the caller, so a month can never be opened committed to an amount
+    -- the supporter never pledged.
+    insert into public.sponsorship_period (pledge_id, period_month, committed_cents)
+    values (v_proof.pledge_id, v_month, v_pledge.amount_cents)
+    on conflict (pledge_id, period_month) do nothing;
+
+    select id into v_period_id
+    from public.sponsorship_period
+    where pledge_id = v_proof.pledge_id and period_month = v_month;
+
+    insert into public.sponsorship_payment_allocation (
+      period_id, proof_id, amount_cents, created_by
+    ) values (
+      v_period_id, p_proof_id, v_amount, p_actor_admin_id
+    );
+
+    v_total := v_total + v_amount;
+    v_applied := v_applied || jsonb_build_object(
+      'periodMonth', v_month,
+      'amountCents', v_amount
+    );
+  end loop;
+
+  return jsonb_build_object(
+    'status', 'allocated',
+    'proofId', p_proof_id,
+    'allocatedCents', v_total,
+    'allocations', v_applied
+  );
+end;
+$fn$;
+
+revoke all on function private.apply_sponsorship_allocations(uuid, uuid, jsonb) from public;
+
+-- Attributes an ALREADY-approved payment to months on its own. The ordinary
+-- path allocates inside the review itself (below), in the same transaction that
+-- approves the payment; this exists for a payment approved before this ledger
+-- existed, or for re-attributing one after a reversal.
+create or replace function public.allocate_sponsorship_payment_with_audit(
+  p_proof_id uuid,
+  p_actor_user_id uuid,
+  p_allocations jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_actor_admin_id uuid;
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_result jsonb;
+begin
+  select id into v_actor_admin_id
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+  if v_actor_admin_id is null then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  select * into v_proof from public.sponsorship_payment_proof where id = p_proof_id;
+  if not found then
+    raise exception 'Payment proof % not found', p_proof_id;
+  end if;
+
+  v_result := private.apply_sponsorship_allocations(p_proof_id, v_actor_admin_id, p_allocations);
+
+  if v_result ->> 'status' = 'allocated' then
+    insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+    values (
+      p_actor_user_id,
+      'sponsorship_pledge.payment_allocated',
+      'sponsorship_pledge',
+      v_proof.pledge_id::text,
+      jsonb_build_object(
+        'proofId', p_proof_id,
+        'paymentCents', v_proof.amount_cents,
+        'allocatedCents', v_result -> 'allocatedCents',
+        'allocations', v_result -> 'allocations'
+      )
+    );
+  end if;
+
+  return v_result;
+end;
+$fn$;
+
+revoke all on function public.allocate_sponsorship_payment_with_audit(uuid, uuid, jsonb) from public;
+revoke all on function public.allocate_sponsorship_payment_with_audit(uuid, uuid, jsonb) from anon;
+revoke all on function public.allocate_sponsorship_payment_with_audit(uuid, uuid, jsonb) from authenticated;
+grant execute on function public.allocate_sponsorship_payment_with_audit(uuid, uuid, jsonb) to service_role;
+
+-- Reverses one allocation, for a refund or a correction.
+--
+-- A reversal is a NEW row carrying the negative amount and naming the entry it
+-- undoes -- never an edit or a delete. §6.2: "Handle revisions/refunds through
+-- traceable adjustments rather than overwriting past receipts of payment." The
+-- month then reads as outstanding again by arithmetic, and the original entry
+-- remains legible as something that happened and was undone.
+--
+-- This reverses the ATTRIBUTION only. It does not refund money: the payment row
+-- still records what was received, which is why a refund must also be recorded
+-- against the payment itself through the finance workflow.
+create or replace function public.reverse_sponsorship_allocation_with_audit(
+  p_allocation_id uuid,
+  p_actor_user_id uuid,
+  p_note text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_original public.sponsorship_payment_allocation%rowtype;
+  v_period public.sponsorship_period%rowtype;
+  v_actor_admin_id uuid;
+  v_reversal_id uuid;
+  v_net integer;
+begin
+  select id into v_actor_admin_id
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+  if v_actor_admin_id is null then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  select * into v_original
+  from public.sponsorship_payment_allocation
+  where id = p_allocation_id
+  for update;
+  if not found then
+    raise exception 'Allocation % not found', p_allocation_id;
+  end if;
+
+  if v_original.reverses_allocation_id is not null then
+    raise exception 'Allocation % is itself a reversal', p_allocation_id;
+  end if;
+
+  -- Reversing the same entry twice would take back more than was ever put in.
+  select coalesce(sum(amount_cents), 0) into v_net
+  from public.sponsorship_payment_allocation
+  where reverses_allocation_id = p_allocation_id;
+
+  if v_original.amount_cents + v_net <= 0 then
+    raise exception 'Allocation % has already been reversed', p_allocation_id;
+  end if;
+
+  select * into v_period from public.sponsorship_period where id = v_original.period_id;
+
+  insert into public.sponsorship_payment_allocation (
+    period_id, proof_id, amount_cents, reverses_allocation_id, note, created_by
+  ) values (
+    v_original.period_id,
+    v_original.proof_id,
+    -(v_original.amount_cents + v_net),
+    p_allocation_id,
+    p_note,
+    v_actor_admin_id
+  )
+  returning id into v_reversal_id;
+
+  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+  values (
+    p_actor_user_id,
+    'sponsorship_pledge.allocation_reversed',
+    'sponsorship_pledge',
+    v_period.pledge_id::text,
+    jsonb_build_object(
+      'allocationId', p_allocation_id,
+      'reversalId', v_reversal_id,
+      'proofId', v_original.proof_id,
+      'periodMonth', v_period.period_month,
+      'reversedCents', v_original.amount_cents + v_net,
+      'note', p_note
+    )
+  );
+
+  return v_reversal_id;
+end;
+$$;
+
+revoke all on function public.reverse_sponsorship_allocation_with_audit(uuid, uuid, text) from public;
+revoke all on function public.reverse_sponsorship_allocation_with_audit(uuid, uuid, text) from anon;
+revoke all on function public.reverse_sponsorship_allocation_with_audit(uuid, uuid, text) from authenticated;
+grant execute on function public.reverse_sponsorship_allocation_with_audit(uuid, uuid, text) to service_role;
+
+
+-- Approving a payment now attributes it to months in the same transaction.
+--
+-- The signature gains a fifth parameter with a default, so the previous
+-- four-argument call still resolves and behaves exactly as before (allocating
+-- nothing). Postgres cannot disambiguate a four-argument call between the old
+-- function and a defaulted five-argument one, so the old signature is dropped
+-- first rather than left behind as an overload.
+--
+-- The body below is the function as established by
+-- 20260911180000_sponsorship_second_month.sql, unchanged except for the
+-- allocation step and the audit detail that records it.
+drop function if exists public.review_sponsorship_payment_proof(uuid, text, uuid, text);
+
+create or replace function public.review_sponsorship_payment_proof(
+  p_pledge_id uuid,
+  p_decision text,
+  p_actor_user_id uuid,
+  p_note text,
+  p_allocations jsonb default '[]'::jsonb
+)
+returns void
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_new_pledge_status text;
+  v_new_review_status text;
+  v_actor_admin_id uuid;
+  v_allocation jsonb := null;
+begin
+  if not exists (
+    select 1
+    from public.admin_user
+    where auth_user_id = p_actor_user_id
+      and status = 'active'
+      and role in ('staff', 'admin')
+  ) then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  if p_decision not in ('approve', 'reject') then
+    raise exception 'Invalid review decision %', p_decision;
+  end if;
+
+  select *
+  into v_pledge
+  from public.sponsorship_pledge
+  where id = p_pledge_id
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge not found';
+  end if;
+
+  -- Deliberately no pledge-status gate here. The thing being reviewed is the
+  -- proof, and the check that it is pending (below) is the real precondition.
+  -- Requiring status='provisional' conflated the supporter's commitment with the
+  -- review queue -- exactly what the plan says not to do -- and made a second
+  -- month's payment unreviewable.
+
+  -- The OLDEST proof still awaiting review, not the newest row overall.
+  --
+  -- Asking "is the newest proof pending?" worked only while a pledge could
+  -- hold one proof. Now that a running sponsorship accumulates one per month,
+  -- that question strands rows: an older pending proof can never become the
+  -- newest again, so no future review would ever reach it and a recorded
+  -- payment would sit unreviewed with no way to act on it. Two pending proofs
+  -- are reachable in ordinary use precisely because recording a payment on an
+  -- active pledge now leaves it active, so a second can be recorded while a
+  -- first is still queued.
+  --
+  -- `created_at` alone is not a total order -- two proofs written in one
+  -- transaction share now() -- so `id` breaks the tie deterministically. The
+  -- matching rule in application code is src/lib/sponsorshipAdmin/proofReview.ts
+  -- (`selectReviewTargetProof`); the two must agree, or staff approve one
+  -- payment while looking at another document.
+  select *
+  into v_proof
+  from public.sponsorship_payment_proof
+  where pledge_id = p_pledge_id
+    and review_status = 'pending'
+  order by created_at asc, id asc
+  limit 1
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge has no proof pending review';
+  end if;
+
+  if p_decision = 'approve' then
+    v_new_review_status := 'approved';
+    v_new_pledge_status := 'active';
+  else
+    v_new_review_status := 'rejected';
+    -- 'needs_followup' is reachable from both directions and still permits a
+    -- corrected proof, so a rejected month flags staff follow-up without
+    -- cancelling a sponsorship whose earlier months were paid.
+    v_new_pledge_status := 'needs_followup';
+  end if;
+
+  update public.sponsorship_payment_proof
+  set
+    review_status = v_new_review_status,
+    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),
+    reviewed_at = now(),
+    review_note = p_note
+  where id = v_proof.id;
+
+  update public.sponsorship_pledge
+  set status = v_new_pledge_status
+  where id = p_pledge_id;
+
+  -- Attribute the verified payment to months in the SAME transaction that
+  -- approves it. Two transactions would leave a window in which money is
+  -- approved but attributed to no month, and a crash inside that window would
+  -- make it permanent; section 3.1 puts financial consistency in the database
+  -- transaction. If any allocation violates an invariant, the approval rolls
+  -- back with it and the caller retries -- nothing is half-applied.
+  --
+  -- A rejected proof allocates nothing: money that was refused was never
+  -- received.
+  if p_decision = 'approve' and p_allocations is not null
+     and jsonb_array_length(p_allocations) > 0 then
+    select id into v_actor_admin_id
+    from public.admin_user
+    where auth_user_id = p_actor_user_id;
+
+    v_allocation := private.apply_sponsorship_allocations(
+      v_proof.id, v_actor_admin_id, p_allocations
+    );
+  end if;
+
+  insert into public.audit_log (
+    actor_user_id,
+    action,
+    entity,
+    entity_id,
+    detail
+  ) values (
+    p_actor_user_id,
+    'sponsorship_pledge.proof_reviewed',
+    'sponsorship_pledge',
+    p_pledge_id::text,
+    jsonb_build_object(
+      'proofId', v_proof.id,
+      'decision', p_decision,
+      'note', p_note,
+      'allocation', v_allocation
+    )
+  );
+end;
+$fn$;
+
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb) from public;
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb) from anon;
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb) from authenticated;
+grant execute on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb) to service_role;
+
+comment on table public.sponsorship_period is
+  'One calendar month of a sponsorship pledge, stored as the first day of the month. '
+  'Holds what that month asked for; what it received is the sum of its allocations, '
+  'never a stored duplicate.';
+
+comment on table public.sponsorship_payment_allocation is
+  'Attribution of an approved payment to a month. Not revenue -- the payment row remains '
+  'the single accounting record. Append-only: corrections are reversal rows naming the '
+  'allocation they undo.';

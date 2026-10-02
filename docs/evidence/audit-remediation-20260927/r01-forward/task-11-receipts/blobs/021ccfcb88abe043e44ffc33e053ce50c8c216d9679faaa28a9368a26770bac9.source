@@ -1,0 +1,56 @@
+--- actual-failed-R57-driver
++++ R58-fixture-connection-only-driver
+@@ -3,8 +3,8 @@
+ root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';route=scratch/'task-11-fix3-diagnosis-1790974606735';vendor=route/'vendor';token=uuid.uuid4().hex;out=scratch/('task-11-fix3-native-integration-'+token);out.mkdir();pg='hkscda-task11-fix3-pg-'+token
+ base='d45b849d300f76700efcf5450a9b426e32cc372f';head='18c3c6ea06a25292b6e172e99cd381ed7d4409dc';created=[];queries=json.loads((route/'queries.json').read_text(encoding='utf-8'));secret='task11-r55-owned-synthetic-jwt-secret-0000000000'
+ images={'pg':('public.ecr.aws/supabase/postgres:17.11.0.002','0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53'),'realtime':('public.ecr.aws/supabase/realtime:v2.140.3','f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999'),'storage':('public.ecr.aws/supabase/storage-api:v1.79.28','1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96'),'auth':('public.ecr.aws/supabase/gotrue:v2.197.0','1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b')}
+-receipt={'receiptType':'native-metadata-integration-v1','mode':'owned-full1711-d45-metadata','authority':'Ruling57','sourceHead':head,'baselineSource':base,'out':str(out),'pg':pg,'CLIQualification':'Intended pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Full managed+D45 PG17.11 baseline credit requires all three observed managed jobs, complete migration application and actual catalog capture.','commands':[],'images':{},'inputBindings':[],'migrationInventory':[],'managedJobs':[],'managedJobAttempts':[],'error':None,'cleanup':[],'productionApplied':False,'deployed':False,'operationallyEnabled':False,'heldTask1FiveColumnRepairApplied':False,'heldTask8ScannerProposalApplied':False}
+-flags=['fullD45BaselineObserved','fullScannerPassed','firstApply','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','mixedRefusalsPassed','zeroRowsAfter','normalCleanup','protectedSourcesPreserved','frozenInputsPreserved']
++receipt={'receiptType':'native-metadata-integration-v1','mode':'owned-full1711-d45-metadata','authority':'Ruling58','sourceAdmission':'Ruling57','sourceHead':head,'baselineSource':base,'out':str(out),'pg':pg,'CLIQualification':'Intended pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Full managed+D45 PG17.11 baseline credit requires all three observed managed jobs, complete migration application and actual catalog capture.','commands':[],'images':{},'inputBindings':[],'migrationInventory':[],'managedJobs':[],'managedJobAttempts':[],'error':None,'cleanup':[],'productionApplied':False,'deployed':False,'operationallyEnabled':False,'heldTask1FiveColumnRepairApplied':False,'heldTask8ScannerProposalApplied':False}
++flags=['fullD45BaselineObserved','fullScannerPassed','firstApply','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','fixtureConnectionIdentity','mixedRefusalsPassed','zeroRowsAfter','normalCleanup','protectedSourcesPreserved','frozenInputsPreserved']
+ frozen={}
+ for p in sorted(set([str(path.relative_to(root)).replace('\\','/')for path in (root/'docs/evidence/audit-remediation-20260927/r01-forward').glob('task-11-*.ts')]+['supabase/migrations/20261002170945_r01_finance_callback_forward.sql','docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json','docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json','.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py'])):
+  raw=(root/p).read_bytes();frozen[p]={'rawSha256':hashlib.sha256(raw).hexdigest()}
+@@ -53,8 +53,11 @@
+  names=['fail_pending_provider_payment','refund_provider_payment_atomically','void_receipt_with_audit','void_donation_receipts_with_audit','issue_receipt_with_audit']
+  def outside(value):
+   copied=json.loads(json.dumps(value));copied['catalog']['functions']=[f for f in copied['catalog']['functions']if not(f['schema']=='public'and f['name']in names)];copied['functions']=[f for f in copied['functions']if not(f['schema']=='public'and f['name']in names)];return copied
+- def transport(label,sql,required=True):
+-  raw=sql.encode()if isinstance(sql,str)else sql;path=out/(label+'.transaction.source');path.write_bytes(raw);receipt.setdefault('transactionTransports',[]).append({'label':label,'archive':path.name,'rawSha256':sha(raw),'rawGitBlob':blob(raw),'bytes':len(raw),'preArchived':True});save();return psql(raw,required)
++ def transport(label,sql,required=True,mutator=False):
++  raw=sql.encode()if isinstance(sql,str)else sql;path=out/(label+'.transaction.source');path.write_bytes(raw);receipt.setdefault('transactionTransports',[]).append({'label':label,'archive':path.name,'rawSha256':sha(raw),'rawGitBlob':blob(raw),'bytes':len(raw),'preArchived':True,'connectionUser':'supabase_admin'if mutator else'postgres'});save()
++  if mutator:
++   assert label in ['refusal-'+name for name,_ in mutations];return run(['docker','exec','-i',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','supabase_admin','-d','postgres'],raw,required)
++  return psql(raw,required)
+  transport('first-apply',b'\\set VERBOSITY verbose\nBEGIN;\n'+finance+b'\nCOMMIT;\n');receipt['firstApply']=True;first=capture('after-first');receipt['outsideTargetsPreserved']=outside(before)==outside(first);assert receipt['outsideTargetsPreserved']
+  receipt['supplementalPreserved']=all(before[k]==first[k]for k in ['auth','native','indexes','shapes'])and outside(before)['functions']==outside(first)['functions'];assert receipt['supplementalPreserved']
+  transport('second-apply',b'\\set VERBOSITY verbose\nBEGIN;\n'+finance+b'\nCOMMIT;\n');receipt['secondApply']=True;second=capture('after-second');receipt['secondApplyPreserved']=first==second;assert first==second;save()
+@@ -72,13 +75,16 @@
+   values.extend(["'"+k+"'",expr])
+  fullSelect='select jsonb_build_object('+','.join(values)+');\n'
+  receipt['refusals']=[]
++ identitySQL="DO $identity$ BEGIN IF current_user<>'postgres' OR session_user<>'supabase_admin' THEN RAISE EXCEPTION 'Owned mutator candidate identity differs';END IF;END;$identity$;select 'TASK11_IDENTITY '||jsonb_build_object('current_user',current_user,'session_user',session_user)::text;\n"
+  for label,change in mutations:
+-  raw='\\set VERBOSITY verbose\nBEGIN;\nset local role supabase_admin;\n'+change+';\nset local role postgres;\nset local search_path=pg_catalog;\n'+fullSelect+'SAVEPOINT task11_refusal;\n\\set ON_ERROR_STOP off\n'+finance.decode()+'\n\\echo TASK11_SQLSTATE :SQLSTATE\n\\set ON_ERROR_STOP on\nROLLBACK TO SAVEPOINT task11_refusal;\nset local search_path=pg_catalog;\n'+fullSelect+'ROLLBACK;\n'
+-  result=transport('refusal-'+label,raw)
++  raw='\\set VERBOSITY verbose\nBEGIN;\n'+change+';\nset local role postgres;\nset local search_path=pg_catalog;\n'+identitySQL+fullSelect+'SAVEPOINT task11_refusal;\n'+identitySQL+'\\set ON_ERROR_STOP off\n'+finance.decode()+'\n\\echo TASK11_SQLSTATE :SQLSTATE\n\\set ON_ERROR_STOP on\nROLLBACK TO SAVEPOINT task11_refusal;\nset local search_path=pg_catalog;\n'+identitySQL+fullSelect+'ROLLBACK;\n'
++  result=transport('refusal-'+label,raw,mutator=True)
+   output=result.stdout.decode().splitlines();snapshots=[json.loads(line)for line in output if line.startswith('{')];codes=[line.split()[-1]for line in output if line.startswith('TASK11_SQLSTATE ')]
+   assert len(snapshots)==2 and codes==['55000'] and snapshots[0]==snapshots[1]and b'ERROR:  55000:'in result.stderr and len(re.findall(rb'ERROR:',result.stderr))==1,(label,codes,result.stderr[-500:])
+-  receipt['refusals'].append({'label':label,'code':'55000','preserved':True,'qualification':'Unchanged full candidate after actual owned transactional metadata mutation; savepoint rollback plus complete within-transaction metadata equality.'});save()
++  identities=[json.loads(line[len('TASK11_IDENTITY '):])for line in output if line.startswith('TASK11_IDENTITY ')];assert identities==[{'current_user':'postgres','session_user':'supabase_admin'}]*3
++  receipt['refusals'].append({'label':label,'code':'55000','preserved':True,'identities':identities,'qualification':'Unchanged full candidate as current_user postgres after actual owned transactional metadata mutation; faithful session_user supabase_admin; savepoint rollback plus complete within-transaction metadata equality.'});save()
+  receipt['refusalsPassed']=len(receipt['refusals'])==14
++ receipt['fixtureConnectionIdentity']=len(receipt['refusals'])==14 and all(len(f['identities'])==3 for f in receipt['refusals'])
+  # Mixed checks are guard-only, complete observed vectors, never fake full-schema replay.
+  inputs=json.loads(bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json','profile-input-pointers'))
+  historic=json.loads(bind(root/inputs['captures'][2],'historical-component-receipt'))
+@@ -107,7 +113,7 @@
+ try:
+  assert run(['git','rev-parse','HEAD']).stdout.decode().strip()==head
+  receipt['preIntegrationWorkingTree']=run(['git','status','--porcelain']).stdout.decode()
+- bind(pathlib.Path(__file__),'executed-driver');bind(scratch/'task-11-fix3-native-transport.ts','executed-native-transport');bind(scratch/'task-11-fix3-queries.ts','query-reader');bind(scratch/'task-11-fix3-oid-codec.ts','finite-oid-codec');bind(route/'ruling55.source','authority55');bind(route/'ruling56.source','authority56');bind(route/'ruling57.source','authority57');bind(root/'supabase/rls-tests/helpers/productionSchemaClone.ts','unchanged-full-scanner');bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts','profile-query-source');bind(route/'queries.json','actual-queries')
++ bind(pathlib.Path(__file__),'executed-driver');bind(scratch/'task-11-fix3-native-transport.ts','executed-native-transport');bind(scratch/'task-11-fix3-queries.ts','query-reader');bind(scratch/'task-11-fix3-oid-codec.ts','finite-oid-codec');bind(route/'ruling55.source','authority55');bind(route/'ruling56.source','authority56');bind(route/'ruling57.source','authority57');bind(route/'ruling58.source','authority58');bind(root/'supabase/rls-tests/helpers/productionSchemaClone.ts','unchanged-full-scanner');bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts','profile-query-source');bind(route/'queries.json','actual-queries')
+  for p in frozen:
+   bind(root/p,'frozen-current');frozen[p]=receipt['inputBindings'][-1]
+  for file in sorted(vendor.glob('*.source')):bind(file,'vendor-'+file.name)

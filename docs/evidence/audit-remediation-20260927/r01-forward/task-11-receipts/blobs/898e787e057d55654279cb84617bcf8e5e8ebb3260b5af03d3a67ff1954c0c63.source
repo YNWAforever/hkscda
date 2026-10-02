@@ -1,0 +1,6 @@
+NOTICE:  constraint "knowledge_posts_destination_shape_check" of relation "knowledge_posts" does not exist, skipping
+NOTICE:  policy "staff can read adoption guide releases" for relation "public.adoption_guide_releases" does not exist, skipping
+NOTICE:  policy "staff can create draft adoption guide releases" for relation "public.adoption_guide_releases" does not exist, skipping
+NOTICE:  policy "staff can update draft adoption guide releases" for relation "public.adoption_guide_releases" does not exist, skipping
+NOTICE:  policy "staff can delete draft adoption guide releases" for relation "public.adoption_guide_releases" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_guide_releases" does not exist, skipping

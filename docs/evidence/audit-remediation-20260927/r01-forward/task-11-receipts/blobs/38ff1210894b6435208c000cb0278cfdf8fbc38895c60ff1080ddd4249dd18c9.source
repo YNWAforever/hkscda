@@ -1,0 +1,2 @@
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_fees" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.dog_friendly_estates" does not exist, skipping

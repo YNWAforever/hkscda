@@ -1,0 +1,26 @@
+"""Read-only committed Fix3 source and raw archive closure; owned ignored sidecar."""
+import pathlib,json,hashlib,subprocess,datetime
+root=pathlib.Path.cwd();s=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';prefix='docs/evidence/audit-remediation-20260927/r01-forward/'
+def git(*a):return subprocess.check_output(['git',*a])
+def sha(b):return hashlib.sha256(b).hexdigest()
+def blob(b):return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+head=git('rev-parse','HEAD').decode().strip();tree=git('rev-parse','HEAD^{tree}').decode().strip();assert not git('status','--porcelain')
+objects={}
+for item in git('ls-tree','-r','-z',head).split(b'\0'):
+ if item:
+  meta,p=item.split(b'\t');objects[p.decode()]=meta.split()[2].decode()
+mp=prefix+'task-11-fix3-source-binding.json';m=json.loads((root/mp).read_text(encoding='utf-8'))
+for b in m['currentBindings']:
+ raw=(root/b['path']).read_bytes();assert sha(raw)==b['rawSha256'] and sha(raw.replace(b'\r\n',b'\n'))==b['canonicalSha256']
+ if b['path'] in objects:assert objects[b['path']] in [blob(raw),blob(raw.replace(b'\r\n',b'\n'))]
+for b in m['uniqueArchiveGitBindings']:
+ raw=(root/b['path']).read_bytes();assert sha(raw)==b['rawSha256'] and blob(raw)==objects[b['path']]==b['rawGitBlob']
+t=m['translationBinding'];assert sha((root/t['path']).read_bytes())==t['rawSha256']
+changed=git('diff','--name-only',m['sourceCommit'],head).decode().splitlines()
+assert all(p in [mp,prefix+'task-11-evidence.md'] or p.startswith(prefix+'task-11-receipts/') for p in changed),changed
+addresses={}
+for p in [mp,prefix+'task-11-evidence.md',prefix+'task-11-receipts/translation.json','supabase/migrations/20261002170945_r01_finance_callback_forward.sql']:
+ raw=(root/p).read_bytes();addresses[p]={'gitBlob':objects[p],'rawSha256':sha(raw),'canonicalSha256':sha(raw.replace(b'\r\n',b'\n')),'bytes':len(raw)}
+r={'status':'DONE_WITH_CONCERNS','head':head,'tree':tree,'sourceCommit':m['sourceCommit'],'sourceTree':m['sourceTree'],'clean':True,'currentBindings':len(m['currentBindings']),'allCurrentBindingsPreserved':True,'allRawArchiveGitObjectsVerified':True,'archiveCounts':m['archiveCounts'],'changedPaths18ToHead':git('diff','--name-only','18c3c6ea',head).decode().splitlines(),'metadataOnlySourceToHeadDelta':changed,'addresses':addresses,'driverRawSha256':sha(pathlib.Path(__file__).read_bytes()),'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sidecarQualification':'Ignored owned self-reference sidecar; actual committed Git addresses, not claimed committed in its own referenced HEAD.','external':'SAME18..HEAD review and all5 actual CI including non-skipped finance17.11 pending; native-local Bun NOT RUN; pinned2.118 assembly with exact CI CLI unknown; R52 common modern suite qualification.'}
+(s/'task-11-fix3-final-head-verification.json').write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({k:v for k,v in r.items() if k!='changedPaths18ToHead'}))

@@ -1,0 +1,5 @@
+NOTICE:  trigger "set_updated_at" for relation "public.volunteer_activity" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.volunteer_registration" does not exist, skipping
+NOTICE:  policy "public can read published volunteer activities" for relation "public.volunteer_activity" does not exist, skipping
+NOTICE:  policy "staff can read volunteer activities" for relation "public.volunteer_activity" does not exist, skipping
+NOTICE:  policy "staff can read volunteer registrations" for relation "public.volunteer_registration" does not exist, skipping

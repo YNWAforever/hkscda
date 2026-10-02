@@ -1,0 +1,258 @@
+BEGIN;
+-- Lets an active sponsorship receive its SECOND month's payment.
+--
+-- The master plan's Phase 3 completion outcome is that "a single sponsorship
+-- pledge can be processed normally in its second month". It could not be. Once
+-- the first payment was approved the pledge became 'active', and from there:
+--
+--   * record_sponsorship_payment_proof rejected outright --
+--     "Sponsorship pledge is not eligible for a recorded payment" -- because it
+--     required status in ('pending_payment','needs_followup'); and
+--   * review_sponsorship_payment_proof required status = 'provisional', so even
+--     a recorded proof could not be reviewed.
+--
+-- Both are the conflation the plan names: one status column standing in for the
+-- supporter's commitment AND the payment review queue at the same time. The
+-- proof already has its own review_status ('pending','approved','rejected'),
+-- which is the queue; the pledge status is the commitment.
+--
+-- This migration is the smallest change that delivers the stated outcome:
+--
+--   1. A payment may be recorded against an 'active' pledge.
+--   2. An active pledge is NOT knocked back to 'provisional' while that payment
+--      is reviewed -- the plan is explicit that an active pledge takes payments
+--      for new months directly and must not be reopened or duplicated.
+--   3. Reviewing is gated on the PROOF being pending, not on the pledge's
+--      commitment state.
+--   4. Review acts on the OLDEST proof still pending, not the newest row. Once
+--      proofs accumulate, "is the newest one pending?" strands every older
+--      pending proof permanently -- it can never become the newest again -- so
+--      a recorded payment could sit unreviewed with no way to act on it.
+--
+-- Behaviour for a FIRST payment is unchanged in every respect: a
+-- pending_payment pledge still moves to 'provisional' on record and to 'active'
+-- on approval.
+--
+-- No table, column or constraint changes. sponsorship_payment_proof.pledge_id
+-- already carries no unique constraint -- 20260829180000 dropped it precisely so
+-- proofs could accumulate as history -- so multiple months were already
+-- structurally possible and only these two preconditions stood in the way.
+--
+-- Idempotent: both functions are replaced wholesale.
+
+CREATE OR REPLACE FUNCTION public.record_sponsorship_payment_proof(p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+set search_path = public, pg_temp
+AS $function$
+declare
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_proof_id uuid;
+begin
+  if not exists (
+    select 1
+    from public.admin_user
+    where auth_user_id = p_actor_user_id
+      and status = 'active'
+      and role in ('staff', 'admin')
+  ) then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  select *
+  into v_pledge
+  from public.sponsorship_pledge
+  where id = p_pledge_id
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge not found';
+  end if;
+
+  if v_pledge.status not in ('pending_payment', 'needs_followup', 'active') then
+    raise exception 'Sponsorship pledge is not eligible for a recorded payment';
+  end if;
+
+  insert into public.sponsorship_payment_proof (
+    pledge_id,
+    storage_path,
+    file_name,
+    file_type,
+    file_size,
+    payment_method,
+    reference,
+    amount_cents,
+    payment_date,
+    review_status,
+    source
+  ) values (
+    p_pledge_id,
+    p_storage_path,
+    p_file_name,
+    p_file_type,
+    p_file_size,
+    p_payment_method,
+    p_reference,
+    p_amount_cents,
+    p_payment_date,
+    'pending',
+    'staff'
+  )
+  returning id into v_proof_id;
+
+  -- An already-active sponsorship stays active while the new month's proof is
+  -- reviewed. Moving it to 'provisional' would reopen a confirmed relationship,
+  -- which the plan forbids: "While a pledge remains active, add payments for new
+  -- months directly; do not reopen or duplicate the pledge."
+  if v_pledge.status <> 'active' then
+    update public.sponsorship_pledge
+    set status = 'provisional'
+    where id = p_pledge_id;
+  end if;
+
+  insert into public.audit_log (
+    actor_user_id,
+    action,
+    entity,
+    entity_id,
+    detail
+  ) values (
+    p_actor_user_id,
+    'sponsorship_pledge.proof_recorded',
+    'sponsorship_pledge',
+    p_pledge_id::text,
+    jsonb_build_object(
+      'proofId', v_proof_id,
+      'paymentMethod', p_payment_method,
+      'amountCents', p_amount_cents,
+      'note', p_note
+    )
+  );
+
+  return v_proof_id;
+end;
+$function$;
+CREATE OR REPLACE FUNCTION public.review_sponsorship_payment_proof(p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+set search_path = public, pg_temp
+AS $function$
+declare
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_new_pledge_status text;
+  v_new_review_status text;
+begin
+  if not exists (
+    select 1
+    from public.admin_user
+    where auth_user_id = p_actor_user_id
+      and status = 'active'
+      and role in ('staff', 'admin')
+  ) then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  if p_decision not in ('approve', 'reject') then
+    raise exception 'Invalid review decision %', p_decision;
+  end if;
+
+  select *
+  into v_pledge
+  from public.sponsorship_pledge
+  where id = p_pledge_id
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge not found';
+  end if;
+
+  -- Deliberately no pledge-status gate here. The thing being reviewed is the
+  -- proof, and the check that it is pending (below) is the real precondition.
+  -- Requiring status='provisional' conflated the supporter's commitment with the
+  -- review queue -- exactly what the plan says not to do -- and made a second
+  -- month's payment unreviewable.
+
+  -- The OLDEST proof still awaiting review, not the newest row overall.
+  --
+  -- Asking "is the newest proof pending?" worked only while a pledge could
+  -- hold one proof. Now that a running sponsorship accumulates one per month,
+  -- that question strands rows: an older pending proof can never become the
+  -- newest again, so no future review would ever reach it and a recorded
+  -- payment would sit unreviewed with no way to act on it. Two pending proofs
+  -- are reachable in ordinary use precisely because recording a payment on an
+  -- active pledge now leaves it active, so a second can be recorded while a
+  -- first is still queued.
+  --
+  -- `created_at` alone is not a total order -- two proofs written in one
+  -- transaction share now() -- so `id` breaks the tie deterministically. The
+  -- matching rule in application code is src/lib/sponsorshipAdmin/proofReview.ts
+  -- (`selectReviewTargetProof`); the two must agree, or staff approve one
+  -- payment while looking at another document.
+  select *
+  into v_proof
+  from public.sponsorship_payment_proof
+  where pledge_id = p_pledge_id
+    and review_status = 'pending'
+  order by created_at asc, id asc
+  limit 1
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge has no proof pending review';
+  end if;
+
+  if p_decision = 'approve' then
+    v_new_review_status := 'approved';
+    v_new_pledge_status := 'active';
+  else
+    v_new_review_status := 'rejected';
+    -- 'needs_followup' is reachable from both directions and still permits a
+    -- corrected proof, so a rejected month flags staff follow-up without
+    -- cancelling a sponsorship whose earlier months were paid.
+    v_new_pledge_status := 'needs_followup';
+  end if;
+
+  update public.sponsorship_payment_proof
+  set
+    review_status = v_new_review_status,
+    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),
+    reviewed_at = now(),
+    review_note = p_note
+  where id = v_proof.id;
+
+  update public.sponsorship_pledge
+  set status = v_new_pledge_status
+  where id = p_pledge_id;
+
+  insert into public.audit_log (
+    actor_user_id,
+    action,
+    entity,
+    entity_id,
+    detail
+  ) values (
+    p_actor_user_id,
+    'sponsorship_pledge.proof_reviewed',
+    'sponsorship_pledge',
+    p_pledge_id::text,
+    jsonb_build_object(
+      'proofId', v_proof.id,
+      'decision', p_decision,
+      'note', p_note
+    )
+  );
+end;
+$function$;
+-- CREATE OR REPLACE preserves existing privileges, so these are belt-and-braces
+-- rather than a fix. Restated because the repository states them at every other
+-- RPC definition, and a silently un-granted RPC fails only at runtime.
+revoke all on function public.record_sponsorship_payment_proof(uuid, uuid, text, text, text, integer, text, text, integer, date, text) from public;
+grant execute on function public.record_sponsorship_payment_proof(uuid, uuid, text, text, text, integer, text, text, integer, date, text) to service_role;
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text) from public;
+grant execute on function public.review_sponsorship_payment_proof(uuid, text, uuid, text) to service_role;
+COMMIT;

@@ -1,0 +1,28 @@
+{
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-array-json-probe-1790978529384",
+  "query": "select array[101::oid,105::oid] as \"operatorOids\",to_jsonb(array[101::oid,105::oid]) as \"jsonOperatorOids\"",
+  "rows": [
+    {
+      "operatorOids": [
+        101,
+        105
+      ],
+      "jsonOperatorOids": [
+        "101",
+        "105"
+      ]
+    }
+  ],
+  "bun": "1.3.14",
+  "before": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912"
+  },
+  "after": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912"
+  },
+  "protectedSourcesPreserved": true,
+  "qualification": "Read-only constant OID-array native-wire versus PostgreSQL JSON representation; not actual finance expression dependency data.",
+  "error": null
+}

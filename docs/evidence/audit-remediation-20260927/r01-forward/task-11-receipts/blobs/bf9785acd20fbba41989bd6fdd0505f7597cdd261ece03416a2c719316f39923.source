@@ -1,0 +1,31 @@
+/** R55 owned-only read adapter. Calls the unchanged complete scanner. */
+import {readFile,writeFile} from "node:fs/promises";
+import {resolve} from "node:path";
+import {createHash} from "node:crypto";
+import {catalogQuery,assertSafeFixtureTables,localSourceState} from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {functionsQuery,authQuery,nativeQuery,indexDetailsQuery,shapesQuery,fixtureScope} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile";
+import {queryKind,decodeScannerRows} from "./task-11-fix3-oid-codec";
+const [mode,container,output]=process.argv.slice(2),out=resolve(output??"");
+if(!out.startsWith(resolve(".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-")))throw Error("Exact owned output required");
+if(mode==="emit"){
+ await writeFile(resolve(out,"queries.json"),JSON.stringify({catalog:catalogQuery,functions:functionsQuery,auth:authQuery,native:nativeQuery,indexes:indexDetailsQuery,shapes:shapesQuery,fixtureScope},null,2)+"\n");
+}else if(mode==="states"){
+ const states={template:await localSourceState("postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929"),modern:await localSourceState("postgresql://postgres:postgres@127.0.0.1:57322/postgres")};
+ console.log(JSON.stringify(states));
+}else if(mode==="scan"){
+ if(!/^hkscda-task11-fix3-pg-[0-9a-f]{32}$/.test(container??""))throw Error("Exact uniquely owned PG name required");
+ const inspect=Bun.spawnSync(["docker","inspect",container]);if(inspect.exitCode)throw Error("Owned inspect failed");
+ const state=JSON.parse(inspect.stdout.toString())[0];if(state.Name!=="/"+container||state.HostConfig.NetworkMode!=="none"||state.Mounts.length||state.HostConfig.Binds?.length||Object.keys(state.HostConfig.PortBindings??{}).length)throw Error("Owned network/volume/port binding differs");
+ const reads:any[]=[];let i=0;
+ const adapter:any={unsafe:async(query:string)=>{
+  if(query==="set local search_path=pg_catalog")return [];
+  queryKind(query);
+  const sql="begin read only;set local search_path=pg_catalog;select coalesce(jsonb_agg(to_jsonb(q)),'[]'::jsonb) from ("+query+")q;rollback;\n",stem="scanner-"+i++;
+  await writeFile(resolve(out,stem+".sql.source"),sql);
+  const command=["docker","exec","-i",container,"psql","-X","-qAt","-v","ON_ERROR_STOP=1","-U","postgres","-d","postgres"],p=Bun.spawn(command,{stdin:"pipe",stdout:"pipe",stderr:"pipe"});p.stdin.write(sql);p.stdin.end();
+  const [stdout,stderr,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);await writeFile(resolve(out,stem+".stdout.log"),stdout);await writeFile(resolve(out,stem+".stderr.log"),stderr);reads.push({command,exit,source:stem+".sql.source",stdout:stem+".stdout.log",stderr:stem+".stderr.log",querySha256:createHash("sha256").update(query).digest("hex")});await writeFile(resolve(out,"scanner-reads.json"),JSON.stringify(reads,null,2)+"\n");
+  if(exit!==0)throw Error("Owned scanner metadata query failed: "+stderr);const typed=decodeScannerRows(query,JSON.parse(stdout));const typedRaw=JSON.stringify(typed,null,2)+"\n";await writeFile(resolve(out,stem+".typed.json"),typedRaw);reads[reads.length-1].typed={archive:stem+".typed.json",rawSha256:createHash("sha256").update(typedRaw).digest("hex"),codec:"R56 exact finite known-query uint32/null fields; raw JSON retained"};await writeFile(resolve(out,"scanner-reads.json"),JSON.stringify(reads,null,2)+"\n");return typed;
+ },begin:async(fn:any)=>await fn(adapter)};
+ await assertSafeFixtureTables(adapter,fixtureScope);
+ console.log(JSON.stringify({fullScannerPassed:true,fixtureScope,metadataReads:reads.length,adapterQualification:"Unchanged full scanner; each metadata SELECT uses an owned read-only transaction. begin callback's pg_catalog scope is preserved; no writes or network-bearing function invoked."}));
+}else throw Error("Exact emit/states/scan mode required");

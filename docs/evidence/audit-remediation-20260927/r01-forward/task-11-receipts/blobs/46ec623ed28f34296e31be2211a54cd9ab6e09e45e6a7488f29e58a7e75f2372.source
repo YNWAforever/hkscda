@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-bootstrap/templates/db-webhook.sql.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "9f4545ddaa8450c5deddf5d0f36fc083d526f6ca",
+  "rawSha256": "ecc388e5a81b607508882cc1d293604039479515f41244507db1ff57b7bd0206",
+  "bytes": 8452
+}

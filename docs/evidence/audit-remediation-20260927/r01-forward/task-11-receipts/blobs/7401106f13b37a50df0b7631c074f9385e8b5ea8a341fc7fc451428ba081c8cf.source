@@ -1,0 +1,30 @@
+import { copyFileSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+const route=resolve('.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor');
+const [mode, out, rawPath]=process.argv.slice(2);
+if(mode==='init') {
+  let init='';
+  for(const [name,key] of [['db-schema.sql.ts','START_DB_SCHEMA_SQL'],['db-webhook.sql.ts','START_DB_WEBHOOK_SQL'],['db-supabase.sql.ts','START_DB_SUPABASE_SQL']]) {
+    const target=join(out,name);copyFileSync(join(route,'native-'+name+'.source'),target);
+    const imported=await import(target);init+=imported[key]+'\n';
+  }
+  writeFileSync(join(out,'init.sql.source'),init);
+  for(const name of ['migration-file.ts','sql-split.ts']) copyFileSync(join(route,'native-'+name+'.source'),join(out,name));
+  const source=readFileSync(join(route,'native-migration-apply.ts.source'),'utf8');
+  const start=source.indexOf('const BOM_CODE_POINT =');const end=source.indexOf('const ROLE_REVERT_PATTERN =');
+  if(start<0||end<=start) throw new Error('Pinned native classifier extraction boundary differs');
+  writeFileSync(join(out,'native-classifiers.ts'),source.slice(start,end));
+  console.log(JSON.stringify({nativeTemplateAssembly:true,nativeParserCopied:true,nativeClassifiersExactSlice:true}));
+} else if(mode==='parse') {
+  const {parseMigrationContent}=await import(join(out,'migration-file.ts'));
+  const {hasTransactionControl,isPipelineIncompatible}=await import(join(out,'native-classifiers.ts'));
+  const raw=readFileSync(rawPath);const content=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(raw);
+  const parsed=parseMigrationContent(content);
+  const ownTransaction=parsed.statements.some(hasTransactionControl);const incompatible=parsed.statements.some(isPipelineIncompatible);
+  if(incompatible)throw new Error('Owned transport does not implement standalone incompatible batches');
+  if(parsed.transactionMode!=='transactional')throw new Error('Owned transport does not implement explicit nontransactional migrations');
+  const transported=(ownTransaction?'':'BEGIN;\n')+parsed.statements.join(';\n')+';\n'+(ownTransaction?'':'COMMIT;\n');
+  writeFileSync(rawPath+'.parsed.json',JSON.stringify({...parsed,ownTransaction,incompatible},null,2)+'\n');
+  writeFileSync(rawPath+'.transport.source',transported);
+  console.log(JSON.stringify({statementCount:parsed.statements.length,ownTransaction,incompatible,transactionMode:parsed.transactionMode,rawBOM:raw.subarray(0,3).equals(Buffer.from([239,187,191])),firstParsedBOM:parsed.statements[0]?.charCodeAt(0)===0xfeff,normalization:'Actual pinned native parseMigrationContent/splitAndTrim; terminator reinsertion and psql transaction transport separately archived'}));
+}else throw new Error('Unknown owned transport mode');

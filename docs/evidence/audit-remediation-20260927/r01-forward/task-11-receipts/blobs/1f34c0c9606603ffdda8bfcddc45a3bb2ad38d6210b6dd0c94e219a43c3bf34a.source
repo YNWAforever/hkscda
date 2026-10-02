@@ -1,0 +1,11 @@
+{
+  "statements": [
+    "alter table public.animals\n  add column if not exists age_en text,\n  add column if not exists notes_en text,\n  add column if not exists description_en text",
+    "comment on column public.animals.age_en is 'Optional English age display text for admin-managed animal profiles.'",
+    "comment on column public.animals.notes_en is 'Optional English short note/tag for admin-managed animal profiles.'",
+    "comment on column public.animals.description_en is 'Optional English description for admin-managed animal profiles.'"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

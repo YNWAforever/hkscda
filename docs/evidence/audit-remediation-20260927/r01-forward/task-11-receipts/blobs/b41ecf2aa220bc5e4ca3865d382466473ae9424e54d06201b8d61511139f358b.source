@@ -1,0 +1,35 @@
+BEGIN;
+alter table public.sponsorship_pledge add column contact_submission jsonb;
+create table public.sponsorship_contact_verification(
+ pledge_id uuid primary key references public.sponsorship_pledge(id),supporter_id uuid not null references public.supporter(id),
+ actor_user_id uuid not null,reason text not null,before_contact jsonb not null,after_contact jsonb not null,verified_at timestamptz not null default now()
+);
+alter table public.sponsorship_contact_verification enable row level security;
+revoke all on public.sponsorship_contact_verification from public,anon,authenticated,service_role;
+grant select on public.sponsorship_contact_verification to service_role;
+create function private.preserve_sponsorship_contact_submission() returns trigger language plpgsql set search_path=public,pg_temp as $$
+begin
+ if new.contact_submission is distinct from old.contact_submission then raise exception 'Submitted contact snapshot is immutable';end if;return new;
+end; $$;
+create trigger sponsorship_contact_submission_immutable before update on public.sponsorship_pledge for each row execute function private.preserve_sponsorship_contact_submission();
+create function public.verify_sponsorship_contact_submission(p_actor uuid,p_pledge uuid,p_reason text)
+returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_pledge public.sponsorship_pledge%rowtype;v_supporter public.supporter%rowtype;v_after jsonb;
+begin
+ if not exists(select 1 from public.admin_user where auth_user_id=p_actor and status='active' and role in ('admin','treasurer')) then raise exception 'Finance role required' using errcode='42501';end if;
+ if length(trim(coalesce(p_reason,'')))<5 then raise exception 'Verification evidence required';end if;
+ select * into v_pledge from public.sponsorship_pledge where id=p_pledge for update;
+ if v_pledge.contact_submission is null then raise exception 'No submitted contact snapshot; legacy details are unknown';end if;
+ if exists(select 1 from public.sponsorship_contact_verification where pledge_id=p_pledge) then return jsonb_build_object('kind','already_verified');end if;
+ select * into v_supporter from public.supporter where id=v_pledge.supporter_id for update;
+ if lower(v_pledge.contact_submission->>'email')<>lower(v_supporter.email::text) then raise exception 'Email identity changes require separate verified identity handling';end if;
+ v_after:=jsonb_build_object('name',v_pledge.contact_submission->>'supporterName','phone',v_pledge.contact_submission->>'phone','language',v_pledge.language);
+ if nullif(trim(v_after->>'name'),'') is null then raise exception 'Submitted contact name is missing';end if;
+ insert into public.sponsorship_contact_verification values(p_pledge,v_supporter.id,p_actor,p_reason,jsonb_build_object('name',v_supporter.name,'phone',v_supporter.phone,'language',v_supporter.language),v_after,now());
+ update public.supporter set name=v_after->>'name',phone=v_after->>'phone',language=v_after->>'language' where id=v_supporter.id;
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor,'supporter.contact_verified','supporter',v_supporter.id::text,jsonb_build_object('pledgeId',p_pledge,'source','verified_sponsorship_submission','reason',p_reason,'before',jsonb_build_object('name',v_supporter.name,'phone',v_supporter.phone,'language',v_supporter.language),'after',v_after));
+ return jsonb_build_object('kind','verified');
+end; $$;
+revoke all on function public.verify_sponsorship_contact_submission(uuid,uuid,text) from public,anon,authenticated;
+grant execute on function public.verify_sponsorship_contact_submission(uuid,uuid,text) to service_role;
+COMMIT;

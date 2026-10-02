@@ -1,0 +1,68 @@
+[
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-1cea764774294eb6bc9c9c41edffbe85",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-0.sql.source",
+    "stdout": "scanner-0.stdout.log",
+    "stderr": "scanner-0.stderr.log",
+    "querySha256": "be5256c2f3091c0bd012696b52b91d26697f2a108a44b481e6adbd0a22e178e7"
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-1cea764774294eb6bc9c9c41edffbe85",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-1.sql.source",
+    "stdout": "scanner-1.stdout.log",
+    "stderr": "scanner-1.stderr.log",
+    "querySha256": "5cd67e7fa70d8a430f52a963531e4bf5bfd70f97123ead50bc50f5ad1098b673"
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-1cea764774294eb6bc9c9c41edffbe85",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-2.sql.source",
+    "stdout": "scanner-2.stdout.log",
+    "stderr": "scanner-2.stderr.log",
+    "querySha256": "985720de78041b6407e881c19cdf8ee561e78182cdfa1c35c50c5bf2f608f698"
+  }
+]

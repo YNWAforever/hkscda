@@ -1,0 +1,2 @@
+NOTICE:  trigger "set_updated_at" for relation "public.sponsorship_assignment" does not exist, skipping
+NOTICE:  policy "staff can read sponsorship assignments" for relation "public.sponsorship_assignment" does not exist, skipping

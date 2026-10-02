@@ -1,0 +1,2 @@
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_rules" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.care_topics" does not exist, skipping

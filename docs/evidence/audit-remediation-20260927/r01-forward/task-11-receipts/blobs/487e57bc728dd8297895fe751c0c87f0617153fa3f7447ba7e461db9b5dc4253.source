@@ -1,0 +1,215 @@
+{
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-typing-binding-1790978252674173700",
+  "qualification": "Supplementary read-only probe interval with actual stdout/exits/runtime; prior probes/raw v5 retained. No owned environment launch or source/scanner amendment.",
+  "commands": [
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-queries.ts",
+        "states",
+        "unused",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-typing-binding-1790978252674173700"
+      ],
+      "exit": 0,
+      "stdout": "command-0.stdout.log",
+      "stderr": "command-0.stderr.log",
+      "stdoutSha256": "3801efb0c9c131fe4a9aec03ba214128d3f5289b51212a4c71cf0fa911eff50a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "command-1.stdout.log",
+      "stderr": "command-1.stderr.log",
+      "stdoutSha256": "56b0485099b6c5427d3b68c042fd05b632d5e52e924c5064473389812227164c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-oid-type-probe.ts"
+      ],
+      "exit": 0,
+      "stdout": "command-2.stdout.log",
+      "stderr": "command-2.stderr.log",
+      "stdoutSha256": "79df2911df737271daf35dd95e56b2265fc1c52ca02fad4fe509b7a6fd2657d6",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-expression-oid-probe.ts"
+      ],
+      "exit": 0,
+      "stdout": "command-3.stdout.log",
+      "stderr": "command-3.stderr.log",
+      "stdoutSha256": "7be3b3c75a6b2492f824eea505bcc43d1f3b8ba4aee6a6cc403a12f145c87648",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-operator-diagnosis.ts"
+      ],
+      "exit": 0,
+      "stdout": "command-4.stdout.log",
+      "stderr": "command-4.stderr.log",
+      "stdoutSha256": "d962b101e8d432c1893ef8e536de81b5621f9d88cc478878eeb80e57164318e8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "bun",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-queries.ts",
+        "states",
+        "unused",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-typing-binding-1790978252674173700"
+      ],
+      "exit": 0,
+      "stdout": "command-5.stdout.log",
+      "stderr": "command-5.stderr.log",
+      "stdoutSha256": "3801efb0c9c131fe4a9aec03ba214128d3f5289b51212a4c71cf0fa911eff50a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "command-6.stdout.log",
+      "stderr": "command-6.stderr.log",
+      "stdoutSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stdout": "command-7.stdout.log",
+      "stderr": "command-7.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-typing-binding.py",
+      "archive": "i0.source",
+      "rawSha256": "14e4538721011d3c9aa7f724224aa2a579c1b2493c206150b5a028f07f30f5ef",
+      "bytes": 3008
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-queries.ts",
+      "archive": "i1.source",
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "bytes": 3502
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-oid-type-probe.ts",
+      "archive": "i2.source",
+      "rawSha256": "6c06b2c873c01420052292b5cd7830002abc9fc99dc79664b73b93dcce4df066",
+      "bytes": 1279
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-expression-oid-probe.ts",
+      "archive": "i3.source",
+      "rawSha256": "ff6d8daedeffe8aae8b0c8b40737d1baadd0ef9e3044534221ce2ca8cdba2426",
+      "bytes": 2757
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-operator-diagnosis.ts",
+      "archive": "i4.source",
+      "rawSha256": "df0101cf7acd96e7d4e1073fc90df15627903157ca974d1b903e9dfebafc9d9f",
+      "bytes": 4550
+    }
+  ],
+  "error": null,
+  "protectedBefore": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912"
+  },
+  "bunVersion": "1.3.14",
+  "scalarProbe": {
+    "qualification": "Read-only Bun SQL metadata representation probe; no helper or fixture execution.",
+    "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-oid-type-probe-1790978253859",
+    "query": "select 101::oid as oid,array[101::oid,105::oid] as oid_array,p.oid as proc_oid from pg_catalog.pg_proc p where p.oid=101",
+    "rows": [
+      {
+        "oid": 101,
+        "oid_array": [
+          101,
+          105
+        ],
+        "proc_oid": 101
+      }
+    ],
+    "types": [
+      {
+        "oid": "number",
+        "oid_array": "object",
+        "oid_array_elements": [
+          "number",
+          "number"
+        ],
+        "proc_oid": "number"
+      }
+    ],
+    "querySha256": "98d46608f9c300e92e3d3a0873052e29f7d56fdc5587a58c1c157576b4e5ef1b",
+    "error": null
+  },
+  "expressionProbe": {
+    "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-expression-oid-probe-1790978253961",
+    "rows": 89,
+    "wireElementTypes": [],
+    "jsonElementTypes": [],
+    "runtime": [
+      {
+        "version": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+        "actor": "postgres",
+        "database": "audit_pr135_20260929"
+      }
+    ],
+    "querySha256": "ea2f714672ff8cb7ac30a6634e9563a052492f5bc43e68859888e6b1acef879d",
+    "error": null
+  },
+  "offlineDiagnosis": {
+    "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85\\operator-diagnosis-1790978254088",
+    "raw": {
+      "direct": true,
+      "equalities": [
+        [
+          "public",
+          "public.citext",
+          "public.citext_eq",
+          "101",
+          "105"
+        ]
+      ]
+    },
+    "typed": {
+      "direct": false,
+      "afterUnknown": false,
+      "afterPropagation": false,
+      "ownCoreScope": false,
+      "equalities": [],
+      "unsafeCalledNames": [],
+      "hypotheticalOwnPinnedCore": false
+    }
+  },
+  "protectedAfter": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "1ee81dfc4898ee0ddd60eac75e92fd810db1c2fb9aa3749e88c0e722314c6912"
+  },
+  "protectedSourcesPreserved": true,
+  "all57CurrentInputsPreserved": true,
+  "head": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "clean": true
+}

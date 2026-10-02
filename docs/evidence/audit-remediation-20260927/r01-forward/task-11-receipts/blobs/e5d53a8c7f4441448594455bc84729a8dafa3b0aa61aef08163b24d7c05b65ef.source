@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-bootstrap/realtime-env.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "9bb7c2bc98188a562f23581b77505a61eadf1c51",
+  "rawSha256": "4a0f3ebc4533662db988e7f4ccd00a273acfd131b9accb8bef6deb8658a258dc",
+  "bytes": 2421
+}

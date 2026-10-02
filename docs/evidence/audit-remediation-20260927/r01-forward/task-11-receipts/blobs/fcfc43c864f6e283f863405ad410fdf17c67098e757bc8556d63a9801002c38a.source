@@ -1,0 +1,12 @@
+{
+  "statements": [
+    "alter table public.admin_user\n  drop constraint if exists admin_user_status_check",
+    "alter table public.admin_user\n  add constraint admin_user_status_check\n  check (status in ('pending', 'active', 'disabled'))",
+    "alter table public.admin_user\n  add column if not exists invited_at timestamptz,\n  add column if not exists invite_sent_at timestamptz,\n  add column if not exists invite_accepted_at timestamptz,\n  add column if not exists last_invited_by uuid references auth.users(id)",
+    "create index if not exists admin_user_status_updated_idx\n  on public.admin_user (status, updated_at desc)",
+    "create index if not exists admin_user_invite_sent_idx\n  on public.admin_user (invite_sent_at desc)\n  where status = 'pending'"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

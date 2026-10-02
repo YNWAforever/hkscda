@@ -1,0 +1,65 @@
+import { expect, test } from "bun:test";
+import prerequisites from "./task-11-native-prerequisites.json";
+import { assertCapture } from "./task-11-receipt";
+// Portable eligibility fixture only; never consumed as an executed SQL proof.
+const contract = await import("./task-11-native-profile").catch(() => ({
+  assertNativeQualification: (value: unknown) => assertCapture(value, "component"),
+}));
+const flags = ["redReceiptBound", "captureBound", "sourceBound", "nativeAssemblyBound", "managedJobsBound", "migrationsBound", "fullScannerPassed", "zeroRows", "rollbackPreserved", "normalCleanup", "protectedSourcesPreserved", "prerequisitePairBound"];
+function fixture() {
+  return {
+    receiptType: "native-prerequisite-qualification-v1", mode: "full-native-d45",
+    error: null, failedFinalFlags: [], requiredFinalFlags: flags,
+    ...Object.fromEntries(flags.map((k) => [k, true])),
+    originalReceiptSha256: "73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798",
+    captureSha256: "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+    pairSha256: "9891db66252af4f637c2d9499df3dd0cec5c6665a5d7d5112720ad112ff75dcc",
+    migrationInventorySha256: "a1f21ec32b43429971369b7b59ee301e20711c7cdfecdd9bf8edb0f8c864263a",
+    inputInventorySha256: "15004fffe8993a8f1438d278c3d071d98e851093c5dc7868706260ad20d7769c",
+    sourceHead: "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+    baselineSource: "d45b849d300f76700efcf5450a9b426e32cc372f",
+    financeExit: 3, sqlstate: "55000", prerequisiteError: "R01 finance complete prerequisite catalog differs",
+    baselineMigrationCount: 182, managedKinds: ["realtime", "storage", "auth"], normalCleanupCount: 4,
+    fixtureScope: ["auth.users", "public.admin_user", "public.supporter", "public.donation", "public.payment", "public.receipt", "public.receipt_sequence", "public.audit_log", "public.supporter_consent_intent", "public.donation_delivery_job"],
+    runtime: { version: "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit", user: "postgres", database: "postgres", owner: "postgres" },
+    originalTransportPreArchived: false, CLIIdentityKnown: false, nativeLocalBunBehaviorRun: false,
+    productionApplied: false, deployed: false, operationallyEnabled: false,
+    heldTask1FiveColumnRepairApplied: false, heldTask8ScannerProposalApplied: false,
+    committedPartialTask1SourceApplied: true,
+    pair: structuredClone(prerequisites),
+  };
+}
+test("separately versioned native qualification accepts the exact complete pair", () => {
+  expect(() => contract.assertNativeQualification(fixture())).not.toThrow();
+});
+for (const flag of flags) for (const value of [false, undefined, "true", 1])
+  test(`native qualification rejects ${flag}=${String(value)}`, () => {
+    expect(() => contract.assertNativeQualification({ ...fixture(), [flag]: value })).toThrow();
+  });
+for (const patch of [
+  { receiptType: "capture" }, { mode: "component" }, { error: "missing archive" },
+  { failedFinalFlags: ["normalCleanup"] }, { requiredFinalFlags: [] },
+  { originalReceiptSha256: "0".repeat(64) }, { captureSha256: "0".repeat(64) },
+  { migrationInventorySha256: "0".repeat(64) }, { inputInventorySha256: "0".repeat(64) },
+  { sourceHead: "unknown" }, { baselineSource: "unknown" }, { financeExit: 0 },
+  { baselineMigrationCount: 181 }, { managedKinds: ["auth", "storage", "realtime"] },
+  { normalCleanupCount: 3 }, { fixtureScope: ["auth.users"] },
+  { originalTransportPreArchived: true }, { CLIIdentityKnown: true },
+  { nativeLocalBunBehaviorRun: true }, { productionApplied: true },
+  { heldTask1FiveColumnRepairApplied: true }, { heldTask8ScannerProposalApplied: true },
+]) test(`native qualification rejects wrong prerequisite ${JSON.stringify(patch)}`, () =>
+  expect(() => contract.assertNativeQualification({ ...fixture(), ...patch })).toThrow());
+test("unknown helper body and native catalog plus historical helper mixture reject", () => {
+  const r = fixture();
+  r.pair.helpers.find((f) => f.name === "bump_supporter_edit_version")!.body = "ce77bf772b703ab19ea00a56121ff227";
+  expect(() => contract.assertNativeQualification(r)).toThrow();
+});
+test("historical catalog plus native helper mixture and unknown ACL reject", () => {
+  const r = fixture();
+  r.pair.catalog.columns.find((f) => f.table === "supporter" && f.name === "edit_version")!.acl = [];
+  expect(() => contract.assertNativeQualification(r)).toThrow();
+});
+test("metadata ordering is part of the exact observed pair", () => {
+  const r = fixture(); r.pair.helpers.reverse();
+  expect(() => contract.assertNativeQualification(r)).toThrow();
+});

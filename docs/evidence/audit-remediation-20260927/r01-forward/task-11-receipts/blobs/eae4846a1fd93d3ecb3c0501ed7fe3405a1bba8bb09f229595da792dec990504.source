@@ -1,0 +1,15 @@
+"""Copy exact controller authority bytes; preserve each prior inventory."""
+import pathlib,json,hashlib,subprocess
+s=pathlib.Path('.superpowers/sdd/r01-forward-schema-plan-20261001')
+m=pathlib.Path('../r01-forward-repair-20261001')/s
+o=s/'task-11-fix3-authority-59';o.mkdir(exist_ok=True)
+files=['final-rulings-report-inputs-intermediate.json','rulings-index-current.txt','controller-rulings-audit-v27.json','task-11-native-proof-path-ruling59.md']
+bindings=[]
+for name in files:
+ p=m/name;b=p.read_bytes();q=o/name
+ if q.exists() and q.read_bytes()!=b: raise ValueError('Immutable authority copy differs:'+name)
+ q.write_bytes(b)
+ bindings.append({'source':p.as_posix(),'owned':q.as_posix(),'bytes':len(b),'rawSha256':hashlib.sha256(b).hexdigest(),'canonicalSha256':hashlib.sha256(b.replace(b'\r\n',b'\n')).hexdigest(),'rawGitBlob':subprocess.check_output(['git','hash-object','--no-filters',str(q)],text=True).strip()})
+ledger=json.loads((o/files[0]).read_text(encoding='utf-8'))
+(o/'copy-binding.json').write_text(json.dumps({'bindings':bindings,'ledgerTopLevelKeys':list(ledger),'qualification':'Exact original controller reason/cost ledger; no worker wording substitution.'},indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'out':str(o),'keys':list(ledger)}))

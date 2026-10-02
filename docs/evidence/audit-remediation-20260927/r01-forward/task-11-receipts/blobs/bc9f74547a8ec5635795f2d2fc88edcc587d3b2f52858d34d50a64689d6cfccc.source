@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "create or replace function public.enforce_editorial_review() returns trigger\nlanguage plpgsql security definer set search_path=public,pg_temp as $$\ndeclare k text; eid uuid; rev text;\nbegin\n if tg_table_name='animal_publication_version' then\n  if new.body->>'publication_state'<>'published' then return new;end if;\n  k:='animal';eid:=new.animal_id;rev:=new.revision::text;\n else\n  if new.status<>'published' then return new;end if;\n  k:='content';eid:=new.id;rev:=new.published_revision_id::text;\n end if;\n if not exists(select 1 from public.editorial_content_review where entity_kind=k and entity_id=eid and revision_key=rev and classification='approved') then raise exception '此版本尚未核實為可發布內容，請先完成內容來源審核' using errcode='22023';end if;\n return new;\nend $$",
+    "revoke all on function public.enforce_editorial_review() from public,anon,authenticated"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

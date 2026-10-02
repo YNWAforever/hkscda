@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-bootstrap/postgres.service.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "e1343d75affe96012991f074a9e2a059827ae163",
+  "rawSha256": "69cde8f7be8c697b2e1ae50118029aeaff78fe3060347d98cbcc7f0ac4c0594b",
+  "bytes": 17070
+}

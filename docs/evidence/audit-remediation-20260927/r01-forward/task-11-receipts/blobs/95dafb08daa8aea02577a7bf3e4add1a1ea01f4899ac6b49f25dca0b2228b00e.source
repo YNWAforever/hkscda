@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- Allow approved, published PDF terms in the existing versioned document slot model.\n-- This does not publish any terms or enable submissions by itself.\nalter table public.document_assets\n  drop constraint if exists document_assets_kind_check",
+    "alter table public.document_assets\n  add constraint document_assets_kind_check\n  check (kind in ('annual_report', 'wedding_form', 'adoption_guide', 'sponsorship_terms'))",
+    "-- A publication without content identity cannot be consented to safely.\nalter table public.document_assets\n  add constraint document_assets_sponsorship_terms_checksum_check\n  check (kind <> 'sponsorship_terms' or checksum_sha256 is not null)"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

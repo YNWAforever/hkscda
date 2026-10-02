@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- PostgREST exposes public, not private. Keep the transactional implementation private\n-- and expose only this service-role entry point.\ncreate or replace function public.create_manual_adoption_case(\n  p_actor_user_id uuid,\n  p_identity jsonb,\n  p_case jsonb,\n  p_initial_task jsonb default null\n) returns jsonb\nlanguage sql\nsecurity definer\nset search_path = public, pg_temp\nas $$\n  select private.create_manual_adoption_case(\n    p_actor_user_id,\n    p_identity,\n    p_case,\n    p_initial_task\n  );\n$$",
+    "revoke all on function public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)\n  from public, anon, authenticated",
+    "grant execute on function public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)\n  to service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

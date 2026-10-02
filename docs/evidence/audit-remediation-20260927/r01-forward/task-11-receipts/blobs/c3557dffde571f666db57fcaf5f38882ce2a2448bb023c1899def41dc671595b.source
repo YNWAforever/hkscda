@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- The bearer token is verified by the server before this service-role-only RPC.\n-- Locking and auditing in one transaction makes first-login activation idempotent.\ncreate or replace function public.activate_admin_invite_with_audit(\n  p_auth_user_id uuid\n)\nreturns public.admin_user\nlanguage plpgsql\nsecurity definer\nset search_path = public, pg_temp\nas $$\ndeclare\n  admin_row public.admin_user%rowtype;\n  accepted_at timestamptz;\nbegin\n  if p_auth_user_id is null then\n    raise exception 'admin_user_not_found' using errcode = 'P0001';\n  end if;\n\n  -- Match the lock order used by the admin access mutation RPCs.\n  perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));\n\n  select * into admin_row\n  from public.admin_user\n  where auth_user_id = p_auth_user_id\n  for update;\n\n  if not found or admin_row.status = 'disabled' then\n    raise exception 'admin_user_not_found' using errcode = 'P0001';\n  end if;\n  if admin_row.status = 'active' then\n    return admin_row;\n  end if;\n  if admin_row.status <> 'pending' then\n    raise exception 'invalid_status_transition' using errcode = 'P0001';\n  end if;\n\n  accepted_at := now();\n  update public.admin_user\n  set status = 'active',\n      invite_accepted_at = accepted_at\n  where id = admin_row.id\n  returning * into admin_row;\n\n  insert into public.audit_log (\n    actor_user_id, action, entity, entity_id, timestamp, detail\n  ) values (\n    p_auth_user_id,\n    'admin_user.activate_from_invite',\n    'admin_user',\n    admin_row.id::text,\n    accepted_at,\n    jsonb_build_object(\n      'targetEmail', admin_row.email,\n      'oldStatus', 'pending',\n      'newStatus', 'active',\n      'role', admin_row.role\n    )\n  );\n\n  return admin_row;\nend;\n$$",
+    "revoke all on function public.activate_admin_invite_with_audit(uuid)\n  from public, anon, authenticated",
+    "grant execute on function public.activate_admin_invite_with_audit(uuid)\n  to service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}
