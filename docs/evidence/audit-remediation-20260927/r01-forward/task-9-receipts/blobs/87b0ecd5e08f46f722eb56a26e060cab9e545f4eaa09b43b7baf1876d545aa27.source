@@ -1,0 +1,63 @@
+# Spec Compliance
+
+- Issues found: the final validation path does not enforce all required source/environment preservation results (I1). The three RPCs, narrow private HTTP correction, and native origin-or-reference expansion otherwise match Task 9 and Rulings 28-31 in the reviewed diff.
+- Review range: d0403a1869ea6dead498e62aebe9723e95c3ec19..493b488b8b156e3e24c9330fbfc0b009371c0b1d. Product/DB source marker217fc22 is distinguished from final packaging493b488b.
+- Cannot verify from this diff: exact493b488b five individual CI results, including PostgreSQL17.11 behavior. These are explicitly not-run pending controller publication; this qualification is separate from the source findings. Hosted/JWT/PostgREST/provider/full browser UAT and production application remain unverified, as documented in docs/evidence/audit-remediation-20260927/r01-forward/task-9-evidence.md:33 and :64. No release or operational readiness is approved here.
+- Cannot independently prove the CLI invocation that generated the migration filename from a source diff. The report identifies pinned CLI2.118.0; retain its original invocation evidence with the controller. Absence of an invocation transcript in this review is not a claim that the command was not run.
+
+# Strengths
+
+- supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql:8-130: all known-profile guards precede definitions/grants. Table metadata, effective Auth column permissions, creator defaults, helper metadata, target overloads/defaults/owner/full EXECUTE ACL/options, and old/new body/config profiles are explicitly checked. Unknown profiles raise55000; no legacy file or existing private helper is rewritten.
+- supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql:99, :150-168, :425-441: the private helper retains its intentional default1/NULL::jsonb, owner, ACL, body and public/pg_temp config. Both public mutation entrypoints take Auth then admin FOR SHARE locks and check current predicates before writes; the wrapper returns the same private call. Coordinator business/audit logic and the actorless search contract remain intact; audit insertion stays in the same function transaction at :331.
+- src/lib/adoptions/http/shared.server.ts:148-150 and src/lib/adoptions/atomicForward.http.test.ts:21-65: exact object/string42501 mapping gives a safe403 after Response/Zod handling. Tests use the real case handler and cover status/header neighbors plus201 success.
+- docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts:49 and supabase/rls-tests/helpers/runR01AdoptionAtomic.ts:426-455: native comparison uses the same ten tables on origin OR referenced relation, with trigger/dependency facets retained. The runner records actual selected outgoing/incoming trigger identities and disables each in a rolled-back fixture.
+- src/lib/adoptions/atomicForward.database.test.ts:100-414 and :416-691: meaningful DB coverage includes direct-role denial, stale actor predicates, audit rollback, defaults, protected status behavior, identity retries, temporary shadows, existing version triggers, and real two-transaction blocking with PID checks in both relevant orderings. Retry assertions preserve existing separate-case behavior instead of inventing request idempotency.
+- docs/evidence/audit-remediation-20260927/current-migration-runbook-20261001.md:48 and task-9-evidence.md:9: actual source order excludes Task1 partial SQL and pending Task8, with conditional20->17 and production44 unchanged. The manifest has only the new focused migration entry. Historical failed compositions and the actual incoming-FK RED remain distinguished from final acceptance evidence.
+
+# Issues
+
+## Critical
+
+None found.
+
+## Important
+
+### I1 - Make final preservation failures fail the rehearsal and disqualify its receipt
+
+Files: supabase/rls-tests/helpers/runR01AdoptionAtomic.ts:541-546; docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py:10.
+
+The runner computes `modernPreserved` and `frozenInputsPreserved` in `finally`, writes them to the receipt, then exits normally even when either is false. These computations occur after the catch that sets exitCode1. Thus a successful child test plus changed frozen source or an unexpectedly changed dedicated modern database can still produce process exit0 and no receipt.error. The gate selector filters testExit/error/frozenInputsPreserved but never checks modernPreserved, so a receipt with modernPreserved:false can actually advance to all four gates. Those gates snapshot the already-changed modern state and intentionally permit their own fixture transitions; they cannot detect the earlier preservation failure.
+
+This is a failure-path defect in a mandatory verification boundary. It does not invalidate the current receipts: the controller independently verified the supplied final flags are true. It does mean subsequent validation can report success after violating the task's readonly-source/environment contract.
+
+Minimum fix: retain the complete receipt, but set a nonzero process exit and a clear receipt error when any required final preservation flag is not exactly true. Reject such receipts explicitly in the gate selector, including missing flags. Do not require modernBefore==modernAfter across the full-suite gates, whose authorized fixture transition is intentionally different from clone rehearsal preservation. Add an inert focused regression for false/missing final flags; preserve existing raw receipts and bind the amended executable harness to whatever final validation the controller requires.
+
+Focused supporting check: the unchanged clone helper in the diff archive `docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519.source:498-514` does enforce template preservation during close, but does not enforce the dedicated57322 state or frozen source hashes. This check prevents misattributing template enforcement to the missing runner checks.
+
+## Minor
+
+### M1 - Capture the deliberate error-path logging in the new HTTP tests
+
+File: src/lib/adoptions/atomicForward.http.test.ts:37-44.
+
+The unknown-object and nonobject cases deliberately reach the real withErrors console.error branch, so successful new tests emit an internal diagnostic and a bare42501 into the test output. The report explicitly acknowledges this noise; the archived original HTTP RED also shows it. Capture/spy on console.error for these deliberate cases, assert the expected logging if useful, and restore it in finally. This keeps genuine unexpected diagnostics visible and meets the review requirement for clean test output without changing production logging.
+
+The reported52 lint warnings and build module-directive/bundle notices are retained baseline qualifications, not evidence of a new Task9 regression or a request to broaden this task into unrelated warning cleanup.
+
+# Checks and Limitations
+
+- Read the requested reviewer method, Task9 brief, all four referenced Rulings28-31, and implementer report before judging source; applied applicable Supabase security guidance within the task's fixed scope.
+- Reviewed the prepared diff in bounded source/evidence passes. Recovered only omitted/truncated preflight/evidence hunks from that same diff. Did not reread changed working-tree files, rerun Git state commands, crawl the repository, or execute a suite/DB/provider command.
+- Structured inspection of diff additions confirmed exact0/2/1 target default counts, old/new language and body profiles, preserved private helper metadata, two named profile sets, original missing-target/legacy-actor/HTTP RED receipts, source-order annotations, and final gate summary. Large immutable schema/raw archives were treated as evidence; they were not semantically rereviewed line by line or presented as new executions.
+- The only focused dependency inspection was the archived unchanged clone.close path for I1's concrete possibility that it already enforced the final flags. No outside-diff file or graph exploration was necessary.
+- Final supplied evidence reports hosted47pass/0fail/166assert with70 refusals; modern47/0/166 with78 refusals; two applies and preservation per profile. Final four gates exit0; full tests3266pass/391skip/0fail/10580 assertions. The controller independently checked60 DB inputs,68 gate inputs, four raw logs, actual55000 rollback entries, current Git/content-address bindings. These checks were not duplicated here. The controller's concurrent full788-path archive verification remains a separate evidence check.
+- The original shell sandbox failed before execution with the ACL-bootstrap error. Narrow read commands then succeeded with approved escalation. No product source, SQL, index, branch, database or provider state was changed; the sole written file is this ignored review report.
+- Current CI remains not-run; final whole-branch review is separate. The source verdict does not authorize production migration, merging, deployment, payment/email/media activation, Task1 or Task8 changes.
+
+# Assessment
+
+Task quality: Needs fixes.
+
+Findings: 2 total - 0 Critical, 1 Important, 1 Minor.
+
+The product change is narrow and has substantial behavioral and catalog evidence. Fix the preservation failure propagation and receipt eligibility before accepting the task's verification path; keep exact-head CI and broader release qualifications open separately.

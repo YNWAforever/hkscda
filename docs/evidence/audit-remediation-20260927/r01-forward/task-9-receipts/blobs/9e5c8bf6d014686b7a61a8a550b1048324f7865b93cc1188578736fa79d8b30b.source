@@ -1,0 +1,8 @@
+{
+  "checkedAtUtc": "2026-10-02T06:38:13.923139+00:00",
+  "lookupScope": "only exact current root session; function/custom tool calls with exec_command and exact migration name",
+  "sessionPath": "C:\\Users\\laich\\.codex\\sessions\\2026\\09\\27\\rollout-2026-09-27T01-41-19-01a0dece-a3d1-7c63-8115-1fcf52241c66.jsonl",
+  "matches": [],
+  "originalCreationReexecuted": false,
+  "limitations": "No child-session crawl; absence here does not prove creation did not occur."
+}
