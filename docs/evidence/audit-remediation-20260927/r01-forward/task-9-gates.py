@@ -7,7 +7,7 @@ for mode in ("hosted","modern"):
     candidates=[]
     for p in receipts.glob("task-9-"+mode+"-*/receipt.json"):
         r=json.loads(p.read_text())
-        if r.get("testExit")==0 and not r.get("error") and r.get("frozenInputsPreserved"):
+        if r.get("testExit")==0 and not r.get("error") and all(r.get(k) is True for k in ("normalDrop","templatePreserved","modernPreserved","frozenInputsPreserved")):
             candidates.append((r["at"],p,r))
     if not candidates: raise SystemExit("Final both-profile GREEN required: "+mode)
     accepted[mode]=max(candidates,key=lambda x:x[0])

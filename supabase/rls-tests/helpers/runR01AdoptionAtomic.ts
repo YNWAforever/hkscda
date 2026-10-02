@@ -37,6 +37,8 @@ const paths = [
   "src/lib/adoptions/repository.server.ts",
   "src/lib/adoptions/service.ts",
   "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts",
+  "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py",
   "supabase/rls-tests/helpers/productionSchemaClone.ts",
   "src/lib/operations/releaseSchema.ts",
   "src/lib/operations/releaseManifest.ts",
@@ -505,6 +507,7 @@ try {
     "15000",
     "src/lib/adoptions/atomicForward.database.test.ts",
     "src/lib/adoptions/atomicForward.http.test.ts",
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts",
   ];
   const p = Bun.spawn(args, {
     cwd: root,
@@ -543,6 +546,21 @@ try {
   receipt.templatePreserved = clone.templatePreserved;
   receipt.modernPreserved = modernBefore === (await localSourceState(modern));
   receipt.frozenInputsPreserved = hash(frozen) === hash(await sourceBlobs());
+  const failedFinalFlags = [
+    "normalDrop",
+    "templatePreserved",
+    "modernPreserved",
+    "frozenInputsPreserved",
+  ].filter((key) => receipt[key] !== true);
+  if (failedFinalFlags.length) {
+    receipt.error = [
+      receipt.error,
+      `Required final preservation failed: ${failedFinalFlags.join(", ")}`,
+    ]
+      .filter(Boolean)
+      .join("; ");
+    process.exitCode = 1;
+  }
   await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
   console.log(
     JSON.stringify({
