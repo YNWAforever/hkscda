@@ -1,0 +1,635 @@
+{
+  "file": "20261002011249_r01_cms_atomic_forward.sql",
+  "functions": [
+    {
+      "name": "cms_promotion_command",
+      "args": "p_actor uuid, p_command jsonb",
+      "oldMd5": "8878b4ddef7c4814e9187ce4e09fda3e",
+      "newMd5": "48ab1d0b026bcddcf1832cffda86c3d8",
+      "security": "existingSECDEF preserved",
+      "defaults": 0,
+      "owner": "postgres",
+      "acl": "postgres/service_role EXECUTE only, no grant options"
+    },
+    {
+      "name": "mutate_admin_content_with_audit",
+      "args": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "oldMd5": "ebed8e6248a88b827daa8874c5f429ba",
+      "newMd5": "4c01fd07d59ce7b50630577ede66076e",
+      "security": "existingSECDEF preserved",
+      "defaults": 0,
+      "owner": "postgres",
+      "acl": "postgres/service_role EXECUTE only, no grant options"
+    },
+    {
+      "name": "mutate_dog_friendly_estate_with_audit",
+      "args": "p_actor_user_id uuid, p_command text, p_id uuid, p_expected_version integer, p_payload jsonb",
+      "oldMd5": "5fd7db8387b7383fa8a35ffe23e5d719",
+      "newMd5": "707d66f5650a98c1c772619d47aa84d0",
+      "security": "existingSECDEF preserved",
+      "defaults": 0,
+      "owner": "postgres",
+      "acl": "postgres/service_role EXECUTE only, no grant options"
+    }
+  ],
+  "index": {
+    "acl": null,
+    "keys": "2 6 8",
+    "kind": "i",
+    "live": true,
+    "flags": "0 0 0",
+    "natts": 3,
+    "nkeys": 3,
+    "owner": "postgres",
+    "ready": true,
+    "table": "public.recipient_notification_draft",
+    "valid": true,
+    "access": "btree",
+    "unique": true,
+    "options": null,
+    "primary": false,
+    "checkxmin": false,
+    "clustered": false,
+    "exclusion": false,
+    "immediate": true,
+    "opclasses": [
+      "pg_catalog.uuid_ops",
+      "pg_catalog.text_ops",
+      "pg_catalog.text_ops"
+    ],
+    "predicate": null,
+    "collations": [
+      null,
+      "pg_catalog.default",
+      "pg_catalog.default"
+    ],
+    "definition": "CREATE UNIQUE INDEX recipient_notification_draft_delivery_target_idx ON public.recipient_notification_draft USING btree (story_update_id, channel, recipient_contact)",
+    "expressions": null,
+    "persistence": "p",
+    "replicaIdentity": false,
+    "nullsNotDistinct": false
+  },
+  "defaults": [
+    [
+      {
+        "kind": "f",
+        "owner": "postgres",
+        "schema": "public",
+        "entries": [
+          {
+            "grantee": "anon",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ]
+      }
+    ]
+  ],
+  "tableProfiles": [
+    {
+      "mode": "hosted",
+      "profiles": [
+        {
+          "name": "admin_user",
+          "md5": "270bf82ae3cd7989bf451639f80f6eb1"
+        },
+        {
+          "name": "audit_log",
+          "md5": "5fc405c73d66e35453f7e2bebc7ee56e"
+        },
+        {
+          "name": "content_item",
+          "md5": "27fe827f925aad20443d4e9c77a21c05"
+        },
+        {
+          "name": "story_update",
+          "md5": "ed868ff3c7da38008bcadfda9b12d00c"
+        },
+        {
+          "name": "social_copy_variant",
+          "md5": "0a2dedbedd7c94bfc289d66292c1a4e5"
+        },
+        {
+          "name": "recipient_notification_draft",
+          "md5": "0a9223aded58b3cdaa8798b5cb1ac300"
+        },
+        {
+          "name": "recipient_notification_draft_duplicate_archive",
+          "md5": "aef90a42d04b3d531bef9b96d27b31f3"
+        },
+        {
+          "name": "adoption_fees",
+          "md5": "ef152dc42220ea92e4dee0577807ac41"
+        },
+        {
+          "name": "dog_friendly_estates",
+          "md5": "854a3b4a2b282d03ddce40c89b8554ef"
+        },
+        {
+          "name": "board_member",
+          "md5": "b6430dd8d5e7b401cc7f62287d14dad9"
+        },
+        {
+          "name": "knowledge_posts",
+          "md5": "5567c5c78a96b8938d191414b7bc1322"
+        },
+        {
+          "name": "document_assets",
+          "md5": "c94e50570c249e88d8ed7bc662b564b8"
+        },
+        {
+          "name": "adoption_instruction_pages",
+          "md5": "c4bcd923e0a5d5dfa916eb7d903821aa"
+        },
+        {
+          "name": "adoption_instruction_revisions",
+          "md5": "8d31da3996114f15f74bca902f00d99b"
+        },
+        {
+          "name": "adoption_instruction_publish_requests",
+          "md5": "6ac196046d00488ccbb1310fe74f08d8"
+        }
+      ]
+    },
+    {
+      "mode": "modern",
+      "profiles": [
+        {
+          "name": "admin_user",
+          "md5": "20f917785e938aab9c65b7791d47e580"
+        },
+        {
+          "name": "audit_log",
+          "md5": "65bb62e35c43389f61c9afcd31fb1808"
+        },
+        {
+          "name": "content_item",
+          "md5": "27fe827f925aad20443d4e9c77a21c05"
+        },
+        {
+          "name": "story_update",
+          "md5": "ed868ff3c7da38008bcadfda9b12d00c"
+        },
+        {
+          "name": "social_copy_variant",
+          "md5": "0a2dedbedd7c94bfc289d66292c1a4e5"
+        },
+        {
+          "name": "recipient_notification_draft",
+          "md5": "0a9223aded58b3cdaa8798b5cb1ac300"
+        },
+        {
+          "name": "recipient_notification_draft_duplicate_archive",
+          "md5": "f24050c0ff78fbddabe7c5052b7e69fd"
+        },
+        {
+          "name": "adoption_fees",
+          "md5": "ef152dc42220ea92e4dee0577807ac41"
+        },
+        {
+          "name": "dog_friendly_estates",
+          "md5": "854a3b4a2b282d03ddce40c89b8554ef"
+        },
+        {
+          "name": "board_member",
+          "md5": "b6430dd8d5e7b401cc7f62287d14dad9"
+        },
+        {
+          "name": "knowledge_posts",
+          "md5": "30de1ee09aa858b709cabd99d0add1a2"
+        },
+        {
+          "name": "document_assets",
+          "md5": "cfb14cd0ccf951e53c72f613563f6bd2"
+        },
+        {
+          "name": "adoption_instruction_pages",
+          "md5": "c4bcd923e0a5d5dfa916eb7d903821aa"
+        },
+        {
+          "name": "adoption_instruction_revisions",
+          "md5": "8d31da3996114f15f74bca902f00d99b"
+        },
+        {
+          "name": "adoption_instruction_publish_requests",
+          "md5": "6ac196046d00488ccbb1310fe74f08d8"
+        }
+      ]
+    }
+  ],
+  "triggerHelperProfiles": [
+    {
+      "mode": "hosted",
+      "functions": [
+        {
+          "schema": "private",
+          "name": "protect_published_annual_report_asset",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": null,
+          "config": [
+            "search_path=\"\""
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "0c330175c7659dc022eee56dbefc0978",
+          "definition": "a6091b65cb3f8450df02687546cc0855"
+        },
+        {
+          "schema": "private",
+          "name": "require_ready_content_public_assets",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "1d9aa4ae8ec2403ee0552f88e0dd80f4",
+          "definition": "4c438c0a39732d1c8b57d7898a8d8ccb"
+        },
+        {
+          "schema": "public",
+          "name": "bump_adoption_fee_version",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "98b27d3a2b617fd0bf4655e95752dc70",
+          "definition": "a175f07f18ec47ede7b156aec486abcb"
+        },
+        {
+          "schema": "public",
+          "name": "bump_dog_friendly_estate_version",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "fe64e386b4d84cc3dfede9878cd99c72",
+          "definition": "f64d0b0aee1d51ffe0c76fca0eac04ff"
+        },
+        {
+          "schema": "public",
+          "name": "enforce_editorial_review",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "cf32f0d802d5f128bfd9bd4cc693241f",
+          "definition": "a03bdaed7afea3d68e7cba91a0ebb2e9"
+        },
+        {
+          "schema": "public",
+          "name": "log_animal_mutation",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+          "definition": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "schema": "public",
+          "name": "set_updated_at",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "config": null,
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "9b1889f56258bf9d6554213c05019c76",
+          "definition": "4d6804d5850641a33867814c9e76a714"
+        }
+      ]
+    },
+    {
+      "mode": "modern",
+      "functions": [
+        {
+          "schema": "private",
+          "name": "enforce_published_knowledge_document_assets",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": null,
+          "config": [
+            "search_path=\"\""
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "7a8243945ec1787cabf1dac28587f0a3",
+          "definition": "f6977f1614c3f02d90bf0165470f6fd2"
+        },
+        {
+          "schema": "private",
+          "name": "lock_admin_user_mutation",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": null,
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "35dc11b3cc5150246af05a0d954ce940",
+          "definition": "6fb4cca8ae606d99ac4858d0468ed513"
+        },
+        {
+          "schema": "private",
+          "name": "protect_published_annual_report_asset",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": null,
+          "config": [
+            "search_path=\"\""
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "f8bd98608922f5fd6ee397b249c45d94",
+          "definition": "f7181fe670a3548e00d9bb0e9ba7f9a5"
+        },
+        {
+          "schema": "private",
+          "name": "protect_published_document_references",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": null,
+          "config": [
+            "search_path=\"\""
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "e3f2e0627f31f992f350f3b67d71070e",
+          "definition": "b1b5bdbb2a0156440be3eb784eff93c9"
+        },
+        {
+          "schema": "private",
+          "name": "require_active_admin_user",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": null,
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "15e6194369fbe27203069acd28f0377d",
+          "definition": "98a21ca5b11cbf94c3d0302744af1a87"
+        },
+        {
+          "schema": "private",
+          "name": "require_ready_content_public_assets",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "1d9aa4ae8ec2403ee0552f88e0dd80f4",
+          "definition": "4c438c0a39732d1c8b57d7898a8d8ccb"
+        },
+        {
+          "schema": "public",
+          "name": "bump_adoption_fee_version",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "98b27d3a2b617fd0bf4655e95752dc70",
+          "definition": "a175f07f18ec47ede7b156aec486abcb"
+        },
+        {
+          "schema": "public",
+          "name": "bump_dog_friendly_estate_version",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "fe64e386b4d84cc3dfede9878cd99c72",
+          "definition": "f64d0b0aee1d51ffe0c76fca0eac04ff"
+        },
+        {
+          "schema": "public",
+          "name": "enforce_editorial_review",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "3993f0c2394b87e3efa8213d0ca618fd",
+          "definition": "b8e2b8f275741221459f4d05d563e9dd"
+        },
+        {
+          "schema": "public",
+          "name": "log_animal_mutation",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "definer": true,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+          "definition": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "schema": "public",
+          "name": "set_updated_at",
+          "args": "",
+          "allargs": "",
+          "defaults": 0,
+          "default_expression": null,
+          "result": "trigger",
+          "owner": "postgres",
+          "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "config": null,
+          "definer": false,
+          "cost": 100,
+          "strict": false,
+          "parallel": "u",
+          "volatility": "v",
+          "body": "9b1889f56258bf9d6554213c05019c76",
+          "definition": "4d6804d5850641a33867814c9e76a714"
+        }
+      ]
+    }
+  ],
+  "nativeCounts": [
+    {
+      "mode": "hosted",
+      "count": 108
+    },
+    {
+      "mode": "modern",
+      "count": 108
+    }
+  ]
+}

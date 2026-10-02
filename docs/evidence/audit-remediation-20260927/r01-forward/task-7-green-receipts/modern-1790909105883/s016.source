@@ -1,0 +1,223 @@
+/** Reproducible Task7 LF source from captured exact profiles and root rulings. */
+import { readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { catalogQuery, hash } from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import { tables, nativeQuery, indexQuery } from "./task-7-profile";
+const file = "20261002011249_r01_cms_atomic_forward.sql";
+const md5 = (s: string) => createHash("md5").update(s).digest("hex");
+const literal = (s: unknown) => (s === null ? "null" : "'" + String(s).replaceAll("'", "''") + "'");
+const json = (s: unknown) => literal(JSON.stringify(s)) + "::jsonb";
+const profiles = await Promise.all(
+  ["hosted", "modern"].map(async (mode) =>
+    JSON.parse(
+      await readFile(
+        `.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v5/${mode}.json`,
+        "utf8",
+      ),
+    ),
+  ),
+);
+function body(source: string, name: string) {
+  const m = source
+    .replaceAll("\r\n", "\n")
+    .match(
+      new RegExp(
+        `create or replace function public\\.${name}\\([\\s\\S]*?as \\$\\$([\\s\\S]*?)\\$\\$;`,
+        "i",
+      ),
+    );
+  if (!m) throw new Error("Exact legacy function absent: " + name);
+  return m[1];
+}
+const promotion = body(
+  await readFile("supabase/migrations/20260925053245_cms_promotion_atomicity.sql", "utf8"),
+  "cms_promotion_command",
+);
+const generic = body(
+  await readFile("supabase/migrations/20260925103900_atomic_admin_content_audit.sql", "utf8"),
+  "mutate_admin_content_with_audit",
+);
+const estate = body(
+  await readFile("supabase/migrations/20260927120500_estate_versioned_commands.sql", "utf8"),
+  "mutate_dog_friendly_estate_with_audit",
+);
+if (
+  md5(promotion) !== "8878b4ddef7c4814e9187ce4e09fda3e" ||
+  md5(generic) !== "ebed8e6248a88b827daa8874c5f429ba" ||
+  md5(estate) !== "5fd7db8387b7383fa8a35ffe23e5d719"
+)
+  throw new Error("Root ruled legacy LF body differs");
+const authFence = (actor: string, message: string) =>
+  `  perform 1 from auth.users u\n  where u.id = ${actor} and u.email_confirmed_at is not null\n    and (u.banned_until is null or u.banned_until <= pg_catalog.clock_timestamp())\n  for share;\n  if not found then\n    raise exception '${message}' using errcode = '42501';\n  end if;\n`;
+const promotionStart = promotion.indexOf("  if not exists ("),
+  promotionEnd = promotion.indexOf("\n  if v_kind = 'social_generate'");
+if (promotionStart < 0 || promotionEnd < 0) throw new Error("Known promotion predicate changed");
+const newPromotion =
+  promotion.slice(0, promotionStart) +
+  authFence("p_actor", "forbidden") +
+  `  perform 1 from public.admin_user a\n  where a.auth_user_id = p_actor and a.status = 'active'\n    and a.role in ('staff', 'admin')\n  for share;\n  if not found then\n    raise exception 'forbidden' using errcode = '42501';\n  end if;\n` +
+  promotion.slice(promotionEnd);
+const oldActor = `  select * into actor\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');`;
+const newActor =
+  authFence("p_actor_user_id", "Active staff or admin actor required") +
+  oldActor.replace(
+    "and role in ('staff', 'admin');",
+    "and role in ('staff', 'admin')\n  for share;",
+  );
+if (!generic.includes(oldActor) || !estate.includes(oldActor))
+  throw new Error("Known generic/estate predicate changed");
+const oldKnowledgeEnd = `    if result is null then
+      raise exception 'Knowledge post not found' using errcode = 'P0002';
+    end if;
+
+  elsif p_entity = 'knowledge_post' and p_operation = 'delete' then`;
+if (!generic.includes(oldKnowledgeEnd)) throw new Error("Known knowledge result priority changed");
+const knowledgeFence = `
+    if (result->>'is_published')::boolean then
+      for referenced_asset_id in
+        select distinct refs.asset_id
+        from unnest(array[
+          (result->>'document_asset_id')::uuid,
+          (result->>'zh_hk_document_asset_id')::uuid,
+          (result->>'en_document_asset_id')::uuid
+        ]) as refs(asset_id)
+        where refs.asset_id is not null
+        order by refs.asset_id
+      loop
+        perform 1
+        from public.document_assets
+        where id = referenced_asset_id and is_published = true
+        for update;
+        if not found then
+          raise exception 'Publish the PDF asset before publishing its knowledge post'
+            using errcode = '23514';
+        end if;
+      end loop;
+    end if;
+`;
+const newGeneric = generic
+  .replace(oldActor, newActor)
+  .replace("  action_name text;", "  action_name text;\n  referenced_asset_id uuid;")
+  .replace(oldKnowledgeEnd, oldKnowledgeEnd.replace("\n\n  elsif", knowledgeFence + "\n  elsif"));
+const specs = [
+  {
+    name: "cms_promotion_command",
+    args: "p_actor uuid, p_command jsonb",
+    sig: "uuid,jsonb",
+    old: promotion,
+    next: newPromotion,
+    required: false,
+  },
+  {
+    name: "mutate_admin_content_with_audit",
+    args: "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+    sig: "uuid,text,text,uuid,jsonb",
+    old: generic,
+    next: newGeneric,
+    required: false,
+  },
+  {
+    name: "mutate_dog_friendly_estate_with_audit",
+    args: "p_actor_user_id uuid, p_command text, p_id uuid, p_expected_version integer, p_payload jsonb",
+    sig: "uuid,text,uuid,integer,jsonb",
+    old: estate,
+    next: estate.replace(oldActor, newActor),
+    required: true,
+  },
+];
+const index = profiles[1].deliveryIndex;
+if (
+  !index ||
+  profiles[0].deliveryIndex !== null ||
+  index.definition !==
+    "CREATE UNIQUE INDEX recipient_notification_draft_delivery_target_idx ON public.recipient_notification_draft USING btree (story_update_id, channel, recipient_contact)" ||
+  index.owner !== "postgres" ||
+  !index.valid ||
+  !index.ready ||
+  index.nullsNotDistinct
+)
+  throw new Error("Exact ruled index profile differs");
+let sql = `-- R01 Task7: restore two atomic CMS commands and exact recipient conflict target.\n-- Root ruled minimum inline actor fences in the three existing SECDEF contracts.\n-- No legacy dedup/archive/delete/backfill; all preflight precedes mutation.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb; v_actual jsonb; v_name text; v_table oid; v_function oid; v_index oid;\nbegin\n  if current_user <> 'postgres' then raise exception 'R01 CMS owner context differs' using errcode='55000'; end if;\n  if pg_catalog.has_any_column_privilege('service_role','auth.users','SELECT,UPDATE')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','SELECT')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','UPDATE')\n    or (select count(*) from pg_catalog.pg_attribute where attrelid='auth.users'::regclass and not attisdropped and ((attname='id' and atttypid='uuid'::regtype and attnotnull) or (attname in('email_confirmed_at','banned_until') and atttypid='timestamptz'::regtype)))<>3 then\n    raise exception 'R01 CMS managed Auth prerequisites differ' using errcode='55000'; end if;\n  select catalog into v_catalog from (${catalogQuery}) captured;\n`;
+for (const name of tables) {
+  const allowed = [
+    ...new Set(
+      profiles.map((p) => p.domainProfiles.find((x: { name: string }) => x.name === name).md5),
+    ),
+  ];
+  sql += `  v_name:='${name}'; v_table:=pg_catalog.to_regclass('public.'||v_name);\n  if v_table is null then raise exception 'R01 CMS prerequisite table absent: ${name}' using errcode='55000'; end if;\n  select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name and not(k='indexes' and e.value->>'definition'=${literal(index.definition)})))\n    || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;\n  select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);\n  if pg_catalog.md5(v_actual::text) not in (${allowed.map(literal).join(",")}) then raise exception 'R01 CMS table metadata differs: ${name}' using errcode='55000'; end if;\n`;
+}
+const native = [
+  ...new Map(profiles.map((p) => [hash(p.nativeNormalized), p.nativeNormalized])).values(),
+];
+sql += `  select value into v_actual from (${nativeQuery}) captured;\n  if v_actual not in(${native.map(json).join(",")}) then raise exception 'R01 CMS native FK enforcement differs' using errcode='55000'; end if;\n`;
+const helperNames = [
+  ...new Set(
+    profiles.flatMap((p) =>
+      p.triggerFunctions.map((f: { schema: string; name: string }) => f.schema + "." + f.name),
+    ),
+  ),
+];
+for (const name of helperNames) {
+  const helpers = profiles.flatMap((p) =>
+    p.triggerFunctions.filter(
+      (f: { schema: string; name: string }) => f.schema + "." + f.name === name,
+    ),
+  );
+  const variants = [
+    ...new Map(helpers.map((f: Record<string, unknown>) => [hash(f), f])).values(),
+  ] as Record<string, unknown>[];
+  sql += `  v_function:=pg_catalog.to_regprocedure('${name}()');\n  if ${helpers.length === profiles.length ? "v_function is null or " : ""}(v_function is not null and not exists(select 1 from pg_catalog.pg_proc p where p.oid=v_function and (${variants.map((f) => `(p.proowner=${literal(f.owner)}::regrole and p.proacl::text is not distinct from ${literal(f.acl)} and p.pronargdefaults=${f.defaults} and pg_catalog.pg_get_expr(p.proargdefaults,0) is not distinct from ${literal(f.default_expression)} and pg_catalog.pg_get_function_arguments(p.oid)=${literal(f.allargs)} and pg_catalog.md5(pg_catalog.pg_get_functiondef(p.oid))=${literal(f.definition)})`).join(" or ")}))) then raise exception 'R01 CMS trigger helper contract differs: ${name}' using errcode='55000'; end if;\n`;
+}
+for (const s of specs) {
+  sql += `  v_function:=pg_catalog.to_regprocedure('public.${s.name}(${s.sig})');\n  if ${s.required ? "v_function is null or " : ""}(select count(*) from pg_catalog.pg_proc where pronamespace='public'::regnamespace and proname='${s.name}')<>(case when v_function is null then 0 else 1 end) then raise exception 'R01 CMS overload/required function differs: ${s.name}' using errcode='55000'; end if;\n  if v_function is not null and (not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.prokind='f' and p.proowner='postgres'::regrole and p.prosecdef and p.pronargdefaults=0 and p.proargdefaults is null and pg_catalog.pg_get_function_arguments(p.oid)='${s.args}' and pg_catalog.pg_get_function_result(p.oid)='jsonb' and p.provolatile='v' and p.proparallel='u' and not p.proisstrict and not p.proleakproof and p.procost=100 and p.prorows=0 and p.prosupport=0 and l.lanname='plpgsql' and ((pg_catalog.md5(p.prosrc)='${md5(s.old)}' and p.proconfig=array['search_path=public, pg_temp']::text[]) or (pg_catalog.md5(p.prosrc)='${md5(s.next)}' and p.proconfig=array['search_path=""']::text[])))\n    or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2\n    or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))\n    or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE')) then raise exception 'R01 CMS function contract differs: ${s.name}' using errcode='55000'; end if;\n`;
+}
+const defaults = [
+  ...new Map(
+    profiles.map((p) => {
+      const values = p.facets.defaults
+        .filter(
+          (d: { owner: string; kind: string; schema: string }) =>
+            d.owner === "postgres" && d.kind === "f" && ["", "public"].includes(d.schema),
+        )
+        .sort((a: { schema: string }, b: { schema: string }) => a.schema.localeCompare(b.schema));
+      return [hash(values), values];
+    }),
+  ).values(),
+];
+sql += `  if pg_catalog.to_regprocedure('public.cms_promotion_command(uuid,jsonb)') is null or pg_catalog.to_regprocedure('public.mutate_admin_content_with_audit(uuid,text,text,uuid,jsonb)') is null then\n    select coalesce(pg_catalog.jsonb_agg(e.value order by e.value->>'schema'),'[]'::jsonb) into v_actual from pg_catalog.jsonb_array_elements(v_catalog->'defaults') e where e.value->>'owner'='postgres' and e.value->>'kind'='f' and e.value->>'schema' in('','public');\n    if v_actual not in(${defaults.map(json).join(",")}) then raise exception 'R01 CMS function creation default ACL differs' using errcode='55000'; end if;\n  end if;\n  v_index:=pg_catalog.to_regclass('public.recipient_notification_draft_delivery_target_idx');\n  if v_index is not null then\n    select value into v_actual from (${indexQuery}) captured;\n    if v_actual is distinct from ${json(index)} then raise exception 'R01 CMS delivery target index differs' using errcode='55000'; end if;\n  elsif exists(select 1 from public.recipient_notification_draft where story_update_id is not null and channel is not null and recipient_contact is not null group by story_update_id,channel,recipient_contact having count(*)>1) then\n    raise exception 'R01 CMS duplicate delivery keys require separate review' using errcode='55000';\n  end if;\n  -- No mutation occurred before all known-object checks above completed.\n  if v_index is null then\n    create unique index recipient_notification_draft_delivery_target_idx on public.recipient_notification_draft using btree(story_update_id,channel,recipient_contact);\n  end if;\n`;
+for (const s of specs)
+  sql += `  v_function:=pg_catalog.to_regprocedure('public.${s.name}(${s.sig})');\n  if v_function is null or (select pg_catalog.md5(prosrc) from pg_catalog.pg_proc where oid=v_function)<>'${md5(s.next)}' then\n    execute $definition$create or replace function public.${s.name}(${s.args})\nreturns jsonb\nlanguage plpgsql\nsecurity definer\nset search_path = ''\nas $function$${s.next}$function$;$definition$;\n    if v_function is null then\n      revoke all on function public.${s.name}(${s.sig}) from public,anon,authenticated,service_role;\n      grant execute on function public.${s.name}(${s.sig}) to service_role;\n    end if;\n  end if;\n`;
+sql += "end;\n$migration$;\n";
+await writeFile("supabase/migrations/" + file, sql);
+await writeFile(
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-7-generated-profiles.json",
+  JSON.stringify(
+    {
+      file,
+      functions: specs.map((s) => ({
+        name: s.name,
+        args: s.args,
+        oldMd5: md5(s.old),
+        newMd5: md5(s.next),
+        security: "existingSECDEF preserved",
+        defaults: 0,
+        owner: "postgres",
+        acl: "postgres/service_role EXECUTE only, no grant options",
+      })),
+      index,
+      defaults,
+      tableProfiles: profiles.map((p) => ({
+        mode: p.mode,
+        profiles: p.domainProfiles.map((x: { name: string; md5: string }) => ({
+          name: x.name,
+          md5: x.md5,
+        })),
+      })),
+      triggerHelperProfiles: profiles.map((p) => ({ mode: p.mode, functions: p.triggerFunctions })),
+      nativeCounts: profiles.map((p) => ({ mode: p.mode, count: p.nativeNormalized.length })),
+    },
+    null,
+    2,
+  ) + "\n",
+);
+console.log(JSON.stringify({ file, bytes: Buffer.byteLength(sql), sha256: hash(sql) }));

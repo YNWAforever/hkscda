@@ -1,0 +1,42 @@
+import { afterAll, expect, test } from "bun:test";
+import { SQL } from "bun";
+import { randomUUID } from "node:crypto";
+import { assertCloneUrl } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+
+const raw = process.env.R01_CMS_ALLOW_LOCAL_FIXTURES === "1"
+  ? process.env.R01_CMS_TEST_DATABASE_URL : undefined;
+if (raw) assertCloneUrl(raw);
+const db = raw ? new SQL(raw, { max: 4 }) : null;
+const rollback = new Error("Task7 knowledge fixture rollback");
+afterAll(async () => { await db?.close(); });
+
+test.skipIf(!db)("generic published knowledge rejects an unpublished PDF atomically", async () => {
+  if (!db) throw new Error("Owned clone required");
+  try {
+    await db.begin(async tx => {
+      const actor = randomUUID(), asset = randomUUID();
+      await tx`set local role postgres`;
+      await tx`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor + "@example.invalid"},now())`;
+      await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'staff','active')`;
+      await tx`insert into public.document_assets(id,kind,title,language,object_path,byte_size,is_published) values(${asset}::uuid,'annual_report','Synthetic PDF','zh-HK',${"synthetic-" + asset + ".pdf"},100,false)`;
+      const payload = {title:"Synthetic knowledge",topic:"Synthetic",short_intro:"Synthetic intro",source_name:"Synthetic",external_url:null,document_asset_id:asset,zh_hk_document_asset_id:null,en_document_asset_id:null,is_published:true,sort_order:0};
+      await tx`savepoint knowledge_probe`;
+      let code = "success";
+      try {
+        await tx`set local role service_role`;
+        await tx`select public.mutate_admin_content_with_audit(${actor}::uuid,'knowledge_post','upsert',null::uuid,${payload}::jsonb)`;
+        await tx`set local role postgres`;
+      } catch (e) {
+        code = (e as {errno?:string}).errno ?? "unexpected";
+        await tx`rollback to savepoint knowledge_probe`;
+      }
+      await tx`release savepoint knowledge_probe`;
+      const [rows] = await tx`select (select count(*)::integer from public.knowledge_posts where document_asset_id=${asset}::uuid) posts,(select count(*)::integer from public.audit_log where actor_user_id=${actor}::uuid) audits`;
+      console.log(JSON.stringify({probe:"unpublished PDF",code,posts:rows.posts,audits:rows.audits}));
+      expect(code).toBe("23514");
+      expect(rows.posts).toBe(0);
+      expect(rows.audits).toBe(0);
+      throw rollback;
+    });
+  } catch (e) { if (e !== rollback) throw e; }
+});

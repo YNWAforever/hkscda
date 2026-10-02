@@ -1,0 +1,1406 @@
+{
+  "reason": "First fullgate17 Bun module import errors from archived test.ts discovery. All original execution directories copied unchanged into non-overwritten ignored v2 archive; only packaged source filename suffix becomes .source. Original first archive partial long-path failure preserved separately; subsequent unchanged hosted repeat also archived/qualified.",
+  "bindings": [
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "0e898b950149c69d09abc2e988865e6c7da8e66d86c8e363992278a457306818",
+      "canonicalSha256": "0e898b950149c69d09abc2e988865e6c7da8e66d86c8e363992278a457306818"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "d8941bd7fa64af770a83fb97f47aaf266c8c0e0b40e6dd4989b4225faf7b7814",
+      "canonicalSha256": "d8941bd7fa64af770a83fb97f47aaf266c8c0e0b40e6dd4989b4225faf7b7814"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420",
+      "canonicalSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420",
+      "canonicalSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "canonicalSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "c217a0b21da1f3dd58260b0ed8094ee99f13e85c83c191df0e77c276756555f3",
+      "canonicalSha256": "c217a0b21da1f3dd58260b0ed8094ee99f13e85c83c191df0e77c276756555f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__http.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__http.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__http.server.ts.source",
+      "rawSha256": "c57c355d990619de788e123cdb3ebc7f1fc291c23bc584e8f6a7fb25010c31b3",
+      "canonicalSha256": "c57c355d990619de788e123cdb3ebc7f1fc291c23bc584e8f6a7fb25010c31b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "1b4df814a939a759053a3ea48b79ac447622d925dadb81befccd9ef5ca0d6f7f",
+      "canonicalSha256": "1b4df814a939a759053a3ea48b79ac447622d925dadb81befccd9ef5ca0d6f7f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__http.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__http.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a",
+      "canonicalSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76",
+      "canonicalSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "canonicalSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.estate.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.estate.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99",
+      "canonicalSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84",
+      "canonicalSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__http.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__http.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff",
+      "canonicalSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "bb9b19df4e3e03467db67906a006a44e89b869a39fc148a10e84d687009e349f",
+      "canonicalSha256": "bb9b19df4e3e03467db67906a006a44e89b869a39fc148a10e84d687009e349f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__http.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__http.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a",
+      "canonicalSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76",
+      "canonicalSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "canonicalSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.estate.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.estate.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99",
+      "canonicalSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84",
+      "canonicalSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__http.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__http.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff",
+      "canonicalSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c",
+      "canonicalSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__http.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__http.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a",
+      "canonicalSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76",
+      "canonicalSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "canonicalSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.estate.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.estate.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99",
+      "canonicalSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84",
+      "canonicalSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__http.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__http.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff",
+      "canonicalSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c",
+      "canonicalSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "00b16d6473fc1a752cb1a0ca2fbf8a8620a12c93a13cc5f6bc5c85b73fc0a72b",
+      "canonicalSha256": "00b16d6473fc1a752cb1a0ca2fbf8a8620a12c93a13cc5f6bc5c85b73fc0a72b"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508",
+      "canonicalSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "04dcbe2cf50ca0801ebdb46e8b0af715645a72f9b4e36654d7e7afd7aa52eec4",
+      "canonicalSha256": "04dcbe2cf50ca0801ebdb46e8b0af715645a72f9b4e36654d7e7afd7aa52eec4"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508",
+      "canonicalSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "96020212a0d96f48a5e969d6c2ffcd777a385cf31de58b8909df43b32b101bde",
+      "canonicalSha256": "96020212a0d96f48a5e969d6c2ffcd777a385cf31de58b8909df43b32b101bde"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508",
+      "canonicalSha256": "3a82f54512899ac7ccbda1c8e239495d615d0a029d55f831ed802626a08dc508"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "7e1c0deda419f762b7f400866292baa0892419596a0732e1b3b105d34e06927c",
+      "canonicalSha256": "7e1c0deda419f762b7f400866292baa0892419596a0732e1b3b105d34e06927c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-generate.ts.source",
+      "rawSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+      "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__http.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__http.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__http.ts.source",
+      "rawSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a",
+      "canonicalSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInformation__repository.server.ts.source",
+      "rawSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76",
+      "canonicalSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInstructions__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInstructions__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__adoptionInstructions__repository.server.ts.source",
+      "rawSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.database.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.database.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.database.test.ts.source",
+      "rawSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "canonicalSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.estate.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.estate.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.estate.http.test.ts.source",
+      "rawSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99",
+      "canonicalSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.http.test.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.http.test.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__atomicForward.http.test.ts.source",
+      "rawSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84",
+      "canonicalSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__http.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__http.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__http.server.ts.source",
+      "rawSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff",
+      "canonicalSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__repository.server.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__content__repository.server.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__content__repository.server.ts.source",
+      "rawSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseManifest.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseManifest.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseManifest.ts.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseSchema.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseSchema.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/src__lib__operations__releaseSchema.ts.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__productionSchemaClone.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__productionSchemaClone.ts.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsForward.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsForward.ts.source",
+      "rawSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsGreen.ts",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__rls-tests__helpers__runR01CmsGreen.ts.source",
+      "rawSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c",
+      "canonicalSha256": "03c2e92611a38a502fba88391337534abc8e136624fee984b3cb348c4dd6938c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-1790903122435/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-1790903122435/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-actors-1790903217422/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts/red-index-1790903241271/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "3b2eef2820bb7cbd4fd535dc60652d674c7eaaa8b1a2cf8d7cadb8f7a0ceb165",
+      "canonicalSha256": "3b2eef2820bb7cbd4fd535dc60652d674c7eaaa8b1a2cf8d7cadb8f7a0ceb165"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925053245_cms_promotion_atomicity.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925053245_cms_promotion_atomicity.sql.source",
+      "rawSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925103900_atomic_admin_content_audit.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260925103900_atomic_admin_content_audit.sql.source",
+      "rawSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260927120500_estate_versioned_commands.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20260927120500_estate_versioned_commands.sql.source",
+      "rawSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001134252_r01_adoption_upload_forward.sql.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001150925_r01_sponsorship_submission_forward.sql.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001154743_r01_animal_preference_record_fields.sql.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001175310_r01_internship_upload_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001175310_r01_internship_upload_forward.sql.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001193722_r01_animal_draft_archive_forward.sql.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261001213914_r01_crm_atomic_forward.sql.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    {
+      "originalPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "immutableOriginalPath": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-7-original-execution-archives-v2/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/supabase__migrations__20261002011249_r01_cms_atomic_forward.sql.source",
+      "rawSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f"
+    }
+  ],
+  "sqlSourceSuffixExtension": "Existing copied SQL sources also receive .source, each original raw copy compared before packaging rename."
+}
