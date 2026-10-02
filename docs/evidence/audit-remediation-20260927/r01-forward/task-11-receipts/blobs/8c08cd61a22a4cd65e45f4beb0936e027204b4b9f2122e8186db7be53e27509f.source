@@ -1,0 +1,49 @@
+import hashlib,json,pathlib,subprocess,datetime
+root=pathlib.Path.cwd(); scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001'; evidence=root/'docs/evidence/audit-remediation-20260927/r01-forward'
+source='8540586254579d3e5829830b495610c3c07f195b'
+def sha(raw): return hashlib.sha256(raw).hexdigest()
+def blob(raw): return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def git(*args): return subprocess.check_output(['git',*args])
+def oid(ref): return git('rev-parse',ref).decode().strip()
+def binding(path):
+ raw=(root/path).read_bytes(); return {'path':path,'rawSha256':sha(raw),'canonicalSha256':sha(raw.replace(b'\r\n',b'\n')),'bytes':len(raw),'rawGitBlob':blob(raw)}
+translation_path='docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/translation.json'; translation=json.loads((root/translation_path).read_text()); entries=translation['entries']
+archives={}
+for e in entries:
+ path=e['archivePath']
+ if path not in archives:
+  b=binding(path); assert b['rawSha256']==e['rawSha256'] and b['canonicalSha256']==e['canonicalSha256'] and b['bytes']==e['bytes'] and b['rawGitBlob']==e['gitBlob']
+  b['archiveGitBlob']=oid(':'+path); assert b['archiveGitBlob']==b['rawGitBlob']
+  exists=subprocess.run(['git','cat-file','-e',source+':'+path],capture_output=True).returncode==0
+  b['archivePresentAtSourceCommit']=exists
+  if exists: assert oid(source+':'+path)==b['archiveGitBlob']
+  archives[path]=b
+for e in entries: assert archives[e['archivePath']]['rawSha256']==e['rawSha256']
+proof_paths={'hosted':'task-11-hosted-1790963945547/receipt.json','modern':'task-11-modern-1790963945443/receipt.json','component':'task-11-component-1790963945312/receipt.json','gates':'task-11-gates-1790966853807654300/receipt.json'}
+proofs=[]; maps={}; gate=None
+for mode,leaf in proof_paths.items():
+ path=scratch/leaf; r=json.loads(path.read_text()); assert r['error'] is None and r['failedFinalFlags']==[] and all(r[k] is True for k in r['requiredFinalFlags'])
+ if mode=='gates':
+  assert r['eligible'] is True and len(r['gates'])==4 and all(g['exit']==0 for g in r['gates']); gate=r
+ else: maps[mode]=r['frozenInputs']; assert len(r['frozenInputs'])==24
+ rel=str(path.relative_to(root)).replace('\\','/'); raw=path.read_bytes(); matches=[e for e in entries if e['originalPath']==rel and e['rawSha256']==sha(raw)]; assert len(matches)==1
+ proofs.append({'mode':mode,'receipt':rel,'receiptBinding':matches[0],'requiredFinalFlags':r['requiredFinalFlags'],'allRequiredFlagsExactlyTrue':True,'error':None,'failedFinalFlags':[],'frozenInputs':len(r['frozenInputs']),'testExit':r.get('testExit'),'testSummary':r.get('testSummary'),'zeroRowsAfter':r.get('rowsAfter'),'gates':r.get('gates'),'modernBefore':r.get('modernBefore'),'modernAfter':r.get('modernAfter'),'templateBefore':r.get('templateBefore'),'templateAfter':r.get('templateAfter')})
+assert maps['hosted']==maps['modern']==maps['component']
+current=[]
+for path,frozen in gate['frozenInputs'].items():
+ b=binding(path); assert b['rawSha256']==frozen['rawSha256'] and b['canonicalSha256']==frozen['canonicalSha256'] and b['bytes']==frozen['rawBytes'] and b['rawGitBlob']==frozen['rawGitBlob']
+ b['sourceGitBlob']=oid(source+':'+path)
+ canonical=git('cat-file','blob',b['sourceGitBlob']); assert sha(canonical)==b['canonicalSha256']
+ archive='docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/'+b['rawSha256']+'.source'; assert archive in archives
+ b['archivePath']=archive;b['archiveGitBlob']=archives[archive]['archiveGitBlob'];b['sourceRawGitEqual']=b['sourceGitBlob']==b['rawGitBlob'];current.append(b)
+captures=[]
+for mode,leaf in [('hosted','task-11-capture-shapes-hosted-1790961592384/receipt.json'),('modern','task-11-capture-shapes-modern-1790961933501/receipt.json'),('component','task-11-component-capture-1790963467312/receipt.json')]:
+ path=scratch/leaf
+ if not path.exists():
+  candidates=list(scratch.glob('*'+leaf.split('-')[-1].split('/')[0]+'/receipt.json')); assert len(candidates)==1; path=candidates[0]
+ r=json.loads(path.read_text()); assert r['error'] is None and not r['failedFinalFlags'] and all(r[k] is True for k in r['requiredFinalFlags'])
+ rel=str(path.relative_to(root)).replace('\\','/'); match=[e for e in entries if e['originalPath']==rel and e['rawSha256']==sha(path.read_bytes())]; assert len(match)==1
+ captures.append({'mode':mode,'receiptBinding':match[0],'requiredFinalFlags':r['requiredFinalFlags'],'allRequiredFlagsExactlyTrue':True,'completeCapturedOldNewTuples':'Exact full capture JSON preserved at receiptBinding.archivePath; paired SQL tuple guards consume these actual observed values.'})
+manifest={'status':'SOURCE_VERIFIED_CONDITIONAL_REVIEW_CI','sourceCommit':source,'sourceTree':oid(source+'^{tree}'),'receiptHeads':['d45b849d300f76700efcf5450a9b426e32cc372f'],'workingBytesMarker':'DB final24 and local gate43 inputs executed as frozen working bytes atD45; this source commit binds their unchanged canonical tracked bytes. Raw CRLF archives retain exact Git objects; metadata-only reports/binding archive additions follow source commit.','archiveCommitQualification':'archiveGitBlob is actual staged Git object. archivePresentAtSourceCommit identifies objects already in source commit; remaining metadata binder objects are committed by final metadata-only handoff and verified afterward. No claim that newly staged objects existed in source commit.','proofs':proofs,'captures':captures,'currentBindings':current,'sameFinalDomainInputMap':True,'finalDomainFrozenInputMap':maps['hosted'],'allFinalRawCanonicalGitArchiveCurrentBindingsVerified':True,'allRawArchiveObjectsVerified':True,'archiveCounts':{'rawEntries':len(entries),'uniqueBlobs':len(archives),'bytes':sum(b['bytes'] for b in archives.values())},'rawArchiveManifest':entries,'uniqueArchiveGitBindings':list(archives.values()),'translationBinding':binding(translation_path),'recoveredBuildSourceQualification':json.loads((scratch/'task-11-recovered-build-source-qualification.json').read_text()),'modernFullSuiteQualification':json.loads((scratch/'task-11-modern-suite-diagnostic.json').read_text()),'componentQualification':'Own PG17.6 reconstruction consumes actual historical Task9 LF/Auth artifacts newly bound/installed/observed here; not fresh fullPG17.11 bootstrap or vendor fetch.','reviewAndFreshFiveIndividualFull1711CI':'PENDING_CONTROLLER','productionApplied':False,'deployed':False,'operationallyEnabled':False,'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'bindingCommand':'python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-bind.py','bindingScriptSha256':sha(pathlib.Path(__file__).read_bytes())}
+(evidence/'task-11-source-binding.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'source':source,'tree':manifest['sourceTree'],'proofs':len(proofs),'captures':len(captures),'currentBindings':len(current),'archiveCounts':manifest['archiveCounts'],'allBindings':True}))
