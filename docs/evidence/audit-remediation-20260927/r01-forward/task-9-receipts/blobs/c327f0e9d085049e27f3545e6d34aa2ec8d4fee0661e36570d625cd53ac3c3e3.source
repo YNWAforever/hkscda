@@ -1,0 +1,32 @@
+# Finding Verdicts
+
+- **I2 - Create the temporary-directory parent before mkdtemp: ADDRESSED.** `supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts:89-91` now awaits recursive mkdir for the exact ignored plan parent before the existing mkdtemp call. This handles an initially absent parent and repeated calls. The unique directory, nested receipt fixtures and finally cleanup remain unchanged. The sole executable delta is these three lines.
+- **Covering failure and success confirmed:** `bun test supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts` genuinely fails on the reviewed old bytes with5pass/9fail/20assertions and ENOENT in all nine selector cases, then passes on the amended bytes with14pass/0fail/29assertions. The accepted GREEN receipt records `chosenScratchParentInitiallyAbsent:true`, `chosenScratchParentAfterExists:true`, and `ownedInertDirectoryCountAfterCleanup:0`.
+
+# New Breakage in the Fix Diff
+
+- **Critical:** None found.
+- **Important:** None found.
+- **Minor:** None found.
+- `supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts:89-91` does not change I1 admission/error semantics, fixture uniqueness or deletion scope. No product SQL/private/helper/Auth/default/grant/scanner/runner/selector changes appear in the fix diff.
+
+# Checks and Evidence
+
+- Reviewed FIX_BASE4fc2691af77b7af17489f952b0dc4011713f6f9d..HEADfff2aa600a2d0053e007632bd24ce88a5b517541, comprising executable commitb047f9f1f2c15a0ecc520819bd05d5d3224c5cbd and separate evidence packaging. Used the same Task9 brief and scoped re-review method already read in this reviewer seat; read the complete Fix2 report and original report's covering append.
+- Read the prepared diff in bounded source/evidence passes. No Git rederivation, unchanged-code rereview, graph/repository crawl, outside-diff code inspection, suite, database or provider execution was performed. No unanswered behavioral doubt required another test run. Only this ignored report was written.
+- Genuine absent-parent RED receipt: `docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/636ea64dcefe9042da7987a2b66cd0fb2ad08a0ff25b48e9d161af2c690742ea.source:1-34`; actual RED log: `.../d02f99e97a5fe96500f551777dba9f8cbd9e036ce9fb978c7a21e5c2685a5909.source`. The receipt binds the old test Git blob6a966607 and unchanged runner/selector bytes, exit1 and initially absent parent.
+- Accepted clean-layout GREEN receipt: `docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/805198eefeaf77585b733a9fe0f570b7e5086e15f50c04c7c0e692d1a232aab5.source:1-36`; actual GREEN log: `.../6790ff44d83d5332cd2fb5203db0638ca6ae5c8a1dd14cd58c859eac2d7050c6.source`. It binds amended test Git blobc32b6ee8 matching the source diff, exit0, parent creation and zero residual owned fixture directories. Its pre-source-commit HEAD marker4fc is explicitly qualified by the exact amended raw input binding.
+- The earlier ENAMETOOLONG reproduction attempt, positive-selector long-path failure and WinError206 diagnostic are separately retained setup failures in `docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-2-evidence.md:11`; they are not used as behavioral RED/GREEN or silently relabeled success.
+- Covering evidence at `docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-2-evidence.md:15-27` and the new binding record name the fresh source-bound hosted/modern commands:61pass/0fail/195assertions each;70/78 actual55000 refusals; two applies and preservation. The gate summary records typecheck0, full tests3280pass/391skip/0fail/10609assertions, lint0 and build0; source/template preserved. The full-suite modern fixture transition is separately qualified, with no new cross-gate equality requirement.
+- The binding distinguishes62 DB inputs and69 gate inputs, old immutable evidence and appended Fix2 proof. Controller independent current-runtime/archive verification is separate and was in progress at dispatch; this review did not duplicate that verification or assume its completion.
+
+# Out-of-Scope Observations
+
+- Original M1 Minor expected HTTP diagnostic noise and52 baseline lint warnings remain deferred to final whole-branch triage. I1 remains addressed by the prior scoped review; unchanged I1 code was not rereviewed.
+- The reproduced Windows long-path limit predates this three-line amendment's directory-layout policy. It is retained as an environment/portability qualification for final triage, not new breakage introduced by this fix or an extension of this I2 loop.
+- Original pinnedCLI migration creation remains implementer-reported; exact original command/output is independently unavailable, without an inference that creation did not occur.
+- Exactfff2aa60 five individual CI results, including PostgreSQL17.11 behavior, remain not-run pending publication. Overall source/release acceptance, final whole-branch review, production application and operational enablement remain separate controller gates. No production/release/Task1ACL/Task8scanner authority follows from this verdict.
+
+# Verdict
+
+**Fix round: All findings addressed, no new Critical/Important breakage.** I2 is ADDRESSED; no new findings in this fix diff. The scoped source fix is approved with the stated external verification and deferred-review qualifications.

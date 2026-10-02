@@ -1,0 +1,73 @@
+{
+  "checkedAtUtc": "2026-10-02T07:43:09.958348+00:00",
+  "run": 36978660763,
+  "attempt": 1,
+  "head": "fff2aa600a2d0053e007632bd24ce88a5b517541",
+  "aggregateConclusion": "success",
+  "individualResults": [
+    {
+      "id": 110747978023,
+      "name": "verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 110748791405,
+      "name": "performance-verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 110748791427,
+      "name": "brand-verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 110748791450,
+      "name": "rls-matrix",
+      "conclusion": "failure"
+    },
+    {
+      "id": 110748791479,
+      "name": "a11y-verify",
+      "conclusion": "success"
+    }
+  ],
+  "downloadedLogs": [
+    {
+      "id": 110747978023,
+      "name": "verify",
+      "conclusion": "success",
+      "downloadExit": 0,
+      "bytes": 875900,
+      "rawSha256": "5676a0e24e0f0a7371e94dde3fe1543c340b6ca223996a561898a62448effe96",
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36978660763-verify.raw.log"
+    },
+    {
+      "id": 110748791405,
+      "name": "performance-verify",
+      "conclusion": "success",
+      "downloadExit": 0,
+      "bytes": 226931,
+      "rawSha256": "cb027d68dadc0bec42a45b03fa436219e1ecfea1adaa263683a7530e09e2885d",
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36978660763-performance-verify.raw.log"
+    },
+    {
+      "id": 110748791427,
+      "name": "brand-verify",
+      "conclusion": "success",
+      "downloadExit": 0,
+      "bytes": 224887,
+      "rawSha256": "cba8ce45d974a510f8f84b9174dfcc23937eff87256d60848843e9145ca267ab",
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36978660763-brand-verify.raw.log"
+    },
+    {
+      "id": 110748791479,
+      "name": "a11y-verify",
+      "conclusion": "success",
+      "downloadExit": 0,
+      "bytes": 224554,
+      "rawSha256": "ec0a9f3b05fbe924db9bbef5c6ea715580060fb8fe3e170ddf56f40629a0e476",
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36978660763-a11y-verify.raw.log"
+    }
+  ],
+  "actualFailure": "RLSstartup55000 supporter; behavioral steps skipped; not all-green"
+}
