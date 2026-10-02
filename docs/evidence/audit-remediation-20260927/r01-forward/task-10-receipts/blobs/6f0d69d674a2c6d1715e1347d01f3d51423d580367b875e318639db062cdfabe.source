@@ -1,0 +1,11 @@
+28 | const globalReceipts = await Promise.all(
+29 |   (profileInputs.globals as string[]).map(async (p) => JSON.parse(await readFile(p, "utf8"))),
+30 | );
+31 | for (const [i, p] of globalReceipts.entries())
+32 |   assertReceipt(p, "global", i === 0 ? "hosted" : "modern");
+33 | const globalFinal = { hosted: globalReceipts[0].after, modern: globalReceipts[1].after };
+                                                                                   ^
+TypeError: undefined is not an object (evaluating 'globalReceipts[1].after')
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-10-generate.ts:33:79
+
+Bun v1.3.14 (Windows x64)

@@ -1,0 +1,26 @@
+{
+  "task-10-fix1-profile-refresh-1790949944241342600\\receipt.json": {
+    "sha256": "a8c840d2d41f5803081113a48e408782fceb0ce70fbc1b8d6c282d22cb7ac39c",
+    "bytes": 3298
+  },
+  "task-10-fix1-evidence-green6.log": {
+    "sha256": "d1d45241b7d7e395167f95e64b8fbd6c0cb41924c109284cff65dd31c48f7aee",
+    "bytes": 45443
+  },
+  "task-10-fix1-evidence-green7.log": {
+    "sha256": "87fb3b95ac13b0d55345468156549d3f7d65e746f20407fa459d354b7c6bb271",
+    "bytes": 45339
+  },
+  "task-10-fix1-cardinality-red\\test.source": {
+    "sha256": "ede04a5d7c59b58643c16efa1727520e1e0c307495842010b1c92262a3a13be3",
+    "bytes": 11063
+  },
+  "task-10-fix1-cardinality-red\\generator.source": {
+    "sha256": "ea957e007814c2d896a74b165720e29ca8603b6e446750d923febd1a1c217b58",
+    "bytes": 13267
+  },
+  "task-10-fix1-cardinality-red\\tests.log": {
+    "sha256": "0174f6df95ae95dc70f5a42b08eb62a494c81eb873cc0ac5a97d63528e8c4a72",
+    "bytes": 49425
+  }
+}

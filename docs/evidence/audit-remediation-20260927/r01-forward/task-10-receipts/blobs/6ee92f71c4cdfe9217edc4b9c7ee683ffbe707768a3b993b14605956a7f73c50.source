@@ -1,0 +1,130 @@
+/** Ruling38 focused actual TRUNCATE role/native path; unchanged full scanner. */
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { randomUUID } from "node:crypto";
+import {
+  captureProductionSchema,
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  snapshot,
+  hash,
+  localSourceState,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {
+  fixtureScope,
+  functionsQuery,
+  authQuery,
+  nativeQuery,
+  indexDetailsQuery,
+} from "./task-10-profile";
+const root = process.cwd(),
+  mode = process.argv[2];
+if (
+  !["hosted", "modern", "hosted-restrict", "modern-restrict"].includes(mode) ||
+  process.env.R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1"
+)
+  throw Error("Explicit owned diagnostic required");
+const out = resolve(
+  root,
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-truncate-" + mode + "-" + Date.now(),
+);
+await mkdir(out, { recursive: true });
+const receipt: Record<string, unknown> = {
+  mode,
+  out,
+  at: new Date().toISOString(),
+  productionMutation: false,
+};
+for (const [i, p] of [
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-truncate-red.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+  "supabase/rls-tests/helpers/productionSchemaClone.ts",
+  "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+].entries()) {
+  const raw = await readFile(p);
+  await copyFile(p, resolve(out, "s" + i + ".source"));
+  receipt[p] = {
+    rawSha256: hash(raw.toString()),
+    canonicalSha256: hash(raw.toString().replaceAll("\r\n", "\n")),
+    archive: "s" + i + ".source",
+  };
+}
+const modern = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(modern);
+const cap = mode.startsWith("hosted")
+    ? await captureProductionSchema()
+    : await captureModernLocalSchema(),
+  c = await createProductionClone(cap),
+  db = c.sql;
+const before = hash(await snapshot(db));
+const extra = async () => ({
+  functions: await db.unsafe(functionsQuery),
+  auth: await db.unsafe(authQuery),
+  native: await db.unsafe(nativeQuery),
+  indexes: await db.unsafe(indexDetailsQuery),
+});
+const beforeExtra = hash(await extra());
+const rollback = new Error("Task10 truncate rollback");
+try {
+  const scope =
+    await db`with recursive cascade_scope(oid) as(select 'public.admin_user'::regclass::oid union select c.conrelid from pg_constraint c join cascade_scope s on c.confrelid=s.oid where c.contype='f') select c.oid::regclass::text table_name from cascade_scope s join pg_class c on c.oid=s.oid order by 1`;
+  const names = scope.map((r: { table_name: string }) =>
+    r.table_name.startsWith("public.") ? r.table_name : "public." + r.table_name,
+  );
+  receipt.truncateCascadeScope = names;
+  await assertSafeFixtureTables(
+    db,
+    mode.endsWith("restrict") ? fixtureScope : [...fixtureScope, ...names],
+  );
+  receipt.fullScannerPassed = true;
+  receipt.effectiveTruncate = (
+    await db`select has_table_privilege('authenticated','public.admin_user','TRUNCATE') allowed`
+  )[0].allowed;
+  let result = "success";
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      const actor = randomUUID();
+      await tx`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor + "@example.invalid"},now())`;
+      await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'admin','active')`;
+      await tx.unsafe(
+        "set local request.jwt.claim.sub='" +
+          actor +
+          "';set local request.jwt.claim.role='authenticated';set local role authenticated",
+      );
+      if (mode.endsWith("restrict")) await tx`truncate table public.admin_user restrict`;
+      else await tx`truncate table public.admin_user cascade`;
+      await tx`set local role postgres`;
+      receipt.afterActiveAdmins = (
+        await tx`select count(*)::integer count from public.admin_user where role='admin' and status='active'`
+      )[0].count;
+      receipt.afterAuditRows = (
+        await tx`select count(*)::integer count from public.audit_log`
+      )[0].count;
+      throw rollback;
+    });
+  } catch (e) {
+    if (e !== rollback) result = (e as { errno?: string }).errno ?? String(e);
+  }
+  receipt.actualTruncateResult = result;
+  receipt.expectedRed = mode.startsWith("hosted")
+    ? mode.endsWith("restrict")
+      ? result === "0A000"
+      : result === "success" && receipt.afterActiveAdmins === 0
+    : result === "42501";
+  if (!receipt.expectedRed)
+    throw Error("Concrete truncate diagnostic expectation differs " + result);
+} catch (e) {
+  receipt.error = String(e);
+  process.exitCode = 1;
+} finally {
+  receipt.catalogPreserved = before === hash(await snapshot(db));
+  receipt.completeMetadataPreserved = beforeExtra === hash(await extra());
+  await c.close();
+  receipt.normalDrop = true;
+  receipt.templatePreserved = c.templatePreserved;
+  receipt.modernPreserved = modernBefore === (await localSourceState(modern));
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+  console.log(JSON.stringify(receipt));
+}

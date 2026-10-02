@@ -1,0 +1,48 @@
+{
+  "commands": [
+    {
+      "label": "identity",
+      "args": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "r01-task10-fix1-role-20261002-126d7280-v2"
+      ],
+      "exit": 0,
+      "stdoutSHA": "e37d51956c4c28da0a07efc25268ae9725814a62e3f79ef3604c3fe7d87b8695",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "pre-drop",
+      "args": [
+        "docker",
+        "exec",
+        "-i",
+        "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+        "psql",
+        "-X",
+        "-qAt",
+        "-h",
+        "/tmp",
+        "-U",
+        "supabase_admin",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-d",
+        "r01_task10_fix1"
+      ],
+      "exit": 3,
+      "stdoutSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA": "c0125f6d71ca7fd5fb8ffe7bcba59ab9cdd67d354213e9e16a0e9ebfb20ab62c"
+    }
+  ],
+  "production": false,
+  "force": false,
+  "exactOwnedIdentityVerified": true,
+  "containerID": "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+  "modernBefore": "6519af15b3b03598085dfdbd7a7fcbf33c2e09a0d73c6aa01162a52643ebbb55",
+  "templateBefore": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "error": "b'ERROR:  column \"daticulocale\" does not exist\\nLINE 1: ...me\\',datname,\\'owner\\',pg_get_userbyid(datdba),\\'icu\\',daticuloca...\\n                                                             ^\\nHINT:  Perhaps you meant to reference the column \"pg_database.datlocale\".\\n'",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-10-fix1-cleanup-1790953221762881200"
+}

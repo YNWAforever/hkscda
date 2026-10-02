@@ -1,0 +1,50 @@
+{
+  "unsafeCount": 423,
+  "fixtureTriggers": [
+    {
+      "table_name": "public.admin_user",
+      "function_name": "public.log_animal_mutation"
+    },
+    {
+      "table_name": "public.admin_user",
+      "function_name": "private.lock_admin_user_mutation"
+    },
+    {
+      "table_name": "public.admin_user",
+      "function_name": "private.require_active_admin_user"
+    },
+    {
+      "table_name": "public.admin_user",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.audit_log",
+      "function_name": "public.set_updated_at"
+    }
+  ],
+  "closure": [
+    {
+      "name": "public.log_animal_mutation",
+      "networkBody": false,
+      "operatorBody": true,
+      "networkName": false,
+      "opaque": false,
+      "unknownQualified": false,
+      "unsafeCallees": [
+        "auth.uid",
+        "public.log_animal_mutation"
+      ]
+    },
+    {
+      "name": "auth.uid",
+      "networkBody": false,
+      "operatorBody": true,
+      "networkName": false,
+      "opaque": false,
+      "unknownQualified": false,
+      "unsafeCallees": [
+        "auth.uid"
+      ]
+    }
+  ]
+}

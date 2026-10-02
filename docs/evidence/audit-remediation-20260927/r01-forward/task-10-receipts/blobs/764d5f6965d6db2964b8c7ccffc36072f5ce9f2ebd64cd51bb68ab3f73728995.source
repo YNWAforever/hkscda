@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-02T14:45:35.934801+00:00",
+  "inertUnapplied": true,
+  "generatorExecuted": false,
+  "productEdited": false,
+  "encoding": "UTF8 LF explicit write_bytes; raw equals canonical",
+  "fixBase": "126d728028a844052537fd64d10cecb206ef6fb0",
+  "preservation": {
+    "fourBusinessBodiesExact": true,
+    "privateDefinitionsExact": true,
+    "existingGrantRevokeLinesExact": true,
+    "currentSQLUnchanged": true,
+    "currentGeneratorUnchanged": true
+  },
+  "bindings": {
+    "approval-packet.md": {
+      "rawSha256": "88c25075d67394b88e41d4e1f8758d3e4ead799e2ac6716d46e76c3b0509174f",
+      "canonicalSha256": "88c25075d67394b88e41d4e1f8758d3e4ead799e2ac6716d46e76c3b0509174f",
+      "bytes": 4423
+    },
+    "current-generator.source": {
+      "rawSha256": "9672e0919122a8d288cd684ae8b9956a187ac3db12ac85edb79e4116f1a66779",
+      "canonicalSha256": "9672e0919122a8d288cd684ae8b9956a187ac3db12ac85edb79e4116f1a66779",
+      "bytes": 13550
+    },
+    "current-migration.source": {
+      "rawSha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+      "canonicalSha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+      "bytes": 189982
+    },
+    "generator.ts.proposal": {
+      "rawSha256": "36fdb143240d7d16a35dbe2c26b3587b09dbf18d51949657fdc300842e57e353",
+      "canonicalSha256": "36fdb143240d7d16a35dbe2c26b3587b09dbf18d51949657fdc300842e57e353",
+      "bytes": 15514
+    },
+    "migration.sql.proposal": {
+      "rawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "canonicalSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "bytes": 204984
+    },
+    "targets.json": {
+      "rawSha256": "a7086ed1a79358abecebdafd78aa25fdc1f6ab759b98fded99b446f49af7a3a3",
+      "canonicalSha256": "a7086ed1a79358abecebdafd78aa25fdc1f6ab759b98fded99b446f49af7a3a3",
+      "bytes": 135
+    },
+    "unapplied.patch": {
+      "rawSha256": "3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1",
+      "canonicalSha256": "3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1",
+      "bytes": 46491
+    },
+    "v2-origin-and-preservation.json": {
+      "rawSha256": "636ad41921a93b69dbd47bbf75423d862124ac0f1c37ebf105ef7b39a57adabb",
+      "canonicalSha256": "636ad41921a93b69dbd47bbf75423d862124ac0f1c37ebf105ef7b39a57adabb",
+      "bytes": 1864
+    }
+  }
+}

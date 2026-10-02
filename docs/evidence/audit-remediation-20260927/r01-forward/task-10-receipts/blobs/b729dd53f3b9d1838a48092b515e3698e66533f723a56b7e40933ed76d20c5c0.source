@@ -1,0 +1,1 @@
+begin read only;select count(*) from pg_database where datname='r01_task10_fix1';commit;

@@ -1,0 +1,28 @@
+{
+  "sourceProfile": "task-7-receipts/p/c05/modern.json",
+  "helper": {
+    "schema": "private",
+    "name": "enforce_published_knowledge_document_assets",
+    "args": "",
+    "allargs": "",
+    "defaults": 0,
+    "default_expression": null,
+    "result": "trigger",
+    "owner": "postgres",
+    "acl": null,
+    "config": [
+      "search_path=\"\""
+    ],
+    "definer": true,
+    "cost": 100,
+    "strict": false,
+    "parallel": "u",
+    "volatility": "v",
+    "body": "7a8243945ec1787cabf1dac28587f0a3",
+    "definition": "f6977f1614c3f02d90bf0165470f6fd2"
+  },
+  "legacyBodyPath": "supabase/migrations/20260926150000_guard_published_document_slots.sql",
+  "behavior": "sorted distinct non-null document/zh-HK/en UUIDs; each is_published=true FOR UPDATE; exact23514 Publish the PDF asset before publishing its knowledge post; constraint trigger after insert/update deferrable initially immediate",
+  "hostedCapturedHelperAndTriggerAbsent": true,
+  "scope": "preserve helper exactly; absence was preservation only, not a safety proof"
+}

@@ -1,0 +1,61 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\evidenceEligibility.test.ts:
+(pass) Task10 actual evidence gate selector inert regressions > reject false postTestsRowsPreserved [381.87ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing postTestsRowsPreserved [267.14ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false helpersPreserved [218.63ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing helpersPreserved [274.11ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false completeAuthDefaultNativeLedgerSequencePreserved [222.74ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing completeAuthDefaultNativeLedgerSequencePreserved [379.79ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject nonempty failed flags [391.12ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject wrong mode [329.76ms]
+3 | ) {
+4 | 
+5 |   await c.close();
+6 |   receipt.normalDrop = true;
+7 |   receipt.templatePreserved = c.templatePreserved;
+8 |   if (completeReceipt(receipt, "capture", mode)) process.exitCode = 1;
+                                                  ^
+ReferenceError: mode is not defined
+      at anonymous (file:///C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/lib/admin/evidenceEligibility.test.ts:8:47)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:29:207)
+(fail) Task10 actual post-cleanup preservation propagation > capture rejects preservation false after cleanup and retains receipt [113.45ms]
+3 | ) {
+4 | 
+5 |   await c.close();
+6 |   receipt.normalDrop = true;
+7 |   receipt.templatePreserved = c.templatePreserved;
+8 |   if (completeReceipt(receipt, "global", mode)) process.exitCode = 1;
+                                                 ^
+ReferenceError: mode is not defined
+      at anonymous (file:///C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/lib/admin/evidenceEligibility.test.ts:8:46)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:29:207)
+(fail) Task10 actual post-cleanup preservation propagation > global-capture rejects preservation false after cleanup and retains receipt [17.66ms]
+3 | ) {
+4 | 
+5 |   await c.close();
+6 |   receipt.normalDrop = true;
+7 |   receipt.templatePreserved = c.templatePreserved;
+8 |   if (completeReceipt(receipt, "red", mode)) process.exitCode = 1;
+                                              ^
+ReferenceError: mode is not defined
+      at anonymous (file:///C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/lib/admin/evidenceEligibility.test.ts:8:43)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:29:207)
+(fail) Task10 actual post-cleanup preservation propagation > red rejects preservation false after cleanup and retains receipt [29.14ms]
+ 5 |   receipt.catalogPreserved = before === hash(await snapshot(db));
+ 6 |   receipt.completeMetadataPreserved = beforeExtra === hash(await extra());
+ 7 |   await c.close();
+ 8 |   receipt.normalDrop = true;
+ 9 |   receipt.templatePreserved = c.templatePreserved;
+10 |   if (completeReceipt(receipt, "truncate", mode)) process.exitCode = 1;
+                                                    ^
+ReferenceError: mode is not defined
+      at anonymous (file:///C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/lib/admin/evidenceEligibility.test.ts:10:48)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\evidenceEligibility.test.ts:29:207)
+(fail) Task10 actual post-cleanup preservation propagation > truncate-red rejects preservation false after cleanup and retains receipt [40.69ms]
+(pass) Task10 actual post-cleanup preservation propagation > auth-component-red rejects preservation false after cleanup and retains receipt [41.72ms]
+
+ 9 pass
+ 4 fail
+ 10 expect() calls
+Ran 13 tests across 1 file. [3.86s]

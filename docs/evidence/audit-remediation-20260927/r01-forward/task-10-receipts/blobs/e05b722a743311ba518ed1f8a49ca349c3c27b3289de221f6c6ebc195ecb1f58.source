@@ -1,0 +1,34 @@
+{
+  "command": [
+    "bun",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-oid-protocol.ts"
+  ],
+  "exit": 0,
+  "scope": "OID wire type only; unchanged SQL/scanner/closure/search_path and BEGIN READ ONLY",
+  "bindings": {
+    "adapter.source": {
+      "sha256": "57ed2309a099b101288bfe5591135b220f10786700893266e35109daa4ac957d",
+      "bytes": 2025
+    },
+    "oid-protocol-receipt.json": {
+      "sha256": "f15b5bc689fb182f4f064864a3ad869b0767bb0eb4536741c63c3976b864a20d",
+      "bytes": 1887
+    },
+    "oid-protocol.log": {
+      "sha256": "34d585f8f189a10a83e85f0fdcfff1571d0a09b4ac44538b96977fd0d816be05",
+      "bytes": 1051
+    },
+    "oid-protocol.source": {
+      "sha256": "f41c9b80184e01a79f4b5b8ca177db8d058ac3c4876edabc116863d8f3e4eb19",
+      "bytes": 2279
+    },
+    "original-scanner.source": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142
+    },
+    "previous-adapter.source": {
+      "sha256": "1f1af39b35a2de7730194726dc98e44756c31b6624eecdec9175a1e0b45ecb54",
+      "bytes": 1228
+    }
+  }
+}

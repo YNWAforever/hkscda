@@ -1,0 +1,81 @@
+"""Read-only final source/raw/archive/Git binding; no database execution."""
+import hashlib, json, pathlib, subprocess, datetime
+
+root = pathlib.Path.cwd()
+scratch = root / '.superpowers/sdd/r01-forward-schema-plan-20261001'
+evidence = root / 'docs/evidence/audit-remediation-20260927/r01-forward'
+sha = lambda raw: hashlib.sha256(raw).hexdigest()
+git = lambda *args: subprocess.check_output(['git', *args], cwd=root)
+head = git('rev-parse', 'HEAD').decode().strip()
+
+def current(expected):
+    return all(sha((root / p).read_bytes()) == b['rawSha256'] for p, b in expected.items())
+
+proofs = {}
+for mode in ('hosted', 'modern', 'component'):
+    candidates = []
+    for p in scratch.glob('task-10-' + mode + '-*/receipt.json'):
+        r = json.loads(p.read_text(encoding='utf-8'))
+        flags = r.get('requiredFinalFlags', [])
+        if mode == 'component': flags = flags + ['componentOtherMetadataPreserved', 'componentFullScannerPassed']
+        if r.get('testExit') == 0 and not r.get('error') and flags and all(r.get(f) is True for f in flags) and current(r['frozenInputs']):
+            candidates.append((r['at'], p, r))
+    if not candidates: raise RuntimeError('No current exact-true final proof:' + mode)
+    proofs[mode] = max(candidates, key=lambda c: c[0])
+frozen = proofs['hosted'][2]['frozenInputs']
+assert all(r[2]['frozenInputs'] == frozen for r in proofs.values())
+
+checks = []
+for mode, (_, p, r) in proofs.items():
+    for name, expected in frozen.items():
+        raw = (root / name).read_bytes()
+        archived = (p.parent / r['archivedInputs'][name]).read_bytes()
+        assert raw == archived
+        assert sha(raw) == expected['rawSha256']
+        assert sha(raw.replace(b'\r\n', b'\n')) == expected['canonicalSha256']
+        assert git('hash-object', '--no-filters', name).decode().strip() == expected['gitBlob']
+    assert all(f['errno'] == '55000' and f['fullRollback'] is True for f in r['refusals'])
+    checks.append({'mode': mode, 'receipt': str(p.relative_to(root)).replace('\\', '/'), 'receiptSha256': sha(p.read_bytes()), 'rawInputs': len(frozen), 'refusals': len(r['refusals']), 'gapCounts': [r['beforeGapCount'], r['afterGapCount']], 'allFinalFlagsExactlyTrue': True, 'testSummary': r['testSummary'], 'testLogSha256': sha((p.parent / 'tests.log').read_bytes())})
+
+gates = []
+for p in scratch.glob('task-10-gates-*/receipt.json'):
+    r = json.loads(p.read_text(encoding='utf-8'))
+    if all(g['exit'] == 0 for g in r.get('gates', [])) and len(r.get('gates', [])) == 4 and r.get('frozenInputsPreserved') is True and r.get('templatePreserved') is True and all(r['testedFinalSourceBlobs'].get(name, {}).get('sha256') == expected['rawSha256'] for name, expected in frozen.items()):
+        gates.append((r['startedAt'], p, r))
+if not gates: raise RuntimeError('No same-current-map four gate GREEN')
+_, gate_path, gate = max(gates, key=lambda c: c[0])
+assert sorted(g['gate'] for g in gate['gates']) == ['build', 'lint', 'tests', 'typecheck']
+for name, expected in gate['testedFinalSourceBlobs'].items():
+    raw = (root / name).read_bytes()
+    assert raw == (gate_path.parent / gate['archivedInputs'][name]).read_bytes()
+    assert sha(raw) == expected['sha256']
+    assert sha(raw.replace(b'\r\n', b'\n')) == expected['canonicalSha256']
+    assert git('hash-object', '--no-filters', name).decode().strip() == expected['gitBlob']
+for g in gate['gates']:
+    assert sha((gate_path.parent / g['log']).read_bytes()) == g['logSha256']
+
+translation = json.loads((evidence / 'task-10-receipts/translation.json').read_text(encoding='utf-8'))
+entries = {(x['originalPath'], x['rawSha256']): x for x in translation['entries']}
+bindings = []
+for name, expected in gate['testedFinalSourceBlobs'].items():
+    raw = (root / name).read_bytes()
+    raw_hash = sha(raw)
+    key = (name, raw_hash)
+    if key not in entries:
+        # Every final receipt's copied source is independently archived in Git.
+        leaf = gate['archivedInputs'][name]
+        key = (str((gate_path.parent / leaf).relative_to(root)).replace('\\', '/'), raw_hash)
+    archived = entries[key]
+    assert (root / archived['archivePath']).read_bytes() == raw
+    archive_git = git('rev-parse', head + ':' + archived['archivePath']).decode().strip()
+    assert archive_git == expected['gitBlob']
+    result = subprocess.run(['git', 'rev-parse', head + ':' + name], cwd=root, capture_output=True)
+    source_git = result.stdout.decode().strip() if result.returncode == 0 else None
+    if source_git:
+        committed = git('cat-file', 'blob', source_git)
+        assert sha(committed.replace(b'\r\n', b'\n')) == expected['canonicalSha256']
+    bindings.append({'path': name, 'currentRawSha256': raw_hash, 'canonicalSha256': expected['canonicalSha256'], 'rawGitBlob': expected['gitBlob'], 'sourceGitBlob': source_git, 'sourceRawGitEqual': source_git == expected['gitBlob'] if source_git else None, 'archivePath': archived['archivePath'], 'archiveGitBlob': archive_git})
+
+out = {'status': 'SOURCE_VERIFIED_CONDITIONAL_REVIEW_CI', 'sourceCommit': head, 'sourceTree': git('rev-parse', head + '^{tree}').decode().strip(), 'receiptHeads': sorted({r[2]['sourceCommit'] for r in proofs.values()} | {gate['sourceCommit']}), 'workingBytesMarker': 'Proofs tested frozen working bytes at efeb receipt HEAD; this source HEAD binds the current exact raw archives and canonical tracked source. Ignored CRLF inputs retain their raw Git blob in binary .source archives.', 'proofs': checks, 'gateReceipt': str(gate_path.relative_to(root)).replace('\\', '/'), 'gateReceiptSha256': sha(gate_path.read_bytes()), 'gates': gate['gates'], 'templatePreserved': gate['templatePreserved'], 'fullSuiteModernFixtureState': {'before': gate['modernBefore'], 'after': gate['modernAfter'], 'equal': gate['modernBefore'] == gate['modernAfter'], 'qualification': 'Authorized existing full-suite fixture interface; distinct from read-only source preservation in each owned composition.'}, 'environment': gate['environment'], 'bindings': bindings, 'sameFinalDomainInputMap': True, 'allFinalRawCanonicalGitArchiveCurrentBindingsVerified': True, 'productionApplied': False, 'deployed': False, 'operationallyEnabled': False, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'bindingCommand': 'python .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-bind.py', 'bindingScriptSha256': sha((scratch / 'task-10-bind.py').read_bytes())}
+(evidence / 'task-10-source-binding.json').write_text(json.dumps(out, indent=2) + '\n', encoding='utf-8', newline='\n')
+print(json.dumps({'sourceCommit': head, 'inputBindings': len(bindings), 'proofs': checks, 'gates': [g['exit'] for g in gate['gates']], 'allFinalBindingsVerified': True}))

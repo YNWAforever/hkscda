@@ -1,0 +1,18 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\accessFence.database.test.ts:
+(pass) Task10 actual direct admin access fence > authenticated administrator can read other admin identities [311.70ms]
+(pass) Task10 actual direct admin access fence > authenticated staff retains own-role read only [192.16ms]
+(pass) Task10 actual direct admin access fence > authenticated treasurer retains own-role read only [377.82ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly insert admin identities [103.12ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly update admin identities [35.70ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly delete admin identities [100.02ms]
+(pass) Task10 actual direct admin access fence > service direct bulk update cannot remove final active admins [120.94ms]
+(pass) Task10 actual direct admin access fence > service direct bulk delete cannot remove final active admins [90.73ms]
+(pass) Task10 scoped TRUNCATE browser fence > anon has no TRUNCATE privilege and RESTRICT fails42501 [77.93ms]
+(pass) Task10 scoped TRUNCATE browser fence > authenticated has no TRUNCATE privilege and RESTRICT fails42501 [56.16ms]
+
+ 10 pass
+ 0 fail
+ 16 expect() calls
+Ran 10 tests across 1 file. [1.78s]

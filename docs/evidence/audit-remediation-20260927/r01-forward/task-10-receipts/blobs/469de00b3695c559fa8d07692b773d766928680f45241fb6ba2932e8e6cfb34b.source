@@ -1,0 +1,73 @@
+{
+  "boundedLookup": "task-7-generate.ts reads ignored v4 JSON (retained), exact legacy/current source reads retained; runR01CmsGreen/Forward read current source only, receipt/source copies are output-only; gates.py reads hosted/modern receipts at original runtime paths restored byte-identically, including all failed hosted-smoke candidates. It does not read archived source-copy output filenames.",
+  "runtimeReceiptInputs": [
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790904893056/receipt.json",
+      "rawSha256": "515337b0ffdb6123f4cde36a6a7fa07438a5798a11cee268f5fb2eef6771a501",
+      "canonicalSha256": "515337b0ffdb6123f4cde36a6a7fa07438a5798a11cee268f5fb2eef6771a501"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905266622/receipt.json",
+      "rawSha256": "379a316b7c246134490d6f0935b19d9a09de04cb0fcad2feeb4f0dafb5b71ff7",
+      "canonicalSha256": "379a316b7c246134490d6f0935b19d9a09de04cb0fcad2feeb4f0dafb5b71ff7"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790905388995/receipt.json",
+      "rawSha256": "c697b76d4ea8b336499e1f8e26a828d79d93646c77ccf481dc554b0205046596",
+      "canonicalSha256": "c697b76d4ea8b336499e1f8e26a828d79d93646c77ccf481dc554b0205046596"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906021355/receipt.json",
+      "rawSha256": "d2a282a14a32f4356085087b1a64ff4eb654ad7dc536cfafadc397488f279eca",
+      "canonicalSha256": "d2a282a14a32f4356085087b1a64ff4eb654ad7dc536cfafadc397488f279eca"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906221102/receipt.json",
+      "rawSha256": "ceebc4adea6c72a839375bb5a8a96f85acd24847932572a7189e3ddc10433091",
+      "canonicalSha256": "ceebc4adea6c72a839375bb5a8a96f85acd24847932572a7189e3ddc10433091"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904130065/receipt.json",
+      "rawSha256": "304b0cdbb13174f36a3d7f20ef740152b63f77a47546d722be572d9ecdf50b2f",
+      "canonicalSha256": "304b0cdbb13174f36a3d7f20ef740152b63f77a47546d722be572d9ecdf50b2f"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904517064/receipt.json",
+      "rawSha256": "a4fc4208df668844af53774a7bb6b377d63a21748db22dabda3d171430b6d6b5",
+      "canonicalSha256": "a4fc4208df668844af53774a7bb6b377d63a21748db22dabda3d171430b6d6b5"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-smoke-1790904604287/receipt.json",
+      "rawSha256": "3aeb330fd1b73379a5139504db3551009b31aaa14e65a830e369a5788f7a9999",
+      "canonicalSha256": "3aeb330fd1b73379a5139504db3551009b31aaa14e65a830e369a5788f7a9999"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790905488092/receipt.json",
+      "rawSha256": "8684ec3e2f4c60b26044e3c77a46174157ec4f94ac1667c3370e39d209ef4286",
+      "canonicalSha256": "8684ec3e2f4c60b26044e3c77a46174157ec4f94ac1667c3370e39d209ef4286"
+    },
+    {
+      "runtimePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790906355423/receipt.json",
+      "rawSha256": "37c5207584dcd1e03a097c0be71738540e40d2bdf865c8598a301f767e0d2442",
+      "canonicalSha256": "37c5207584dcd1e03a097c0be71738540e40d2bdf865c8598a301f767e0d2442"
+    }
+  ],
+  "runtimeGeneratorInputs": [
+    {
+      "runtimePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v4/hosted.json",
+      "packagedInputMirror": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/p/c05/hosted.json",
+      "runtimePathPreserved": true,
+      "rawSha256": "ef61db94549bcc65aaed2dade9d55cbc6f52ce1468c9970d9db37b6543a0c050",
+      "canonicalSha256": "ef61db94549bcc65aaed2dade9d55cbc6f52ce1468c9970d9db37b6543a0c050"
+    },
+    {
+      "runtimePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v4/modern.json",
+      "packagedInputMirror": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/p/c05/modern.json",
+      "runtimePathPreserved": true,
+      "rawSha256": "6ef2a0b46b8a2e979ef1e6b98a734c5a629083f2c690670e9fca1da4b56bc4cf",
+      "canonicalSha256": "6ef2a0b46b8a2e979ef1e6b98a734c5a629083f2c690670e9fca1da4b56bc4cf"
+    }
+  ],
+  "sourceAndRuntimeExecutableBytesChanged": false,
+  "shortPathsWereNotExecuted": true
+}

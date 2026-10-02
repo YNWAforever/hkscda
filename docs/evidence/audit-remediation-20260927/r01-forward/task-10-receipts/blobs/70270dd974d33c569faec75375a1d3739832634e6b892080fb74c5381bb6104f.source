@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-02T14:40:59.406166+00:00",
+  "inertUnapplied": true,
+  "generatorExecuted": false,
+  "productEdited": false,
+  "fixBase": "126d728028a844052537fd64d10cecb206ef6fb0",
+  "qualification": "First inert preparation asserted an incorrect handwritten invite name before any file write; v2 uses actual source names. Proposal SQL is text insertion, not executed generated evidence.",
+  "bindings": {
+    "current-generator.source": {
+      "sha256": "9672e0919122a8d288cd684ae8b9956a187ac3db12ac85edb79e4116f1a66779",
+      "bytes": 13550
+    },
+    "current-migration.source": {
+      "sha256": "89070e7cc185c407a35606c36b1dbb56a87fb3f34ffd02c4cd33b58ca2e64f3d",
+      "bytes": 189982
+    },
+    "generator.ts.proposal": {
+      "sha256": "fff59abe6dff15691db300a7bfde3ac3e8688a806f341f1f9622855472348451",
+      "bytes": 15752
+    },
+    "migration.sql.proposal": {
+      "sha256": "7cd1f0a4e5b5c332bef654742205119d1115fb417e841a7966d07b5e9c192b9d",
+      "bytes": 205483
+    },
+    "targets.json": {
+      "sha256": "6f20cdbc816bcc3607233a63742c2fd38f967b25f23c392389a01a646e3b9c6f",
+      "bytes": 136
+    },
+    "unapplied.patch": {
+      "sha256": "05803ff621bed91c2f5729323d41b9d8d752a087788f4cd90e2c50725779ca72",
+      "bytes": 46607
+    },
+    "approval-packet.md": {
+      "sha256": "73081839355c73b53778a1e94edc8534d52cfc2c0da51e3c1058eec2db724787",
+      "bytes": 3836
+    }
+  }
+}

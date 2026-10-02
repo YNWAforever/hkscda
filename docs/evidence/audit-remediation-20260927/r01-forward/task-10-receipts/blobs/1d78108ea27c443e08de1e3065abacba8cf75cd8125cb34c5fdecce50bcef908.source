@@ -1,0 +1,43 @@
+{
+  "sourceHead": "126d728028a844052537fd64d10cecb206ef6fb0",
+  "SQLSHA": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+  "commands": [
+    {
+      "mode": "hosted",
+      "args": [
+        "bun",
+        "supabase/rls-tests/helpers/runR01AdminAtomic.ts",
+        "hosted"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 225.07,
+      "log": "hosted.log",
+      "logSHA": "06f6c0618a0d1f424bc25ed1a425b075b2a87d1e4495f2793e46097b52019ef6"
+    },
+    {
+      "mode": "modern",
+      "args": [
+        "bun",
+        "supabase/rls-tests/helpers/runR01AdminAtomic.ts",
+        "modern"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 250.85,
+      "log": "modern.log",
+      "logSHA": "85301e18de3cc5d600fe6a49912dae0a12acf5a526e4ee1af58be4e92c326202"
+    },
+    {
+      "mode": "component",
+      "args": [
+        "bun",
+        "supabase/rls-tests/helpers/runR01AdminAtomic.ts",
+        "component"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 151.23,
+      "log": "component.log",
+      "logSHA": "52b00c3d65fa6b50d941676be5e3771c052a4eb0075c824d98ece84d74af0edd"
+    }
+  ],
+  "environment": "Bun1.3.14 ownloopback schema-only clones; explicit R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES=1; inherited feature DB/fixture vars removed; no actor/provider production calls"
+}

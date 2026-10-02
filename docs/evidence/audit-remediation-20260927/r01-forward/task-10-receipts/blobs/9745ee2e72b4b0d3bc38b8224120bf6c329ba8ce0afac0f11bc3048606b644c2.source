@@ -1,0 +1,10 @@
+-- ONLY newly owned no-network cluster. Run each case in a transaction and ROLLBACK.
+-- direct inheritance / SET
+GRANT service_role TO authenticated WITH INHERIT TRUE, SET TRUE;
+-- indirect inheritance / SET
+GRANT service_role TO r01_task10_indirect WITH INHERIT TRUE, SET TRUE;
+GRANT r01_task10_indirect TO authenticated WITH INHERIT TRUE, SET TRUE;
+-- SET-only path: no inherited object privileges
+GRANT service_role TO r01_task10_setonly WITH INHERIT FALSE, SET TRUE;
+GRANT r01_task10_setonly TO authenticated WITH INHERIT FALSE, SET TRUE;
+-- Any new role mutations roll back before next case; no shared cluster calls.

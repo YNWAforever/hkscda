@@ -1,0 +1,7 @@
+{
+  "fullDiffCheckExit": 2,
+  "fullRawLog": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-diff-check-full.raw",
+  "fullRawSha256": "b62be54adf732024c6628e67fc4904eda54171b3be62cd852b740f5d557294c4",
+  "focusedExecutableAndCurrentSourceDiffCheckExit": 0,
+  "qualification": "Fullcheck flags immutable raw CRLF JSON/log/source artifacts and historical EOF spacing; raw originals retained unchanged. Editable executable/current source check0. First tool output was truncated; this full raw capture is a subsequent diagnostic check, not a domain/test exit."
+}

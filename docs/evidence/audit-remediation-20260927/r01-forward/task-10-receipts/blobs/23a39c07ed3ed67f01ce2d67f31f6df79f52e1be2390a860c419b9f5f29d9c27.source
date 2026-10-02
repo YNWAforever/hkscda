@@ -1,0 +1,105 @@
+{
+  "review": "Actual current function definitions reviewed from legacy SQL and read-only synthetic catalog; no provider/network/default guard exceptions added",
+  "profiles": {
+    "hosted": [
+      {
+        "name": "private.bump_sponsorship_followup_version",
+        "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+      },
+      {
+        "name": "private.bump_supporter_edit_version",
+        "hash": "d1fd0a986ef9bb089e9d5025e4177a49"
+      },
+      {
+        "name": "private.is_valid_animal_public_profile",
+        "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+      },
+      {
+        "name": "private.normalize_public_animal_age",
+        "hash": "1f85086f172d61fff31de8d854f32a55"
+      },
+      {
+        "name": "private.preserve_sponsorship_contact_submission",
+        "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+      },
+      {
+        "name": "private.sponsorship_cancel_transition",
+        "hash": "17036bab02ad4087b0727e395faac4b1"
+      },
+      {
+        "name": "public.enforce_current_animal_preference",
+        "hash": "5d9512de7da0c787523292316c6603e7"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.record_public_consent_intents",
+        "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+      },
+      {
+        "name": "public.set_animal_catalog_membership_defaults",
+        "hash": "16d251076045243facecbe0088b5422c"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      }
+    ],
+    "modern": [
+      {
+        "name": "private.bump_sponsorship_followup_version",
+        "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+      },
+      {
+        "name": "private.bump_supporter_edit_version",
+        "hash": "08619e0337db72d3d685130718c47538"
+      },
+      {
+        "name": "private.is_valid_animal_public_profile",
+        "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+      },
+      {
+        "name": "private.lock_admin_user_mutation",
+        "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+      },
+      {
+        "name": "private.normalize_public_animal_age",
+        "hash": "1f85086f172d61fff31de8d854f32a55"
+      },
+      {
+        "name": "private.preserve_sponsorship_contact_submission",
+        "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+      },
+      {
+        "name": "private.require_active_admin_user",
+        "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+      },
+      {
+        "name": "private.sponsorship_cancel_transition",
+        "hash": "17036bab02ad4087b0727e395faac4b1"
+      },
+      {
+        "name": "public.enforce_current_animal_preference",
+        "hash": "5d9512de7da0c787523292316c6603e7"
+      },
+      {
+        "name": "public.log_animal_mutation",
+        "hash": "264525288c36bf724df4dc72dcafba82"
+      },
+      {
+        "name": "public.record_public_consent_intents",
+        "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+      },
+      {
+        "name": "public.set_animal_catalog_membership_defaults",
+        "hash": "fa013ae528d796d1cdee6f769d16abeb"
+      },
+      {
+        "name": "public.set_updated_at",
+        "hash": "4d6804d5850641a33867814c9e76a714"
+      }
+    ]
+  }
+}

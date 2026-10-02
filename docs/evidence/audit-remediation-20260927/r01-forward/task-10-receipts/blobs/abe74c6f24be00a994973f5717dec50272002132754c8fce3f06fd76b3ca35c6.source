@@ -1,0 +1,24 @@
+
+-- Exact captured22 baseline memberships, owned cluster only; administrator restore user supabase_admin.
+GRANT "anon" TO "authenticator" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "anon" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "anon" TO "supabase_realtime_admin" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "authenticated" TO "authenticator" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "authenticated" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "authenticated" TO "supabase_realtime_admin" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "authenticator" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "authenticator" TO "supabase_storage_admin" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "pg_create_subscription" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "pg_monitor" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "pg_monitor" TO "supabase_etl_admin" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;
+GRANT "pg_monitor" TO "supabase_read_only_user" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;
+GRANT "pg_read_all_data" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "pg_read_all_data" TO "supabase_etl_admin" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;
+GRANT "pg_read_all_data" TO "supabase_read_only_user" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;
+GRANT "pg_signal_backend" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "service_role" TO "authenticator" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "service_role" TO "postgres" WITH ADMIN TRUE, INHERIT TRUE, SET TRUE;
+GRANT "service_role" TO "supabase_realtime_admin" WITH ADMIN FALSE, INHERIT FALSE, SET TRUE;
+GRANT "supabase_functions_admin" TO "postgres" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;
+GRANT "supabase_privileged_role" TO "postgres" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;
+GRANT "supabase_privileged_role" TO "supabase_etl_admin" WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;

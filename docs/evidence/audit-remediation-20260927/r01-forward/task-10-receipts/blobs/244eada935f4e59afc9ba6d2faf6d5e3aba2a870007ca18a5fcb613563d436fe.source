@@ -1,0 +1,4036 @@
+{
+  "fixBase": "ffe70c969faa178186e2bd371b633570132b2820",
+  "branch": "codex/audit-r01-internship-upload-20261002",
+  "executionParent": "ffe70c969faa178186e2bd371b633570132b2820",
+  "testedCandidateTree": "df84f290739a625a3f9f7874a8f451ba7a3e5a2e",
+  "finalCommitMeaning": "Commit containing binding is packaging HEAD; execution parent and exact final executable hashes/Git blobs are distinct and retained. Original Task4 bindings/receipts remain unchanged.",
+  "actualFinalComposition": {
+    "src/lib/internships/uploadIntent.database.test.ts": {
+      "sha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8",
+      "canonicalSha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8",
+      "gitBlob": "633d607479155b355a3adde3d6e00e293b832d82"
+    },
+    "src/lib/internships/uploadIntent.testSupport.ts": {
+      "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+      "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+      "gitBlob": "a0ca9cc1bc6ca0c47bff2b71a64839223ae3c471"
+    },
+    "src/lib/internships/attachments.server.ts": {
+      "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+      "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+      "gitBlob": "f8459e23cc9ea1addbbbcaabec179771ea9d82f9"
+    },
+    "src/lib/internships/uploadCleanup.server.ts": {
+      "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+      "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+      "gitBlob": "8918e9fac868b296375eaaa0df193526c8517eed"
+    },
+    "src/lib/volunteers/policy/booking.repository.server.ts": {
+      "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+      "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+      "gitBlob": "6cbfb16adc6b85072e5309963fbe250969cae589"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    "src/lib/supabase.server.ts": {
+      "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    "src/lib/http/boundedFormData.server.ts": {
+      "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+      "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+      "gitBlob": "d598d43da6b9bafa37224a9cbca64f815549a596"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e",
+      "canonicalSha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e",
+      "gitBlob": "11f6ba632e414864f547b5184bd5a99b8f8d2b59"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-fix-1-gates.py": {
+      "sha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+      "canonicalSha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+      "gitBlob": "4fd18268153c366d963e194a7aff7e7118600592"
+    },
+    "package.json": {
+      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "gitBlob": "043a1e7d45f1cfbe92ff0306304817ecd253a891"
+    },
+    "bun.lock": {
+      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "gitBlob": "0d6238fb8646bc4263cad4021f7e83a1d0905cd2"
+    },
+    "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+      "sha256": "a4cf1c94bbe7dda2d7cb9c105a6d48e507b9656acf4be7ff09281a68125566b8",
+      "canonicalSha256": "a4cf1c94bbe7dda2d7cb9c105a6d48e507b9656acf4be7ff09281a68125566b8",
+      "gitBlob": "ec743beacc2eaeb49c486f9f80f435504433755c"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+      "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+      "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+      "gitBlob": "f77162c837331ac0f1db4e2f5382fc6855a67f2c"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    }
+  },
+  "originalTask4Binding": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-4-source-binding.json",
+    "sha256": "3aae19b8fbae09ac19ae3d11961afb884d8b0dd34e94146a691e4eb753e34d8b",
+    "gitBlob": "c19630e962fe464abe67d41e4734a169fc089893"
+  },
+  "originalSqlObservedRed": {
+    "path": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+    "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+    "gitBlob": "95f0db558aec4ba5b21d8e45e72f6c19799bc2f2"
+  },
+  "receipts": {
+    "task-4-fix-1-red.json": {
+      "sha256": "0532f3100fba4c703117302e34ebe37bc5b37b37658d2ff98707f6fdba3184df",
+      "receipt": {
+        "base": "ffe70c969faa178186e2bd371b633570132b2820",
+        "startedAt": "2026-10-01T18:48:58.008Z",
+        "sqlSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "scope": "owned zero-data modern clone; target FK metadata/dependencies and independent rollback drift transactions only",
+        "actualForeignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_437957",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_437957\" AFTER DELETE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_437958",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_437958\" AFTER UPDATE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_437959",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_437959\" AFTER INSERT ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_437960",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_437960\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_437962",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_437962\" AFTER DELETE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_437963",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_437963\" AFTER UPDATE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_437964",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_437964\" AFTER INSERT ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_437965",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_437965\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "auth.users",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "accepted",
+            "message": "",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "accepted",
+            "message": "",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_application",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "accepted",
+            "message": "",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "accepted",
+            "message": "",
+            "preserved": true
+          }
+        ],
+        "result": "watched I1 RED: current migration accepted four independently disabled FK enforcement triggers",
+        "completedAt": "2026-10-01T18:49:01.854Z",
+        "templatePreserved": true,
+        "modernBeforeHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+        "modernPreserved": true,
+        "cleanup": "only exact owned clone normally dropped",
+        "sqlPreserved": true
+      }
+    },
+    "task-4-fix-1-red-probe-setup.json": {
+      "sha256": "cb14efe805204540f7baf63be665fd0d7658558ce5f348e489c828cfe3e893ec",
+      "receipt": {
+        "base": "ffe70c969faa178186e2bd371b633570132b2820",
+        "startedAt": "2026-10-01T18:44:54.486Z",
+        "sqlSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "scope": "owned zero-data modern clone; target FK metadata/dependencies and independent rollback drift transactions only",
+        "actualForeignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_424685",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_424685\" AFTER DELETE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_424686",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_424686\" AFTER UPDATE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_424687",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_424687\" AFTER INSERT ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_424688",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_424688\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_424690",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_424690\" AFTER DELETE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_424691",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_424691\" AFTER UPDATE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_424692",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_424692\" AFTER INSERT ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_424693",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_424693\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "auth.users",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "55000",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "55000",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_application",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "55000",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "55000",
+            "preserved": true
+          }
+        ],
+        "result": "unexpected",
+        "completedAt": "2026-10-01T18:45:02.051Z",
+        "templatePreserved": true,
+        "modernBeforeHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+        "modernPreserved": true,
+        "cleanup": "only exact owned clone normally dropped",
+        "sqlPreserved": true
+      }
+    },
+    "task-4-fix-1-red-owner-context-probe.json": {
+      "sha256": "af3d5cfbb262e3df3b7fa549122fc2942a692cbce33d4743ee3fffe663170083",
+      "receipt": {
+        "base": "ffe70c969faa178186e2bd371b633570132b2820",
+        "startedAt": "2026-10-01T18:46:36.524Z",
+        "sqlSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "scope": "owned zero-data modern clone; target FK metadata/dependencies and independent rollback drift transactions only",
+        "actualForeignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_429109",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_429109\" AFTER DELETE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_429110",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_429110\" AFTER UPDATE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_429111",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_429111\" AFTER INSERT ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_429112",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_429112\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_429114",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_429114\" AFTER DELETE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_429115",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_429115\" AFTER UPDATE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_429116",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_429116\" AFTER INSERT ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_429117",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_429117\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "auth.users",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "55000",
+            "message": "R01 internship requires postgres owner context",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "55000",
+            "message": "R01 internship requires postgres owner context",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_application",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "55000",
+            "message": "R01 internship requires postgres owner context",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "55000",
+            "message": "R01 internship requires postgres owner context",
+            "preserved": true
+          }
+        ],
+        "result": "unexpected",
+        "completedAt": "2026-10-01T18:46:39.991Z",
+        "templatePreserved": true,
+        "modernBeforeHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+        "modernPreserved": true,
+        "cleanup": "only exact owned clone normally dropped",
+        "sqlPreserved": true
+      }
+    },
+    "task-4-fix-1-red-system-trigger-probe.json": {
+      "sha256": "a3420ffaf28ccde82ef15d9027cebef63300e6303eb8901343b84c456fc0cb31",
+      "receipt": {
+        "base": "ffe70c969faa178186e2bd371b633570132b2820",
+        "startedAt": "2026-10-01T18:47:50.365Z",
+        "sqlSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "scope": "owned zero-data modern clone; target FK metadata/dependencies and independent rollback drift transactions only",
+        "actualForeignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_433533",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_433533\" AFTER DELETE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_a_433534",
+            "relation": "auth.users",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_433534\" AFTER UPDATE ON auth.users FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_433535",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_433535\" AFTER INSERT ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "tgname": "RI_ConstraintTrigger_c_433536",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "auth.users",
+            "constraint_index": "auth.users_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_433536\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_433538",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_433538\" AFTER DELETE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_a_433539",
+            "relation": "public.internship_application",
+            "constraint_relation": "public.internship_attachment_upload_intent",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_noaction_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_433539\" AFTER UPDATE ON public.internship_application FROM public.internship_attachment_upload_intent NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_433540",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_433540\" AFTER INSERT ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "tgname": "RI_ConstraintTrigger_c_433541",
+            "relation": "public.internship_attachment_upload_intent",
+            "constraint_relation": "public.internship_application",
+            "constraint_index": "public.internship_application_pkey",
+            "function": "\"RI_FKey_check_upd\"()",
+            "tgtype": 17,
+            "tgenabled": "O",
+            "tgisinternal": true,
+            "tgdeferrable": false,
+            "tginitdeferred": false,
+            "tgnargs": 0,
+            "tgattr": "",
+            "tgargs": "\\x",
+            "tgqual": null,
+            "tgoldtable": null,
+            "tgnewtable": null,
+            "tgparentid": "0",
+            "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_433541\" AFTER UPDATE ON public.internship_attachment_upload_intent FROM public.internship_application NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+            "dependencies": [
+              {
+                "class": "pg_trigger",
+                "deptype": "i",
+                "refclass": "pg_constraint",
+                "targetConstraint": true
+              }
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "auth.users",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "42501",
+            "message": "must be owner of table users",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_actor_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "42501",
+            "message": "permission denied: \"RI_ConstraintTrigger_c_433535\" is a system trigger",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_application",
+            "function": "\"RI_FKey_noaction_del\"()",
+            "tgtype": 9,
+            "result": "42501",
+            "message": "permission denied: \"RI_ConstraintTrigger_a_433538\" is a system trigger",
+            "preserved": true
+          },
+          {
+            "constraint": "internship_attachment_upload_intent_application_id_fkey",
+            "relation": "public.internship_attachment_upload_intent",
+            "function": "\"RI_FKey_check_ins\"()",
+            "tgtype": 5,
+            "result": "42501",
+            "message": "permission denied: \"RI_ConstraintTrigger_c_433540\" is a system trigger",
+            "preserved": true
+          }
+        ],
+        "result": "unexpected",
+        "completedAt": "2026-10-01T18:47:57.510Z",
+        "templatePreserved": true,
+        "modernBeforeHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+        "modernPreserved": true,
+        "cleanup": "only exact owned clone normally dropped",
+        "sqlPreserved": true
+      }
+    },
+    "task-4-green-fix-1-db.json": {
+      "sha256": "3372dc856b08afe22b07ed28a3ea52ea3a74377e8e76223a1d4f17fdb14ab7a9",
+      "receipt": {
+        "mode": "green-fix-1",
+        "startedAt": "2026-10-01T19:02:21.001Z",
+        "sourceCommit": "ffe70c969faa178186e2bd371b633570132b2820",
+        "testedExecutableBlobs": {
+          "src/lib/internships/uploadIntent.database.test.ts": {
+            "sha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8",
+            "canonicalSha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8"
+          },
+          "src/lib/internships/uploadIntent.testSupport.ts": {
+            "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+            "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2"
+          },
+          "src/lib/internships/attachments.server.ts": {
+            "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+            "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+          },
+          "src/lib/internships/uploadCleanup.server.ts": {
+            "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+            "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+          },
+          "src/lib/volunteers/policy/booking.repository.server.ts": {
+            "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+            "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+          },
+          "src/lib/donations/supabase.server.ts": {
+            "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+            "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+          },
+          "src/lib/admin/session.server.ts": {
+            "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+            "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+          },
+          "src/lib/supabase.server.ts": {
+            "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+            "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+          },
+          "src/lib/http/boundedFormData.server.ts": {
+            "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+            "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+          },
+          "src/lib/operations/releaseSchema.ts": {
+            "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+            "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+          },
+          "src/lib/operations/releaseManifest.ts": {
+            "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+            "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+          },
+          "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+            "sha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e",
+            "canonicalSha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e"
+          },
+          ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-fix-1-gates.py": {
+            "sha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+            "canonicalSha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb"
+          },
+          "package.json": {
+            "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+            "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+          },
+          "bun.lock": {
+            "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+            "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+          },
+          "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+            "sha256": "a4cf1c94bbe7dda2d7cb9c105a6d48e507b9656acf4be7ff09281a68125566b8",
+            "canonicalSha256": "a4cf1c94bbe7dda2d7cb9c105a6d48e507b9656acf4be7ff09281a68125566b8"
+          },
+          "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+            "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+            "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+          },
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+            "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+            "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+          },
+          "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+          },
+          "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+          },
+          "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+          },
+          "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+            "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+            "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+          }
+        },
+        "productionActions": "catalog/schema reads only; no production data or actor RPC",
+        "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+        "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+        "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+        "clone": "r01_clone_1977a69e4241480ab95cb8f08dd2541b",
+        "schemaParity": true,
+        "zeroApplicationTables": 158,
+        "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+        "reviewedFunctions": [
+          {
+            "name": "public.internship_command",
+            "hash": "84662adb879ce5365c625d7d4dfb629c"
+          },
+          {
+            "name": "public.internship_history_guard",
+            "hash": "308d9a20a14412d81ee2f226a96784c2"
+          },
+          {
+            "name": "public.internship_validate_intake",
+            "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+          },
+          {
+            "name": "public.log_animal_mutation",
+            "hash": "264525288c36bf724df4dc72dcafba82"
+          },
+          {
+            "name": "public.set_updated_at",
+            "hash": "4d6804d5850641a33867814c9e76a714"
+          },
+          {
+            "name": "storage.enforce_bucket_lifecycle_service_role",
+            "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+          },
+          {
+            "name": "storage.enforce_bucket_name_length",
+            "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+          },
+          {
+            "name": "storage.protect_bucket_control_columns",
+            "hash": "81db66d9936722b1164bca480ccbbf68"
+          },
+          {
+            "name": "storage.protect_delete",
+            "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+          },
+          {
+            "name": "storage.update_updated_at_column",
+            "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+          }
+        ],
+        "manifestBefore": {
+          "requirements": 146,
+          "issues": 44
+        },
+        "dependencies": [
+          {
+            "file": "20261001134252_r01_adoption_upload_forward.sql",
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "issues": 41
+          },
+          {
+            "file": "20261001154743_r01_animal_preference_record_fields.sql",
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "issues": 41
+          },
+          {
+            "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "issues": 33
+          }
+        ],
+        "task1Applied": false,
+        "manifestBeforeTask4": {
+          "requirements": 146,
+          "issues": 33
+        },
+        "foreignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "452020",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_452020",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452019",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "452004",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452020",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452019",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "452021",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_452021",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452019",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "452004",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452021",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452019",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "452022",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_452022",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "452004",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452019",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452022",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452019",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "452023",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_452023",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "452004",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452019",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452023",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452019",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "452015",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_452015",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "449046",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452014",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "450031",
+              "tgconstrrelid": "452004",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452015",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452014",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "452016",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_452016",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "449046",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452014",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "450031",
+              "tgconstrrelid": "452004",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452016",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452014",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "452017",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_452017",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "452004",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452014",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "450031",
+              "tgconstrrelid": "449046",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452017",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452014",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "452018",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_452018",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "452004",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "452014",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "450031",
+              "tgconstrrelid": "449046",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "452018",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "452014",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          }
+        ],
+        "preflightResults": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "client column grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled RLS",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected policy",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong default",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled trigger",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong trigger args",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "definer drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "config drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected overload",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "insert rewrite rule",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unlogged relation",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ],
+        "manifestAfter": {
+          "requirements": 146,
+          "issues": 30
+        },
+        "migration": {
+          "file": "20261001175310_r01_internship_upload_forward.sql",
+          "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "firstApply": 0,
+          "secondApply": 0,
+          "unrelatedCatalogPreserved": true,
+          "modernAllCatalogPreserved": false,
+          "preexistingRowsPreserved": true,
+          "tempShadowPreserved": true,
+          "relationProfileHash": "6db03f8e2e0d7afbd873c3924f52388d485d641a0f7405614216f258a86b3ac1"
+        },
+        "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+        "testExit": 0,
+        "testSummary": [
+          "\n 13 pass",
+          " 0 fail",
+          " 105 expect() calls"
+        ],
+        "ledgerPreserved": true,
+        "preexistingSyntheticFactsPreservedAfterTests": true,
+        "result": "GREEN",
+        "originalSources": {
+          "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+          "templatePreserved": true,
+          "modernBeforeHash": "04ad745841012a8665d51e5cece08d7e932e1a7e3a86fa0858128221554e610a",
+          "modernPreserved": true
+        },
+        "cleanup": "only exact owned clone normally dropped; no force/session termination",
+        "completedAt": "2026-10-01T19:03:10.627Z",
+        "testedExecutableBlobsPreserved": true
+      }
+    },
+    "task-4-green-modern-fix-1-db.json": {
+      "sha256": "84d1b8efb5208285569a457c859120a3b888499b8447758bc8d03de816ae179e",
+      "receipt": {
+        "mode": "green-modern-fix-1",
+        "startedAt": "2026-10-01T19:03:37.034Z",
+        "sourceCommit": "ffe70c969faa178186e2bd371b633570132b2820",
+        "testedExecutableBlobs": {
+          "src/lib/internships/uploadIntent.database.test.ts": {
+            "sha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8",
+            "canonicalSha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8"
+          },
+          "src/lib/internships/uploadIntent.testSupport.ts": {
+            "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+            "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2"
+          },
+          "src/lib/internships/attachments.server.ts": {
+            "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+            "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+          },
+          "src/lib/internships/uploadCleanup.server.ts": {
+            "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+            "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+          },
+          "src/lib/volunteers/policy/booking.repository.server.ts": {
+            "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+            "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+          },
+          "src/lib/donations/supabase.server.ts": {
+            "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+            "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+          },
+          "src/lib/admin/session.server.ts": {
+            "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+            "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+          },
+          "src/lib/supabase.server.ts": {
+            "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+            "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+          },
+          "src/lib/http/boundedFormData.server.ts": {
+            "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+            "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+          },
+          "src/lib/operations/releaseSchema.ts": {
+            "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+            "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+          },
+          "src/lib/operations/releaseManifest.ts": {
+            "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+            "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+          },
+          "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+            "sha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e",
+            "canonicalSha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e"
+          },
+          ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-fix-1-gates.py": {
+            "sha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+            "canonicalSha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb"
+          },
+          "package.json": {
+            "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+            "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+          },
+          "bun.lock": {
+            "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+            "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+          },
+          "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+            "sha256": "a4cf1c94bbe7dda2d7cb9c105a6d48e507b9656acf4be7ff09281a68125566b8",
+            "canonicalSha256": "a4cf1c94bbe7dda2d7cb9c105a6d48e507b9656acf4be7ff09281a68125566b8"
+          },
+          "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+            "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+            "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+          },
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+            "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+            "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+          },
+          "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+          },
+          "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+          },
+          "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+          },
+          "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+            "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+            "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+          }
+        },
+        "productionActions": "catalog/schema reads only; no production data or actor RPC",
+        "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+        "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+        "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+        "clone": "r01_clone_664a6b078970404e8c8d40a0e27198f1",
+        "schemaParity": true,
+        "zeroApplicationTables": 162,
+        "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+        "reviewedFunctions": [
+          {
+            "name": "private.lock_admin_user_mutation",
+            "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+          },
+          {
+            "name": "private.require_active_admin_user",
+            "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+          },
+          {
+            "name": "public.internship_command",
+            "hash": "84662adb879ce5365c625d7d4dfb629c"
+          },
+          {
+            "name": "public.internship_history_guard",
+            "hash": "308d9a20a14412d81ee2f226a96784c2"
+          },
+          {
+            "name": "public.internship_validate_intake",
+            "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+          },
+          {
+            "name": "public.log_animal_mutation",
+            "hash": "264525288c36bf724df4dc72dcafba82"
+          },
+          {
+            "name": "public.mark_internship_attachment_uploaded",
+            "hash": "4592d14b324b3fd7db847d663cae4eaa"
+          },
+          {
+            "name": "public.set_updated_at",
+            "hash": "4d6804d5850641a33867814c9e76a714"
+          },
+          {
+            "name": "storage.enforce_bucket_lifecycle_service_role",
+            "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+          },
+          {
+            "name": "storage.enforce_bucket_name_length",
+            "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+          },
+          {
+            "name": "storage.protect_bucket_control_columns",
+            "hash": "81db66d9936722b1164bca480ccbbf68"
+          },
+          {
+            "name": "storage.protect_delete",
+            "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+          },
+          {
+            "name": "storage.update_updated_at_column",
+            "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+          }
+        ],
+        "manifestBefore": {
+          "requirements": 146,
+          "issues": 1
+        },
+        "dependencies": [
+          {
+            "file": "20261001134252_r01_adoption_upload_forward.sql",
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "issues": 1
+          },
+          {
+            "file": "20261001154743_r01_animal_preference_record_fields.sql",
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "issues": 1
+          },
+          {
+            "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "issues": 1
+          }
+        ],
+        "task1Applied": false,
+        "manifestBeforeTask4": {
+          "requirements": 146,
+          "issues": 1
+        },
+        "foreignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "455682",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_455682",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455681",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "453524",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455682",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455681",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "455683",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_455683",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455681",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "453524",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455683",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455681",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "455684",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_455684",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "453524",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455681",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455684",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455681",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "455685",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_455685",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "453524",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455681",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455685",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455681",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "455687",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_455687",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "453506",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455686",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "454520",
+              "tgconstrrelid": "453524",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455687",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455686",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "455688",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_455688",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "453506",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455686",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "454520",
+              "tgconstrrelid": "453524",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455688",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455686",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "455689",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_455689",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "453524",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455686",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "454520",
+              "tgconstrrelid": "453506",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455689",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455686",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "455690",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_455690",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "453524",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "455686",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "454520",
+              "tgconstrrelid": "453506",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "455690",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "455686",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          }
+        ],
+        "preflightResults": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "client column grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled RLS",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected policy",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong default",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled trigger",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong trigger args",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "definer drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "config drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected overload",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "insert rewrite rule",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unlogged relation",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ],
+        "manifestAfter": {
+          "requirements": 146,
+          "issues": 1
+        },
+        "migration": {
+          "file": "20261001175310_r01_internship_upload_forward.sql",
+          "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "firstApply": 0,
+          "secondApply": 0,
+          "unrelatedCatalogPreserved": true,
+          "modernAllCatalogPreserved": true,
+          "preexistingRowsPreserved": true,
+          "tempShadowPreserved": true,
+          "relationProfileHash": "0c6ec06742e12e9b7be348d6037036084b00ade5c8685097da21477826ac05a2"
+        },
+        "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+        "testExit": 0,
+        "testSummary": [
+          "\n 13 pass",
+          " 0 fail",
+          " 105 expect() calls"
+        ],
+        "ledgerPreserved": true,
+        "preexistingSyntheticFactsPreservedAfterTests": true,
+        "result": "GREEN",
+        "originalSources": {
+          "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+          "templatePreserved": true,
+          "modernBeforeHash": "04ad745841012a8665d51e5cece08d7e932e1a7e3a86fa0858128221554e610a",
+          "modernPreserved": true
+        },
+        "cleanup": "only exact owned clone normally dropped; no force/session termination",
+        "completedAt": "2026-10-01T19:03:53.344Z",
+        "testedExecutableBlobsPreserved": true
+      }
+    },
+    "task-4-fix-1-final-gates.json": {
+      "sha256": "9cf89844dfe03eee4a9e6888d665b473fb15db28c2a6a863e38dc4f13e408a95",
+      "receipt": {
+        "phase": "final",
+        "source": "ffe70c969faa178186e2bd371b633570132b2820",
+        "startedAt": "2026-10-01T19:04:41.656024+00:00",
+        "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+        "gates": [
+          {
+            "gate": "typecheck",
+            "command": "bun run typecheck",
+            "exit": 0,
+            "elapsedSeconds": 27.92,
+            "log": "task-4-fix-1-final-typecheck.log"
+          },
+          {
+            "gate": "tests",
+            "command": "bun test --isolate --timeout 30000",
+            "exit": 0,
+            "elapsedSeconds": 50.06,
+            "log": "task-4-fix-1-final-tests.log",
+            "summary": [
+              "\n 3228 pass",
+              " 247 skip",
+              " 0 fail",
+              " 10477 expect() calls"
+            ]
+          },
+          {
+            "gate": "lint",
+            "command": "bun run lint",
+            "exit": 0,
+            "elapsedSeconds": 25.33,
+            "log": "task-4-fix-1-final-lint.log"
+          },
+          {
+            "gate": "build",
+            "command": "bun run build",
+            "exit": 0,
+            "elapsedSeconds": 35.63,
+            "log": "task-4-fix-1-final-build.log"
+          }
+        ],
+        "completedAt": "2026-10-01T19:07:00.599569+00:00"
+      }
+    },
+    "task-4-fix-1-post-gate-source-state.json": {
+      "sha256": "10dc1a58a2f28116829379e9e48faf74a5bcce8ddad78bead2421e124e52a4c8",
+      "receipt": {
+        "observedAt": "2026-10-01T19:08:02.876Z",
+        "templateHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "modernHash": "d62f75103778083c73460f549da2e99b76c8e1e2da8fc61d63b43e14e977d5e9",
+        "actions": "aggregate read-only helper; no restoration/reset/actor calls",
+        "scope": "post authorized synthetic full-gate fixtures, distinct from per-clone preservation"
+      }
+    },
+    "task-4-fix-1-tested-candidate.json": {
+      "sha256": "e6e05af71000ac057d671dcf396bae16cb976d949b0771a1777b33dd2192e04d",
+      "receipt": {
+        "executionParent": "ffe70c969faa178186e2bd371b633570132b2820",
+        "testedCandidateTree": "df84f290739a625a3f9f7874a8f451ba7a3e5a2e",
+        "scope": "final formatter-corrected explicit Fix1 executable/manifest/wrapper archive; later evidence/current tracker packaging separate",
+        "inputCount": 22
+      }
+    },
+    "task-4-fix-1-pre-format-green-fix-1-db.json": {
+      "sha256": "9566be29d8a29925e8b4f7e1986725f0984aed6699f1291d20b3e818bdf753f9",
+      "receipt": {
+        "mode": "green-fix-1",
+        "startedAt": "2026-10-01T18:54:41.212Z",
+        "sourceCommit": "ffe70c969faa178186e2bd371b633570132b2820",
+        "testedExecutableBlobs": {
+          "src/lib/internships/uploadIntent.database.test.ts": {
+            "sha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8",
+            "canonicalSha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8"
+          },
+          "src/lib/internships/uploadIntent.testSupport.ts": {
+            "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+            "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2"
+          },
+          "src/lib/internships/attachments.server.ts": {
+            "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+            "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+          },
+          "src/lib/internships/uploadCleanup.server.ts": {
+            "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+            "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+          },
+          "src/lib/volunteers/policy/booking.repository.server.ts": {
+            "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+            "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+          },
+          "src/lib/donations/supabase.server.ts": {
+            "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+            "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+          },
+          "src/lib/admin/session.server.ts": {
+            "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+            "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+          },
+          "src/lib/supabase.server.ts": {
+            "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+            "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+          },
+          "src/lib/http/boundedFormData.server.ts": {
+            "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+            "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+          },
+          "src/lib/operations/releaseSchema.ts": {
+            "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+            "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+          },
+          "src/lib/operations/releaseManifest.ts": {
+            "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+            "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+          },
+          "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+            "sha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e",
+            "canonicalSha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e"
+          },
+          ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-fix-1-gates.py": {
+            "sha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+            "canonicalSha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb"
+          },
+          "package.json": {
+            "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+            "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+          },
+          "bun.lock": {
+            "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+            "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+          },
+          "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+            "sha256": "f3f8077bb2f624ee9fe476fc6e562dc6b3d711868a21f0d05dc3319986f360b4",
+            "canonicalSha256": "f3f8077bb2f624ee9fe476fc6e562dc6b3d711868a21f0d05dc3319986f360b4"
+          },
+          "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+            "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+            "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+          },
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+            "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+            "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+          },
+          "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+          },
+          "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+          },
+          "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+          },
+          "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+            "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+            "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+          }
+        },
+        "productionActions": "catalog/schema reads only; no production data or actor RPC",
+        "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+        "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+        "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+        "clone": "r01_clone_29de4505211b4f86b28065be6935a931",
+        "schemaParity": true,
+        "zeroApplicationTables": 158,
+        "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+        "reviewedFunctions": [
+          {
+            "name": "public.internship_command",
+            "hash": "84662adb879ce5365c625d7d4dfb629c"
+          },
+          {
+            "name": "public.internship_history_guard",
+            "hash": "308d9a20a14412d81ee2f226a96784c2"
+          },
+          {
+            "name": "public.internship_validate_intake",
+            "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+          },
+          {
+            "name": "public.log_animal_mutation",
+            "hash": "264525288c36bf724df4dc72dcafba82"
+          },
+          {
+            "name": "public.set_updated_at",
+            "hash": "4d6804d5850641a33867814c9e76a714"
+          },
+          {
+            "name": "storage.enforce_bucket_lifecycle_service_role",
+            "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+          },
+          {
+            "name": "storage.enforce_bucket_name_length",
+            "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+          },
+          {
+            "name": "storage.protect_bucket_control_columns",
+            "hash": "81db66d9936722b1164bca480ccbbf68"
+          },
+          {
+            "name": "storage.protect_delete",
+            "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+          },
+          {
+            "name": "storage.update_updated_at_column",
+            "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+          }
+        ],
+        "manifestBefore": {
+          "requirements": 146,
+          "issues": 44
+        },
+        "dependencies": [
+          {
+            "file": "20261001134252_r01_adoption_upload_forward.sql",
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "issues": 41
+          },
+          {
+            "file": "20261001154743_r01_animal_preference_record_fields.sql",
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "issues": 41
+          },
+          {
+            "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "issues": 33
+          }
+        ],
+        "task1Applied": false,
+        "manifestBeforeTask4": {
+          "requirements": 146,
+          "issues": 33
+        },
+        "foreignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "443147",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_443147",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443146",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "443131",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443147",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443146",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "443148",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_443148",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443146",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "443131",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443148",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443146",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "443149",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_443149",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "443131",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443146",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443149",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443146",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "443150",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_443150",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "443131",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443146",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443150",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443146",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "443142",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_443142",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "440173",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443141",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "441158",
+              "tgconstrrelid": "443131",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443142",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443141",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "443143",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_443143",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "440173",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443141",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "441158",
+              "tgconstrrelid": "443131",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443143",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443141",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "443144",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_443144",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "443131",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443141",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "441158",
+              "tgconstrrelid": "440173",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443144",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443141",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "443145",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_443145",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "443131",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "443141",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "441158",
+              "tgconstrrelid": "440173",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "443145",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "443141",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          }
+        ],
+        "preflightResults": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "client column grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled RLS",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected policy",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong default",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled trigger",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong trigger args",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "definer drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "config drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected overload",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "insert rewrite rule",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unlogged relation",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ],
+        "manifestAfter": {
+          "requirements": 146,
+          "issues": 30
+        },
+        "migration": {
+          "file": "20261001175310_r01_internship_upload_forward.sql",
+          "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "firstApply": 0,
+          "secondApply": 0,
+          "unrelatedCatalogPreserved": true,
+          "modernAllCatalogPreserved": false,
+          "preexistingRowsPreserved": true,
+          "tempShadowPreserved": true,
+          "relationProfileHash": "ebc4608955fd27ac68dc6c742b8eea02567c47bb3c78d59f8c8462de4530ef4d"
+        },
+        "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+        "testExit": 0,
+        "testSummary": [
+          "\n 13 pass",
+          " 0 fail",
+          " 105 expect() calls"
+        ],
+        "ledgerPreserved": true,
+        "preexistingSyntheticFactsPreservedAfterTests": true,
+        "result": "GREEN",
+        "originalSources": {
+          "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+          "templatePreserved": true,
+          "modernBeforeHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+          "modernPreserved": true
+        },
+        "cleanup": "only exact owned clone normally dropped; no force/session termination",
+        "completedAt": "2026-10-01T18:55:34.936Z",
+        "testedExecutableBlobsPreserved": true
+      }
+    },
+    "task-4-fix-1-pre-format-green-modern-fix-1-db.json": {
+      "sha256": "c56d83ec0182a9bcb8a781511cfe2e377d887778b5959a85fa2258419d906104",
+      "receipt": {
+        "mode": "green-modern-fix-1",
+        "startedAt": "2026-10-01T18:56:15.829Z",
+        "sourceCommit": "ffe70c969faa178186e2bd371b633570132b2820",
+        "testedExecutableBlobs": {
+          "src/lib/internships/uploadIntent.database.test.ts": {
+            "sha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8",
+            "canonicalSha256": "c24cd998381c41dafdeab87fea9ef5b444f1095bef0f7495878b787d68a642c8"
+          },
+          "src/lib/internships/uploadIntent.testSupport.ts": {
+            "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+            "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2"
+          },
+          "src/lib/internships/attachments.server.ts": {
+            "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+            "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+          },
+          "src/lib/internships/uploadCleanup.server.ts": {
+            "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+            "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+          },
+          "src/lib/volunteers/policy/booking.repository.server.ts": {
+            "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+            "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+          },
+          "src/lib/donations/supabase.server.ts": {
+            "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+            "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+          },
+          "src/lib/admin/session.server.ts": {
+            "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+            "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+          },
+          "src/lib/supabase.server.ts": {
+            "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+            "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+          },
+          "src/lib/http/boundedFormData.server.ts": {
+            "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+            "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+          },
+          "src/lib/operations/releaseSchema.ts": {
+            "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+            "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+          },
+          "src/lib/operations/releaseManifest.ts": {
+            "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+            "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+          },
+          "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+            "sha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e",
+            "canonicalSha256": "10ca71e275b41bd18a61ffd40ea51661afb388a277ecc50bcdb1b12d18c9c00e"
+          },
+          ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-fix-1-gates.py": {
+            "sha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+            "canonicalSha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb"
+          },
+          "package.json": {
+            "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+            "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+          },
+          "bun.lock": {
+            "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+            "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+          },
+          "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+            "sha256": "f3f8077bb2f624ee9fe476fc6e562dc6b3d711868a21f0d05dc3319986f360b4",
+            "canonicalSha256": "f3f8077bb2f624ee9fe476fc6e562dc6b3d711868a21f0d05dc3319986f360b4"
+          },
+          "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+            "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+            "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+          },
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+            "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+            "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+          },
+          "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+          },
+          "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+          },
+          "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+          },
+          "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+            "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+            "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+          }
+        },
+        "productionActions": "catalog/schema reads only; no production data or actor RPC",
+        "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+        "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+        "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+        "clone": "r01_clone_9a2ad34a6df448c6a656c9b3080207e2",
+        "schemaParity": true,
+        "zeroApplicationTables": 162,
+        "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+        "reviewedFunctions": [
+          {
+            "name": "private.lock_admin_user_mutation",
+            "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+          },
+          {
+            "name": "private.require_active_admin_user",
+            "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+          },
+          {
+            "name": "public.internship_command",
+            "hash": "84662adb879ce5365c625d7d4dfb629c"
+          },
+          {
+            "name": "public.internship_history_guard",
+            "hash": "308d9a20a14412d81ee2f226a96784c2"
+          },
+          {
+            "name": "public.internship_validate_intake",
+            "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+          },
+          {
+            "name": "public.log_animal_mutation",
+            "hash": "264525288c36bf724df4dc72dcafba82"
+          },
+          {
+            "name": "public.mark_internship_attachment_uploaded",
+            "hash": "4592d14b324b3fd7db847d663cae4eaa"
+          },
+          {
+            "name": "public.set_updated_at",
+            "hash": "4d6804d5850641a33867814c9e76a714"
+          },
+          {
+            "name": "storage.enforce_bucket_lifecycle_service_role",
+            "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+          },
+          {
+            "name": "storage.enforce_bucket_name_length",
+            "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+          },
+          {
+            "name": "storage.protect_bucket_control_columns",
+            "hash": "81db66d9936722b1164bca480ccbbf68"
+          },
+          {
+            "name": "storage.protect_delete",
+            "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+          },
+          {
+            "name": "storage.update_updated_at_column",
+            "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+          }
+        ],
+        "manifestBefore": {
+          "requirements": 146,
+          "issues": 1
+        },
+        "dependencies": [
+          {
+            "file": "20261001134252_r01_adoption_upload_forward.sql",
+            "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+            "issues": 1
+          },
+          {
+            "file": "20261001154743_r01_animal_preference_record_fields.sql",
+            "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+            "issues": 1
+          },
+          {
+            "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+            "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+            "issues": 1
+          }
+        ],
+        "task1Applied": false,
+        "manifestBeforeTask4": {
+          "requirements": 146,
+          "issues": 1
+        },
+        "foreignKeyTriggers": [
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "446809",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_446809",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446808",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "444651",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446809",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446808",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "446810",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_446810",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "24860",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446808",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "444651",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446810",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446808",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "446811",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_446811",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "444651",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446808",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446811",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446808",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_actor_fkey",
+            "trigger": {
+              "oid": "446812",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_446812",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "444651",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446808",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "26672",
+              "tgconstrrelid": "24860",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446812",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446808",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "446814",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1654",
+              "tgname": "RI_ConstraintTrigger_a_446814",
+              "tgqual": null,
+              "tgtype": 9,
+              "tgnargs": 0,
+              "tgrelid": "444633",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446813",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "445647",
+              "tgconstrrelid": "444651",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446814",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446813",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "446815",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1655",
+              "tgname": "RI_ConstraintTrigger_a_446815",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "444633",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446813",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "445647",
+              "tgconstrrelid": "444651",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446815",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446813",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "446816",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1644",
+              "tgname": "RI_ConstraintTrigger_c_446816",
+              "tgqual": null,
+              "tgtype": 5,
+              "tgnargs": 0,
+              "tgrelid": "444651",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446813",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "445647",
+              "tgconstrrelid": "444633",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446816",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446813",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          },
+          {
+            "conname": "internship_attachment_upload_intent_application_id_fkey",
+            "trigger": {
+              "oid": "446817",
+              "tgargs": "\\x",
+              "tgattr": [],
+              "tgfoid": "1645",
+              "tgname": "RI_ConstraintTrigger_c_446817",
+              "tgqual": null,
+              "tgtype": 17,
+              "tgnargs": 0,
+              "tgrelid": "444651",
+              "tgenabled": "O",
+              "tgnewtable": null,
+              "tgoldtable": null,
+              "tgparentid": "0",
+              "tgconstraint": "446813",
+              "tgdeferrable": false,
+              "tgisinternal": true,
+              "tgconstrindid": "445647",
+              "tgconstrrelid": "444633",
+              "tginitdeferred": false
+            },
+            "dependencies": [
+              {
+                "objid": "446817",
+                "classid": "2620",
+                "deptype": "i",
+                "objsubid": 0,
+                "refobjid": "446813",
+                "refclassid": "2606",
+                "refobjsubid": 0
+              }
+            ]
+          }
+        ],
+        "preflightResults": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "client column grant",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled RLS",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected policy",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong default",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled trigger",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong trigger args",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "definer drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "config drift",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unexpected overload",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "insert rewrite rule",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "unlogged relation",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_actor_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey referenced action",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled internship_attachment_upload_intent_application_id_fkey intent check",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ],
+        "manifestAfter": {
+          "requirements": 146,
+          "issues": 1
+        },
+        "migration": {
+          "file": "20261001175310_r01_internship_upload_forward.sql",
+          "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "firstApply": 0,
+          "secondApply": 0,
+          "unrelatedCatalogPreserved": true,
+          "modernAllCatalogPreserved": true,
+          "preexistingRowsPreserved": true,
+          "tempShadowPreserved": true,
+          "relationProfileHash": "a72f355a6c7b0a7992b69eeed503b10887b93c2ee40154093e0b50c262eb3135"
+        },
+        "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+        "testExit": 0,
+        "testSummary": [
+          "\n 13 pass",
+          " 0 fail",
+          " 105 expect() calls"
+        ],
+        "ledgerPreserved": true,
+        "preexistingSyntheticFactsPreservedAfterTests": true,
+        "result": "GREEN",
+        "originalSources": {
+          "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+          "templatePreserved": true,
+          "modernBeforeHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+          "modernPreserved": true
+        },
+        "cleanup": "only exact owned clone normally dropped; no force/session termination",
+        "completedAt": "2026-10-01T18:56:34.171Z",
+        "testedExecutableBlobsPreserved": true
+      }
+    },
+    "task-4-fix-1-pre-format-fix-1-tested-candidate.json": {
+      "sha256": "922f89f530252e2cfea8048f8d3e5e5b754f3a088b2b720ae74b541e20d8122d",
+      "receipt": {
+        "executionParent": "ffe70c969faa178186e2bd371b633570132b2820",
+        "testedCandidateTree": "06195ff9985fd0cd80d468bd37cd37da2f9a8814",
+        "scope": "explicit Fix1 executable/manifest/wrapper archive; later evidence/current tracker packaging separate",
+        "inputCount": 22
+      }
+    },
+    "task-4-fix-1-pre-format-fix-1-final-gates.json": {
+      "sha256": "e5cef2bf778da5a5c2359bba95bfd305b00bbc7b2bd9ec649b96b7d593bd7ea4",
+      "receipt": {
+        "phase": "final",
+        "source": "ffe70c969faa178186e2bd371b633570132b2820",
+        "startedAt": "2026-10-01T18:57:37.869091+00:00",
+        "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+        "gates": [
+          {
+            "gate": "typecheck",
+            "command": "bun run typecheck",
+            "exit": 0,
+            "elapsedSeconds": 31.15,
+            "log": "task-4-fix-1-final-typecheck.log"
+          },
+          {
+            "gate": "tests",
+            "command": "bun test --isolate --timeout 30000",
+            "exit": 0,
+            "elapsedSeconds": 76.04,
+            "log": "task-4-fix-1-final-tests.log",
+            "summary": [
+              "\n 3228 pass",
+              " 247 skip",
+              " 0 fail",
+              " 10477 expect() calls"
+            ]
+          },
+          {
+            "gate": "lint",
+            "command": "bun run lint",
+            "exit": 1,
+            "elapsedSeconds": 31.43,
+            "log": "task-4-fix-1-final-lint.log"
+          },
+          {
+            "gate": "build",
+            "command": "bun run build",
+            "exit": 0,
+            "elapsedSeconds": 49.17,
+            "log": "task-4-fix-1-final-build.log"
+          }
+        ],
+        "completedAt": "2026-10-01T19:00:45.660569+00:00"
+      }
+    },
+    "task-4-fix-1-pre-format-post-gate-source-state.json": {
+      "sha256": "0fd9bcb79feac61369346dd49aa5cf6b59ff7a057f6a7bf641fa8042c06030f5",
+      "receipt": {
+        "observedAt": "2026-10-01T19:01:48.473Z",
+        "templateHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "modernHash": "04ad745841012a8665d51e5cece08d7e932e1a7e3a86fa0858128221554e610a",
+        "actions": "aggregate read-only helper; no restoration/reset/actor calls",
+        "scope": "post authorized synthetic full-gate fixtures, distinct from per-clone preservation"
+      }
+    }
+  },
+  "retainedFixArtifacts": {
+    "run-task-4-fix-1-gates.py": {
+      "sha256": "069e9c6abec2ffa86e33ed2a1d51ea866e1c571d08cdc64556cb575c67962cfb",
+      "bytes": 2312
+    },
+    "task-4-fix-1-final-build.log": {
+      "sha256": "3b07019a22c94e2eb4cd15dab4b7ecfecf6b52b08bca9871df4aa58c3db24f15",
+      "bytes": 120067
+    },
+    "task-4-fix-1-final-gates-runner.log": {
+      "sha256": "23eb1a44c4a2f2b2fe9d62d3028e4e49b8e9432691bb97fccfb67fbe50a62747",
+      "bytes": 596
+    },
+    "task-4-fix-1-final-gates.json": {
+      "sha256": "9cf89844dfe03eee4a9e6888d665b473fb15db28c2a6a863e38dc4f13e408a95",
+      "bytes": 1165
+    },
+    "task-4-fix-1-final-lint.log": {
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696
+    },
+    "task-4-fix-1-final-tests.log": {
+      "sha256": "6b0850701f170681a3ccc478fe665083535b5070632592b5fb75dd52f3838048",
+      "bytes": 411641
+    },
+    "task-4-fix-1-final-typecheck.log": {
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    "task-4-fix-1-focused-lint.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "task-4-fix-1-hosted-runner.log": {
+      "sha256": "4fac9d28d851d279417eb7da6f255e3cdc4d287e64fc00dd3a1c80ebae330847",
+      "bytes": 14282
+    },
+    "task-4-fix-1-inspect-red.ts": {
+      "sha256": "92ce9d9f771ac752ce21ba727058c3e5ee5db37970e75d09787a98465884dbbb",
+      "bytes": 4205
+    },
+    "task-4-fix-1-modern-runner.log": {
+      "sha256": "79612c47db4ece96a4f2ff9cce929572a2847239c1d312e3092e2f2d382b8dd4",
+      "bytes": 14551
+    },
+    "task-4-fix-1-post-gate-source-state.json": {
+      "sha256": "10dc1a58a2f28116829379e9e48faf74a5bcce8ddad78bead2421e124e52a4c8",
+      "bytes": 391
+    },
+    "task-4-fix-1-post-gate-source-state.ts": {
+      "sha256": "7cd875bf4b1dd0f5500bc3ffcbce4ded3683a5a6276a40a8ff14530adb4f6323",
+      "bytes": 652
+    },
+    "task-4-fix-1-pre-format-fix-1-final-build.log": {
+      "sha256": "68de065c96a5d8d44f28ff78d9f35771bc53442759b3c1b18508bbf0c15515cb",
+      "bytes": 120067
+    },
+    "task-4-fix-1-pre-format-fix-1-final-gates-runner.log": {
+      "sha256": "c9d864786dc33733436e775fe027c7df57a6aa4e54b65f3bffbe23bc32e1f74b",
+      "bytes": 5217
+    },
+    "task-4-fix-1-pre-format-fix-1-final-gates.json": {
+      "sha256": "e5cef2bf778da5a5c2359bba95bfd305b00bbc7b2bd9ec649b96b7d593bd7ea4",
+      "bytes": 1165
+    },
+    "task-4-fix-1-pre-format-fix-1-final-lint.log": {
+      "sha256": "366bcf5dd1d89d8496329cb5b3d36a95f80d9755666d5afd1623f184595b1b0e",
+      "bytes": 15085
+    },
+    "task-4-fix-1-pre-format-fix-1-final-tests.log": {
+      "sha256": "2e91839bf818ba8b344b6fa23d9fa5379b0dc25321d71a10aa12fadab912ae8f",
+      "bytes": 411710
+    },
+    "task-4-fix-1-pre-format-fix-1-final-typecheck.log": {
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    "task-4-fix-1-pre-format-fix-1-hosted-runner.log": {
+      "sha256": "029366e40df8f93f9c52fa5adbe5994aa20c92a8e4ed412c70372c39b4a84b8a",
+      "bytes": 14282
+    },
+    "task-4-fix-1-pre-format-fix-1-modern-runner.log": {
+      "sha256": "34e7ed42b2f9f4605841efa9f2278880d2747d41b11bd497005e885eb0ec97e8",
+      "bytes": 14551
+    },
+    "task-4-fix-1-pre-format-fix-1-tested-candidate.json": {
+      "sha256": "922f89f530252e2cfea8048f8d3e5e5b754f3a088b2b720ae74b541e20d8122d",
+      "bytes": 272
+    },
+    "task-4-fix-1-pre-format-green-fix-1-db.json": {
+      "sha256": "9566be29d8a29925e8b4f7e1986725f0984aed6699f1291d20b3e818bdf753f9",
+      "bytes": 18992
+    },
+    "task-4-fix-1-pre-format-green-fix-1-db.log": {
+      "sha256": "0d6657855390331c30a3e503ad15de0a462720261e163d291f574fd8140950e9",
+      "bytes": 2134
+    },
+    "task-4-fix-1-pre-format-green-modern-fix-1-db.json": {
+      "sha256": "c56d83ec0182a9bcb8a781511cfe2e377d887778b5959a85fa2258419d906104",
+      "bytes": 19339
+    },
+    "task-4-fix-1-pre-format-green-modern-fix-1-db.log": {
+      "sha256": "056d7808248c646767b11ea612f4d62cec3a2f57d62ab4b9202a20e832dfd4a8",
+      "bytes": 2131
+    },
+    "task-4-fix-1-pre-format-post-gate-source-state.json": {
+      "sha256": "0fd9bcb79feac61369346dd49aa5cf6b59ff7a057f6a7bf641fa8042c06030f5",
+      "bytes": 391
+    },
+    "task-4-fix-1-pre-format-post-gate-source-state.ts": {
+      "sha256": "1e6f2571fc1b3c0f9e54c8b91c0f871c42c355b27f6b61c24ab65a710a166e2e",
+      "bytes": 663
+    },
+    "task-4-fix-1-preflight-typecheck.log": {
+      "sha256": "5a3973f79ed9becd5f23c4feff467513814de7ea381d75a4d2e339aa8b8edca9",
+      "bytes": 16
+    },
+    "task-4-fix-1-red-owner-context-probe.json": {
+      "sha256": "af3d5cfbb262e3df3b7fa549122fc2942a692cbce33d4743ee3fffe663170083",
+      "bytes": 10645
+    },
+    "task-4-fix-1-red-owner-context-probe.log": {
+      "sha256": "a208b5a8756c227522a5a895ce211f233964dce768b4f4f2854981d58b0dc682",
+      "bytes": 11864
+    },
+    "task-4-fix-1-red-probe-setup.json": {
+      "sha256": "cb14efe805204540f7baf63be665fd0d7658558ce5f348e489c828cfe3e893ec",
+      "bytes": 10377
+    },
+    "task-4-fix-1-red-probe-setup.log": {
+      "sha256": "2f7993e1d9217fd9e93a825989d75dce82b46ea47a1941f9608bc3c475eacc0a",
+      "bytes": 11584
+    },
+    "task-4-fix-1-red-system-trigger-probe.json": {
+      "sha256": "a3420ffaf28ccde82ef15d9027cebef63300e6303eb8901343b84c456fc0cb31",
+      "bytes": 10705
+    },
+    "task-4-fix-1-red-system-trigger-probe.log": {
+      "sha256": "dc484897c0822d8928ad6962c13d2391efbd5e9e772e63bebcf5884f4cce66ac",
+      "bytes": 11924
+    },
+    "task-4-fix-1-red.json": {
+      "sha256": "0532f3100fba4c703117302e34ebe37bc5b37b37658d2ff98707f6fdba3184df",
+      "bytes": 10557
+    },
+    "task-4-fix-1-red.log": {
+      "sha256": "9abc80eebd1d39b13e8190ba4524459885aa9c0164a4deafdc6a5734ec4907a7",
+      "bytes": 10842
+    },
+    "task-4-fix-1-tested-candidate.json": {
+      "sha256": "e6e05af71000ac057d671dcf396bae16cb976d949b0771a1777b33dd2192e04d",
+      "bytes": 298
+    },
+    "task-4-green-fix-1-db.json": {
+      "sha256": "3372dc856b08afe22b07ed28a3ea52ea3a74377e8e76223a1d4f17fdb14ab7a9",
+      "bytes": 18992
+    },
+    "task-4-green-fix-1-db.log": {
+      "sha256": "8dd43d7197714c90624f262fc8c40774cc7bdd1050bdf098ab4353573d2c55af",
+      "bytes": 2135
+    },
+    "task-4-green-modern-fix-1-db.json": {
+      "sha256": "84d1b8efb5208285569a457c859120a3b888499b8447758bc8d03de816ae179e",
+      "bytes": 19339
+    },
+    "task-4-green-modern-fix-1-db.log": {
+      "sha256": "0b653e2383b8d2331346adcd48cec3be0e803c0eb24f8c44e709189618e862ba",
+      "bytes": 2135
+    }
+  },
+  "archiveWrapper": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-4-fix-1-gates.py",
+    "sha256": "9b6fe00a770cb47dcc153285929e2342f20f02698aedff2b65952888fd1256bb",
+    "canonicalSha256": "9b6fe00a770cb47dcc153285929e2342f20f02698aedff2b65952888fd1256bb",
+    "gitBlob": "4251fd65b1d75cdfcb1000a6291ef3d6582b1014",
+    "mapping": "actual ignored executable wrapper unchanged; archive strips one final empty line only"
+  },
+  "currentPackaging": {
+    "docs/evidence/audit-remediation-20260927/tracker.csv": {
+      "sha256": "1e73153e4d900abf65ecd584781a771e051cf29e0349b342b3dcd712abd8a55d",
+      "canonicalSha256": "1e73153e4d900abf65ecd584781a771e051cf29e0349b342b3dcd712abd8a55d",
+      "gitBlob": "b0d9eb6bf6fd164c611f87e5f47f3eb5a6663850"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-4-fix-1-internship-upload.md": {
+      "sha256": "696e9005e1d14779d31c84dccd555f91642bf23bb4c197484e13f3456f745ca5",
+      "canonicalSha256": "696e9005e1d14779d31c84dccd555f91642bf23bb4c197484e13f3456f745ca5",
+      "gitBlob": "2222d4d3d37ae1b21e3018cb839fd739d69152f8"
+    }
+  },
+  "scope": "I1 only; no new migration/shared harness/dependency/caller/adapter/ACL/roles/engine changes; existing Task4 function bodies/security/grants unchanged",
+  "notRun": [
+    "same reviewer scoped Fix1 re-review/exact-head CI",
+    "Task1 SQL/source ACL patch",
+    "production/provider/real Storage/Auth/JWT/PostgREST/full checkout/recovery/hosted UAT/release/enablement"
+  ]
+}

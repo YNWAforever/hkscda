@@ -1,0 +1,131 @@
+{
+  "mode": "green",
+  "startedAt": "2026-10-01T13:52:17.264Z",
+  "productionActions": "schema/catalog reads only; zero production rows/mutations/RPC invocations",
+  "environment": "new guarded empty clone at52322; managed synthetic Auth/Storage retained; no Storage calls",
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "counts": {
+    "columns": 2176,
+    "constraints": 808,
+    "databaseOwner": "string",
+    "defaults": 6,
+    "extensionMembers": 136,
+    "extensions": 2,
+    "functions": 353,
+    "indexes": 396,
+    "memberships": "object",
+    "policies": 82,
+    "relations": 557,
+    "roles": 5,
+    "schemas": 2,
+    "sequences": "object",
+    "triggers": 145,
+    "types": 326,
+    "views": 3
+  },
+  "clone": "r01_clone_294abd07a3fe4052a0d44b32ea9bb760",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "reviewedTriggerPaths": [
+    {
+      "name": "private.bump_adoption_case_bulk_row_version",
+      "hash": "4360bcbf3bdaa28be558e276bf60ea6c"
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7"
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714"
+    }
+  ],
+  "reviewedFkChildren": [
+    {
+      "child": "public.adoption_application_animal_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_detail",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_photo",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_visit_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_case",
+      "confdeltype": "n"
+    },
+    {
+      "child": "public.adoption_intake_item",
+      "confdeltype": "c"
+    }
+  ],
+  "manifestBefore": {
+    "requirements": 146,
+    "issues": 44
+  },
+  "manifestAfter": {
+    "requirements": 146,
+    "issues": 41
+  },
+  "migration": {
+    "file": "20261001134252_r01_adoption_upload_forward.sql",
+    "sha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef",
+    "canonicalSha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef",
+    "firstApply": 0,
+    "secondApply": 0,
+    "metadataPreserved": true,
+    "legacyRowsLedgerPreserved": true,
+    "tempShadowPreserved": true,
+    "modernAllCatalogPreserved": false,
+    "rejected": [
+      {
+        "case": "wrong-fingerprint-type",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong-fingerprint-check",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "wrong-intent-index",
+        "sqlState": "55000",
+        "preserved": true
+      },
+      {
+        "case": "public-cleanup-execute",
+        "sqlState": "55000",
+        "preserved": true
+      }
+    ]
+  },
+  "testCommand": "bun test src/lib/publicAdoption/uploadIntent.database.test.ts --timeout 30000",
+  "testExit": 0,
+  "testSummary": [
+    "\n 11 pass",
+    " 0 fail",
+    " 49 expect() calls"
+  ],
+  "result": "GREEN",
+  "originalSources": {
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d88e815f545e74aef0c0a126180f445265b72282c88737e1640319b0b2e90577",
+    "modernPreserved": true
+  },
+  "cleanup": "exact owned clone dropped normally; no FORCE/session termination",
+  "completedAt": "2026-10-01T13:59:16.108Z"
+}
