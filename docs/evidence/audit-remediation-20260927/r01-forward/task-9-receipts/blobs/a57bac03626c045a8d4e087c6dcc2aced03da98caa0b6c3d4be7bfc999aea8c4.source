@@ -1,0 +1,60 @@
+{
+  "base": "9df26366cc719d0f92530a784da6871d0db81398",
+  "finalSourceCommit": "9258f52e6f72432cd798f46deba14e2909429586",
+  "sqlInsertionBytes": 440,
+  "sqlRemovedBytes": 0,
+  "onlySqlChangedLine": 91,
+  "sqlRawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+  "sourceCommitMatchesTestedRawFiles": true,
+  "runtime": {
+    "hosted": {
+      "receipt": "task-9-hosted-1790935448904",
+      "inputs": 70,
+      "runtimeCopies": 70,
+      "refusals": 74,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "allFinalFlags": true
+    },
+    "modern": {
+      "receipt": "task-9-modern-1790935582481",
+      "inputs": 70,
+      "runtimeCopies": 70,
+      "refusals": 82,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "allFinalFlags": true
+    },
+    "component": {
+      "receipt": "task-9-component-1790935250738",
+      "inputs": 70,
+      "runtimeCopies": 70,
+      "refusals": 84,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "allFinalFlags": true
+    },
+    "gates": {
+      "receipt": "task-9-gates-1790935663057902800",
+      "inputs": 77,
+      "runtimeCopies": 78,
+      "allFourExitZero": true,
+      "frozenAndTemplatePreserved": true
+    }
+  },
+  "priorTranslationPrefix": 1615,
+  "priorUniqueBlobs": 252,
+  "allArchiveBytesVerified": true,
+  "reportAndRunbookAppendOnly": true,
+  "trackerOnlyR01EvidenceAndConcernAppended": true,
+  "qualification": "Read-only covering checker; no DB/test reruns, preserved original receipt HEAD markers and failed runs."
+}

@@ -1,0 +1,49 @@
+{
+  "run": 36985370386,
+  "head": "9df26366cc719d0f92530a784da6871d0db81398",
+  "allFiveIndividualSuccess": false,
+  "bindings": [
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-final-receipt.json",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-final-receipt.json",
+      "bytes": 12963,
+      "sha256": "a2f7aeb3dfcbacfa3fd4766e475e29a2dda7755c72e3cb45b30069768957162d"
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-verify.raw.log",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-verify.raw.log",
+      "bytes": 875837,
+      "sha256": "2cb4496a8586be6e50f07bc7270ab9aa9e3187c58fe4094946a95b71dee57100"
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-rls.raw.log",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-rls.raw.log",
+      "bytes": 277975,
+      "sha256": "13e0493c98771f39f3e4c269441b4910e25016774128aecb0277518cd3dffb0b"
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-performance-verify.raw.log",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-performance-verify.raw.log",
+      "bytes": 226859,
+      "sha256": "8836fcb0cea88cb0969b02a9cc08545a7459779278d47ce5705b8d6fe20fe21e"
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-a11y-verify.raw.log",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-a11y-verify.raw.log",
+      "bytes": 224625,
+      "sha256": "5e301b3322049b7635596f0fd8266fa0575848aa20b9aa9e8a768ce19a78c53c"
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-brand-verify.raw.log",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-brand-verify.raw.log",
+      "bytes": 224816,
+      "sha256": "38f255138e47e6cfa26077dc35ddd03d301afd90aaf90f1410735d8c0b74f460"
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-final-metadata.json",
+      "local": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-final-metadata.json",
+      "bytes": 40984,
+      "sha256": "dc12ad369501de5209f22673cca9c2a051f7da18b75c42a2434e5884b0943873"
+    }
+  ]
+}

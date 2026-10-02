@@ -1,0 +1,47 @@
+{
+  "checkedAtUtc": "2026-10-02T09:24:08.596388+00:00",
+  "exitCode": 0,
+  "rawFiles": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\after-auth-catalog.json",
+      "bytes": 642250,
+      "sha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\before-auth-catalog.json",
+      "bytes": 133748,
+      "sha256": "b754830039f44d4990d8a5972de6b26ce9663fd68ac34b20f6782291b86cd003"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\executed-stageb.py.source",
+      "bytes": 7121,
+      "sha256": "5936194a608d49ac0c721bb07bf233831b401f9984d1f1be66394d3322d5bf13"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\query.sql.source",
+      "bytes": 2258,
+      "sha256": "c9684267e8e451798cdd70ca41df9becd3dadaa5b5fed70e8071ce5bc982e143"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\ruling.source",
+      "bytes": 3263,
+      "sha256": "354e03265a1835ad8198451cda9b3c919c1f92b8ab6dcc16d7a1015f5609158e"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\schema.sql.source",
+      "bytes": 702,
+      "sha256": "3a9f39fb79d67d4fb2f5e54638dca1d06894a3e1a57419bc188e4ee09c72556f"
+    }
+  ],
+  "sourceHead": "9df26366cc719d0f92530a784da6871d0db81398",
+  "receiptSha256": "8230202bbf559c986f845662f4bc9dbe421256362f507ef8e779378f5907efbd",
+  "readOnly17_11Actual": true,
+  "zeroAuthRowsAbsentJobsAndNetQueuesBoth": true,
+  "sameCompleteUidRowAsObserved17_6Modern": true,
+  "templateOnlyUidBodyLFvsCRLFAndOids": true,
+  "exactFullAclOwnerDefaultsLanguageSecurityConfigNativeFacets": true,
+  "noPortsBindsVolumesAndOnlyOwnedNamespace": true,
+  "bothOwnedNormalCleanupExit0": true,
+  "componentNotFullCi": true,
+  "rootNoDbTests": true
+}

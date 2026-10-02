@@ -1,0 +1,54 @@
+{
+  "checkedAtUtc": "2026-10-02T10:04:45.397709+00:00",
+  "scope": "Immutable FAILED first Fix4 gate inputs and actual raw logs only; no rerun and no final acceptance",
+  "gateReceipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-gates-1790934875982673800\\receipt.json",
+  "receiptSha256": "61114de83e48b0e45749fee2204a2911be3dd5ffe9b6ce66f56ce36a1ccd3d36",
+  "sourceCommitMarker": "9df26366cc719d0f92530a784da6871d0db81398",
+  "sourceCommitQualification": "Modified working bytes are represented by testedFinalSourceBlobs and exact archivedInputs; marker is not a clean source commit claim",
+  "inputCount": 77,
+  "allArchiveRawCanonicalGitBindings": true,
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 2,
+      "elapsedSeconds": 33.35,
+      "log": "typecheck.log",
+      "logSha256": "863f393f57f3fd3ffbd38621a6fc9d087ac6f759f94dab885e8791f9d1428781"
+    },
+    {
+      "gate": "tests",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 94.06,
+      "log": "tests.log",
+      "logSha256": "48d30afffd707eae74ab8c5ac5bf548c6a02e39c86a06255cbc92e454e1db6e6",
+      "summary": [
+        "\n 3280 pass",
+        " 391 skip",
+        " 0 fail",
+        " 10609 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 0,
+      "elapsedSeconds": 50.8,
+      "log": "lint.log",
+      "logSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "gate": "build",
+      "command": "bun run build",
+      "exit": 0,
+      "elapsedSeconds": 118.6,
+      "log": "build.log",
+      "logSha256": "5de07195662f26b769baeb4a89e26ac37af98e720e3792c5764b8d6823dbdaaa"
+    }
+  ],
+  "frozenInputsPreserved": true,
+  "templatePreserved": true,
+  "errors": [],
+  "noTestsOrSQLExecuted": true
+}

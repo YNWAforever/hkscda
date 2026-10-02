@@ -1,0 +1,413 @@
+{
+  "at": "2026-10-02T09:01:35.178530+00:00",
+  "sourceCommit": "9df26366cc719d0f92530a784da6871d0db81398",
+  "qualification": "Read-only PostgreSQL 17.6 catalog observations; not CI 17.11 metadata or a new accepted profile. No application/Auth data rows or helper execution.",
+  "captures": [
+    {
+      "profile": "modern",
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-audit-integration-573",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "runtime": {
+        "user": "postgres",
+        "version": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+        "database": "postgres",
+        "readonly": "on"
+      },
+      "functions": 391,
+      "triggers": 1282,
+      "uid": [
+        {
+          "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+          "name": "uid",
+          "owner": "supabase_auth_admin",
+          "result": "uuid",
+          "schema": "auth",
+          "bodyMd5": "cdef18c69c4f4cbbced2eaf81e628b49",
+          "identity": "",
+          "language": "sql",
+          "arguments": "",
+          "definition": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n$function$\n",
+          "completeProc": {
+            "oid": "16501",
+            "proacl": [
+              "=X/supabase_auth_admin",
+              "supabase_auth_admin=X/supabase_auth_admin",
+              "dashboard_user=X/supabase_auth_admin"
+            ],
+            "probin": null,
+            "prosrc": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n",
+            "procost": 100,
+            "prokind": "f",
+            "prolang": "14",
+            "proname": "uid",
+            "prorows": 0,
+            "pronargs": 0,
+            "proowner": "16504",
+            "proconfig": null,
+            "proretset": false,
+            "prosecdef": false,
+            "prorettype": "2950",
+            "prosqlbody": null,
+            "prosupport": "-",
+            "proargmodes": null,
+            "proargnames": null,
+            "proargtypes": [],
+            "proisstrict": false,
+            "proparallel": "u",
+            "protrftypes": null,
+            "provariadic": "0",
+            "provolatile": "s",
+            "proleakproof": false,
+            "pronamespace": "16457",
+            "proallargtypes": null,
+            "proargdefaults": null,
+            "pronargdefaults": 0
+          },
+          "effectiveAcl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "supabase_auth_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "supabase_auth_admin",
+              "grantor": "supabase_auth_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "dashboard_user",
+              "grantor": "supabase_auth_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "definitionMd5": "ea3b41bf29e2ad573067939329aa088e",
+          "defaultExpression": null
+        }
+      ],
+      "privateManual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "name": "create_manual_adoption_case",
+          "owner": "postgres",
+          "result": "jsonb",
+          "schema": "private",
+          "bodyMd5": "18def457bdf482aea149d9ff56dff3c6",
+          "identity": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+          "language": "plpgsql",
+          "arguments": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb",
+          "definition": "CREATE OR REPLACE FUNCTION private.create_manual_adoption_case(p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_identity_kind text := p_identity->>'kind';\n  v_supporter_id uuid;\n  v_adopter_profile_id uuid;\n  v_case_id uuid;\n  v_task_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user admin\n    where admin.auth_user_id = p_actor_user_id\n      and admin.status = 'active'\n      and admin.role in ('staff', 'admin')\n  ) then\n    raise exception 'Forbidden';\n  end if;\n\n  if v_identity_kind = 'existing_adopter' then\n    v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;\n    select adopter.supporter_id into v_supporter_id\n    from public.adopter_profile adopter\n    join public.supporter supporter on supporter.id = adopter.supporter_id\n    where adopter.id = v_adopter_profile_id\n      and supporter.deleted_at is null;\n    if v_adopter_profile_id is null or v_supporter_id is null then\n      raise exception 'Adopter profile not found';\n    end if;\n  elsif v_identity_kind = 'existing_supporter' then\n    v_supporter_id := (p_identity->>'supporterId')::uuid;\n    if not exists (select 1 from public.supporter where id = v_supporter_id and deleted_at is null) then\n      raise exception 'Supporter not found';\n    end if;\n    select id into v_adopter_profile_id\n    from public.adopter_profile\n    where supporter_id = v_supporter_id;\n    if v_adopter_profile_id is null then\n      insert into public.adopter_profile (\n        supporter_id,\n        name_english,\n        name_chinese,\n        address,\n        household_size\n      )\n      values (\n        v_supporter_id,\n        nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n        nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n        nullif(p_identity#>>'{adopterProfile,address}', ''),\n        nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n      )\n      on conflict (supporter_id) do update\n      set supporter_id = excluded.supporter_id\n      returning id into v_adopter_profile_id;\n    end if;\n  elsif v_identity_kind = 'new_supporter' then\n    insert into public.supporter (\n      name,\n      email,\n      phone,\n      language,\n      source\n    )\n    values (\n      p_identity#>>'{supporter,name}',\n      nullif(p_identity#>>'{supporter,email}', ''),\n      p_identity#>>'{supporter,phone}',\n      coalesce(nullif(p_identity#>>'{supporter,language}', ''), 'zh-HK'),\n      'manual_adoption_intake'\n    )\n    returning id into v_supporter_id;\n\n    insert into public.adopter_profile (\n      supporter_id,\n      name_english,\n      name_chinese,\n      address,\n      household_size\n    )\n    values (\n      v_supporter_id,\n      nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n      nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n      nullif(p_identity#>>'{adopterProfile,address}', ''),\n      nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n    )\n    returning id into v_adopter_profile_id;\n  else\n    raise exception 'Invalid manual intake identity';\n  end if;\n\n  insert into public.supporter_role (supporter_id, role)\n  values (v_supporter_id, 'adopter')\n  on conflict (supporter_id, role) do nothing;\n\n  insert into public.adoption_case (\n    status_id,\n    requested_animal_id,\n    animal_type,\n    applicant_name,\n    applicant_phone,\n    applicant_email,\n    applicant_address,\n    housing_type,\n    family_size,\n    existing_pets,\n    reason,\n    supporter_id,\n    adopter_profile_id,\n    preferences,\n    source,\n    created_by\n  )\n  values (\n    (p_case->>'initialStatusId')::uuid,\n    nullif(p_case->>'requestedAnimalId', '')::uuid,\n    p_case->>'animalType',\n    p_case->>'applicantName',\n    p_case->>'applicantPhone',\n    nullif(p_case->>'applicantEmail', ''),\n    nullif(p_case->>'applicantAddress', ''),\n    nullif(p_case->>'housingType', ''),\n    nullif(p_case->>'familySize', '')::int,\n    nullif(p_case->>'existingPets', ''),\n    nullif(p_case->>'reason', ''),\n    v_supporter_id,\n    v_adopter_profile_id,\n    coalesce(p_case->'preferences', '{}'::jsonb),\n    'manual_intake',\n    p_actor_user_id\n  )\n  returning id into v_case_id;\n\n  if not exists (\n    select 1\n    from public.adoption_case\n    where id = v_case_id\n      and source = 'manual_intake'\n  ) then\n    raise exception 'Manual intake source not set';\n  end if;\n\n  if p_initial_task is not null then\n    insert into public.adoption_followup (\n      adoption_case_id,\n      adopter_profile_id,\n      animal_id,\n      status_id,\n      title,\n      task_type,\n      priority,\n      due_at,\n      assigned_to,\n      volunteer,\n      contact_channel,\n      remarks,\n      created_by,\n      updated_by\n    )\n    values (\n      v_case_id,\n      v_adopter_profile_id,\n      nullif(p_case->>'requestedAnimalId', '')::uuid,\n      (p_initial_task->>'statusId')::uuid,\n      p_initial_task->>'title',\n      coalesce(nullif(p_initial_task->>'taskType', ''), 'followup'),\n      coalesce(nullif(p_initial_task->>'priority', ''), 'normal'),\n      nullif(p_initial_task->>'dueAt', '')::timestamptz,\n      nullif(p_initial_task->>'assignedTo', ''),\n      nullif(p_initial_task->>'volunteer', ''),\n      nullif(p_initial_task->>'contactChannel', ''),\n      nullif(p_initial_task->>'remarks', ''),\n      p_actor_user_id,\n      p_actor_user_id\n    )\n    returning id into v_task_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    timestamp,\n    detail\n  )\n  values (\n    p_actor_user_id,\n    'coordinator_manual_intake.create',\n    'adoption_case',\n    v_case_id::text,\n    now(),\n    jsonb_build_object(\n      'source', 'manual_intake',\n      'supporterId', v_supporter_id,\n      'adopterProfileId', v_adopter_profile_id,\n      'requestedAnimalId', nullif(p_case->>'requestedAnimalId', ''),\n      'initialStatusId', p_case->>'initialStatusId',\n      'createdInitialTask', v_task_id is not null,\n      'initialTaskId', v_task_id\n    )\n  );\n\n  return jsonb_build_object(\n    'caseId', v_case_id,\n    'supporterId', v_supporter_id,\n    'adopterProfileId', v_adopter_profile_id,\n    'taskId', v_task_id\n  );\nend;\n$function$\n",
+          "completeProc": {
+            "oid": "18733",
+            "proacl": [
+              "postgres=X/postgres",
+              "service_role=X/postgres"
+            ],
+            "probin": null,
+            "prosrc": "\ndeclare\n  v_identity_kind text := p_identity->>'kind';\n  v_supporter_id uuid;\n  v_adopter_profile_id uuid;\n  v_case_id uuid;\n  v_task_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user admin\n    where admin.auth_user_id = p_actor_user_id\n      and admin.status = 'active'\n      and admin.role in ('staff', 'admin')\n  ) then\n    raise exception 'Forbidden';\n  end if;\n\n  if v_identity_kind = 'existing_adopter' then\n    v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;\n    select adopter.supporter_id into v_supporter_id\n    from public.adopter_profile adopter\n    join public.supporter supporter on supporter.id = adopter.supporter_id\n    where adopter.id = v_adopter_profile_id\n      and supporter.deleted_at is null;\n    if v_adopter_profile_id is null or v_supporter_id is null then\n      raise exception 'Adopter profile not found';\n    end if;\n  elsif v_identity_kind = 'existing_supporter' then\n    v_supporter_id := (p_identity->>'supporterId')::uuid;\n    if not exists (select 1 from public.supporter where id = v_supporter_id and deleted_at is null) then\n      raise exception 'Supporter not found';\n    end if;\n    select id into v_adopter_profile_id\n    from public.adopter_profile\n    where supporter_id = v_supporter_id;\n    if v_adopter_profile_id is null then\n      insert into public.adopter_profile (\n        supporter_id,\n        name_english,\n        name_chinese,\n        address,\n        household_size\n      )\n      values (\n        v_supporter_id,\n        nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n        nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n        nullif(p_identity#>>'{adopterProfile,address}', ''),\n        nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n      )\n      on conflict (supporter_id) do update\n      set supporter_id = excluded.supporter_id\n      returning id into v_adopter_profile_id;\n    end if;\n  elsif v_identity_kind = 'new_supporter' then\n    insert into public.supporter (\n      name,\n      email,\n      phone,\n      language,\n      source\n    )\n    values (\n      p_identity#>>'{supporter,name}',\n      nullif(p_identity#>>'{supporter,email}', ''),\n      p_identity#>>'{supporter,phone}',\n      coalesce(nullif(p_identity#>>'{supporter,language}', ''), 'zh-HK'),\n      'manual_adoption_intake'\n    )\n    returning id into v_supporter_id;\n\n    insert into public.adopter_profile (\n      supporter_id,\n      name_english,\n      name_chinese,\n      address,\n      household_size\n    )\n    values (\n      v_supporter_id,\n      nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n      nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n      nullif(p_identity#>>'{adopterProfile,address}', ''),\n      nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n    )\n    returning id into v_adopter_profile_id;\n  else\n    raise exception 'Invalid manual intake identity';\n  end if;\n\n  insert into public.supporter_role (supporter_id, role)\n  values (v_supporter_id, 'adopter')\n  on conflict (supporter_id, role) do nothing;\n\n  insert into public.adoption_case (\n    status_id,\n    requested_animal_id,\n    animal_type,\n    applicant_name,\n    applicant_phone,\n    applicant_email,\n    applicant_address,\n    housing_type,\n    family_size,\n    existing_pets,\n    reason,\n    supporter_id,\n    adopter_profile_id,\n    preferences,\n    source,\n    created_by\n  )\n  values (\n    (p_case->>'initialStatusId')::uuid,\n    nullif(p_case->>'requestedAnimalId', '')::uuid,\n    p_case->>'animalType',\n    p_case->>'applicantName',\n    p_case->>'applicantPhone',\n    nullif(p_case->>'applicantEmail', ''),\n    nullif(p_case->>'applicantAddress', ''),\n    nullif(p_case->>'housingType', ''),\n    nullif(p_case->>'familySize', '')::int,\n    nullif(p_case->>'existingPets', ''),\n    nullif(p_case->>'reason', ''),\n    v_supporter_id,\n    v_adopter_profile_id,\n    coalesce(p_case->'preferences', '{}'::jsonb),\n    'manual_intake',\n    p_actor_user_id\n  )\n  returning id into v_case_id;\n\n  if not exists (\n    select 1\n    from public.adoption_case\n    where id = v_case_id\n      and source = 'manual_intake'\n  ) then\n    raise exception 'Manual intake source not set';\n  end if;\n\n  if p_initial_task is not null then\n    insert into public.adoption_followup (\n      adoption_case_id,\n      adopter_profile_id,\n      animal_id,\n      status_id,\n      title,\n      task_type,\n      priority,\n      due_at,\n      assigned_to,\n      volunteer,\n      contact_channel,\n      remarks,\n      created_by,\n      updated_by\n    )\n    values (\n      v_case_id,\n      v_adopter_profile_id,\n      nullif(p_case->>'requestedAnimalId', '')::uuid,\n      (p_initial_task->>'statusId')::uuid,\n      p_initial_task->>'title',\n      coalesce(nullif(p_initial_task->>'taskType', ''), 'followup'),\n      coalesce(nullif(p_initial_task->>'priority', ''), 'normal'),\n      nullif(p_initial_task->>'dueAt', '')::timestamptz,\n      nullif(p_initial_task->>'assignedTo', ''),\n      nullif(p_initial_task->>'volunteer', ''),\n      nullif(p_initial_task->>'contactChannel', ''),\n      nullif(p_initial_task->>'remarks', ''),\n      p_actor_user_id,\n      p_actor_user_id\n    )\n    returning id into v_task_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    timestamp,\n    detail\n  )\n  values (\n    p_actor_user_id,\n    'coordinator_manual_intake.create',\n    'adoption_case',\n    v_case_id::text,\n    now(),\n    jsonb_build_object(\n      'source', 'manual_intake',\n      'supporterId', v_supporter_id,\n      'adopterProfileId', v_adopter_profile_id,\n      'requestedAnimalId', nullif(p_case->>'requestedAnimalId', ''),\n      'initialStatusId', p_case->>'initialStatusId',\n      'createdInitialTask', v_task_id is not null,\n      'initialTaskId', v_task_id\n    )\n  );\n\n  return jsonb_build_object(\n    'caseId', v_case_id,\n    'supporterId', v_supporter_id,\n    'adopterProfileId', v_adopter_profile_id,\n    'taskId', v_task_id\n  );\nend;\n",
+            "procost": 100,
+            "prokind": "f",
+            "prolang": "13619",
+            "proname": "create_manual_adoption_case",
+            "prorows": 0,
+            "pronargs": 4,
+            "proowner": "16384",
+            "proconfig": [
+              "search_path=public, pg_temp"
+            ],
+            "proretset": false,
+            "prosecdef": true,
+            "prorettype": "3802",
+            "prosqlbody": null,
+            "prosupport": "-",
+            "proargmodes": null,
+            "proargnames": [
+              "p_actor_user_id",
+              "p_identity",
+              "p_case",
+              "p_initial_task"
+            ],
+            "proargtypes": [
+              "2950",
+              "3802",
+              "3802",
+              "3802"
+            ],
+            "proisstrict": false,
+            "proparallel": "u",
+            "protrftypes": null,
+            "provariadic": "0",
+            "provolatile": "v",
+            "proleakproof": false,
+            "pronamespace": "17965",
+            "proallargtypes": null,
+            "proargdefaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull true :location -1 :constvalue <>})",
+            "pronargdefaults": 1
+          },
+          "effectiveAcl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "definitionMd5": "495416f481fbad0367dc078c5c53783f",
+          "defaultExpression": "NULL::jsonb"
+        }
+      ]
+    },
+    {
+      "profile": "template",
+      "command": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-audit-integration-fresh",
+        "psql",
+        "-X",
+        "-qAt",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "audit_pr135_20260929"
+      ],
+      "exit": 0,
+      "runtime": {
+        "user": "postgres",
+        "version": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+        "database": "audit_pr135_20260929",
+        "readonly": "on"
+      },
+      "functions": 354,
+      "triggers": 1265,
+      "uid": [
+        {
+          "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+          "name": "uid",
+          "owner": "supabase_auth_admin",
+          "result": "uuid",
+          "schema": "auth",
+          "bodyMd5": "772430c79a4272a214d3e200a170c0c3",
+          "identity": "",
+          "language": "sql",
+          "arguments": "",
+          "definition": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\r\n  select \r\n  coalesce(\r\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\r\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\r\n  )::uuid\r\n$function$\n",
+          "completeProc": {
+            "oid": "24038",
+            "proacl": [
+              "=X/supabase_auth_admin",
+              "supabase_auth_admin=X/supabase_auth_admin",
+              "dashboard_user=X/supabase_auth_admin"
+            ],
+            "probin": null,
+            "prosrc": "\r\n  select \r\n  coalesce(\r\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\r\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\r\n  )::uuid\r\n",
+            "procost": 100,
+            "prokind": "f",
+            "prolang": "14",
+            "proname": "uid",
+            "prorows": 0,
+            "pronargs": 0,
+            "proowner": "16504",
+            "proconfig": null,
+            "proretset": false,
+            "prosecdef": false,
+            "prorettype": "2950",
+            "prosqlbody": null,
+            "prosupport": "-",
+            "proargmodes": null,
+            "proargnames": null,
+            "proargtypes": [],
+            "proisstrict": false,
+            "proparallel": "u",
+            "protrftypes": null,
+            "provariadic": "0",
+            "provolatile": "s",
+            "proleakproof": false,
+            "pronamespace": "23605",
+            "proallargtypes": null,
+            "proargdefaults": null,
+            "pronargdefaults": 0
+          },
+          "effectiveAcl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "supabase_auth_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "supabase_auth_admin",
+              "grantor": "supabase_auth_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "dashboard_user",
+              "grantor": "supabase_auth_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "definitionMd5": "5dd851706ecb5893606782fd9e2cbf83",
+          "defaultExpression": null
+        }
+      ],
+      "privateManual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "name": "create_manual_adoption_case",
+          "owner": "postgres",
+          "result": "jsonb",
+          "schema": "private",
+          "bodyMd5": "18def457bdf482aea149d9ff56dff3c6",
+          "identity": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+          "language": "plpgsql",
+          "arguments": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb",
+          "definition": "CREATE OR REPLACE FUNCTION private.create_manual_adoption_case(p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_identity_kind text := p_identity->>'kind';\n  v_supporter_id uuid;\n  v_adopter_profile_id uuid;\n  v_case_id uuid;\n  v_task_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user admin\n    where admin.auth_user_id = p_actor_user_id\n      and admin.status = 'active'\n      and admin.role in ('staff', 'admin')\n  ) then\n    raise exception 'Forbidden';\n  end if;\n\n  if v_identity_kind = 'existing_adopter' then\n    v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;\n    select adopter.supporter_id into v_supporter_id\n    from public.adopter_profile adopter\n    join public.supporter supporter on supporter.id = adopter.supporter_id\n    where adopter.id = v_adopter_profile_id\n      and supporter.deleted_at is null;\n    if v_adopter_profile_id is null or v_supporter_id is null then\n      raise exception 'Adopter profile not found';\n    end if;\n  elsif v_identity_kind = 'existing_supporter' then\n    v_supporter_id := (p_identity->>'supporterId')::uuid;\n    if not exists (select 1 from public.supporter where id = v_supporter_id and deleted_at is null) then\n      raise exception 'Supporter not found';\n    end if;\n    select id into v_adopter_profile_id\n    from public.adopter_profile\n    where supporter_id = v_supporter_id;\n    if v_adopter_profile_id is null then\n      insert into public.adopter_profile (\n        supporter_id,\n        name_english,\n        name_chinese,\n        address,\n        household_size\n      )\n      values (\n        v_supporter_id,\n        nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n        nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n        nullif(p_identity#>>'{adopterProfile,address}', ''),\n        nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n      )\n      on conflict (supporter_id) do update\n      set supporter_id = excluded.supporter_id\n      returning id into v_adopter_profile_id;\n    end if;\n  elsif v_identity_kind = 'new_supporter' then\n    insert into public.supporter (\n      name,\n      email,\n      phone,\n      language,\n      source\n    )\n    values (\n      p_identity#>>'{supporter,name}',\n      nullif(p_identity#>>'{supporter,email}', ''),\n      p_identity#>>'{supporter,phone}',\n      coalesce(nullif(p_identity#>>'{supporter,language}', ''), 'zh-HK'),\n      'manual_adoption_intake'\n    )\n    returning id into v_supporter_id;\n\n    insert into public.adopter_profile (\n      supporter_id,\n      name_english,\n      name_chinese,\n      address,\n      household_size\n    )\n    values (\n      v_supporter_id,\n      nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n      nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n      nullif(p_identity#>>'{adopterProfile,address}', ''),\n      nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n    )\n    returning id into v_adopter_profile_id;\n  else\n    raise exception 'Invalid manual intake identity';\n  end if;\n\n  insert into public.supporter_role (supporter_id, role)\n  values (v_supporter_id, 'adopter')\n  on conflict (supporter_id, role) do nothing;\n\n  insert into public.adoption_case (\n    status_id,\n    requested_animal_id,\n    animal_type,\n    applicant_name,\n    applicant_phone,\n    applicant_email,\n    applicant_address,\n    housing_type,\n    family_size,\n    existing_pets,\n    reason,\n    supporter_id,\n    adopter_profile_id,\n    preferences,\n    source,\n    created_by\n  )\n  values (\n    (p_case->>'initialStatusId')::uuid,\n    nullif(p_case->>'requestedAnimalId', '')::uuid,\n    p_case->>'animalType',\n    p_case->>'applicantName',\n    p_case->>'applicantPhone',\n    nullif(p_case->>'applicantEmail', ''),\n    nullif(p_case->>'applicantAddress', ''),\n    nullif(p_case->>'housingType', ''),\n    nullif(p_case->>'familySize', '')::int,\n    nullif(p_case->>'existingPets', ''),\n    nullif(p_case->>'reason', ''),\n    v_supporter_id,\n    v_adopter_profile_id,\n    coalesce(p_case->'preferences', '{}'::jsonb),\n    'manual_intake',\n    p_actor_user_id\n  )\n  returning id into v_case_id;\n\n  if not exists (\n    select 1\n    from public.adoption_case\n    where id = v_case_id\n      and source = 'manual_intake'\n  ) then\n    raise exception 'Manual intake source not set';\n  end if;\n\n  if p_initial_task is not null then\n    insert into public.adoption_followup (\n      adoption_case_id,\n      adopter_profile_id,\n      animal_id,\n      status_id,\n      title,\n      task_type,\n      priority,\n      due_at,\n      assigned_to,\n      volunteer,\n      contact_channel,\n      remarks,\n      created_by,\n      updated_by\n    )\n    values (\n      v_case_id,\n      v_adopter_profile_id,\n      nullif(p_case->>'requestedAnimalId', '')::uuid,\n      (p_initial_task->>'statusId')::uuid,\n      p_initial_task->>'title',\n      coalesce(nullif(p_initial_task->>'taskType', ''), 'followup'),\n      coalesce(nullif(p_initial_task->>'priority', ''), 'normal'),\n      nullif(p_initial_task->>'dueAt', '')::timestamptz,\n      nullif(p_initial_task->>'assignedTo', ''),\n      nullif(p_initial_task->>'volunteer', ''),\n      nullif(p_initial_task->>'contactChannel', ''),\n      nullif(p_initial_task->>'remarks', ''),\n      p_actor_user_id,\n      p_actor_user_id\n    )\n    returning id into v_task_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    timestamp,\n    detail\n  )\n  values (\n    p_actor_user_id,\n    'coordinator_manual_intake.create',\n    'adoption_case',\n    v_case_id::text,\n    now(),\n    jsonb_build_object(\n      'source', 'manual_intake',\n      'supporterId', v_supporter_id,\n      'adopterProfileId', v_adopter_profile_id,\n      'requestedAnimalId', nullif(p_case->>'requestedAnimalId', ''),\n      'initialStatusId', p_case->>'initialStatusId',\n      'createdInitialTask', v_task_id is not null,\n      'initialTaskId', v_task_id\n    )\n  );\n\n  return jsonb_build_object(\n    'caseId', v_case_id,\n    'supporterId', v_supporter_id,\n    'adopterProfileId', v_adopter_profile_id,\n    'taskId', v_task_id\n  );\nend;\n$function$\n",
+          "completeProc": {
+            "oid": "31601",
+            "proacl": [
+              "postgres=X/postgres",
+              "service_role=X/postgres"
+            ],
+            "probin": null,
+            "prosrc": "\ndeclare\n  v_identity_kind text := p_identity->>'kind';\n  v_supporter_id uuid;\n  v_adopter_profile_id uuid;\n  v_case_id uuid;\n  v_task_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user admin\n    where admin.auth_user_id = p_actor_user_id\n      and admin.status = 'active'\n      and admin.role in ('staff', 'admin')\n  ) then\n    raise exception 'Forbidden';\n  end if;\n\n  if v_identity_kind = 'existing_adopter' then\n    v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;\n    select adopter.supporter_id into v_supporter_id\n    from public.adopter_profile adopter\n    join public.supporter supporter on supporter.id = adopter.supporter_id\n    where adopter.id = v_adopter_profile_id\n      and supporter.deleted_at is null;\n    if v_adopter_profile_id is null or v_supporter_id is null then\n      raise exception 'Adopter profile not found';\n    end if;\n  elsif v_identity_kind = 'existing_supporter' then\n    v_supporter_id := (p_identity->>'supporterId')::uuid;\n    if not exists (select 1 from public.supporter where id = v_supporter_id and deleted_at is null) then\n      raise exception 'Supporter not found';\n    end if;\n    select id into v_adopter_profile_id\n    from public.adopter_profile\n    where supporter_id = v_supporter_id;\n    if v_adopter_profile_id is null then\n      insert into public.adopter_profile (\n        supporter_id,\n        name_english,\n        name_chinese,\n        address,\n        household_size\n      )\n      values (\n        v_supporter_id,\n        nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n        nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n        nullif(p_identity#>>'{adopterProfile,address}', ''),\n        nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n      )\n      on conflict (supporter_id) do update\n      set supporter_id = excluded.supporter_id\n      returning id into v_adopter_profile_id;\n    end if;\n  elsif v_identity_kind = 'new_supporter' then\n    insert into public.supporter (\n      name,\n      email,\n      phone,\n      language,\n      source\n    )\n    values (\n      p_identity#>>'{supporter,name}',\n      nullif(p_identity#>>'{supporter,email}', ''),\n      p_identity#>>'{supporter,phone}',\n      coalesce(nullif(p_identity#>>'{supporter,language}', ''), 'zh-HK'),\n      'manual_adoption_intake'\n    )\n    returning id into v_supporter_id;\n\n    insert into public.adopter_profile (\n      supporter_id,\n      name_english,\n      name_chinese,\n      address,\n      household_size\n    )\n    values (\n      v_supporter_id,\n      nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n      nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n      nullif(p_identity#>>'{adopterProfile,address}', ''),\n      nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n    )\n    returning id into v_adopter_profile_id;\n  else\n    raise exception 'Invalid manual intake identity';\n  end if;\n\n  insert into public.supporter_role (supporter_id, role)\n  values (v_supporter_id, 'adopter')\n  on conflict (supporter_id, role) do nothing;\n\n  insert into public.adoption_case (\n    status_id,\n    requested_animal_id,\n    animal_type,\n    applicant_name,\n    applicant_phone,\n    applicant_email,\n    applicant_address,\n    housing_type,\n    family_size,\n    existing_pets,\n    reason,\n    supporter_id,\n    adopter_profile_id,\n    preferences,\n    source,\n    created_by\n  )\n  values (\n    (p_case->>'initialStatusId')::uuid,\n    nullif(p_case->>'requestedAnimalId', '')::uuid,\n    p_case->>'animalType',\n    p_case->>'applicantName',\n    p_case->>'applicantPhone',\n    nullif(p_case->>'applicantEmail', ''),\n    nullif(p_case->>'applicantAddress', ''),\n    nullif(p_case->>'housingType', ''),\n    nullif(p_case->>'familySize', '')::int,\n    nullif(p_case->>'existingPets', ''),\n    nullif(p_case->>'reason', ''),\n    v_supporter_id,\n    v_adopter_profile_id,\n    coalesce(p_case->'preferences', '{}'::jsonb),\n    'manual_intake',\n    p_actor_user_id\n  )\n  returning id into v_case_id;\n\n  if not exists (\n    select 1\n    from public.adoption_case\n    where id = v_case_id\n      and source = 'manual_intake'\n  ) then\n    raise exception 'Manual intake source not set';\n  end if;\n\n  if p_initial_task is not null then\n    insert into public.adoption_followup (\n      adoption_case_id,\n      adopter_profile_id,\n      animal_id,\n      status_id,\n      title,\n      task_type,\n      priority,\n      due_at,\n      assigned_to,\n      volunteer,\n      contact_channel,\n      remarks,\n      created_by,\n      updated_by\n    )\n    values (\n      v_case_id,\n      v_adopter_profile_id,\n      nullif(p_case->>'requestedAnimalId', '')::uuid,\n      (p_initial_task->>'statusId')::uuid,\n      p_initial_task->>'title',\n      coalesce(nullif(p_initial_task->>'taskType', ''), 'followup'),\n      coalesce(nullif(p_initial_task->>'priority', ''), 'normal'),\n      nullif(p_initial_task->>'dueAt', '')::timestamptz,\n      nullif(p_initial_task->>'assignedTo', ''),\n      nullif(p_initial_task->>'volunteer', ''),\n      nullif(p_initial_task->>'contactChannel', ''),\n      nullif(p_initial_task->>'remarks', ''),\n      p_actor_user_id,\n      p_actor_user_id\n    )\n    returning id into v_task_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    timestamp,\n    detail\n  )\n  values (\n    p_actor_user_id,\n    'coordinator_manual_intake.create',\n    'adoption_case',\n    v_case_id::text,\n    now(),\n    jsonb_build_object(\n      'source', 'manual_intake',\n      'supporterId', v_supporter_id,\n      'adopterProfileId', v_adopter_profile_id,\n      'requestedAnimalId', nullif(p_case->>'requestedAnimalId', ''),\n      'initialStatusId', p_case->>'initialStatusId',\n      'createdInitialTask', v_task_id is not null,\n      'initialTaskId', v_task_id\n    )\n  );\n\n  return jsonb_build_object(\n    'caseId', v_case_id,\n    'supporterId', v_supporter_id,\n    'adopterProfileId', v_adopter_profile_id,\n    'taskId', v_task_id\n  );\nend;\n",
+            "procost": 100,
+            "prokind": "f",
+            "prolang": "13619",
+            "proname": "create_manual_adoption_case",
+            "prorows": 0,
+            "pronargs": 4,
+            "proowner": "16384",
+            "proconfig": [
+              "search_path=public, pg_temp"
+            ],
+            "proretset": false,
+            "prosecdef": true,
+            "prorettype": "3802",
+            "prosqlbody": null,
+            "prosupport": "-",
+            "proargmodes": null,
+            "proargnames": [
+              "p_actor_user_id",
+              "p_identity",
+              "p_case",
+              "p_initial_task"
+            ],
+            "proargtypes": [
+              "2950",
+              "3802",
+              "3802",
+              "3802"
+            ],
+            "proisstrict": false,
+            "proparallel": "u",
+            "protrftypes": null,
+            "provariadic": "0",
+            "provolatile": "v",
+            "proleakproof": false,
+            "pronamespace": "31591",
+            "proallargtypes": null,
+            "proargdefaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull true :location -1 :constvalue <>})",
+            "pronargdefaults": 1
+          },
+          "effectiveAcl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "definitionMd5": "495416f481fbad0367dc078c5c53783f",
+          "defaultExpression": "NULL::jsonb"
+        }
+      ]
+    }
+  ],
+  "inventory": {
+    "command": [
+      "docker",
+      "image",
+      "ls",
+      "--format",
+      "{{.Repository}}:{{.Tag}}"
+    ],
+    "exit": 0,
+    "stdout": "buyeros-cf-runtime-probe:20261001-cf04\nbuyeros-cf-runtime-probe:20261001-cf03\nbuyeros-cf-runtime-probe:20261001\nearnest-mls-container-mlsruncontainer:worker\nwukong-ecommerce-local-minio:latest\ncgr.dev/chainguard/minio:<none>\nnode:22.23.2\nnode:22.23.2-bookworm-slim\npostgres:17\npublic.ecr.aws/supabase/realtime:v2.135.3\npublic.ecr.aws/supabase/studio:2026.09.14-sha-4dd8a95\npublic.ecr.aws/supabase/logflare:1.50.12\npublic.ecr.aws/supabase/postgres:17.6.1.171\npublic.ecr.aws/supabase/storage-api:v1.77.0\npublic.ecr.aws/supabase/gotrue:v2.197.0\nvalkey/valkey:8\npublic.ecr.aws/supabase/edge-runtime:v1.76.2\npublic.ecr.aws/supabase/postgres-meta:v0.99.0\npublic.ecr.aws/supabase/postgres:17.6.1.167\npublic.ecr.aws/supabase/storage-api:v1.72.1\npublic.ecr.aws/supabase/realtime:v2.130.0\npostgres:15\npostgres:16\npublic.ecr.aws/supabase/postgres:17.6.1.165\npublic.ecr.aws/supabase/studio:2026.08.24-sha-8ec45b2\npublic.ecr.aws/supabase/logflare:1.50.6\npublic.ecr.aws/supabase/realtime:v2.129.3\npublic.ecr.aws/supabase/gotrue:v2.196.0\npublic.ecr.aws/supabase/storage-api:v1.70.3\npublic.ecr.aws/supabase/logflare:1.50.4\npublic.ecr.aws/supabase/studio:2026.08.17-sha-0c1da8f\npublic.ecr.aws/supabase/postgres-meta:v0.98.0\npgvector/pgvector:pg16\npostgres:18\npublic.ecr.aws/supabase/realtime:v2.124.2\npublic.ecr.aws/supabase/logflare:1.50.1\npublic.ecr.aws/supabase/postgres-meta:v0.96.8\nfotomax-medusa-staging-fotomaxmedusacontainer:a4c32e69\nfotomax-medusa-staging-fotomaxmedusacontainer:c9196847\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:c9196847\nfotomax-medusa-staging-fotomaxmedusacontainer:813502da\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:813502da\npublic.ecr.aws/supabase/studio:2026.08.03-sha-022b374\npublic.ecr.aws/supabase/postgrest:v16.3\npublic.ecr.aws/supabase/postgrest:v16.2\npublic.ecr.aws/supabase/postgrest:v16.1\npublic.ecr.aws/supabase/edge-runtime:v1.74.3\nfotomax-medusa-staging-fotomaxmedusacontainer:9a7dbac5\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:9a7dbac5\nfotomax-medusa-staging-fotomaxmedusacontainer:7f8eacaa\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:7f8eacaa\nfotomax-medusa-staging-fotomaxmedusacontainer:270e55b9\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:270e55b9\nfotomax-medusa-staging-fotomaxmedusacontainer:d1e372da\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:d1e372da\nfotomax-medusa-staging-fotomaxmedusacontainer:059633a1\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:059633a1\nfotomax-medusa-staging-fotomaxmedusacontainer:97e80150\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:97e80150\nfotomax-medusa-staging-fotomaxmedusacontainer:b779fcfd\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:b779fcfd\nfotomax-medusa-staging-fotomaxmedusacontainer:02adba63\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:02adba63\nfotomax-medusa-staging-fotomaxmedusacontainer:c3528d83\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:c3528d83\nfotomax-medusa-staging-fotomaxmedusacontainer:dc9b8011\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:dc9b8011\nfotomax-medusa:ci\nfotomax-medusa-build:diagnostic\npublic.ecr.aws/supabase/realtime:v2.113.4\npublic.ecr.aws/supabase/storage-api:v1.66.4\nfotomax-medusa-staging-fotomaxmedusacontainer:aad129f5\nfotomax-medusa-staging-fotomaxmedusacontainer:b4e60a46\nfotomax-medusa-staging-fotomaxmedusacontainer:worker\nregistry.cloudflare.com/e387dfbeded3deb5b8f0023a78a660b5/fotomax-medusa-staging-fotomaxmedusacontainer:aad129f5\nnode:24.18.0-bookworm-slim\npublic.ecr.aws/supabase/gotrue:v2.193.0\npublic.ecr.aws/supabase/storage-api:v1.65.1\naxllent/mailpit:latest\npgvector/pgvector:pg17\npostgres:16-alpine\npostgres:17-alpine\npublic.ecr.aws/supabase/postgres:17.6.1.143\npublic.ecr.aws/supabase/storage-api:v1.62.5\npublic.ecr.aws/supabase/realtime:v2.112.6\npublic.ecr.aws/supabase/studio:2026.07.06-sha-66cf431\npublic.ecr.aws/supabase/logflare:1.46.0\npublic.ecr.aws/supabase/gotrue:v2.192.0\nnode:22-bookworm-slim\npublic.ecr.aws/supabase/edge-runtime:v1.74.2\ncaddy:2-alpine\nredis:8-alpine\npublic.ecr.aws/supabase/gotrue:v2.191.0\npublic.ecr.aws/supabase/mailpit:v1.30.2\npublic.ecr.aws/supabase/logflare:1.44.1\npublic.ecr.aws/supabase/realtime:v2.106.0\npublic.ecr.aws/supabase/edge-runtime:v1.74.1\npublic.ecr.aws/supabase/postgres:17.6.1.134\npublic.ecr.aws/supabase/storage-api:v1.60.15\npublic.ecr.aws/supabase/storage-api:v1.60.10\npublic.ecr.aws/supabase/studio:2026.06.08-sha-8af2bb0\npublic.ecr.aws/supabase/postgres:17.6.1.127\npublic.ecr.aws/supabase/postgres-meta:v0.96.6\npublic.ecr.aws/supabase/postgres:17.6.1.121\nredis:7.4-alpine\nsupabase/gotrue:v2.189.0\npublic.ecr.aws/supabase/gotrue:v2.189.0\npublic.ecr.aws/supabase/postgres-meta:v0.96.1\npublic.ecr.aws/supabase/vector:0.53.0-alpine\nminio/minio:latest\nquay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z\nminio/mc:latest\npublic.ecr.aws/supabase/postgrest:v14.13\npublic.ecr.aws/supabase/postgrest:v14.5\npublic.ecr.aws/supabase/postgrest:v14.14\nminio/minio:RELEASE.2025-04-22T22-12-26Z\nminio/mc:RELEASE.2025-04-16T18-13-26Z\npublic.ecr.aws/supabase/mailpit:v1.22.3\nghcr.io/neondatabase/wsproxy:latest\naxllent/mailpit:v1.20.5\npostgrest/postgrest:v12.2.3\npublic.ecr.aws/supabase/imgproxy:v3.8.0\npublic.ecr.aws/supabase/kong:2.8.1\n",
+    "stderr": ""
+  },
+  "artifacts": {
+    "command": [
+      "gh",
+      "api",
+      "repos/YNWAforever/hkscda/actions/runs/36985370386/artifacts",
+      "--jq",
+      "{total_count: .total_count, artifacts: [.artifacts[] | {name: .name,id: .id,expired: .expired}]}"
+    ],
+    "exit": 0,
+    "stdout": "{\"artifacts\":[{\"expired\":false,\"id\":11217847479,\"name\":\"brand-ci\"},{\"expired\":false,\"id\":11217208185,\"name\":\"performance-ci\"},{\"expired\":false,\"id\":11216879253,\"name\":\"a11y-ci\"}],\"total_count\":3}\n",
+    "stderr": ""
+  },
+  "files": {
+    "catalog-query.sql.source": {
+      "bytes": 2258,
+      "sha256": "c9684267e8e451798cdd70ca41df9becd3dadaa5b5fed70e8071ce5bc982e143"
+    },
+    "modern-catalog.json": {
+      "bytes": 3898586,
+      "sha256": "8a06ab34e400f29463cff14a23f3ea29de6fd94aebaa5558ceea0ba55f437310"
+    },
+    "modern-command.json": {
+      "bytes": 3543381,
+      "sha256": "cb4b9a009b0658753655eee2e9d1422490ffd1ade818a4172fe0f652a71c2b2a"
+    },
+    "modern-helpers.json": {
+      "bytes": 24364,
+      "sha256": "c5ba4e2477468e2dcaf3bd18e13472601d39000aa10ea970d166a838c4bda51e"
+    },
+    "template-catalog.json": {
+      "bytes": 3571707,
+      "sha256": "0e01d0460a60f31c25e167e9c82773607d7cbb8c101da8f90690ac13d6c3bd30"
+    },
+    "template-command.json": {
+      "bytes": 3253745,
+      "sha256": "0ea64b2d52127998d6695cc5509c4d21285a9d83e717acb5460566e34bd3cd64"
+    },
+    "template-helpers.json": {
+      "bytes": 24460,
+      "sha256": "0f24aab36dff047a74e2a044d32e216be727b9ecaefe266f886ae106d8586114"
+    }
+  }
+}

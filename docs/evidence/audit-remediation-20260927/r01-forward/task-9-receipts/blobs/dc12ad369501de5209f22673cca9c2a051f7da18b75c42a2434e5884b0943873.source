@@ -1,0 +1,963 @@
+{
+  "run": {
+    "id": 36985370386,
+    "name": "CI",
+    "node_id": "WFR_kwLOS3tinc8AAAAInH_3Eg",
+    "head_branch": "codex/audit-r01-adoption-atomic-20261002",
+    "head_sha": "9df26366cc719d0f92530a784da6871d0db81398",
+    "path": ".github/workflows/ci.yml",
+    "display_title": "fix(r01): restore atomic adoption coordinator and manual intake RPCs",
+    "run_number": 534,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 326402471,
+    "check_suite_id": 100179940066,
+    "check_suite_node_id": "CS_kwDOS3tinc8AAAAXUzCS4g",
+    "url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386",
+    "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36985370386",
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/YNWAforever/hkscda/pulls/192",
+        "id": 4713841698,
+        "number": 192,
+        "head": {
+          "ref": "codex/audit-r01-adoption-atomic-20261002",
+          "sha": "9df26366cc719d0f92530a784da6871d0db81398",
+          "repo": {
+            "id": 1266377373,
+            "url": "https://api.github.com/repos/YNWAforever/hkscda",
+            "name": "hkscda"
+          }
+        },
+        "base": {
+          "ref": "codex/audit-r01-cms-atomic-20261002",
+          "sha": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+          "repo": {
+            "id": 1266377373,
+            "url": "https://api.github.com/repos/YNWAforever/hkscda",
+            "name": "hkscda"
+          }
+        }
+      }
+    ],
+    "created_at": "2026-10-02T08:40:21Z",
+    "updated_at": "2026-10-02T08:51:46Z",
+    "actor": {
+      "login": "YNWAforever",
+      "id": 201698560,
+      "node_id": "U_kgDODAWtAA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/201698560?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/YNWAforever",
+      "html_url": "https://github.com/YNWAforever",
+      "followers_url": "https://api.github.com/users/YNWAforever/followers",
+      "following_url": "https://api.github.com/users/YNWAforever/following{/other_user}",
+      "gists_url": "https://api.github.com/users/YNWAforever/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/YNWAforever/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/YNWAforever/subscriptions",
+      "organizations_url": "https://api.github.com/users/YNWAforever/orgs",
+      "repos_url": "https://api.github.com/users/YNWAforever/repos",
+      "events_url": "https://api.github.com/users/YNWAforever/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/YNWAforever/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-10-02T08:40:21Z",
+    "triggering_actor": {
+      "login": "YNWAforever",
+      "id": 201698560,
+      "node_id": "U_kgDODAWtAA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/201698560?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/YNWAforever",
+      "html_url": "https://github.com/YNWAforever",
+      "followers_url": "https://api.github.com/users/YNWAforever/followers",
+      "following_url": "https://api.github.com/users/YNWAforever/following{/other_user}",
+      "gists_url": "https://api.github.com/users/YNWAforever/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/YNWAforever/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/YNWAforever/subscriptions",
+      "organizations_url": "https://api.github.com/users/YNWAforever/orgs",
+      "repos_url": "https://api.github.com/users/YNWAforever/repos",
+      "events_url": "https://api.github.com/users/YNWAforever/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/YNWAforever/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386/jobs",
+    "logs_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386/logs",
+    "check_suite_url": "https://api.github.com/repos/YNWAforever/hkscda/check-suites/100179940066",
+    "artifacts_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386/artifacts",
+    "cancel_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386/cancel",
+    "rerun_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/workflows/326402471",
+    "head_commit": {
+      "id": "9df26366cc719d0f92530a784da6871d0db81398",
+      "tree_id": "8d6f1e73afe6bb5ae3b1c99814c51e3fc7beed97",
+      "message": "docs(r01): bind adoption component profile Fix3 evidence",
+      "timestamp": "2026-10-02T08:24:45Z",
+      "author": {
+        "name": "YNWAforever",
+        "email": "laichiwillyjp@gmail.com"
+      },
+      "committer": {
+        "name": "YNWAforever",
+        "email": "laichiwillyjp@gmail.com"
+      }
+    },
+    "repository": {
+      "id": 1266377373,
+      "node_id": "R_kgDOS3tinQ",
+      "name": "hkscda",
+      "full_name": "YNWAforever/hkscda",
+      "private": false,
+      "owner": {
+        "login": "YNWAforever",
+        "id": 201698560,
+        "node_id": "U_kgDODAWtAA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/201698560?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/YNWAforever",
+        "html_url": "https://github.com/YNWAforever",
+        "followers_url": "https://api.github.com/users/YNWAforever/followers",
+        "following_url": "https://api.github.com/users/YNWAforever/following{/other_user}",
+        "gists_url": "https://api.github.com/users/YNWAforever/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/YNWAforever/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/YNWAforever/subscriptions",
+        "organizations_url": "https://api.github.com/users/YNWAforever/orgs",
+        "repos_url": "https://api.github.com/users/YNWAforever/repos",
+        "events_url": "https://api.github.com/users/YNWAforever/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/YNWAforever/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/YNWAforever/hkscda",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/YNWAforever/hkscda",
+      "forks_url": "https://api.github.com/repos/YNWAforever/hkscda/forks",
+      "keys_url": "https://api.github.com/repos/YNWAforever/hkscda/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/YNWAforever/hkscda/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/YNWAforever/hkscda/teams",
+      "hooks_url": "https://api.github.com/repos/YNWAforever/hkscda/hooks",
+      "issue_events_url": "https://api.github.com/repos/YNWAforever/hkscda/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/YNWAforever/hkscda/events",
+      "assignees_url": "https://api.github.com/repos/YNWAforever/hkscda/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/YNWAforever/hkscda/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/YNWAforever/hkscda/tags",
+      "blobs_url": "https://api.github.com/repos/YNWAforever/hkscda/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/YNWAforever/hkscda/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/YNWAforever/hkscda/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/YNWAforever/hkscda/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/YNWAforever/hkscda/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/YNWAforever/hkscda/languages",
+      "stargazers_url": "https://api.github.com/repos/YNWAforever/hkscda/stargazers",
+      "contributors_url": "https://api.github.com/repos/YNWAforever/hkscda/contributors",
+      "subscribers_url": "https://api.github.com/repos/YNWAforever/hkscda/subscribers",
+      "subscription_url": "https://api.github.com/repos/YNWAforever/hkscda/subscription",
+      "commits_url": "https://api.github.com/repos/YNWAforever/hkscda/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/YNWAforever/hkscda/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/YNWAforever/hkscda/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/YNWAforever/hkscda/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/YNWAforever/hkscda/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/YNWAforever/hkscda/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/YNWAforever/hkscda/merges",
+      "archive_url": "https://api.github.com/repos/YNWAforever/hkscda/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/YNWAforever/hkscda/downloads",
+      "issues_url": "https://api.github.com/repos/YNWAforever/hkscda/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/YNWAforever/hkscda/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/YNWAforever/hkscda/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/YNWAforever/hkscda/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/YNWAforever/hkscda/labels{/name}",
+      "releases_url": "https://api.github.com/repos/YNWAforever/hkscda/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/YNWAforever/hkscda/deployments"
+    },
+    "head_repository": {
+      "id": 1266377373,
+      "node_id": "R_kgDOS3tinQ",
+      "name": "hkscda",
+      "full_name": "YNWAforever/hkscda",
+      "private": false,
+      "owner": {
+        "login": "YNWAforever",
+        "id": 201698560,
+        "node_id": "U_kgDODAWtAA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/201698560?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/YNWAforever",
+        "html_url": "https://github.com/YNWAforever",
+        "followers_url": "https://api.github.com/users/YNWAforever/followers",
+        "following_url": "https://api.github.com/users/YNWAforever/following{/other_user}",
+        "gists_url": "https://api.github.com/users/YNWAforever/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/YNWAforever/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/YNWAforever/subscriptions",
+        "organizations_url": "https://api.github.com/users/YNWAforever/orgs",
+        "repos_url": "https://api.github.com/users/YNWAforever/repos",
+        "events_url": "https://api.github.com/users/YNWAforever/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/YNWAforever/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/YNWAforever/hkscda",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/YNWAforever/hkscda",
+      "forks_url": "https://api.github.com/repos/YNWAforever/hkscda/forks",
+      "keys_url": "https://api.github.com/repos/YNWAforever/hkscda/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/YNWAforever/hkscda/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/YNWAforever/hkscda/teams",
+      "hooks_url": "https://api.github.com/repos/YNWAforever/hkscda/hooks",
+      "issue_events_url": "https://api.github.com/repos/YNWAforever/hkscda/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/YNWAforever/hkscda/events",
+      "assignees_url": "https://api.github.com/repos/YNWAforever/hkscda/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/YNWAforever/hkscda/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/YNWAforever/hkscda/tags",
+      "blobs_url": "https://api.github.com/repos/YNWAforever/hkscda/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/YNWAforever/hkscda/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/YNWAforever/hkscda/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/YNWAforever/hkscda/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/YNWAforever/hkscda/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/YNWAforever/hkscda/languages",
+      "stargazers_url": "https://api.github.com/repos/YNWAforever/hkscda/stargazers",
+      "contributors_url": "https://api.github.com/repos/YNWAforever/hkscda/contributors",
+      "subscribers_url": "https://api.github.com/repos/YNWAforever/hkscda/subscribers",
+      "subscription_url": "https://api.github.com/repos/YNWAforever/hkscda/subscription",
+      "commits_url": "https://api.github.com/repos/YNWAforever/hkscda/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/YNWAforever/hkscda/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/YNWAforever/hkscda/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/YNWAforever/hkscda/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/YNWAforever/hkscda/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/YNWAforever/hkscda/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/YNWAforever/hkscda/merges",
+      "archive_url": "https://api.github.com/repos/YNWAforever/hkscda/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/YNWAforever/hkscda/downloads",
+      "issues_url": "https://api.github.com/repos/YNWAforever/hkscda/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/YNWAforever/hkscda/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/YNWAforever/hkscda/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/YNWAforever/hkscda/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/YNWAforever/hkscda/labels{/name}",
+      "releases_url": "https://api.github.com/repos/YNWAforever/hkscda/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/YNWAforever/hkscda/deployments"
+    }
+  },
+  "jobs": {
+    "total_count": 5,
+    "jobs": [
+      {
+        "id": 110769069702,
+        "run_id": 36985370386,
+        "workflow_name": "CI",
+        "head_branch": "codex/audit-r01-adoption-atomic-20261002",
+        "run_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOS3tinc8AAAAZylnehg",
+        "head_sha": "9df26366cc719d0f92530a784da6871d0db81398",
+        "url": "https://api.github.com/repos/YNWAforever/hkscda/actions/jobs/110769069702",
+        "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36985370386/job/110769069702",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-02T08:40:22Z",
+        "started_at": "2026-10-02T08:40:24Z",
+        "completed_at": "2026-10-02T08:43:00Z",
+        "name": "verify",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-02T08:40:25Z",
+            "completed_at": "2026-10-02T08:40:26Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-02T08:40:26Z",
+            "completed_at": "2026-10-02T08:40:31Z"
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-02T08:40:31Z",
+            "completed_at": "2026-10-02T08:40:33Z"
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-02T08:40:33Z",
+            "completed_at": "2026-10-02T08:40:38Z"
+          },
+          {
+            "name": "Typecheck",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-10-02T08:40:38Z",
+            "completed_at": "2026-10-02T08:41:09Z"
+          },
+          {
+            "name": "Test",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-10-02T08:41:09Z",
+            "completed_at": "2026-10-02T08:41:52Z"
+          },
+          {
+            "name": "Lint",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-10-02T08:41:52Z",
+            "completed_at": "2026-10-02T08:42:24Z"
+          },
+          {
+            "name": "Build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-10-02T08:42:24Z",
+            "completed_at": "2026-10-02T08:42:57Z"
+          },
+          {
+            "name": "Route tree is current",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-10-02T08:42:57Z",
+            "completed_at": "2026-10-02T08:42:57Z"
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-10-02T08:42:57Z",
+            "completed_at": "2026-10-02T08:42:57Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-10-02T08:42:57Z",
+            "completed_at": "2026-10-02T08:42:57Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-10-02T08:42:57Z",
+            "completed_at": "2026-10-02T08:42:58Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/YNWAforever/hkscda/check-runs/110769069702",
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "runner_id": 1000008134,
+        "runner_name": "GitHub Actions 1000008134",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 110769871554,
+        "run_id": 36985370386,
+        "workflow_name": "CI",
+        "head_branch": "codex/audit-r01-adoption-atomic-20261002",
+        "run_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOS3tinc8AAAAZymYawg",
+        "head_sha": "9df26366cc719d0f92530a784da6871d0db81398",
+        "url": "https://api.github.com/repos/YNWAforever/hkscda/actions/jobs/110769871554",
+        "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36985370386/job/110769871554",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-10-02T08:43:01Z",
+        "started_at": "2026-10-02T08:43:03Z",
+        "completed_at": "2026-10-02T08:44:37Z",
+        "name": "rls-matrix",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-02T08:43:04Z",
+            "completed_at": "2026-10-02T08:43:04Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-02T08:43:04Z",
+            "completed_at": "2026-10-02T08:43:08Z"
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-02T08:43:08Z",
+            "completed_at": "2026-10-02T08:43:09Z"
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-02T08:43:09Z",
+            "completed_at": "2026-10-02T08:43:13Z"
+          },
+          {
+            "name": "Start local Supabase stack",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 5,
+            "started_at": "2026-10-02T08:43:13Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run RLS behavioral tests",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run database-backed transaction tests",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 7,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run volunteer bulk database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run content publication eligibility database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run media repair database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run public listing database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 11,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run supporter portal preference database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 12,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run CRM tag bulk database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 13,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run volunteer reviewer bulk database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 14,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run adoption assignment bulk database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run animal review bulk database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 16,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run manual finance atomic database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 17,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run CMS quality queue database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 18,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Run CMS review bulk database scenarios",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 19,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:35Z"
+          },
+          {
+            "name": "Stop local Supabase stack",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 20,
+            "started_at": "2026-10-02T08:44:35Z",
+            "completed_at": "2026-10-02T08:44:36Z"
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 39,
+            "started_at": "2026-10-02T08:44:36Z",
+            "completed_at": "2026-10-02T08:44:36Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 40,
+            "started_at": "2026-10-02T08:44:36Z",
+            "completed_at": "2026-10-02T08:44:36Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 41,
+            "started_at": "2026-10-02T08:44:36Z",
+            "completed_at": "2026-10-02T08:44:36Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/YNWAforever/hkscda/check-runs/110769871554",
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "runner_id": 1000008136,
+        "runner_name": "GitHub Actions 1000008136",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 110769871630,
+        "run_id": 36985370386,
+        "workflow_name": "CI",
+        "head_branch": "codex/audit-r01-adoption-atomic-20261002",
+        "run_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOS3tinc8AAAAZymYbDg",
+        "head_sha": "9df26366cc719d0f92530a784da6871d0db81398",
+        "url": "https://api.github.com/repos/YNWAforever/hkscda/actions/jobs/110769871630",
+        "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36985370386/job/110769871630",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-02T08:43:01Z",
+        "started_at": "2026-10-02T08:43:03Z",
+        "completed_at": "2026-10-02T08:48:38Z",
+        "name": "performance-verify",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-02T08:43:04Z",
+            "completed_at": "2026-10-02T08:43:05Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-02T08:43:05Z",
+            "completed_at": "2026-10-02T08:43:10Z"
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-02T08:43:10Z",
+            "completed_at": "2026-10-02T08:43:12Z"
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-02T08:43:12Z",
+            "completed_at": "2026-10-02T08:43:14Z"
+          },
+          {
+            "name": "Build against the fixture",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-10-02T08:43:14Z",
+            "completed_at": "2026-10-02T08:43:46Z"
+          },
+          {
+            "name": "Install performance verifier browser",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-10-02T08:43:46Z",
+            "completed_at": "2026-10-02T08:44:08Z"
+          },
+          {
+            "name": "Verify public performance",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-10-02T08:44:08Z",
+            "completed_at": "2026-10-02T08:48:34Z"
+          },
+          {
+            "name": "Upload performance artefacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-10-02T08:48:34Z",
+            "completed_at": "2026-10-02T08:48:36Z"
+          },
+          {
+            "name": "Report unavailable artefacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-10-02T08:48:36Z",
+            "completed_at": "2026-10-02T08:48:36Z"
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-10-02T08:48:36Z",
+            "completed_at": "2026-10-02T08:48:36Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-10-02T08:48:36Z",
+            "completed_at": "2026-10-02T08:48:36Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-10-02T08:48:36Z",
+            "completed_at": "2026-10-02T08:48:36Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/YNWAforever/hkscda/check-runs/110769871630",
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "runner_id": 1000008135,
+        "runner_name": "GitHub Actions 1000008135",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 110769871659,
+        "run_id": 36985370386,
+        "workflow_name": "CI",
+        "head_branch": "codex/audit-r01-adoption-atomic-20261002",
+        "run_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOS3tinc8AAAAZymYbKw",
+        "head_sha": "9df26366cc719d0f92530a784da6871d0db81398",
+        "url": "https://api.github.com/repos/YNWAforever/hkscda/actions/jobs/110769871659",
+        "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36985370386/job/110769871659",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-02T08:43:01Z",
+        "started_at": "2026-10-02T08:43:03Z",
+        "completed_at": "2026-10-02T08:45:51Z",
+        "name": "a11y-verify",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-02T08:43:04Z",
+            "completed_at": "2026-10-02T08:43:05Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-02T08:43:05Z",
+            "completed_at": "2026-10-02T08:43:11Z"
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-02T08:43:11Z",
+            "completed_at": "2026-10-02T08:43:13Z"
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-02T08:43:13Z",
+            "completed_at": "2026-10-02T08:43:15Z"
+          },
+          {
+            "name": "Build against the fixture",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-10-02T08:43:15Z",
+            "completed_at": "2026-10-02T08:43:48Z"
+          },
+          {
+            "name": "Install a11y verifier browser",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-10-02T08:43:48Z",
+            "completed_at": "2026-10-02T08:44:12Z"
+          },
+          {
+            "name": "Verify public a11y",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-10-02T08:44:12Z",
+            "completed_at": "2026-10-02T08:45:46Z"
+          },
+          {
+            "name": "Upload a11y artefacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-10-02T08:45:46Z",
+            "completed_at": "2026-10-02T08:45:48Z"
+          },
+          {
+            "name": "Report unavailable artefacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-10-02T08:45:48Z",
+            "completed_at": "2026-10-02T08:45:48Z"
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-10-02T08:45:48Z",
+            "completed_at": "2026-10-02T08:45:48Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-10-02T08:45:48Z",
+            "completed_at": "2026-10-02T08:45:48Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-10-02T08:45:48Z",
+            "completed_at": "2026-10-02T08:45:48Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/YNWAforever/hkscda/check-runs/110769871659",
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "runner_id": 1000008137,
+        "runner_name": "GitHub Actions 1000008137",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 110769871678,
+        "run_id": 36985370386,
+        "workflow_name": "CI",
+        "head_branch": "codex/audit-r01-adoption-atomic-20261002",
+        "run_url": "https://api.github.com/repos/YNWAforever/hkscda/actions/runs/36985370386",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOS3tinc8AAAAZymYbPg",
+        "head_sha": "9df26366cc719d0f92530a784da6871d0db81398",
+        "url": "https://api.github.com/repos/YNWAforever/hkscda/actions/jobs/110769871678",
+        "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36985370386/job/110769871678",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-02T08:43:01Z",
+        "started_at": "2026-10-02T08:43:04Z",
+        "completed_at": "2026-10-02T08:51:38Z",
+        "name": "brand-verify",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-02T08:43:05Z",
+            "completed_at": "2026-10-02T08:43:07Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-02T08:43:07Z",
+            "completed_at": "2026-10-02T08:43:10Z"
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-02T08:43:10Z",
+            "completed_at": "2026-10-02T08:43:11Z"
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-02T08:43:11Z",
+            "completed_at": "2026-10-02T08:43:13Z"
+          },
+          {
+            "name": "Build against the fixture",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-10-02T08:43:13Z",
+            "completed_at": "2026-10-02T08:43:47Z"
+          },
+          {
+            "name": "Install brand verifier browser",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-10-02T08:43:47Z",
+            "completed_at": "2026-10-02T08:44:08Z"
+          },
+          {
+            "name": "Verify public brand",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-10-02T08:44:08Z",
+            "completed_at": "2026-10-02T08:51:33Z"
+          },
+          {
+            "name": "Upload brand artefacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-10-02T08:51:33Z",
+            "completed_at": "2026-10-02T08:51:36Z"
+          },
+          {
+            "name": "Report unavailable artefacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-10-02T08:51:36Z",
+            "completed_at": "2026-10-02T08:51:36Z"
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-10-02T08:51:36Z",
+            "completed_at": "2026-10-02T08:51:36Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-10-02T08:51:36Z",
+            "completed_at": "2026-10-02T08:51:36Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-10-02T08:51:36Z",
+            "completed_at": "2026-10-02T08:51:36Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/YNWAforever/hkscda/check-runs/110769871678",
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "runner_id": 1000008138,
+        "runner_name": "GitHub Actions 1000008138",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  }
+}

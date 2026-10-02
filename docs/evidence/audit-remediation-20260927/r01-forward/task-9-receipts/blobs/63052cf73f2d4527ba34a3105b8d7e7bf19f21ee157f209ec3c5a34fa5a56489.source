@@ -1,0 +1,33 @@
+{
+  "nonProcDifferences": {
+    "bodyMd5": {
+      "modern": "cdef18c69c4f4cbbced2eaf81e628b49",
+      "template": "772430c79a4272a214d3e200a170c0c3"
+    },
+    "definition": {
+      "modern": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n$function$\n",
+      "template": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\r\n  select \r\n  coalesce(\r\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\r\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\r\n  )::uuid\r\n$function$\n"
+    },
+    "definitionMd5": {
+      "modern": "ea3b41bf29e2ad573067939329aa088e",
+      "template": "5dd851706ecb5893606782fd9e2cbf83"
+    }
+  },
+  "completeProcDifferences": {
+    "oid": {
+      "modern": "16501",
+      "template": "24038"
+    },
+    "prosrc": {
+      "modern": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n",
+      "template": "\r\n  select \r\n  coalesce(\r\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\r\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\r\n  )::uuid\r\n"
+    },
+    "pronamespace": {
+      "modern": "16457",
+      "template": "23605"
+    }
+  },
+  "onlyLFvsCRLFBody": true,
+  "onlyLFvsCRLFDefinition": true,
+  "qualification": "Comparison explains local capture discrepancy only. No schema or acceptance normalization performed; actual CI17.11 unknown."
+}

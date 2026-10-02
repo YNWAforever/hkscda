@@ -1,0 +1,364 @@
+[
+  {
+    "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+    "name": "email",
+    "owner": "supabase_auth_admin",
+    "result": "text",
+    "schema": "auth",
+    "bodyMd5": "d83fa9609bbd5e95512922e407b4141d",
+    "identity": "",
+    "language": "sql",
+    "arguments": "",
+    "definition": "CREATE OR REPLACE FUNCTION auth.email()\n RETURNS text\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.email', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'email')\n  )::text\n$function$\n",
+    "completeProc": {
+      "oid": "16503",
+      "proacl": [
+        "=X/supabase_auth_admin",
+        "supabase_auth_admin=X/supabase_auth_admin",
+        "dashboard_user=X/supabase_auth_admin"
+      ],
+      "probin": null,
+      "prosrc": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.email', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'email')\n  )::text\n",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "14",
+      "proname": "email",
+      "prorows": 0,
+      "pronargs": 0,
+      "proowner": "16504",
+      "proconfig": null,
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "25",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": null,
+      "proargtypes": [],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "s",
+      "proleakproof": false,
+      "pronamespace": "16457",
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "pronargdefaults": 0
+    },
+    "effectiveAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_auth_admin",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "dashboard_user",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definitionMd5": "bf3569f4ae1c7e250e74daf51d0311c7",
+    "defaultExpression": null
+  },
+  {
+    "acl": "{=X/supabase_auth_admin,postgres=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+    "name": "jwt",
+    "owner": "supabase_auth_admin",
+    "result": "jsonb",
+    "schema": "auth",
+    "bodyMd5": "2db09c3fc855ba90e71d3ae28cfadae3",
+    "identity": "",
+    "language": "sql",
+    "arguments": "",
+    "definition": "CREATE OR REPLACE FUNCTION auth.jwt()\n RETURNS jsonb\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n    coalesce(\n        nullif(current_setting('request.jwt.claim', true), ''),\n        nullif(current_setting('request.jwt.claims', true), '')\n    )::jsonb\n$function$\n",
+    "completeProc": {
+      "oid": "17276",
+      "proacl": [
+        "=X/supabase_auth_admin",
+        "postgres=X/supabase_auth_admin",
+        "supabase_auth_admin=X/supabase_auth_admin",
+        "dashboard_user=X/supabase_auth_admin"
+      ],
+      "probin": null,
+      "prosrc": "\n  select \n    coalesce(\n        nullif(current_setting('request.jwt.claim', true), ''),\n        nullif(current_setting('request.jwt.claims', true), '')\n    )::jsonb\n",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "14",
+      "proname": "jwt",
+      "prorows": 0,
+      "pronargs": 0,
+      "proowner": "16504",
+      "proconfig": null,
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "3802",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": null,
+      "proargtypes": [],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "s",
+      "proleakproof": false,
+      "pronamespace": "16457",
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "pronargdefaults": 0
+    },
+    "effectiveAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_auth_admin",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "dashboard_user",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definitionMd5": "20054548ba2003f61a6bcb472175700b",
+    "defaultExpression": null
+  },
+  {
+    "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+    "name": "role",
+    "owner": "supabase_auth_admin",
+    "result": "text",
+    "schema": "auth",
+    "bodyMd5": "f31486fed08a7402e89d4aa71b0ad273",
+    "identity": "",
+    "language": "sql",
+    "arguments": "",
+    "definition": "CREATE OR REPLACE FUNCTION auth.role()\n RETURNS text\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.role', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')\n  )::text\n$function$\n",
+    "completeProc": {
+      "oid": "16502",
+      "proacl": [
+        "=X/supabase_auth_admin",
+        "supabase_auth_admin=X/supabase_auth_admin",
+        "dashboard_user=X/supabase_auth_admin"
+      ],
+      "probin": null,
+      "prosrc": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.role', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')\n  )::text\n",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "14",
+      "proname": "role",
+      "prorows": 0,
+      "pronargs": 0,
+      "proowner": "16504",
+      "proconfig": null,
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "25",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": null,
+      "proargtypes": [],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "s",
+      "proleakproof": false,
+      "pronamespace": "16457",
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "pronargdefaults": 0
+    },
+    "effectiveAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_auth_admin",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "dashboard_user",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definitionMd5": "8a3e05459e07e0633d43c6fba2a2cdf4",
+    "defaultExpression": null
+  },
+  {
+    "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+    "name": "uid",
+    "owner": "supabase_auth_admin",
+    "result": "uuid",
+    "schema": "auth",
+    "bodyMd5": "cdef18c69c4f4cbbced2eaf81e628b49",
+    "identity": "",
+    "language": "sql",
+    "arguments": "",
+    "definition": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n$function$\n",
+    "completeProc": {
+      "oid": "16501",
+      "proacl": [
+        "=X/supabase_auth_admin",
+        "supabase_auth_admin=X/supabase_auth_admin",
+        "dashboard_user=X/supabase_auth_admin"
+      ],
+      "probin": null,
+      "prosrc": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "14",
+      "proname": "uid",
+      "prorows": 0,
+      "pronargs": 0,
+      "proowner": "16504",
+      "proconfig": null,
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "2950",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": null,
+      "proargtypes": [],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "s",
+      "proleakproof": false,
+      "pronamespace": "16457",
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "pronargdefaults": 0
+    },
+    "effectiveAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_auth_admin",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "dashboard_user",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definitionMd5": "ea3b41bf29e2ad573067939329aa088e",
+    "defaultExpression": null
+  },
+  {
+    "acl": "{postgres=X/postgres,service_role=X/postgres}",
+    "name": "create_manual_adoption_case",
+    "owner": "postgres",
+    "result": "jsonb",
+    "schema": "private",
+    "bodyMd5": "18def457bdf482aea149d9ff56dff3c6",
+    "identity": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+    "language": "plpgsql",
+    "arguments": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb",
+    "definition": "CREATE OR REPLACE FUNCTION private.create_manual_adoption_case(p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_identity_kind text := p_identity->>'kind';\n  v_supporter_id uuid;\n  v_adopter_profile_id uuid;\n  v_case_id uuid;\n  v_task_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user admin\n    where admin.auth_user_id = p_actor_user_id\n      and admin.status = 'active'\n      and admin.role in ('staff', 'admin')\n  ) then\n    raise exception 'Forbidden';\n  end if;\n\n  if v_identity_kind = 'existing_adopter' then\n    v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;\n    select adopter.supporter_id into v_supporter_id\n    from public.adopter_profile adopter\n    join public.supporter supporter on supporter.id = adopter.supporter_id\n    where adopter.id = v_adopter_profile_id\n      and supporter.deleted_at is null;\n    if v_adopter_profile_id is null or v_supporter_id is null then\n      raise exception 'Adopter profile not found';\n    end if;\n  elsif v_identity_kind = 'existing_supporter' then\n    v_supporter_id := (p_identity->>'supporterId')::uuid;\n    if not exists (select 1 from public.supporter where id = v_supporter_id and deleted_at is null) then\n      raise exception 'Supporter not found';\n    end if;\n    select id into v_adopter_profile_id\n    from public.adopter_profile\n    where supporter_id = v_supporter_id;\n    if v_adopter_profile_id is null then\n      insert into public.adopter_profile (\n        supporter_id,\n        name_english,\n        name_chinese,\n        address,\n        household_size\n      )\n      values (\n        v_supporter_id,\n        nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n        nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n        nullif(p_identity#>>'{adopterProfile,address}', ''),\n        nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n      )\n      on conflict (supporter_id) do update\n      set supporter_id = excluded.supporter_id\n      returning id into v_adopter_profile_id;\n    end if;\n  elsif v_identity_kind = 'new_supporter' then\n    insert into public.supporter (\n      name,\n      email,\n      phone,\n      language,\n      source\n    )\n    values (\n      p_identity#>>'{supporter,name}',\n      nullif(p_identity#>>'{supporter,email}', ''),\n      p_identity#>>'{supporter,phone}',\n      coalesce(nullif(p_identity#>>'{supporter,language}', ''), 'zh-HK'),\n      'manual_adoption_intake'\n    )\n    returning id into v_supporter_id;\n\n    insert into public.adopter_profile (\n      supporter_id,\n      name_english,\n      name_chinese,\n      address,\n      household_size\n    )\n    values (\n      v_supporter_id,\n      nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n      nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n      nullif(p_identity#>>'{adopterProfile,address}', ''),\n      nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n    )\n    returning id into v_adopter_profile_id;\n  else\n    raise exception 'Invalid manual intake identity';\n  end if;\n\n  insert into public.supporter_role (supporter_id, role)\n  values (v_supporter_id, 'adopter')\n  on conflict (supporter_id, role) do nothing;\n\n  insert into public.adoption_case (\n    status_id,\n    requested_animal_id,\n    animal_type,\n    applicant_name,\n    applicant_phone,\n    applicant_email,\n    applicant_address,\n    housing_type,\n    family_size,\n    existing_pets,\n    reason,\n    supporter_id,\n    adopter_profile_id,\n    preferences,\n    source,\n    created_by\n  )\n  values (\n    (p_case->>'initialStatusId')::uuid,\n    nullif(p_case->>'requestedAnimalId', '')::uuid,\n    p_case->>'animalType',\n    p_case->>'applicantName',\n    p_case->>'applicantPhone',\n    nullif(p_case->>'applicantEmail', ''),\n    nullif(p_case->>'applicantAddress', ''),\n    nullif(p_case->>'housingType', ''),\n    nullif(p_case->>'familySize', '')::int,\n    nullif(p_case->>'existingPets', ''),\n    nullif(p_case->>'reason', ''),\n    v_supporter_id,\n    v_adopter_profile_id,\n    coalesce(p_case->'preferences', '{}'::jsonb),\n    'manual_intake',\n    p_actor_user_id\n  )\n  returning id into v_case_id;\n\n  if not exists (\n    select 1\n    from public.adoption_case\n    where id = v_case_id\n      and source = 'manual_intake'\n  ) then\n    raise exception 'Manual intake source not set';\n  end if;\n\n  if p_initial_task is not null then\n    insert into public.adoption_followup (\n      adoption_case_id,\n      adopter_profile_id,\n      animal_id,\n      status_id,\n      title,\n      task_type,\n      priority,\n      due_at,\n      assigned_to,\n      volunteer,\n      contact_channel,\n      remarks,\n      created_by,\n      updated_by\n    )\n    values (\n      v_case_id,\n      v_adopter_profile_id,\n      nullif(p_case->>'requestedAnimalId', '')::uuid,\n      (p_initial_task->>'statusId')::uuid,\n      p_initial_task->>'title',\n      coalesce(nullif(p_initial_task->>'taskType', ''), 'followup'),\n      coalesce(nullif(p_initial_task->>'priority', ''), 'normal'),\n      nullif(p_initial_task->>'dueAt', '')::timestamptz,\n      nullif(p_initial_task->>'assignedTo', ''),\n      nullif(p_initial_task->>'volunteer', ''),\n      nullif(p_initial_task->>'contactChannel', ''),\n      nullif(p_initial_task->>'remarks', ''),\n      p_actor_user_id,\n      p_actor_user_id\n    )\n    returning id into v_task_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    timestamp,\n    detail\n  )\n  values (\n    p_actor_user_id,\n    'coordinator_manual_intake.create',\n    'adoption_case',\n    v_case_id::text,\n    now(),\n    jsonb_build_object(\n      'source', 'manual_intake',\n      'supporterId', v_supporter_id,\n      'adopterProfileId', v_adopter_profile_id,\n      'requestedAnimalId', nullif(p_case->>'requestedAnimalId', ''),\n      'initialStatusId', p_case->>'initialStatusId',\n      'createdInitialTask', v_task_id is not null,\n      'initialTaskId', v_task_id\n    )\n  );\n\n  return jsonb_build_object(\n    'caseId', v_case_id,\n    'supporterId', v_supporter_id,\n    'adopterProfileId', v_adopter_profile_id,\n    'taskId', v_task_id\n  );\nend;\n$function$\n",
+    "completeProc": {
+      "oid": "18733",
+      "proacl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "probin": null,
+      "prosrc": "\ndeclare\n  v_identity_kind text := p_identity->>'kind';\n  v_supporter_id uuid;\n  v_adopter_profile_id uuid;\n  v_case_id uuid;\n  v_task_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user admin\n    where admin.auth_user_id = p_actor_user_id\n      and admin.status = 'active'\n      and admin.role in ('staff', 'admin')\n  ) then\n    raise exception 'Forbidden';\n  end if;\n\n  if v_identity_kind = 'existing_adopter' then\n    v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;\n    select adopter.supporter_id into v_supporter_id\n    from public.adopter_profile adopter\n    join public.supporter supporter on supporter.id = adopter.supporter_id\n    where adopter.id = v_adopter_profile_id\n      and supporter.deleted_at is null;\n    if v_adopter_profile_id is null or v_supporter_id is null then\n      raise exception 'Adopter profile not found';\n    end if;\n  elsif v_identity_kind = 'existing_supporter' then\n    v_supporter_id := (p_identity->>'supporterId')::uuid;\n    if not exists (select 1 from public.supporter where id = v_supporter_id and deleted_at is null) then\n      raise exception 'Supporter not found';\n    end if;\n    select id into v_adopter_profile_id\n    from public.adopter_profile\n    where supporter_id = v_supporter_id;\n    if v_adopter_profile_id is null then\n      insert into public.adopter_profile (\n        supporter_id,\n        name_english,\n        name_chinese,\n        address,\n        household_size\n      )\n      values (\n        v_supporter_id,\n        nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n        nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n        nullif(p_identity#>>'{adopterProfile,address}', ''),\n        nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n      )\n      on conflict (supporter_id) do update\n      set supporter_id = excluded.supporter_id\n      returning id into v_adopter_profile_id;\n    end if;\n  elsif v_identity_kind = 'new_supporter' then\n    insert into public.supporter (\n      name,\n      email,\n      phone,\n      language,\n      source\n    )\n    values (\n      p_identity#>>'{supporter,name}',\n      nullif(p_identity#>>'{supporter,email}', ''),\n      p_identity#>>'{supporter,phone}',\n      coalesce(nullif(p_identity#>>'{supporter,language}', ''), 'zh-HK'),\n      'manual_adoption_intake'\n    )\n    returning id into v_supporter_id;\n\n    insert into public.adopter_profile (\n      supporter_id,\n      name_english,\n      name_chinese,\n      address,\n      household_size\n    )\n    values (\n      v_supporter_id,\n      nullif(p_identity#>>'{adopterProfile,nameEnglish}', ''),\n      nullif(p_identity#>>'{adopterProfile,nameChinese}', ''),\n      nullif(p_identity#>>'{adopterProfile,address}', ''),\n      nullif(p_identity#>>'{adopterProfile,householdSize}', '')\n    )\n    returning id into v_adopter_profile_id;\n  else\n    raise exception 'Invalid manual intake identity';\n  end if;\n\n  insert into public.supporter_role (supporter_id, role)\n  values (v_supporter_id, 'adopter')\n  on conflict (supporter_id, role) do nothing;\n\n  insert into public.adoption_case (\n    status_id,\n    requested_animal_id,\n    animal_type,\n    applicant_name,\n    applicant_phone,\n    applicant_email,\n    applicant_address,\n    housing_type,\n    family_size,\n    existing_pets,\n    reason,\n    supporter_id,\n    adopter_profile_id,\n    preferences,\n    source,\n    created_by\n  )\n  values (\n    (p_case->>'initialStatusId')::uuid,\n    nullif(p_case->>'requestedAnimalId', '')::uuid,\n    p_case->>'animalType',\n    p_case->>'applicantName',\n    p_case->>'applicantPhone',\n    nullif(p_case->>'applicantEmail', ''),\n    nullif(p_case->>'applicantAddress', ''),\n    nullif(p_case->>'housingType', ''),\n    nullif(p_case->>'familySize', '')::int,\n    nullif(p_case->>'existingPets', ''),\n    nullif(p_case->>'reason', ''),\n    v_supporter_id,\n    v_adopter_profile_id,\n    coalesce(p_case->'preferences', '{}'::jsonb),\n    'manual_intake',\n    p_actor_user_id\n  )\n  returning id into v_case_id;\n\n  if not exists (\n    select 1\n    from public.adoption_case\n    where id = v_case_id\n      and source = 'manual_intake'\n  ) then\n    raise exception 'Manual intake source not set';\n  end if;\n\n  if p_initial_task is not null then\n    insert into public.adoption_followup (\n      adoption_case_id,\n      adopter_profile_id,\n      animal_id,\n      status_id,\n      title,\n      task_type,\n      priority,\n      due_at,\n      assigned_to,\n      volunteer,\n      contact_channel,\n      remarks,\n      created_by,\n      updated_by\n    )\n    values (\n      v_case_id,\n      v_adopter_profile_id,\n      nullif(p_case->>'requestedAnimalId', '')::uuid,\n      (p_initial_task->>'statusId')::uuid,\n      p_initial_task->>'title',\n      coalesce(nullif(p_initial_task->>'taskType', ''), 'followup'),\n      coalesce(nullif(p_initial_task->>'priority', ''), 'normal'),\n      nullif(p_initial_task->>'dueAt', '')::timestamptz,\n      nullif(p_initial_task->>'assignedTo', ''),\n      nullif(p_initial_task->>'volunteer', ''),\n      nullif(p_initial_task->>'contactChannel', ''),\n      nullif(p_initial_task->>'remarks', ''),\n      p_actor_user_id,\n      p_actor_user_id\n    )\n    returning id into v_task_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    timestamp,\n    detail\n  )\n  values (\n    p_actor_user_id,\n    'coordinator_manual_intake.create',\n    'adoption_case',\n    v_case_id::text,\n    now(),\n    jsonb_build_object(\n      'source', 'manual_intake',\n      'supporterId', v_supporter_id,\n      'adopterProfileId', v_adopter_profile_id,\n      'requestedAnimalId', nullif(p_case->>'requestedAnimalId', ''),\n      'initialStatusId', p_case->>'initialStatusId',\n      'createdInitialTask', v_task_id is not null,\n      'initialTaskId', v_task_id\n    )\n  );\n\n  return jsonb_build_object(\n    'caseId', v_case_id,\n    'supporterId', v_supporter_id,\n    'adopterProfileId', v_adopter_profile_id,\n    'taskId', v_task_id\n  );\nend;\n",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "13619",
+      "proname": "create_manual_adoption_case",
+      "prorows": 0,
+      "pronargs": 4,
+      "proowner": "16384",
+      "proconfig": [
+        "search_path=public, pg_temp"
+      ],
+      "proretset": false,
+      "prosecdef": true,
+      "prorettype": "3802",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": [
+        "p_actor_user_id",
+        "p_identity",
+        "p_case",
+        "p_initial_task"
+      ],
+      "proargtypes": [
+        "2950",
+        "3802",
+        "3802",
+        "3802"
+      ],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "proleakproof": false,
+      "pronamespace": "17965",
+      "proallargtypes": null,
+      "proargdefaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull true :location -1 :constvalue <>})",
+      "pronargdefaults": 1
+    },
+    "effectiveAcl": [
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definitionMd5": "495416f481fbad0367dc078c5c53783f",
+    "defaultExpression": "NULL::jsonb"
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "finalHead": "9df26366cc719d0f92530a784da6871d0db81398",
+  "cleanStatus": "empty",
+  "fullReportPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-report.md",
+  "fullReportRawSha256": "79a99c6b8212c713ff78ceabdfb488ed25b60e2e05bbf1344f011aca0662290a",
+  "fullReportBytes": 22685,
+  "originalReportPriorSHA256": "c977c12acb38264a4142ce3ee8b043b91944c1304cd83b2c7919cccc6b0125a5",
+  "originalReportAppendOnly": true,
+  "originalReportCurrentSHA256": "28d330a29539124252c6a56547b2f39a26e413d22bee5fed7d97f99387a02042",
+  "originalReportCurrentBytes": 42627,
+  "manifestCommittedBodyExactFrozen": true,
+  "manifestCommittedGitBlob": "8b08a66a4200c1500e96e8f06f27a844f4cf7f7e",
+  "reportWrittenAfterPackaging": true,
+  "historicalTranslationCount": 1240,
+  "finalTranslationCount": 1615,
+  "frozenInputCounts": [
+    66,
+    73
+  ],
+  "noTestsOrDBRerun": true
+}

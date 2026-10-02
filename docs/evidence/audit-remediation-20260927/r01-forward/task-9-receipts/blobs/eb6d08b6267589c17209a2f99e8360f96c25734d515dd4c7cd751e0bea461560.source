@@ -1,0 +1,17 @@
+[
+  {
+    "name": "task-9-controller-fix4-auth-component-binding.json",
+    "sha256": "16da1a1770bc5ea8a51dbd3d36c059a4ed126d289a02a051ddfa8108c1bdac42",
+    "bytes": 2765
+  },
+  {
+    "name": "task-9-controller-fix4-proposal-binding.json",
+    "sha256": "1f9aee76c90d5ef75b3e65f8e98c5414ac30b6ed22a09c5e7cb9b1c32f714c49",
+    "bytes": 597
+  },
+  {
+    "name": "task-9-controller-fix4-source-minimum-check.json",
+    "sha256": "38803e1d727adf34889b0e01f56223a4d912f55fc9bd0372316d8feaff72b6b3",
+    "bytes": 419
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-02T09:39:23.612120+00:00",
+  "exitCode": 0,
+  "diagnosticActual55000AuthUid": true,
+  "baselineRollbackAndAllPreservationTrue": true,
+  "receiptSHA256": "c44590f593c93133fbae0c5a86366ad9fca9ed8d13b50c89e5ae1a5ea4171b15",
+  "uniqueCurrentRawInputs": 69,
+  "actualCopiedRuntimeAddresses": 71,
+  "allCurrentRawCanonicalAndArchivedInputsMatched": true,
+  "catalogByteIdentical": true,
+  "completeUidOnlyProsrcAndRenderedDefinitionChanged": true,
+  "fullCaptured17_11UidOnlyOwnedOidNamespaceDifference": true,
+  "otherHelpersAndExtraFacetsUnchanged": true,
+  "rawBoundBeforeAfterFiles": 5,
+  "scannerActualSource5352Unchanged": true,
+  "scannerInvocationQualification": "own transaction proxy maps only begin callback to rollbacksavepoint; realcatalog queries/checks execute and only exactownsentinel caught; existing scannerbegin is catalog-only, not SETTRANSACTIONREADONLY",
+  "metadataLabelQualification": "original sourceFragments.assignment.fragmentSha256 explicitly means capturedAuthdefinition, assignmentfile notexecuted; retainedhistoricallabel not used as assignmentDDLproof",
+  "phase2UnderRuling35Released": true,
+  "rootNoDbTests": true
+}

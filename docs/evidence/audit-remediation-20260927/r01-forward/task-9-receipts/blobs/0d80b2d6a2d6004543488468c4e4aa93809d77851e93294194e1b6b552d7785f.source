@@ -1,0 +1,101 @@
+{
+  "checkedAtUtc": "2026-10-02T10:10:30.536756+00:00",
+  "scope": "Read-only final Fix4 DB receipt/current/raw archive binding before source commit; no tests or SQL executed",
+  "profiles": {
+    "component": {
+      "receipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-component-1790935250738\\receipt.json",
+      "receiptSha256": "038a3e7464b03f95c2c126549de7e858e91fb14e3578eb5ce230d31bda50799c",
+      "sourceCommitMarker": "9df26366cc719d0f92530a784da6871d0db81398",
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/adoptions/atomicForward.database.test.ts",
+        "src/lib/adoptions/atomicForward.http.test.ts",
+        "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "applies": 2,
+      "conditionalGaps": [
+        1,
+        1
+      ],
+      "refusals": 84,
+      "inputCount": 70,
+      "all14Flags": true,
+      "rawLogBytes": 7332,
+      "rawLogSha256": "9df598e515e0887a8d1d276aeedac02fc8ebb876c22f9b30520e47ec4264bf7b"
+    },
+    "hosted": {
+      "receipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-hosted-1790935448904\\receipt.json",
+      "receiptSha256": "ab0d8df52b905869a014dce9de5ec359d4bb8c68e203e6e5f0b69a9dea06487c",
+      "sourceCommitMarker": "9df26366cc719d0f92530a784da6871d0db81398",
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/adoptions/atomicForward.database.test.ts",
+        "src/lib/adoptions/atomicForward.http.test.ts",
+        "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "applies": 2,
+      "conditionalGaps": [
+        20,
+        17
+      ],
+      "refusals": 74,
+      "inputCount": 70,
+      "all14Flags": true,
+      "rawLogBytes": 7330,
+      "rawLogSha256": "d02b3fdc51a8fd0ea4bcd5a69f2b59b75aaca000747e15fa7466f8f75623b5d6"
+    },
+    "modern": {
+      "receipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-modern-1790935582481\\receipt.json",
+      "receiptSha256": "9721137201f6012184c0388cd720d83e0486738551bed9545030690e5c1381d0",
+      "sourceCommitMarker": "9df26366cc719d0f92530a784da6871d0db81398",
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/adoptions/atomicForward.database.test.ts",
+        "src/lib/adoptions/atomicForward.http.test.ts",
+        "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "applies": 2,
+      "conditionalGaps": [
+        1,
+        1
+      ],
+      "refusals": 82,
+      "inputCount": 70,
+      "all14Flags": true,
+      "rawLogBytes": 7339,
+      "rawLogSha256": "bc4289382eeaa608ba2de3777d57c23e54cc2b92c2b95de6d76a64f1ea9611b5"
+    }
+  },
+  "threeIdentical70InputMaps": true,
+  "sourceCommitQualification": "9df is a historical HEAD marker; exact tested working bytes bound by frozen maps/current archive equality. Final Git source commit and four gates pending.",
+  "errors": [],
+  "sourceComplete": false,
+  "countQualification": "First controller inspector incorrectly imposed hosted20->17 on modern/component. Actual stored modern/component profiles are1->1; they test preservation of existing targets. Hosted alone reproduces44->20->17. Original failed inspector is retained; no fixture/test rerun or receipt rewrite."
+}

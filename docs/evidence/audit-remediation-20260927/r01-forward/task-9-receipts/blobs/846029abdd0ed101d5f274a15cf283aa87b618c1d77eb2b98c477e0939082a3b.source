@@ -1,0 +1,292 @@
+/** Fix4 unchanged-source exact Auth LF component diagnosis in one owned rollback transaction. */
+import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import type { SQL } from "bun";
+import {
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  localSourceState,
+  snapshot,
+  hash,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {
+  tables,
+  fixtureScope,
+  dependencies,
+  functionsQuery,
+  authQuery,
+  nativeQuery,
+  indexDetailsQuery,
+} from "./task-9-profile";
+const root = process.cwd(),
+  scratch = resolve(root, ".superpowers/sdd/r01-forward-schema-plan-20261001");
+if (process.env.R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1" || process.argv[2] !== "diagnose")
+  throw Error("Explicit Fix4 owned diagnosis opt-in required");
+const forward = "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+  maintenancePath =
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+  assignmentPath = "supabase/migrations/20260928120000_crm_assignment_bulk.sql";
+const beforeReceipt = JSON.parse(
+  await readFile(resolve(scratch, "task-9-hosted-1790928080801/receipt.json"), "utf8"),
+);
+const paths = [
+  ...Object.keys(beforeReceipt.frozenInputs),
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-4-diagnose.ts",
+  maintenancePath,
+  assignmentPath,
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+];
+const blobs = async () =>
+  Object.fromEntries(
+    await Promise.all(
+      paths.map(async (p) => {
+        const b = await readFile(p);
+        return [
+          p,
+          {
+            rawSha256: hash(b.toString()),
+            canonicalSha256: hash(b.toString().replaceAll("\r\n", "\n")),
+          },
+        ];
+      }),
+    ),
+  );
+const frozen = await blobs(),
+  text = await readFile(forward, "utf8"),
+  maintenance = await readFile(maintenancePath, "utf8"),
+  assignment = await readFile(assignmentPath, "utf8");
+if (hash(text) !== "e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992")
+  throw Error("Exact unchanged9df SQL required");
+const capturedAuth = JSON.parse(
+  await readFile(
+    resolve(scratch, "task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json"),
+    "utf8",
+  ),
+);
+const capturedUid = capturedAuth.functions.find(
+  (f: { schema: string; name: string }) => f.schema === "auth" && f.name === "uid",
+);
+const comparison = JSON.parse(
+  await readFile(resolve(scratch, "task-9-fix-4-helper-comparison.json"), "utf8"),
+);
+if (
+  capturedUid.bodyMd5 !== "cdef18c69c4f4cbbced2eaf81e628b49" ||
+  capturedUid.definitionMd5 !== "ea3b41bf29e2ad573067939329aa088e"
+)
+  throw Error("Exact independently captured LF source absent");
+const columnFence = capturedUid.definition as string;
+const out = resolve(scratch, "task-9-fix-4-red-" + Date.now());
+await mkdir(out);
+for (const [i, p] of paths.entries())
+  await copyFile(p, resolve(out, "s" + String(i).padStart(3, "0") + ".source"));
+await writeFile(resolve(out, "executed-maintenance.source"), maintenance);
+await writeFile(resolve(out, "executed-auth-lf.source"), columnFence);
+const url = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(url),
+  capture = await captureModernLocalSchema(),
+  clone = await createProductionClone(capture),
+  db = clone.sql;
+const receipt: Record<string, unknown> = {
+  sourceCommit: (
+    await new Response(Bun.spawn(["git", "rev-parse", "HEAD"], { stdout: "pipe" }).stdout).text()
+  ).trim(),
+  at: new Date().toISOString(),
+  clone: clone.name,
+  zeroApplicationTables: clone.tableCount,
+  schemaParity: true,
+  fixtureScope,
+  frozenInputs: frozen,
+  sourceFragments: {
+    maintenance: { file: maintenancePath, sha256: hash(maintenance) },
+    assignment: {
+      file: assignmentPath,
+      wholeFileSha256: hash(assignment),
+      fragmentSha256: hash(columnFence),
+      qualification:
+        "field refers to exact captured Auth definition; historical assignment source bound but not executed",
+    },
+  },
+  qualification:
+    "Ruling35 Phase1: PG17.6 application clone with exact17.11/Auth component LF definition. Not fullCI bootstrap; only existing UID body construction in owned rollback, no grant/role/default normalization or source allowance",
+};
+const rows = async (sql: SQL = db) => {
+  const values = [];
+  for (const t of await sql`select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('r','p') union all select 'auth.users' order by 1`) {
+    const [r] = await sql.unsafe(
+      `select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' order by to_jsonb(t)::text),'')) hash from ${t.name} t`,
+    );
+    values.push([t.name, r]);
+  }
+  return hash(values);
+};
+const extra = async (sql: SQL = db) => ({
+  auth: (await sql.unsafe(authQuery))[0].value,
+  completeUid:
+    await sql`select to_jsonb(p) proc,l.lanname language,pg_get_userbyid(p.proowner) owner,pg_get_functiondef(p.oid) definition,(select jsonb_agg(to_jsonb(a) order by a.grantor,a.grantee,a.privilege_type) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a) effective_acl from pg_proc p join pg_language l on l.oid=p.prolang where p.oid='auth.uid()'::regprocedure`,
+  native: (await sql.unsafe(nativeQuery))[0].value,
+  indexes: (await sql.unsafe(indexDetailsQuery))[0].value,
+  functions: await sql.unsafe(functionsQuery),
+  defaults:
+    await sql`select to_jsonb(d) value from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
+  roles: await sql`select to_jsonb(r) value from pg_roles r order by r.oid`,
+  memberships:
+    await sql`select to_jsonb(m) value from pg_auth_members m order by m.roleid,m.member,m.grantor`,
+  ledger:
+    await sql`select md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),'')) hash from supabase_migrations.schema_migrations t`,
+  sequences:
+    await sql`select schemaname,sequencename,last_value from pg_sequences where schemaname !~ '^pg_' order by 1,2`,
+  completeNative:
+    await sql`select to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_trigger t where t.tgisinternal order by t.oid`,
+});
+const profiles = async (sql: SQL) => {
+  const catalog = await snapshot(sql),
+    items = [];
+  for (const name of tables) {
+    const p = Object.fromEntries(
+      ["relations", "columns", "constraints", "indexes", "triggers", "policies"].map((k) => [
+        k,
+        ((catalog[k] ?? []) as Record<string, unknown>[]).filter(
+          (x) => x.schema === "public" && (x.table ?? x.name) === name,
+        ),
+      ]),
+    );
+    const [r] =
+      await sql`select jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_rewrite r where r.ev_class=c.oid)) value from pg_class c where c.oid=${"public." + name}::regclass`;
+    Object.assign(p, { shape: r.value });
+    const [d] = await sql`select md5(${p}::jsonb::text) md5`;
+    items.push({ name, md5: d.md5, profile: p });
+  }
+  return items;
+};
+try {
+  await assertSafeFixtureTables(db, fixtureScope);
+  receipt.fixtureSafety = "unchanged5352 full scope PASS";
+  receipt.runtime =
+    await db`select current_database(),current_user,session_user,current_setting('server_version') server_version`;
+  for (const [file, sha] of dependencies) {
+    const source = await readFile("supabase/migrations/" + file, "utf8");
+    if (hash(source) !== sha) throw Error("Accepted dependency bytes differ " + file);
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(source);
+    });
+  }
+  receipt.dependencies = dependencies;
+  const catalog = await snapshot(db),
+    metadata = await extra(),
+    rowHash = await rows();
+  await writeFile(resolve(out, "catalog-before.json"), JSON.stringify(catalog, null, 2) + "\n");
+  await writeFile(resolve(out, "extra-before.json"), JSON.stringify(metadata, null, 2) + "\n");
+  receipt.beforeProfiles = await profiles(db);
+  const preserved = async () =>
+    hash(catalog) === hash(await snapshot(db)) &&
+    hash(metadata) === hash(await extra()) &&
+    rowHash === (await rows());
+  const rollback = Error("Expected positive baseline rollback");
+  let accepted = false;
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(text);
+      accepted = true;
+      throw rollback;
+    });
+  } catch (e) {
+    if (e !== rollback) throw e;
+  }
+  receipt.baselineAccepted = accepted;
+  receipt.baselineRollbackPreserved = await preserved();
+  if (!accepted || !receipt.baselineRollbackPreserved) throw Error("Invalid positive baseline");
+  let status = "accepted",
+    message = "",
+    setupComplete = false;
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx`set local role supabase_auth_admin`;
+      await tx.unsafe(columnFence);
+      await tx`set local role postgres`;
+      await assertSafeFixtureTables(tx as SQL, fixtureScope);
+      const actualUid = (await tx.unsafe(functionsQuery)).find(
+        (f) => f.schema === "auth" && f.name === "uid",
+      );
+      if (hash(actualUid) !== hash(comparison.proposedMigrationProfile))
+        throw Error("Installed LF tuple differs from captured17.11 tuple");
+      receipt.actualInstalledUid = actualUid;
+      receipt.capturedUid = capturedUid;
+      setupComplete = true;
+      const after = await snapshot(tx),
+        afterExtra = await extra(tx);
+      receipt.componentProfiles = await profiles(tx);
+      receipt.componentCatalogFacetsChanged = Object.keys(catalog).filter(
+        (k) => hash(catalog[k]) !== hash(after[k]),
+      );
+      receipt.componentExtraFacetsChanged = Object.keys(metadata).filter(
+        (k) =>
+          hash(metadata[k as keyof typeof metadata]) !==
+          hash(afterExtra[k as keyof typeof afterExtra]),
+      );
+      await writeFile(
+        resolve(out, "catalog-component.json"),
+        JSON.stringify(after, null, 2) + "\n",
+      );
+      await writeFile(
+        resolve(out, "extra-component.json"),
+        JSON.stringify(afterExtra, null, 2) + "\n",
+      );
+      await tx.unsafe(text);
+      throw Error("Unexpected old SQL component acceptance");
+    });
+  } catch (e) {
+    status = (e as { errno?: string }).errno ?? "unexpected";
+    message = (e as Error).message;
+  }
+  receipt.actualMigrationResult = { status, message, setupComplete };
+  receipt.fullRollbackPreserved = await preserved();
+  if (
+    status !== "55000" ||
+    message !== "R01 adoption helper contract differs: auth.uid" ||
+    !setupComplete ||
+    !receipt.fullRollbackPreserved
+  )
+    throw Error("Independent actual component RED did not match");
+  receipt.result = "Genuine unchanged9df-e690 LF auth.uid RED55000";
+} catch (e) {
+  receipt.error = String(e);
+  process.exitCode = 1;
+} finally {
+  await clone.close();
+  receipt.normalDrop = true;
+  receipt.templatePreserved = clone.templatePreserved;
+  receipt.modernPreserved = modernBefore === (await localSourceState(url));
+  receipt.frozenInputsPreserved = hash(frozen) === hash(await blobs());
+  if (
+    ![
+      receipt.normalDrop,
+      receipt.templatePreserved,
+      receipt.modernPreserved,
+      receipt.frozenInputsPreserved,
+    ].every((v) => v === true)
+  ) {
+    receipt.error = String(receipt.error ?? "") + "; required preservation failed";
+    process.exitCode = 1;
+  }
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+  console.log(
+    JSON.stringify({
+      out,
+      result: receipt.result,
+      error: receipt.error,
+      actualMigrationResult: receipt.actualMigrationResult,
+      componentCatalogFacetsChanged: receipt.componentCatalogFacetsChanged,
+      componentExtraFacetsChanged: receipt.componentExtraFacetsChanged,
+      fullRollbackPreserved: receipt.fullRollbackPreserved,
+      normalDrop: receipt.normalDrop,
+      templatePreserved: receipt.templatePreserved,
+      modernPreserved: receipt.modernPreserved,
+      frozenInputsPreserved: receipt.frozenInputsPreserved,
+    }),
+  );
+}
