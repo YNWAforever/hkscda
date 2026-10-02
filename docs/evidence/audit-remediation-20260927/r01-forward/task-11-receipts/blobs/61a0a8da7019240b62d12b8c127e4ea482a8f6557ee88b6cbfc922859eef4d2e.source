@@ -1,0 +1,283 @@
+{
+  "type": "recoveredBuildSourceQualification",
+  "originalGate": "task-11-gates-1790964133361186800",
+  "actualRecoveryBuild": "task-11-build-recovery-1790965455528",
+  "actualExit": 0,
+  "original40ToCurrentComparison": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+      "preBuildRawSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+      "currentRawSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+      "unchanged": true
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+      "preBuildRawSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+      "currentRawSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+      "unchanged": true
+    },
+    {
+      "path": "bun.lock",
+      "preBuildRawSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "currentRawSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+      "preBuildRawSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+      "currentRawSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-capture.ts",
+      "preBuildRawSha256": "9ec0ebfaa8e75a3153c6acacb1e9245945b832ef763f05eb86c7b0cb5313dee9",
+      "currentRawSha256": "9ec0ebfaa8e75a3153c6acacb1e9245945b832ef763f05eb86c7b0cb5313dee9",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cli.ts",
+      "preBuildRawSha256": "58de21e20c81843930599464db2d4efe97d1f3619d7796c56dfd8de9c0fd7294",
+      "currentRawSha256": "58de21e20c81843930599464db2d4efe97d1f3619d7796c56dfd8de9c0fd7294",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-capture.ts",
+      "preBuildRawSha256": "8432f3993884987c7ab6398bb4a43016f6b19452efaed334df304eb47755442a",
+      "currentRawSha256": "8432f3993884987c7ab6398bb4a43016f6b19452efaed334df304eb47755442a",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-red.ts",
+      "preBuildRawSha256": "740175ea6e0ccec084dc8f755f39b0104589333e4d5d1c19594afaf5d3f026ec",
+      "currentRawSha256": "740175ea6e0ccec084dc8f755f39b0104589333e4d5d1c19594afaf5d3f026ec",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gap.ts",
+      "preBuildRawSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+      "currentRawSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gates.py",
+      "preBuildRawSha256": "81adb9f42e208efa102ce7badcd2d93fbba8b64c342e95c9fd413e66acd20a65",
+      "currentRawSha256": "81adb9f42e208efa102ce7badcd2d93fbba8b64c342e95c9fd413e66acd20a65",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts",
+      "preBuildRawSha256": "081e8d11f81804d248273808159bc707295d1ee7d1649d46ad8234f8759242ad",
+      "currentRawSha256": "081e8d11f81804d248273808159bc707295d1ee7d1649d46ad8234f8759242ad",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-package.py",
+      "preBuildRawSha256": "b272666ebb4d26a47c383db5e8e682c607c2cde35bc0477e12a3826d74b66b4b",
+      "currentRawSha256": "304e8d65a7c1159603dceb93618335ddc4adff8d40026cc322a120b7840bea0a",
+      "unchanged": false
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json",
+      "preBuildRawSha256": "0ff3dafa43ce062d24c79fad9d743e16b9a20bbf4f22c3c5c0b4acd72a34a2c7",
+      "currentRawSha256": "0ff3dafa43ce062d24c79fad9d743e16b9a20bbf4f22c3c5c0b4acd72a34a2c7",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+      "preBuildRawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "currentRawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.test.ts",
+      "preBuildRawSha256": "4521595820b0b3736552519690e48a0fedfa203fd8783b9ee81429f9afb40d44",
+      "currentRawSha256": "4521595820b0b3736552519690e48a0fedfa203fd8783b9ee81429f9afb40d44",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+      "preBuildRawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+      "currentRawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-red.ts",
+      "preBuildRawSha256": "a92c40060728574594574085f23d63dac4bfbb72bc0bd80609ad581907d2ce9f",
+      "currentRawSha256": "a92c40060728574594574085f23d63dac4bfbb72bc0bd80609ad581907d2ce9f",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts",
+      "preBuildRawSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+      "currentRawSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-targets.ts",
+      "preBuildRawSha256": "d0d23be412dddfb978dab15c625bbebd6265ae4c00c35a024509426c635bf7a3",
+      "currentRawSha256": "d0d23be412dddfb978dab15c625bbebd6265ae4c00c35a024509426c635bf7a3",
+      "unchanged": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts",
+      "preBuildRawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "currentRawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "unchanged": true
+    },
+    {
+      "path": "eslint.config.js",
+      "preBuildRawSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "currentRawSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "preBuildRawSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "currentRawSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/donations/financeCallbackForward.database.test.ts",
+      "preBuildRawSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+      "currentRawSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/donations/reconcile.server.test.ts",
+      "preBuildRawSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+      "currentRawSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/donations/reconcile.server.ts",
+      "preBuildRawSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+      "currentRawSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/operations/releaseManifest.ts",
+      "preBuildRawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "currentRawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/operations/releaseSchema.ts",
+      "preBuildRawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "currentRawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+      "preBuildRawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "currentRawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+      "preBuildRawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "currentRawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+      "preBuildRawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "currentRawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+      "preBuildRawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "currentRawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+      "preBuildRawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "currentRawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+      "preBuildRawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "currentRawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+      "preBuildRawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "currentRawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+      "preBuildRawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "currentRawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+      "preBuildRawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "currentRawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "preBuildRawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "currentRawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "unchanged": true
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "preBuildRawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "currentRawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "unchanged": true
+    },
+    {
+      "path": "tsconfig.json",
+      "preBuildRawSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "currentRawSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "unchanged": true
+    },
+    {
+      "path": "vite.config.ts",
+      "preBuildRawSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "currentRawSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "unchanged": true
+    }
+  ],
+  "changedOriginalFrozenPaths": [
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-package.py"
+  ],
+  "qualification": "Only the Task11 proof package writer differs in original40; finance database test is identical to its original frozen pre-build bytes. The later slogan test amendment is bound separately by old/new source below. Vite unchanged config builds TanStack application routes and src/server.ts; literal searches find no application reference to either exact test module. This is an exact observed snapshot/import qualification, not a generic test-file exception.",
+  "laterSloganSource": {
+    "originalRawSha256": "12ea6f6fc2c5b1c756f5254112961b959a37fad72ba017792a941bb016c6ca6b",
+    "currentRawSha256": "b8fb8e422fdab8556a793a525847675c619b2f5c1c96d4e00659d447e892457c",
+    "currentBytes": 9747
+  },
+  "literalImportSearch": {
+    "command": [
+      "rg",
+      "-n",
+      "serviceSloganCopy|financeCallbackForward.database",
+      "src",
+      "--glob",
+      "!serviceSloganCopy.test.ts",
+      "--glob",
+      "!financeCallbackForward.database.test.ts"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "buildConfig": {
+    "path": "vite.config.ts",
+    "sha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+    "entry": "TanStack routes + src/server.ts; no test discovery configuration"
+  },
+  "actualRecoveryDriver": "Direct PowerShell tool invocation, exec_command chunk4d545d/session53290 and write_stdin chunk7b698d exit0; invocation.json captured before execution. unchanged-gate-binder.source is contextual only and was not executed.",
+  "finalGateReceipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-gates-1790966853807654300/receipt.json",
+  "finalFrozenInputs": 43,
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false
+}

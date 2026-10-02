@@ -1,0 +1,108 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+(pass) Task11 finance callback production gaps > fail_pending_provider_payment resolves current API signature before input rejection [32.87ms]
+(pass) Task11 finance callback production gaps > refund_provider_payment_atomically resolves current API signature before input rejection [14.20ms]
+(pass) Task11 finance callback production gaps > void_receipt_with_audit resolves current API signature before input rejection [13.89ms]
+(pass) Task11 finance callback production gaps > void_donation_receipts_with_audit resolves current API signature before input rejection [14.65ms]
+(pass) Task11 finance callback production gaps > issue_receipt_with_audit resolves current API signature before input rejection [14.17ms]
+(pass) Task11 manual receipt Auth fence > banned finance actor cannot void a receipt [57.08ms]
+(pass) Task11 manual receipt Auth fence > unconfirmed finance actor cannot void a receipt [71.98ms]
+(pass) Task11 manual receipt Auth fence > banned finance actor cannot issue a receipt [41.66ms]
+(pass) Task11 manual receipt Auth fence > unconfirmed finance actor cannot issue a receipt [43.34ms]
+(pass) Task11 finance behavior and transaction contracts > void confirmed treasurer succeeds with one atomic audit and immutable money [74.57ms]
+(pass) Task11 finance behavior and transaction contracts > void confirmed admin succeeds with one atomic audit and immutable money [59.43ms]
+(pass) Task11 finance behavior and transaction contracts > void rejects stale finance role='staff' [638.71ms]
+(pass) Task11 finance behavior and transaction contracts > void rejects stale finance status='disabled' [329.66ms]
+(pass) Task11 finance behavior and transaction contracts > void audit failure rolls back receipt and sequence but preserves settled payment [117.14ms]
+(pass) Task11 finance behavior and transaction contracts > issue confirmed treasurer succeeds with one atomic audit and immutable money [57.89ms]
+(pass) Task11 finance behavior and transaction contracts > issue confirmed admin succeeds with one atomic audit and immutable money [38.10ms]
+(pass) Task11 finance behavior and transaction contracts > issue rejects stale finance role='staff' [20.75ms]
+(pass) Task11 finance behavior and transaction contracts > issue rejects stale finance status='disabled' [23.85ms]
+(pass) Task11 finance behavior and transaction contracts > issue audit failure rolls back receipt and sequence but preserves settled payment [42.29ms]
+(pass) Task11 finance behavior and transaction contracts > anon cannot directly invoke deny with trusted actor ids [29.68ms]
+(pass) Task11 finance behavior and transaction contracts > anon cannot directly invoke refund with trusted actor ids [50.06ms]
+(pass) Task11 finance behavior and transaction contracts > anon cannot directly invoke void with trusted actor ids [32.49ms]
+(pass) Task11 finance behavior and transaction contracts > anon cannot directly invoke system-void with trusted actor ids [26.85ms]
+(pass) Task11 finance behavior and transaction contracts > anon cannot directly invoke issue with trusted actor ids [33.48ms]
+(pass) Task11 finance behavior and transaction contracts > authenticated cannot directly invoke deny with trusted actor ids [25.24ms]
+(pass) Task11 finance behavior and transaction contracts > authenticated cannot directly invoke refund with trusted actor ids [21.04ms]
+(pass) Task11 finance behavior and transaction contracts > authenticated cannot directly invoke void with trusted actor ids [44.18ms]
+(pass) Task11 finance behavior and transaction contracts > authenticated cannot directly invoke system-void with trusted actor ids [44.98ms]
+(pass) Task11 finance behavior and transaction contracts > authenticated cannot directly invoke issue with trusted actor ids [39.13ms]
+(pass) Task11 finance behavior and transaction contracts > issue retry after missing PDF returns same receipt and no second audit or number [78.80ms]
+(pass) Task11 finance behavior and transaction contracts > manual void replay rejects without second audit; signed void retry returns zero rows [119.26ms]
+(pass) Task11 finance behavior and transaction contracts > system void audit failure preserves issued receipt and paid money [83.28ms]
+(pass) Task11 finance behavior and transaction contracts > manual void rejects cross-supporter identity before audit [45.87ms]
+(pass) Task11 finance behavior and transaction contracts > issue rejects mismatched supporter without receipt allocation [70.61ms]
+(pass) Task11 finance behavior and transaction contracts > issue rejects mismatched amount without receipt allocation [91.25ms]
+(pass) Task11 finance behavior and transaction contracts > void ignores caller temporary Auth/admin/receipt relation shadows [597.23ms]
+(pass) Task11 finance behavior and transaction contracts > issue ignores caller temporary Auth/admin/receipt relation shadows [147.08ms]
+(pass) Task11 finance behavior and transaction contracts > deny pending pair preserves immutable money and settles retry consistently [375.93ms]
+(pass) Task11 finance behavior and transaction contracts > refund pending pair preserves immutable money and settles retry consistently [265.53ms]
+(pass) Task11 finance behavior and transaction contracts > deny failed pair preserves immutable money and settles retry consistently [33.11ms]
+(pass) Task11 finance behavior and transaction contracts > refund failed pair preserves immutable money and settles retry consistently [262.64ms]
+(pass) Task11 finance behavior and transaction contracts > deny succeeded pair preserves immutable money and settles retry consistently [314.28ms]
+(pass) Task11 finance behavior and transaction contracts > refund succeeded pair preserves immutable money and settles retry consistently [81.77ms]
+(pass) Task11 finance behavior and transaction contracts > deny refunded pair preserves immutable money and settles retry consistently [321.52ms]
+(pass) Task11 finance behavior and transaction contracts > refund refunded pair preserves immutable money and settles retry consistently [304.35ms]
+(pass) Task11 finance behavior and transaction contracts > signed callbacks reject identity mismatch and malformed ids without ledger change [807.37ms]
+(pass) Task11 finance behavior and transaction contracts > void permits an expired Auth ban and rejects an absent actor [451.43ms]
+(pass) Task11 finance behavior and transaction contracts > issue permits an expired Auth ban and rejects an absent actor [416.79ms]
+PostgresError: duplicate key value violates unique constraint "receipt_one_issued_per_donation"
+      errno: "23505",
+     detail: "Key ((donation_ids[1]))=(56d4a598-bc4e-4689-92a1-cac3be966cb7) already exists.",
+   severity: "ERROR",
+     schema: "public",
+      table: "receipt",
+ constraint: "receipt_one_issued_per_donation",
+       file: "nbtinsert.c",
+    routine: "_bt_check_unique",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) Task11 finance behavior and transaction contracts > system void late audit failure rolls back both receipts and earlier audit [299.04ms]
+(pass) Task11 actual finance concurrency fences > void ban mutation-first observes row blocking and correct commit order [542.26ms]
+(pass) Task11 actual finance concurrency fences > void ban command-first observes row blocking and correct commit order [225.28ms]
+(pass) Task11 actual finance concurrency fences > void role mutation-first observes row blocking and correct commit order [457.66ms]
+(pass) Task11 actual finance concurrency fences > void role command-first observes row blocking and correct commit order [366.90ms]
+(pass) Task11 actual finance concurrency fences > void disable mutation-first observes row blocking and correct commit order [200.77ms]
+(pass) Task11 actual finance concurrency fences > void disable command-first observes row blocking and correct commit order [143.11ms]
+(pass) Task11 actual finance concurrency fences > issue ban mutation-first observes row blocking and correct commit order [71.14ms]
+(pass) Task11 actual finance concurrency fences > issue ban command-first observes row blocking and correct commit order [60.87ms]
+(pass) Task11 actual finance concurrency fences > issue role mutation-first observes row blocking and correct commit order [76.63ms]
+(pass) Task11 actual finance concurrency fences > issue role command-first observes row blocking and correct commit order [71.72ms]
+(pass) Task11 actual finance concurrency fences > issue disable mutation-first observes row blocking and correct commit order [59.62ms]
+(pass) Task11 actual finance concurrency fences > issue disable command-first observes row blocking and correct commit order [62.32ms]
+(pass) Task11 actual finance concurrency fences > concurrent same-actor issue retries commit one receipt number and one issue audit [45.75ms]
+(pass) Task11 actual finance concurrency fences > signed deny then concurrent deny serializes retries without money drift [112.78ms]
+(pass) Task11 actual finance concurrency fences > signed deny then concurrent refund serializes retries without money drift [145.76ms]
+(pass) Task11 actual finance concurrency fences > signed refund then concurrent refund serializes retries without money drift [103.45ms]
+(pass) Task11 actual finance concurrency fences > signed refund then concurrent deny serializes retries without money drift [66.49ms]
+(pass) Task11 actual finance concurrency fences > concurrent signed receipt void retries commit one audit [100.50ms]
+
+src\lib\donations\reconcile.server.test.ts:
+(pass) reconcileProviderPayment webhook event processing > releases a failed capture reservation for immediate PayPal retry [2.44ms]
+(pass) reconcileProviderPayment webhook event processing > releases its reservation after a transient failure so immediate redelivery reprocesses [2.84ms]
+Failed to release webhook reservation after processing error
+(pass) reconcileProviderPayment webhook event processing > keeps immediate redelivery retryable when reservation cleanup itself fails [0.54ms]
+(pass) reconcileProviderPayment webhook event processing > marks provider events processed only after payment and donation updates succeed [0.96ms]
+(pass) reconcileProviderPayment webhook event processing > does not acknowledge an unmatched event after losing its processing owner [0.27ms]
+(pass) reconcileProviderPayment webhook event processing > retries duplicate webhook events that were reserved but not processed [0.28ms]
+(pass) reconcileProviderPayment webhook event processing > reclaims expired webhook leases with a compare-and-claim predicate [0.24ms]
+(pass) reconcileProviderPayment webhook event processing > keeps a lost expired-lease reclaim retryable instead of acknowledging it [0.17ms]
+(pass) reconcileProviderPayment webhook event processing > keeps an actively leased event retryable instead of acknowledging it as duplicate [0.13ms]
+(pass) reconcileProviderPayment webhook event processing > still acknowledges an event whose processed_at timestamp is committed [0.16ms]
+(pass) reconcileProviderPayment webhook event processing > continues acknowledgement completion for already-succeeded payment retries [0.21ms]
+(pass) reconcileProviderPayment webhook event processing > finishes pending donation status before processing a retry after payment update succeeded [0.19ms]
+(pass) financial webhook manual review > uses a provider-neutral action for PayPal review while preserving COD's action [0.35ms]
+(pass) financial webhook manual review > audits an unmatched denied capture before acknowledging it [0.39ms]
+(pass) financial webhook manual review > audits an unmatched refund and retries if the audit insert fails [0.37ms]
+
+1 tests failed:
+(fail) Task11 finance behavior and transaction contracts > system void late audit failure rolls back both receipts and earlier audit [299.04ms]
+
+ 81 pass
+ 1 fail
+ 271 expect() calls
+Ran 82 tests across 2 files. [12.23s]

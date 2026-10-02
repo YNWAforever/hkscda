@@ -1,0 +1,38 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+56 |             await tx`set local role postgres`;
+57 |             observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action='receipt.void' and a.entity_id=${receipt}) audits from public.receipt r where r.id=${receipt}::uuid`;
+58 |             console.log(JSON.stringify({ actorState: banned ? "banned" : "unconfirmed", result, observation }));
+59 |           } catch (e) { error = e; }
+60 |           await tx.unsafe("rollback to savepoint task11_fence");
+61 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:61:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > banned finance actor cannot void a receipt [82.55ms]
+56 |             await tx`set local role postgres`;
+57 |             observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action='receipt.void' and a.entity_id=${receipt}) audits from public.receipt r where r.id=${receipt}::uuid`;
+58 |             console.log(JSON.stringify({ actorState: banned ? "banned" : "unconfirmed", result, observation }));
+59 |           } catch (e) { error = e; }
+60 |           await tx.unsafe("rollback to savepoint task11_fence");
+61 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:61:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > unconfirmed finance actor cannot void a receipt [14.56ms]
+
+ 0 pass
+ 5 filtered out
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [314.00ms]

@@ -1,0 +1,20 @@
+import { expect, test } from "bun:test";
+import { assertCapture, captureFlags } from "./task-11-receipt";
+// Portable synthetic validation only; this fixture never feeds executed SQL.
+const targetNames = ["fail_pending_provider_payment", "refund_provider_payment_atomically", "void_receipt_with_audit", "void_donation_receipts_with_audit", "issue_receipt_with_audit"];
+function portableCapture() {
+  const targets = targetNames.map(name => ({ schema: "public", name, owner: "postgres", body: "0".repeat(32), definition: "1".repeat(32), full_acl: ["postgres", "service_role"].map(grantee => ({ grantor: "postgres", grantee, privilege: "EXECUTE", grantable: false })) }));
+  return { receiptType: "capture", mode: "hosted", error: null, failedFinalFlags: [], requiredFinalFlags: [...captureFlags], ...Object.fromEntries(captureFlags.map(k => [k, true])), oldTargets: targets, nextTargets: structuredClone(targets), functions: [{ schema: "auth", name: "uid" }], catalog: { roles: [], memberships: null }, auth: { serviceSelect: false, serviceUpdate: false, serviceColumnSelect: false, serviceColumnUpdate: false, postgresSelect: true, postgresUpdate: true }, native: [], indexes: [], bindings: {}, dependencies: Array.from({ length: 9 }, (_, i) => ["synthetic" + i, "0".repeat(64)]), fixtureScope: Array.from({ length: 10 }, (_, i) => "synthetic" + i) };
+}
+test("portable fully qualified capture validates without ignored receipts", () => expect(() => assertCapture(portableCapture(), "hosted")).not.toThrow());
+for (const flag of captureFlags)
+  for (const value of [false, undefined, 1, "true"])
+    test(`capture rejects ${flag}=${String(value)}`, () => { const r = { ...portableCapture(), [flag]: value }; expect(() => assertCapture(r, "hosted")).toThrow(); });
+for (const patch of [{ mode: "modern" }, { mode: "component" }, { receiptType: "composition" }, { error: "cleanup failed" }, { failedFinalFlags: ["normalDrop"] }, { requiredFinalFlags: [] }])
+  test(`capture refuses mode/type/error contract ${JSON.stringify(patch)}`, () => expect(() => assertCapture({ ...portableCapture(), ...patch }, "hosted")).toThrow());
+for (const key of ["oldTargets", "nextTargets"] as const)
+  for (const count of [0, 1, 4, 6])
+    test(`${key} requires exactly five`, () => { const r = portableCapture(); r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+test("five unrelated named functions cannot qualify as Task11 targets", () => { const r = portableCapture(); r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+for (const key of ["serviceSelect", "serviceUpdate", "serviceColumnSelect", "serviceColumnUpdate"] as const)
+  test(`unexpected effective Auth ${key} cannot qualify`, () => { const r = portableCapture(); r.auth[key] = true; expect(() => assertCapture(r, "hosted")).toThrow(); });

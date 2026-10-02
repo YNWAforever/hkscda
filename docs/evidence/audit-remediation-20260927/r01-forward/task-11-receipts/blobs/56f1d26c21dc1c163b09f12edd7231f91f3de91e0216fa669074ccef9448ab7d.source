@@ -41,57 +41,6 @@ async function readTrackedTextFile(filePath: string): Promise<string> {
   return contents.includes(0) ? "" : contents.toString("utf8");
 }
 
-type ProofAttributes = { text?: string; diff?: string; merge?: string };
-const proofPath =
-  /^docs\/evidence\/audit-remediation-20260927\/r01-forward\/task-11-receipts\/blobs\/[a-f0-9]{64}\.source$/;
-function isExplicitBinaryProof(repositoryPath: string, attributes?: ProofAttributes): boolean {
-  return (
-    proofPath.test(repositoryPath.replaceAll("\\", "/")) &&
-    attributes?.text === "unset" &&
-    attributes.diff === "unset" &&
-    attributes.merge === "unset"
-  );
-}
-
-function parseProofAttributes(output: string, paths: string[]): Map<string, ProofAttributes> {
-  const fields = output.split("\0");
-  if (fields.pop() !== "" || fields.length !== paths.length * 9)
-    throw new Error("Incomplete Git proof attributes");
-  const expected = new Set(paths),
-    result = new Map<string, ProofAttributes>();
-  for (let i = 0; i < fields.length; i += 3) {
-    const [path, name, value] = fields.slice(i, i + 3);
-    if (!expected.has(path) || !["text", "diff", "merge"].includes(name))
-      throw new Error("Unexpected Git proof attributes");
-    const entry = result.get(path) ?? {};
-    if (Object.hasOwn(entry, name)) throw new Error("Duplicate Git proof attributes");
-    entry[name as keyof ProofAttributes] = value;
-    result.set(path, entry);
-  }
-  for (const path of paths)
-    if (
-      !result.has(path) ||
-      ["text", "diff", "merge"].some((key) => !Object.hasOwn(result.get(path)!, key))
-    )
-      throw new Error("Missing Git proof attribute path");
-  return result;
-}
-
-function proofAttributes(filePaths: string[]): Map<string, ProofAttributes> {
-  const paths = filePaths
-    .map((path) => relative(process.cwd(), path).replaceAll("\\", "/"))
-    .filter((path) => proofPath.test(path));
-  if (!paths.length) return new Map();
-  // stdin avoids Windows command-line limits; all three records for every
-  // candidate must be present. Git failures propagate, just like ls-files.
-  const output = execFileSync("git", ["check-attr", "-z", "--stdin", "text", "diff", "merge"], {
-    cwd: process.cwd(),
-    encoding: "utf8",
-    input: paths.join("\0") + "\0",
-  });
-  return parseProofAttributes(output, paths);
-}
-
 async function readTrackedTextFiles(
   filePaths: string[],
   readText = readTrackedTextFile,
@@ -126,13 +75,7 @@ describe("service slogan correction", () => {
       expect.arrayContaining(["scripts/seed-admin.js", "vite.config.ts", "eslint.config.js"]),
     );
 
-    const attributes = proofAttributes(auditFilePaths);
-    const contents = await readTrackedTextFiles(auditFilePaths, async (path) => {
-      const repositoryPath = relative(process.cwd(), path).replaceAll("\\", "/");
-      return isExplicitBinaryProof(repositoryPath, attributes.get(repositoryPath))
-        ? ""
-        : await readTrackedTextFile(path);
-    });
+    const contents = await readTrackedTextFiles(auditFilePaths);
     const obsoleteFiles = auditFilePaths.filter((_, index) =>
       contents[index].includes(obsoleteServiceSlogan),
     );
@@ -196,54 +139,4 @@ test("slogan scan awaits every ordered result with at most eight active reads", 
   expect(calls).toEqual(paths);
   expect(active).toBe(0);
   expect(maximum).toBe(8);
-});
-
-test("only exact Task11 proof paths with all three explicit binary attributes are opaque", () => {
-  const path =
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/" +
-    "a".repeat(64) +
-    ".source";
-  const binary = { text: "unset", diff: "unset", merge: "unset" };
-  expect(isExplicitBinaryProof(path, binary)).toBe(true);
-  for (const ordinary of [
-    "src/routes/index.tsx",
-    "supabase/migrations/a.sql",
-    "docs/source.source",
-    path.replace("task-11", "task-10"),
-    path.replace("/blobs/", "/"),
-    path.replace("a".repeat(64), "unknown"),
-    path.replace("a".repeat(64), "A".repeat(64)),
-    path.replace(/blobs\/.*$/, "translation.json"),
-  ])
-    expect(isExplicitBinaryProof(ordinary, binary)).toBe(false);
-  for (const attributes of [
-    undefined,
-    {},
-    { text: "unset" },
-    { ...binary, diff: "unspecified" },
-    { ...binary, merge: "unspecified" },
-    { ...binary, text: "auto" },
-  ])
-    expect(isExplicitBinaryProof(path, attributes)).toBe(false);
-  expect(
-    obsoleteServiceSlogan.includes(obsoleteServiceSlogan) &&
-      !isExplicitBinaryProof("src/routes/obsolete.tsx", binary),
-  ).toBe(true);
-});
-
-test("Git proof attribute batches require every path and record without hiding errors", () => {
-  const paths = ["a", "b"];
-  const output = paths
-    .map((path) =>
-      ["text", "diff", "merge"].map((name) => [path, name, "unset"].join("\0") + "\0").join(""),
-    )
-    .join("");
-  expect([...parseProofAttributes(output, paths).keys()]).toEqual(paths);
-  for (const malformed of [
-    output.slice(0, -1),
-    output.replace("merge", "text"),
-    output.replace("a\0", "c\0"),
-    output.split("b\0")[0],
-  ])
-    expect(() => parseProofAttributes(malformed, paths)).toThrow();
 });

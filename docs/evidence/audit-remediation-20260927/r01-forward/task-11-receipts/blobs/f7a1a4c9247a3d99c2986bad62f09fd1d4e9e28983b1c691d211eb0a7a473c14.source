@@ -1,0 +1,23 @@
+export const captureFlags = ["schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved", "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"] as const;
+export const compositionFlags = ["schemaParity","fullScannerPassed","dependenciesBound","firstApply","secondApply","secondApplyPreserved","outsideTargetsPreserved","supplementalPreserved","refusalsPassed","testPassed","zeroRowsAfter","catalogAfterBehaviorPreserved","normalDrop","templatePreserved","modernPreserved","frozenInputsPreserved"] as const;
+export function assertComposition(value:unknown,mode:"hosted"|"modern"|"component") {
+  if(!value||typeof value!=="object"||Array.isArray(value))throw Error("Composition object required");
+  const r=value as Record<string,unknown>;
+  if(r.receiptType!=="composition"||r.mode!==mode||r.error!==null||JSON.stringify(r.failedFinalFlags)!=="[]"||JSON.stringify(r.requiredFinalFlags)!==JSON.stringify(compositionFlags)||compositionFlags.some(k=>r[k]!==true)||r.testExit!==0)throw Error("Ineligible Task11 composition flags/mode/type");
+  if(!Array.isArray(r.dependencies)||r.dependencies.length!==9||!Array.isArray(r.fixtureScope)||r.fixtureScope.length!==10||r.zeroApplicationTables!==158||!Array.isArray(r.rowCountsAfter)||r.rowCountsAfter.length!==158||new Set(r.rowCountsAfter.map(t=>t.table)).size!==158||r.rowCountsAfter.some(t=>t.count!=="0")||!Array.isArray(r.refusals)||r.refusals.length!==14||new Set(r.refusals.map(t=>t.label)).size!==14||r.refusals.some(t=>t.code!=="55000"||t.preserved!==true))throw Error("Ineligible Task11 composition cardinality/rollback/rows");
+  return r;
+}
+const targetNames = ["fail_pending_provider_payment", "refund_provider_payment_atomically", "void_receipt_with_audit", "void_donation_receipts_with_audit", "issue_receipt_with_audit"].sort();
+export function assertCapture(value: unknown, mode: "hosted" | "modern") {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw Error("Capture object required");
+  const r = value as Record<string, unknown>;
+  if (r.receiptType !== "capture" || r.mode !== mode || r.error !== null || JSON.stringify(r.failedFinalFlags) !== "[]" || JSON.stringify(r.requiredFinalFlags) !== JSON.stringify(captureFlags) || captureFlags.some(k => r[k] !== true)) throw Error("Ineligible Task11 capture flags/mode/type");
+  for (const key of ["oldTargets", "nextTargets"]) {
+    const targets = r[key];
+    if (!Array.isArray(targets) || targets.length !== 5 || JSON.stringify(targets.map(t => t?.name).sort()) !== JSON.stringify(targetNames) || targets.some(t => !t || t.schema !== "public" || t.owner !== "postgres" || !/^[a-f0-9]{32}$/.test(t.body) || !/^[a-f0-9]{32}$/.test(t.definition) || !Array.isArray(t.full_acl) || t.full_acl.length !== 2 || JSON.stringify(t.full_acl.map((a: Record<string, unknown>) => a.grantee).sort()) !== JSON.stringify(["postgres", "service_role"]) || t.full_acl.some((a: Record<string, unknown>) => a.grantor !== "postgres" || !["postgres", "service_role"].includes(String(a.grantee)) || a.privilege !== "EXECUTE" || a.grantable !== false))) throw Error("Ineligible Task11 exact five service target tuples:" + key);
+  }
+  if (!Array.isArray(r.functions) || !r.functions.length || !r.catalog || !r.auth || !Array.isArray(r.native) || !Array.isArray(r.indexes) || !Array.isArray(r.shapes) || r.shapes.length !== 10 || !r.bindings || !Array.isArray(r.dependencies) || r.dependencies.length !== 9 || !Array.isArray(r.fixtureScope) || r.fixtureScope.length !== 10) throw Error("Ineligible Task11 full prerequisites/cardinality");
+  const auth = r.auth as Record<string, unknown>;
+  if (["serviceSelect", "serviceUpdate", "serviceColumnSelect", "serviceColumnUpdate"].some(k => auth[k] !== false) || ["postgresSelect", "postgresUpdate"].some(k => auth[k] !== true)) throw Error("Ineligible Task11 effective Auth boundary");
+  return r;
+}

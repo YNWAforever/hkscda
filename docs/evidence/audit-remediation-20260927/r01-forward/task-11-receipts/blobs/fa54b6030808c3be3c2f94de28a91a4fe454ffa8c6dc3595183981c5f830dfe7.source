@@ -1,0 +1,19 @@
+{
+  "atUtc": "2026-10-02T16:45:24.602007+00:00",
+  "task": 11,
+  "base": "d45b849d300f76700efcf5450a9b426e32cc372f",
+  "tree": "aeb6c4e396969a5296483ddf2525c90894bd440a",
+  "branch": "codex/audit-r01-finance-callback-20261003",
+  "worktree": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "clean": true,
+  "branchCommandExit": 0,
+  "branchCommandStdout": "",
+  "branchCommandStderr": "Switched to a new branch 'codex/audit-r01-finance-callback-20261003'\n",
+  "briefRawBytes": 14788,
+  "briefRawSHA256": "fbde785c62b25626160f7bdc06bb1b5eaaf8f86b5f1ed6ce6cb55021f5adfcea",
+  "briefCanonicalLFSHA256": "9f7732caeafe4a94621a3a5199b1ea9a49e736e39fe306527da841e61486eb70",
+  "qualification": "Previous compact summary records canonical LF bytes/hash; current raw CRLF bytes are separately recorded. No requirement content changed.",
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false
+}

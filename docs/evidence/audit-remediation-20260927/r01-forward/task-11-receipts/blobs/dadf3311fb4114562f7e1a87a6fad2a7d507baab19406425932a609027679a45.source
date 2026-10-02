@@ -1,0 +1,40 @@
+{
+  "trackedCount": 5067,
+  "trackedBytes": 320330934,
+  "archiveCount": 1397,
+  "archiveBytes": 194858407,
+  "largest": [
+    [
+      "src/assets/fonts/NotoSansHK-Regular.ttf",
+      7071436
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/b8cf0eb29cfb7e95b0f697e2294bfe39e45bf365a4f24d0b356a404c6a82f8b4.source",
+      6663449
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/bfea99ab2aa2d3eb047a301a3e5bd624957e043b06c6713435bcfec859dc1899.source",
+      6663291
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/c03c6bffff875ceba0af9394ff2814c217ebd59c3ac8c950db298d7858a03351.source",
+      6463805
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/849374dc67406f468dcddb310bfe1066b2e79ad78c1d0a10e5339cf012e94001.source",
+      6463718
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/cb54b9ed408b22af6613399cdc97047481b4fe2dcc57767609bd71450eabbbda.source",
+      6463718
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/0e24b867502e026a54f2da0043b95d74000d32b782db289793f274565d0568bf.source",
+      6463056
+    ],
+    [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/16f520dc1f503b241d414ab258a2877224ab55a4dee1ea2fc5a09a610b6c1bbb.source",
+      6442505
+    ]
+  ]
+}

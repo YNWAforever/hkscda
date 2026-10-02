@@ -1,0 +1,1 @@
+{"command":["bun","run","build"],"source":"unchanged frozen source","reason":"original started build lost tool session with no observed exit; no source edit","environment":"loopback54329 ci-placeholder; modern57322/Auth52321; inherited feature DB options removed"}
