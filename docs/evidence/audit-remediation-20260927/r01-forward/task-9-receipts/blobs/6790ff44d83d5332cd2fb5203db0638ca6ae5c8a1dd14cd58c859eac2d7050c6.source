@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:
+(pass) actual finalization fails for modern preservation and retains receipt [32.22ms]
+(pass) actual finalization fails for frozen preservation and retains receipt [1.24ms]
+(pass) actual finalization fails for template preservation and retains receipt [2.76ms]
+(pass) actual finalization fails for missing-template preservation and retains receipt [0.64ms]
+(pass) actual finalization accepts all final flags exactly true [1.23ms]
+(pass) actual gate selector rejects false normalDrop [135.59ms]
+(pass) actual gate selector rejects missing normalDrop [98.76ms]
+(pass) actual gate selector rejects false templatePreserved [106.45ms]
+(pass) actual gate selector rejects missing templatePreserved [125.15ms]
+(pass) actual gate selector rejects false modernPreserved [262.92ms]
+(pass) actual gate selector rejects missing modernPreserved [137.46ms]
+(pass) actual gate selector rejects false frozenInputsPreserved [159.78ms]
+(pass) actual gate selector rejects missing frozenInputsPreserved [137.74ms]
+(pass) actual gate selector accepts exact true clone flags [142.05ms]
+
+ 14 pass
+ 0 fail
+ 29 expect() calls
+Ran 14 tests across 1 file. [1.52s]

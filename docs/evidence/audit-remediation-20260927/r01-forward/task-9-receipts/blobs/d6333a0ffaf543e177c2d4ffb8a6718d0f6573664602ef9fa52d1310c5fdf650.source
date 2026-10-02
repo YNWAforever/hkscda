@@ -1,0 +1,105 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.database.test.ts:
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (9992d520-55c0-40d5-bb94-af824e962eff, adoption_case, synthetic-9992d520-55c0-40d5-bb94-af824e962eff, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.937516+00, 2026-10-02 04:45:37.937516+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [22.81ms]
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (553346ee-7ef6-4e6d-9bb5-2b861fbc04ad, adoption_case, synthetic-553346ee-7ef6-4e6d-9bb5-2b861fbc04ad, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.95158+00, 2026-10-02 04:45:37.95158+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [9.16ms]
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (0b2b4304-fc0d-4a9f-a408-ddb36c215aca, adoption_case, synthetic-0b2b4304-fc0d-4a9f-a408-ddb36c215aca, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.960724+00, 2026-10-02 04:45:37.960724+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [10.02ms]
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (4467d686-31cd-4bad-ae91-32fa12f689a3, adoption_case, synthetic-4467d686-31cd-4bad-ae91-32fa12f689a3, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.97075+00, 2026-10-02 04:45:37.97075+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [8.99ms]
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (96e69fe4-533d-4b14-b6aa-f28177f9318a, adoption_case, synthetic-96e69fe4-533d-4b14-b6aa-f28177f9318a, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.98057+00, 2026-10-02 04:45:37.98057+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [4.78ms]
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (d2fdc7e4-d41c-4096-9259-404976b549f5, adoption_case, synthetic-d2fdc7e4-d41c-4096-9259-404976b549f5, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.984395+00, 2026-10-02 04:45:37.984395+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [4.44ms]
+PostgresError: new row for relation "coordinator_status" violates check constraint "coordinator_status_key_check"
+      errno: "23514",
+     detail: "Failing row contains (b76e26f4-b878-4929-becd-b8140ce2fb28, adoption_case, synthetic-b76e26f4-b878-4929-becd-b8140ce2fb28, Synthetic, Synthetic, 0, slate, t, f, f, f, 2026-10-02 04:45:37.988823+00, 2026-10-02 04:45:37.988823+00).",
+   severity: "ERROR",
+     schema: "public",
+      table: "coordinator_status",
+ constraint: "coordinator_status_key_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [4.00ms]
+
+ 0 pass
+ 7 fail
+Ran 7 tests across 1 file. [124.00ms]

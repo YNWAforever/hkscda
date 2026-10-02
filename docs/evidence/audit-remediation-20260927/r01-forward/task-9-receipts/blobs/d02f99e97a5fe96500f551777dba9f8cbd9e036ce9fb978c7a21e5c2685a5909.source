@@ -1,0 +1,157 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:
+(pass) actual finalization fails for modern preservation and retains receipt [26.86ms]
+(pass) actual finalization fails for frozen preservation and retains receipt [0.80ms]
+(pass) actual finalization fails for template preservation and retains receipt [0.50ms]
+(pass) actual finalization fails for missing-template preservation and retains receipt [0.42ms]
+(pass) actual finalization accepts all final flags exactly true [0.54ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false normalDrop [1.13ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing normalDrop [0.45ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false templatePreserved [0.35ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing templatePreserved [0.28ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false modernPreserved [0.28ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing modernPreserved [0.26ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false frozenInputsPreserved [0.32ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing frozenInputsPreserved [0.29ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENOENT: no such file or directory, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.r01fix2-yvvrl413\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -2,
+    code: "ENOENT"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-yvvrl413\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:124:16)
+(fail) actual gate selector accepts exact true clone flags [0.42ms]
+
+ 5 pass
+ 9 fail
+ 20 expect() calls
+Ran 14 tests across 1 file. [77.00ms]

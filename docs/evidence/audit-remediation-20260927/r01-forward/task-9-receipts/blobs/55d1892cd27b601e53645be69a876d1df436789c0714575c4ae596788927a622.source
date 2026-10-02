@@ -1,0 +1,43 @@
+{
+  "uidChangedFields": [
+    "proc",
+    "definition"
+  ],
+  "uidChangedProcFields": [
+    "prosrc"
+  ],
+  "otherHelpersPreserved": true,
+  "unchangedExtraFacets": [
+    "auth",
+    "native",
+    "indexes",
+    "defaults",
+    "roles",
+    "memberships",
+    "ledger",
+    "sequences",
+    "completeNative"
+  ],
+  "rawBindings": {
+    "receipt.json": {
+      "sha256": "c44590f593c93133fbae0c5a86366ad9fca9ed8d13b50c89e5ae1a5ea4171b15",
+      "bytes": 346599
+    },
+    "extra-before.json": {
+      "sha256": "da0a8baf65956117c3af81b93ea3eee1c749156dc06bdf7dcc873d2f5074177c",
+      "bytes": 1321198
+    },
+    "extra-component.json": {
+      "sha256": "a718334735d6b968ad28dd5ce5a220187d42b0e00ffa6034188b9d9c5d6febfd",
+      "bytes": 1321174
+    },
+    "catalog-before.json": {
+      "sha256": "062cd3aa69438415dd42aa209a6a13d4f25e62d27247b667237cf2486bd20829",
+      "bytes": 2610681
+    },
+    "catalog-component.json": {
+      "sha256": "062cd3aa69438415dd42aa209a6a13d4f25e62d27247b667237cf2486bd20829",
+      "bytes": 2610681
+    }
+  }
+}

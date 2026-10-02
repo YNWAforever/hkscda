@@ -1,0 +1,105 @@
+{
+  "run": 36978660763,
+  "attempt": 1,
+  "head": "fff2aa600a2d0053e007632bd24ce88a5b517541",
+  "aggregateConclusion": "success",
+  "individualResults": [
+    {
+      "id": 110747978023,
+      "name": "verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 110748791405,
+      "name": "performance-verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 110748791427,
+      "name": "brand-verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 110748791450,
+      "name": "rls-matrix",
+      "conclusion": "failure"
+    },
+    {
+      "id": 110748791479,
+      "name": "a11y-verify",
+      "conclusion": "success"
+    }
+  ],
+  "actualFailure": "RLSstartup55000 supporter; behavioral steps skipped; not all-green",
+  "retryRequestedOrRun": false,
+  "files": [
+    {
+      "name": "verify",
+      "conclusion": "success",
+      "archiveName": "task-9-controller-ci-36978660763-verify.raw.log",
+      "bytes": 875900,
+      "rawSha256": "5676a0e24e0f0a7371e94dde3fe1543c340b6ca223996a561898a62448effe96"
+    },
+    {
+      "name": "performance-verify",
+      "conclusion": "success",
+      "archiveName": "task-9-controller-ci-36978660763-performance-verify.raw.log",
+      "bytes": 226931,
+      "rawSha256": "cb027d68dadc0bec42a45b03fa436219e1ecfea1adaa263683a7530e09e2885d"
+    },
+    {
+      "name": "brand-verify",
+      "conclusion": "success",
+      "archiveName": "task-9-controller-ci-36978660763-brand-verify.raw.log",
+      "bytes": 224887,
+      "rawSha256": "cba8ce45d974a510f8f84b9174dfcc23937eff87256d60848843e9145ca267ab"
+    },
+    {
+      "name": "a11y-verify",
+      "conclusion": "success",
+      "archiveName": "task-9-controller-ci-36978660763-a11y-verify.raw.log",
+      "bytes": 224554,
+      "rawSha256": "ec0a9f3b05fbe924db9bbef5c6ea715580060fb8fe3e170ddf56f40629a0e476"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-a11y-verify.raw.log",
+      "bytes": 224554,
+      "rawSha256": "ec0a9f3b05fbe924db9bbef5c6ea715580060fb8fe3e170ddf56f40629a0e476"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-brand-verify.raw.log",
+      "bytes": 224887,
+      "rawSha256": "cba8ce45d974a510f8f84b9174dfcc23937eff87256d60848843e9145ca267ab"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-final-receipt.json",
+      "bytes": 2626,
+      "rawSha256": "3b3076176eb5e002b2bf32acdaa052e4352647f5b70249900f4fb59dd6a33d21"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-log-download.json",
+      "bytes": 427,
+      "rawSha256": "fea2f1636003662b893ce272464b8aa3cd6a8178c309d2c10e8a89d861d7a9ad"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-metadata.json",
+      "bytes": 12583,
+      "rawSha256": "ed755d9da28e996efdec7d1ceeccc98b87ea61695d743ec4fa820327800af5c8"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-performance-verify.raw.log",
+      "bytes": 226931,
+      "rawSha256": "cb027d68dadc0bec42a45b03fa436219e1ecfea1adaa263683a7530e09e2885d"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-rls.raw.log",
+      "bytes": 270840,
+      "rawSha256": "3b277167427e182851849f8f2263a1fbd52ea600e7e318b61f347b9c68ca2986"
+    },
+    {
+      "archiveName": "task-9-controller-ci-36978660763-verify.raw.log",
+      "bytes": 875900,
+      "rawSha256": "5676a0e24e0f0a7371e94dde3fe1543c340b6ca223996a561898a62448effe96"
+    }
+  ]
+}

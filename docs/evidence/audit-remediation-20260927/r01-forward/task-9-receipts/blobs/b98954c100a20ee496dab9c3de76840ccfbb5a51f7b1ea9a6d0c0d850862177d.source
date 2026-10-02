@@ -1,0 +1,32 @@
+[
+  {
+    "name": "task-9-image-diagnosis-ruling33.md",
+    "sha256": "4dd7e3b45736b7193331701aeb7bac48e3fda3fd41c4e183bd83fa4b14069641",
+    "bytes": 2496
+  },
+  {
+    "name": "task-9-auth-component-ruling34.md",
+    "sha256": "354e03265a1835ad8198451cda9b3c919c1f92b8ab6dcc16d7a1015f5609158e",
+    "bytes": 3263
+  },
+  {
+    "name": "task-9-auth-compatibility-ruling35.md",
+    "sha256": "3c589e9464710e425b94865fb7de39f5e40358c4310df60030501f863ce8fd83",
+    "bytes": 3687
+  },
+  {
+    "name": "task-9-controller-fix4-local-helper-binding.json",
+    "sha256": "bb50532ff70d24da027859d9bbf2e012b4dec55723b2b0ad06d4d4cbc56690c6",
+    "bytes": 2608
+  },
+  {
+    "name": "task-9-controller-fix4-image-source-binding.json",
+    "sha256": "e259995a174390829fac62b5b7309cead9f7b51c96205f96df96cfd530423355",
+    "bytes": 10341
+  },
+  {
+    "name": "task-9-controller-fix4-red-binding.json",
+    "sha256": "ece6540516b83ec518bac55d65bdfbc8121e9457a5b864de3e7414a397a562ae",
+    "bytes": 1186
+  }
+]

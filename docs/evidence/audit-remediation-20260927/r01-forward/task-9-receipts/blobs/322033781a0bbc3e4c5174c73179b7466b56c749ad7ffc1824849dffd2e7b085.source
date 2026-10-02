@@ -1,0 +1,10 @@
+{
+  "command": "python .superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-packaging-check.py",
+  "exit": 1,
+  "error": "TypeError: object of type int has no len()",
+  "field": "receipt.applies is integer2, not collection",
+  "sourceRawSHA256": "5bb8536e1aa983943227d88d5a3973b0c79b42dee4d53d9d246f84c91ceafca9",
+  "noDatabaseOrGateFailure": true,
+  "noRawMismatchObserved": "all1611 raw archives checked before failure",
+  "noTestsOrDBRerun": true
+}

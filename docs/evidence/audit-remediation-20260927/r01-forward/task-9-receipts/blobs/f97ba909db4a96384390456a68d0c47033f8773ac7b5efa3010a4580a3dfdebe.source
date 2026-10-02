@@ -1,0 +1,17 @@
+[
+  {
+    "name": "task-9-controller-fix4-final-db-binding-v2.json",
+    "sha256": "0d80b2d6a2d6004543488468c4e4aa93809d77851e93294194e1b6b552d7785f",
+    "bytes": 4023
+  },
+  {
+    "name": "task-9-controller-fix4-final-db-binding.json",
+    "sha256": "a76b635e67d772a315df3f37f712e5b4cd61eef3e9c1992a2ed1419fbaf1898c",
+    "bytes": 3775
+  },
+  {
+    "name": "task-9-controller-fix4-first-gates-input-binding.json",
+    "sha256": "f26976b1997da04f195c01b2fce92f94c39a1f89d75b7f274624a22058d87f09",
+    "bytes": 1978
+  }
+]

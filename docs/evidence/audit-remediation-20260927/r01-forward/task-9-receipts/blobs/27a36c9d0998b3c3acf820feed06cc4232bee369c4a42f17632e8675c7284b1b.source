@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "217fc22b0bf8834f878751e3f02c991fa5ff7378",
+  "newSqlRawSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+  "newSqlCanonicalSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+  "previousSqlRawSha256": "6cf7beb544812a21500dff3163b9cb9201506d8df2f5d46ee526588a6ca9e296",
+  "functionDefinitionAndGrantTailExactAcrossRuling31": true,
+  "scannerRawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+  "versions": {
+    "bun": "1.3.14",
+    "git": "git version 2.55.0.windows.2",
+    "python": "Python 3.14.6"
+  },
+  "platform": "Windows PowerShell; own loopback PostgreSQL managed clone on existing integration container; no production data fixture",
+  "dedicatedReadonlyRuntime": {
+    "server_version": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+    "database": "postgres",
+    "actor": "postgres"
+  }
+}

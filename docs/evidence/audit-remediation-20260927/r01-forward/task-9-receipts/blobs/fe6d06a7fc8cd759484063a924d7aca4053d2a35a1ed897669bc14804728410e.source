@@ -1,0 +1,73 @@
+{
+  "mode": "missing",
+  "sources": {
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-red.ts": {
+      "sha256": "37fb8704a8a372d05e8248070cc0554ef289370a7edf36540b5fd6fb837499fe",
+      "canonicalSha256": "d198e588fbef3027f8de78f4aa3474868b6def7b7867e4b9519cf54aba9cffed",
+      "archive": "s0.source"
+    },
+    "src/lib/adoptions/atomicForward.database.test.ts": {
+      "sha256": "1bf09f2b07c181363da0be029093240e808a7f5b987a034131cffda76497df1a",
+      "canonicalSha256": "1bf09f2b07c181363da0be029093240e808a7f5b987a034131cffda76497df1a",
+      "archive": "s1.source"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "archive": "s2.source"
+    },
+    "supabase/migrations/20260925104926_atomic_adoption_coordinator_audit.sql": {
+      "sha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "canonicalSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "archive": "s3.source"
+    },
+    "supabase/migrations/20260926110000_manual_case_identity_search.sql": {
+      "sha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "canonicalSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "archive": "s4.source"
+    },
+    "supabase/migrations/20260926133000_expose_manual_adoption_case_rpc.sql": {
+      "sha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "canonicalSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "archive": "s5.source"
+    }
+  },
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-red-missing-1790916300743",
+  "clone": "r01_clone_8d288a42f3c24dcc945d3d7489d3c95a",
+  "at": "2026-10-02T04:45:36.987Z",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "scope": [
+    "auth.users",
+    "admin_user",
+    "coordinator_status",
+    "supporter",
+    "supporter_role",
+    "adopter_profile",
+    "adoption_case",
+    "adoption_followup",
+    "animal_match",
+    "animal",
+    "animals",
+    "audit_log"
+  ],
+  "productionActions": "schema and catalog only; owned clone synthetic rows only",
+  "task1Applied": false,
+  "task8Applied": false,
+  "scanner": "unchanged5352 fullscope PASS",
+  "command": [
+    "bun",
+    "test",
+    "src/lib/adoptions/atomicForward.database.test.ts"
+  ],
+  "childExit": 1,
+  "summary": [
+    " 0 pass",
+    " 7 fail"
+  ],
+  "catalogPreserved": true,
+  "rowsPreserved": true,
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true
+}

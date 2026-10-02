@@ -1,0 +1,6 @@
+import {SQL} from 'bun';
+const db=new SQL('postgresql://postgres:postgres@127.0.0.1:57322/postgres',{max:1});
+try {await db.unsafe('begin read only');
+console.log(JSON.stringify(await db`select n.nspname,c.relname,a.attname,format_type(a.atttypid,a.atttypmod) type,a.attnotnull,pg_get_expr(d.adbin,d.adrelid) default from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname='public' and c.relname in ('coordinator_status','adoption_followup','adoption_case','supporter','animals','admin_user') and a.attnum>0 and not a.attisdropped order by c.relname,a.attnum`));
+console.log(JSON.stringify(await db`select n.nspname,p.proname,p.prosrc source from pg_proc p join pg_namespace n on n.oid=p.pronamespace where (n.nspname='private' and p.proname in ('bump_supporter_edit_version_from_role','bump_adoption_case_bulk_row_version','bump_supporter_edit_version')) or (n.nspname='public' and p.proname='log_animal_mutation')`));
+await db.unsafe('rollback');}finally{await db.close();}

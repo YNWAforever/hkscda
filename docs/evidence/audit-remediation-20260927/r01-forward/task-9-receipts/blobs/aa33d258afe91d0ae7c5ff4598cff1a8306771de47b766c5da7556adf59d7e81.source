@@ -1,0 +1,37 @@
+from pathlib import Path
+import csv,hashlib,json,subprocess
+root=Path.cwd();plan=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';out=root/'docs/evidence/audit-remediation-20260927/r01-forward';base='9df26366cc719d0f92530a784da6871d0db81398'
+binding=json.loads((out/'task-9-fix-4-source-binding.json').read_text(encoding='utf-8'));source=binding['finalSourceCommit'];sha=lambda b:hashlib.sha256(b).hexdigest()
+def tree(commit):return {x.split('\t',1)[1]:x.split()[2] for x in subprocess.check_output(['git','ls-tree','-r',commit],text=True).splitlines()}
+bt=tree(base);st=tree(source)
+def blob(oid):return subprocess.check_output(['git','cat-file','blob',oid])
+for name,b in binding['committedChangedFiles'].items():assert blob(st[name])==(root/name).read_bytes() and sha(blob(st[name]))==b['rawSha256'],name
+sql='supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql';before=blob(bt[sql]);after=(root/sql).read_bytes();assert after==(plan/'task-9-fix-4-proposed-migration.sql.source').read_bytes() and len(after)-len(before)==440
+oldlines=before.splitlines(keepends=True);newlines=after.splitlines(keepends=True);assert len(oldlines)==len(newlines);changes=[i for i,(a,b) in enumerate(zip(oldlines,newlines)) if a!=b];assert changes==[90]
+a=oldlines[90];b=newlines[90];prefix=0
+while prefix<len(a) and a[prefix]==b[prefix]:prefix+=1
+assert b[:prefix]+b[prefix+440:]==a
+runtime={}
+for mode,meta in binding['databaseReceipts'].items():
+ p=root/meta['originalPath'];assert sha(p.read_bytes())==meta['rawSha256'];r=json.loads(p.read_text(encoding='utf-8'));assert r['frozenInputs']==binding['databaseFrozenInputs'];assert all(r[k] is True for k in ['normalDrop','templatePreserved','modernPreserved','frozenInputsPreserved']);assert r['applies']==2 and r['secondApplyIdempotent'] is True and r['testExit']==0
+ for name,b in r['frozenInputs'].items():
+  raw=(root/name).read_bytes();copy=(p.parent/r['archivedInputs'][name]).read_bytes();assert raw==copy and sha(copy)==b['rawSha256'] and sha(copy.replace(b'\r\n',b'\n'))==b['canonicalSha256'],name
+ runtime[mode]={'receipt':p.parent.name,'inputs':len(r['frozenInputs']),'runtimeCopies':len(list(p.parent.glob('s*.source'))),'refusals':len(r['refusals']),'testSummary':r['testSummary'],'allFinalFlags':True}
+p=root/binding['gateReceipt']['originalPath'];g=json.loads(p.read_text(encoding='utf-8'));assert sha(p.read_bytes())==binding['gateReceipt']['rawSha256'];assert g['frozenInputsPreserved'] is True and g['templatePreserved'] is True and all(x['exit']==0 for x in g['gates']);known={x['sha256'] for x in g['testedFinalSourceBlobs'].values()}
+for name,b in g['testedFinalSourceBlobs'].items():
+ raw=(root/name).read_bytes();assert raw==(p.parent/g['archivedInputs'][name]).read_bytes() and sha(raw)==b['sha256'],name
+for copy in p.parent.glob('s*.source'):assert sha(copy.read_bytes()) in known
+for gate in g['gates']:assert sha((p.parent/gate['log']).read_bytes())==gate['logSha256']
+runtime['gates']={'receipt':p.parent.name,'inputs':len(g['testedFinalSourceBlobs']),'runtimeCopies':len(list(p.parent.glob('s*.source'))),'allFourExitZero':True,'frozenAndTemplatePreserved':True}
+tp='docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/translation.json';old=json.loads(blob(bt[tp]))['entries'];new=json.loads((root/tp).read_text(encoding='utf-8'))['entries'];assert new[:len(old)]==old
+for e in new:
+ raw=(root/e['archivePath']).read_bytes();assert sha(raw)==e['rawSha256'] and len(raw)==e['bytes'] and sha(raw.replace(b'\r\n',b'\n'))==e['canonicalSha256']
+for name in {e['archivePath'] for e in old}:assert blob(bt[name])==(root/name).read_bytes()
+assert (plan/'task-9-report.md').read_bytes().startswith((plan/'task-9-fix-4-original-report.source').read_bytes())
+rp='docs/evidence/audit-remediation-20260927/current-migration-runbook-20261001.md';assert (root/rp).read_bytes().startswith(blob(bt[rp]))
+tp='docs/evidence/audit-remediation-20260927/tracker.csv';old=list(csv.reader(blob(bt[tp]).decode().splitlines()));new=list(csv.reader((root/tp).read_text(encoding='utf-8').splitlines()));assert len(old)==len(new)
+for a,b in zip(old,new):
+ if a[0]!='R01':assert a==b
+ else:assert all(x==y for i,(x,y) in enumerate(zip(a,b)) if i not in [10,11]) and b[10].startswith(a[10]) and b[11].startswith(a[11])
+result={'base':base,'finalSourceCommit':source,'sqlInsertionBytes':440,'sqlRemovedBytes':0,'onlySqlChangedLine':91,'sqlRawSha256':sha(after),'sourceCommitMatchesTestedRawFiles':True,'runtime':runtime,'priorTranslationPrefix':1615,'priorUniqueBlobs':252,'allArchiveBytesVerified':True,'reportAndRunbookAppendOnly':True,'trackerOnlyR01EvidenceAndConcernAppended':True,'qualification':'Read-only covering checker; no DB/test reruns, preserved original receipt HEAD markers and failed runs.'}
+(plan/'task-9-fix-4-covering-check.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps(result))

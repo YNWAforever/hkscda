@@ -1,0 +1,1015 @@
+{
+  "mode": "modern",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-modern-1790928423473",
+  "at": "2026-10-02T08:07:11.301Z",
+  "sourceCommit": "8821c8f8facc8146ac61c8b305ab79f41768fec8",
+  "sourceBase": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+  "clone": "r01_clone_7da2e355106e418c919f098c6ad255ae",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisites": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "catalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "fixtureScope": [
+    "auth.users",
+    "admin_user",
+    "audit_log",
+    "coordinator_status",
+    "supporter",
+    "supporter_role",
+    "adopter_profile",
+    "adoption_case",
+    "adoption_followup",
+    "animal_match",
+    "animals",
+    "animal"
+  ],
+  "frozenInputs": {
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": {
+      "rawSha256": "e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992",
+      "canonicalSha256": "e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992",
+      "gitBlob": "3deae663df8d55492943940a4315bc40dfafcfee"
+    },
+    "src/lib/adoptions/atomicForward.database.test.ts": {
+      "rawSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "canonicalSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "gitBlob": "d030db5c496b062416995ba73d2efde26c6b4dd8"
+    },
+    "src/lib/adoptions/atomicForward.http.test.ts": {
+      "rawSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "canonicalSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "gitBlob": "2c9176c0a46d3e8c3f98f515da05d2368eb94a07"
+    },
+    "src/lib/adoptions/http/shared.server.ts": {
+      "rawSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "canonicalSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "gitBlob": "a9fcbf52db3085bbd8f8f4911336b75c263e4bc1"
+    },
+    "src/lib/adoptions/http/caseHandlers.server.ts": {
+      "rawSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "canonicalSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "gitBlob": "cd4c38b9c4c653abacf43980557072ee8177a820"
+    },
+    "src/lib/adoptions/repository.server.ts": {
+      "rawSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "canonicalSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "gitBlob": "e08ead3c8fe789d06896399a28aa2f1801a29518"
+    },
+    "src/lib/adoptions/service.ts": {
+      "rawSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "canonicalSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "gitBlob": "a20d60626c64b16248f764caa543e9f3aa92f8a9"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts": {
+      "rawSha256": "21eee5ddcffcdf2c46392c9b2a20d3c2bb05c8a2602d98ac47cebb152eabf2c6",
+      "canonicalSha256": "21eee5ddcffcdf2c46392c9b2a20d3c2bb05c8a2602d98ac47cebb152eabf2c6",
+      "gitBlob": "cd45292f9e83384064a5a3fcfe80755c48f8f7fc"
+    },
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts": {
+      "rawSha256": "49e8199d3ec009bbaac80e28afa0a3fa67e0adf9159ec3d733a8d1a0b41cc5af",
+      "canonicalSha256": "49e8199d3ec009bbaac80e28afa0a3fa67e0adf9159ec3d733a8d1a0b41cc5af",
+      "gitBlob": "eae5f65cbd81e95de535d3b4792bcbe14fcaa759"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py": {
+      "rawSha256": "0f7780bc3c45cb63ab2bc1b09ec0cc3c55fe0023e3645b7f73c5bc0de9941df5",
+      "canonicalSha256": "0f7780bc3c45cb63ab2bc1b09ec0cc3c55fe0023e3645b7f73c5bc0de9941df5",
+      "gitBlob": "38ba857bbf2919d8709577aad097777b945104e5"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts": {
+      "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "gitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-capture.ts": {
+      "rawSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "canonicalSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "gitBlob": "8d7e38ddc2a290cfb8f5754a576302b5019a96e0"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generate.ts": {
+      "rawSha256": "ce85917448ef05a13769ab47814afe89b53a5db1df07b463a83ed3114387e81a",
+      "canonicalSha256": "ce85917448ef05a13769ab47814afe89b53a5db1df07b463a83ed3114387e81a",
+      "gitBlob": "1dea4c65705b565ae8927f6a3b58b817c31f933c"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generated-profiles.json": {
+      "rawSha256": "4a4a8e1269477487c8980f11d678b5214bd0b8d595fe71619ecda1d96eb5bf13",
+      "canonicalSha256": "4a4a8e1269477487c8980f11d678b5214bd0b8d595fe71619ecda1d96eb5bf13",
+      "gitBlob": "08c1e31b04928643dec63a8a4cdf5ce5a1286f02"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-3-diagnose.ts": {
+      "rawSha256": "8125544411ddfc1f9038e6266810e991af631ca7d695fea8d298b9e6ccd758f4",
+      "canonicalSha256": "8125544411ddfc1f9038e6266810e991af631ca7d695fea8d298b9e6ccd758f4",
+      "gitBlob": "45c35868f5e32327b69979b8706eb80c261841e4"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-red-1790927158262/receipt.json": {
+      "rawSha256": "1f11d71fd36004014ea6be680c822c2856c1b3a3697baafc8ac89fc9df841685",
+      "canonicalSha256": "1f11d71fd36004014ea6be680c822c2856c1b3a3697baafc8ac89fc9df841685",
+      "gitBlob": "5707c1512eb188483a17581d780244fedbd6d4d5"
+    },
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+      "rawSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "gitBlob": "11e165120730fa396c61c2643f6826256a4de67a"
+    },
+    "supabase/migrations/20260928120000_crm_assignment_bulk.sql": {
+      "rawSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "canonicalSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "gitBlob": "b255225a21bd131a6625371bc31246a3e87343a7"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": {
+      "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "gitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    "supabase/migrations/20260925104926_atomic_adoption_coordinator_audit.sql": {
+      "rawSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "canonicalSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "gitBlob": "2c82f6410ee31f76664199aa5a7a7533e459e2b7"
+    },
+    "supabase/migrations/20260926110000_manual_case_identity_search.sql": {
+      "rawSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "canonicalSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "gitBlob": "7974f2bbd367bb64dc77f2a1791e6fc0ebd49a84"
+    },
+    "supabase/migrations/20260926133000_expose_manual_adoption_case_rpc.sql": {
+      "rawSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "canonicalSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "gitBlob": "534827f633bb40780e2cb6cf3b42f58cc543576f"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-hosted-1790919336913/receipt.json": {
+      "rawSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "canonicalSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "gitBlob": "74a43492bb5ef60edd182dd76c557a063283972e"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-modern-1790919424679/receipt.json": {
+      "rawSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "canonicalSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "gitBlob": "a51ce026a62be8b6fb8878b588a09956d7884965"
+    },
+    "src/lib/http/adminJson.server.ts": {
+      "rawSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "canonicalSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "gitBlob": "5c4a745643c1f5966feef67eb46f59442dac1342"
+    },
+    "src/lib/http/publicJson.server.ts": {
+      "rawSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "gitBlob": "02f75bdefbb4db5fb6438138c7bdda44053e2032"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "rawSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    "src/lib/crm/consent.ts": {
+      "rawSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "gitBlob": "85e25a9d42429091572dc22075ad47518e654ac0"
+    },
+    "src/lib/crm/types.ts": {
+      "rawSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "gitBlob": "fd933196de2109375db2ab25785d1ffc9f99c100"
+    },
+    "src/lib/adoptions/tasks.ts": {
+      "rawSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "canonicalSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "gitBlob": "94f2d2e431d1a826336727c64a415255b329e621"
+    },
+    "src/lib/adoptions/types.ts": {
+      "rawSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "canonicalSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "gitBlob": "6555ca58697753269eceb9ed36c89332103e21d2"
+    },
+    "src/lib/adoptions/caseFactory.ts": {
+      "rawSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "canonicalSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "gitBlob": "2f44ccfaca9e7e0a41a09c77b4ea1de734280429"
+    },
+    "src/lib/adoptions/status.ts": {
+      "rawSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "canonicalSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "gitBlob": "912ebe1d0919691de16e5d663145e32a328386ca"
+    },
+    "src/lib/adoptions/csv.ts": {
+      "rawSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "canonicalSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "gitBlob": "75cc9ed4869761e4719346d1b029ef7c58244dba"
+    },
+    "src/lib/adoptions/schemas.ts": {
+      "rawSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "canonicalSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "gitBlob": "68018d5ff1eaf5f301ce7461f09a3682c2f7256b"
+    },
+    "src/lib/http/boundedBody.server.ts": {
+      "rawSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "canonicalSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "gitBlob": "1ec448631dbbab00228e4ba8b056d8b15a61f05b"
+    },
+    "src/lib/supabase.server.ts": {
+      "rawSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    "src/lib/supporters/publicIdentity.server.ts": {
+      "rawSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "canonicalSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "gitBlob": "6c80a35a5d54f687c85e6ad46f7da4ba20bda2d7"
+    },
+    "src/lib/donations/checkoutPolicy.ts": {
+      "rawSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "canonicalSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "gitBlob": "4cbe943350d48fea63c6a9d7f59f08f20be8e427"
+    },
+    "src/lib/paymentPublicConfig/instructions.server.ts": {
+      "rawSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "canonicalSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "gitBlob": "ffa71fd71cfe033fa20894c982ffe55ed53319e0"
+    },
+    "src/lib/donations/service.ts": {
+      "rawSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "canonicalSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "gitBlob": "d49fe5c7cd0c53e47cb1c7777f5760eaecaf2950"
+    },
+    "src/lib/donations/publicStatus.ts": {
+      "rawSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "canonicalSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "gitBlob": "5af06919c89f6d0a3d0a203a5751cd2f8004629a"
+    },
+    "src/lib/donations/publicStatus.server.ts": {
+      "rawSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "canonicalSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "gitBlob": "48badc635a41307f16697a39cd126f3368d0a01a"
+    },
+    "src/lib/donations/publicStatusProjection.ts": {
+      "rawSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "canonicalSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "gitBlob": "f08f3c23d2cda9e982664a11e234fe50d74200f2"
+    },
+    "src/lib/admin/session.server.ts": {
+      "rawSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    "src/lib/crm/schemas.ts": {
+      "rawSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "gitBlob": "ab157595bcffcf4dc46d03ba93739cf02301319e"
+    },
+    "src/types/animal.ts": {
+      "rawSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "canonicalSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "gitBlob": "4eaec349ae4548ae70d1f9ab63741b41cdf6efe7"
+    },
+    "src/lib/crm/csv.ts": {
+      "rawSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "canonicalSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "gitBlob": "a690fb784c30702851d8fd5b649c2e6a39e85686"
+    },
+    "src/lib/donations/config.server.ts": {
+      "rawSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "canonicalSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "gitBlob": "dba445193c06557584dba4c91ecab4925ef3d709"
+    },
+    "src/lib/donations/contracts.ts": {
+      "rawSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "canonicalSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "gitBlob": "30c189cb9028c2c90202adae9777012b376ff2e7"
+    },
+    "src/lib/paymentPublicConfig/types.ts": {
+      "rawSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "canonicalSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "gitBlob": "37dc1c26acdc7ae5a8bb96cbe756d5b5bbf88efc"
+    },
+    "src/lib/donations/domain.ts": {
+      "rawSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "canonicalSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "gitBlob": "91761950ce929b739a6275c30347e0435cc3cad8"
+    },
+    "src/lib/paymentPublicConfig/instructions.ts": {
+      "rawSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "canonicalSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "gitBlob": "61b298b97497e789f796b1e4ecabd1d6f971347d"
+    },
+    "src/lib/admin/access.ts": {
+      "rawSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "canonicalSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "gitBlob": "be2fffc8f941f1790e42b20b07d9ec9d9ebcb517"
+    },
+    "src/lib/donations/cod-crypto.server.ts": {
+      "rawSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "canonicalSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "gitBlob": "7f19cc5e9ac86c2e8e37bf9a0387b403597ebabb"
+    },
+    "src/lib/donations/attribution.ts": {
+      "rawSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "canonicalSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "gitBlob": "16f0116ddd4042313545d476f70228fc27446d41"
+    },
+    "src/lib/donations/prompt.ts": {
+      "rawSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "canonicalSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "gitBlob": "b8cc3374afcc2f87ed433300edc48542e0a3536a"
+    }
+  },
+  "archivedInputs": {
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": "s000.source",
+    "src/lib/adoptions/atomicForward.database.test.ts": "s001.source",
+    "src/lib/adoptions/atomicForward.http.test.ts": "s002.source",
+    "src/lib/adoptions/http/shared.server.ts": "s003.source",
+    "src/lib/adoptions/http/caseHandlers.server.ts": "s004.source",
+    "src/lib/adoptions/repository.server.ts": "s005.source",
+    "src/lib/adoptions/service.ts": "s006.source",
+    "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts": "s007.source",
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts": "s008.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py": "s009.source",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "s010.source",
+    "src/lib/operations/releaseSchema.ts": "s011.source",
+    "src/lib/operations/releaseManifest.ts": "s012.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts": "s013.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-capture.ts": "s014.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generate.ts": "s015.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generated-profiles.json": "s016.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-3-diagnose.ts": "s017.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-red-1790927158262/receipt.json": "s018.source",
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": "s019.source",
+    "supabase/migrations/20260928120000_crm_assignment_bulk.sql": "s020.source",
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": "s021.source",
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": "s022.source",
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": "s023.source",
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": "s024.source",
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": "s025.source",
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": "s026.source",
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": "s027.source",
+    "supabase/migrations/20260925104926_atomic_adoption_coordinator_audit.sql": "s028.source",
+    "supabase/migrations/20260926110000_manual_case_identity_search.sql": "s029.source",
+    "supabase/migrations/20260926133000_expose_manual_adoption_case_rpc.sql": "s030.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-hosted-1790919336913/receipt.json": "s031.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-modern-1790919424679/receipt.json": "s032.source",
+    "src/lib/http/adminJson.server.ts": "s033.source",
+    "src/lib/http/publicJson.server.ts": "s034.source",
+    "src/lib/donations/supabase.server.ts": "s035.source",
+    "src/lib/crm/consent.ts": "s036.source",
+    "src/lib/crm/types.ts": "s037.source",
+    "src/lib/adoptions/tasks.ts": "s038.source",
+    "src/lib/adoptions/types.ts": "s039.source",
+    "src/lib/adoptions/caseFactory.ts": "s040.source",
+    "src/lib/adoptions/status.ts": "s041.source",
+    "src/lib/adoptions/csv.ts": "s042.source",
+    "src/lib/adoptions/schemas.ts": "s043.source",
+    "src/lib/http/boundedBody.server.ts": "s044.source",
+    "src/lib/supabase.server.ts": "s045.source",
+    "src/lib/supporters/publicIdentity.server.ts": "s046.source",
+    "src/lib/donations/checkoutPolicy.ts": "s047.source",
+    "src/lib/paymentPublicConfig/instructions.server.ts": "s048.source",
+    "src/lib/donations/service.ts": "s049.source",
+    "src/lib/donations/publicStatus.ts": "s050.source",
+    "src/lib/donations/publicStatus.server.ts": "s051.source",
+    "src/lib/donations/publicStatusProjection.ts": "s052.source",
+    "src/lib/admin/session.server.ts": "s053.source",
+    "src/lib/crm/schemas.ts": "s054.source",
+    "src/types/animal.ts": "s055.source",
+    "src/lib/crm/csv.ts": "s056.source",
+    "src/lib/donations/config.server.ts": "s057.source",
+    "src/lib/donations/contracts.ts": "s058.source",
+    "src/lib/paymentPublicConfig/types.ts": "s059.source",
+    "src/lib/donations/domain.ts": "s060.source",
+    "src/lib/paymentPublicConfig/instructions.ts": "s061.source",
+    "src/lib/admin/access.ts": "s062.source",
+    "src/lib/donations/cod-crypto.server.ts": "s063.source",
+    "src/lib/donations/attribution.ts": "s064.source",
+    "src/lib/donations/prompt.ts": "s065.source"
+  },
+  "task1Applied": false,
+  "task8Applied": false,
+  "dependencyGate": "Task7 PR191 exactd040 CI36960650129 attempt1 five individualSUCCESS",
+  "productionActions": "schema/catalog only; no actor/rows/mutations/provider",
+  "environment": "only owned52322 clone; modern57322/template52322 readonly; no web/provider/email calls",
+  "fixtureSafety": "unchanged5352 fullscope PASS",
+  "initialGapCount": 1,
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gapCount": 1
+    },
+    {
+      "file": "20261001213914_r01_crm_atomic_forward.sql",
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gapCount": 1
+    },
+    {
+      "file": "20261002011249_r01_cms_atomic_forward.sql",
+      "sha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "gapCount": 1
+    }
+  ],
+  "beforeGapCount": 1,
+  "beforeRowsHash": "6d67ba153267181b88a82292a9b76e896c84d1d88caeac62be754d49a8a3b66a",
+  "beforeCompleteAuthDefaultNativeLedgerSequenceHash": "e9a6c072ca17712cbf65479b1094d33933a1b804e0bbdc3ed3220e7dcc37c8ae",
+  "beforeHelperHash": "6e46b909980daf0d88b2c0b128bee078c13e864bff4ef894d321c9e0eee77c8a",
+  "baselineAcceptedBeforeNegatives": true,
+  "baselineRollbackPreserved": true,
+  "nativeFixtureSelections": {
+    "native FK trigger disabled": {
+      "oid": 933449,
+      "tgname": "RI_ConstraintTrigger_a_933449",
+      "tgenabled": "O",
+      "tgtype": 9,
+      "function": "\"RI_FKey_cascade_del\"()",
+      "constraint_oid": 933448,
+      "conname": "adoption_followup_adoption_case_id_fkey",
+      "origin": "public.adoption_followup",
+      "referenced": "public.adoption_case",
+      "table": "public.adoption_case",
+      "tgisinternal": true,
+      "tgparentid": 0,
+      "tgdeferrable": false,
+      "tginitdeferred": false,
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_933449\" AFTER DELETE ON public.adoption_case FROM public.adoption_followup NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()"
+    },
+    "named outgoing FK trigger disabled": {
+      "oid": 933441,
+      "tgname": "RI_ConstraintTrigger_c_933441",
+      "tgenabled": "O",
+      "tgtype": 5,
+      "function": "\"RI_FKey_check_ins\"()",
+      "constraint_oid": 933438,
+      "conname": "adoption_case_supporter_id_fkey",
+      "origin": "public.adoption_case",
+      "referenced": "public.supporter",
+      "table": "public.adoption_case",
+      "tgisinternal": true,
+      "tgparentid": 0,
+      "tgdeferrable": false,
+      "tginitdeferred": false,
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_933441\" AFTER INSERT ON public.adoption_case FROM public.supporter NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    "named incoming FK trigger disabled": {
+      "oid": 934244,
+      "tgname": "RI_ConstraintTrigger_a_934244",
+      "tgenabled": "O",
+      "tgtype": 9,
+      "function": "\"RI_FKey_restrict_del\"()",
+      "constraint_oid": 934243,
+      "conname": "successful_adoption_adoption_case_id_fkey",
+      "origin": "public.successful_adoption",
+      "referenced": "public.adoption_case",
+      "table": "public.adoption_case",
+      "tgisinternal": true,
+      "tgparentid": 0,
+      "tgdeferrable": false,
+      "tginitdeferred": false,
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_934244\" AFTER DELETE ON public.adoption_case FROM public.successful_adoption NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_restrict_del\"()"
+    }
+  },
+  "refusals": [
+    {
+      "name": "table owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "RLS",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "column ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "column default",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "unknown index",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "version trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator public recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator public grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator global recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "Auth effective SELECT column",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "Auth effective UPDATE column",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_adoption_case_bulk_row_version config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.bump_supporter_edit_version_from_role config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.create_manual_adoption_case config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.lock_admin_user_mutation config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.normalize_public_animal_age config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.require_active_admin_user config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private helper intentional default",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target mutate_adoption_coordinator_with_audit body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target search_manual_case_identity body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target create_manual_adoption_case body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "native FK trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "named outgoing FK trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "named incoming FK trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    }
+  ],
+  "applies": 2,
+  "secondApplyIdempotent": true,
+  "afterGapCount": 1,
+  "unaffectedCatalogPreserved": true,
+  "rowsPreserved": true,
+  "completeAuthDefaultNativeLedgerSequencePreserved": true,
+  "helpersPreserved": true,
+  "finalFunctions": [
+    {
+      "schema": "public",
+      "name": "create_manual_adoption_case",
+      "args": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+      "allargs": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb",
+      "defaults": 1,
+      "default_expression": "NULL::jsonb",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "v",
+      "body": "5725edc893e1de19fce3d68905793e7e",
+      "definition": "95554b13bbff63687a02915a03ef352a"
+    },
+    {
+      "schema": "public",
+      "name": "mutate_adoption_coordinator_with_audit",
+      "args": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "allargs": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "v",
+      "body": "14b25802b9f1bb9d4916a155371cd96c",
+      "definition": "bf23274600c991e5707bcc16ce069334"
+    },
+    {
+      "schema": "public",
+      "name": "search_manual_case_identity",
+      "args": "p_query text, p_page integer, p_page_size integer",
+      "allargs": "p_query text, p_page integer DEFAULT 1, p_page_size integer DEFAULT 10",
+      "defaults": 2,
+      "default_expression": "1, 10",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "s",
+      "body": "400b3b85e6b25b16e6b3758cb536adf9",
+      "definition": "e3ef437854441afd67d6ad7d59aa8f35"
+    }
+  ],
+  "testCommand": [
+    "bun",
+    "test",
+    "--timeout",
+    "15000",
+    "src/lib/adoptions/atomicForward.database.test.ts",
+    "src/lib/adoptions/atomicForward.http.test.ts",
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+  ],
+  "testExit": 0,
+  "testSummary": [
+    " 61 pass",
+    " 0 fail",
+    " 195 expect() calls"
+  ],
+  "postTestsCatalogPreserved": true,
+  "postTestsRowsPreserved": true,
+  "postTestsCompleteMetadataPreserved": true,
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true
+}

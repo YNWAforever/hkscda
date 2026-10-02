@@ -1,0 +1,35 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:
+(pass) actual finalization fails for modern preservation and retains receipt [24.31ms]
+(pass) actual finalization fails for frozen preservation and retains receipt [1.33ms]
+(pass) actual finalization fails for template preservation and retains receipt [0.71ms]
+(pass) actual finalization fails for missing-template preservation and retains receipt [0.56ms]
+(pass) actual finalization accepts all final flags exactly true [0.78ms]
+(pass) actual gate selector rejects false normalDrop [162.67ms]
+(pass) actual gate selector rejects missing normalDrop [131.90ms]
+(pass) actual gate selector rejects false templatePreserved [197.42ms]
+(pass) actual gate selector rejects missing templatePreserved [147.89ms]
+(pass) actual gate selector rejects false modernPreserved [101.41ms]
+(pass) actual gate selector rejects missing modernPreserved [183.00ms]
+(pass) actual gate selector rejects false frozenInputsPreserved [99.71ms]
+(pass) actual gate selector rejects missing frozenInputsPreserved [106.84ms]
+122 |   for (const state of ["false", "missing"] as const)
+123 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+124 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+125 |     });
+126 | test("actual gate selector accepts exact true clone flags", async () => {
+127 |   expect(await selected()).toBe(0);
+                                 ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.r01fix2-r8vkn71f\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:127:28)
+(fail) actual gate selector accepts exact true clone flags [107.68ms]
+
+ 13 pass
+ 1 fail
+ 29 expect() calls
+Ran 14 tests across 1 file. [1311.00ms]

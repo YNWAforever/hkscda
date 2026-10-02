@@ -1,0 +1,157 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:
+(pass) actual finalization fails for modern preservation and retains receipt [25.77ms]
+(pass) actual finalization fails for frozen preservation and retains receipt [0.93ms]
+(pass) actual finalization fails for template preservation and retains receipt [0.46ms]
+(pass) actual finalization fails for missing-template preservation and retains receipt [0.40ms]
+(pass) actual finalization accepts all final flags exactly true [0.71ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false normalDrop [6.61ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing normalDrop [1.37ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false templatePreserved [0.27ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing templatePreserved [0.21ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false modernPreserved [0.24ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing modernPreserved [0.21ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects false frozenInputsPreserved [0.19ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:20)
+(fail) actual gate selector rejects missing frozenInputsPreserved [0.14ms]
+84 |   const result = await finalization("good");
+85 |   expect(result.exit).toBe(0);
+86 |   expect(result.receipt.error).toBeUndefined();
+87 | });
+88 | async function selected(flag?: string, value?: unknown) {
+89 |   const dir = await mkdtemp(
+                         ^
+ENAMETOOLONG: name too long, mkdtemp 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-inert-XXXXXX'
+    path: "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-2-red-r6_jicbr\\clean-layout\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-inert-XXXXXX",
+ syscall: "mkdtemp",
+   errno: -36,
+    code: "ENAMETOOLONG"
+
+      at async selected (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:89:21)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-9-fix-2-red-r6_jicbr\clean-layout\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:124:16)
+(fail) actual gate selector accepts exact true clone flags [0.54ms]
+
+ 5 pass
+ 9 fail
+ 20 expect() calls
+Ran 14 tests across 1 file. [97.00ms]

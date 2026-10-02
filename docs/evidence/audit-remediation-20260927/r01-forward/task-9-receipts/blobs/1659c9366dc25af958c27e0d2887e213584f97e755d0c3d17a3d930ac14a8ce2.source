@@ -1,0 +1,70 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.database.test.ts:
+(pass) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [33.25ms]
+(pass) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [34.08ms]
+(pass) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [26.19ms]
+(pass) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [27.82ms]
+(pass) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [15.36ms]
+(pass) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [15.55ms]
+(pass) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [16.78ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual missing actor with42501 and no audit [15.58ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual disabled actor with42501 and no audit [21.12ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual treasurer actor with42501 and no audit [17.65ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual missing actor with42501 and no audit [15.82ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual disabled actor with42501 and no audit [17.91ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual treasurer actor with42501 and no audit [17.73ms]
+(pass) R01 adoption role and transaction contracts > anon cannot execute any restored service-only RPC [30.74ms]
+(pass) R01 adoption role and transaction contracts > authenticated cannot execute any restored service-only RPC [24.80ms]
+PostgresError: new row for relation "adoption_followup" violates check constraint "adoption_followup_link_required"
+      errno: "23514",
+     detail: "Failing row contains (4c928dff-f974-45b8-ae92-743ba073f9c1, null, followup, 17788658-dbac-43ce-8879-b4607928bae0, Synthetic task, null, null, null, null, null, null, null, f7fafa2b-b76b-4784-8fbc-7e122dc3ce84, f7fafa2b-b76b-4784-8fbc-7e122dc3ce84, 2026-10-02 05:07:18.637429+00, 2026-10-02 05:07:18.637429+00, null, null, followup, normal, null, null, null, null, null).",
+   severity: "ERROR",
+      where: "SQL statement \"insert into public.adoption_followup (\n      adoption_case_id, adopter_profile_id, animal_id, status_id,\n      title, task_type, priority, due_at, scheduled_at, completed_at,\n      assigned_to, volunteer, contact_channel, outcome, next_step_at, remarks,\n      has_window_net, environment, score, created_by, updated_by\n    ) values (\n      desired_task.adoption_case_id, desired_task.adopter_profile_id,\n      desired_task.animal_id, desired_task.status_id,\n      desired_task.title, desired_task.task_type, desired_task.priority,\n      desired_task.due_at, desired_task.scheduled_at, desired_task.completed_at,\n      desired_task.assigned_to, desired_task.volunteer, desired_task.contact_channel,\n      desired_task.outcome, desired_task.next_step_at, desired_task.remarks,\n      desired_task.has_window_net, desired_task.environment, desired_task.score,\n      p_actor_user_id, p_actor_user_id\n    )\n    returning to_jsonb(adoption_followup.*)\"\nPL/pgSQL function public.mutate_adoption_coordinator_with_audit(uuid,text,text,uuid,jsonb) line 94 at SQL statement",
+     schema: "public",
+      table: "adoption_followup",
+ constraint: "adoption_followup_link_required",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption role and transaction contracts > staff cannot mutate statuses but may create and update audited followup tasks [25.34ms]
+(pass) R01 adoption role and transaction contracts > system status identity/deletion remain protected and normal status update/delete return audited rows [32.58ms]
+(pass) R01 adoption role and transaction contracts > missing targets and unsupported operations keep P0002/22023 without audit [34.71ms]
+(pass) R01 adoption role and transaction contracts > coordinator audit failure rolls back all identity/business writes [33.98ms]
+(pass) R01 adoption role and transaction contracts > manual audit failure rolls back all identity/business writes [37.43ms]
+(pass) R01 adoption role and transaction contracts > manual intake preserves initial task linking and actor IDs [33.79ms]
+(pass) R01 adoption role and transaction contracts > manual existing supporter retries reuse identity/role and create separate cases without inventing request idempotency [36.54ms]
+(pass) R01 adoption role and transaction contracts > manual malformed/unavailable identities preserve original refusal and no partial writes [43.11ms]
+(pass) R01 adoption role and transaction contracts > duplicate coordinator status and malformed payload are atomic refusals [30.99ms]
+(pass) R01 adoption role and transaction contracts > empty pinned public commands and preserved private helper ignore temporary table shadows [39.38ms]
+(pass) R01 adoption role and transaction contracts > existing bulk case/supporter version triggers remain unchanged during valid synthetic updates [33.17ms]
+(pass) R01 adoption transaction actor locks > coordinator holds actual actor admin_user row against concurrent suspension/ban until transaction ends [90.30ms]
+(pass) R01 adoption transaction actor locks > coordinator holds actual actor auth.users row against concurrent suspension/ban until transaction ends [81.19ms]
+(pass) R01 adoption transaction actor locks > manual holds actual actor admin_user row against concurrent suspension/ban until transaction ends [91.64ms]
+(pass) R01 adoption transaction actor locks > manual holds actual actor auth.users row against concurrent suspension/ban until transaction ends [80.15ms]
+
+src\lib\adoptions\atomicForward.http.test.ts:
+(pass) manual actor SQLSTATE42501 returns safe403 through actual coordinator handler [4.70ms]
+(pass) coordinator permission mapping preserves Response [0.61ms]
+(pass) coordinator permission mapping preserves Zod [0.21ms]
+(pass) coordinator permission mapping preserves missing [0.17ms]
+(pass) coordinator permission mapping preserves domain conflict [0.27ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) coordinator permission mapping preserves unknown [0.29ms]
+42501
+(pass) coordinator permission mapping preserves nonobject [0.20ms]
+(pass) manual handler preserves201 IDs and task-null response [0.47ms]
+
+1 tests failed:
+(fail) R01 adoption role and transaction contracts > staff cannot mutate statuses but may create and update audited followup tasks [25.34ms]
+
+ 37 pass
+ 1 fail
+ 125 expect() calls
+Ran 38 tests across 2 files. [1297.00ms]

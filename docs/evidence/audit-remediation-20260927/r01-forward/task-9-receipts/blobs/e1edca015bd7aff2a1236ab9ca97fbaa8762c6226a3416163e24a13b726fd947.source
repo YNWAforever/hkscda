@@ -1,0 +1,3 @@
+import {SQL} from 'bun';import {captureModernLocalSchema,createProductionClone} from '../../../supabase/rls-tests/helpers/productionSchemaClone';
+const cap=await captureModernLocalSchema();const c=await createProductionClone(cap);
+try{console.log('own parent',await c.sql`select current_database(),current_user`);const p=Bun.spawn(['bun','-e',"import {SQL} from 'bun';const db=new SQL(process.env.R01_ADOPTION_ATOMIC_TEST_DATABASE_URL,{max:4});console.log(await db`select current_database(),current_user`);await db.close();"],{env:{...process.env,R01_ADOPTION_ATOMIC_TEST_DATABASE_URL:c.url},stdout:'pipe',stderr:'pipe'});console.log('child',await new Response(p.stdout).text(),await new Response(p.stderr).text(),await p.exited);}finally{await c.close();}

@@ -1,0 +1,33 @@
+import datetime, hashlib, json, pathlib, subprocess
+plan=pathlib.Path(__file__).resolve().parent
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+name='hkscda-task9-fix4-image-'+stamp.lower()
+out=plan/('task-9-fix-4-image-source-'+stamp); out.mkdir()
+image='public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53'
+receipt={'at':stamp,'containerName':name,'image':image,'commands':[],'stage':'Ruling33 stopped-image source inspection only'}
+def run(args,required=True):
+ r=subprocess.run(args,capture_output=True); d={'command':args,'exit':r.returncode,'stdout':r.stdout.decode('utf8'),'stderr':r.stderr.decode('utf8')}; receipt['commands'].append(d)
+ (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf8',newline='\n')
+ if required and r.returncode: raise RuntimeError(d)
+ return d
+created=False
+try:
+ run(['docker','create','--name',name,'--network','none','--read-only','--cpus','1','--memory','512m','--no-healthcheck',image]); created=True
+ inspect=json.loads(run(['docker','inspect',name])['stdout'])[0]
+ assert inspect['State']['Status']=='created' and not inspect['State']['Running']
+ assert not inspect['HostConfig']['Binds'] and not inspect['HostConfig']['PortBindings'] and inspect['HostConfig']['NetworkMode']=='none'
+ assert all(m['Type']=='volume' for m in inspect['Mounts'])
+ receipt['before']=inspect
+ for src,label in [('/docker-entrypoint-initdb.d','initdb'),('/etc/postgresql','postgresql-config'),('/usr/local/bin/docker-entrypoint.sh','entrypoint.source')]:
+  run(['docker','cp','-L',name+':'+src,str(out/label)],required=False)
+finally:
+ if created:
+  inspect=json.loads(run(['docker','inspect',name])['stdout'])[0]
+  assert inspect['State']['Status']=='created' and not inspect['State']['Running'] and inspect['State']['StartedAt'].startswith('0001-')
+  receipt['neverStarted']=True; receipt['ownedVolumes']=inspect['Mounts']
+  run(['docker','rm','-v',name])
+  remaining=run(['docker','ps','-a','--filter','name=^/'+name+'$','--format','{{.ID}}'])
+  assert not remaining['stdout'].strip(); receipt['normalRemoved']=True
+ receipt['files']={str(p.relative_to(out)).replace('\\','/'):{'bytes':len(p.read_bytes()),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in out.rglob('*') if p.is_file() and p.name!='receipt.json'}
+ (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf8',newline='\n')
+print(json.dumps({'out':str(out),'container':name,'neverStarted':receipt.get('neverStarted'),'normalRemoved':receipt.get('normalRemoved'),'files':len(receipt['files']),'copyResults':[{'command':c['command'],'exit':c['exit'],'stderr':c['stderr']} for c in receipt['commands'] if c['command'][1]=='cp']}))

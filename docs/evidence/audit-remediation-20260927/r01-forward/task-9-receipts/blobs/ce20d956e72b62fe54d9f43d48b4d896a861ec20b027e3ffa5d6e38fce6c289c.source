@@ -1,0 +1,9 @@
+{
+  "officialAuthVersion": "v2.197.0",
+  "sourcePath": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-official-source\\20220224000811_update_auth_functions.up.sql",
+  "sourceSha256": "5b72022d73e64a8e474d2122ac42f299bb7ce4d59755cdcc78e72abfe5d47dc0",
+  "sourceGitBlob": "4be423739aa3bf07bc3769aea5cc7751959ad53e",
+  "sourceUidBodyMd5": "cdef18c69c4f4cbbced2eaf81e628b49",
+  "sourceBodyExactlyMatchesObserved17_6Modern": true,
+  "qualification": "Source definition only; does not establish complete17.11 final Auth metadata."
+}

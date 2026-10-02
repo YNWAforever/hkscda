@@ -1,0 +1,22 @@
+{
+  "command": "bun test supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts",
+  "exit": 1,
+  "bindings": {
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts": {
+      "rawSha256": "597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54",
+      "canonicalSha256": "597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54",
+      "archive": "s000.source"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts": {
+      "rawSha256": "4e8c73bb51aee3f4677c64fc8fc807e638c7d071e238eb708bcaa5ab5aa1c380",
+      "canonicalSha256": "4e8c73bb51aee3f4677c64fc8fc807e638c7d071e238eb708bcaa5ab5aa1c380",
+      "archive": "s001.source"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py": {
+      "rawSha256": "ad85b1abf27b0d1381de485005333b9bd9696f4ba758749ed5137a7605bad3dc",
+      "canonicalSha256": "ad85b1abf27b0d1381de485005333b9bd9696f4ba758749ed5137a7605bad3dc",
+      "archive": "s002.source"
+    }
+  },
+  "environment": "inert actual finalization IO stubs and selector prefix; no DB/provider mutation or capture"
+}

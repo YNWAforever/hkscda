@@ -1,0 +1,23 @@
+from pathlib import Path
+root=Path.cwd()
+p=root/'src/lib/adoptions/atomicForward.database.test.ts'
+s=p.read_text(encoding='utf-8')
+s=s.replace('const rollback = new Error(', 'const fixtureBaselines = new WeakMap<SQL, Record<string, number>>();\nconst rollback = new Error(',1)
+s=s.replace('const actor = randomUUID(),\n        status = randomUUID();', '''const baseline: Record<string, number> = {};
+      for (const table of ["audit_log", "supporter", "supporter_role", "adopter_profile", "adoption_case", "adoption_followup", "coordinator_status", "animal_match"]) {
+        const [row] = await tx.unsafe("select count(*)::integer count from public." + table);
+        baseline[table] = row.count;
+      }
+      fixtureBaselines.set(tx, baseline);
+      const actor = randomUUID(),
+        status = randomUUID();''',1)
+s=s.replace('return r.count as number;', 'return (r.count as number) - (fixtureBaselines.get(tx)?.[table] ?? 0);',1)
+p.write_text(s,encoding='utf-8',newline='\n')
+p=root/'supabase/rls-tests/helpers/runR01AdoptionAtomic.ts'
+s=p.read_text(encoding='utf-8')
+s=s.replace('refusals.push({\n        name: f.schema + "." + f.name + " " + facet,\n        setup,\n      });','''refusals.push({
+        name: f.schema + "." + f.name + " " + facet,
+        setup: f.owner === "supabase_auth_admin" ? "set local role supabase_admin;" + setup + ";set local role postgres" : setup,
+      });''')
+s=s.replace('const actualRefusals = [];','const actualRefusals = [];\n  receipt.refusals = actualRefusals;')
+p.write_text(s,encoding='utf-8',newline='\n')

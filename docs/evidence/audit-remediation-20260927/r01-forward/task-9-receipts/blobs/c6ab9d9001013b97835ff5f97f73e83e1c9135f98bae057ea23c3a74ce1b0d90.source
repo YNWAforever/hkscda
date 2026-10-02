@@ -1,0 +1,33 @@
+import {readFile,writeFile,mkdir,copyFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {captureModernLocalSchema,createProductionClone,assertSafeFixtureTables,hash,snapshot,localSourceState} from '../../../supabase/rls-tests/helpers/productionSchemaClone';
+import {dependencies,fixtureScope,nativeQuery,tables} from '../../../docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile';
+if(process.env.R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES!=='1')throw Error('Own isolated diagnostic opt-in');
+const root=resolve(import.meta.dir,'../../..'),out=resolve(root,'.superpowers/sdd/r01-forward-schema-plan-20261001/task-9-native-red-'+Date.now());
+await mkdir(out,{recursive:true});
+const paths=['.superpowers/sdd/r01-forward-schema-plan-20261001/task-9-native-red.ts','supabase/rls-tests/helpers/productionSchemaClone.ts','docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts','supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql',...dependencies.map(([p])=>'supabase/migrations/'+p)];
+const bindings:Record<string,unknown>={};for(const[i,p]of paths.entries()){const b=await readFile(resolve(root,p));bindings[p]={rawSha256:hash(b.toString()),canonicalSha256:hash(b.toString().replaceAll('\r\n','\n')),archive:'s'+i+'.source'};await copyFile(resolve(root,p),resolve(out,'s'+i+'.source'));}
+const modern='postgresql://postgres:postgres@127.0.0.1:57322/postgres',modernBefore=await localSourceState(modern);
+const c=await createProductionClone(await captureModernLocalSchema()),db=c.sql;
+const r:Record<string,unknown>={at:new Date().toISOString(),out,clone:c.name,zeroTables:c.tableCount,bindings,fixtureScope};
+const rawNative=async()=>db`select to_jsonb(t) trigger,to_jsonb(c) constraint from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where t.tgisinternal order by t.oid`;
+const forced=new Error('rollback native diagnostic');
+try{
+ await assertSafeFixtureTables(db,fixtureScope);r.scanner='unchanged5352 PASS';
+ for(const[f,h]of dependencies){const s=await readFile(resolve(root,'supabase/migrations',f),'utf8');if(hash(s)!==h)throw Error('dependency bytes differ');await db.begin(async tx=>{await tx`set local role postgres`;await tx.unsafe(s);});}
+ const before=hash(await snapshot(db)),beforeRaw=hash(await rawNative()),beforeGuard=(await db.unsafe(nativeQuery))[0].value;
+ const [first]=await db`select t.oid,t.tgname,t.tgenabled,t.tgtype,t.tgfoid::regprocedure::text function,c.oid constraint_oid,c.conname,c.conrelid::regclass::text origin,c.confrelid::regclass::text referenced,t.tgrelid::regclass::text table from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where t.tgrelid='public.adoption_case'::regclass and t.tgisinternal limit 1`;
+ r.currentUnorderedSelection=first;r.unorderedSelectionGuarded=tables.includes(first.origin.replace('public.',''));
+ const [selected]=await db`select t.oid,t.tgname,t.tgenabled,t.tgtype,t.tgfoid::regprocedure::text function,c.oid constraint_oid,c.conname,c.conrelid::regclass::text origin,c.confrelid::regclass::text referenced,t.tgrelid::regclass::text table from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where t.tgrelid='public.adoption_case'::regclass and t.tgisinternal and c.conname='successful_adoption_adoption_case_id_fkey' order by t.oid limit 1`;
+ r.selectedBefore=selected;r.selectedGuarded=tables.includes(selected.origin.replace('public.',''));
+ try{await db.begin(async tx=>{
+  await tx`set local role supabase_admin`;await tx.unsafe('alter table public.adoption_case disable trigger "'+String(selected.tgname).replaceAll('"','""')+'"');await tx`set local role postgres`;
+  r.selectedAfter=(await tx`select to_jsonb(t) value from pg_trigger t where t.oid=${selected.oid}::oid`)[0].value;
+  r.guardProjectionUnchanged=hash(beforeGuard)===hash((await tx.unsafe(nativeQuery))[0].value);
+  r.completeNativeChanged=beforeRaw!==hash(await tx`select to_jsonb(t) trigger,to_jsonb(c) constraint from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where t.tgisinternal order by t.oid`);
+  await tx.unsafe(await readFile(resolve(root,'supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql'),'utf8'));
+  r.actualMigrationAcceptedDrift=true;throw forced;
+ });}catch(e){if(e!==forced){r.errno=(e as {errno?:string}).errno;r.error=String(e);}}
+ r.fullCatalogRollback=before===hash(await snapshot(db));r.completeNativeRollback=beforeRaw===hash(await rawNative());
+ if(r.actualMigrationAcceptedDrift!==true||!r.fullCatalogRollback||!r.completeNativeRollback)process.exitCode=1;
+}catch(e){r.error=String(e);process.exitCode=1;}finally{await c.close();r.normalDrop=true;r.templatePreserved=c.templatePreserved;r.modernPreserved=modernBefore===await localSourceState(modern);await writeFile(resolve(out,'receipt.json'),JSON.stringify(r,null,2)+'\n');console.log(JSON.stringify(r));}

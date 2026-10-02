@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptions\atomicForward.http.test.ts:
+(pass) manual actor SQLSTATE42501 returns safe403 through actual coordinator handler [3.99ms]
+(pass) coordinator permission mapping preserves Response [0.47ms]
+(pass) coordinator permission mapping preserves Zod [0.18ms]
+(pass) coordinator permission mapping preserves missing [0.14ms]
+(pass) coordinator permission mapping preserves domain conflict [0.50ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) coordinator permission mapping preserves unknown [0.27ms]
+42501
+(pass) coordinator permission mapping preserves nonobject [0.40ms]
+(pass) manual handler preserves201 IDs and task-null response [0.38ms]
+
+ 8 pass
+ 0 fail
+ 17 expect() calls
+Ran 8 tests across 1 file. [70.00ms]
