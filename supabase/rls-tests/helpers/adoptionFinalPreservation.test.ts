@@ -93,7 +93,7 @@ async function selected(flag?: string, value?: unknown) {
     resolve(root, ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-inert-"),
   );
   try {
-    for (const mode of ["hosted", "modern"]) {
+    for (const mode of ["hosted", "modern", "component"]) {
       const folder = resolve(
         dir,
         ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-" + mode + "-inert",

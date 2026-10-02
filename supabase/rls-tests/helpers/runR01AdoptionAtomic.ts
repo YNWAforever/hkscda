@@ -23,7 +23,7 @@ import { releaseManifest } from "../../../src/lib/operations/releaseManifest";
 const root = resolve(import.meta.dir, "../../.."),
   mode = process.argv[2];
 if (
-  !["hosted", "modern"].includes(mode) ||
+  !["hosted", "modern", "component"].includes(mode) ||
   process.env.R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1"
 )
   throw Error("Explicit Task9 owned clone opt-in required");
@@ -46,6 +46,10 @@ const paths = [
     (n) => "docs/evidence/audit-remediation-20260927/r01-forward/task-9-" + n + ".ts",
   ),
   "docs/evidence/audit-remediation-20260927/r01-forward/task-9-generated-profiles.json",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-3-diagnose.ts",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-red-1790927158262/receipt.json",
+  "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+  "supabase/migrations/20260928120000_crm_assignment_bulk.sql",
   ...dependencies.map(([f]) => "supabase/migrations/" + f),
   ...[
     "20260925104926_atomic_adoption_coordinator_audit.sql",
@@ -246,6 +250,46 @@ try {
     deps.push({ file, sha256: expected, gapCount: await gap(await snapshot(db)) });
   }
   receipt.dependencies = deps;
+  if (mode === "component") {
+    const maintenance = await readFile(
+      resolve(
+        root,
+        "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+      ),
+      "utf8",
+    );
+    const assignment = await readFile(
+      resolve(root, "supabase/migrations/20260928120000_crm_assignment_bulk.sql"),
+      "utf8",
+    );
+    const start = assignment.indexOf("revoke insert, update on public.supporter"),
+      end = assignment.indexOf("create index supporter_crm_assignee_active_idx");
+    if (start < 0 || end < start) throw Error("Exact component fragment absent");
+    const columnFence = assignment.slice(start, end);
+    if (
+      hash(maintenance) !== "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a" ||
+      hash(assignment) !== "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09" ||
+      hash(columnFence) !== "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c"
+    )
+      throw Error("Ruling32 exact source fragment bytes differ");
+    const beforeComponent = hash(await extra());
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(maintenance);
+      await tx.unsafe(columnFence);
+    });
+    receipt.sourceComponent = {
+      maintenanceSha256: hash(maintenance),
+      assignmentWholeSha256: hash(assignment),
+      assignmentFragmentSha256: hash(columnFence),
+      expectedSupporterMd5: "6283c96ed21f1197474461a8028892e1",
+      engineQualification:
+        "PG17.6 source-component reconstruction; not exact CI17.11 startup proof",
+    };
+    receipt.componentExtraPreserved = beforeComponent === hash(await extra());
+    if (receipt.componentExtraPreserved !== true)
+      throw Error("Component changed Auth/default/native/ledger/sequence metadata");
+  }
   const actor = randomUUID(),
     status = randomUUID(),
     supporter = randomUUID();
@@ -337,6 +381,17 @@ try {
         "set local role supabase_admin;grant update(banned_until) on auth.users to service_role;set local role postgres",
     },
   ];
+  if (mode === "component")
+    refusals.push(
+      {
+        name: "component excluded assignment column ACL",
+        setup: "grant update(crm_assignee_user_id) on public.supporter to authenticated",
+      },
+      {
+        name: "component allowed column grant option",
+        setup: "grant update(name) on public.supporter to authenticated with grant option",
+      },
+    );
   const helperRows = await db.unsafe(functionsQuery);
   for (const f of helperRows.filter(
     (f: Record<string, unknown>) => !(f.schema === "public" && names.includes(String(f.name))),

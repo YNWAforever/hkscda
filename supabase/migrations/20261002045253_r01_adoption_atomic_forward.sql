@@ -48,7 +48,7 @@ begin
   if v_table is null then raise exception 'R01 adoption table absent: supporter' using errcode='55000'; end if;
   select pg_catalog.jsonb_object_agg(k,(select coalesce(pg_catalog.jsonb_agg(e.value order by e.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))
     || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
-  if pg_catalog.md5(v_actual::text) not in('3148b717a290aa5be32b446245ddc1ce','8ac590a6fec96f6c2cbaa48e7be16c97') then raise exception 'R01 adoption table metadata differs: supporter' using errcode='55000'; end if;
+  if pg_catalog.md5(v_actual::text) not in('3148b717a290aa5be32b446245ddc1ce','8ac590a6fec96f6c2cbaa48e7be16c97','6283c96ed21f1197474461a8028892e1') then raise exception 'R01 adoption table metadata differs: supporter' using errcode='55000'; end if;
   v_name:='supporter_role'; v_table:=pg_catalog.to_regclass('public.'||v_name);
   if v_table is null then raise exception 'R01 adoption table absent: supporter_role' using errcode='55000'; end if;
   select pg_catalog.jsonb_object_agg(k,(select coalesce(pg_catalog.jsonb_agg(e.value order by e.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))

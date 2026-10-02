@@ -3,7 +3,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 root=pathlib.Path.cwd()
 receipts=root/".superpowers/sdd/r01-forward-schema-plan-20261001"
 accepted={}
-for mode in ("hosted","modern"):
+for mode in ("hosted","modern","component"):
     candidates=[]
     for p in receipts.glob("task-9-"+mode+"-*/receipt.json"):
         r=json.loads(p.read_text())
@@ -11,7 +11,7 @@ for mode in ("hosted","modern"):
             candidates.append((r["at"],p,r))
     if not candidates: raise SystemExit("Final both-profile GREEN required: "+mode)
     accepted[mode]=max(candidates,key=lambda x:x[0])
-if accepted["hosted"][2]["frozenInputs"] != accepted["modern"][2]["frozenInputs"]:
+if any(accepted["hosted"][2]["frozenInputs"] != x[2]["frozenInputs"] for x in accepted.values()):
     raise SystemExit("Final profiles must bind identical executable bytes")
 paths=list(accepted["hosted"][2]["frozenInputs"])
 paths += ["docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py","package.json","bun.lock","tsconfig.json","eslint.config.js","vite.config.ts"]

@@ -21,6 +21,27 @@ const profiles = await Promise.all(
     ),
   ),
 );
+const componentCapturePath = "task-9-fix-3-red-1790927158262/receipt.json";
+const component = JSON.parse(
+  await readFile(
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/" + componentCapturePath,
+    "utf8",
+  ),
+);
+const supporterAlternative = component.componentProfiles.find(
+  (p: { name: string }) => p.name === "supporter",
+);
+if (
+  supporterAlternative.md5 !== "6283c96ed21f1197474461a8028892e1" ||
+  component.actualMigrationResult.status !== "55000" ||
+  component.componentExtraFacetsChanged.length ||
+  component.componentProfiles.some(
+    (p: { name: string; md5: string }) =>
+      p.name !== "supporter" &&
+      p.md5 !== profiles[1].profiles.find((x: { name: string }) => x.name === p.name).md5,
+  )
+)
+  throw Error("Ruling32 complete source-component contract differs");
 const md5 = (s: string) => createHash("md5").update(s).digest("hex");
 const literal = (s: unknown) => (s === null ? "null" : "'" + String(s).replaceAll("'", "''") + "'");
 const json = (s: unknown) => literal(JSON.stringify(s)) + "::jsonb";
@@ -117,9 +138,10 @@ for (const s of specs) {
 }
 let sql = `-- R01 Task9: three exact adoption entrypoints; Rulings28-31.\n-- Existing private manual helper/default/ACL and modern version triggers are preserved.\n-- Task1 and pending Task8 are excluded; no data/backfill/identity merge or approval.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb; v_actual jsonb; v_name text; v_table oid; v_function oid;\nbegin\n  if current_user <> 'postgres' then raise exception 'R01 adoption owner context differs' using errcode='55000'; end if;\n  if pg_catalog.has_any_column_privilege('service_role','auth.users','SELECT,UPDATE')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','SELECT')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','UPDATE') then\n    raise exception 'R01 adoption managed Auth privileges differ' using errcode='55000'; end if;\n  select catalog into v_catalog from (${catalogQuery}) captured;\n`;
 for (const name of tables) {
-  const allowed = unique(
-    profiles.map((p) => p.profiles.find((x: { name: string }) => x.name === name).md5),
-  );
+  const allowed = unique([
+    ...profiles.map((p) => p.profiles.find((x: { name: string }) => x.name === name).md5),
+    ...(name === "supporter" ? [supporterAlternative.md5] : []),
+  ]);
   sql += `  v_name:='${name}'; v_table:=pg_catalog.to_regclass('public.'||v_name);\n  if v_table is null then raise exception 'R01 adoption table absent: ${name}' using errcode='55000'; end if;\n  select pg_catalog.jsonb_object_agg(k,(select coalesce(pg_catalog.jsonb_agg(e.value order by e.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))\n    || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;\n  if pg_catalog.md5(v_actual::text) not in(${allowed.map(literal).join(",")}) then raise exception 'R01 adoption table metadata differs: ${name}' using errcode='55000'; end if;\n`;
 }
 for (const [name, query, values] of [
@@ -177,6 +199,12 @@ await writeFile(
       file,
       sha256: hash(sql),
       captures,
+      supporterAlternative: {
+        ...supporterAlternative,
+        componentCapturePath,
+        sourceFragments: component.sourceFragments,
+        qualification: component.qualification,
+      },
       specs: specs.map(({ old, next, ...s }) => ({
         ...s,
         oldBodyMd5: md5(old),
