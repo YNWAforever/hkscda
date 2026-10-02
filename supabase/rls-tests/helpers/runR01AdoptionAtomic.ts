@@ -50,7 +50,7 @@ const paths = [
     "20260926110000_manual_case_identity_search.sql",
     "20260926133000_expose_manual_adoption_case_rpc.sql",
   ].map((f) => "supabase/migrations/" + f),
-  ...["hosted-1790916576452", "modern-1790916801651"].map(
+  ...["hosted-1790919336913", "modern-1790919424679"].map(
     (n) =>
       ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-capture-" + n + "/receipt.json",
   ),
@@ -424,15 +424,31 @@ try {
           drift.replaceAll("default1", "default 1").replaceAll("default10", "default 10"),
       });
   }
-  const [t] =
-    await db`select t.tgname from pg_trigger t where t.tgrelid='public.adoption_case'::regclass and t.tgisinternal limit 1`;
-  refusals.push({
-    name: "native FK trigger disabled",
-    setup:
-      'set local role supabase_admin;alter table public.adoption_case disable trigger "' +
-      String(t.tgname).replaceAll('"', '""') +
-      '";set local role postgres',
-  });
+  const nativeSelection = `select t.oid,t.tgname,t.tgenabled,t.tgtype,t.tgfoid::regprocedure::text function,c.oid constraint_oid,c.conname,c.conrelid::regclass::text origin,c.confrelid::regclass::text referenced,t.tgrelid::regclass::text table,t.tgisinternal,t.tgparentid,t.tgdeferrable,t.tginitdeferred,pg_get_triggerdef(t.oid,true) definition from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where t.tgrelid='public.adoption_case'::regclass and t.tgisinternal`;
+  const nativeSelections: Record<string, unknown> = {};
+  receipt.nativeFixtureSelections = nativeSelections;
+  for (const [name, suffix] of [
+    ["native FK trigger disabled", " limit 1"],
+    [
+      "named outgoing FK trigger disabled",
+      " and c.conname='adoption_case_supporter_id_fkey' order by t.oid limit 1",
+    ],
+    [
+      "named incoming FK trigger disabled",
+      " and c.conname='successful_adoption_adoption_case_id_fkey' order by t.oid limit 1",
+    ],
+  ] as const) {
+    const [t] = await db.unsafe(nativeSelection + suffix);
+    if (!t || t.tgenabled !== "O") throw Error("Reviewed native fixture baseline differs: " + name);
+    nativeSelections[name] = t;
+    refusals.push({
+      name,
+      setup:
+        'set local role supabase_admin;alter table public.adoption_case disable trigger "' +
+        String(t.tgname).replaceAll('"', '""') +
+        '";set local role postgres',
+    });
+  }
   const actualRefusals: { name: string; errno: string; fullRollback: boolean }[] = [];
   receipt.refusals = actualRefusals;
   for (const f of refusals) {

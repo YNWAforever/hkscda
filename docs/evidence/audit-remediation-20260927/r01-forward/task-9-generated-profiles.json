@@ -1,7 +1,7 @@
 {
   "file": "20261002045253_r01_adoption_atomic_forward.sql",
-  "sha256": "6cf7beb544812a21500dff3163b9cb9201506d8df2f5d46ee526588a6ca9e296",
-  "captures": ["task-9-capture-hosted-1790916576452", "task-9-capture-modern-1790916801651"],
+  "sha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+  "captures": ["task-9-capture-hosted-1790919336913", "task-9-capture-modern-1790919424679"],
   "specs": [
     {
       "name": "mutate_adoption_coordinator_with_audit",

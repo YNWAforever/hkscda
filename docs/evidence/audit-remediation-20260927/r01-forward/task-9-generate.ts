@@ -10,7 +10,7 @@ import {
   indexDetailsQuery,
 } from "./task-9-profile";
 const file = "20261002045253_r01_adoption_atomic_forward.sql";
-const captures = ["task-9-capture-hosted-1790916576452", "task-9-capture-modern-1790916801651"];
+const captures = ["task-9-capture-hosted-1790919336913", "task-9-capture-modern-1790919424679"];
 const profiles = await Promise.all(
   captures.map(async (p) =>
     JSON.parse(
@@ -115,7 +115,7 @@ for (const s of specs) {
   )
     throw Error("Captured legacy target differs " + s.name);
 }
-let sql = `-- R01 Task9: three exact adoption entrypoints; Rulings28-30.\n-- Existing private manual helper/default/ACL and modern version triggers are preserved.\n-- Task1 and pending Task8 are excluded; no data/backfill/identity merge or approval.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb; v_actual jsonb; v_name text; v_table oid; v_function oid;\nbegin\n  if current_user <> 'postgres' then raise exception 'R01 adoption owner context differs' using errcode='55000'; end if;\n  if pg_catalog.has_any_column_privilege('service_role','auth.users','SELECT,UPDATE')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','SELECT')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','UPDATE') then\n    raise exception 'R01 adoption managed Auth privileges differ' using errcode='55000'; end if;\n  select catalog into v_catalog from (${catalogQuery}) captured;\n`;
+let sql = `-- R01 Task9: three exact adoption entrypoints; Rulings28-31.\n-- Existing private manual helper/default/ACL and modern version triggers are preserved.\n-- Task1 and pending Task8 are excluded; no data/backfill/identity merge or approval.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb; v_actual jsonb; v_name text; v_table oid; v_function oid;\nbegin\n  if current_user <> 'postgres' then raise exception 'R01 adoption owner context differs' using errcode='55000'; end if;\n  if pg_catalog.has_any_column_privilege('service_role','auth.users','SELECT,UPDATE')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','SELECT')\n    or not pg_catalog.has_table_privilege('postgres','auth.users','UPDATE') then\n    raise exception 'R01 adoption managed Auth privileges differ' using errcode='55000'; end if;\n  select catalog into v_catalog from (${catalogQuery}) captured;\n`;
 for (const name of tables) {
   const allowed = unique(
     profiles.map((p) => p.profiles.find((x: { name: string }) => x.name === name).md5),
