@@ -1,0 +1,10 @@
+{
+  "command": "python .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-bind.py",
+  "exit": 0,
+  "output": "task-10-fix1-binding.log",
+  "outputSha256": "ffb89a6cb9bc35409c5f73afb7820e3c35dbbd5a1a1a270238f44d7cfa0e1169",
+  "outputCapture": "Exact completed tool-returned stdout bytes retained; no command replay",
+  "bindingFileSha256": "f2221eec2ce0e3475866491a7fc23c1c69cf045ab78bd957d91456505364634a",
+  "scriptSha256": "8f2cf9692a7e1ed0a01b9c4db348262a64c3d737a20e272c8eedccd24c247ce1",
+  "sourceCommit": "0e5d1f2867dbe547623c65e92f455a0d1a9a4d21"
+}

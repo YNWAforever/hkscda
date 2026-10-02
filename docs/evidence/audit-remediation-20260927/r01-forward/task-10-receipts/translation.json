@@ -16656,6 +16656,46 @@
       "canonicalSha256": "32a873fa8b50129a94500b9dbe8bf90a6c8273317dc3b8a76ffd974e1a3fe45a",
       "bytes": 15917,
       "gitBlob": "fcd451c50b41759aa63ca41e66016629f634caee"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-binding-receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/b857e2ba7d5c764262a843072cd38fa3815003af7727e7ffb6c1a060c1108206.source",
+      "rawSha256": "b857e2ba7d5c764262a843072cd38fa3815003af7727e7ffb6c1a060c1108206",
+      "canonicalSha256": "b857e2ba7d5c764262a843072cd38fa3815003af7727e7ffb6c1a060c1108206",
+      "bytes": 568,
+      "gitBlob": "1f74fd69aa83f6942969aba37c4da90fc61c471e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-binding.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/ffb89a6cb9bc35409c5f73afb7820e3c35dbbd5a1a1a270238f44d7cfa0e1169.source",
+      "rawSha256": "ffb89a6cb9bc35409c5f73afb7820e3c35dbbd5a1a1a270238f44d7cfa0e1169",
+      "canonicalSha256": "7f161240fad0d3396e6857f3a07bbd466e32a1b97a86287278d747281303251f",
+      "bytes": 1501,
+      "gitBlob": "1a34134a9f1e6bcb09205f5f08753d2bbe89f0d2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-report.md",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/3812e7ad245d62e33a46dfc40a43cea2cb0aa3cfd63cb690971a4c2497769d34.source",
+      "rawSha256": "3812e7ad245d62e33a46dfc40a43cea2cb0aa3cfd63cb690971a4c2497769d34",
+      "canonicalSha256": "085d35763b0dc814a16816d7bfacea58698182af4391ae1c3e8e88e161c4d920",
+      "bytes": 33152,
+      "gitBlob": "f0dc9066e24bb3af61609adb640db91135767948"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-source-binding-output.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/f2221eec2ce0e3475866491a7fc23c1c69cf045ab78bd957d91456505364634a.source",
+      "rawSha256": "f2221eec2ce0e3475866491a7fc23c1c69cf045ab78bd957d91456505364634a",
+      "canonicalSha256": "f2221eec2ce0e3475866491a7fc23c1c69cf045ab78bd957d91456505364634a",
+      "bytes": 48403,
+      "gitBlob": "8381ef7ad322350b563fabc6fa63a33077ee981e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-source-whitespace.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.source",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
     }
   ]
 }
