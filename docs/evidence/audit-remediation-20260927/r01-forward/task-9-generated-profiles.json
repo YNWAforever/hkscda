@@ -1,10 +1,7 @@
 {
   "file": "20261002045253_r01_adoption_atomic_forward.sql",
   "sha256": "6cf7beb544812a21500dff3163b9cb9201506d8df2f5d46ee526588a6ca9e296",
-  "captures": [
-    "task-9-capture-hosted-1790916576452",
-    "task-9-capture-modern-1790916801651"
-  ],
+  "captures": ["task-9-capture-hosted-1790916576452", "task-9-capture-modern-1790916801651"],
   "specs": [
     {
       "name": "mutate_adoption_coordinator_with_audit",
@@ -76,9 +73,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": "{postgres=X/postgres}",
-      "config": [
-        "search_path=\"\""
-      ],
+      "config": ["search_path=\"\""],
       "definer": false,
       "cost": 100,
       "strict": false,
@@ -97,9 +92,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": "{postgres=X/postgres}",
-      "config": [
-        "search_path=\"\""
-      ],
+      "config": ["search_path=\"\""],
       "definer": false,
       "cost": 100,
       "strict": false,
@@ -118,9 +111,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": null,
-      "config": [
-        "search_path=\"\""
-      ],
+      "config": ["search_path=\"\""],
       "definer": false,
       "cost": 100,
       "strict": false,
@@ -139,9 +130,7 @@
       "result": "jsonb",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,service_role=X/postgres}",
-      "config": [
-        "search_path=public, pg_temp"
-      ],
+      "config": ["search_path=public, pg_temp"],
       "definer": true,
       "cost": 100,
       "strict": false,
@@ -160,9 +149,7 @@
       "result": "text",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,service_role=X/postgres}",
-      "config": [
-        "search_path=pg_catalog, pg_temp"
-      ],
+      "config": ["search_path=pg_catalog, pg_temp"],
       "definer": false,
       "cost": 100,
       "strict": true,
@@ -181,9 +168,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,service_role=X/postgres}",
-      "config": [
-        "search_path=public, pg_temp"
-      ],
+      "config": ["search_path=public, pg_temp"],
       "definer": true,
       "cost": 100,
       "strict": false,
@@ -202,9 +187,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
-      "config": [
-        "search_path=public, pg_temp"
-      ],
+      "config": ["search_path=public, pg_temp"],
       "definer": false,
       "cost": 100,
       "strict": false,
@@ -242,9 +225,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": "{postgres=X/postgres}",
-      "config": [
-        "search_path=\"\""
-      ],
+      "config": ["search_path=\"\""],
       "definer": false,
       "cost": 100,
       "strict": false,
@@ -263,9 +244,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": null,
-      "config": [
-        "search_path=public, pg_temp"
-      ],
+      "config": ["search_path=public, pg_temp"],
       "definer": true,
       "cost": 100,
       "strict": false,
@@ -284,9 +263,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": null,
-      "config": [
-        "search_path=public, pg_temp"
-      ],
+      "config": ["search_path=public, pg_temp"],
       "definer": true,
       "cost": 100,
       "strict": false,
@@ -305,9 +282,7 @@
       "result": "trigger",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
-      "config": [
-        "search_path=public, pg_temp"
-      ],
+      "config": ["search_path=public, pg_temp"],
       "definer": false,
       "cost": 100,
       "strict": false,

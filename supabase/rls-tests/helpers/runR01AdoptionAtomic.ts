@@ -433,7 +433,7 @@ try {
       String(t.tgname).replaceAll('"', '""') +
       '";set local role postgres',
   });
-  const actualRefusals = [];
+  const actualRefusals: { name: string; errno: string; fullRollback: boolean }[] = [];
   receipt.refusals = actualRefusals;
   for (const f of refusals) {
     let errno = "success";
