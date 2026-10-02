@@ -1,0 +1,435 @@
+{
+  "mode": "hosted",
+  "startedAt": "2026-10-02T01:58:13.164Z",
+  "sourceCommit": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+  "clone": "r01_clone_c7805a8a9fd6490eb06fbb28bfecfac1",
+  "schemaParity": true,
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "zeroApplicationTables": 158,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "testedExecutableBlobs": {
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": {
+      "sha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "canonicalSha256": "a2c365210aa2421e67a90b79714679759ef30520f2162d53407bb0b59760785f",
+      "gitBlob": "8da424387f888c7ab2c07f34254177dbb7249567"
+    },
+    "src/lib/content/atomicForward.database.test.ts": {
+      "sha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "canonicalSha256": "7a46d84047ef273eb01e2e3802852918be348371a759155dc2a0aa8b498734b9",
+      "gitBlob": "c5e990ef7dda2d85bf776c9937274881a06ac3fc"
+    },
+    "src/lib/content/atomicForward.http.test.ts": {
+      "sha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84",
+      "canonicalSha256": "b88fdd4d8c4dcb447f3c4f389147bebc1ceb7e1c2ee61ac6f6fbea4ae83f0f84",
+      "gitBlob": "f907bff6ed5e00cb467247b6f1301dfc8601e240"
+    },
+    "src/lib/content/atomicForward.estate.http.test.ts": {
+      "sha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99",
+      "canonicalSha256": "73f0e934b752d94b2352a78483e984e707e897b9097dba2a1dda9e086ea58d99",
+      "gitBlob": "bcd87ccb5190359ca4c9214f8f9729a7a77a2f13"
+    },
+    "src/lib/adoptionInformation/http.ts": {
+      "sha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a",
+      "canonicalSha256": "b2fcdefefb4decf886bb4dc1cc6a113da3ef98358af664302aaa7ec030916b4a",
+      "gitBlob": "e82ce12687de5e42b0dd8680b587c64d3f992a2c"
+    },
+    "src/lib/adoptionInformation/repository.server.ts": {
+      "sha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76",
+      "canonicalSha256": "f5560f8fd9b678f117a339ecca49bb32d26a249f29573ff11b44a9c59a552f76",
+      "gitBlob": "51edb34648cc0b4b4ae1bd2f86dc680468de94fc"
+    },
+    "src/lib/content/http.server.ts": {
+      "sha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff",
+      "canonicalSha256": "502f2588aa1c8499d64974751b99c1e4c1c912cb90dd46e228da329fe3749aff",
+      "gitBlob": "274a55e3f41697451bb8d779c7397c43522a96bc"
+    },
+    "supabase/rls-tests/helpers/runR01CmsForward.ts": {
+      "sha256": "95f7db617f17119e0d94b61ec03f08406a0baf42ad86a9ff47952c087d78c5b7",
+      "canonicalSha256": "95f7db617f17119e0d94b61ec03f08406a0baf42ad86a9ff47952c087d78c5b7",
+      "gitBlob": "b824f60f60ed98e52e5446e360ca66e72790d85b"
+    },
+    "supabase/rls-tests/helpers/runR01CmsGreen.ts": {
+      "sha256": "2ecb62d48c13b4b7d0c4f71d5818975155893ef86b503424177be5ea7cca32d1",
+      "canonicalSha256": "2ecb62d48c13b4b7d0c4f71d5818975155893ef86b503424177be5ea7cca32d1",
+      "gitBlob": "0d5e7ee9ffae8d84cd955b21c0301a85691bf92e"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-7-profile.ts": {
+      "sha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+      "gitBlob": "08dd5eb286f13a1b9d36cb059abc62c63cd0d9e1"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-7-generate.ts": {
+      "sha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "canonicalSha256": "7063bccb89f49b8cc23d193aa1c02344357774a658230c7b1d3f30eac928f2b3",
+      "gitBlob": "4cd20f5118a0016ba98106372d708603371765a9"
+    },
+    "src/lib/content/repository.server.ts": {
+      "sha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "canonicalSha256": "f0a334002e662982e607aa5851d07b789d92c9dc41e38fc6a3f591037e8f02f1",
+      "gitBlob": "f069d767b00484f4c37b17094992e691aff2f754"
+    },
+    "src/lib/adoptionInstructions/repository.server.ts": {
+      "sha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "canonicalSha256": "e237d6d85ced4c7e98f06cead19dac8d74ec76a0dea3d637c38b217fba4c4f4a",
+      "gitBlob": "fd881c9e674cd4c96b51165cb416dbc211788af9"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    "supabase/migrations/20260925053245_cms_promotion_atomicity.sql": {
+      "sha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "gitBlob": "99393d03ddcc57dc7708454278daab83c6433cc3"
+    },
+    "supabase/migrations/20260925103900_atomic_admin_content_audit.sql": {
+      "sha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "gitBlob": "718f85ae35e3ca677e0fcc308ad9c21730627c94"
+    },
+    "supabase/migrations/20260927120500_estate_versioned_commands.sql": {
+      "sha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "gitBlob": "a6d45c0c781e4d542edaeb8f17fe7a2a85b80334"
+    }
+  },
+  "task1Applied": false,
+  "dependencyGate": "root explicit5cd CI36947861601 attempt1 allfiveSUCCESS 2026-10-02T01:00:21Z",
+  "productionActions": "schema/catalog only; no rows/actor commands/mutations",
+  "initialGapCount": 44,
+  "dependencies": [
+    {
+      "name": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gapCount": 41
+    },
+    {
+      "name": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gapCount": 41
+    },
+    {
+      "name": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gapCount": 33
+    },
+    {
+      "name": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gapCount": 30
+    },
+    {
+      "name": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gapCount": 25
+    },
+    {
+      "name": "20261001213914_r01_crm_atomic_forward.sql",
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gapCount": 22
+    }
+  ],
+  "beforeGapCount": 22,
+  "beforeRowsHash": "adf7894c0fb59018cb9d0d654924b7a87545eee5cb7e1bb17b031a3086cdb5e8",
+  "beforeCompleteAuthDefaultNativeLedgerHash": "6e71ba4e4e62dda150d92de8648c97d17660b79888a9c8f21d36f2f3180a6348",
+  "baselineAcceptedBeforeNegatives": true,
+  "baselineRollbackPreserved": true,
+  "refusals": [
+    {
+      "name": "mutate_dog_friendly_estate_with_audit(uuid,text,uuid,integer,jsonb) owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "mutate_dog_friendly_estate_with_audit(uuid,text,uuid,integer,jsonb) ACL",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "mutate_dog_friendly_estate_with_audit(uuid,text,uuid,integer,jsonb) grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "bump_dog_friendly_estate_version() owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "bump_dog_friendly_estate_version() ACL",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "bump_dog_friendly_estate_version() grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "bump_adoption_fee_version() owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "bump_adoption_fee_version() ACL",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "bump_adoption_fee_version() grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "set_updated_at() owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "set_updated_at() ACL",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "set_updated_at() grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "table owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "RLS",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "unknown index",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "version trigger disabled",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "creator public unknown recipient",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "creator public grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "creator global unexpected recipient",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "effective Auth service column",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "delivery index wrong shape",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "delivery index lookalike extra",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "estate argument default",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "estate version helper language/config",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "managed Auth column UPDATE",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "delivery index unready exact owned row",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "existing duplicate nonnull delivery keys",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "cms_promotion_command owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "cms_promotion_command ACL",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "cms_promotion_command grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "cms_promotion_command argument default",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "mutate_admin_content_with_audit owner",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "mutate_admin_content_with_audit ACL",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "mutate_admin_content_with_audit grant option",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "mutate_admin_content_with_audit argument default",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "native RI disabled admin_user",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "native RI disabled social_copy_variant",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "native RI disabled recipient_notification_draft",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    },
+    {
+      "name": "native RI disabled knowledge_posts",
+      "code": "55000",
+      "stage": "guard",
+      "fullRollbackPreserved": true
+    }
+  ],
+  "applyCount": 2,
+  "secondApplyIdempotent": true,
+  "rowsPreservedAfterApply": true,
+  "completeAuthDefaultNativeLedgerPreservedAfterApply": true,
+  "unaffectedCatalogPreserved": true,
+  "afterGapCount": 20,
+  "testExit": 0,
+  "testSummary": [
+    "\n 62 pass",
+    " 0 fail",
+    " 170 expect() calls"
+  ],
+  "catalogPreservedAfterTests": true,
+  "rowsPreservedAfterTests": true,
+  "completeAuthDefaultNativeLedgerPreservedAfterTests": true,
+  "result": "GREEN owned synthetic rehearsal",
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "cleanup": "normal owned clone DROP",
+  "completedAt": "2026-10-02T01:58:51.846Z"
+}

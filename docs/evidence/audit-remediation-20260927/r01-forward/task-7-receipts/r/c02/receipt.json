@@ -1,0 +1,128 @@
+{
+  "mode": "red-actors",
+  "startedAt": "2026-10-02T01:07:15.678Z",
+  "sourceCommit": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+  "clone": "r01_clone_b49ac40436254ed98b2253e50cdba29e",
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "testedExecutableBlobs": {
+    "src/lib/content/atomicForward.database.test.ts": {
+      "sha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420",
+      "canonicalSha256": "b990511549ad779c5543514947669909130cac443461771ec2d6e9cad932a420"
+    },
+    "supabase/rls-tests/helpers/runR01CmsForward.ts": {
+      "sha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a",
+      "canonicalSha256": "c1d89e742cd0d170b639d055f20849cbd86de00679309ed616f6c9437781747a"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "supabase/migrations/20260925053245_cms_promotion_atomicity.sql": {
+      "sha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09",
+      "canonicalSha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    "supabase/migrations/20260925103900_atomic_admin_content_audit.sql": {
+      "sha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376",
+      "canonicalSha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    "supabase/migrations/20260927120500_estate_versioned_commands.sql": {
+      "sha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d",
+      "canonicalSha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    }
+  },
+  "task1Applied": false,
+  "dependencySqlApplied": false,
+  "productionActions": "schema-only capture, no production rows or actor commands",
+  "authEffectiveAccess": {
+    "sel": false,
+    "upd": false
+  },
+  "targetProfiles": [
+    {
+      "schema": "public",
+      "name": "bump_dog_friendly_estate_version",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": false,
+      "body": "fe64e386b4d84cc3dfede9878cd99c72",
+      "definition": "f64d0b0aee1d51ffe0c76fca0eac04ff"
+    },
+    {
+      "schema": "public",
+      "name": "cms_promotion_command",
+      "args": "p_actor uuid, p_command jsonb",
+      "allargs": "p_actor uuid, p_command jsonb",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "body": "8878b4ddef7c4814e9187ce4e09fda3e",
+      "definition": "8f52dbecab6817f25e273c65d0627a1b"
+    },
+    {
+      "schema": "public",
+      "name": "mutate_admin_content_with_audit",
+      "args": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "allargs": "p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "body": "ebed8e6248a88b827daa8874c5f429ba",
+      "definition": "bceb3d542599b6fd69bce79ea31d82ac"
+    },
+    {
+      "schema": "public",
+      "name": "mutate_dog_friendly_estate_with_audit",
+      "args": "p_actor_user_id uuid, p_command text, p_id uuid, p_expected_version integer, p_payload jsonb",
+      "allargs": "p_actor_user_id uuid, p_command text, p_id uuid, p_expected_version integer, p_payload jsonb",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "body": "5fd7db8387b7383fa8a35ffe23e5d719",
+      "definition": "13518e9160afb93321d19163206b8fb9"
+    }
+  ],
+  "testExit": 1,
+  "testSummary": [
+    "\n 0 pass",
+    " 11 fail",
+    " 11 expect() calls"
+  ],
+  "catalogPreserved": true,
+  "rowsPreserved": true,
+  "completeAuthDefaultNativeLedgerPreserved": true,
+  "result": "actual RED Expected: \"42501\"",
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "cleanup": "normal owned clone DROP",
+  "completedAt": "2026-10-02T01:07:32.449Z"
+}

@@ -1,0 +1,1429 @@
+import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type { AdopterNotificationRecipient } from "./notificationDrafts";
+import {
+  CONTENT_MEDIA_BUCKET,
+  isSafePublicHref,
+  type ContentInput,
+  type ContentLinkInput,
+  type ContentMediaInput,
+  type LinkSearch,
+  type StoryProfileInput,
+  type StoryUpdateInput,
+} from "./schemas";
+import type { ContentAuditLogInsert, ContentRepository } from "./service";
+import type {
+  AnimalStoryType,
+  ContentDetail,
+  ContentLink,
+  ContentMedia,
+  ContentStatus,
+  ContentSummary,
+  ContentType,
+  PublicStoryMapPoint,
+  NotificationDraftStatus,
+  RecipientNotificationDraft,
+  RescuePublicStatus,
+  RescueStoryProfile,
+  SocialCopyStatus,
+  SocialCopyVariant,
+  SocialPlatform,
+  StoryUpdate,
+  StoryUpdateKind,
+  StoryUpdateVisibility,
+} from "./types";
+
+type ContentRow = {
+  content_class?: "unreviewed" | "verified" | "demo";
+  effective_from?: string | null;
+  effective_until?: string | null;
+  source_reference?: string | null;
+  content_owner?: string | null;
+  version?: number;
+  draft_revision_id?: string | null;
+  id: string;
+  slug: string;
+  type: ContentType;
+  title: string;
+  subtitle: string | null;
+  summary: string;
+  body: string | null;
+  cover_media_id: string | null;
+  status: ContentStatus;
+  published_at: string | null;
+  cta_label: string | null;
+  cta_url: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
+  og_title: string | null;
+  og_description: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type StoryUpdateRow = {
+  id: string;
+  content_item_id: string;
+  kind: StoryUpdateKind;
+  title: string;
+  body: string | null;
+  occurred_at: string;
+  visibility: StoryUpdateVisibility;
+  should_generate_adopter_drafts: boolean;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type MediaRow = {
+  id: string;
+  content_item_id: string;
+  story_update_id: string | null;
+  storage_bucket: string;
+  storage_path: string;
+  alt_text: string;
+  caption: string | null;
+  sort_order: number;
+  is_cover: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+type ContentLinkRow = {
+  id: string;
+  content_item_id: string;
+  linked_type: ContentLink["linkedType"];
+  linked_id: string;
+  relationship: ContentLink["relationship"];
+  created_at: string;
+  updated_at: string;
+};
+
+type RescueStoryProfileRow = {
+  content_item_id: string;
+  animal_type: AnimalStoryType;
+  public_status: RescuePublicStatus;
+  rescue_region: string;
+  rescue_date: string | null;
+  show_on_map: boolean;
+  public_map_label: string | null;
+  public_lat: number | string | null;
+  public_lng: number | string | null;
+  internal_address: string | null;
+  internal_location_notes: string | null;
+  is_featured: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type SocialCopyVariantRow = {
+  id: string;
+  content_item_id: string;
+  story_update_id: string | null;
+  platform: SocialPlatform;
+  language: "zh-HK";
+  copy_text: string;
+  hashtags: string[];
+  status: SocialCopyStatus;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type RecipientNotificationDraftRow = {
+  id: string;
+  story_update_id: string;
+  content_item_id: string;
+  adoption_case_id: string | null;
+  supporter_id: string | null;
+  channel: RecipientNotificationDraft["channel"];
+  recipient_name: string;
+  recipient_contact: string;
+  subject: string | null;
+  body: string;
+  status: NotificationDraftStatus;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type AdoptionCaseRow = {
+  id: string;
+  supporter_id: string | null;
+  applicant_name: string;
+  applicant_email: string | null;
+  applicant_phone: string | null;
+};
+
+type SuccessfulAdoptionRow = {
+  id: string;
+  adoption_case_id: string;
+  supporter_id: string | null;
+};
+
+type SupporterRow = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+};
+
+type LinkSearchResult = { id: string; label: string; sublabel: string | null };
+
+type AnimalLinkRow = {
+  id: string;
+  name: string | null;
+  name_en: string | null;
+  type: string | null;
+};
+
+type AdoptionCaseLinkRow = {
+  id: string;
+  applicant_name: string | null;
+  applicant_email: string | null;
+};
+
+type SuccessfulAdoptionLinkRow = {
+  id: string;
+  case_number: string | null;
+  animal_id: string | null;
+};
+
+type SupporterLinkRow = {
+  id: string;
+  name: string | null;
+  phone: string | null;
+};
+
+type VolunteerActivityLinkRow = {
+  id: string;
+  title: string | null;
+  starts_at: string | null;
+};
+
+function escapeLike(value: string) {
+  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+}
+
+function sanitizeOrLikeValue(value: string) {
+  // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
+  return escapeLike(
+    value
+      .replace(/[(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+([%_])/g, "$1"),
+  );
+}
+
+function maskEmail(value: string | null): string | null {
+  const email = value?.trim();
+  if (!email) return null;
+  const at = email.indexOf("@");
+  if (at <= 0) return "***";
+  return `${email[0]}***@${email.slice(at + 1)}`;
+}
+
+function maskPhone(value: string | null): string | null {
+  const phone = value?.trim();
+  if (!phone) return null;
+  const tail = phone.replace(/\D/g, "").slice(-4);
+  return tail ? `****${tail}` : null;
+}
+
+function isoDate(value: string | null): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function nonNullable<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
+
+function unique(values: string[]) {
+  return Array.from(new Set(values));
+}
+
+function toNullableNumber(value: number | string | null): number | null {
+  if (value === null) return null;
+  const numeric = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function latestPublicUpdate(updates: StoryUpdate[]) {
+  return (
+    updates
+      .filter((update) => update.visibility === "public")
+      .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))[0] ?? null
+  );
+}
+
+export function toContentSummary(row: ContentRow): ContentSummary {
+  return {
+    contentClass: row.content_class ?? "unreviewed",
+    effectiveFrom: row.effective_from ?? null,
+    effectiveUntil: row.effective_until ?? null,
+    sourceReference: row.source_reference ?? null,
+    contentOwner: row.content_owner ?? null,
+    id: row.id,
+    slug: row.slug,
+    type: row.type,
+    title: row.title,
+    subtitle: row.subtitle,
+    summary: row.summary,
+    coverMediaId: row.cover_media_id,
+    coverImageUrl: null,
+    status: row.status,
+    publishedAt: row.published_at,
+    ctaLabel: row.cta_label,
+    ctaUrl: row.cta_url,
+    storyProfile: null,
+    latestPublicUpdate: null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function toContentMedia(row: MediaRow, publicUrl: string | null): ContentMedia {
+  return {
+    id: row.id,
+    contentItemId: row.content_item_id,
+    storyUpdateId: row.story_update_id,
+    url: publicUrl || row.storage_path,
+    storageBucket: row.storage_bucket,
+    storagePath: row.storage_path,
+    altText: row.alt_text,
+    caption: row.caption,
+    sortOrder: row.sort_order,
+    isCover: row.is_cover,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function toStoryUpdate(row: StoryUpdateRow, media: ContentMedia[]): StoryUpdate {
+  return {
+    id: row.id,
+    contentItemId: row.content_item_id,
+    kind: row.kind,
+    title: row.title,
+    body: row.body,
+    occurredAt: row.occurred_at,
+    visibility: row.visibility,
+    shouldGenerateAdopterDrafts: row.should_generate_adopter_drafts,
+    media,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toRescueStoryProfile(row: RescueStoryProfileRow): RescueStoryProfile {
+  return {
+    contentItemId: row.content_item_id,
+    animalType: row.animal_type,
+    publicStatus: row.public_status,
+    rescueRegion: row.rescue_region,
+    rescueDate: row.rescue_date,
+    showOnMap: row.show_on_map,
+    publicMapLabel: row.public_map_label,
+    publicLat: toNullableNumber(row.public_lat),
+    publicLng: toNullableNumber(row.public_lng),
+    internalAddress: row.internal_address,
+    internalLocationNotes: row.internal_location_notes,
+    isFeatured: row.is_featured,
+  };
+}
+
+function toContentLink(row: ContentLinkRow): ContentLink {
+  return {
+    id: row.id,
+    contentItemId: row.content_item_id,
+    linkedType: row.linked_type,
+    linkedId: row.linked_id,
+    relationship: row.relationship,
+    label: null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toSocialCopyVariant(row: SocialCopyVariantRow): SocialCopyVariant {
+  return {
+    id: row.id,
+    contentItemId: row.content_item_id,
+    storyUpdateId: row.story_update_id,
+    platform: row.platform,
+    language: row.language,
+    copyText: row.copy_text,
+    hashtags: row.hashtags,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toRecipientNotificationDraft(
+  row: RecipientNotificationDraftRow,
+): RecipientNotificationDraft {
+  return {
+    id: row.id,
+    storyUpdateId: row.story_update_id,
+    contentItemId: row.content_item_id,
+    adoptionCaseId: row.adoption_case_id,
+    supporterId: row.supporter_id,
+    channel: row.channel,
+    recipientName: row.recipient_name,
+    recipientContact: row.recipient_contact,
+    subject: row.subject,
+    body: row.body,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+async function adminMediaUrl(client: SupabaseClient, row: MediaRow): Promise<string | null> {
+  if (row.storage_bucket !== "content-media-private") return mediaPublicUrl(client, row);
+  const { data, error } = await client.storage
+    .from(row.storage_bucket)
+    .createSignedUrl(row.storage_path, 300);
+  if (error) throw error;
+  return data?.signedUrl ?? null;
+}
+
+async function adminMediaUrls(client: SupabaseClient, rows: MediaRow[]) {
+  const urls = new Map<string, string | null>();
+  const privateRows = rows.filter((row) => row.storage_bucket === "content-media-private");
+  if (privateRows.length) {
+    const { data, error } = await client.storage
+      .from("content-media-private")
+      .createSignedUrls([...new Set(privateRows.map((row) => row.storage_path))], 300);
+    if (error) throw error;
+    for (const row of data ?? [])
+      if (row.path) urls.set(`content-media-private/${row.path}`, row.signedUrl ?? null);
+  }
+  for (const row of rows)
+    if (row.storage_bucket !== "content-media-private")
+      urls.set(`${row.storage_bucket}/${row.storage_path}`, mediaPublicUrl(client, row));
+  return urls;
+}
+
+function mediaPublicUrl(client: SupabaseClient, row: MediaRow) {
+  const { data } = client.storage.from(row.storage_bucket).getPublicUrl(row.storage_path);
+  return data?.publicUrl || null;
+}
+
+function toContentInsert(input: ContentInput) {
+  return {
+    type: input.type,
+    slug: input.slug,
+    title: input.title,
+    subtitle: input.subtitle,
+    summary: input.summary,
+    body: input.body,
+    cover_media_id: input.coverMediaId,
+    status: input.status,
+    published_at: input.publishedAt,
+    cta_label: input.ctaLabel,
+    cta_url: input.ctaUrl,
+    seo_title: input.seoTitle,
+    seo_description: input.seoDescription,
+    og_title: input.ogTitle,
+    og_description: input.ogDescription,
+  };
+}
+
+function toContentUpdate(input: Partial<ContentInput>) {
+  const payload: Record<string, unknown> = {};
+  if (input.type !== undefined) payload.type = input.type;
+  if (input.slug !== undefined) payload.slug = input.slug;
+  if (input.title !== undefined) payload.title = input.title;
+  if (input.subtitle !== undefined) payload.subtitle = input.subtitle;
+  if (input.summary !== undefined) payload.summary = input.summary;
+  if (input.body !== undefined) payload.body = input.body;
+  if (input.coverMediaId !== undefined) payload.cover_media_id = input.coverMediaId;
+  if (input.status !== undefined) payload.status = input.status;
+  if (input.publishedAt !== undefined) payload.published_at = input.publishedAt;
+  if (input.ctaLabel !== undefined) payload.cta_label = input.ctaLabel;
+  if (input.ctaUrl !== undefined) payload.cta_url = input.ctaUrl;
+  if (input.seoTitle !== undefined) payload.seo_title = input.seoTitle;
+  if (input.seoDescription !== undefined) payload.seo_description = input.seoDescription;
+  if (input.ogTitle !== undefined) payload.og_title = input.ogTitle;
+  if (input.ogDescription !== undefined) payload.og_description = input.ogDescription;
+  return payload;
+}
+
+export function toStoryProfileUpsert(contentId: string, input: StoryProfileInput) {
+  return {
+    content_item_id: contentId,
+    animal_type: input.animalType,
+    public_status: input.publicStatus,
+    rescue_region: input.rescueRegion,
+    rescue_date: input.rescueDate,
+    show_on_map: input.showOnMap,
+    public_map_label: input.publicMapLabel,
+    public_lat: input.publicLat,
+    public_lng: input.publicLng,
+    internal_address: input.internalAddress,
+    internal_location_notes: input.internalLocationNotes,
+    is_featured: input.isFeatured,
+  };
+}
+
+export function toStoryUpdateInsert(contentId: string, input: StoryUpdateInput) {
+  return {
+    content_item_id: contentId,
+    kind: input.kind,
+    title: input.title,
+    body: input.body,
+    occurred_at: input.occurredAt,
+    visibility: input.visibility,
+    should_generate_adopter_drafts: input.shouldGenerateAdopterDrafts,
+  };
+}
+
+export function toContentMediaInsert(contentId: string, input: ContentMediaInput) {
+  return {
+    content_item_id: contentId,
+    story_update_id: input.storyUpdateId,
+    storage_bucket: CONTENT_MEDIA_BUCKET,
+    storage_path: input.storagePath,
+    alt_text: input.altText,
+    caption: input.caption,
+    sort_order: input.sortOrder,
+    is_cover: input.isCover,
+  };
+}
+
+export function toContentLinkInsert(contentId: string, input: ContentLinkInput) {
+  return {
+    content_item_id: contentId,
+    linked_type: input.linkedType,
+    linked_id: input.linkedId,
+    relationship: input.relationship,
+  };
+}
+
+function findCoverMedia(media: ContentMedia[], coverMediaId: string | null) {
+  return (
+    (coverMediaId ? media.find((item) => item.id === coverMediaId) : null) ??
+    media.find((item) => item.isCover) ??
+    null
+  );
+}
+
+function buildContentDetail(
+  row: ContentRow,
+  storyProfile: RescueStoryProfile | null,
+  links: ContentLink[],
+  media: ContentMedia[],
+  updates: StoryUpdate[],
+  socialCopies: SocialCopyVariant[],
+  notificationDrafts: RecipientNotificationDraft[],
+): ContentDetail {
+  const summary = toContentSummary(row);
+  const coverMedia = findCoverMedia(media, row.cover_media_id);
+
+  return {
+    ...summary,
+    version: row.version,
+    revisionId: row.draft_revision_id,
+    coverImageUrl: coverMedia?.url ?? null,
+    storyProfile,
+    latestPublicUpdate: latestPublicUpdate(updates),
+    body: row.body,
+    seoTitle: row.seo_title,
+    seoDescription: row.seo_description,
+    ogTitle: row.og_title,
+    ogDescription: row.og_description,
+    links,
+    media,
+    updates,
+    socialCopies,
+    notificationDrafts,
+  };
+}
+
+async function hydrateContentDetail(
+  client: SupabaseClient,
+  row: ContentRow,
+  historyPage = 1,
+): Promise<ContentDetail> {
+  const { data, error } = await client.rpc("read_content_authoring_detail", {
+    p_content_id: row.id,
+    p_history_page: historyPage,
+  });
+  if (error) throw error;
+  if (!data) throw new Error("Content item not found");
+  const snapshot = z
+    .object({
+      content: z.record(z.string(), z.unknown()),
+      profile: z.record(z.string(), z.unknown()).nullable(),
+      cover: z.record(z.string(), z.unknown()).nullable(),
+      latest: z.record(z.string(), z.unknown()).nullable(),
+      links: z.array(z.record(z.string(), z.unknown())),
+      media: z.array(z.record(z.string(), z.unknown())),
+      updates: z.array(z.record(z.string(), z.unknown())),
+      socialCopies: z.array(z.record(z.string(), z.unknown())),
+      notificationDrafts: z.array(z.record(z.string(), z.unknown())),
+    })
+    .parse(data);
+  const pageMedia = snapshot.media.slice(0, 20) as MediaRow[];
+  const cover = snapshot.cover as MediaRow | null;
+  const signedUrls = await adminMediaUrls(client, [...pageMedia, ...(cover ? [cover] : [])]);
+  const media = pageMedia.map((row) =>
+    toContentMedia(row, signedUrls.get(`${row.storage_bucket}/${row.storage_path}`) ?? null),
+  );
+  const updates = (snapshot.updates.slice(0, 20) as StoryUpdateRow[]).map((update) => ({
+    ...toStoryUpdate(
+      { ...update, body: null },
+      media.filter((item) => item.storyUpdateId === update.id),
+    ),
+    bodyLoaded: false,
+  }));
+  return {
+    ...buildContentDetail(
+      snapshot.content as ContentRow,
+      snapshot.profile ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow) : null,
+      (snapshot.links.slice(0, 20) as ContentLinkRow[]).map(toContentLink),
+      media,
+      updates,
+      (snapshot.socialCopies.slice(0, 20) as SocialCopyVariantRow[]).map(toSocialCopyVariant),
+      (snapshot.notificationDrafts.slice(0, 20) as RecipientNotificationDraftRow[]).map(
+        toRecipientNotificationDraft,
+      ),
+    ),
+    coverImageUrl: cover
+      ? (signedUrls.get(`${cover.storage_bucket}/${cover.storage_path}`) ?? null)
+      : null,
+    latestPublicUpdate: snapshot.latest
+      ? toStoryUpdate({ ...snapshot.latest, body: null } as StoryUpdateRow, [])
+      : null,
+    history: {
+      page: historyPage,
+      hasMore: [
+        snapshot.links,
+        snapshot.media,
+        snapshot.updates,
+        snapshot.socialCopies,
+        snapshot.notificationDrafts,
+      ].some((rows) => rows.length > 20),
+    },
+  };
+}
+
+export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
+  const updates = detail.updates.filter((update) => update.visibility === "public");
+  const publicUpdateIds = new Set(updates.map((update) => update.id));
+  const media = detail.media.filter(
+    (item) => item.storyUpdateId === null || publicUpdateIds.has(item.storyUpdateId),
+  );
+  const coverMedia = findCoverMedia(media, detail.coverMediaId);
+  const ctaUrl = isSafePublicHref(detail.ctaUrl) ? detail.ctaUrl : null;
+
+  return {
+    ...detail,
+    coverMediaId: coverMedia?.id ?? null,
+    coverImageUrl: coverMedia?.url ?? null,
+    ctaUrl,
+    storyProfile: detail.storyProfile
+      ? {
+          ...detail.storyProfile,
+          internalAddress: null,
+          internalLocationNotes: null,
+        }
+      : null,
+    links: [],
+    media,
+    updates,
+    latestPublicUpdate: latestPublicUpdate(updates),
+    socialCopies: [],
+    notificationDrafts: [],
+  };
+}
+
+async function getContentDetailById(client: SupabaseClient, id: string, historyPage = 1) {
+  const { data, error } = await client.from("content_item").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return hydrateContentDetail(client, data as ContentRow, historyPage);
+}
+
+async function getContentDetailByIdOrThrow(client: SupabaseClient, id: string) {
+  const detail = await getContentDetailById(client, id);
+  if (!detail) throw new Error("Content item not found");
+  return detail;
+}
+
+function normalizeText(value: string | null | undefined) {
+  const next = value?.trim();
+  return next ? next : null;
+}
+
+function recipientKey(recipient: AdopterNotificationRecipient) {
+  if (recipient.supporterId) return `supporter:${recipient.supporterId}`;
+  const email = normalizeText(recipient.email)?.toLowerCase();
+  if (email) return `email:${email}`;
+  const phone = normalizeText(recipient.phone)?.toLowerCase();
+  if (phone) return `phone:${phone}`;
+  return `case:${recipient.adoptionCaseId ?? recipient.name.toLowerCase()}`;
+}
+
+function buildRecipient(input: {
+  adoptionCase: AdoptionCaseRow | null;
+  adoptionCaseId: string | null;
+  supporter: SupporterRow | null;
+  supporterId: string | null;
+}) {
+  const name =
+    normalizeText(input.supporter?.name) ?? normalizeText(input.adoptionCase?.applicant_name);
+  const email =
+    normalizeText(input.supporter?.email) ?? normalizeText(input.adoptionCase?.applicant_email);
+  const phone =
+    normalizeText(input.supporter?.phone) ?? normalizeText(input.adoptionCase?.applicant_phone);
+
+  if (!name || (!email && !phone)) return null;
+
+  return {
+    adoptionCaseId: input.adoptionCaseId,
+    supporterId: input.supporterId,
+    name,
+    email,
+    phone,
+  } satisfies AdopterNotificationRecipient;
+}
+
+type RecipientReadFilter = { column: string; value: string } | { column: string; values: string[] };
+
+async function readRecipientRows<T>(
+  client: SupabaseClient,
+  table: string,
+  columns: string,
+  filters: RecipientReadFilter[],
+): Promise<T[]> {
+  const rows: T[] = [];
+  let from = 0;
+  let total = 0;
+  do {
+    let query = client.from(table).select(columns, { count: "exact" });
+    for (const filter of filters) {
+      query =
+        "values" in filter
+          ? query.in(filter.column, filter.values)
+          : query.eq(filter.column, filter.value);
+    }
+    const { data, count, error } = await query
+      .order("id", { ascending: true })
+      .range(from, from + 999);
+    if (error) throw error;
+    const batch = (data ?? []) as T[];
+    if (batch.length === 0 && from < (count ?? 0)) {
+      throw new Error("Recipient records were not all returned");
+    }
+    rows.push(...batch);
+    from += batch.length;
+    total = count ?? from;
+  } while (from < total);
+  return rows;
+}
+
+async function readRecipientRowsByIds<T>(
+  client: SupabaseClient,
+  table: string,
+  columns: string,
+  ids: string[],
+): Promise<T[]> {
+  const uniqueIds = unique(ids);
+  const rows: T[] = [];
+  for (let from = 0; from < uniqueIds.length; from += 100) {
+    rows.push(
+      ...(await readRecipientRows<T>(client, table, columns, [
+        { column: "id", values: uniqueIds.slice(from, from + 100) },
+      ])),
+    );
+  }
+  return rows;
+}
+
+async function loadAdoptionCases(client: SupabaseClient, ids: string[]) {
+  const rows = new Map<string, AdoptionCaseRow>();
+  const cases = await readRecipientRowsByIds<AdoptionCaseRow>(
+    client,
+    "adoption_case",
+    "id,supporter_id,applicant_name,applicant_email,applicant_phone",
+    ids,
+  );
+  for (const row of cases) rows.set(row.id, row);
+  return rows;
+}
+
+async function loadSupporters(client: SupabaseClient, ids: string[]) {
+  const rows = new Map<string, SupporterRow>();
+  const supporters = await readRecipientRowsByIds<SupporterRow>(
+    client,
+    "supporter",
+    "id,name,email,phone",
+    ids,
+  );
+  for (const row of supporters) rows.set(row.id, row);
+  return rows;
+}
+
+const publishedEnvelopeSchema = z.object({
+  total: z.number().int().nonnegative(),
+  rows: z.array(
+    z.object({
+      published_at: z.string().nullable(),
+      snapshot: z.object({
+        content: z.record(z.unknown()),
+        profile: z.record(z.unknown()).nullable(),
+        updates: z.array(z.record(z.unknown())),
+        media: z.array(z.record(z.unknown())),
+      }),
+    }),
+  ),
+});
+function snapshotSummary(item: ContentDetail): ContentSummary {
+  return {
+    contentClass: item.contentClass,
+    effectiveFrom: item.effectiveFrom,
+    effectiveUntil: item.effectiveUntil,
+    id: item.id,
+    slug: item.slug,
+    type: item.type,
+    title: item.title,
+    subtitle: item.subtitle,
+    summary: item.summary,
+    coverMediaId: item.coverMediaId,
+    coverImageUrl: item.coverImageUrl,
+    status: item.status,
+    publishedAt: item.publishedAt,
+    ctaLabel: item.ctaLabel,
+    ctaUrl: item.ctaUrl,
+    storyProfile: item.storyProfile,
+    latestPublicUpdate: item.latestPublicUpdate,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
+}
+function snapshotMapPoint(content: ContentSummary): PublicStoryMapPoint | null {
+  const profile = content.storyProfile;
+  if (
+    content.type !== "rescue_story" ||
+    !profile?.showOnMap ||
+    !profile.publicMapLabel ||
+    profile.publicLat === null ||
+    profile.publicLng === null
+  )
+    return null;
+  return {
+    id: content.id,
+    slug: content.slug,
+    title: content.title,
+    animalType: profile.animalType,
+    publicStatus: profile.publicStatus,
+    rescueRegion: profile.rescueRegion,
+    publicMapLabel: profile.publicMapLabel,
+    lat: profile.publicLat,
+    lng: profile.publicLng,
+    latestUpdateTitle: content.latestPublicUpdate?.title ?? null,
+  };
+}
+
+export function createSupabaseContentRepository(client: SupabaseClient): ContentRepository {
+  async function readPublished(filters: Record<string, unknown>) {
+    const { data, error } = await client.rpc("read_published_content_snapshots", {
+      p_filters: filters,
+    });
+    if (error) throw error;
+    const envelope = publishedEnvelopeSchema.parse(data);
+    const items = envelope.rows.map(({ snapshot, published_at }) => {
+      const media = (snapshot.media as MediaRow[]).map((row) =>
+        toContentMedia(row, mediaPublicUrl(client, row)),
+      );
+      const updates = (snapshot.updates as StoryUpdateRow[]).map((row) =>
+        toStoryUpdate(
+          row,
+          media.filter((item) => item.storyUpdateId === row.id),
+        ),
+      );
+      const content = { ...snapshot.content, status: "published", published_at } as ContentRow;
+      return toPublicContentDetail(
+        buildContentDetail(
+          content,
+          snapshot.profile ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow) : null,
+          [],
+          media,
+          updates,
+          [],
+          [],
+        ),
+      );
+    });
+    return { items, total: envelope.total };
+  }
+
+  return {
+    async listPublicContent(input) {
+      const result = await readPublished(input);
+      return { ...result, items: result.items.map(snapshotSummary) };
+    },
+
+    async listPublicStoriesPage(input) {
+      const result = await readPublished(input);
+      return {
+        ...result,
+        items: result.items.map(snapshotSummary),
+        points: result.items
+          .map(snapshotMapPoint)
+          .filter((point): point is PublicStoryMapPoint => point !== null),
+      };
+    },
+
+    async getPublicContentBySlug(slug) {
+      const { items } = await readPublished({ slug, page: 1, pageSize: 1, detail: true });
+      return items[0] ?? null;
+    },
+    async listPublicMapStories(input) {
+      if (input.type && input.type !== "rescue_story") return [];
+      const { items } = await readPublished({ ...input, type: "rescue_story" });
+      return items
+        .map(snapshotMapPoint)
+        .filter((point): point is PublicStoryMapPoint => point !== null);
+    },
+
+    async listAdminContent(input) {
+      const { data, error } = await client.rpc("read_content_admin_summaries", {
+        p_filters: input,
+      });
+      if (error) throw error;
+      const result = z
+        .object({
+          total: z.number().nonnegative(),
+          rows: z.array(
+            z.object({
+              content: z.record(z.string(), z.unknown()),
+              profile: z.record(z.string(), z.unknown()).nullable(),
+              media: z.array(z.record(z.string(), z.unknown())),
+              updates: z.array(z.record(z.string(), z.unknown())),
+            }),
+          ),
+        })
+        .parse(data);
+      const signedUrls = await adminMediaUrls(
+        client,
+        result.rows.flatMap((snapshot) => snapshot.media) as MediaRow[],
+      );
+      const items = await Promise.all(
+        result.rows.map(async (snapshot) => {
+          const media = await Promise.all(
+            (snapshot.media as MediaRow[]).map(async (row) =>
+              toContentMedia(
+                row,
+                signedUrls.get(`${row.storage_bucket}/${row.storage_path}`) ?? null,
+              ),
+            ),
+          );
+          const updates = (snapshot.updates as StoryUpdateRow[]).map((row) =>
+            toStoryUpdate({ ...row, body: null }, []),
+          );
+          return snapshotSummary(
+            buildContentDetail(
+              snapshot.content as ContentRow,
+              snapshot.profile
+                ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow)
+                : null,
+              [],
+              media,
+              updates,
+              [],
+              [],
+            ),
+          );
+        }),
+      );
+      return { items, total: result.total };
+    },
+
+    async getAdminUpdateBody(contentId, updateId) {
+      const { data, error } = await client
+        .from("story_update")
+        .select("body")
+        .eq("content_item_id", contentId)
+        .eq("id", updateId)
+        .eq("is_authoring_active", true)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) throw new Error("Story update not found");
+      return data.body as string | null;
+    },
+    getAdminContent(id, historyPage) {
+      return getContentDetailById(client, id, historyPage);
+    },
+
+    async createContent(input) {
+      const { data, error } = await client
+        .from("content_item")
+        .insert(toContentInsert(input))
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id as string;
+    },
+
+    async updateContent(id, input) {
+      const payload = toContentUpdate(input);
+      if (Object.keys(payload).length === 0) return getContentDetailByIdOrThrow(client, id);
+
+      const { data, error } = await client
+        .from("content_item")
+        .update(payload)
+        .eq("id", id)
+        .select("*")
+        .single();
+      if (error) throw error;
+      return hydrateContentDetail(client, data as ContentRow);
+    },
+
+    async upsertStoryProfile(contentId, input) {
+      const { error } = await client
+        .from("rescue_story_profile")
+        .upsert(toStoryProfileUpsert(contentId, input), { onConflict: "content_item_id" })
+        .select("content_item_id")
+        .single();
+      if (error) throw error;
+
+      return getContentDetailByIdOrThrow(client, contentId);
+    },
+
+    async createStoryUpdate(contentId, input) {
+      const { data, error } = await client
+        .from("story_update")
+        .insert(toStoryUpdateInsert(contentId, input))
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id as string;
+    },
+
+    async createContentMedia(contentId, input) {
+      const { data, error } = await client
+        .from("content_media")
+        .insert(toContentMediaInsert(contentId, input))
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      const mediaId = data.id as string;
+      if (input.isCover) {
+        const { error: coverError } = await client
+          .from("content_item")
+          .update({ cover_media_id: mediaId })
+          .eq("id", contentId)
+          .select("id")
+          .single();
+        if (coverError) throw coverError;
+      }
+
+      return mediaId;
+    },
+
+    async createSignedUploadUrl(objectPath: string) {
+      const { data, error } = await client.storage
+        .from(CONTENT_MEDIA_BUCKET)
+        .createSignedUploadUrl(objectPath);
+      if (error) throw error;
+      if (!data?.token || !data.path) throw new Error("Storage did not return an upload target");
+      return { token: data.token, path: data.path };
+    },
+
+    async createContentLink(contentId, input) {
+      const { data, error } = await client
+        .from("content_link")
+        .insert(toContentLinkInsert(contentId, input))
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id as string;
+    },
+
+    async searchLinks(input: LinkSearch): Promise<LinkSearchResult[]> {
+      switch (input.linkedType) {
+        case "animal": {
+          const like = `%${sanitizeOrLikeValue(input.q)}%`;
+          const { data, error } = await client
+            .from("animals")
+            .select("id,name,name_en,type")
+            .or(`name.ilike.${like},name_en.ilike.${like}`)
+            .order("name", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as AnimalLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.name?.trim() || row.name_en?.trim() || "（未命名）",
+            sublabel: row.type ?? null,
+          }));
+        }
+        case "adoption_case": {
+          const { data, error } = await client
+            .from("adoption_case")
+            .select("id,applicant_name,applicant_email")
+            .ilike("applicant_name", `%${escapeLike(input.q)}%`)
+            .order("applicant_name", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as AdoptionCaseLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.applicant_name?.trim() || "（未填姓名）",
+            sublabel: maskEmail(row.applicant_email),
+          }));
+        }
+        case "successful_adoption": {
+          const { data, error } = await client
+            .from("successful_adoption")
+            .select("id,case_number,animal_id")
+            .ilike("case_number", `%${escapeLike(input.q)}%`)
+            .order("case_number", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as SuccessfulAdoptionLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.case_number?.trim() || "（無編號）",
+            sublabel: row.animal_id ?? null,
+          }));
+        }
+        case "supporter": {
+          const { data, error } = await client
+            .from("supporter")
+            .select("id,name,phone")
+            .ilike("name", `%${escapeLike(input.q)}%`)
+            .order("name", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as SupporterLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.name?.trim() || "（未填姓名）",
+            sublabel: maskPhone(row.phone),
+          }));
+        }
+        case "volunteer_activity": {
+          const { data, error } = await client
+            .from("volunteer_activity")
+            .select("id,title,starts_at")
+            .ilike("title", `%${escapeLike(input.q)}%`)
+            .order("title", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as VolunteerActivityLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.title?.trim() || "（未命名活動）",
+            sublabel: isoDate(row.starts_at),
+          }));
+        }
+        default:
+          throw new Error(`Unsupported linked type: ${input.linkedType satisfies never}`);
+      }
+    },
+
+    async publishContent(id) {
+      const { data, error } = await client
+        .from("content_item")
+        .update({ status: "published" })
+        .eq("id", id)
+        .select("*")
+        .single();
+      if (error) throw error;
+      return hydrateContentDetail(client, data as ContentRow);
+    },
+
+    async archiveContent(id) {
+      const { data, error } = await client
+        .from("content_item")
+        .update({ status: "archived" })
+        .eq("id", id)
+        .select("*")
+        .single();
+      if (error) throw error;
+      return hydrateContentDetail(client, data as ContentRow);
+    },
+
+    async generateSocialCopiesWithAudit(rows, actorUserId, contentId, storyUpdateId, platform) {
+      const { data, error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: {
+          kind: "social_generate",
+          content_id: contentId,
+          story_update_id: storyUpdateId,
+          platform,
+          rows: rows.map((row) => ({
+            content_item_id: row.contentItemId,
+            story_update_id: row.storyUpdateId,
+            platform: row.platform,
+            language: row.language,
+            copy_text: row.copyText,
+            hashtags: row.hashtags,
+            status: row.status,
+          })),
+        },
+      });
+      if (error) throw error;
+      return Number((data as { count: number }).count);
+    },
+
+    async generateNotificationDraftsWithAudit(rows, actorUserId, storyUpdateId) {
+      let created = 0;
+      for (let offset = 0; offset < Math.max(1, rows.length); offset += 500) {
+        const batch = rows.slice(offset, offset + 500);
+        const { data, error } = await client.rpc("cms_promotion_command", {
+          p_actor: actorUserId,
+          p_command: {
+            kind: "draft_generate",
+            story_update_id: storyUpdateId,
+            rows: batch.map((row) => ({
+              story_update_id: row.storyUpdateId,
+              content_item_id: row.contentItemId,
+              adoption_case_id: row.adoptionCaseId,
+              supporter_id: row.supporterId,
+              channel: row.channel,
+              recipient_name: row.recipientName,
+              recipient_contact: row.recipientContact,
+              subject: row.subject,
+              body: row.body,
+              status: row.status,
+            })),
+          },
+        });
+        if (error) throw error;
+        created += Number((data as { count: number }).count);
+      }
+      return created;
+    },
+
+    async updateSocialCopyStatusWithAudit(id, status, actorUserId) {
+      const { error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: { kind: "social_status", id, status },
+      });
+      if (error) throw error;
+    },
+
+    async updateNotificationDraftStatusWithAudit(id, status, actorUserId) {
+      const { error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: { kind: "draft_status", id, status },
+      });
+      if (error) throw error;
+    },
+
+    async insertSocialCopies(rows) {
+      if (rows.length === 0) return;
+      const { error } = await client.from("social_copy_variant").insert(
+        rows.map((row) => ({
+          content_item_id: row.contentItemId,
+          story_update_id: row.storyUpdateId,
+          platform: row.platform,
+          language: row.language,
+          copy_text: row.copyText,
+          hashtags: row.hashtags,
+          status: row.status,
+        })),
+      );
+      if (error) throw error;
+    },
+
+    async getStoryUpdate(id) {
+      const { data, error } = await client
+        .from("story_update")
+        .select("*")
+        .eq("id", id)
+        .eq("is_authoring_active", true)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+
+      const { data: mediaRows, error: mediaError } = await client
+        .from("content_media")
+        .select("*")
+        .eq("story_update_id", id)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true });
+      if (mediaError) throw mediaError;
+
+      const media = await Promise.all(
+        ((mediaRows ?? []) as MediaRow[]).map(async (row) =>
+          toContentMedia(row, await adminMediaUrl(client, row)),
+        ),
+      );
+      return toStoryUpdate(data as StoryUpdateRow, media);
+    },
+
+    async listNotificationDraftKeys(storyUpdateId) {
+      const rows: Array<{ channel: string; recipient_contact: string }> = [];
+      let from = 0;
+      let total = 0;
+      do {
+        const { data, count, error } = await client
+          .from("recipient_notification_draft")
+          .select("channel, recipient_contact", { count: "exact" })
+          .eq("story_update_id", storyUpdateId)
+          .order("id", { ascending: true })
+          .range(from, from + 999);
+        if (error) throw error;
+        const batch = (data ?? []) as Array<{ channel: string; recipient_contact: string }>;
+        if (batch.length === 0 && from < (count ?? 0)) {
+          throw new Error("Notification draft keys were not all returned");
+        }
+        rows.push(...batch);
+        from += batch.length;
+        total = count ?? from;
+      } while (from < total);
+      return rows.map((row) => ({
+        channel: row.channel,
+        recipientContact: row.recipient_contact,
+      }));
+    },
+
+    async resolveAdopterRecipients(contentId) {
+      const links = await readRecipientRows<ContentLinkRow>(client, "content_link", "*", [
+        { column: "content_item_id", value: contentId },
+        { column: "linked_type", values: ["adoption_case", "successful_adoption"] },
+      ]);
+      const directAdoptionCaseIds = links
+        .filter((row) => row.linked_type === "adoption_case")
+        .map((row) => row.linked_id);
+      const successfulAdoptionIds = links
+        .filter((row) => row.linked_type === "successful_adoption")
+        .map((row) => row.linked_id);
+
+      const successfulAdoptions = await readRecipientRowsByIds<SuccessfulAdoptionRow>(
+        client,
+        "successful_adoption",
+        "id,adoption_case_id,supporter_id",
+        successfulAdoptionIds,
+      );
+
+      const adoptionCases = await loadAdoptionCases(
+        client,
+        directAdoptionCaseIds.concat(
+          successfulAdoptions.map((row) => row.adoption_case_id).filter(nonNullable),
+        ),
+      );
+      const supporterIds = unique(
+        Array.from(adoptionCases.values())
+          .map((row) => row.supporter_id)
+          .concat(successfulAdoptions.map((row) => row.supporter_id))
+          .filter(nonNullable),
+      );
+      const supporters = await loadSupporters(client, supporterIds);
+
+      const recipients = new Map<string, AdopterNotificationRecipient>();
+      const addRecipient = (recipient: AdopterNotificationRecipient | null) => {
+        if (!recipient) return;
+        const key = recipientKey(recipient);
+        if (!recipients.has(key)) recipients.set(key, recipient);
+      };
+
+      for (const adoptionCaseId of directAdoptionCaseIds) {
+        const adoptionCase = adoptionCases.get(adoptionCaseId) ?? null;
+        const supporterId = adoptionCase?.supporter_id ?? null;
+        addRecipient(
+          buildRecipient({
+            adoptionCase,
+            adoptionCaseId,
+            supporter: supporterId ? (supporters.get(supporterId) ?? null) : null,
+            supporterId,
+          }),
+        );
+      }
+
+      for (const successfulAdoption of successfulAdoptions) {
+        const adoptionCase = adoptionCases.get(successfulAdoption.adoption_case_id) ?? null;
+        const supporterId = successfulAdoption.supporter_id ?? adoptionCase?.supporter_id ?? null;
+        addRecipient(
+          buildRecipient({
+            adoptionCase,
+            adoptionCaseId: successfulAdoption.adoption_case_id,
+            supporter: supporterId ? (supporters.get(supporterId) ?? null) : null,
+            supporterId,
+          }),
+        );
+      }
+
+      return Array.from(recipients.values());
+    },
+
+    async insertNotificationDrafts(rows) {
+      if (rows.length === 0) return;
+      const { error } = await client.from("recipient_notification_draft").insert(
+        rows.map((row) => ({
+          story_update_id: row.storyUpdateId,
+          content_item_id: row.contentItemId,
+          adoption_case_id: row.adoptionCaseId,
+          supporter_id: row.supporterId,
+          channel: row.channel,
+          recipient_name: row.recipientName,
+          recipient_contact: row.recipientContact,
+          subject: row.subject,
+          body: row.body,
+          status: row.status,
+        })),
+      );
+      if (error) throw error;
+    },
+
+    async updateNotificationDraftStatus(id, status) {
+      const { error } = await client
+        .from("recipient_notification_draft")
+        .update({ status })
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+
+    async updateSocialCopy(id, patch) {
+      const payload: Record<string, unknown> = {};
+      if (patch.status !== undefined) payload.status = patch.status;
+      if (patch.copyText !== undefined) payload.copy_text = patch.copyText;
+      if (patch.hashtags !== undefined) payload.hashtags = patch.hashtags;
+      if (Object.keys(payload).length === 0) return;
+
+      const { error } = await client
+        .from("social_copy_variant")
+        .update(payload)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+
+    async updateSocialCopyStatus(id, status) {
+      const { error } = await client
+        .from("social_copy_variant")
+        .update({ status })
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+
+    async insertAuditLog(row: ContentAuditLogInsert) {
+      const { error } = await client.from("audit_log").insert({
+        actor_user_id: row.actor_user_id,
+        action: row.action,
+        entity: row.entity,
+        entity_id: row.entity_id,
+        timestamp: row.timestamp,
+        detail: row.detail,
+      });
+      if (error) throw error;
+    },
+  };
+}

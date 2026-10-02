@@ -1,0 +1,85 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\adoptionInformation\http.test.ts:
+(pass) createAdoptionInformationHandlers.upsert > missing estate deletion returns 404 [35.99ms]
+(pass) createAdoptionInformationHandlers.upsert > resource=fee returns 201 with { fee } and calls service.upsertFee [3.38ms]
+(pass) createAdoptionInformationHandlers.upsert > estate create returns canonical unpublished row with 201 [1.33ms]
+(pass) createAdoptionInformationHandlers.upsert > estate publication invokes only the publication command [0.65ms]
+(pass) createAdoptionInformationHandlers.upsert > old estate upsert cannot bypass the versioned commands [2.22ms]
+(pass) createAdoptionInformationHandlers.upsert > resource=rule returns 201 with { rule } and calls service.upsertRule [1.01ms]
+(pass) createAdoptionInformationHandlers.upsert > resource=careTopic returns 201 with { careTopic } and calls service.upsertCareTopic [12.70ms]
+(pass) createAdoptionInformationHandlers.upsert > returns 400 with an issues array when a rule is missing its required content [1.16ms]
+(pass) createAdoptionInformationHandlers.upsert > returns 400 with an issues array when a care topic is missing its required content [0.76ms]
+(pass) createAdoptionInformationHandlers.upsert > propagates a Response thrown by requireAdoptionInformationAdmin (auth failure) [0.73ms]
+(pass) createAdoptionInformationHandlers.upsert > fee reorder is one authenticated command and rejects injected sort fields [3.51ms]
+(pass) createAdoptionInformationHandlers.upsert > fee content command rejects publication and order fields [2.50ms]
+
+src\lib\content\atomicForward.estate.http.test.ts:
+(pass) generic estate deletion actor refusal maps to safe private 403 [1.21ms]
+(pass) estate permission mapping preserves Response [0.66ms]
+(pass) estate permission mapping preserves Zod [0.32ms]
+(pass) estate permission mapping preserves conflict [1.56ms]
+(pass) estate permission mapping preserves missing [0.65ms]
+Adoption information request failed {
+  requestId: "synthetic-request-id",
+  error: {
+    code: "XX000",
+    message: "internal diagnostic",
+  },
+}
+(pass) estate permission mapping preserves unknown [2.84ms]
+Adoption information request failed {
+  requestId: "synthetic-request-id",
+  error: "42501",
+}
+(pass) estate permission mapping preserves non-object [0.44ms]
+
+src\lib\content\atomicForward.http.test.ts:
+(pass) CMS actor permission refusal maps to safe private 403 [1.51ms]
+(pass) CMS permission mapping preserves Response [0.34ms]
+(pass) CMS permission mapping preserves lifecycle conflict [0.11ms]
+(pass) CMS permission mapping preserves Zod [0.23ms]
+(pass) CMS permission mapping preserves publication validation [0.06ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) CMS permission mapping preserves unknown SQLSTATE [0.15ms]
+{
+  code: "P4090",
+  message: "internal diagnostic",
+}
+(pass) CMS permission mapping preserves raw version code [0.09ms]
+42501
+(pass) CMS permission mapping preserves non-object matching text [0.06ms]
+{
+  code: "42501",
+  message: "internal diagnostic",
+}
+(pass) CMS permission mapping preserves public request500 [2.23ms]
+
+src\lib\content\http.test.ts:
+(pass) createContentHandlers > rejects an oversized optional publish body before service work [77.79ms]
+(pass) createContentHandlers > returns public content with no-store cache headers [0.52ms]
+(pass) createContentHandlers > returns the combined stories page with short public caching [0.43ms]
+(pass) createContentHandlers > keeps authenticated content responses on no-store [0.36ms]
+(pass) createContentHandlers > rejects admin requests before service work when auth is missing [0.26ms]
+(pass) createContentHandlers > maps publish validation errors to field-level 400 responses [0.74ms]
+(pass) createContentHandlers > maps publish validation errors to a 400 with the offending field [2.43ms]
+(pass) createContentHandlers > returns both story profile field issues when publishing an under-specified rescue story [15.17ms]
+(pass) createContentHandlers > maps zod errors to admin 400 responses with field-level details [1.78ms]
+(pass) createContentHandlers > maps draft-only creation errors to 400 responses [0.67ms]
+(pass) createContentHandlers > maps internal public-media errors to 400 responses [0.71ms]
+(pass) createContentHandlers > rejects malformed optional admin JSON bodies before service work [8.04ms]
+(pass) createContentHandlers > maps service not-found errors to admin 404 responses [0.54ms]
+(pass) createContentHandlers > maps Supabase single-row misses to admin 404 responses [0.93ms]
+(pass) createContentHandlers > routes authoring mutations to content service methods [30.54ms]
+(pass) createContentHandlers > routes the upload-target request behind admin auth [1.17ms]
+(pass) createContentHandlers > maps a spoofed upload path to a 400, not a 500 [0.81ms]
+(pass) createContentHandlers > returns linked-record search results for admins without caching [0.78ms]
+(pass) createContentHandlers > rejects linked-record search when auth is missing [0.24ms]
+
+ 47 pass
+ 0 fail
+ 132 expect() calls
+Ran 47 tests across 4 files. [994.00ms]

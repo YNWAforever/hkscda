@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\atomicForward.database.test.ts:
+PostgresError: function public.cms_promotion_command(uuid, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CMS atomic forward on owned synthetic clone > missing-target promotion creates synthetic draft and actor audit atomically [43.85ms]
+PostgresError: function public.mutate_admin_content_with_audit(uuid, unknown, unknown, uuid, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CMS atomic forward on owned synthetic clone > missing-target generic content preserves fee publication audit contract [20.28ms]
+
+ 0 pass
+ 15 filtered out
+ 2 fail
+Ran 2 tests across 1 file. [141.00ms]

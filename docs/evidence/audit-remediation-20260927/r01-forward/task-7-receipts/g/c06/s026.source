@@ -1,0 +1,204 @@
+/** Task7 rehearsal: new owned clones only, no legacy DML replay. */
+import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import {
+  captureProductionSchema,
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  localSourceState,
+  snapshot,
+  hash,
+} from "./productionSchemaClone";
+
+const root = resolve(import.meta.dir, "../../..");
+const mode = process.argv[2];
+if (
+  process.env.R01_CMS_ALLOW_LOCAL_FIXTURES !== "1" ||
+  !["red", "red-actors", "red-index"].includes(mode)
+)
+  throw new Error("Explicit Task7 owned RED opt-in required");
+const out = resolve(
+  root,
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-7-red-receipts",
+  mode + "-" + Date.now(),
+);
+await mkdir(out, { recursive: true });
+const paths = [
+  "src/lib/content/atomicForward.database.test.ts",
+  "supabase/rls-tests/helpers/runR01CmsForward.ts",
+  "supabase/rls-tests/helpers/productionSchemaClone.ts",
+  "supabase/migrations/20260925053245_cms_promotion_atomicity.sql",
+  "supabase/migrations/20260925103900_atomic_admin_content_audit.sql",
+  "supabase/migrations/20260927120500_estate_versioned_commands.sql",
+];
+const blobs = async () =>
+  Object.fromEntries(
+    await Promise.all(
+      paths.map(async (p) => {
+        const s = await readFile(resolve(root, p));
+        return [
+          p,
+          {
+            sha256: hash(s.toString("utf8")),
+            canonicalSha256: hash(s.toString("utf8").replaceAll("\r\n", "\n")),
+          },
+        ];
+      }),
+    ),
+  );
+const frozen = await blobs();
+for (const p of paths) await copyFile(resolve(root, p), resolve(out, p.replaceAll("/", "__")));
+const modernUrl = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(modernUrl);
+const capture =
+  mode === "red-actors" ? await captureModernLocalSchema() : await captureProductionSchema();
+const clone = await createProductionClone(capture),
+  db = clone.sql;
+const receipt: Record<string, unknown> = {
+  mode,
+  startedAt: new Date().toISOString(),
+  sourceCommit: (
+    await new Response(
+      Bun.spawn(["git", "rev-parse", "HEAD"], { cwd: root, stdout: "pipe" }).stdout,
+    ).text()
+  ).trim(),
+  clone: clone.name,
+  sourceCatalogHash: hash(capture.catalog),
+  schemaParity: true,
+  zeroApplicationTables: clone.tableCount,
+  managedPrerequisitesHash: clone.prerequisites,
+  testedExecutableBlobs: frozen,
+  task1Applied: false,
+  dependencySqlApplied: false,
+  productionActions: "schema-only capture, no production rows or actor commands",
+};
+const rows = async () => {
+  const result = [];
+  for (const t of await db`select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('r','p') union all select 'auth.users' order by 1`) {
+    const [r] = await db.unsafe(
+      `select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' order by to_jsonb(t)::text),'')) hash from ${t.name} t`,
+    );
+    result.push([t.name, r]);
+  }
+  return hash(result);
+};
+const extra = async () => ({
+  auth: await db`select c.relacl::text acl,(select jsonb_agg(jsonb_build_object('name',a.attname,'acl',a.attacl::text) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped) columns from pg_class c where c.oid='auth.users'::regclass`,
+  defaults:
+    await db`select to_jsonb(d) value from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
+  native:
+    await db`select to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_trigger t where t.tgisinternal order by t.oid`,
+  ledger:
+    await db`select md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),'')) hash from supabase_migrations.schema_migrations t`,
+});
+try {
+  await assertSafeFixtureTables(db, [
+    "auth.users",
+    "admin_user",
+    "content_item",
+    "story_update",
+    "social_copy_variant",
+    "recipient_notification_draft",
+    "adoption_fees",
+    "dog_friendly_estates",
+    "audit_log",
+  ]);
+  const [auth] =
+    await db`select has_any_column_privilege('service_role','auth.users','SELECT') sel,has_any_column_privilege('service_role','auth.users','UPDATE') upd`;
+  if (auth.sel || auth.upd)
+    throw new Error("Effective Auth privilege fidelity mismatch; no calibration authorized");
+  receipt.authEffectiveAccess = auth;
+  receipt.targetProfiles =
+    await db`select n.nspname schema,p.proname name,pg_get_function_identity_arguments(p.oid) args,pg_get_function_arguments(p.oid) allargs,p.pronargdefaults defaults,pg_get_expr(p.proargdefaults,0) default_expression,pg_get_function_result(p.oid) result,pg_get_userbyid(p.proowner) owner,p.proacl::text acl,p.proconfig config,p.prosecdef definer,md5(p.prosrc) body,md5(pg_get_functiondef(p.oid)) definition from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.proname in ('cms_promotion_command','mutate_admin_content_with_audit','mutate_dog_friendly_estate_with_audit','bump_dog_friendly_estate_version') order by n.nspname,p.proname`;
+  if (mode === "red-index") {
+    const legacy = await readFile(
+      resolve(root, "supabase/migrations/20260925053245_cms_promotion_atomicity.sql"),
+      "utf8",
+    );
+    const start = legacy.indexOf("create or replace function public.cms_promotion_command");
+    if (
+      start < 0 ||
+      (await db`select to_regprocedure('public.cms_promotion_command(uuid,jsonb)') p`)[0].p
+    )
+      throw new Error("Missing exact function prerequisite expected");
+    const source = legacy.slice(start);
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(source);
+    });
+    receipt.indexDiagnosis =
+      "exact legacy missing function only; no archive/dedup/delete/index statements replayed";
+  }
+  const beforeCatalog = hash(await snapshot(db)),
+    beforeRows = await rows(),
+    beforeExtra = hash(await extra());
+  const child = Bun.spawn(
+    [
+      "bun",
+      "test",
+      "src/lib/content/atomicForward.database.test.ts",
+      "--timeout",
+      "30000",
+      "--test-name-pattern",
+      mode === "red"
+        ? "missing-target"
+        : mode === "red-actors"
+          ? "generic actor rejects|estate actor rejects|concurrent fence"
+          : "recipient index prerequisite",
+    ],
+    {
+      cwd: root,
+      env: { ...process.env, R01_CMS_TEST_DATABASE_URL: clone.url },
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
+  const [stdout, stderr, exit] = await Promise.all([
+    new Response(child.stdout).text(),
+    new Response(child.stderr).text(),
+    child.exited,
+  ]);
+  const log = stdout + stderr;
+  await writeFile(resolve(out, "test.log"), log, { flag: "wx" });
+  receipt.testExit = exit;
+  receipt.testSummary = log.match(/^\s*\d+ (?:pass|fail|skip|expect\(\) calls)\s*$/gm);
+  receipt.catalogPreserved = beforeCatalog === hash(await snapshot(db));
+  receipt.rowsPreserved = beforeRows === (await rows());
+  receipt.completeAuthDefaultNativeLedgerPreserved = beforeExtra === hash(await extra());
+  const expected = mode === "red" ? "42883" : mode === "red-index" ? "42P10" : 'Expected: "42501"';
+  if (exit === 0 || !log.includes(expected))
+    throw new Error("Expected actual Task7 domain RED absent; inspect setup separately");
+  receipt.result = "actual RED " + expected;
+  process.exitCode = 1;
+} catch (e) {
+  receipt.error = {
+    name: (e as Error).name,
+    message: (e as Error).message,
+    errno: (e as { errno?: string }).errno,
+  };
+  throw e;
+} finally {
+  await clone.close();
+  receipt.templatePreserved = clone.templatePreserved;
+  receipt.modernPreserved = modernBefore === (await localSourceState(modernUrl));
+  receipt.frozenInputsPreserved = hash(frozen) === hash(await blobs());
+  receipt.cleanup = "normal owned clone DROP";
+  receipt.completedAt = new Date().toISOString();
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n", {
+    flag: "wx",
+  });
+  console.log(
+    JSON.stringify({
+      mode,
+      out,
+      exit: receipt.testExit,
+      result: receipt.result,
+      error: receipt.error,
+      catalogPreserved: receipt.catalogPreserved,
+      rowsPreserved: receipt.rowsPreserved,
+      templatePreserved: receipt.templatePreserved,
+      modernPreserved: receipt.modernPreserved,
+    }),
+  );
+}

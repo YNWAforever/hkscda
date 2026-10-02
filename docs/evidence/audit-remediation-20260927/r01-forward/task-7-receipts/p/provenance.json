@@ -1,0 +1,22 @@
+{
+  "rawCopiedHashes": {
+    ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+    "task-7-estate-http-red.log": "6f188496d5d3b371f1ca24aef424bdb6c25fb704c5f7dc51a47a4f8770c5a4db",
+    "task-7-http-green.log": "ce69d6a30b944e87002f74f22386747dd968bbaf3ff9f0ec4b9fd635e6b22114",
+    "task-7-http-red.log": "35548e5bd5c36d32620818bec2097e95ba8ae33973843f1d4bb9e3d0c142424d",
+    "task-7-attempt-1-setup-failed/hosted.json": "56dc309beab5273e504099588ccb775306a64fd51d5120919ce4d6ce3af5c7c8",
+    "task-7-attempt-1-setup-failed/task-7-preflight.ts": "6828601c3ceb7d9469a0907bdf54c79c9bee77e862527de2454448f334337c50",
+    "task-7-attempt-1-setup-failed/transcript-excerpt.log": "9c328a166a5daaf1ef1254e563f7dfe3229e3c33a47ae3eb5ba435780d711f4f",
+    "task-7-preflight/hosted.json": "56dc309beab5273e504099588ccb775306a64fd51d5120919ce4d6ce3af5c7c8",
+    "task-7-preflight-v2/hosted.json": "a1e4ed7b57c65e448e03cf02464443c88c7e7afa80845c876c2370e23a054a41",
+    "task-7-preflight-v2/modern.json": "03e2c4c3ff6271a547360c8034432b87f56540657f2c54f717bbb1c10e40b15d",
+    "task-7-preflight-v3/hosted.json": "9aefc5bb65bd4db970b6d6bb34f3d7a42bfcd5f5efa26dc1b18b815c79a5211f",
+    "task-7-preflight-v3/modern.json": "5a0b28b80ab4ac961750cb57a9e2ea7bc57f727cbe65c36efd24f69034f92e7f",
+    "task-7-preflight-v4/hosted.json": "ef61db94549bcc65aaed2dade9d55cbc6f52ce1468c9970d9db37b6543a0c050",
+    "task-7-preflight-v4/modern.json": "6ef2a0b46b8a2e979ef1e6b98a734c5a629083f2c690670e9fca1da4b56bc4cf"
+  },
+  "preflightV4": "Actual captured output; current diagnostic source later tightens index exclusion to exact known definition, not rerun under v4. Final DB uses unchanged captured v4 JSON and exact full-index checks.",
+  "httpRed": "Raw Tee-Object logs retained. Original wrappers did not bind raw execution source SHA; no retroactive raw execution binding claimed. Source origin is creation tool transcript; final tested sources bound by both-profile/gate receipts.",
+  "generatorReproduction": "Copy task-7-preflight-v4/hosted.json and modern.json from this directory into same ignored .superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v4 before running task-7-generate.ts. These raw inputs exactly match executed generator inputs.",
+  "packagingAttempt": "Initial copy succeeded, then Python default cp950 brief decoding failed before provenance/ruling snapshot. Corrected only explicit utf-8 decoding; copied raw files never overwritten."
+}
