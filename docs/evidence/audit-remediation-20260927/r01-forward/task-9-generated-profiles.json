@@ -1,6 +1,6 @@
 {
   "file": "20261002045253_r01_adoption_atomic_forward.sql",
-  "sha256": "e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992",
+  "sha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
   "captures": ["task-9-capture-hosted-1790919336913", "task-9-capture-modern-1790919424679"],
   "supporterAlternative": {
     "name": "supporter",
@@ -888,6 +888,25 @@
       "volatility": "v",
       "body": "4431f9db3ecc87c2f4698a9778ce0139",
       "definition": "fa013ae528d796d1cdee6f769d16abeb"
+    },
+    {
+      "schema": "auth",
+      "name": "uid",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "uuid",
+      "owner": "supabase_auth_admin",
+      "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "config": null,
+      "definer": false,
+      "cost": 100,
+      "strict": false,
+      "parallel": "u",
+      "volatility": "s",
+      "body": "cdef18c69c4f4cbbced2eaf81e628b49",
+      "definition": "ea3b41bf29e2ad573067939329aa088e"
     }
   ],
   "tableProfiles": [

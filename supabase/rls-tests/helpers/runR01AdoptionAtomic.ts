@@ -27,9 +27,15 @@ if (
   process.env.R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1"
 )
   throw Error("Explicit Task9 owned clone opt-in required");
+const authFixturePath =
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json";
 const migration = "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql";
 const paths = [
   migration,
+  authFixturePath,
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-4-diagnose.ts",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-red-1790933603845/receipt.json",
   "src/lib/adoptions/atomicForward.database.test.ts",
   "src/lib/adoptions/atomicForward.http.test.ts",
   "src/lib/adoptions/http/shared.server.ts",
@@ -152,7 +158,14 @@ const rows = async () => {
   }
   return hash(values);
 };
+const completeUid = async () => {
+  const [value] =
+    await db`select to_jsonb(p) proc,l.lanname language,pg_get_userbyid(p.proowner) owner,pg_get_functiondef(p.oid) definition,(select jsonb_agg(to_jsonb(a) order by a.grantor,a.grantee,a.privilege_type) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a) effective_acl from pg_proc p join pg_language l on l.oid=p.prolang where p.oid='auth.uid()'::regprocedure`;
+  return value;
+};
 const extra = async () => ({
+  uid: await completeUid(),
+
   auth: await db`select c.relacl::text acl,(select jsonb_agg(jsonb_build_object('name',a.attname,'acl',a.attacl::text) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped) columns from pg_class c where c.oid='auth.users'::regclass`,
   defaults:
     await db`select to_jsonb(d) value from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
@@ -290,6 +303,65 @@ try {
     if (receipt.componentExtraPreserved !== true)
       throw Error("Component changed Auth/default/native/ledger/sequence metadata");
   }
+  if (mode === "component") {
+    const authFixtureRaw = await readFile(resolve(root, authFixturePath), "utf8");
+    if (hash(authFixtureRaw) !== "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77")
+      throw Error("Ruling35 captured Auth proof bytes differ");
+    const authFixture = JSON.parse(authFixtureRaw);
+    const beforeUid = await completeUid();
+    const beforeAuthComponent = await extra();
+    const beforeAuthCatalog = await snapshot(db);
+    const beforeAllHelpers = await db.unsafe(functionsQuery);
+    await db.begin(async (tx) => {
+      await tx`set local role supabase_auth_admin`;
+      await tx.unsafe(authFixture.finalHelper.definition);
+    });
+    const afterUid = await completeUid();
+    const afterAuthComponent = await extra();
+    const afterAllHelpers = await db.unsafe(functionsQuery);
+    const actualTuple = afterAllHelpers.find(
+      (f: Record<string, unknown>) => f.schema === "auth" && f.name === "uid",
+    );
+    if (hash(actualTuple) !== hash(authFixture.proposedMigrationProfile))
+      throw Error("Installed LF helper differs from captured tuple");
+    if (
+      hash(afterUid) !==
+      hash({
+        ...beforeUid,
+        proc: { ...beforeUid.proc, prosrc: authFixture.finalHelper.completeProc.prosrc },
+        definition: authFixture.finalHelper.definition,
+      })
+    )
+      throw Error("LF constructor changed unrelated helper metadata");
+    if (
+      hash(beforeAuthComponent) !== hash({ ...afterAuthComponent, uid: beforeAuthComponent.uid }) ||
+      hash(beforeAuthCatalog) !== hash(await snapshot(db)) ||
+      hash(
+        beforeAllHelpers.filter(
+          (f: Record<string, unknown>) => f.schema !== "auth" || f.name !== "uid",
+        ),
+      ) !==
+        hash(
+          afterAllHelpers.filter(
+            (f: Record<string, unknown>) => f.schema !== "auth" || f.name !== "uid",
+          ),
+        )
+    )
+      throw Error("LF constructor changed unrelated catalog metadata");
+    await assertSafeFixtureTables(db, fixtureScope);
+    receipt.authSourceComponent = {
+      fixturePath: authFixturePath,
+      fixtureSha256: hash(authFixtureRaw),
+      definitionSha256: hash(authFixture.finalHelper.definition),
+      beforeUid,
+      afterUid,
+      actualTuple,
+      fullScannerPassed: true,
+      unrelatedMetadataPreserved: true,
+      qualification:
+        "PG17.6 application clone constructed from captured exact17.11/Auth LF definition; not fullCI bootstrap",
+    };
+  }
   const actor = randomUUID(),
     status = randomUUID(),
     supporter = randomUUID();
@@ -426,6 +498,31 @@ try {
       });
     }
   }
+  const [uidDefinition] =
+    await db`select pg_get_functiondef('auth.uid()'::regprocedure) definition`;
+  const unknownUidBody = String(uidDefinition.definition).replace("select ", "select  ");
+  if (unknownUidBody === uidDefinition.definition) throw Error("Expected UID source token absent");
+  refusals.push(
+    {
+      name: "auth.uid exact owner",
+      setup:
+        "set local role supabase_admin;alter function auth.uid() owner to postgres;set local role postgres",
+    },
+    {
+      name: "auth.uid full ordinary ACL",
+      setup:
+        "set local role supabase_admin;grant execute on function auth.uid() to authenticated;set local role postgres",
+    },
+    {
+      name: "auth.uid unknown body",
+      setup: "set local role supabase_auth_admin;" + unknownUidBody + ";set local role postgres",
+    },
+    {
+      name: "auth.uid defaulted overload",
+      setup:
+        "set local role supabase_auth_admin;create function auth.uid(p_probe text default null) returns uuid language sql stable as $unknown$select null::uuid$unknown$;set local role postgres",
+    },
+  );
   refusals.push({
     name: "private helper intentional default",
     setup:

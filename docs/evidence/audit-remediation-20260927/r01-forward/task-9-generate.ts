@@ -167,6 +167,27 @@ const helpers = unique(
     ),
   ),
 );
+// Ruling35: exact runtime-captured LF tuple; preserve the existing CRLF tuple.
+const authFixturePath =
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json";
+const authFixtureRaw = await readFile(authFixturePath, "utf8");
+if (hash(authFixtureRaw) !== "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77")
+  throw Error("Ruling35 captured Auth proof bytes differ");
+const authFixture = JSON.parse(authFixtureRaw);
+const knownUid = (helpers as Record<string, unknown>[]).find(
+  (f) => f.schema === "auth" && f.name === "uid",
+);
+if (
+  !knownUid ||
+  hash(authFixture.proposedMigrationProfile) !==
+    hash({
+      ...knownUid,
+      body: "cdef18c69c4f4cbbced2eaf81e628b49",
+      definition: "ea3b41bf29e2ad573067939329aa088e",
+    })
+)
+  throw Error("Ruling35 complete paired Auth tuple differs");
+helpers.push(authFixture.proposedMigrationProfile);
 const helperNames = [
   ...new Set((helpers as Record<string, unknown>[]).map((f) => f.schema + "." + f.name)),
 ];
