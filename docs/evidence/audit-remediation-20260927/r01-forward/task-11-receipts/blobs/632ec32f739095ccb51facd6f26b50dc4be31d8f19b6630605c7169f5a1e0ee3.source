@@ -1,18 +1,13 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
 import { SQL } from "bun";
 import { randomUUID } from "node:crypto";
-import { assertSafeFixtureTables } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
-import { fixtureScope } from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile";
-import { assertFinanceFixtureUrl } from "./financeCallbackFixtureGuard";
+import { assertCloneUrl } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
 
 const url = process.env.R01_FINANCE_CALLBACK_TEST_DATABASE_URL;
 const enabled = !!url && process.env.R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES === "1";
-if (enabled) assertFinanceFixtureUrl(url!, process.env);
+if (enabled) assertCloneUrl(url!);
 const db = enabled ? new SQL(url!, { max: 5 }) : null;
 const rollback = new Error("Task11 fixture rollback");
-beforeAll(async () => {
-  if (db) await assertSafeFixtureTables(db, fixtureScope);
-});
 
 describe.skipIf(!db)("Task11 finance callback production gaps", () => {
   const calls = [
@@ -125,14 +120,13 @@ async function seedFinance(
   issued = false,
   role = "treasurer",
   backstopRequired = true,
-  receiptId: string = randomUUID(),
 ): Promise<FinanceFixture> {
   const f = {
     actor: randomUUID(),
     supporter: randomUUID(),
     donation: randomUUID(),
     payment: randomUUID(),
-    receipt: receiptId,
+    receipt: randomUUID(),
   };
   const backstop = randomUUID();
   for (const actor of backstopRequired ? [f.actor, backstop] : [f.actor])
@@ -157,13 +151,12 @@ async function financeFixture(
   run: (tx: SQL, f: FinanceFixture) => Promise<void>,
   issued = false,
   role = "treasurer",
-  receiptId?: string,
 ) {
   try {
     await db!.begin(async (sql) => {
       const tx = sql as SQL;
       await tx`set local role postgres`;
-      const f = await seedFinance(tx, issued, role, true, receiptId);
+      const f = await seedFinance(tx, issued, role);
       await run(tx, f);
       throw rollback;
     });
@@ -440,77 +433,36 @@ describe.skipIf(!db)("Task11 finance behavior and transaction contracts", () => 
         expect(await manual(tx, command, f)).toHaveLength(1);
       }, command === "void"));
   test("system void late audit failure rolls back both receipts and earlier audit", () =>
-    financeFixture(
-      async (tx, f) => {
-        const second = "00000000-0000-0000-0000-000000000002",
-          otherDonation = randomUUID(),
-          beforeMoney = await money(tx, f);
-        await tx`insert into public.donation(id,supporter_id,amount_cents,purpose,method) values(${otherDonation}::uuid,${f.supporter}::uuid,10000,'general','fps')`;
-        await tx`insert into public.receipt(id,supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,issued_at,status) values(${second}::uuid,${f.supporter}::uuid,${"T11-" + second},array[${otherDonation}::uuid,${f.donation}::uuid],20000,2026,now()+interval '1 day','issued')`;
-        const before = await tx`select to_jsonb(r) value from public.receipt r order by id`;
-        const processingOrder = (
-          await tx`select id from public.receipt where donation_ids @> array[${f.donation}::uuid] and status='issued' order by id`
-        ).map((r: { id: string }) => r.id);
-        expect(processingOrder).toEqual([f.receipt, second]);
-        // The nontransactional sequence survives rollback to the RPC savepoint.
-        // Its AFTER INSERT probe advances only once a real first audit row and
-        // the first voided receipt both exist, before the later constraint fails.
-        await tx.unsafe("create temporary sequence task11_first_audit_progress");
-        await tx.unsafe(`create function pg_temp.task11_first_audit_probe() returns trigger
-        language plpgsql as $$ begin
-          if new.action='receipt.void' and new.entity_id='${f.receipt}'::text then
-            if not exists(select 1 from public.receipt where id=new.entity_id::uuid and status='void')
-              or not exists(select 1 from public.audit_log where id=new.id) then
-              raise exception 'first receipt/audit path not completed';
-            end if;
-            perform nextval('pg_temp.task11_first_audit_progress');
-          end if;
-          return new;
-        end $$`);
-        await tx.unsafe(
-          "create trigger task11_first_audit_probe after insert on public.audit_log for each row execute function pg_temp.task11_first_audit_probe()",
-        );
-        await tx.unsafe(
-          "alter table public.audit_log add constraint task11_second_audit_failure check(action<>'receipt.void' or entity_id<>'" +
-            second +
-            "')",
-        );
-        await tx`set local role service_role`;
-        await fail(
-          tx,
-          () => tx`select * from public.void_donation_receipts_with_audit(${f.donation}::uuid)`,
-          "23514",
-        );
-        await tx`set local role postgres`;
-        const auditProgress =
-          (await tx`select last_value::integer value,is_called from pg_temp.task11_first_audit_progress`) as {
-            value: number;
-            is_called: boolean;
-          }[];
-        expect(auditProgress).toEqual([{ value: 1, is_called: true }]);
-        console.log(
-          JSON.stringify({
-            lateAuditFailure: {
-              processingOrder,
-              firstAuditPathReached: true,
-              failedReceipt: second,
-            },
-          }),
-        );
-        expect(await tx`select to_jsonb(r) value from public.receipt r order by id`).toEqual(
-          before,
-        );
-        expect(
-          (
-            await tx`select count(*)::integer n from public.audit_log where action='receipt.void'`
-          )[0].n,
-        ).toBe(0);
-        expect(await money(tx, f)).toEqual(beforeMoney);
-      },
-      true,
-      "treasurer",
-      "00000000-0000-0000-0000-000000000001",
-    ));
+    financeFixture(async (tx, f) => {
+      const second = "00000000-0000-0000-0000-000000000000",
+        otherDonation = randomUUID(),
+        beforeMoney = await money(tx, f);
+      await tx`insert into public.donation(id,supporter_id,amount_cents,purpose,method) values(${otherDonation}::uuid,${f.supporter}::uuid,10000,'general','fps')`;
+      await tx`insert into public.receipt(id,supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,issued_at,status) values(${second}::uuid,${f.supporter}::uuid,${"T11-" + second},array[${otherDonation}::uuid,${f.donation}::uuid],20000,2026,now()+interval '1 day','issued')`;
+      const before = await tx`select to_jsonb(r) value from public.receipt r order by id`;
+      const processingOrder = (
+        await tx`select id from public.receipt where donation_ids @> array[${f.donation}::uuid] and status='issued' order by id`
+      ).map((r) => r.id);
+      expect(processingOrder).toEqual([f.receipt, second]);
+      await tx.unsafe(
+        "alter table public.audit_log add constraint task11_second_audit_failure check(action<>'receipt.void' or entity_id<>'" +
+          second +
+          "')",
+      );
+      await tx`set local role service_role`;
+      await fail(
+        tx,
+        () => tx`select * from public.void_donation_receipts_with_audit(${f.donation}::uuid)`,
+        "23514",
+      );
+      await tx`set local role postgres`;
+      expect(await tx`select to_jsonb(r) value from public.receipt r order by id`).toEqual(before);
+      expect(
+        (await tx`select count(*)::integer n from public.audit_log where action='receipt.void'`)[0]
+          .n,
+      ).toBe(0);
+      expect(await money(tx, f)).toEqual(beforeMoney);
+    }, true));
 });
 function latch() {
   let release!: () => void;

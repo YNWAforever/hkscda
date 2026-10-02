@@ -233,10 +233,7 @@ test("only exact Task11 proof paths with all three explicit binary attributes ar
 
 test("actual slogan scan rejects obsolete ordinary and unqualified proof text", async () => {
   const directory = await mkdtemp(join(tmpdir(), "hkscda-slogan-product-fixtures-"));
-  const exact =
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/" +
-    "a".repeat(64) +
-    ".source";
+  const exact = "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/" + "a".repeat(64) + ".source";
   const binary = { text: "unset", diff: "unset", merge: "unset" };
   const fixtures = [
     { path: "src/routes/ordinary.tsx", attributes: undefined },
@@ -249,14 +246,8 @@ test("actual slogan scan rejects obsolete ordinary and unqualified proof text", 
   try {
     const files = fixtures.map((_, i) => join(directory, String(i)));
     await Promise.all(files.map((file) => writeFile(file, obsoleteServiceSlogan)));
-    const attributes = new Map<string, ProofAttributes>(
-      fixtures.filter((f) => f.attributes !== undefined).map((f) => [f.path, f.attributes!]),
-    );
-    const obsolete = await scanObsoleteFiles(
-      files,
-      attributes,
-      (file) => fixtures[files.indexOf(file)].path,
-    );
+    const attributes = new Map<string, ProofAttributes>(fixtures.filter((f) => f.attributes !== undefined).map((f) => [f.path, f.attributes!]));
+    const obsolete = await scanObsoleteFiles(files, attributes, (file) => fixtures[files.indexOf(file)].path);
     expect(obsolete).toEqual(files.slice(0, 5));
   } finally {
     await rm(directory, { recursive: true, force: true });

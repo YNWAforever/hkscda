@@ -1,0 +1,30 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+441 |       await tx`insert into public.receipt(id,supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,issued_at,status) values(${second}::uuid,${f.supporter}::uuid,${"T11-" + second},array[${otherDonation}::uuid,${f.donation}::uuid],20000,2026,now()+interval '1 day','issued')`;
+442 |       const before = await tx`select to_jsonb(r) value from public.receipt r order by id`;
+443 |       const processingOrder = (
+444 |         await tx`select id from public.receipt where donation_ids @> array[${f.donation}::uuid] and status='issued' order by id`
+445 |       ).map((r) => r.id);
+446 |       expect(processingOrder).toEqual([f.receipt, second]);
+                                    ^
+error: expect(received).toEqual(expected)
+
+  [
+-   "abbe1514-d6f2-45a2-8195-dad6fc4224f1",
+    "00000000-0000-0000-0000-000000000000",
++   "abbe1514-d6f2-45a2-8195-dad6fc4224f1",
+  ]
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:446:31)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:160:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 finance behavior and transaction contracts > system void late audit failure rolls back both receipts and earlier audit [64.02ms]
+
+ 0 pass
+ 66 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [162.00ms]

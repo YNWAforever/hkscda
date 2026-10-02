@@ -1,0 +1,13 @@
+{"gate": "typecheck", "command": ["bun", "run", "typecheck"], "exit": 2, "elapsedSeconds": 40.17, "log": "typecheck.log", "logSha256": "156b169966ba4a2a5bd1ebac17c418b064768eaa403358ac159513e2589b8445"}
+$ tsc --noEmit
+src/lib/donations/financeCallbackForward.database.test.ts(453,16): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/donations/financeCallbackForward.database.test.ts(487,19): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(expected: undefined): void', gave the following error.
+    Argument of type '{ value: number; is_called: boolean; }[]' is not assignable to parameter of type 'undefined'.
+  Overload 2 of 2, '(expected: undefined): void', gave the following error.
+    Argument of type '{ value: number; is_called: boolean; }[]' is not assignable to parameter of type 'undefined'.
+
+{"gate": "tests", "command": ["bun", "test", "--isolate", "--timeout", "30000"], "exit": 0, "elapsedSeconds": 88.53, "log": "tests.log", "logSha256": "4e277b27a43c624725cecaf2b034efe77abc3d5fecaf3d5aa47fca9f713ea723", "summary": ["\n 3878 pass", " 540 skip", " 0 fail", " 11650 expect() calls"]}
+{"gate": "lint", "command": ["bun", "run", "lint"], "exit": 0, "elapsedSeconds": 76.72, "log": "lint.log", "logSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a", "summary": ["\u2716 52 problems (0 errors, 52 warnings)"]}
+{"gate": "build", "command": ["bun", "run", "build"], "exit": 0, "elapsedSeconds": 68.68, "log": "build.log", "logSha256": "673859df71561d2b0944445567fc9f4b96da598f654636f06325d99324e864e9"}
+{"out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix1-gates-1790971035180073000", "eligible": false, "error": "Command '['bun', '-e', 'import {assertGates} from \"./docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt\";import {readFile} from \"node:fs/promises\";const r=JSON.parse(await readFile(process.argv[1],\"utf8\"));assertGates(r);', 'C:\\\\Users\\\\laich\\\\Documents\\\\HKCSDA\\\\HKCSDA\\\\hkscda\\\\.worktrees\\\\audit-r01-adoption-upload-20261001\\\\.superpowers\\\\sdd\\\\r01-forward-schema-plan-20261001\\\\task-11-fix1-gates-1790971035180073000\\\\receipt.json', 'local']' returned non-zero exit status 1.", "failedFinalFlags": []}
