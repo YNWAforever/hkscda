@@ -1,0 +1,29 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\atomicForward.estate.http.test.ts:
+Adoption information request failed {
+  requestId: "53178286-4bbb-4cf6-bfc4-9a0f02af1fe0",
+  error: {
+    code: "42501",
+    message: "forbidden internal diagnostic",
+  },
+}
+ 7 |     service: { deleteEstate: async () => { throw { code: "42501", message: "forbidden internal diagnostic" }; } } as never,
+ 8 |   });
+ 9 |   const response = await handlers.deleteEstate({
+10 |     request: new Request("https://example.invalid/cms", { method: "DELETE", headers: {"content-type":"application/json"}, body: JSON.stringify({id:"00000000-0000-4000-8000-000000000002"}) }),
+11 |   });
+12 |   expect(response.status).toBe(403);
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.estate.http.test.ts:12:27)
+(fail) generic estate deletion actor refusal maps to safe private 403 [56.17ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [325.00ms]

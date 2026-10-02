@@ -1,0 +1,44 @@
+bun test v1.3.14 (0d9b296a)
+{"probe":"unpublished PDF","code":"success","posts":1,"audits":1}
+
+src\lib\knowledge\atomicKnowledgeForward.database.test.ts:
+31 |         await tx`rollback to savepoint knowledge_probe`;
+32 |       }
+33 |       await tx`release savepoint knowledge_probe`;
+34 |       const [rows] = await tx`select (select count(*)::integer from public.knowledge_posts where document_asset_id=${asset}::uuid) posts,(select count(*)::integer from public.audit_log where actor_user_id=${actor}::uuid) audits`;
+35 |       console.log(JSON.stringify({probe:"unpublished PDF",code,posts:rows.posts,audits:rows.audits}));
+36 |       expect(code).toBe("23514");
+                        ^
+error: expect(received).toBe(expected)
+
+Expected: "23514"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\knowledge\atomicKnowledgeForward.database.test.ts:36:20)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) generic published knowledge rejects an unpublished PDF atomically [78.33ms]
+
+src\lib\knowledge\atomicKnowledgeForward.http.test.ts:
+{
+  code: "42501",
+  message: "internal PDF diagnostic",
+}
+ 5 |   const handlers = createAdminKnowledgeHandlers({
+ 6 |     requireKnowledgeAdmin: async () => ({authUserId:crypto.randomUUID()}) as never,
+ 7 |     service:{upsert:async () => { throw {code:"42501",message:"internal PDF diagnostic"}; }} as never,
+ 8 |   });
+ 9 |   const response = await handlers.upsert({request:new Request("https://example.invalid/api/admin/knowledge",{method:"POST",headers:{"content-type":"application/json"},body:"{}"})});
+10 |   expect(response.status).toBe(403);
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\knowledge\atomicKnowledgeForward.http.test.ts:10:27)
+(fail) actual knowledge handler maps actor refusal to safe 403 [8.02ms]
+
+ 0 pass
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 2 files. [196.00ms]

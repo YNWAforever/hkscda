@@ -1,0 +1,8 @@
+Transcript extract from exec session32398 / chunk9ac4b0; no raw process log file was captured by original wrapper.
+Exit1, Bun1.3.14, before behavior.
+{"mode":"hosted","templatePreserved":true,"modernPreserved":true}
+PostgresError: malformed array literal: "cms_promotion_command,mutate_admin_content_with_audit,mutate_dog_friendly_estate_with_audit,bump_dog_friendly_estate_version"
+errno: "22P02"
+detail: "Array value must start with \"{\" or dimension information."
+where: "unnamed portal parameter $1 = '...'"
+Normal owned clone DROP completed, no dependency applied. Modern loop not entered.
