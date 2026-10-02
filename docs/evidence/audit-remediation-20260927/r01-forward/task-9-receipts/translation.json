@@ -8104,6 +8104,1822 @@
       "canonicalSha256": "87b0ecd5e08f46f722eb56a26e060cab9e545f4eaa09b43b7baf1876d545aa27",
       "bytes": 9426,
       "gitBlob": "a7f7e3bd5735956afa87fa383fd2ce89dad0f204"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-1-report.md",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/890ecbd8cd0a065d79ff41d5499c0d06e1e6b91bfac63f31bc7d00deefdf546f.source",
+      "rawSha256": "890ecbd8cd0a065d79ff41d5499c0d06e1e6b91bfac63f31bc7d00deefdf546f",
+      "canonicalSha256": "890ecbd8cd0a065d79ff41d5499c0d06e1e6b91bfac63f31bc7d00deefdf546f",
+      "bytes": 10933,
+      "gitBlob": "7596173b5e4ddc3c3e3f5e25145c793a83af6bb2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-1-review.md",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e505428b02cb168e49201aa5cca9408faa10cf5204c32325eac81aa9d08716d3.source",
+      "rawSha256": "e505428b02cb168e49201aa5cca9408faa10cf5204c32325eac81aa9d08716d3",
+      "canonicalSha256": "e505428b02cb168e49201aa5cca9408faa10cf5204c32325eac81aa9d08716d3",
+      "bytes": 5815,
+      "gitBlob": "544ddaf17b2a2af8c7878b78e44127235c7c101f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-evidence-writer.py",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/02b8ef3ef1ab5a554139b2bfb5ecab4117e068acac0bf85059a2fda4200179ca.source",
+      "rawSha256": "02b8ef3ef1ab5a554139b2bfb5ecab4117e068acac0bf85059a2fda4200179ca",
+      "canonicalSha256": "02b8ef3ef1ab5a554139b2bfb5ecab4117e068acac0bf85059a2fda4200179ca",
+      "bytes": 12622,
+      "gitBlob": "8351e28d3985ebb6b8d9069edccd24386897a46b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-current-sm5fadvu/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/805198eefeaf77585b733a9fe0f570b7e5086e15f50c04c7c0e692d1a232aab5.source",
+      "rawSha256": "805198eefeaf77585b733a9fe0f570b7e5086e15f50c04c7c0e692d1a232aab5",
+      "canonicalSha256": "805198eefeaf77585b733a9fe0f570b7e5086e15f50c04c7c0e692d1a232aab5",
+      "bytes": 1793,
+      "gitBlob": "f73d5cf3fd1008d1ed1f1991854daaa9a6c349cd"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-current-sm5fadvu/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf.source",
+      "rawSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "canonicalSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "bytes": 4522,
+      "gitBlob": "c32b6ee87279e39b916dcec1791c9cfaae8d22c1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-current-sm5fadvu/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-current-sm5fadvu/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-current-sm5fadvu/test.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6790ff44d83d5332cd2fb5203db0638ca6ae5c8a1dd14cd58c859eac2d7050c6.source",
+      "rawSha256": "6790ff44d83d5332cd2fb5203db0638ca6ae5c8a1dd14cd58c859eac2d7050c6",
+      "canonicalSha256": "6790ff44d83d5332cd2fb5203db0638ca6ae5c8a1dd14cd58c859eac2d7050c6",
+      "bytes": 1229,
+      "gitBlob": "b9f9ad77ba80dc6be699635d08376e4982f5b32c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-sv4vebgp/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2fea310a4311c5907c2f55b8e9a236df07c8c92fe097170bdc713328a8ec820a.source",
+      "rawSha256": "2fea310a4311c5907c2f55b8e9a236df07c8c92fe097170bdc713328a8ec820a",
+      "canonicalSha256": "2fea310a4311c5907c2f55b8e9a236df07c8c92fe097170bdc713328a8ec820a",
+      "bytes": 1766,
+      "gitBlob": "787405011b9aa3c4b01c25225ac1d5a60524ee08"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-sv4vebgp/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf.source",
+      "rawSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "canonicalSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "bytes": 4522,
+      "gitBlob": "c32b6ee87279e39b916dcec1791c9cfaae8d22c1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-sv4vebgp/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-sv4vebgp/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-green-sv4vebgp/test.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6ad1709fe4c20bb25eeafaf4c55708642a9f2291f1eed2c7dad41d1eed47f786.source",
+      "rawSha256": "6ad1709fe4c20bb25eeafaf4c55708642a9f2291f1eed2c7dad41d1eed47f786",
+      "canonicalSha256": "6ad1709fe4c20bb25eeafaf4c55708642a9f2291f1eed2c7dad41d1eed47f786",
+      "bytes": 1896,
+      "gitBlob": "8c208cce6d00f6ad4ceb9fd1159f7833544ad6fa"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-current-fo_5ovhd/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/636ea64dcefe9042da7987a2b66cd0fb2ad08a0ff25b48e9d161af2c690742ea.source",
+      "rawSha256": "636ea64dcefe9042da7987a2b66cd0fb2ad08a0ff25b48e9d161af2c690742ea",
+      "canonicalSha256": "636ea64dcefe9042da7987a2b66cd0fb2ad08a0ff25b48e9d161af2c690742ea",
+      "bytes": 1722,
+      "gitBlob": "4510147e2eb598f00f5f08e278b850bfc2debe59"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-current-fo_5ovhd/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54.source",
+      "rawSha256": "597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54",
+      "canonicalSha256": "597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54",
+      "bytes": 4411,
+      "gitBlob": "6a96660762fa8bc75465f75b8976e5ce4e72ff43"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-current-fo_5ovhd/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-current-fo_5ovhd/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-current-fo_5ovhd/test.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d02f99e97a5fe96500f551777dba9f8cbd9e036ce9fb978c7a21e5c2685a5909.source",
+      "rawSha256": "d02f99e97a5fe96500f551777dba9f8cbd9e036ce9fb978c7a21e5c2685a5909",
+      "canonicalSha256": "d02f99e97a5fe96500f551777dba9f8cbd9e036ce9fb978c7a21e5c2685a5909",
+      "bytes": 11725,
+      "gitBlob": "b2dd4cf13d70de010a31bbbd0f6bec20e98cb1a5"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-r6_jicbr/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/b4de5fc12a1e75d142fafa2466a4b6f4370ea3de705e512cecd94dcfe1044e97.source",
+      "rawSha256": "b4de5fc12a1e75d142fafa2466a4b6f4370ea3de705e512cecd94dcfe1044e97",
+      "canonicalSha256": "b4de5fc12a1e75d142fafa2466a4b6f4370ea3de705e512cecd94dcfe1044e97",
+      "bytes": 1793,
+      "gitBlob": "d229e0841c1b4bc8e33371320578b900c63feaaf"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-r6_jicbr/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54.source",
+      "rawSha256": "597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54",
+      "canonicalSha256": "597e77162699ce25460b1bb7dbedd13afd4f5b9cb916531f97803a88be774c54",
+      "bytes": 4411,
+      "gitBlob": "6a96660762fa8bc75465f75b8976e5ce4e72ff43"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-r6_jicbr/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-r6_jicbr/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-2-red-r6_jicbr/test.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/678ea07c8641ad331537a670bedfcb338bd251d20e8f3d086d6ff49e6238a930.source",
+      "rawSha256": "678ea07c8641ad331537a670bedfcb338bd251d20e8f3d086d6ff49e6238a930",
+      "canonicalSha256": "678ea07c8641ad331537a670bedfcb338bd251d20e8f3d086d6ff49e6238a930",
+      "bytes": 14326,
+      "gitBlob": "794f41c0bddc4fd05aa05759e8e3f5fd22a82ce6"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/.gitattributes",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da.source",
+      "rawSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+      "canonicalSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+      "bytes": 8,
+      "gitBlob": "fa1385d99a319b43c06f5309d1aae9fdd3adea46"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/build.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/279d16ba028c9269724512bda95c63d2a9ca30327c175a07a142e32fa40dbc93.source",
+      "rawSha256": "279d16ba028c9269724512bda95c63d2a9ca30327c175a07a142e32fa40dbc93",
+      "canonicalSha256": "279d16ba028c9269724512bda95c63d2a9ca30327c175a07a142e32fa40dbc93",
+      "bytes": 120067,
+      "gitBlob": "55cbe5ee6a6497a4a541af52f1559cfa7039eefc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/lint.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a.source",
+      "rawSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "canonicalSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696,
+      "gitBlob": "e26a53e181f0152d140961ba882ad1cb890771fe"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/cd04e53f6308dfe91f8c539dacf05ad6c02c482f5370ddadad175d1b9587e4ea.source",
+      "rawSha256": "cd04e53f6308dfe91f8c539dacf05ad6c02c482f5370ddadad175d1b9587e4ea",
+      "canonicalSha256": "a10da36ca41cfe9be4db5f3e3f1a57bb6dacdda4b1308841af8b3c00f386e263",
+      "bytes": 27663,
+      "gitBlob": "6d427429a4d44f182236bbb124f799bbdcb32ccd"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8.source",
+      "rawSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+      "canonicalSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+      "bytes": 352877,
+      "gitBlob": "d82f22434ec62458c2869a2ff60d837f21a7d354"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c.source",
+      "rawSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "canonicalSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "bytes": 30032,
+      "gitBlob": "d030db5c496b062416995ba73d2efde26c6b4dd8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2.source",
+      "rawSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "canonicalSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "bytes": 2424,
+      "gitBlob": "2c9176c0a46d3e8c3f98f515da05d2368eb94a07"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s003.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb.source",
+      "rawSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "canonicalSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "bytes": 5284,
+      "gitBlob": "a9fcbf52db3085bbd8f8f4911336b75c263e4bc1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s004.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7.source",
+      "rawSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "canonicalSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "bytes": 4744,
+      "gitBlob": "cd4c38b9c4c653abacf43980557072ee8177a820"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s005.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421.source",
+      "rawSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "canonicalSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "bytes": 85687,
+      "gitBlob": "e08ead3c8fe789d06896399a28aa2f1801a29518"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s006.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8.source",
+      "rawSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "canonicalSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "bytes": 23684,
+      "gitBlob": "a20d60626c64b16248f764caa543e9f3aa92f8a9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s007.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s008.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf.source",
+      "rawSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "canonicalSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "bytes": 4522,
+      "gitBlob": "c32b6ee87279e39b916dcec1791c9cfaae8d22c1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s009.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s010.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142,
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s011.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "bytes": 5118,
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s012.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "bytes": 44055,
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s013.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef.source",
+      "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "bytes": 5746,
+      "gitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s014.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa.source",
+      "rawSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "canonicalSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "bytes": 4467,
+      "gitBlob": "8d7e38ddc2a290cfb8f5754a576302b5019a96e0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s015.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15.source",
+      "rawSha256": "6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15",
+      "canonicalSha256": "6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15",
+      "bytes": 12720,
+      "gitBlob": "d84e8a830ab9863760d501fc90950a4587a33be5"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s016.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e.source",
+      "rawSha256": "9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e",
+      "canonicalSha256": "9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e",
+      "bytes": 43856,
+      "gitBlob": "8901eebdf0440cc830b84b1e2904d880a7bf968e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s017.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "bytes": 15241,
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s018.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "bytes": 5204,
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s019.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "bytes": 37542,
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s020.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "bytes": 18234,
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s021.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "bytes": 34033,
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s022.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "bytes": 44473,
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s023.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901.source",
+      "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "bytes": 214203,
+      "gitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s024.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52.source",
+      "rawSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "canonicalSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "bytes": 8851,
+      "gitBlob": "2c82f6410ee31f76664199aa5a7a7533e459e2b7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s025.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0.source",
+      "rawSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "canonicalSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "bytes": 2632,
+      "gitBlob": "7974f2bbd367bb64dc77f2a1791e6fc0ebd49a84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s026.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a.source",
+      "rawSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "canonicalSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "bytes": 729,
+      "gitBlob": "534827f633bb40780e2cb6cf3b42f58cc543576f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s027.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d.source",
+      "rawSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "canonicalSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "bytes": 3361172,
+      "gitBlob": "74a43492bb5ef60edd182dd76c557a063283972e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s028.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5.source",
+      "rawSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "canonicalSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "bytes": 3330436,
+      "gitBlob": "a51ce026a62be8b6fb8878b588a09956d7884965"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s029.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798.source",
+      "rawSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "canonicalSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "bytes": 581,
+      "gitBlob": "5c4a745643c1f5966feef67eb46f59442dac1342"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s030.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262.source",
+      "rawSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "bytes": 701,
+      "gitBlob": "02f75bdefbb4db5fb6438138c7bdda44053e2032"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s031.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f.source",
+      "rawSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "bytes": 11434,
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s032.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172.source",
+      "rawSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "bytes": 1480,
+      "gitBlob": "85e25a9d42429091572dc22075ad47518e654ac0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s033.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c.source",
+      "rawSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "bytes": 6502,
+      "gitBlob": "fd933196de2109375db2ab25785d1ffc9f99c100"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s034.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00.source",
+      "rawSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "canonicalSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "bytes": 3918,
+      "gitBlob": "94f2d2e431d1a826336727c64a415255b329e621"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s035.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b.source",
+      "rawSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "canonicalSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "bytes": 10526,
+      "gitBlob": "6555ca58697753269eceb9ed36c89332103e21d2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s036.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86.source",
+      "rawSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "canonicalSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "bytes": 1070,
+      "gitBlob": "2f44ccfaca9e7e0a41a09c77b4ea1de734280429"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s037.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818.source",
+      "rawSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "canonicalSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "bytes": 941,
+      "gitBlob": "912ebe1d0919691de16e5d663145e32a328386ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s038.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98.source",
+      "rawSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "canonicalSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "bytes": 3825,
+      "gitBlob": "75cc9ed4869761e4719346d1b029ef7c58244dba"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s039.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e.source",
+      "rawSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "canonicalSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "bytes": 9204,
+      "gitBlob": "68018d5ff1eaf5f301ce7461f09a3682c2f7256b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s040.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172.source",
+      "rawSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "canonicalSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "bytes": 1140,
+      "gitBlob": "1ec448631dbbab00228e4ba8b056d8b15a61f05b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s041.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b.source",
+      "rawSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "bytes": 363,
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s042.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c.source",
+      "rawSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "canonicalSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "bytes": 1461,
+      "gitBlob": "6c80a35a5d54f687c85e6ad46f7da4ba20bda2d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s043.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f.source",
+      "rawSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "canonicalSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "bytes": 1617,
+      "gitBlob": "4cbe943350d48fea63c6a9d7f59f08f20be8e427"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s044.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7.source",
+      "rawSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "canonicalSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "bytes": 1309,
+      "gitBlob": "ffa71fd71cfe033fa20894c982ffe55ed53319e0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s045.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da.source",
+      "rawSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "canonicalSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "bytes": 11993,
+      "gitBlob": "d49fe5c7cd0c53e47cb1c7777f5760eaecaf2950"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s046.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4.source",
+      "rawSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "canonicalSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "bytes": 4918,
+      "gitBlob": "5af06919c89f6d0a3d0a203a5751cd2f8004629a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s047.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a.source",
+      "rawSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "canonicalSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "bytes": 2068,
+      "gitBlob": "48badc635a41307f16697a39cd126f3368d0a01a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s048.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448.source",
+      "rawSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "canonicalSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "bytes": 1845,
+      "gitBlob": "f08f3c23d2cda9e982664a11e234fe50d74200f2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s049.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f.source",
+      "rawSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "bytes": 2584,
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s050.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a.source",
+      "rawSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "bytes": 5942,
+      "gitBlob": "ab157595bcffcf4dc46d03ba93739cf02301319e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s051.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188.source",
+      "rawSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "canonicalSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "bytes": 3723,
+      "gitBlob": "4eaec349ae4548ae70d1f9ab63741b41cdf6efe7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s052.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331.source",
+      "rawSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "canonicalSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "bytes": 3832,
+      "gitBlob": "a690fb784c30702851d8fd5b649c2e6a39e85686"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s053.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549.source",
+      "rawSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "canonicalSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "bytes": 4733,
+      "gitBlob": "dba445193c06557584dba4c91ecab4925ef3d709"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s054.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc.source",
+      "rawSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "canonicalSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "bytes": 1094,
+      "gitBlob": "30c189cb9028c2c90202adae9777012b376ff2e7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s055.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62.source",
+      "rawSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "canonicalSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "bytes": 1888,
+      "gitBlob": "37dc1c26acdc7ae5a8bb96cbe756d5b5bbf88efc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s056.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab.source",
+      "rawSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "canonicalSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "bytes": 3279,
+      "gitBlob": "91761950ce929b739a6275c30347e0435cc3cad8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s057.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6.source",
+      "rawSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "canonicalSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "bytes": 980,
+      "gitBlob": "61b298b97497e789f796b1e4ecabd1d6f971347d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s058.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a.source",
+      "rawSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "canonicalSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "bytes": 5986,
+      "gitBlob": "be2fffc8f941f1790e42b20b07d9ec9d9ebcb517"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s059.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d.source",
+      "rawSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "canonicalSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "bytes": 4014,
+      "gitBlob": "7f19cc5e9ac86c2e8e37bf9a0387b403597ebabb"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s060.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99.source",
+      "rawSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "canonicalSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "bytes": 1279,
+      "gitBlob": "16f0116ddd4042313545d476f70228fc27446d41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s061.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3.source",
+      "rawSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "canonicalSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "bytes": 2733,
+      "gitBlob": "b8cc3374afcc2f87ed433300edc48542e0a3536a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s062.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s063.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a.source",
+      "rawSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "bytes": 4988,
+      "gitBlob": "043a1e7d45f1cfbe92ff0306304817ecd253a891"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s064.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84.source",
+      "rawSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "bytes": 207497,
+      "gitBlob": "0d6238fb8646bc4263cad4021f7e83a1d0905cd2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s065.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491.source",
+      "rawSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "canonicalSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "bytes": 739,
+      "gitBlob": "5080bdcc058940fb0a41ed02cc5298a65b9f99e6"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s066.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200.source",
+      "rawSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "canonicalSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "bytes": 1454,
+      "gitBlob": "2d972c0016abb8812712a3e20bc7dc4c01d0ecd2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s067.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c.source",
+      "rawSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "canonicalSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "bytes": 842,
+      "gitBlob": "3b977120096bf07a73d33b24833575880b2afbb3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s068.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9.source",
+      "rawSha256": "a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9",
+      "canonicalSha256": "a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9",
+      "bytes": 16079,
+      "gitBlob": "f732088f59db7260b6567c412ffaeb611a397c79"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/s069.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/dbb6995e33e8b3a4ea0bb5993ed5d8f0e5e72c9f2890e088d31f6b80098ea31a.source",
+      "rawSha256": "dbb6995e33e8b3a4ea0bb5993ed5d8f0e5e72c9f2890e088d31f6b80098ea31a",
+      "canonicalSha256": "dbb6995e33e8b3a4ea0bb5993ed5d8f0e5e72c9f2890e088d31f6b80098ea31a",
+      "bytes": 1909,
+      "gitBlob": "177f2d95de7e4f16882541f3ad1f1aa7fb13a03a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/tests.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/09e6834a1a85f0b6a6587dc88b33859d304e1578a74c44623d8570c822fd40a3.source",
+      "rawSha256": "09e6834a1a85f0b6a6587dc88b33859d304e1578a74c44623d8570c822fd40a3",
+      "canonicalSha256": "09e6834a1a85f0b6a6587dc88b33859d304e1578a74c44623d8570c822fd40a3",
+      "bytes": 450812,
+      "gitBlob": "1a248c281a4a187b49bdd0a269354ea3ed4f9fad"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790924885691400900/typecheck.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92.source",
+      "rawSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "canonicalSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15,
+      "gitBlob": "f5b99e8a88f3351bff2d974f340241915d097a47"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d3f34be5772285e00b7144950f6921333f035979e36ab4cb6c1af022805bf53d.source",
+      "rawSha256": "d3f34be5772285e00b7144950f6921333f035979e36ab4cb6c1af022805bf53d",
+      "canonicalSha256": "d3f34be5772285e00b7144950f6921333f035979e36ab4cb6c1af022805bf53d",
+      "bytes": 39856,
+      "gitBlob": "9ad924d40f5b5096dbeacc787cadf8e753c40b7b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8.source",
+      "rawSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+      "canonicalSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+      "bytes": 352877,
+      "gitBlob": "d82f22434ec62458c2869a2ff60d837f21a7d354"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c.source",
+      "rawSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "canonicalSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "bytes": 30032,
+      "gitBlob": "d030db5c496b062416995ba73d2efde26c6b4dd8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2.source",
+      "rawSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "canonicalSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "bytes": 2424,
+      "gitBlob": "2c9176c0a46d3e8c3f98f515da05d2368eb94a07"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s003.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb.source",
+      "rawSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "canonicalSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "bytes": 5284,
+      "gitBlob": "a9fcbf52db3085bbd8f8f4911336b75c263e4bc1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s004.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7.source",
+      "rawSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "canonicalSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "bytes": 4744,
+      "gitBlob": "cd4c38b9c4c653abacf43980557072ee8177a820"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s005.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421.source",
+      "rawSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "canonicalSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "bytes": 85687,
+      "gitBlob": "e08ead3c8fe789d06896399a28aa2f1801a29518"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s006.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8.source",
+      "rawSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "canonicalSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "bytes": 23684,
+      "gitBlob": "a20d60626c64b16248f764caa543e9f3aa92f8a9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s007.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s008.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf.source",
+      "rawSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "canonicalSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "bytes": 4522,
+      "gitBlob": "c32b6ee87279e39b916dcec1791c9cfaae8d22c1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s009.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s010.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142,
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s011.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "bytes": 5118,
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s012.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "bytes": 44055,
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s013.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef.source",
+      "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "bytes": 5746,
+      "gitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s014.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa.source",
+      "rawSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "canonicalSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "bytes": 4467,
+      "gitBlob": "8d7e38ddc2a290cfb8f5754a576302b5019a96e0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s015.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15.source",
+      "rawSha256": "6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15",
+      "canonicalSha256": "6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15",
+      "bytes": 12720,
+      "gitBlob": "d84e8a830ab9863760d501fc90950a4587a33be5"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s016.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e.source",
+      "rawSha256": "9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e",
+      "canonicalSha256": "9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e",
+      "bytes": 43856,
+      "gitBlob": "8901eebdf0440cc830b84b1e2904d880a7bf968e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s017.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "bytes": 15241,
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s018.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "bytes": 5204,
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s019.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "bytes": 37542,
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s020.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "bytes": 18234,
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s021.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "bytes": 34033,
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s022.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "bytes": 44473,
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s023.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901.source",
+      "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "bytes": 214203,
+      "gitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s024.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52.source",
+      "rawSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "canonicalSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "bytes": 8851,
+      "gitBlob": "2c82f6410ee31f76664199aa5a7a7533e459e2b7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s025.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0.source",
+      "rawSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "canonicalSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "bytes": 2632,
+      "gitBlob": "7974f2bbd367bb64dc77f2a1791e6fc0ebd49a84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s026.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a.source",
+      "rawSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "canonicalSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "bytes": 729,
+      "gitBlob": "534827f633bb40780e2cb6cf3b42f58cc543576f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s027.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d.source",
+      "rawSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "canonicalSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "bytes": 3361172,
+      "gitBlob": "74a43492bb5ef60edd182dd76c557a063283972e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s028.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5.source",
+      "rawSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "canonicalSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "bytes": 3330436,
+      "gitBlob": "a51ce026a62be8b6fb8878b588a09956d7884965"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s029.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798.source",
+      "rawSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "canonicalSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "bytes": 581,
+      "gitBlob": "5c4a745643c1f5966feef67eb46f59442dac1342"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s030.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262.source",
+      "rawSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "bytes": 701,
+      "gitBlob": "02f75bdefbb4db5fb6438138c7bdda44053e2032"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s031.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f.source",
+      "rawSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "bytes": 11434,
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s032.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172.source",
+      "rawSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "bytes": 1480,
+      "gitBlob": "85e25a9d42429091572dc22075ad47518e654ac0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s033.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c.source",
+      "rawSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "bytes": 6502,
+      "gitBlob": "fd933196de2109375db2ab25785d1ffc9f99c100"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s034.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00.source",
+      "rawSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "canonicalSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "bytes": 3918,
+      "gitBlob": "94f2d2e431d1a826336727c64a415255b329e621"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s035.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b.source",
+      "rawSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "canonicalSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "bytes": 10526,
+      "gitBlob": "6555ca58697753269eceb9ed36c89332103e21d2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s036.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86.source",
+      "rawSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "canonicalSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "bytes": 1070,
+      "gitBlob": "2f44ccfaca9e7e0a41a09c77b4ea1de734280429"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s037.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818.source",
+      "rawSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "canonicalSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "bytes": 941,
+      "gitBlob": "912ebe1d0919691de16e5d663145e32a328386ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s038.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98.source",
+      "rawSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "canonicalSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "bytes": 3825,
+      "gitBlob": "75cc9ed4869761e4719346d1b029ef7c58244dba"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s039.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e.source",
+      "rawSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "canonicalSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "bytes": 9204,
+      "gitBlob": "68018d5ff1eaf5f301ce7461f09a3682c2f7256b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s040.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172.source",
+      "rawSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "canonicalSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "bytes": 1140,
+      "gitBlob": "1ec448631dbbab00228e4ba8b056d8b15a61f05b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s041.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b.source",
+      "rawSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "bytes": 363,
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s042.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c.source",
+      "rawSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "canonicalSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "bytes": 1461,
+      "gitBlob": "6c80a35a5d54f687c85e6ad46f7da4ba20bda2d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s043.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f.source",
+      "rawSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "canonicalSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "bytes": 1617,
+      "gitBlob": "4cbe943350d48fea63c6a9d7f59f08f20be8e427"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s044.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7.source",
+      "rawSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "canonicalSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "bytes": 1309,
+      "gitBlob": "ffa71fd71cfe033fa20894c982ffe55ed53319e0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s045.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da.source",
+      "rawSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "canonicalSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "bytes": 11993,
+      "gitBlob": "d49fe5c7cd0c53e47cb1c7777f5760eaecaf2950"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s046.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4.source",
+      "rawSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "canonicalSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "bytes": 4918,
+      "gitBlob": "5af06919c89f6d0a3d0a203a5751cd2f8004629a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s047.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a.source",
+      "rawSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "canonicalSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "bytes": 2068,
+      "gitBlob": "48badc635a41307f16697a39cd126f3368d0a01a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s048.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448.source",
+      "rawSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "canonicalSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "bytes": 1845,
+      "gitBlob": "f08f3c23d2cda9e982664a11e234fe50d74200f2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s049.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f.source",
+      "rawSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "bytes": 2584,
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s050.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a.source",
+      "rawSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "bytes": 5942,
+      "gitBlob": "ab157595bcffcf4dc46d03ba93739cf02301319e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s051.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188.source",
+      "rawSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "canonicalSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "bytes": 3723,
+      "gitBlob": "4eaec349ae4548ae70d1f9ab63741b41cdf6efe7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s052.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331.source",
+      "rawSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "canonicalSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "bytes": 3832,
+      "gitBlob": "a690fb784c30702851d8fd5b649c2e6a39e85686"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s053.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549.source",
+      "rawSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "canonicalSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "bytes": 4733,
+      "gitBlob": "dba445193c06557584dba4c91ecab4925ef3d709"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s054.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc.source",
+      "rawSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "canonicalSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "bytes": 1094,
+      "gitBlob": "30c189cb9028c2c90202adae9777012b376ff2e7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s055.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62.source",
+      "rawSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "canonicalSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "bytes": 1888,
+      "gitBlob": "37dc1c26acdc7ae5a8bb96cbe756d5b5bbf88efc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s056.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab.source",
+      "rawSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "canonicalSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "bytes": 3279,
+      "gitBlob": "91761950ce929b739a6275c30347e0435cc3cad8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s057.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6.source",
+      "rawSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "canonicalSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "bytes": 980,
+      "gitBlob": "61b298b97497e789f796b1e4ecabd1d6f971347d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s058.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a.source",
+      "rawSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "canonicalSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "bytes": 5986,
+      "gitBlob": "be2fffc8f941f1790e42b20b07d9ec9d9ebcb517"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s059.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d.source",
+      "rawSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "canonicalSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "bytes": 4014,
+      "gitBlob": "7f19cc5e9ac86c2e8e37bf9a0387b403597ebabb"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s060.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99.source",
+      "rawSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "canonicalSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "bytes": 1279,
+      "gitBlob": "16f0116ddd4042313545d476f70228fc27446d41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/s061.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3.source",
+      "rawSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "canonicalSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "bytes": 2733,
+      "gitBlob": "b8cc3374afcc2f87ed433300edc48542e0a3536a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790924549998/tests.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2785266230ac6196cf424bb64143926628b5c77f3a7dea34f9534eefc0863d1b.source",
+      "rawSha256": "2785266230ac6196cf424bb64143926628b5c77f3a7dea34f9534eefc0863d1b",
+      "canonicalSha256": "2785266230ac6196cf424bb64143926628b5c77f3a7dea34f9534eefc0863d1b",
+      "bytes": 7349,
+      "gitBlob": "be2f44a898f56d180c66f8182755d1c44656f7d2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/98f3a88cb25f0df19ad2b261fa692138cb6e21c3fee27af6952fb3ca98084b2f.source",
+      "rawSha256": "98f3a88cb25f0df19ad2b261fa692138cb6e21c3fee27af6952fb3ca98084b2f",
+      "canonicalSha256": "98f3a88cb25f0df19ad2b261fa692138cb6e21c3fee27af6952fb3ca98084b2f",
+      "bytes": 40822,
+      "gitBlob": "4707012c70c2efbdec4eb9aa7a484e1d1863ac04"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s000.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8.source",
+      "rawSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+      "canonicalSha256": "e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8",
+      "bytes": 352877,
+      "gitBlob": "d82f22434ec62458c2869a2ff60d837f21a7d354"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s001.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c.source",
+      "rawSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "canonicalSha256": "9da71f425794b65455a23967aaf56a963d31d2f246c617c7d778e85c38c5b31c",
+      "bytes": 30032,
+      "gitBlob": "d030db5c496b062416995ba73d2efde26c6b4dd8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s002.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2.source",
+      "rawSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "canonicalSha256": "5518a384ebf3eb2da1e2fa55c472c11f080e499d85aa1b70413868811d423dd2",
+      "bytes": 2424,
+      "gitBlob": "2c9176c0a46d3e8c3f98f515da05d2368eb94a07"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s003.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb.source",
+      "rawSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "canonicalSha256": "6025acdc8c5f0f33b5a8ac3f9a32a6d15b279c68d9f6e3b1e04d0633d1da9eeb",
+      "bytes": 5284,
+      "gitBlob": "a9fcbf52db3085bbd8f8f4911336b75c263e4bc1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s004.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7.source",
+      "rawSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "canonicalSha256": "84065d665375bd0ba2f7eb326d1c1c8b61fa70677198d8952e7ad665d0e638b7",
+      "bytes": 4744,
+      "gitBlob": "cd4c38b9c4c653abacf43980557072ee8177a820"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s005.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421.source",
+      "rawSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "canonicalSha256": "6907b067463ac77869279bd79990aaeab37977f56cb1e107c9a2236eeb290421",
+      "bytes": 85687,
+      "gitBlob": "e08ead3c8fe789d06896399a28aa2f1801a29518"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s006.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8.source",
+      "rawSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "canonicalSha256": "e3e17f99e16645d725eece3535cfb35e3a75cefd17032f2cf0370e6745e2a0c8",
+      "bytes": 23684,
+      "gitBlob": "a20d60626c64b16248f764caa543e9f3aa92f8a9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s007.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1.source",
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "bytes": 24683,
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s008.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf.source",
+      "rawSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "canonicalSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "bytes": 4522,
+      "gitBlob": "c32b6ee87279e39b916dcec1791c9cfaae8d22c1"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s009.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016.source",
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "bytes": 4793,
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s010.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519.source",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142,
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s011.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564.source",
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "bytes": 5118,
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s012.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3.source",
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "bytes": 44055,
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s013.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef.source",
+      "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "bytes": 5746,
+      "gitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s014.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa.source",
+      "rawSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "canonicalSha256": "be1d2c5d07e39b417babc97277ae5ab4e92619b3c16d98b8cff2e3e2f2885caa",
+      "bytes": 4467,
+      "gitBlob": "8d7e38ddc2a290cfb8f5754a576302b5019a96e0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s015.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15.source",
+      "rawSha256": "6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15",
+      "canonicalSha256": "6cfb39755a2cdeaf4fcbd015201d1072dd33566f8e97dae5b44b97c0a4ce0a15",
+      "bytes": 12720,
+      "gitBlob": "d84e8a830ab9863760d501fc90950a4587a33be5"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s016.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e.source",
+      "rawSha256": "9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e",
+      "canonicalSha256": "9ce8df26385c58e5fc76dba31cff49ca5d8ca4cacbccf8d992f43f3fd2fcb77e",
+      "bytes": 43856,
+      "gitBlob": "8901eebdf0440cc830b84b1e2904d880a7bf968e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s017.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3.source",
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "bytes": 15241,
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s018.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867.source",
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "bytes": 5204,
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s019.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c.source",
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "bytes": 37542,
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s020.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41.source",
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "bytes": 18234,
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s021.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca.source",
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "bytes": 34033,
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s022.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0.source",
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "bytes": 44473,
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s023.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901.source",
+      "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "bytes": 214203,
+      "gitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s024.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52.source",
+      "rawSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "canonicalSha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52",
+      "bytes": 8851,
+      "gitBlob": "2c82f6410ee31f76664199aa5a7a7533e459e2b7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s025.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0.source",
+      "rawSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "canonicalSha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0",
+      "bytes": 2632,
+      "gitBlob": "7974f2bbd367bb64dc77f2a1791e6fc0ebd49a84"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s026.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a.source",
+      "rawSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "canonicalSha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a",
+      "bytes": 729,
+      "gitBlob": "534827f633bb40780e2cb6cf3b42f58cc543576f"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s027.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d.source",
+      "rawSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "canonicalSha256": "0ca960964f75c1a4f7bb606d6b34609556e6ad170751abe9006f1b4cb4c24a9d",
+      "bytes": 3361172,
+      "gitBlob": "74a43492bb5ef60edd182dd76c557a063283972e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s028.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5.source",
+      "rawSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "canonicalSha256": "569ed4b6a50458e2018f2da398c3fb314d0297f1916f42ac096d0a2b7acdcec5",
+      "bytes": 3330436,
+      "gitBlob": "a51ce026a62be8b6fb8878b588a09956d7884965"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s029.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798.source",
+      "rawSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "canonicalSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "bytes": 581,
+      "gitBlob": "5c4a745643c1f5966feef67eb46f59442dac1342"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s030.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262.source",
+      "rawSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "bytes": 701,
+      "gitBlob": "02f75bdefbb4db5fb6438138c7bdda44053e2032"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s031.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f.source",
+      "rawSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "bytes": 11434,
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s032.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172.source",
+      "rawSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "bytes": 1480,
+      "gitBlob": "85e25a9d42429091572dc22075ad47518e654ac0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s033.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c.source",
+      "rawSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "bytes": 6502,
+      "gitBlob": "fd933196de2109375db2ab25785d1ffc9f99c100"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s034.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00.source",
+      "rawSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "canonicalSha256": "0395ccc534abd93d5dd90d9f6310955dfd9bd3986b08f7e183d9a4f17a21bf00",
+      "bytes": 3918,
+      "gitBlob": "94f2d2e431d1a826336727c64a415255b329e621"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s035.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b.source",
+      "rawSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "canonicalSha256": "9b92435c71b13e039ef4fdc52941f977786ab55af12b79b8470201be1276736b",
+      "bytes": 10526,
+      "gitBlob": "6555ca58697753269eceb9ed36c89332103e21d2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s036.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86.source",
+      "rawSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "canonicalSha256": "ce068a3874b55b4aaf9be545c0e52a3e1c899d166eb1b315ea1a99a6c2d5bb86",
+      "bytes": 1070,
+      "gitBlob": "2f44ccfaca9e7e0a41a09c77b4ea1de734280429"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s037.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818.source",
+      "rawSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "canonicalSha256": "989e578420fd0a79e6deef05af442f00411bcdcb89c77af6c213293c90e43818",
+      "bytes": 941,
+      "gitBlob": "912ebe1d0919691de16e5d663145e32a328386ca"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s038.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98.source",
+      "rawSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "canonicalSha256": "1821a9ff557d9a4d4a088c5eb8236a18dd18874191437bf2bb54e9f8214a6e98",
+      "bytes": 3825,
+      "gitBlob": "75cc9ed4869761e4719346d1b029ef7c58244dba"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s039.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e.source",
+      "rawSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "canonicalSha256": "0a3260f7b9298f1877865f6b76af1ecff14db9489585aac7a8725eabccd3316e",
+      "bytes": 9204,
+      "gitBlob": "68018d5ff1eaf5f301ce7461f09a3682c2f7256b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s040.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172.source",
+      "rawSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "canonicalSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "bytes": 1140,
+      "gitBlob": "1ec448631dbbab00228e4ba8b056d8b15a61f05b"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s041.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b.source",
+      "rawSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "bytes": 363,
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s042.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c.source",
+      "rawSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "canonicalSha256": "4b4aa2655811eaa13bb1f114ec7c8ba419d81abffcb3eac57ee1613a4433ac9c",
+      "bytes": 1461,
+      "gitBlob": "6c80a35a5d54f687c85e6ad46f7da4ba20bda2d7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s043.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f.source",
+      "rawSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "canonicalSha256": "d64751c335b1d8297cf0acf9c4bd23e5dc92d3919dc1bad7c1f53292d93d865f",
+      "bytes": 1617,
+      "gitBlob": "4cbe943350d48fea63c6a9d7f59f08f20be8e427"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s044.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7.source",
+      "rawSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "canonicalSha256": "1759e6cd2435c36fbb7ce0ad46c671b4b027a7b694db83f48932e6e9077945c7",
+      "bytes": 1309,
+      "gitBlob": "ffa71fd71cfe033fa20894c982ffe55ed53319e0"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s045.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da.source",
+      "rawSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "canonicalSha256": "59e94cf3e0a330476e6eaec2a8edd69395bcbfad351bc4f8a30babd2187659da",
+      "bytes": 11993,
+      "gitBlob": "d49fe5c7cd0c53e47cb1c7777f5760eaecaf2950"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s046.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4.source",
+      "rawSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "canonicalSha256": "738b1dfdbf5d01fa59bb4aa6d31f80c3e96f78bd12595d186a488503d33704f4",
+      "bytes": 4918,
+      "gitBlob": "5af06919c89f6d0a3d0a203a5751cd2f8004629a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s047.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a.source",
+      "rawSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "canonicalSha256": "9024777f3b0167a735453b88c45f1ab2bf2d73bdacbb0687974544ecfe6ebb9a",
+      "bytes": 2068,
+      "gitBlob": "48badc635a41307f16697a39cd126f3368d0a01a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s048.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448.source",
+      "rawSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "canonicalSha256": "7def7c083329ecf42a7c12569d9f05292809f8a689717a8634b2cd1b37296448",
+      "bytes": 1845,
+      "gitBlob": "f08f3c23d2cda9e982664a11e234fe50d74200f2"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s049.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f.source",
+      "rawSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "bytes": 2584,
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s050.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a.source",
+      "rawSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "bytes": 5942,
+      "gitBlob": "ab157595bcffcf4dc46d03ba93739cf02301319e"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s051.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188.source",
+      "rawSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "canonicalSha256": "20612f3ac4689f93b4c271f73c2e9dbb797bd307d04e761d90fadb5c87146188",
+      "bytes": 3723,
+      "gitBlob": "4eaec349ae4548ae70d1f9ab63741b41cdf6efe7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s052.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331.source",
+      "rawSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "canonicalSha256": "2f382364b819535a7b7ca2fce04544ad5fd5100ead5376290a6de713a109e331",
+      "bytes": 3832,
+      "gitBlob": "a690fb784c30702851d8fd5b649c2e6a39e85686"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s053.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549.source",
+      "rawSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "canonicalSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "bytes": 4733,
+      "gitBlob": "dba445193c06557584dba4c91ecab4925ef3d709"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s054.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc.source",
+      "rawSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "canonicalSha256": "c16f34ed7df01253b3c7686adb0fceb1db3ddfeea2736a2b9ad8696081e10bcc",
+      "bytes": 1094,
+      "gitBlob": "30c189cb9028c2c90202adae9777012b376ff2e7"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s055.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62.source",
+      "rawSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "canonicalSha256": "ee74999e5cb3a826b156dfc7c9e1b33343d610dfd613060ee939aea4611c0d62",
+      "bytes": 1888,
+      "gitBlob": "37dc1c26acdc7ae5a8bb96cbe756d5b5bbf88efc"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s056.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab.source",
+      "rawSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "canonicalSha256": "eba8854cb297cd81fe347665d0f5e34d31721376d8ebaeb8fa17c51341594eab",
+      "bytes": 3279,
+      "gitBlob": "91761950ce929b739a6275c30347e0435cc3cad8"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s057.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6.source",
+      "rawSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "canonicalSha256": "62c7085d82bdd89132e00d1c67df656fa17ed474d2d9a237d81379dd1c649ea6",
+      "bytes": 980,
+      "gitBlob": "61b298b97497e789f796b1e4ecabd1d6f971347d"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s058.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a.source",
+      "rawSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "canonicalSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "bytes": 5986,
+      "gitBlob": "be2fffc8f941f1790e42b20b07d9ec9d9ebcb517"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s059.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d.source",
+      "rawSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "canonicalSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "bytes": 4014,
+      "gitBlob": "7f19cc5e9ac86c2e8e37bf9a0387b403597ebabb"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s060.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99.source",
+      "rawSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "canonicalSha256": "8e38ddee7323a9dda05ca2c5de51ba1f28bf8d2b0d780680706a92e5bb7deb99",
+      "bytes": 1279,
+      "gitBlob": "16f0116ddd4042313545d476f70228fc27446d41"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/s061.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3.source",
+      "rawSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "canonicalSha256": "e1a47511ebd174bab1511398ff7b0c6e1a97006022ced157c7e086efe52bb0c3",
+      "bytes": 2733,
+      "gitBlob": "b8cc3374afcc2f87ed433300edc48542e0a3536a"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790924800311/tests.log",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/47b2c0dd112fddca0964d7883f8380b682fb17a4ac952d2273feb287a57f3a84.source",
+      "rawSha256": "47b2c0dd112fddca0964d7883f8380b682fb17a4ac952d2273feb287a57f3a84",
+      "canonicalSha256": "47b2c0dd112fddca0964d7883f8380b682fb17a4ac952d2273feb287a57f3a84",
+      "bytes": 7326,
+      "gitBlob": "74522199e2c2e03d57ff8fbffcb122907bd2f866"
     }
   ]
 }
