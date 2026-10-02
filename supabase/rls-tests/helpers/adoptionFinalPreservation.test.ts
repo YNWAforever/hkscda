@@ -86,6 +86,9 @@ test("actual finalization accepts all final flags exactly true", async () => {
   expect(result.receipt.error).toBeUndefined();
 });
 async function selected(flag?: string, value?: unknown) {
+  await mkdir(resolve(root, ".superpowers/sdd/r01-forward-schema-plan-20261001"), {
+    recursive: true,
+  });
   const dir = await mkdtemp(
     resolve(root, ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-inert-"),
   );
