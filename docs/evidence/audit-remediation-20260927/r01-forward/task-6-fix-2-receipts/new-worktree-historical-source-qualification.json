@@ -1,0 +1,23 @@
+[
+  {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-bind.py",
+    "oldObservedRawSHA256": "58fe4a087b3f1d04654b26482e5886cf07a083ada927fa63676431048e0a673c",
+    "currentRawSHA256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+    "canonicalSHA256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+    "qualification": "New-worktree Git checkout normalizes historical script line endings; canonical source unchanged. Old8b actual raw receipt/map is historical and unmodified; this is not a claim that all old71 current paths match."
+  },
+  {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-cleanup.ts",
+    "oldObservedRawSHA256": "cc127cdd7a134969c1da4673b9a64a70dff1c58b049621057da7bc77b6a5325e",
+    "currentRawSHA256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+    "canonicalSHA256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+    "qualification": "New-worktree Git checkout normalizes historical script line endings; canonical source unchanged. Old8b actual raw receipt/map is historical and unmodified; this is not a claim that all old71 current paths match."
+  },
+  {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-report.py",
+    "oldObservedRawSHA256": "73b776cc0c41fecea38f15d4717dba2d6a9a1f372b03770b389410954438314d",
+    "currentRawSHA256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+    "canonicalSHA256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+    "qualification": "New-worktree Git checkout normalizes historical script line endings; canonical source unchanged. Old8b actual raw receipt/map is historical and unmodified; this is not a claim that all old71 current paths match."
+  }
+]

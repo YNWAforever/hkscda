@@ -1,0 +1,1678 @@
+{
+  "schema": "r01-task6-fix2-binding-v1",
+  "executionParent": "8b665fa4c05c20d728a7fb9617312c377618bc07",
+  "branch": "codex/audit-r01-crm-atomic-20261002",
+  "testedSourceCandidateTree": "4b75be5ea7d078a2d399c0aa288c89bf168523c5",
+  "candidateSourcePaths": [
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+    "supabase/rls-tests/helpers/runR01CrmForward.ts",
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-diagnose.ts",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-runtime-proof.ts",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-source-states.ts"
+  ],
+  "packagingMeaning": "Candidate binds four own amended source files plus four new fixture/gate/proof/source-state scripts; packaging HEAD contains this binding, evidence and current R01 tracker. Final28 observed DB inputs match all three rehearsals and all34 gate inputs; HTTP is unchanged and excluded from five-file DB runtime closure. No exact PG17.11/bootstrap/provider/production readiness claim.",
+  "actualDatabaseExecutedSourceMap": {
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+    },
+    "supabase/migrations/20260928120000_crm_assignment_bulk.sql": {
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "canonicalSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql": {
+      "sha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+      "canonicalSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c"
+    },
+    "src/lib/crm/atomicForward.database.test.ts": {
+      "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+      "canonicalSha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts": {
+      "sha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da",
+      "canonicalSha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py": {
+      "sha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+      "canonicalSha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c"
+    },
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "sha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+      "canonicalSha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "src/lib/crm/service.ts": {
+      "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+      "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110"
+    },
+    "src/lib/crm/repository.server.ts": {
+      "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+      "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b"
+    },
+    "src/lib/crm/http.server.ts": {
+      "sha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67",
+      "canonicalSha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67"
+    },
+    "src/lib/crm/consent.ts": {
+      "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172"
+    },
+    "src/lib/crm/schemas.ts": {
+      "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a"
+    },
+    "src/lib/crm/types.ts": {
+      "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224",
+      "canonicalSha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+      "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+    },
+    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+      "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+    }
+  },
+  "finalHttpAndGateSourceMap": {
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "gitBlob": "11e165120730fa396c61c2643f6826256a4de67a"
+    },
+    "supabase/migrations/20260928120000_crm_assignment_bulk.sql": {
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "canonicalSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "gitBlob": "b255225a21bd131a6625371bc31246a3e87343a7"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "gitBlob": "11e165120730fa396c61c2643f6826256a4de67a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql": {
+      "sha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+      "canonicalSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+      "gitBlob": "71517699486bc1ad06f7bf58332b4444486e0912"
+    },
+    "src/lib/crm/atomicForward.database.test.ts": {
+      "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+      "canonicalSha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+      "gitBlob": "15b0e4791bc1685fcf05972bb947d07087f25c71"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts": {
+      "sha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da",
+      "canonicalSha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da",
+      "gitBlob": "dae4bc29e4f8577ab077c426bc9e6efa2139f5c1"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py": {
+      "sha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+      "canonicalSha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+      "gitBlob": "b611c073b8316bc78e945f68a782f476d88b9143"
+    },
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "sha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+      "canonicalSha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+      "gitBlob": "287ad15398f25b1453a12dd763e94fbcc7e92e80"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "src/lib/crm/service.ts": {
+      "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+      "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+      "gitBlob": "b88b1928bc9a3a5eba93d65dab8081629c294ac3"
+    },
+    "src/lib/crm/repository.server.ts": {
+      "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+      "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+      "gitBlob": "8511d5a53e0ad4494fc4db760c52d7a2096542e3"
+    },
+    "src/lib/crm/http.server.ts": {
+      "sha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67",
+      "canonicalSha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67",
+      "gitBlob": "e144a6dc8f0ea14c8be7dbe6d0e20982dccdc76b"
+    },
+    "src/lib/crm/consent.ts": {
+      "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "gitBlob": "85e25a9d42429091572dc22075ad47518e654ac0"
+    },
+    "src/lib/crm/schemas.ts": {
+      "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "gitBlob": "ab157595bcffcf4dc46d03ba93739cf02301319e"
+    },
+    "src/lib/crm/types.ts": {
+      "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "gitBlob": "fd933196de2109375db2ab25785d1ffc9f99c100"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224",
+      "canonicalSha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224",
+      "gitBlob": "c6260cdd7b68d97a07abf01a3a1d1c44c2820ed6"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+      "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+      "gitBlob": "69acacd3411c24800700b46e5f373773a14e5b4e"
+    },
+    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+      "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+      "gitBlob": "c3602d23a07d1da68ccb7f5afb7d38b772132d63"
+    },
+    "src/lib/crm/atomicForward.http.test.ts": {
+      "sha256": "d8fae8e5ce8ab234d9caa5280c17b7e7aa1619342b92da22d14759e8c7a757a5",
+      "canonicalSha256": "d8fae8e5ce8ab234d9caa5280c17b7e7aa1619342b92da22d14759e8c7a757a5",
+      "gitBlob": "c7e14441c75e2c3cce79ebe74493e3efa7c77813"
+    },
+    "package.json": {
+      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "gitBlob": "043a1e7d45f1cfbe92ff0306304817ecd253a891"
+    },
+    "bun.lock": {
+      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "gitBlob": "0d6238fb8646bc4263cad4021f7e83a1d0905cd2"
+    },
+    "tsconfig.json": {
+      "sha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "canonicalSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "gitBlob": "5080bdcc058940fb0a41ed02cc5298a65b9f99e6"
+    },
+    "eslint.config.js": {
+      "sha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "canonicalSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "gitBlob": "2d972c0016abb8812712a3e20bc7dc4c01d0ecd2"
+    },
+    "vite.config.ts": {
+      "sha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "canonicalSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "gitBlob": "3b977120096bf07a73d33b24833575880b2afbb3"
+    }
+  },
+  "differingObservedDbInputs": [],
+  "dbRuntimeImportProof": {
+    "meaning": "Bun1.3.14 static runtime import closure, plus explicit runner child bun test atomicForward.database.test.ts; no HTTP mapping import/execution; Fix1 receipts observe current HTTP bytes separately from the DB runtime closure",
+    "entries": [
+      "supabase/rls-tests/helpers/runR01CrmForward.ts",
+      "src/lib/crm/atomicForward.database.test.ts"
+    ],
+    "httpMappingInRuntimeClosure": false,
+    "files": {
+      "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+        "sha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+        "imports": [
+          {
+            "kind": "import-statement",
+            "path": "node:fs/promises"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:path"
+          },
+          {
+            "kind": "import-statement",
+            "path": "./productionSchemaClone"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:crypto"
+          },
+          {
+            "kind": "import-statement",
+            "path": "../../../src/lib/operations/releaseSchema"
+          },
+          {
+            "kind": "import-statement",
+            "path": "../../../src/lib/operations/releaseManifest"
+          }
+        ]
+      },
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+        "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+        "imports": [
+          {
+            "kind": "import-statement",
+            "path": "bun"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:crypto"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:fs/promises"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:os"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:path"
+          }
+        ]
+      },
+      "src/lib/operations/releaseSchema.ts": {
+        "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+        "imports": []
+      },
+      "src/lib/operations/releaseManifest.ts": {
+        "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+        "imports": []
+      },
+      "src/lib/crm/atomicForward.database.test.ts": {
+        "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+        "imports": [
+          {
+            "kind": "import-statement",
+            "path": "bun:test"
+          },
+          {
+            "kind": "import-statement",
+            "path": "bun"
+          },
+          {
+            "kind": "import-statement",
+            "path": "node:crypto"
+          },
+          {
+            "kind": "import-statement",
+            "path": "../../../supabase/rls-tests/helpers/productionSchemaClone"
+          }
+        ]
+      }
+    }
+  },
+  "onlySQLChange": "Complete reviewed supporter profile6283 alternative; all prior helper/default/Auth/native/body/owner/ACL/signature guards and definition tail unchanged.",
+  "sqlSHA256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+  "reviewedSourceComponent": {
+    "name": "supporter",
+    "profiletype": "object",
+    "md5": "6283c96ed21f1197474461a8028892e1",
+    "profile": {
+      "relations": [
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "MAINTAIN"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "rls": true,
+          "kind": "r",
+          "name": "supporter",
+          "owner": "postgres",
+          "schema": "public",
+          "options": null,
+          "forceRls": false,
+          "replicaIdentity": "d"
+        }
+      ],
+      "columns": [
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "id",
+          "type": "uuid",
+          "table": "supporter",
+          "schema": "public",
+          "default": "gen_random_uuid()",
+          "notNull": true,
+          "identity": "",
+          "position": 1,
+          "collation": null,
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "name",
+          "type": "text",
+          "table": "supporter",
+          "schema": "public",
+          "default": null,
+          "notNull": true,
+          "identity": "",
+          "position": 2,
+          "collation": "pg_catalog.default",
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "email",
+          "type": "public.citext",
+          "table": "supporter",
+          "schema": "public",
+          "default": null,
+          "notNull": false,
+          "identity": "",
+          "position": 3,
+          "collation": "pg_catalog.default",
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "phone",
+          "type": "text",
+          "table": "supporter",
+          "schema": "public",
+          "default": null,
+          "notNull": false,
+          "identity": "",
+          "position": 4,
+          "collation": "pg_catalog.default",
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "language",
+          "type": "text",
+          "table": "supporter",
+          "schema": "public",
+          "default": "'zh-HK'::text",
+          "notNull": true,
+          "identity": "",
+          "position": 5,
+          "collation": "pg_catalog.default",
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "tags",
+          "type": "text[]",
+          "table": "supporter",
+          "schema": "public",
+          "default": "'{}'::text[]",
+          "notNull": true,
+          "identity": "",
+          "position": 6,
+          "collation": "pg_catalog.default",
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "source",
+          "type": "text",
+          "table": "supporter",
+          "schema": "public",
+          "default": "'donation_form'::text",
+          "notNull": true,
+          "identity": "",
+          "position": 7,
+          "collation": "pg_catalog.default",
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "table": "supporter",
+          "schema": "public",
+          "default": null,
+          "notNull": false,
+          "identity": "",
+          "position": 8,
+          "collation": null,
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "table": "supporter",
+          "schema": "public",
+          "default": "now()",
+          "notNull": true,
+          "identity": "",
+          "position": 9,
+          "collation": null,
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "table": "supporter",
+          "schema": "public",
+          "default": "now()",
+          "notNull": true,
+          "identity": "",
+          "position": 10,
+          "collation": null,
+          "generated": ""
+        },
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "UPDATE"
+            }
+          ],
+          "name": "edit_version",
+          "type": "bigint",
+          "table": "supporter",
+          "schema": "public",
+          "default": "1",
+          "notNull": true,
+          "identity": "",
+          "position": 11,
+          "collation": null,
+          "generated": ""
+        },
+        {
+          "acl": [],
+          "name": "crm_assignee_user_id",
+          "type": "uuid",
+          "table": "supporter",
+          "schema": "public",
+          "default": null,
+          "notNull": false,
+          "identity": "",
+          "position": 12,
+          "collation": null,
+          "generated": ""
+        }
+      ],
+      "constraints": [
+        {
+          "name": "supporter_crm_assignee_user_id_fkey",
+          "type": "f",
+          "table": "supporter",
+          "schema": "public",
+          "validated": true,
+          "definition": "FOREIGN KEY (crm_assignee_user_id) REFERENCES auth.users(id)"
+        },
+        {
+          "name": "supporter_edit_version_check",
+          "type": "c",
+          "table": "supporter",
+          "schema": "public",
+          "validated": true,
+          "definition": "CHECK (edit_version > 0)"
+        },
+        {
+          "name": "supporter_email_key",
+          "type": "u",
+          "table": "supporter",
+          "schema": "public",
+          "validated": true,
+          "definition": "UNIQUE (email)"
+        },
+        {
+          "name": "supporter_language_check",
+          "type": "c",
+          "table": "supporter",
+          "schema": "public",
+          "validated": true,
+          "definition": "CHECK (language = ANY (ARRAY['zh-HK'::text, 'en'::text]))"
+        },
+        {
+          "name": "supporter_pkey",
+          "type": "p",
+          "table": "supporter",
+          "schema": "public",
+          "validated": true,
+          "definition": "PRIMARY KEY (id)"
+        }
+      ],
+      "indexes": [
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": false,
+          "definition": "CREATE INDEX supporter_active_name_trgm_idx ON public.supporter USING gin (name public.gin_trgm_ops) WHERE (deleted_at IS NULL)"
+        },
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": false,
+          "definition": "CREATE INDEX supporter_active_phone_trgm_idx ON public.supporter USING gin (phone public.gin_trgm_ops) WHERE ((deleted_at IS NULL) AND (phone IS NOT NULL))"
+        },
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": false,
+          "definition": "CREATE INDEX supporter_crm_assignee_active_idx ON public.supporter USING btree (crm_assignee_user_id) WHERE (deleted_at IS NULL)"
+        },
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": false,
+          "definition": "CREATE INDEX supporter_deleted_at_idx ON public.supporter USING btree (deleted_at)"
+        },
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": false,
+          "definition": "CREATE INDEX supporter_tags_gin_idx ON public.supporter USING gin (tags)"
+        },
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": true,
+          "definition": "CREATE UNIQUE INDEX supporter_email_key ON public.supporter USING btree (email)"
+        },
+        {
+          "ready": true,
+          "table": "supporter",
+          "valid": true,
+          "schema": "public",
+          "unique": true,
+          "definition": "CREATE UNIQUE INDEX supporter_pkey ON public.supporter USING btree (id)"
+        }
+      ],
+      "triggers": [
+        {
+          "name": "audit_supporter",
+          "table": "supporter",
+          "schema": "public",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER audit_supporter AFTER INSERT OR DELETE OR UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()"
+        },
+        {
+          "name": "bump_supporter_edit_version",
+          "table": "supporter",
+          "schema": "public",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER bump_supporter_edit_version BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION private.bump_supporter_edit_version()"
+        },
+        {
+          "name": "set_updated_at",
+          "table": "supporter",
+          "schema": "public",
+          "enabled": "O",
+          "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()"
+        }
+      ],
+      "policies": [
+        {
+          "name": "staff can read supporters",
+          "check": null,
+          "roles": [
+            "authenticated"
+          ],
+          "table": "supporter",
+          "using": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])",
+          "schema": "public",
+          "command": "r",
+          "permissive": true
+        },
+        {
+          "name": "staff can update supporters",
+          "check": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])",
+          "roles": [
+            "authenticated"
+          ],
+          "table": "supporter",
+          "using": "private.has_admin_role(ARRAY['staff'::text, 'treasurer'::text, 'admin'::text])",
+          "schema": "public",
+          "command": "w",
+          "permissive": true
+        }
+      ],
+      "shape": {
+        "rules": false,
+        "rewrites": 0,
+        "persistence": "p"
+      }
+    },
+    "sourceFragments": {
+      "maintenance": {
+        "file": "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+        "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+      },
+      "assignment": {
+        "file": "supabase/migrations/20260928120000_crm_assignment_bulk.sql",
+        "wholeFileSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+        "fragmentSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c"
+      }
+    },
+    "qualification": "PG17.6 source-component reconstruction; not exact CI17.11 bootstrap proof"
+  },
+  "databaseRehearsals": [
+    {
+      "mode": "green",
+      "startedAt": "2026-10-02T00:19:58.377Z",
+      "completedAt": "2026-10-02T00:20:33.917Z",
+      "testExit": 0,
+      "testSummary": [
+        "\n 25 pass",
+        " 0 fail",
+        " 205 expect() calls"
+      ],
+      "normalBaselineAccepted": true,
+      "normalBaselineRollbackPreserved": true,
+      "frozenInputsPreserved": true,
+      "refusals": 63
+    },
+    {
+      "mode": "green-modern",
+      "startedAt": "2026-10-02T00:21:01.957Z",
+      "completedAt": "2026-10-02T00:21:38.941Z",
+      "testExit": 0,
+      "testSummary": [
+        "\n 25 pass",
+        " 0 fail",
+        " 205 expect() calls"
+      ],
+      "normalBaselineAccepted": true,
+      "normalBaselineRollbackPreserved": true,
+      "frozenInputsPreserved": true,
+      "refusals": 63
+    },
+    {
+      "mode": "green-component",
+      "startedAt": "2026-10-02T00:22:02.734Z",
+      "completedAt": "2026-10-02T00:22:38.950Z",
+      "testExit": 0,
+      "testSummary": [
+        "\n 25 pass",
+        " 0 fail",
+        " 205 expect() calls"
+      ],
+      "normalBaselineAccepted": true,
+      "normalBaselineRollbackPreserved": true,
+      "frozenInputsPreserved": true,
+      "refusals": 64
+    }
+  ],
+  "gates": {
+    "phase": "final",
+    "source": "8b665fa4c05c20d728a7fb9617312c377618bc07",
+    "startedAt": "2026-10-02T00:23:01.288828+00:00",
+    "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+    "gates": [
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 58.14,
+        "log": "task-6-final-typecheck.log"
+      },
+      {
+        "gate": "tests",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 0,
+        "elapsedSeconds": 113.29,
+        "log": "task-6-final-tests.log",
+        "summary": [
+          "\n 3235 pass",
+          " 292 skip",
+          " 0 fail",
+          " 10499 expect() calls"
+        ]
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 47.02,
+        "log": "task-6-final-lint.log"
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 91.38,
+        "log": "task-6-final-build.log"
+      }
+    ],
+    "testedFinalSourceBlobs": {
+      "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+        "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+        "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+      },
+      "supabase/migrations/20260928120000_crm_assignment_bulk.sql": {
+        "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+        "canonicalSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql": {
+        "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+        "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql": {
+        "sha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+        "canonicalSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c"
+      },
+      "src/lib/crm/atomicForward.database.test.ts": {
+        "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+        "canonicalSha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts": {
+        "sha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da",
+        "canonicalSha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da"
+      },
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py": {
+        "sha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+        "canonicalSha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c"
+      },
+      "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+        "sha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+        "canonicalSha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5"
+      },
+      "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+        "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+        "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+      },
+      "src/lib/crm/service.ts": {
+        "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+        "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110"
+      },
+      "src/lib/crm/repository.server.ts": {
+        "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+        "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b"
+      },
+      "src/lib/crm/http.server.ts": {
+        "sha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67",
+        "canonicalSha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67"
+      },
+      "src/lib/crm/consent.ts": {
+        "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+        "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172"
+      },
+      "src/lib/crm/schemas.ts": {
+        "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+        "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a"
+      },
+      "src/lib/crm/types.ts": {
+        "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+        "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c"
+      },
+      "src/lib/admin/session.server.ts": {
+        "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+        "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+      },
+      "src/lib/donations/supabase.server.ts": {
+        "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+        "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+      },
+      "src/lib/operations/releaseSchema.ts": {
+        "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+        "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+      },
+      "src/lib/operations/releaseManifest.ts": {
+        "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+        "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+      },
+      "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+        "sha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224",
+        "canonicalSha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224"
+      },
+      "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+        "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+        "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+      },
+      "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+        "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+        "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+      },
+      "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+      },
+      "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+      },
+      "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+        "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+        "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+      },
+      "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+        "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+        "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+      },
+      "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+        "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+        "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+      },
+      "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+        "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+        "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+      },
+      "src/lib/crm/atomicForward.http.test.ts": {
+        "sha256": "d8fae8e5ce8ab234d9caa5280c17b7e7aa1619342b92da22d14759e8c7a757a5",
+        "canonicalSha256": "d8fae8e5ce8ab234d9caa5280c17b7e7aa1619342b92da22d14759e8c7a757a5"
+      },
+      "package.json": {
+        "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+        "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+      },
+      "bun.lock": {
+        "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+        "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+      },
+      "tsconfig.json": {
+        "sha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+        "canonicalSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491"
+      },
+      "eslint.config.js": {
+        "sha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+        "canonicalSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200"
+      },
+      "vite.config.ts": {
+        "sha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+        "canonicalSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c"
+      }
+    },
+    "frozenInputsPreserved": true,
+    "completedAt": "2026-10-02T00:28:11.159042+00:00"
+  },
+  "original7fBinding": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-source-binding.json",
+    "blob": {
+      "sha256": "0c10eb2383ac8034de0696b0eb1203334ecc5f2425f762afc454ad93255c42b5",
+      "canonicalSha256": "0c10eb2383ac8034de0696b0eb1203334ecc5f2425f762afc454ad93255c42b5",
+      "gitBlob": "5f9b80d73b7fea755f3b967c78f8852ec9d1c090"
+    },
+    "actualDbInputs": 22,
+    "finalHttpGateInputs": 29,
+    "rawArtifacts": 71,
+    "changedCurrentRawArtifactPaths": [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts"
+    ],
+    "qualification": "Historical original7f maps/receipts/logs unchanged; authoritative generator changed and original exact archive remains bound by immutable Fix1 originalInputVersions. Old HTTP observation remains separate."
+  },
+  "previousFix1Binding": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-source-binding.json",
+    "blob": {
+      "sha256": "695b7830976ef7ad8134404ae035faacba29f651faa7cd710a7be659f2dd42fe",
+      "canonicalSha256": "695b7830976ef7ad8134404ae035faacba29f651faa7cd710a7be659f2dd42fe",
+      "gitBlob": "42b64b5081eaa8ab7d4f346beddee5dff5c8e3fa"
+    },
+    "actualDbInputs": 24,
+    "finalHttpGateInputs": 30,
+    "rawArtifacts": 71,
+    "changedCurrentObservedSourcePaths": [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts",
+      "supabase/rls-tests/helpers/runR01CrmForward.ts",
+      "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
+      "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql"
+    ],
+    "changedCurrentRawArtifactPaths": [
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-bind.py",
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-cleanup.ts",
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-report.py"
+    ],
+    "qualification": "Four legitimate amended source files archived at exact8b observed and Git versions. Three historical metadata scripts normalized CRLF on new checkout; canonical Git versions unchanged and exact canonical archives preserved; old raw observations remain separately recorded, not reconstructed. All true old receipts/logs/maps remain byte-immutable. Do not claim all original71 current paths unchanged."
+  },
+  "previousInputVersions": {
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "fix1Observed": {
+        "sha256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+        "canonicalSha256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+        "gitBlob": "869cea4a786f8dfb390d1cfd673d0764556a1ca6"
+      },
+      "exact8bArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-forward.sql",
+      "archiveBlob": {
+        "sha256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+        "canonicalSha256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+        "gitBlob": "869cea4a786f8dfb390d1cfd673d0764556a1ca6"
+      },
+      "fixBaseGitBlob": "869cea4a786f8dfb390d1cfd673d0764556a1ca6",
+      "fixBaseCanonicalSHA256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9"
+    },
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "fix1Observed": {
+        "sha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+        "canonicalSha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+        "gitBlob": "79ff26165043c22224488c04bb81d2af48b08a3b"
+      },
+      "exact8bArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-runner.ts",
+      "archiveBlob": {
+        "sha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+        "canonicalSha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+        "gitBlob": "79ff26165043c22224488c04bb81d2af48b08a3b"
+      },
+      "fixBaseGitBlob": "79ff26165043c22224488c04bb81d2af48b08a3b",
+      "fixBaseCanonicalSHA256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "fix1Observed": {
+        "sha256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721",
+        "canonicalSha256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721",
+        "gitBlob": "8ce88d031c59d402b8f791055290aae5d7709d14"
+      },
+      "exact8bArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-manifest.csv",
+      "archiveBlob": {
+        "sha256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721",
+        "canonicalSha256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721",
+        "gitBlob": "8ce88d031c59d402b8f791055290aae5d7709d14"
+      },
+      "fixBaseGitBlob": "8ce88d031c59d402b8f791055290aae5d7709d14",
+      "fixBaseCanonicalSHA256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts": {
+      "fix1Observed": {
+        "sha256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208",
+        "canonicalSha256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208",
+        "gitBlob": "5f82e8801681fb934040f8e9dbed975c093372d7"
+      },
+      "exact8bArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-generator.ts",
+      "archiveBlob": {
+        "sha256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208",
+        "canonicalSha256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208",
+        "gitBlob": "5f82e8801681fb934040f8e9dbed975c093372d7"
+      },
+      "fixBaseGitBlob": "5f82e8801681fb934040f8e9dbed975c093372d7",
+      "fixBaseCanonicalSHA256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-bind.py": {
+      "qualification": "Exact canonical FIX_BASE Git source archive. Old raw observation is retained in immutable original map; raw mixed line endings are not reconstructed or claimed equal. This canonical archive is not a new execution receipt.",
+      "fix1Observed": {
+        "sha256": "58fe4a087b3f1d04654b26482e5886cf07a083ada927fa63676431048e0a673c",
+        "canonicalSha256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+        "gitBlob": "889fbd5de716c37913387c6c78166e07681afd55"
+      },
+      "canonicalOriginalArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/canonical-original-8b-task-6-fix-1-bind.py",
+      "archiveBlob": {
+        "sha256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+        "canonicalSha256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+        "gitBlob": "889fbd5de716c37913387c6c78166e07681afd55"
+      },
+      "fixBaseGitBlob": "889fbd5de716c37913387c6c78166e07681afd55"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-cleanup.ts": {
+      "qualification": "Exact canonical FIX_BASE Git source archive. Old raw observation is retained in immutable original map; raw mixed line endings are not reconstructed or claimed equal. This canonical archive is not a new execution receipt.",
+      "fix1Observed": {
+        "sha256": "cc127cdd7a134969c1da4673b9a64a70dff1c58b049621057da7bc77b6a5325e",
+        "canonicalSha256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+        "gitBlob": "c31e407a0e06a333057b6e0f4bb32b2077d1289b"
+      },
+      "canonicalOriginalArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/canonical-original-8b-task-6-fix-1-cleanup.ts",
+      "archiveBlob": {
+        "sha256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+        "canonicalSha256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+        "gitBlob": "c31e407a0e06a333057b6e0f4bb32b2077d1289b"
+      },
+      "fixBaseGitBlob": "c31e407a0e06a333057b6e0f4bb32b2077d1289b"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-report.py": {
+      "qualification": "Exact canonical FIX_BASE Git source archive. Old raw observation is retained in immutable original map; raw mixed line endings are not reconstructed or claimed equal. This canonical archive is not a new execution receipt.",
+      "fix1Observed": {
+        "sha256": "73b776cc0c41fecea38f15d4717dba2d6a9a1f372b03770b389410954438314d",
+        "canonicalSha256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+        "gitBlob": "9f864786218272e9e22dc41f703c248d8a157105"
+      },
+      "canonicalOriginalArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/canonical-original-8b-task-6-fix-1-report.py",
+      "archiveBlob": {
+        "sha256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+        "canonicalSha256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+        "gitBlob": "9f864786218272e9e22dc41f703c248d8a157105"
+      },
+      "fixBaseGitBlob": "9f864786218272e9e22dc41f703c248d8a157105"
+    }
+  },
+  "diagnosisExecutedVersion": {
+    "archive": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/diagnosis-executed-script.ts",
+    "blob": {
+      "sha256": "b38e623350a00130c34f223771b51d35b375eb334f8c8f919167f9f2c78c374a",
+      "canonicalSha256": "e8cfd881ea967c103929bae11ca8f9d60b604ad68ede773efc4d9968135d7705",
+      "gitBlob": "17bcac44e0d3de838798fd6cfa937b0b7253f50f"
+    },
+    "currentFormattedScript": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-diagnose.ts",
+    "currentBlob": {
+      "sha256": "61b2d7b76f424ea598027c3a3bb5da2f6c542fb6889e7d85f1c431d2e0c75a40",
+      "canonicalSha256": "61b2d7b76f424ea598027c3a3bb5da2f6c542fb6889e7d85f1c431d2e0c75a40",
+      "gitBlob": "eaecd8d4434b4edec8ea15a8140ec591a34f341f"
+    },
+    "qualification": "Actual diagnosis ran originalb38/e8 script; current formatted version was not rerun."
+  },
+  "rawArtifacts": {
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/.gitattributes": {
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+      "canonicalSha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+      "gitBlob": "fa1385d99a319b43c06f5309d1aae9fdd3adea46"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-jobs.json": {
+      "sha256": "926d58d40925b5e6a33b35dab4ef65fd5d3f7c9646ffff26403d1a7f6f3c9bbb",
+      "canonicalSha256": "926d58d40925b5e6a33b35dab4ef65fd5d3f7c9646ffff26403d1a7f6f3c9bbb",
+      "gitBlob": "ddb9515908466e4a191cf1b71b8102cdd1605440"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json": {
+      "sha256": "cb5e2bf4ffdf0ab1d26d7a8629bf5305daa72c4768fa05e9966aadeba72da4ec",
+      "canonicalSha256": "ad8b882e0e358822917a6790e9c7371aa56110df9784ab861d8cc5fc315c6f34",
+      "gitBlob": "b8ba6df2a47cb4f5149a322474df4e894c394f89"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log": {
+      "sha256": "3253123dd0f2c53ed83e9b0feb2736be0697eb6ed7e4b0cacbf052601952f609",
+      "canonicalSha256": "3253123dd0f2c53ed83e9b0feb2736be0697eb6ed7e4b0cacbf052601952f609",
+      "gitBlob": "6a7f38cc5e82f081e708693190ecd2e072651e69"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-workflow.json": {
+      "sha256": "43d9b14c963eac3a3dd5d9b99c6879410f4fe34f1244ab52996552cc0e077b7e",
+      "canonicalSha256": "43d9b14c963eac3a3dd5d9b99c6879410f4fe34f1244ab52996552cc0e077b7e",
+      "gitBlob": "f8d2d6d290e658c62107fb325f59d4d66820c069"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/after-gates-command.log": {
+      "sha256": "8fa9a3469a9d334355765dd0ffbc8aa38f90a9481b36552928aa46af8b3ba497",
+      "canonicalSha256": "8865bfff2a1a122e4ad13770965ce59d2d0ff9c9cc28de9c787bf43993a36f9e",
+      "gitBlob": "b9693c5fc3f3445c947205a113af0550db378240"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/after-gates-sources.json": {
+      "sha256": "19298fc40d67b64c9238e69d2f2c6307e00481f5148b7e93bd3670c785ff09ea",
+      "canonicalSha256": "19298fc40d67b64c9238e69d2f2c6307e00481f5148b7e93bd3670c785ff09ea",
+      "gitBlob": "ca1f2625a9eef1a7abb4e3b6ef5871262a8a250d"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-forward.sql": {
+      "sha256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+      "canonicalSha256": "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9",
+      "gitBlob": "869cea4a786f8dfb390d1cfd673d0764556a1ca6"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-generator.ts": {
+      "sha256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208",
+      "canonicalSha256": "3ca2544974ccbba8bd5979819e65661e7f9d99a43c2bfcf7a1c45a49c1a96208",
+      "gitBlob": "5f82e8801681fb934040f8e9dbed975c093372d7"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-manifest.csv": {
+      "sha256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721",
+      "canonicalSha256": "2e4f81a9770fe1f5113ed52570a85b31b9b0f8ff4a5f3c1c3fadeaeccb4fc721",
+      "gitBlob": "8ce88d031c59d402b8f791055290aae5d7709d14"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/base-8b-runner.ts": {
+      "sha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+      "canonicalSha256": "ae9d1271c1a220db8728a149da59a134103911e57abe0c05b338ec14ae8bfccb",
+      "gitBlob": "79ff26165043c22224488c04bb81d2af48b08a3b"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/before-gates-command.log": {
+      "sha256": "dbb637d44383f8a1b3f55cc59f651774809ea2ed7924a26927a4d74334776574",
+      "canonicalSha256": "c13190240a0ad5801a0bd355311ccbc5cf5556aea413d7f34ca9df2960be6ca1",
+      "gitBlob": "54f93fa1614d439efc97b2ae4bd72ed22f27326f"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/before-gates-sources.json": {
+      "sha256": "f8deff570e5598d02b5b03b1e423bda55afba76d9dbf76c7d900e15177579570",
+      "canonicalSha256": "f8deff570e5598d02b5b03b1e423bda55afba76d9dbf76c7d900e15177579570",
+      "gitBlob": "b1eea22d41033f404a42001e7d97843327e6ee8d"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/binding-attempt1.json": {
+      "sha256": "634ccd1c0ac882e6a50765b21ec586d50b2f7d9a71c78804f495c0062bc10f32",
+      "canonicalSha256": "634ccd1c0ac882e6a50765b21ec586d50b2f7d9a71c78804f495c0062bc10f32",
+      "gitBlob": "452cb61b7b7c0327a6c821a7bb0f747814807229"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/binding-attempt1.py": {
+      "sha256": "1c3f891391c24d01f792cefa11291fcf115c4271fb27866a81874a36af196b17",
+      "canonicalSha256": "1c3f891391c24d01f792cefa11291fcf115c4271fb27866a81874a36af196b17",
+      "gitBlob": "4c94e7c7d0b2dfcdef17eb3de3147afb25f33c7b"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/canonical-original-8b-task-6-fix-1-bind.py": {
+      "sha256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+      "canonicalSha256": "7da880ddb5752189c47e22e360c2f6a63dba9614f45f6bebcfcd6fc997f6007c",
+      "gitBlob": "889fbd5de716c37913387c6c78166e07681afd55"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/canonical-original-8b-task-6-fix-1-cleanup.ts": {
+      "sha256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+      "canonicalSha256": "8e2ee629e8b869182be31aba6cb5a72b1a0b749948ff13e188514ffca775e5c7",
+      "gitBlob": "c31e407a0e06a333057b6e0f4bb32b2077d1289b"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/canonical-original-8b-task-6-fix-1-report.py": {
+      "sha256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+      "canonicalSha256": "4003d9f64a7ca431a84816ad564d41ea1240b26ea4e5943cb4ddc1cd2475416c",
+      "gitBlob": "9f864786218272e9e22dc41f703c248d8a157105"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/catalog-before.json": {
+      "sha256": "bef19a9356e8f02f9ad77113989333619425f3b501f867000265c092ca58b771",
+      "canonicalSha256": "bef19a9356e8f02f9ad77113989333619425f3b501f867000265c092ca58b771",
+      "gitBlob": "2f972161820982188eee770c2c50ae3b4eb9e920"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/catalog-reconstructed.json": {
+      "sha256": "e4149351107c60e2266957e709644f860e404b47addf061b9a133a790e16ce12",
+      "canonicalSha256": "e4149351107c60e2266957e709644f860e404b47addf061b9a133a790e16ce12",
+      "gitBlob": "a53a62371241a18c2a95fe3e035002ad420f33d8"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/diagnosis-executed-script.ts": {
+      "sha256": "b38e623350a00130c34f223771b51d35b375eb334f8c8f919167f9f2c78c374a",
+      "canonicalSha256": "e8cfd881ea967c103929bae11ca8f9d60b604ad68ede773efc4d9968135d7705",
+      "gitBlob": "17bcac44e0d3de838798fd6cfa937b0b7253f50f"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/diagnosis.json": {
+      "sha256": "867a945e9a87b471e6c5b8f36fe24d62d69cefbe03c0bd49832c8c1f550389c8",
+      "canonicalSha256": "867a945e9a87b471e6c5b8f36fe24d62d69cefbe03c0bd49832c8c1f550389c8",
+      "gitBlob": "76a2a57676ad6cb1506907f7d4bb8918cf394b11"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/diagnosis.log": {
+      "sha256": "b4ec81629b581e96d34216798df3ebedbbafc1030b10bb8f919d4c868be8d237",
+      "canonicalSha256": "9cda8731d4145daee8a8f3b1ba9010a7e967b1ca6ffcac0d61e26a302d02271a",
+      "gitBlob": "60dcf540975b0f293764fc1500fdf285d4f43938"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql": {
+      "sha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+      "canonicalSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+      "gitBlob": "71517699486bc1ad06f7bf58332b4444486e0912"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "gitBlob": "11e165120730fa396c61c2643f6826256a4de67a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/extra-before.json": {
+      "sha256": "5ab99dc1dc60140fdb5fc0c956241b9259513da265072198c3c8c23112610c33",
+      "canonicalSha256": "5ab99dc1dc60140fdb5fc0c956241b9259513da265072198c3c8c23112610c33",
+      "gitBlob": "6be0531914b92a83791037443ff10a6be19491e8"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/extra-reconstructed.json": {
+      "sha256": "5ab99dc1dc60140fdb5fc0c956241b9259513da265072198c3c8c23112610c33",
+      "canonicalSha256": "5ab99dc1dc60140fdb5fc0c956241b9259513da265072198c3c8c23112610c33",
+      "gitBlob": "6be0531914b92a83791037443ff10a6be19491e8"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/final-component-command.log": {
+      "sha256": "52cb0c47390acb09f51313fb34efabc241410e6c26f2931687068cdf413d9598",
+      "canonicalSha256": "5bc9321d3430c544fbe1dd555672664a749ee9c4058da5f365a21d9b7e655b0e",
+      "gitBlob": "30114ccadc609f6f338c0c07a92d10ad66eb8016"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/final-hosted-command.log": {
+      "sha256": "53252f7310180de8cfcbbee12b2c493dc2c957ec5604cfc074b895ace270c3f6",
+      "canonicalSha256": "eb45202ef40598be317ed1c4fad74f875cb3d548664b5a60357bad0847623721",
+      "gitBlob": "344aa2c12cbc53da37d3c78699e32859857fe285"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/final-modern-command.log": {
+      "sha256": "dbca2dd89d30bd15ef996422808aff3d385199b468fa7852e7c44b3ab6a77a56",
+      "canonicalSha256": "a477948b2880add1ddb8883c01f11d080b83c8f606e653dec35191fd1fceff91",
+      "gitBlob": "b27b371e697afa1db76bc702d5ae828920382cfd"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/focused-lint.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/format-preparation.log": {
+      "sha256": "3655442c541e026c30696a74779ca7b46291c36f47023fece830c76c8e11fc6f",
+      "canonicalSha256": "25c5f95f6c7b7b889b52dc5ce35938496e19a70e30588efd7b8f0829563a1e29",
+      "gitBlob": "fbff10a60445d0ca87892e6cdd91d3c78ae594fa"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/generation.log": {
+      "sha256": "f78a8e983b13d7efbbf8ffe17e1c3373a6057efe37d6b625a2c4e5c41bad8bcf",
+      "canonicalSha256": "2aec710528704299f25128230441f6987fcdd26a50d098681e40dc50b4364e8d",
+      "gitBlob": "b41237f3b7e77d624a0b25e6a7c250950115f669"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/new-worktree-historical-source-qualification.json": {
+      "sha256": "cb9bd2b26dc009ced13156e469df93d1059de73517e317f1363e4f3ece306c82",
+      "canonicalSha256": "cb9bd2b26dc009ced13156e469df93d1059de73517e317f1363e4f3ece306c82",
+      "gitBlob": "d1f82693fca867e2f20bf260c9c36d8e50f36d3f"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/packaging-diff-check.json": {
+      "sha256": "038d57eb63e39e44654cf66e832dc22343f9a8a86e89b1751824d045e1cdbb2e",
+      "canonicalSha256": "038d57eb63e39e44654cf66e832dc22343f9a8a86e89b1751824d045e1cdbb2e",
+      "gitBlob": "bd3c4fba1dfe30790af61d940ffee85ce0ebac2d"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/packaging-diff-check.log": {
+      "sha256": "fddff732b5c2fa0c96458e1986c9512df27c76ca45a1c20c875155b1e790f8e2",
+      "canonicalSha256": "51a8d97820bf074dce7397cc7b24d76a87e02f37cdad89b3dd1685df166be511",
+      "gitBlob": "039faccf1eeb40d6b72bd6e90033660d523dc9aa"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/reviewed-profile-differences.json": {
+      "sha256": "2c7c18bcb85cd7c15fbafe403a6a82f8a2d95c3ba7750058925fc2ebb49e9f04",
+      "canonicalSha256": "2c7c18bcb85cd7c15fbafe403a6a82f8a2d95c3ba7750058925fc2ebb49e9f04",
+      "gitBlob": "34be03758737d301dbd3e907ea134e28501a1503"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-build.log": {
+      "sha256": "a7d891c6a6193797b67765b771b76f39e045bde57ea90e521907b1658593c2e2",
+      "canonicalSha256": "a7d891c6a6193797b67765b771b76f39e045bde57ea90e521907b1658593c2e2",
+      "gitBlob": "abcf4bd3889b21741b4cbf7e43c871a850a85d0e"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json": {
+      "sha256": "cbb1182db5e0139257cb8b5f236f15e588b07b217f5993e35607d008df3783d6",
+      "canonicalSha256": "f33c6351aa7f923d86402ed7d4a092899e07b7a544fe328f7a5712edee829aa7",
+      "gitBlob": "4e7f4199b0e99c632101a30f50167f4594c0fbc7"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-lint.log": {
+      "sha256": "1fde4bcad336b97e3fa31277fd9dcbf431ad3190828b6bfb4eeaf0eb26442338",
+      "canonicalSha256": "1fde4bcad336b97e3fa31277fd9dcbf431ad3190828b6bfb4eeaf0eb26442338",
+      "gitBlob": "cc5512be1fb270ed4afa68e974ec1ec31d526bed"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-tests.log": {
+      "sha256": "2e103bb481d520c27cffcadee0a0468abfe482d1d143300131337024899b7827",
+      "canonicalSha256": "2e103bb481d520c27cffcadee0a0468abfe482d1d143300131337024899b7827",
+      "gitBlob": "a9539e1129507377b2f64a5968be5ffa167b0892"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-typecheck.log": {
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "canonicalSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "gitBlob": "f5b99e8a88f3351bff2d974f340241915d097a47"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-green-component.json": {
+      "sha256": "b1edfd7b9cbb3ccf8359481e8cc4f8151cd609c41017b6cc9ac197377cd0364a",
+      "canonicalSha256": "b1edfd7b9cbb3ccf8359481e8cc4f8151cd609c41017b6cc9ac197377cd0364a",
+      "gitBlob": "aec6b332272ac24655a3f017a8528fd9b852c92f"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-green-component.log": {
+      "sha256": "e8b05c755678699a4da16a93f7ac714389e5241d1de727bd64322df2ad4076d3",
+      "canonicalSha256": "e8b05c755678699a4da16a93f7ac714389e5241d1de727bd64322df2ad4076d3",
+      "gitBlob": "81552cdaa7be66b47caac417c8f328dc4d95b532"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-green-modern.json": {
+      "sha256": "8fc1040ed6cd5ebf548b5499df455a86bd49e14a48571e02baea6621b5e7f656",
+      "canonicalSha256": "8fc1040ed6cd5ebf548b5499df455a86bd49e14a48571e02baea6621b5e7f656",
+      "gitBlob": "3fcb39f498e395209151e4c4d35ab2dd0ca85d54"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-green-modern.log": {
+      "sha256": "65448469e557463789cf6ffee107727af37d1d91b532761dc841a00c262338f2",
+      "canonicalSha256": "65448469e557463789cf6ffee107727af37d1d91b532761dc841a00c262338f2",
+      "gitBlob": "81308c511bbe4cbcc5dc601b6753f56f432c218c"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-green.json": {
+      "sha256": "b4341d78cd5e065e7bde0d66aa728a6070818c79d350744c26e23914ccba840a",
+      "canonicalSha256": "b4341d78cd5e065e7bde0d66aa728a6070818c79d350744c26e23914ccba840a",
+      "gitBlob": "543c8d3ab9ee90ba23d448bef2bb9f14243d938d"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-green.log": {
+      "sha256": "7afc2fec06abf111fce10245e3f8eb70b9d68b8947d677eb5ee4262887cb5345",
+      "canonicalSha256": "7afc2fec06abf111fce10245e3f8eb70b9d68b8947d677eb5ee4262887cb5345",
+      "gitBlob": "b628623a28f69190e39651e831602992ccbd0707"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-bind.py": {
+      "sha256": "8de862548808cb4aece1e90f53f08086727c474dedd98f643afc7b1a3182a525",
+      "canonicalSha256": "8de862548808cb4aece1e90f53f08086727c474dedd98f643afc7b1a3182a525",
+      "gitBlob": "27858d3d837653f64b8ddd3a8c8cc8e70601e91d"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-diagnose.ts": {
+      "sha256": "61b2d7b76f424ea598027c3a3bb5da2f6c542fb6889e7d85f1c431d2e0c75a40",
+      "canonicalSha256": "61b2d7b76f424ea598027c3a3bb5da2f6c542fb6889e7d85f1c431d2e0c75a40",
+      "gitBlob": "eaecd8d4434b4edec8ea15a8140ec591a34f341f"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-evidence.md": {
+      "sha256": "5e83ef8dd2b240906273429a3066194e36b426d30cc174cec90d38373e22eb1e",
+      "canonicalSha256": "5e83ef8dd2b240906273429a3066194e36b426d30cc174cec90d38373e22eb1e",
+      "gitBlob": "2bb5a549678f0b297cb51239d3c669ac8923126a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py": {
+      "sha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+      "canonicalSha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+      "gitBlob": "b611c073b8316bc78e945f68a782f476d88b9143"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-generated-profiles.json": {
+      "sha256": "d11a083bc481d611b08b8f09461fc0ba64810737fed881b83e89b67f34fbf12e",
+      "canonicalSha256": "d11a083bc481d611b08b8f09461fc0ba64810737fed881b83e89b67f34fbf12e",
+      "gitBlob": "404a99a2637a6ff050b0bde45b84db2b4d2f2e38"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-report.py": {
+      "sha256": "8964cb5609fd18fbebdfc96f5a3f1f85a64f8961abe7df245018f9cd7134ff7a",
+      "canonicalSha256": "8964cb5609fd18fbebdfc96f5a3f1f85a64f8961abe7df245018f9cd7134ff7a",
+      "gitBlob": "2e4b6ead75fc834a8a75853cbb63b45d9f54baea"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-runtime-proof.json": {
+      "sha256": "31b3882fd2e9841b2e7e4c2293626e9592191e449086d1b4b41ea90b048aaa78",
+      "canonicalSha256": "31b3882fd2e9841b2e7e4c2293626e9592191e449086d1b4b41ea90b048aaa78",
+      "gitBlob": "9dfc8eb2aa8236b6a67122ecb6f905196a3b699b"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-runtime-proof.ts": {
+      "sha256": "30474892e5062fe3e94d2f399196afe496d4023326844d872f39e51702cd3bf3",
+      "canonicalSha256": "30474892e5062fe3e94d2f399196afe496d4023326844d872f39e51702cd3bf3",
+      "gitBlob": "a61b79b992719ba17d4bdd9b727d70bf53da6568"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-source-states.ts": {
+      "sha256": "555c8c05052c29f7e77d21275eccf8a7fb45553ca800c0e80b799c4fbf1000e5",
+      "canonicalSha256": "555c8c05052c29f7e77d21275eccf8a7fb45553ca800c0e80b799c4fbf1000e5",
+      "gitBlob": "6c1109c0ee0039c325a5c51eb428991d69e4c298"
+    }
+  },
+  "capturedAt": "2026-10-02T00:36:52.788667+00:00"
+}

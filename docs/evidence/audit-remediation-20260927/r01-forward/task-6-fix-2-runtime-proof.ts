@@ -1,0 +1,9 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {existsSync} from "node:fs";
+import {resolve,dirname,relative} from "node:path";
+import {createHash} from "node:crypto";
+const root=process.cwd(),transpiler=new Bun.Transpiler({loader:"ts"}),files:Record<string,unknown>={};
+async function visit(path:string){const name=relative(root,path).replaceAll("\\","/");if(files[name])return;const source=await readFile(path,"utf8"),imports=transpiler.scanImports(source);files[name]={sha256:createHash("sha256").update(source).digest("hex"),imports};for(const i of imports){if(!i.path.startsWith("."))continue;const base=resolve(dirname(path),i.path),target=[base,base+".ts",base+".tsx",resolve(base,"index.ts")].find(existsSync);if(!target)throw new Error("Unresolved runtime import "+i.path);await visit(target);}}
+for(const p of ["supabase/rls-tests/helpers/runR01CrmForward.ts","src/lib/crm/atomicForward.database.test.ts"])await visit(resolve(root,p));
+if(Object.keys(files).some(p=>p.includes("http.server")||p.includes("atomicForward.http")))throw new Error("HTTP is a DB runtime dependency");
+const receipt={meaning:"Bun1.3.14 static runtime import closure, plus explicit runner child bun test atomicForward.database.test.ts; no HTTP mapping import/execution; Fix1 receipts observe current HTTP bytes separately from the DB runtime closure",entries:["supabase/rls-tests/helpers/runR01CrmForward.ts","src/lib/crm/atomicForward.database.test.ts"],httpMappingInRuntimeClosure:false,files};await writeFile("docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-runtime-proof.json",JSON.stringify(receipt,null,2)+"\n");console.log(JSON.stringify({files:Object.keys(files),httpMappingInRuntimeClosure:false}));

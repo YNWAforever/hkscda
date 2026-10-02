@@ -1,0 +1,149 @@
+$ eslint src eslint.config.js vite.config.ts supabase/rls-tests
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\LoadFailure.tsx
+  39:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\adminI18n.tsx
+  141:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  562:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\AboutPagesManagement.tsx
+  35:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\AdoptionInformationManagement.tsx
+   56:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   66:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  800:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\AdoptionInstructionsManagement.tsx
+   23:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  143:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\AdoptionRulesManagement.tsx
+  36:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\CareTopicsManagement.tsx
+  43:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\ContentCreateForm.tsx
+  25:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  37:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\ContentEditor.tsx
+   127:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  1840:23  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\FaqManagement.tsx
+  51:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  74:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\GovernanceManagement.tsx
+  28:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  38:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\KnowledgeManagement.tsx
+  41:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  51:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  55:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\admin\content\LinkedRecordPicker.tsx
+  22:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  26:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\InternshipForm.tsx
+  22:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\TurnstileWidget.tsx
+  27:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\adoption\ApplicationWizard.tsx
+   65:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  148:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  198:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  208:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  225:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\adoption\WizardFields.tsx
+  531:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\fixedActions\PublicFixedActions.tsx
+  59:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  68:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\help\HelpWidget.tsx
+  35:6  warning  React Hook useEffect has a missing dependency: 'setOpen'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\volunteer\GroupEnquiryForm.tsx
+  33:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  37:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\site\volunteer\VerifiedEmailSignIn.tsx
+  230:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  242:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\ui\badge.tsx
+  32:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\ui\button.tsx
+  49:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\ui\form.tsx
+  163:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\ui\navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\ui\sidebar.tsx
+  743:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\components\ui\toggle.tsx
+  42:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\reveal.tsx
+  35:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\donate.tsx
+  224:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  232:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  248:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  254:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  272:23  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\stories.tsx
+  15:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\runR01CrmForward.ts
+  513:29  error  Replace `·name:·string;·sql?:·string;·sig?:·string;·last?:·string;·replacement?:·string` with `⏎········name:·string;⏎········sql?:·string;⏎········sig?:·string;⏎········last?:·string;⏎········replacement?:·string;⏎·····`                                                                                                                                                        prettier/prettier
+  516:12  error  Replace `name:·name+"·owner",·sql:·`alter·function·private.${name}()·owner·to·supabase_admin`` with `⏎············name:·name·+·"·owner",⏎············sql:·`alter·function·private.${name}()·owner·to·supabase_admin`,⏎··········`                                                                                                                                                    prettier/prettier
+  517:12  error  Replace `name:·name+"·extra·ACL·recipient",·sql:·`grant·execute·on·function·private.${name}()·to·dashboard_user`` with `⏎············name:·name·+·"·extra·ACL·recipient",⏎············sql:·`grant·execute·on·function·private.${name}()·to·dashboard_user`,⏎··········`                                                                                                              prettier/prettier
+  518:12  error  Replace `name:·name+"·owner·EXECUTE·grant·option",·sql:·`grant·execute·on·function·private.${name}()·to·postgres·with·grant·option`` with `⏎············name:·name·+·"·owner·EXECUTE·grant·option",⏎············sql:·`grant·execute·on·function·private.${name}()·to·postgres·with·grant·option`,⏎··········`                                                                        prettier/prettier
+  521:27  error  Replace `name:·"role·helper·missing·historical·PUBLIC",·sql:·"revoke·execute·on·function·private.bump_supporter_edit_version_from_role()·from·public"` with `⏎········name:·"role·helper·missing·historical·PUBLIC",⏎········sql:·"revoke·execute·on·function·private.bump_supporter_edit_version_from_role()·from·public",⏎······`                                                  prettier/prettier
+  522:23  error  Replace `last,` with `·last,·`                                                                                                                                                                                                                                                                                                                                                       prettier/prettier
+  523:10  error  Replace `"public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb)","p_detail·jsonb)","p_detail·jsonb·DEFAULT·'{}'::jsonb)"` with `⏎··········"public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb)",⏎··········"p_detail·jsonb)",⏎··········"p_detail·jsonb·DEFAULT·'{}'::jsonb)",⏎········`                            prettier/prettier
+  524:10  error  Replace `"public.replace_supporter_roles_atomic(uuid,jsonb)","p_roles·jsonb)","p_roles·jsonb·DEFAULT·'[]'::jsonb)"` with `⏎··········"public.replace_supporter_roles_atomic(uuid,jsonb)",⏎··········"p_roles·jsonb)",⏎··········"p_roles·jsonb·DEFAULT·'[]'::jsonb)",⏎········`                                                                                                      prettier/prettier
+  525:10  error  Replace `"public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb)","p_detail·jsonb)","p_detail·jsonb·DEFAULT·'{}'::jsonb)"` with `⏎··········"public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb)",⏎··········"p_detail·jsonb)",⏎··········"p_detail·jsonb·DEFAULT·'{}'::jsonb)",⏎········`                                                    prettier/prettier
+  526:10  error  Replace `"public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb)","p_detail·jsonb)","p_detail·jsonb·DEFAULT·'{}'::jsonb)"` with `⏎··········"public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb)",⏎··········"p_detail·jsonb)",⏎··········"p_detail·jsonb·DEFAULT·'{}'::jsonb)",⏎········`  prettier/prettier
+  527:10  error  Replace `"private.require_crm_supporter_actor(uuid)","p_actor·uuid)","p_actor·uuid·DEFAULT·NULL::uuid)"` with `⏎··········"private.require_crm_supporter_actor(uuid)",⏎··········"p_actor·uuid)",⏎··········"p_actor·uuid·DEFAULT·NULL::uuid)",⏎········`                                                                                                                            prettier/prettier
+  528:9   error  Replace `·metadataCases.push({name:·sig+"·argument·default",sig,last,replacement` with `⏎········metadataCases.push({·name:·sig·+·"·argument·default",·sig,·last,·replacement·`                                                                                                                                                                                                      prettier/prettier
+  530:19  error  Replace `="success",message="",setupComplete=false,` with `·=·"success",⏎··········message·=·"",⏎··········setupComplete·=·false,⏎··········`                                                                                                                                                                                                                                        prettier/prettier
+  532:32  error  Replace `tx` with `(tx)`                                                                                                                                                                                                                                                                                                                                                             prettier/prettier
+  537:28  error  Replace `=` with `·=⏎················`                                                                                                                                                                                                                                                                                                                                               prettier/prettier
+  538:55  error  Insert `⏎···············`                                                                                                                                                                                                                                                                                                                                                            prettier/prettier
+  539:64  error  Insert `·`                                                                                                                                                                                                                                                                                                                                                                           prettier/prettier
+  540:30  error  Replace `=` with `·=⏎················`                                                                                                                                                                                                                                                                                                                                               prettier/prettier
+  541:19  error  Replace `changed.metadata!==prior.metadata·||·changed.pronargdefaults!==1·||·changed.defaults===null)` with `⏎················changed.metadata·!==·prior.metadata·||⏎················changed.pronargdefaults·!==·1·||⏎················changed.defaults·===·null⏎··············)⏎···············`                                                                                     prettier/prettier
+  542:29  error  Replace `={beforeMetadata:prior.metadata,...changed` with `·=·{·beforeMetadata:·prior.metadata,·...changed·`                                                                                                                                                                                                                                                                         prettier/prettier
+  544:35  error  Replace `=` with `·=⏎················`                                                                                                                                                                                                                                                                                                                                               prettier/prettier
+  546:35  error  Replace `=` with `·=⏎················`                                                                                                                                                                                                                                                                                                                                               prettier/prettier
+  547:39  error  Replace `!==hash(newDefinitions))` with `·!==·hash(newDefinitions))⏎···············`                                                                                                                                                                                                                                                                                                 prettier/prettier
+  548:29  error  Replace `=` with `·=⏎················`                                                                                                                                                                                                                                                                                                                                               prettier/prettier
+  550:26  error  Replace `=` with `·=·`                                                                                                                                                                                                                                                                                                                                                               prettier/prettier
+  555:16  error  Replace `(e)·{status=(e·as·{errno?:string}).errno??"unexpected";message=(e·as·Error).message;` with `·(e)·{⏎··········status·=·(e·as·{·errno?:·string·}).errno·??·"unexpected";⏎··········message·=·(e·as·Error).message;⏎········`                                                                                                                                                  prettier/prettier
+  556:24  error  Replace `=hash(await·snapshot(db))===hash(before)·&&·hash(await·extra())===beforeExtra·&&·await·rowState()===` with `·=⏎··········hash(await·snapshot(db))·===·hash(before)·&&⏎··········hash(await·extra())·===·beforeExtra·&&⏎··········(await·rowState())·===·`                                                                                                                   prettier/prettier
+  557:23  error  Replace `case:c.name,status,message,setupComplete,fixtureProfile,preserved` with `·case:·c.name,·status,·message,·setupComplete,·fixtureProfile,·preserved·`                                                                                                                                                                                                                         prettier/prettier
+  558:11  error  Replace `(status!=="55000"·||·!setupComplete·||·!preserved)·throw·new·Error("Fix1·metadata·refusal·failed:·"+c.name+"·"+status+"·"+` with `·(status·!==·"55000"·||·!setupComplete·||·!preserved)⏎··········throw·new·Error("Fix1·metadata·refusal·failed:·"·+·c.name·+·"·"·+·status·+·"·"·+·`                                                                                        prettier/prettier
+
+✖ 81 problems (29 errors, 52 warnings)
+  29 errors and 0 warnings potentially fixable with the `--fix` option.
+
+error: script "lint" exited with code 1

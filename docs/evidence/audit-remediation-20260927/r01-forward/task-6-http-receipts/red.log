@@ -1,0 +1,54 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\atomicForward.http.test.ts:
+43 |       const response = await handlers({
+44 |         code: "42501",
+45 |         message: "supporter_edit_forbidden",
+46 |         details: "Synthetic private detail",
+47 |       })[action](context(action === "updateSupporter"));
+48 |       expect(response.status).toBe(403);
+                                   ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.http.test.ts:48:31)
+(fail) R01 CRM actor denial HTTP translation > createSupporter returns generic forbidden for transaction actor fence42501 [10.49ms]
+43 |       const response = await handlers({
+44 |         code: "42501",
+45 |         message: "supporter_edit_forbidden",
+46 |         details: "Synthetic private detail",
+47 |       })[action](context(action === "updateSupporter"));
+48 |       expect(response.status).toBe(403);
+                                   ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.http.test.ts:48:31)
+(fail) R01 CRM actor denial HTTP translation > updateSupporter returns generic forbidden for transaction actor fence42501 [2.10ms]
+43 |       const response = await handlers({
+44 |         code: "42501",
+45 |         message: "supporter_edit_forbidden",
+46 |         details: "Synthetic private detail",
+47 |       })[action](context(action === "updateSupporter"));
+48 |       expect(response.status).toBe(403);
+                                   ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.http.test.ts:48:31)
+(fail) R01 CRM actor denial HTTP translation > appendConsents returns generic forbidden for transaction actor fence42501 [0.51ms]
+(pass) R01 CRM actor denial HTTP translation > existing Response denial is passed through [0.17ms]
+(pass) R01 CRM actor denial HTTP translation > Zod validation remains400 [0.82ms]
+(pass) R01 CRM actor denial HTTP translation > P4090 remains version conflict409 [0.35ms]
+(pass) R01 CRM actor denial HTTP translation > unknown SQL failure remains generic500 [0.25ms]
+
+ 4 pass
+ 3 fail
+ 11 expect() calls
+Ran 7 tests across 1 file. [90.00ms]

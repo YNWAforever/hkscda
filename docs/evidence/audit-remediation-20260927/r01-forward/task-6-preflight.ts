@@ -1,0 +1,23 @@
+import {mkdir,writeFile} from "node:fs/promises";
+import {captureProductionSchema,captureModernLocalSchema,createProductionClone,snapshot,hash} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+const tables=["supporter","supporter_role","consent","audit_log","admin_user"];
+for(const mode of ["hosted","modern"]){
+ const capture=mode==="hosted"?await captureProductionSchema():await captureModernLocalSchema(),clone=await createProductionClone(capture);
+ const receipt:Record<string,unknown>={mode,observedAt:new Date().toISOString(),sourceCatalogHash:hash(capture.catalog),clone:clone.name,schemaParity:true,zeroApplicationTables:clone.tableCount};
+ try{const db=clone.sql;
+ receipt.facets=Object.fromEntries(Object.entries(capture.catalog).map(([k,v])=>[k,Array.isArray(v)?v.filter((x:Record<string,unknown>)=>tables.includes(String(x.table??x.name))||k==="defaults"||k==="schemas"||k==="functions"&&["mutate_crm_supporter_with_audit","replace_supporter_roles_atomic","append_crm_consents_with_audit","mutate_crm_supporter_if_version_with_audit","bump_supporter_edit_version","bump_supporter_edit_version_from_role","lock_admin_user_mutation"].includes(String(x.name))):v]));
+ receipt.functions=await db`select n.nspname schema,p.proname name,pg_get_function_identity_arguments(p.oid) args,pg_get_function_result(p.oid) result,md5(p.prosrc) body,p.proacl::text acl,pg_get_userbyid(p.proowner) owner,p.proconfig config,pg_get_functiondef(p.oid) definition from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.proname in ('mutate_crm_supporter_with_audit','replace_supporter_roles_atomic','append_crm_consents_with_audit','mutate_crm_supporter_if_version_with_audit','bump_supporter_edit_version','bump_supporter_edit_version_from_role','lock_admin_user_mutation') order by n.nspname,p.proname`;
+ receipt.auth=await db`select c.relacl::text acl,has_any_column_privilege('service_role',c.oid,'SELECT') sel,has_any_column_privilege('service_role',c.oid,'UPDATE') upd,(select jsonb_agg(jsonb_build_object('name',a.attname,'acl',a.attacl::text,'type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped) columns from pg_class c where c.oid='auth.users'::regclass`;
+ receipt.nativeFks=await db`select c.conname,pg_get_constraintdef(c.oid,true) definition,t.tgtype,t.tgenabled,t.tgisinternal,t.tgdeferrable,t.tginitdeferred,t.tgfoid::regprocedure::text function,t.tgrelid::regclass::text table,t.tgconstrrelid::regclass::text referenced,(select jsonb_agg(jsonb_build_object('deptype',d.deptype,'reference',d.refobjid::regclass::text) order by d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_constraint c join pg_trigger t on t.tgconstraint=c.oid where c.conrelid=any(${"{"+tables.map(t=>"public."+t).join(",")+"}"}::regclass[]) and c.contype='f' order by c.conname,t.tgtype,t.tgrelid::regclass::text`;
+ const functions=receipt.functions as Record<string,unknown>[];for(const f of functions){delete f.definition;} // no source-body dump in metadata receipt
+  const profiles=[];
+ for(const name of tables){
+  const facets=Object.fromEntries(["relations","columns","constraints","indexes","triggers","policies"].map(k=>[k,((capture.catalog[k]??[]) as Record<string,unknown>[]).filter(x=>x.schema==="public"&&(x.table??x.name)===name)]));
+  const [shape]=await db`select jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_rewrite r where r.ev_class=c.oid)) value from pg_class c where c.oid=${"public."+name}::regclass`;
+  const profile={...facets,shape:shape.value};const [digest]=await db`select jsonb_typeof(${profile}::jsonb) profile_type,md5(${profile}::jsonb::text) md5`;
+  if(digest.profile_type!=="object")throw new Error("Task6 profile JSONB transport must be object"); profiles.push({name,profileType:digest.profile_type,md5:digest.md5,profile});
+ }
+ receipt.domainProfiles=profiles;
+ receipt.preserved=hash(await snapshot(db))===hash(capture.catalog);
+ }finally{await clone.close();receipt.templatePreserved=clone.templatePreserved;receipt.cleanup="normal new owned clone drop only";await mkdir("docs/evidence/audit-remediation-20260927/r01-forward/task-6-preflight-receipts",{recursive:true});await writeFile(`docs/evidence/audit-remediation-20260927/r01-forward/task-6-preflight-receipts/${mode}.json`,JSON.stringify(receipt,null,2)+"\n");console.log(JSON.stringify({mode,sourceCatalogHash:receipt.sourceCatalogHash,preserved:receipt.preserved,templatePreserved:receipt.templatePreserved}));}
+}

@@ -1,0 +1,7 @@
+{
+  "phase": "after-gates",
+  "observedAt": "2026-10-02T00:28:23.512Z",
+  "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "modern": "943093e7e93194acf7f18ccab233c375a194a196f06e7efe5d661e08dc081d08",
+  "meaning": "read-only aggregate catalog/row/ledger/source hashes; no normalization or reset"
+}

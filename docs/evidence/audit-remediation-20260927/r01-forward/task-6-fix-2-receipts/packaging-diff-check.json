@@ -1,0 +1,9 @@
+{
+  "fullCommand": "git diff --cached --check",
+  "fullExit": 2,
+  "outputSHA256": "fddff732b5c2fa0c96458e1986c9512df27c76ca45a1c20c875155b1e790f8e2",
+  "outputLines": 450,
+  "scopedCommand": "git diff --cached --check -- . :(exclude)docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/**",
+  "scopedExit": 0,
+  "qualification": "Exact raw receipts/source archives retain original line endings/whitespace and are not reformatted. Only own Fix2 raw receipt folder excluded from source/metadata check. No SQL/test/gate inputs changed."
+}

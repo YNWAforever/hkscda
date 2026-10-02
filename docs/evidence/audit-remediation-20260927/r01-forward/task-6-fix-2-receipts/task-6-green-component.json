@@ -1,0 +1,1140 @@
+{
+  "mode": "green-component",
+  "startedAt": "2026-10-02T00:22:02.734Z",
+  "sourceCommit": "8b665fa4c05c20d728a7fb9617312c377618bc07",
+  "testedExecutableBlobs": {
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+    },
+    "supabase/migrations/20260928120000_crm_assignment_bulk.sql": {
+      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+      "canonicalSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql": {
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql": {
+      "sha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+      "canonicalSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c"
+    },
+    "src/lib/crm/atomicForward.database.test.ts": {
+      "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+      "canonicalSha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts": {
+      "sha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da",
+      "canonicalSha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py": {
+      "sha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+      "canonicalSha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c"
+    },
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "sha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+      "canonicalSha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "src/lib/crm/service.ts": {
+      "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+      "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110"
+    },
+    "src/lib/crm/repository.server.ts": {
+      "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+      "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b"
+    },
+    "src/lib/crm/http.server.ts": {
+      "sha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67",
+      "canonicalSha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67"
+    },
+    "src/lib/crm/consent.ts": {
+      "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172"
+    },
+    "src/lib/crm/schemas.ts": {
+      "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a"
+    },
+    "src/lib/crm/types.ts": {
+      "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224",
+      "canonicalSha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+      "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+    },
+    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+      "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+    }
+  },
+  "clone": "r01_clone_b871fda312474537a4b2f855adf209b1",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "productionActions": "schema/catalog read only; no production actor calls or data",
+  "dependencyGate": "controller released PR189 exact592 CI36928397189 allfiveSUCCESS",
+  "task1Applied": false,
+  "manifestInitial": 1,
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "issues": 1
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "issues": 1
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "issues": 1
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "issues": 1
+    },
+    {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "issues": 1
+    }
+  ],
+  "manifestBeforeTask6": 1,
+  "componentConstruction": {
+    "meaning": "Exact ruled #150/#177 source fragments only in new owned clone; PG17.6, not exactCI17.11",
+    "catalogChangedFacets": [
+      "columns",
+      "relations"
+    ],
+    "rowsPreserved": true,
+    "completeAuthDefaultNativeLedgerPreserved": true
+  },
+  "preMigrationRowHash": "62b2dd1cbca87e5b52d1c45714c21a1dd694e3586469ce8c03662dc598965069",
+  "preMigrationCompleteAuthDefaultNativeLedgerHash": "5f18ac87894dc0bbd15bd8a2dfce0d44469ad18ce461b7e6873e17e9520e8708",
+  "normalBaselineAccepted": true,
+  "normalBaselineRollbackPreserved": true,
+  "refusals": [
+    {
+      "case": "Auth direct SELECT(email)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "Auth direct UPDATE(banned_until)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "Auth PUBLIC SELECT(email)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "Auth PUBLIC UPDATE(banned_until)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "public unknown schema creation default",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "private unknown schema creation default",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unknown global creation default",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "public schema default grant option",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "private schema default grant option",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "global default grant option",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "global owner default missing",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "consent rule",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "consent persistence",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter column type",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter owner",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter RLS",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter version trigger disabled",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "role version trigger disabled",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "consent index dropped",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper argument names",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper body",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper ACL",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper owner",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper configuration",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper security definer",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper cost",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unknown private bridge",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "mutate_crm_supporter_with_audit overload",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "replace_supporter_roles_atomic overload",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "append_crm_consents_with_audit overload",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_c_663401",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_a_663399",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_a_663400",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_c_663402",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_c_663791",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_a_663789",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_a_663790",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_c_663792",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_c_664326",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_a_664324",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_a_664325",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_c_664327",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_c_664331",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_a_664329",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_a_664330",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_c_664332",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "replace_supporter_roles_atomic(uuid,jsonb) security definer",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) set search_path='public'",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) cost 1",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "bump_supporter_edit_version owner",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "supabase_admin",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "supabase_admin",
+              "grantor": "supabase_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "postgres",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "bump_supporter_edit_version extra ACL recipient",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "postgres",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "dashboard_user",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "postgres",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "bump_supporter_edit_version owner EXECUTE grant option",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "postgres",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": true,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "postgres",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "bump_supporter_edit_version_from_role owner",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "postgres",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "supabase_admin",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "supabase_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "supabase_admin",
+              "grantor": "supabase_admin",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "bump_supporter_edit_version_from_role extra ACL recipient",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "postgres",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "postgres",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "dashboard_user",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "bump_supporter_edit_version_from_role owner EXECUTE grant option",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "postgres",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "postgres",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": true,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "role helper missing historical PUBLIC",
+      "status": "55000",
+      "message": "R01 CRM version trigger helpers differ",
+      "setupComplete": true,
+      "fixtureProfile": [
+        {
+          "proname": "bump_supporter_edit_version",
+          "owner": "postgres",
+          "definitionmd5": "08619e0337db72d3d685130718c47538",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        },
+        {
+          "proname": "bump_supporter_edit_version_from_role",
+          "owner": "postgres",
+          "definitionmd5": "3b3d61191955f415e4ed1a22389d71fb",
+          "effectiveacl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ]
+        }
+      ],
+      "preserved": true
+    },
+    {
+      "case": "public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) argument default",
+      "status": "55000",
+      "message": "R01 CRM function contract differs: mutate_crm_supporter_with_audit",
+      "setupComplete": true,
+      "fixtureProfile": {
+        "beforeMetadata": "4767a0b6de67f57d25a3191edceda21e",
+        "metadata": "4767a0b6de67f57d25a3191edceda21e",
+        "pronargdefaults": 1,
+        "defaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location -1 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]})",
+        "body": "b855a871526b63f13a1d653757a2f4c1"
+      },
+      "preserved": true
+    },
+    {
+      "case": "public.replace_supporter_roles_atomic(uuid,jsonb) argument default",
+      "status": "55000",
+      "message": "R01 CRM function contract differs: replace_supporter_roles_atomic",
+      "setupComplete": true,
+      "fixtureProfile": {
+        "beforeMetadata": "ba96ab0016a2c8218f130ab0add3cdf3",
+        "metadata": "ba96ab0016a2c8218f130ab0add3cdf3",
+        "pronargdefaults": 1,
+        "defaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location -1 :constvalue 8 [ 32 0 0 0 0 0 0 64 ]})",
+        "body": "f2c7e2d7478e45b8320a59b43b56f818"
+      },
+      "preserved": true
+    },
+    {
+      "case": "public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) argument default",
+      "status": "55000",
+      "message": "R01 CRM function contract differs: append_crm_consents_with_audit",
+      "setupComplete": true,
+      "fixtureProfile": {
+        "beforeMetadata": "b75fa215c982c9e2b51134ee81b681bb",
+        "metadata": "b75fa215c982c9e2b51134ee81b681bb",
+        "pronargdefaults": 1,
+        "defaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location -1 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]})",
+        "body": "fad2e7acedab10443930040b3e667939"
+      },
+      "preserved": true
+    },
+    {
+      "case": "public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb) argument default",
+      "status": "55000",
+      "message": "R01 CRM function contract differs: mutate_crm_supporter_if_version_with_audit",
+      "setupComplete": true,
+      "fixtureProfile": {
+        "beforeMetadata": "df78e49f8e1c09b29d9594b595f0eefe",
+        "metadata": "df78e49f8e1c09b29d9594b595f0eefe",
+        "pronargdefaults": 1,
+        "defaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location -1 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]})",
+        "body": "f6963da392c67e51fea8e5b451698238"
+      },
+      "preserved": true
+    },
+    {
+      "case": "private.require_crm_supporter_actor(uuid) argument default",
+      "status": "55000",
+      "message": "R01 CRM function contract differs: require_crm_supporter_actor",
+      "setupComplete": true,
+      "fixtureProfile": {
+        "beforeMetadata": "f5ebee2e51907c4609e078607905eb3e",
+        "metadata": "f5ebee2e51907c4609e078607905eb3e",
+        "pronargdefaults": 1,
+        "defaults": "({CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull true :location -1 :constvalue <>})",
+        "body": "60f3f9ec8d075cfd67c0e992d2667030"
+      },
+      "preserved": true
+    },
+    {
+      "case": "assignment column write ACL drift",
+      "status": "55000",
+      "message": "R01 CRM table metadata differs: supporter",
+      "fixtureChanged": true,
+      "oldPermission": {
+        "tableacl": "{postgres=arwdDxtm/postgres,authenticated=rdm/postgres,service_role=arwdDxtm/postgres}",
+        "columns": [
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "id"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "name"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "email"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "phone"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "language"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "tags"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "source"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "deleted_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "created_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "updated_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "edit_version"
+          },
+          {
+            "acl": null,
+            "column": "crm_assignee_user_id"
+          }
+        ]
+      },
+      "newPermission": {
+        "tableacl": "{postgres=arwdDxtm/postgres,authenticated=rdm/postgres,service_role=arwdDxtm/postgres}",
+        "columns": [
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "id"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "name"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "email"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "phone"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "language"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "tags"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "source"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "deleted_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "created_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "updated_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "edit_version"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "crm_assignee_user_id"
+          }
+        ]
+      },
+      "preserved": true
+    },
+    {
+      "case": "prior column UPDATE grant-option drift",
+      "status": "55000",
+      "message": "R01 CRM table metadata differs: supporter",
+      "fixtureChanged": true,
+      "oldPermission": {
+        "tableacl": "{postgres=arwdDxtm/postgres,authenticated=rdm/postgres,service_role=arwdDxtm/postgres}",
+        "columns": [
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "id"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "name"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "email"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "phone"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "language"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "tags"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "source"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "deleted_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "created_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "updated_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "edit_version"
+          },
+          {
+            "acl": null,
+            "column": "crm_assignee_user_id"
+          }
+        ]
+      },
+      "newPermission": {
+        "tableacl": "{postgres=arwdDxtm/postgres,authenticated=rdm/postgres,service_role=arwdDxtm/postgres}",
+        "columns": [
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "id"
+          },
+          {
+            "acl": "{authenticated=aw*/postgres}",
+            "column": "name"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "email"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "phone"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "language"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "tags"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "source"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "deleted_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "created_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "updated_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "edit_version"
+          },
+          {
+            "acl": null,
+            "column": "crm_assignee_user_id"
+          }
+        ]
+      },
+      "preserved": true
+    },
+    {
+      "case": "hybrid table INSERT/UPDATE drift",
+      "status": "55000",
+      "message": "R01 CRM table metadata differs: supporter",
+      "fixtureChanged": true,
+      "oldPermission": {
+        "tableacl": "{postgres=arwdDxtm/postgres,authenticated=rdm/postgres,service_role=arwdDxtm/postgres}",
+        "columns": [
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "id"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "name"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "email"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "phone"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "language"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "tags"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "source"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "deleted_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "created_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "updated_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "edit_version"
+          },
+          {
+            "acl": null,
+            "column": "crm_assignee_user_id"
+          }
+        ]
+      },
+      "newPermission": {
+        "tableacl": "{postgres=arwdDxtm/postgres,authenticated=arwdm/postgres,service_role=arwdDxtm/postgres}",
+        "columns": [
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "id"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "name"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "email"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "phone"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "language"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "tags"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "source"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "deleted_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "created_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "updated_at"
+          },
+          {
+            "acl": "{authenticated=aw/postgres}",
+            "column": "edit_version"
+          },
+          {
+            "acl": null,
+            "column": "crm_assignee_user_id"
+          }
+        ]
+      },
+      "preserved": true
+    }
+  ],
+  "migrationRowsPreserved": true,
+  "completeAuthDefaultsNativeLedgerPreserved": true,
+  "unrelatedCatalogPreserved": true,
+  "secondApplyCatalogIdentical": true,
+  "secondApplyRowsIdentical": true,
+  "manifestAfterTask6": 1,
+  "testExit": 0,
+  "testSummary": [
+    "\n 25 pass",
+    " 0 fail",
+    " 205 expect() calls"
+  ],
+  "postTestRowsPreserved": true,
+  "postTestCatalogPreserved": true,
+  "postTestAuthDefaultsNativeLedgerPreserved": true,
+  "templateBefore": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templatePreserved": true,
+  "modernBefore": "7a89ed0638d732159b40568ea284955ea14b86167a2de11fd282db2aa2104803",
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "cleanup": "normal newly owned clone drop only",
+  "completedAt": "2026-10-02T00:22:38.950Z"
+}

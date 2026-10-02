@@ -1,0 +1,73 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\atomicForward.database.test.ts:
+58 |     expect(await state(tx)).toEqual(before);
+59 |   }));
+60 |   test("legacy defect create refuses an unauthorized staff actor",()=>fixture(async(tx,actor)=>{
+61 |     await tx`update public.admin_user set role='staff' where auth_user_id=${actor}::uuid`;
+62 |     const before=await state(tx);
+63 |     expect(await errno(()=>service(tx,s=>s`select public.mutate_crm_supporter_with_audit('create',null,${{name:"Forbidden",email:randomUUID()+"@example.invalid",language:"en",tags:[],source:"test"}}::jsonb,${["donor"]}::jsonb,${actor}::uuid,${at}::timestamptz,'{}'::jsonb)`))).toBe("42501");
+                                                                                                                                                                                                                                                                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:63:278)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:18:11)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CRM forward commands on owned synthetic clone > legacy defect create refuses an unauthorized staff actor [53.05ms]
+64 |     expect(await state(tx)).toEqual(before);
+65 |   }));
+66 |   test("legacy defect consent refuses a banned actor",()=>fixture(async(tx,actor,supporter)=>{
+67 |     await tx`update auth.users set banned_until=clock_timestamp()+interval '1 day' where id=${actor}::uuid`;
+68 |     const before=await state(tx),rows=[{supporter_id:supporter,channel:"email",status:"opt_in",source:"admin",timestamp:at}];
+69 |     expect(await errno(()=>service(tx,s=>s`select public.append_crm_consents_with_audit(${rows}::jsonb,${actor}::uuid,${supporter}::uuid,${at}::timestamptz,'{}'::jsonb)`))).toBe("42501");
+                                                                                                                                                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:69:174)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:18:11)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CRM forward commands on owned synthetic clone > legacy defect consent refuses a banned actor [25.88ms]
+69 |     expect(await errno(()=>service(tx,s=>s`select public.append_crm_consents_with_audit(${rows}::jsonb,${actor}::uuid,${supporter}::uuid,${at}::timestamptz,'{}'::jsonb)`))).toBe("42501");
+70 |     expect(await state(tx)).toEqual(before);
+71 |   }));
+72 |   test("legacy defect consent refuses row identity mismatch",()=>fixture(async(tx,actor,supporter)=>{
+73 |     const before=await state(tx),rows=[{supporter_id:randomUUID(),channel:"email",status:"opt_in",source:"admin",timestamp:at}];
+74 |     expect(await errno(()=>service(tx,s=>s`select public.append_crm_consents_with_audit(${rows}::jsonb,${actor}::uuid,${supporter}::uuid,${at}::timestamptz,'{}'::jsonb)`))).toBe("22023");
+                                                                                                                                                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: "22023"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:74:174)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:18:11)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CRM forward commands on owned synthetic clone > legacy defect consent refuses row identity mismatch [10.55ms]
+74 |     expect(await errno(()=>service(tx,s=>s`select public.append_crm_consents_with_audit(${rows}::jsonb,${actor}::uuid,${supporter}::uuid,${at}::timestamptz,'{}'::jsonb)`))).toBe("22023");
+75 |     expect(await state(tx)).toEqual(before);
+76 |   }));
+77 |   test("legacy defect consent refuses empty audit-only append",()=>fixture(async(tx,actor,supporter)=>{
+78 |     const before=await state(tx);
+79 |     expect(await errno(()=>service(tx,s=>s`select public.append_crm_consents_with_audit('[]'::jsonb,${actor}::uuid,${supporter}::uuid,${at}::timestamptz,'{}'::jsonb)`))).toBe("22023");
+                                                                                                                                                                               ^
+error: expect(received).toBe(expected)
+
+Expected: "22023"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:79:171)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:18:11)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CRM forward commands on owned synthetic clone > legacy defect consent refuses empty audit-only append [7.87ms]
+
+ 0 pass
+ 4 filtered out
+ 4 fail
+ 4 expect() calls
+Ran 4 tests across 1 file. [212.00ms]

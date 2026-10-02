@@ -1,0 +1,14 @@
+{
+  "downloadedAtUtc": "2026-10-01T23:52:47.2947125Z",
+  "head": "8b665fa4c05c20d728a7fb9617312c377618bc07",
+  "run": 36942406286,
+  "job": 110637449346,
+  "command": "gh api repos/YNWAforever/hkscda/actions/jobs/110637449346/logs",
+  "exit": 0,
+  "file": "task-6-ci-36942406286-attempt1-rls.log",
+  "sha256": "3253123dd0f2c53ed83e9b0feb2736be0697eb6ed7e4b0cacbf052601952f609",
+  "bytes": 127807,
+  "error": "ERROR: R01 CRM table metadata differs: supporter (SQLSTATE 55000)",
+  "failedStep": "Start local Supabase stack",
+  "behaviorSteps": "skipped"
+}

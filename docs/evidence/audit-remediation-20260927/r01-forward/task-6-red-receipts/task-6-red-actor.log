@@ -1,0 +1,25 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\atomicForward.database.test.ts:
+52 |     expect(count.total).toBe(1);
+53 |   }));
+54 |   test("versioned actor rejects managed Auth ban without mutation",()=>fixture(async(tx,actor,supporter)=>{
+55 |     await tx`update auth.users set banned_until=clock_timestamp()+interval '1 day' where id=${actor}::uuid`;
+56 |     const before=await state(tx);
+57 |     expect(await errno(()=>edit(tx,actor,supporter))).toBe("42501");
+                                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:57:55)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\crm\atomicForward.database.test.ts:18:11)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CRM forward commands on owned synthetic clone > versioned actor rejects managed Auth ban without mutation [32.57ms]
+
+ 0 pass
+ 3 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [88.00ms]
