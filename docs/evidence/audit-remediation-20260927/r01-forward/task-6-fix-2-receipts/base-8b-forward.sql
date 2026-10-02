@@ -41,7 +41,7 @@ begin
   from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
   -- Empty facets are [] in the captured profile, never SQL NULL.
   select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);
-  if pg_catalog.md5(v_actual::text) not in ('3148b717a290aa5be32b446245ddc1ce','8ac590a6fec96f6c2cbaa48e7be16c97','6283c96ed21f1197474461a8028892e1') then raise exception 'R01 CRM table metadata differs: supporter' using errcode='55000'; end if;
+  if pg_catalog.md5(v_actual::text) not in ('3148b717a290aa5be32b446245ddc1ce','8ac590a6fec96f6c2cbaa48e7be16c97') then raise exception 'R01 CRM table metadata differs: supporter' using errcode='55000'; end if;
   v_name := 'supporter_role'; v_table := pg_catalog.to_regclass('public.'||v_name);
   if v_table is null then raise exception 'R01 CRM prerequisite table absent: supporter_role' using errcode='55000'; end if;
   select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))

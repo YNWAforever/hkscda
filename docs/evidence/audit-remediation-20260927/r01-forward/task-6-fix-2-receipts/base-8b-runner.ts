@@ -27,13 +27,9 @@ async function red() {
     );
   await mkdir(archive, { recursive: true });
   const paths = [
-    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
-    "supabase/migrations/20260928120000_crm_assignment_bulk.sql",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql",
     "src/lib/crm/atomicForward.database.test.ts",
     "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-gates.py",
     "supabase/rls-tests/helpers/runR01CrmForward.ts",
     "supabase/rls-tests/helpers/productionSchemaClone.ts",
     "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql",
@@ -142,15 +138,13 @@ async function green() {
   const mode = process.argv[2];
   if (
     process.env.R01_CRM_ALLOW_LOCAL_FIXTURES !== "1" ||
-    !["green", "green-modern", "green-component", "green-smoke", "green-modern-smoke"].includes(
-      mode,
-    )
+    !["green", "green-modern", "green-smoke", "green-modern-smoke"].includes(mode)
   )
     throw new Error("Task6 GREEN opt-in required");
   const root = resolve(import.meta.dir, "../../.."),
     out = resolve(
       root,
-      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts",
+      "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-receipts",
     ),
     file = "20261001213914_r01_crm_atomic_forward.sql";
   await mkdir(out, { recursive: true });
@@ -177,13 +171,9 @@ async function green() {
     ],
   ];
   const paths = [
-    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
-    "supabase/migrations/20260928120000_crm_assignment_bulk.sql",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql",
     "src/lib/crm/atomicForward.database.test.ts",
     "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts",
-    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-gates.py",
     "supabase/rls-tests/helpers/runR01CrmForward.ts",
     "supabase/rls-tests/helpers/productionSchemaClone.ts",
     "src/lib/crm/service.ts",
@@ -212,8 +202,7 @@ async function green() {
       ),
     );
   const frozen = await blobs(),
-    component = mode === "green-component",
-    modern = mode.includes("modern") || component,
+    modern = mode.includes("modern"),
     modernUrl = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
     modernBefore = await localSourceState(modernUrl),
     capture = modern ? await captureModernLocalSchema() : await captureProductionSchema(),
@@ -286,35 +275,6 @@ async function green() {
     receipt.manifestBeforeTask6 = (await crmManifest(await snapshot(db))).issues.length;
     if (!modern && receipt.manifestBeforeTask6 !== 25)
       throw new Error("Task2–5 conditional gap baseline drift");
-    if (component) {
-      const beforeComponent = await snapshot(db),
-        extras = hash(await extra()),
-        rows = await rowState();
-      await db.begin(async (tx) => {
-        await tx`set local role postgres`;
-        for (const name of [
-          "executed-maintenance-fragment.sql",
-          "executed-assignment-column-fragment.sql",
-        ])
-          await tx.unsafe(await readFile(resolve(out, name), "utf8"));
-      });
-      const afterComponent = await snapshot(db);
-      const componentConstruction = {
-        meaning:
-          "Exact ruled #150/#177 source fragments only in new owned clone; PG17.6, not exactCI17.11",
-        catalogChangedFacets: Object.keys(beforeComponent).filter(
-          (k) => hash(beforeComponent[k]) !== hash(afterComponent[k]),
-        ),
-        rowsPreserved: (await rowState()) === rows,
-        completeAuthDefaultNativeLedgerPreserved: hash(await extra()) === extras,
-      };
-      receipt.componentConstruction = componentConstruction;
-      if (
-        !componentConstruction.rowsPreserved ||
-        !componentConstruction.completeAuthDefaultNativeLedgerPreserved
-      )
-        throw new Error("Component setup preservation failure");
-    }
     const actor = randomUUID(),
       supporter = randomUUID();
     await db.begin(async (tx) => {
@@ -658,65 +618,6 @@ async function green() {
         if (status !== "55000" || !setupComplete || !preserved)
           throw new Error("Fix1 metadata refusal failed: " + c.name + " " + status + " " + message);
       }
-    }
-    // Fix2: third baseline must still reject unsupported column/table permission hybrids.
-    const permissionCases: [string, string][] = [
-      [
-        "assignment column write ACL drift",
-        "grant insert(crm_assignee_user_id),update(crm_assignee_user_id) on public.supporter to authenticated",
-      ],
-      [
-        "prior column UPDATE grant-option drift",
-        "grant update(name) on public.supporter to authenticated with grant option",
-      ],
-    ];
-    if (component)
-      permissionCases.push([
-        "hybrid table INSERT/UPDATE drift",
-        "grant insert,update on public.supporter to authenticated",
-      ]);
-    for (const [name, change] of permissionCases) {
-      let status = "success",
-        message = "",
-        fixtureChanged = false;
-      let oldPermission: unknown, newPermission: unknown;
-      try {
-        await db.begin(async (tx) => {
-          await tx`set local role postgres`;
-          [oldPermission] =
-            await tx`select c.relacl::text tableAcl,(select jsonb_agg(jsonb_build_object('column',a.attname,'acl',a.attacl::text) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped) columns from pg_class c where c.oid='public.supporter'::regclass`;
-          await tx.unsafe(change);
-          [newPermission] =
-            await tx`select c.relacl::text tableAcl,(select jsonb_agg(jsonb_build_object('column',a.attname,'acl',a.attacl::text) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped) columns from pg_class c where c.oid='public.supporter'::regclass`;
-          fixtureChanged = hash(oldPermission) !== hash(newPermission);
-          if (!fixtureChanged) throw new Error("Permission drift fixture did not change metadata");
-          await tx.unsafe(text);
-          throw new Error("Unexpected Fix2 permission drift acceptance");
-        });
-      } catch (e) {
-        status = (e as { errno?: string }).errno ?? "unexpected";
-        message = (e as Error).message;
-      }
-      const preserved =
-        hash(await snapshot(db)) === hash(before) &&
-        hash(await extra()) === beforeExtra &&
-        (await rowState()) === beforeRows;
-      refusal.push({
-        case: name,
-        status,
-        message,
-        fixtureChanged,
-        oldPermission,
-        newPermission,
-        preserved,
-      });
-      if (
-        status !== "55000" ||
-        message !== "R01 CRM table metadata differs: supporter" ||
-        !fixtureChanged ||
-        !preserved
-      )
-        throw new Error("Fix2 permission refusal failed: " + name + " " + status + " " + message);
     }
     receipt.refusals = refusal;
     await apply();
