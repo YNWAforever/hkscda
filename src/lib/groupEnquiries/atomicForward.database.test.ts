@@ -302,7 +302,7 @@ describe.skipIf(!db)("Task12 group transaction contract", () => {
       const audits = await tx`select detail from public.audit_log where entity_id=${f.enquiry}`;
       expect(audits).toHaveLength(2);
       for (const audit of audits)
-        expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: "new" });
+        expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: null });
     });
   });
   test("audit failure rolls back updated enquiry and retry remains possible", async () => {
