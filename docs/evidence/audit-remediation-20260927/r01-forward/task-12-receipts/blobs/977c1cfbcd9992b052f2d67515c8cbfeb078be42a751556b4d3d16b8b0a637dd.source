@@ -1,0 +1,11 @@
+{
+  "command": [
+    "bun",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-native-query-reader.ts",
+    "emit",
+    "unused",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-native-final-b85b6c33f8554d8597ee70dd21030492"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

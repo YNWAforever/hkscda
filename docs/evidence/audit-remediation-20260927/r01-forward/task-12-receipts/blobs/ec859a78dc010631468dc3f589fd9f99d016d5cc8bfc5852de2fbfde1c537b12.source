@@ -1,0 +1,45 @@
+
+src\lib\groupEnquiries\atomicForward.database.test.ts:
+(pass) Task12 group enquiry atomic command > resolves current API signature before input rejection [8.76ms]
+(pass) Task12 group enquiry atomic command > banned group actor cannot update an enquiry [16.99ms]
+(pass) Task12 group enquiry atomic command > unconfirmed group actor cannot update an enquiry [15.35ms]
+(pass) Task12 group transaction contract > staff updates allowed fields and writes one privacy-safe audit [18.72ms]
+(pass) Task12 group transaction contract > admin updates allowed fields and writes one privacy-safe audit [15.43ms]
+(pass) Task12 group transaction contract > disabled actor is denied without mutation or audit [15.72ms]
+(pass) Task12 group transaction contract > role_changed actor is denied without mutation or audit [11.45ms]
+(pass) Task12 group transaction contract > identity_mismatch actor is denied without mutation or audit [9.63ms]
+(pass) Task12 group transaction contract > missing_auth actor is denied without mutation or audit [27.08ms]
+(pass) Task12 group transaction contract > anon cannot invoke command, read or write group table even with forged actor claims [10.89ms]
+(pass) Task12 group transaction contract > authenticated cannot invoke command, read or write group table even with forged actor claims [9.53ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {} is rejected [8.34ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {"notificationStatus":"sent"} is rejected [7.08ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {"status":"closed","contactEmail":"changed@example.invalid"} is rejected [7.71ms]
+(pass) Task12 group transaction contract > malformed or unowned patch [] is rejected [7.47ms]
+(pass) Task12 group transaction contract > malformed or unowned patch "bad" is rejected [10.12ms]
+(pass) Task12 group transaction contract > constraint failure status rolls back all changes and audit [9.58ms]
+(pass) Task12 group transaction contract > constraint failure assignedTo rolls back all changes and audit [9.41ms]
+(pass) Task12 group transaction contract > constraint failure assignedTo rolls back all changes and audit [10.22ms]
+(pass) Task12 group transaction contract > missing enquiry and stale version return exact result without an audit [9.10ms]
+(pass) Task12 group transaction contract > audit failure rolls back updated enquiry and retry remains possible [14.93ms]
+(pass) Task12 group transaction contract > temporary table shadowing cannot redirect target or audit writes [12.66ms]
+(pass) Task12 group transaction contract > expired Auth ban permits the same confirmed staff contract [7.04ms]
+(pass) Task12 group concurrent transaction fencing > disable mutation-first observes real actor row blocking and rechecked commit order [64.16ms]
+(pass) Task12 group concurrent transaction fencing > disable command-first observes real actor row blocking and rechecked commit order [60.98ms]
+(pass) Task12 group concurrent transaction fencing > role mutation-first observes real actor row blocking and rechecked commit order [60.17ms]
+(pass) Task12 group concurrent transaction fencing > role command-first observes real actor row blocking and rechecked commit order [56.75ms]
+(pass) Task12 group concurrent transaction fencing > ban mutation-first observes real actor row blocking and rechecked commit order [59.44ms]
+(pass) Task12 group concurrent transaction fencing > ban command-first observes real actor row blocking and rechecked commit order [51.98ms]
+(pass) Task12 group concurrent transaction fencing > unconfirm mutation-first observes real actor row blocking and rechecked commit order [47.71ms]
+(pass) Task12 group concurrent transaction fencing > unconfirm command-first observes real actor row blocking and rechecked commit order [54.64ms]
+(pass) Task12 group concurrent transaction fencing > concurrent and sequential same-version retries retain one mutation/audit and exact conflict [49.23ms]
+
+src\lib\groupEnquiries\service.test.ts:
+(pass) group enquiry service > persists normalized public input before notifying [2.24ms]
+(pass) group enquiry service > replays existing idempotency keys without sending duplicate notifications [0.28ms]
+(pass) group enquiry service > records a resolved delivery failure and retries the same enquiry [0.49ms]
+(pass) group enquiry service > keeps public success after notification failure and stores a bounded diagnostic [0.86ms]
+
+ 36 pass
+ 0 fail
+ 133 expect() calls
+Ran 36 tests across 2 files. [1.64s]

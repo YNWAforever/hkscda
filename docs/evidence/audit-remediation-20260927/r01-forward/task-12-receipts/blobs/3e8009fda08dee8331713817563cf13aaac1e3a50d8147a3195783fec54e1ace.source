@@ -1,0 +1,469 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned, not `latest`. bunfig.toml holds every dependency back a day
+      # (minimumReleaseAge) as a supply-chain guard; installing whatever Bun
+      # shipped that hour would run the whole gate on an unvetted toolchain, and
+      # a point release that changes bun.lock's format or bun:test's defaults
+      # would turn every PR red with no repository change and no way back to the
+      # last green. Bump this deliberately.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      # `bun run build` transpiles without type checking, so this is the only
+      # thing standing between a type error and production. Keep it before the
+      # build: it is fast and its failures are the most actionable.
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun test --isolate
+
+      - name: Lint
+        run: bun run lint
+
+      # Turnstile boot-asserts on an inconsistent site-key/secret pair. CI has
+      # neither, and VERCEL_ENV is unset, so it takes the non-production path.
+      - name: Build
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+
+      # The build regenerates the route tree. If it differs from what was
+      # committed, the committed file was stale - the defect that made PR #60 fail
+      # typecheck on two routes that existed but were not registered.
+      - name: Route tree is current
+        run: git diff --exit-code -- src/routeTree.gen.ts
+
+  # Separate job so the fast gate stays fast, and a browser sweep can never block
+  # a typecheck fix while it's non-blocking. Was green on main 5+ runs in a row
+  # (2026-08-30 through 2026-09-01), well past the "twice" bar, so it is now a
+  # required branch-protection check on main (P0-12) -- continue-on-error is
+  # removed so a real failure here is reported as a real failure, not masked
+  # as success.
+  brand-verify:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      # Point the app at the fixture rather than a name that does not resolve.
+      # With an unreachable host the verifier reports DNS failures on every page,
+      # which says nothing about the brand.
+      - name: Build against the fixture
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      - name: Install brand verifier browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: Verify public brand
+        shell: bash
+        run: |
+          node scripts/ci/supabase-fixture.mjs > /tmp/hkscda-fixture.log 2>&1 &
+          fixture_pid=$!
+          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173             bun run preview > /tmp/hkscda-brand-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" "$fixture_pid" 2>/dev/null || true' EXIT
+
+          ready=false
+          for attempt in {1..120}; do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              ready=true
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then
+              cat /tmp/hkscda-brand-preview.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            cat /tmp/hkscda-brand-preview.log
+            exit 1
+          fi
+
+          curl --fail --silent "http://127.0.0.1:54329/rest/v1/animals?select=id&limit=1" >/dev/null || {
+            echo "fixture did not answer"
+            cat /tmp/hkscda-fixture.log
+            exit 1
+          }
+
+          bun run verify:brand
+        env:
+          FIXTURE_ID: supabase-ci-v1
+          BASE_URL: http://127.0.0.1:4173
+          OUTPUT_DIR: artifacts/brand-ci
+          BRAND_VERIFY_TIMEOUT: 15000
+          MODE: brand
+          # bun run preview spawns the actual SSR server process here, which
+          # now needs live Supabase config at request time: /help's route
+          # loader (added for the FAQ CMS) is the first public route whose
+          # SSR path reads through createSupabaseServiceClient(). Without
+          # these, getSupabaseServerConfig() throws "Missing required
+          # environment variable" and /help 500s under this job specifically
+          # (the earlier "Build against the fixture" step's env: does not
+          # carry over to this separate step).
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      # Report storage is best-effort; verification above remains enforced.
+      - name: Upload brand artefacts
+        id: upload-report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: brand-ci
+          path: artifacts/brand-ci
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Report unavailable artefacts
+        if: ${{ always() && steps.upload-report.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "::warning::Report upload failed. Verification results remain in the job logs; check GitHub artifact storage quota."
+          echo "### Reports unavailable" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact upload failed. See verification steps above for test results and the upload log for the storage error." >> "$GITHUB_STEP_SUMMARY"
+
+  # Separate job so brand-verify (required) never fails on a11y findings.
+  # Non-blocking until proven green repeatedly, then promote via branch
+  # protection -- the same process already used for brand-verify itself.
+  a11y-verify:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build against the fixture
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      - name: Install a11y verifier browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: Verify public a11y
+        shell: bash
+        run: |
+          node scripts/ci/supabase-fixture.mjs > /tmp/hkscda-fixture.log 2>&1 &
+          fixture_pid=$!
+          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173             bun run preview > /tmp/hkscda-a11y-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" "$fixture_pid" 2>/dev/null || true' EXIT
+
+          ready=false
+          for attempt in {1..120}; do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              ready=true
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then
+              cat /tmp/hkscda-a11y-preview.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            cat /tmp/hkscda-a11y-preview.log
+            exit 1
+          fi
+
+          curl --fail --silent "http://127.0.0.1:54329/rest/v1/animals?select=id&limit=1" >/dev/null || {
+            echo "fixture did not answer"
+            cat /tmp/hkscda-fixture.log
+            exit 1
+          }
+
+          bun run verify:a11y
+        env:
+          FIXTURE_ID: supabase-ci-v1
+          BASE_URL: http://127.0.0.1:4173
+          OUTPUT_DIR: artifacts/a11y-ci
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      # Report storage is best-effort; verification above remains enforced.
+      - name: Upload a11y artefacts
+        id: upload-report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-ci
+          path: artifacts/a11y-ci
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Report unavailable artefacts
+        if: ${{ always() && steps.upload-report.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "::warning::Report upload failed. Verification results remain in the job logs; check GitHub artifact storage quota."
+          echo "### Reports unavailable" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact upload failed. See verification steps above for test results and the upload log for the storage error." >> "$GITHUB_STEP_SUMMARY"
+
+  # Separate job so the fast gate stays fast. Non-blocking until proven green
+  # repeatedly on main, then promote via branch protection (matching the
+  # process already used for brand-verify).
+  rls-matrix:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      - name: Start local Supabase stack
+        run: bunx supabase start
+
+      - name: Run Task11 finance callback transaction tests
+        run: bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts
+        env:
+          R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: "1"
+          R01_FINANCE_CALLBACK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run Task12 group enquiry transaction tests
+        run: bun test --timeout 15000 src/lib/groupEnquiries/atomicForward.database.test.ts
+        env:
+          R01_GROUP_ENQUIRY_ALLOW_LOCAL_FIXTURES: "1"
+          R01_GROUP_ENQUIRY_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run RLS behavioral tests
+        run: bun run test:rls
+
+      # The database-backed suites opt in through their own *_ALLOW_LOCAL_FIXTURES
+      # pair, and no job set those variables -- so every one of the suite's
+      # skipped tests was a database test and nothing in CI ever executed them.
+      # They are the only coverage for the transactional guarantees that matter
+      # most (manual-gift idempotency, version conflicts, concurrent approval on
+      # the last remaining place, capacity reduction racing an approval, and
+      # rollback when the audit write fails), and the stack this job already
+      # starts is exactly what they need. Measured locally against that stack:
+      # 37 tests, all passing.
+      - name: Run database-backed transaction tests
+        run: bun run test:db
+
+      - name: Run volunteer bulk database scenarios
+        run: bun test src/lib/volunteers/bulk/bulk.database.test.ts src/lib/volunteers/bulk/mandatoryScenarios.database.test.ts
+        env:
+          VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          VOLUNTEER_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run content publication eligibility database scenarios
+        run: bun test src/lib/content/publicationEligibility.integration.test.ts
+        env:
+          CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          CMS_LIFECYCLE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run media repair database scenarios
+        run: bun test src/lib/animals/publicationMediaRepair.database.test.ts src/lib/content/publicationMediaRepair.database.test.ts
+        env:
+          MEDIA_REPAIR_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          MEDIA_REPAIR_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run public listing database scenarios
+        run: bun test src/lib/animals/publicListing.database.test.ts
+        env:
+          PUBLIC_LISTING_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          PUBLIC_LISTING_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run supporter portal preference database scenarios
+        run: bun test src/lib/supporters/marketingPreference.database.test.ts
+        env:
+          SUPPORTER_PORTAL_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          SUPPORTER_PORTAL_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run CRM tag bulk database scenarios
+        run: bun test src/lib/crm/tagBulk.database.test.ts
+        env:
+          CRM_TAG_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          CRM_TAG_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run volunteer reviewer bulk database scenarios
+        run: bun test src/lib/volunteers/directory/reviewerBulk.database.test.ts
+        env:
+          VOLUNTEER_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          VOLUNTEER_REVIEW_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run adoption assignment bulk database scenarios
+        run: bun test src/lib/adoptions/assignmentBulk.database.test.ts
+        env:
+          ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          ADOPTION_ASSIGNMENT_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run animal review bulk database scenarios
+        run: bun test src/lib/contentReview/animalBulk.database.test.ts
+        env:
+          ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          ANIMAL_REVIEW_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run manual finance atomic database scenarios
+        run: bun test src/lib/donations/manualAtomic.database.test.ts
+        env:
+          MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          MANUAL_FINANCE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run CMS quality queue database scenarios
+        run: bun test src/lib/contentReview/qualityQueue.database.test.ts
+        env:
+          CMS_QUALITY_ALLOW_LOCAL_FIXTURES: "1"
+          CMS_QUALITY_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run CMS review bulk database scenarios
+        run: bun test src/lib/contentReview/cmsBulk.database.test.ts
+        env:
+          CMS_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          CMS_REVIEW_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: bunx supabase stop
+
+  # Separate job so brand-verify (required) never fails on a Lighthouse score.
+  # Non-blocking until proven consistently green (Lighthouse's own CI-noise
+  # profile means "consistently green" may take longer to establish than it
+  # did for brand-verify/a11y-verify) -- promote via branch protection only
+  # once that's actually observed, not on the same "green 5 times" timeline
+  # used for the deterministic checks.
+  performance-verify:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build against the fixture
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      - name: Install performance verifier browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: Verify public performance
+        shell: bash
+        run: |
+          node scripts/ci/supabase-fixture.mjs > /tmp/hkscda-fixture.log 2>&1 &
+          fixture_pid=$!
+          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173             bun run preview > /tmp/hkscda-performance-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" "$fixture_pid" 2>/dev/null || true' EXIT
+
+          ready=false
+          for attempt in {1..120}; do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              ready=true
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then
+              cat /tmp/hkscda-performance-preview.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            cat /tmp/hkscda-performance-preview.log
+            exit 1
+          fi
+
+          curl --fail --silent "http://127.0.0.1:54329/rest/v1/animals?select=id&limit=1" >/dev/null || {
+            echo "fixture did not answer"
+            cat /tmp/hkscda-fixture.log
+            exit 1
+          }
+
+          bun run verify:performance
+        env:
+          FIXTURE_ID: supabase-ci-v1
+          BASE_URL: http://127.0.0.1:4173
+          OUTPUT_DIR: artifacts/performance-ci
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      # Report storage is best-effort; verification above remains enforced.
+      - name: Upload performance artefacts
+        id: upload-report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-ci
+          path: artifacts/performance-ci
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Report unavailable artefacts
+        if: ${{ always() && steps.upload-report.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "::warning::Report upload failed. Verification results remain in the job logs; check GitHub artifact storage quota."
+          echo "### Reports unavailable" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact upload failed. See verification steps above for test results and the upload log for the storage error." >> "$GITHUB_STEP_SUMMARY"

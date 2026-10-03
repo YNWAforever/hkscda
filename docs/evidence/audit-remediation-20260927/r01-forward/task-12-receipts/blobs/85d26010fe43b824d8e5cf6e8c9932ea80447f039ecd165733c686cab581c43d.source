@@ -1,0 +1,14 @@
+{
+  "command": [
+    "git",
+    "ls-tree",
+    "-r",
+    "--name-only",
+    "f4e96e3484d135d179caea835d913552d96d2dcb",
+    "--",
+    "supabase/roles.sql",
+    "supabase/.temp"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

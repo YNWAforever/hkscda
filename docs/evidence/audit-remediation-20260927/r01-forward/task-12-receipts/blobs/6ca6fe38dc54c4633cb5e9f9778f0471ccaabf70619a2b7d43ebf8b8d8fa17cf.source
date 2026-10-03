@@ -1,0 +1,44 @@
+[
+  {
+    "schema": "public",
+    "name": "update_group_enquiry_with_audit",
+    "args": "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+    "allargs": "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+    "defaults": 0,
+    "default_expression": null,
+    "result": "jsonb",
+    "owner": "postgres",
+    "acl": "{postgres=X/postgres,service_role=X/postgres}",
+    "full_acl": [
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "config": [
+      "search_path=public, pg_temp"
+    ],
+    "definer": true,
+    "language": "plpgsql",
+    "kind": "f",
+    "cost": 100,
+    "rows": 0,
+    "strict": false,
+    "leakproof": false,
+    "parallel": "u",
+    "volatility": "v",
+    "support": "-",
+    "variadic": "-",
+    "modes": null,
+    "body": "2769396f44ea208f010b60be0a8077ee",
+    "definition": "5385cdfd05d569b1bc57feaefa187ece"
+  }
+]

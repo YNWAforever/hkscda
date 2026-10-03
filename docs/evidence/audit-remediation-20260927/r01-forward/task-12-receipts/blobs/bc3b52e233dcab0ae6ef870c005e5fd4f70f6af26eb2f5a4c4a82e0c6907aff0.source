@@ -1,0 +1,16 @@
+-- Public operational summaries expose aggregate counts and window transitions only.
+create function public.volunteer_public_session_summary(p_ids uuid[]) returns jsonb language sql stable security definer set search_path=public,pg_temp as $$
+ select coalesce(jsonb_object_agg(id::text,summary),'{}') from (
+ select a.id,jsonb_build_object('confirmed',coalesce(c.approved_participants,0),'waitlisted',coalesce(c.waitlisted_participants,0),'remaining',greatest(0,a.capacity-coalesce(c.approved_participants,0)),
+ 'window_state',case when clock_timestamp()<w.opens then 'not_yet_open' when clock_timestamp()>=w.closes then 'window_closed' else 'within_window' end,
+ 'opens_at',case when isfinite(w.opens) then w.opens else null end,'closes_at',case when isfinite(w.closes) then w.closes else null end,
+ 'next_transition_at',(select min(t) from (select w.opens t union all select w.closes union all select a.starts_at-make_interval(hours=>(r->>'within_hours')::integer) from jsonb_array_elements(v.body->'release_rules') r) transitions where t>clock_timestamp() and isfinite(t)),
+ 'timezone',v.body->>'timezone') summary
+ from public.volunteer_activity a join public.volunteer_policy_version v on v.id=a.policy_version_id
+ left join jsonb_to_recordset(public.volunteer_activity_counts(p_ids)) as c(activity_id uuid,approved_participants integer,pending_participants integer,waitlisted_participants integer) on c.activity_id=a.id
+ cross join lateral(select public.volunteer_policy_window(v.body#>'{booking,individual_open}',a.starts_at,v.body->>'timezone') opens,public.volunteer_policy_window(v.body#>'{booking,individual_close}',a.starts_at,v.body->>'timezone') closes) w
+ where a.id=any(p_ids) and a.status='published' and a.starts_at>clock_timestamp() order by a.starts_at limit 100
+ ) rows;
+$$;
+revoke all on function public.volunteer_public_session_summary(uuid[]) from public,anon,authenticated;
+grant execute on function public.volunteer_public_session_summary(uuid[]) to service_role;

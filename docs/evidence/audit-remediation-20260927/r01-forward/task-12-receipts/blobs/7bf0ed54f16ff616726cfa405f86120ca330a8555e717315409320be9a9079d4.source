@@ -1,0 +1,8 @@
+{
+  "statements": [
+    "-- The preceding 20260927110000_crm_supporter_edit_version migration owns\n-- supporter.edit_version and both profile/role version triggers.\n-- Preserve existing versions and trigger identities; do not recreate them.\n-- Trigger invocation remains valid without a caller's direct EXECUTE grant.\nrevoke all on function private.bump_supporter_edit_version()\n  from public, anon, authenticated, service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

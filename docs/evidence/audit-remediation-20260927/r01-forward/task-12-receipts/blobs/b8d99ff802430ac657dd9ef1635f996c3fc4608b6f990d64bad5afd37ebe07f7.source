@@ -1,0 +1,218 @@
+[
+    {
+        "Id": "761538ede37898e642d5b5fbb7f771a38ee4a041d7814253c95ba216127661fe",
+        "Created": "2026-10-03T02:35:30.290098854Z",
+        "Path": "/usr/bin/tini",
+        "Args": [
+            "-s",
+            "-g",
+            "--",
+            "/app/run.sh",
+            "/app/bin/realtime",
+            "eval",
+            "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+        ],
+        "State": {
+            "Status": "created",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "0001-01-01T00:00:00Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+        "ResolvConfPath": "",
+        "HostnamePath": "",
+        "HostsPath": "",
+        "LogPath": "",
+        "Name": "/hkscda-task12-realtime-a3b891334d5e498888d663e3b5df776d",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "container:4c5491ebf16f6c242b025050ca3b196ea408be4cecf3481eaca19908a6bb15f1",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 1073741824,
+            "NanoCpus": 1000000000,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 2147483648,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "761538ede378",
+            "Domainname": "",
+            "User": "nobody",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "API_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+                "METRICS_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+                "RUN_JANITOR=true",
+                "PORT=4000",
+                "DB_PASSWORD=postgres",
+                "DB_ENC_KEY=supabaserealtime",
+                "ERL_AFLAGS=-proto_dist inet_tcp",
+                "DNS_NODES=''",
+                "DB_HOST=127.0.0.1",
+                "DB_USER=supabase_admin",
+                "DB_NAME=postgres",
+                "DB_AFTER_CONNECT_QUERY=SET search_path TO _realtime",
+                "API_JWT_JWKS={\"keys\":[{\"kty\":\"EC\",\"kid\":\"b81269f1-21d8-4f2e-b719-c2240a840d90\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"alg\":\"ES256\",\"ext\":true,\"crv\":\"P-256\",\"x\":\"M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4\",\"y\":\"P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ\"},{\"kty\":\"oct\",\"k\":\"dGFzazExLXI1NS1vd25lZC1zeW50aGV0aWMtand0LXNlY3JldC0wMDAwMDAwMDAw\"}]}",
+                "APP_NAME=realtime",
+                "SECRET_KEY_BASE=EAx3IQ/wRG1v47ZD4NE4/9RzBI8Jmil3x0yhcW4V2NHBP6c2iPIzwjofi2Ep4HIG",
+                "RLIMIT_NOFILE=",
+                "SEED_SELF_HOST=true",
+                "MAX_HEADER_LENGTH=4096",
+                "DB_PORT=5432",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "SLOT_NAME_SUFFIX=",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "MIX_ENV=prod",
+                "ECTO_IPV6=true"
+            ],
+            "Cmd": [
+                "/app/bin/realtime",
+                "eval",
+                "{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check(\"realtime-dev\")"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "NONE"
+                ]
+            },
+            "Image": "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": [
+                "/usr/bin/tini",
+                "-s",
+                "-g",
+                "--",
+                "/app/run.sh"
+            ],
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "SandboxID": "",
+            "SandboxKey": "",
+            "Ports": {},
+            "Networks": {}
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "digest": "sha256:c1f11db3fd2afbed8657af3bb473cf49dc417bb8d1e30714ce863b1d039baa67",
+            "size": 2829,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

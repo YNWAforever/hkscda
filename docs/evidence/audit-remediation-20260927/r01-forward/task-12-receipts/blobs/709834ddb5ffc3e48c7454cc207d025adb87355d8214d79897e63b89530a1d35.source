@@ -1,0 +1,275 @@
+BEGIN;
+-- R01 Task 2: missing hosted adoption upload/retry objects only.
+-- Existing reviewed modern objects are validated and preserved, never replaced.
+-- Run as postgres in the migration transaction; no Storage/provider operation.
+set local search_path = '';
+do $migration$
+declare
+  v_table oid;
+  v_existing_intent boolean;
+  v_function oid;
+  v_column record;
+  v_constraint record;
+  v_expected text;
+  v_body text := $body$
+declare
+  v_intent public.adoption_upload_intent%rowtype;
+begin
+  select * into v_intent
+  from public.adoption_upload_intent
+  where application_id = p_application_id
+  for update;
+
+  if not found or v_intent.submitted_at is not null
+    or v_intent.expires_at >= pg_catalog.clock_timestamp() - interval '1 hour' then
+    return 'defer';
+  end if;
+
+  -- The parent lock coordinates with the case insertion's FK key-share lock.
+  perform 1
+  from public.adoption_applications
+  where id = p_application_id
+  for update;
+
+  if found then
+    if exists (
+      select 1 from public.adoption_case
+      where public_application_id = p_application_id
+    ) then
+      return 'completed';
+    end if;
+
+    delete from public.adoption_applications where id = p_application_id;
+  end if;
+
+  -- Keep the intent until the caller confirms successful Storage deletion.
+  return 'purged';
+end;
+$body$;
+begin
+  if current_user <> 'postgres' then
+    raise exception 'R01 adoption migration requires postgres owner context' using errcode = '55000';
+  end if;
+
+  -- This exact existing FK/unique pairing is essential to parent/case locking.
+  if not exists (
+    select 1 from pg_catalog.pg_constraint
+    where conrelid = 'public.adoption_case'::pg_catalog.regclass
+      and confrelid = 'public.adoption_applications'::pg_catalog.regclass
+      and conname = 'adoption_case_public_application_id_fkey'
+      and contype = 'f' and confdeltype = 'n' and convalidated
+      and pg_catalog.pg_get_constraintdef(oid, true) =
+        'FOREIGN KEY (public_application_id) REFERENCES public.adoption_applications(id) ON DELETE SET NULL'
+  ) or not exists (
+    select 1 from pg_catalog.pg_constraint
+    where conrelid = 'public.adoption_case'::pg_catalog.regclass
+      and conname = 'adoption_case_public_application_id_key'
+      and contype = 'u' and convalidated
+      and pg_catalog.pg_get_constraintdef(oid, true) = 'UNIQUE (public_application_id)'
+  ) then
+    raise exception 'R01 adoption parent/case coordination prerequisites differ' using errcode = '55000';
+  end if;
+
+  v_table := pg_catalog.to_regclass('public.adoption_upload_intent');
+  v_existing_intent := v_table is not null;
+  if v_table is null then
+    create table public.adoption_upload_intent (
+      application_id uuid primary key,
+      photo_paths text[] not null check (pg_catalog.cardinality(photo_paths) between 1 and 6),
+      status_token_hash text not null unique check (status_token_hash ~ '^[0-9a-f]{64}$'),
+      created_at timestamptz not null default pg_catalog.now(),
+      expires_at timestamptz not null,
+      submitted_at timestamptz,
+      constraint adoption_upload_intent_expiry_after_creation check (expires_at > created_at)
+    );
+    alter table public.adoption_upload_intent enable row level security;
+    revoke all on public.adoption_upload_intent from public, anon, authenticated, service_role;
+    grant select, insert, update, delete on public.adoption_upload_intent to service_role;
+    create index adoption_upload_intent_cleanup_idx
+      on public.adoption_upload_intent (expires_at) where submitted_at is null;
+    v_table := 'public.adoption_upload_intent'::pg_catalog.regclass;
+  end if;
+
+  if not exists (
+    select 1 from pg_catalog.pg_class
+    where oid = v_table and relkind = 'r' and relrowsecurity and not relforcerowsecurity
+      and pg_catalog.pg_get_userbyid(relowner) = 'postgres'
+  ) or exists (select 1 from pg_catalog.pg_policy where polrelid = v_table)
+    or exists (select 1 from pg_catalog.pg_trigger where tgrelid = v_table and not tgisinternal) then
+    raise exception 'R01 adoption intent owner/RLS/policy/trigger differs' using errcode = '55000';
+  end if;
+  if (select count(*) from pg_catalog.pg_attribute where attrelid = v_table and attnum > 0 and not attisdropped) <> 6 then
+    raise exception 'R01 adoption intent column set differs' using errcode = '55000';
+  end if;
+  for v_column in
+    select a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod) as type,
+      a.attnotnull, a.attidentity, a.attgenerated, a.attacl, a.attnum,
+      pg_catalog.pg_get_expr(d.adbin, d.adrelid) as default_expression
+    from pg_catalog.pg_attribute a
+    left join pg_catalog.pg_attrdef d on d.adrelid = a.attrelid and d.adnum = a.attnum
+    where a.attrelid = v_table and a.attnum > 0 and not a.attisdropped
+  loop
+    v_expected := case v_column.attname
+      when 'application_id' then 'uuid'
+      when 'photo_paths' then 'text[]'
+      when 'status_token_hash' then 'text'
+      when 'created_at' then 'timestamp with time zone'
+      when 'expires_at' then 'timestamp with time zone'
+      when 'submitted_at' then 'timestamp with time zone' end;
+    if v_expected is null or v_column.type <> v_expected
+      or v_column.attnum <> array_position(array['application_id','photo_paths','status_token_hash','created_at','expires_at','submitted_at'], v_column.attname::text)
+      or v_column.attnotnull <> (v_column.attname <> 'submitted_at')
+      or v_column.attidentity <> '' or v_column.attgenerated <> ''
+      or v_column.attacl is not null
+      or v_column.default_expression is distinct from (case when v_column.attname = 'created_at' then 'now()' else null end) then
+      raise exception 'R01 adoption intent column definition differs: %', v_column.attname using errcode = '55000';
+    end if;
+  end loop;
+
+  if (select count(*) from pg_catalog.pg_constraint where conrelid = v_table) <> 5 then
+    raise exception 'R01 adoption intent constraint set differs' using errcode = '55000';
+  end if;
+  for v_constraint in select * from pg_catalog.pg_constraint where conrelid = v_table loop
+    v_expected := case v_constraint.conname
+      when 'adoption_upload_intent_pkey' then 'PRIMARY KEY (application_id)'
+      when 'adoption_upload_intent_photo_paths_check' then 'CHECK (cardinality(photo_paths) >= 1 AND cardinality(photo_paths) <= 6)'
+      when 'adoption_upload_intent_status_token_hash_key' then 'UNIQUE (status_token_hash)'
+      when 'adoption_upload_intent_status_token_hash_check' then 'CHECK (status_token_hash ~ ''^[0-9a-f]{64}$''::text)'
+      when 'adoption_upload_intent_expiry_after_creation' then 'CHECK (expires_at > created_at)' end;
+    if v_expected is null or not v_constraint.convalidated
+      or v_constraint.condeferrable or v_constraint.condeferred
+      or pg_catalog.pg_get_constraintdef(v_constraint.oid, true) <> v_expected then
+      raise exception 'R01 adoption intent constraint differs: %', v_constraint.conname using errcode = '55000';
+    end if;
+  end loop;
+  if (select count(*) from pg_catalog.pg_index where indrelid = v_table) <> 3
+    or exists (
+      select 1 from pg_catalog.pg_index i join pg_catalog.pg_class c on c.oid = i.indexrelid
+      where i.indrelid = v_table and (
+        not i.indisvalid or not i.indisready
+        or pg_catalog.pg_get_indexdef(i.indexrelid) is distinct from case c.relname
+          when 'adoption_upload_intent_pkey' then 'CREATE UNIQUE INDEX adoption_upload_intent_pkey ON public.adoption_upload_intent USING btree (application_id)'
+          when 'adoption_upload_intent_status_token_hash_key' then 'CREATE UNIQUE INDEX adoption_upload_intent_status_token_hash_key ON public.adoption_upload_intent USING btree (status_token_hash)'
+          when 'adoption_upload_intent_cleanup_idx' then 'CREATE INDEX adoption_upload_intent_cleanup_idx ON public.adoption_upload_intent USING btree (expires_at) WHERE (submitted_at IS NULL)' end
+      )
+    ) then
+    raise exception 'R01 adoption intent index differs' using errcode = '55000';
+  end if;
+  -- Actual modern legacy defaults retained eight nongrantable service privileges.
+  -- Preserve that exact reviewed profile only on an existing table. A newly
+  -- missing hosted table receives only the four explicitly granted CRUD rights.
+  if not exists (
+    select 1 from pg_catalog.pg_class c,
+      lateral pg_catalog.aclexplode(coalesce(c.relacl, pg_catalog.acldefault('r', c.relowner))) a
+    where c.oid = v_table
+    group by c.oid, c.relowner
+    having pg_catalog.array_agg(a.privilege_type order by a.privilege_type)
+        filter (where a.grantee = c.relowner) =
+          array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]
+      and (
+        pg_catalog.array_agg(a.privilege_type order by a.privilege_type)
+          filter (where a.grantee = 'service_role'::pg_catalog.regrole) =
+            array['DELETE','INSERT','SELECT','UPDATE']::text[]
+        or (v_existing_intent and pg_catalog.array_agg(a.privilege_type order by a.privilege_type)
+          filter (where a.grantee = 'service_role'::pg_catalog.regrole) =
+            array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[])
+      )
+  ) or exists (
+    select 1 from pg_catalog.pg_class c, lateral pg_catalog.aclexplode(coalesce(c.relacl, pg_catalog.acldefault('r', c.relowner))) a
+    where c.oid = v_table and (a.grantor <> c.relowner
+      or a.is_grantable
+      or (a.grantee <> c.relowner and a.grantee <> 'service_role'::pg_catalog.regrole))
+  ) or not (
+    pg_catalog.has_table_privilege('service_role', v_table, 'SELECT')
+    and pg_catalog.has_table_privilege('service_role', v_table, 'INSERT')
+    and pg_catalog.has_table_privilege('service_role', v_table, 'UPDATE')
+    and pg_catalog.has_table_privilege('service_role', v_table, 'DELETE')
+  ) or pg_catalog.has_table_privilege('anon', v_table, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')
+    or pg_catalog.has_table_privilege('authenticated', v_table, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')
+    or pg_catalog.has_any_column_privilege('anon', v_table, 'SELECT,INSERT,UPDATE,REFERENCES')
+    or pg_catalog.has_any_column_privilege('authenticated', v_table, 'SELECT,INSERT,UPDATE,REFERENCES') then
+    raise exception 'R01 adoption intent effective privileges differ' using errcode = '55000';
+  end if;
+
+  -- Nullable without a default: old tokens cannot confirm a changed submission.
+  if not exists (
+    select 1 from pg_catalog.pg_attribute
+    where attrelid = 'public.public_status_token'::pg_catalog.regclass
+      and attname = 'submission_fingerprint' and not attisdropped
+  ) then
+    alter table public.public_status_token add column submission_fingerprint text;
+  end if;
+  select a.*, pg_catalog.pg_get_expr(d.adbin, d.adrelid) as default_expression into v_column
+  from pg_catalog.pg_attribute a
+  left join pg_catalog.pg_attrdef d on d.adrelid = a.attrelid and d.adnum = a.attnum
+  where a.attrelid = 'public.public_status_token'::pg_catalog.regclass
+    and a.attname = 'submission_fingerprint' and not a.attisdropped;
+  if v_column.atttypid <> 'pg_catalog.text'::pg_catalog.regtype or v_column.atttypmod <> -1
+    or v_column.attnotnull or v_column.attidentity <> '' or v_column.attgenerated <> ''
+    or v_column.default_expression is not null or v_column.attacl is not null then
+    raise exception 'R01 adoption fingerprint column differs' using errcode = '55000';
+  end if;
+  if not exists (
+    select 1 from pg_catalog.pg_constraint
+    where conrelid = 'public.public_status_token'::pg_catalog.regclass
+      and conname = 'public_status_token_submission_fingerprint_format'
+  ) then
+    alter table public.public_status_token add constraint public_status_token_submission_fingerprint_format
+      check (submission_fingerprint is null or submission_fingerprint ~ '^[0-9a-f]{64}$');
+  end if;
+  if not exists (
+    select 1 from pg_catalog.pg_constraint
+    where conrelid = 'public.public_status_token'::pg_catalog.regclass
+      and conname = 'public_status_token_submission_fingerprint_format'
+      and contype = 'c' and convalidated and not condeferrable
+      and pg_catalog.pg_get_constraintdef(oid, true) =
+        'CHECK (submission_fingerprint IS NULL OR submission_fingerprint ~ ''^[0-9a-f]{64}$''::text)'
+  ) then
+    raise exception 'R01 adoption fingerprint constraint differs' using errcode = '55000';
+  end if;
+
+  v_function := pg_catalog.to_regprocedure('public.cleanup_expired_adoption_application(uuid)');
+  if v_function is null then
+    if exists (
+      select 1 from pg_catalog.pg_proc where pronamespace = 'public'::pg_catalog.regnamespace
+        and proname = 'cleanup_expired_adoption_application'
+    ) then
+      raise exception 'R01 adoption cleanup has an unexpected overload' using errcode = '55000';
+    end if;
+    execute 'create function public.cleanup_expired_adoption_application(p_application_id uuid)
+      returns text language plpgsql security definer set search_path = '''' as ' || pg_catalog.quote_literal(v_body);
+    revoke all on function public.cleanup_expired_adoption_application(uuid) from public, anon, authenticated, service_role;
+    grant execute on function public.cleanup_expired_adoption_application(uuid) to service_role;
+    v_function := 'public.cleanup_expired_adoption_application(uuid)'::pg_catalog.regprocedure;
+  end if;
+  if (select count(*) from pg_catalog.pg_proc where pronamespace = 'public'::pg_catalog.regnamespace
+    and proname = 'cleanup_expired_adoption_application') <> 1 or not exists (
+    select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid = p.prolang
+    where p.oid = v_function and pg_catalog.pg_get_userbyid(p.proowner) = 'postgres'
+      and p.prokind = 'f' and p.prosecdef and l.lanname = 'plpgsql'
+      and p.prorettype = 'pg_catalog.text'::pg_catalog.regtype and not p.proretset
+      and p.proargnames = array['p_application_id']::text[] and p.pronargdefaults = 0
+      and p.provolatile = 'v' and p.proparallel = 'u' and not p.proisstrict
+      and not p.proleakproof
+      and (
+        (p.prosrc = v_body and p.proconfig = array['search_path=""']::text[])
+        -- Full reviewed legacy body, retained exactly on the modern prestate.
+        or (pg_catalog.md5(p.prosrc) = '422feeb1fc84428147e7e1b49e371ded'
+          and p.proconfig = array['search_path=public, pg_temp']::text[])
+      )
+  ) then
+    raise exception 'R01 adoption cleanup definition differs; explicit review required' using errcode = '55000';
+  end if;
+  if exists (
+    select 1 from pg_catalog.pg_proc p, lateral pg_catalog.aclexplode(coalesce(p.proacl, pg_catalog.acldefault('f', p.proowner))) a
+    where p.oid = v_function and (a.grantor <> p.proowner
+      or (a.grantee <> p.proowner and (a.grantee <> 'service_role'::pg_catalog.regrole
+        or a.privilege_type <> 'EXECUTE' or a.is_grantable)))
+  ) or not pg_catalog.has_function_privilege('service_role', v_function, 'EXECUTE')
+    or pg_catalog.has_function_privilege('anon', v_function, 'EXECUTE')
+    or pg_catalog.has_function_privilege('authenticated', v_function, 'EXECUTE') then
+    raise exception 'R01 adoption cleanup effective EXECUTE differs' using errcode = '55000';
+  end if;
+end;
+$migration$;
+COMMIT;

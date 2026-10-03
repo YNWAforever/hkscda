@@ -1,0 +1,73 @@
+[
+    {
+        "Id": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+        "RepoTags": [
+            "public.ecr.aws/supabase/realtime:v2.140.3"
+        ],
+        "RepoDigests": [
+            "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-29T21:33:14.266811704Z",
+        "Config": {
+            "User": "nobody",
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "SLOT_NAME_SUFFIX=",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "MIX_ENV=prod",
+                "ECTO_IPV6=true",
+                "ERL_AFLAGS=-proto_dist inet6_tcp"
+            ],
+            "Entrypoint": [
+                "/usr/bin/tini",
+                "-s",
+                "-g",
+                "--",
+                "/app/run.sh"
+            ],
+            "Cmd": [
+                "/app/bin/server"
+            ],
+            "WorkingDir": "/app",
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 133516582,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+                "sha256:96de13c0856529e1d2992601f591f0a5a8c6ba7919103c35b9cb7cb9951d755f",
+                "sha256:29dc9f9bef67f666a87e8c38bf26e52290af0944d3eb42b9d998a59bb91f6560",
+                "sha256:d9cfc1e95f27dbdd8208aae7f9f24aaed28408481831975cf2426dce51035b16",
+                "sha256:1cfb39da48745d925d3f54fbb37f84a56ee4b8db82d7e41dedd5b7a711d5e7ab",
+                "sha256:19b1def79e26ad23a671b41104221fb2d65f12a0a5fc6494b126cc4a7a1a4295",
+                "sha256:b0e79b1b8eb27c5f3c8fefaad5cca42693f04cb2adce9d08ff4f6d4990ae2a7e",
+                "sha256:e1f34d34d0ee141a6e487f4c76af04488f8b8d4cd7295e4fac713190840cfbdf",
+                "sha256:e8657d088f00e96a20bde4e442c48cdc4f97d42e133149c953cc24e13da784d0",
+                "sha256:b16cb3ffc0b8096bdac63e64a1614690c6a9861d9b53b0ac9555dc9066da4ec5",
+                "sha256:42afb67734536957980461af19cd3f6f69f991bbe85dc0ed6e4f1cfc663db743",
+                "sha256:1e052bc164dc437a0273fca54e19208db1c448918c49b78e5f8785f478603ccb"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-02T21:04:14.629104798Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+            "digest": "sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999",
+            "size": 685
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "public.ecr.aws/supabase/realtime"
+                }
+            ]
+        }
+    }
+]

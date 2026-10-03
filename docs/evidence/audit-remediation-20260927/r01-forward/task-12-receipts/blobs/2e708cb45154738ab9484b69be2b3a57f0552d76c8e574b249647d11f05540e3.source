@@ -1,0 +1,1 @@
+{"command": ["bun", "test", "docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-codec.test.ts"], "exit": 1}

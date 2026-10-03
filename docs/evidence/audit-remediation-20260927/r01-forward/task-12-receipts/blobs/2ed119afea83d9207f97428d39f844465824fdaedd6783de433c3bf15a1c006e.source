@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "update public.content_item\nset\n  body = replace(body, '半歲以下仍屬幼貓', '半歲或以上為成貓'),\n  updated_at = now()\nwhere body like '%半歲以下仍屬幼貓%'",
+    "select id, slug, title\nfrom public.content_item\nwhere body::text like '%半歲以下仍屬幼貓%'"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

@@ -1,0 +1,24 @@
+ M .github/workflows/ci.yml
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-binding.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-capture-producer.test.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-capture-producer.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-capture.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-cli.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-component-capture.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-finance-expression.fixture.txt
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-gap.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-gates.py
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-codec.test.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-codec.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-expression.fixture.txt
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-protected.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.test.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-red.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-targets.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-12-vector.ts
+?? src/lib/groupEnquiries/atomicForward.database.test.ts
+?? src/lib/groupEnquiries/atomicForwardFixtureGuard.test.ts
+?? src/lib/groupEnquiries/atomicForwardFixtureGuard.ts
+?? supabase/migrations/20261003005322_r01_group_enquiry_forward.sql

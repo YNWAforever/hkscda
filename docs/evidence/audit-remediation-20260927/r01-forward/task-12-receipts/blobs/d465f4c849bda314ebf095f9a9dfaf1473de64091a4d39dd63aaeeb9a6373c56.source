@@ -1,0 +1,73 @@
+const BOM_CODE_POINT = 0xfeff;
+
+// Statements that PostgreSQL refuses to run inside a transaction block / extended-query
+// pipeline (SQLSTATE 25001). Matched against the upper-cased, comment-stripped statement.
+//
+// JS's `\s` also matches `\v` (vertical tab), which PostgreSQL >= 14 treats as SQL whitespace —
+// so a statement separated only by `\v` (e.g. `VACUUM\v(FULL)`) classifies as
+// pipeline-incompatible here, a known, unfixed edge case.
+const CREATE_INDEX_CONCURRENTLY_PATTERN = /^CREATE\s+(?:UNIQUE\s+)?INDEX\s+CONCURRENTLY(?:\s|$)/u;
+const DROP_INDEX_CONCURRENTLY_PATTERN = /^DROP\s+INDEX\s+CONCURRENTLY(?:\s|$)/u;
+const REINDEX_CONCURRENTLY_PATTERN = /^REINDEX(?:\s|\().*\sCONCURRENTLY(?:\s|$)/u;
+const VACUUM_PATTERN = /^VACUUM(?:\s|\(|$)/u;
+const ALTER_SYSTEM_PATTERN = /^ALTER\s+SYSTEM(?:\s|$)/u;
+const CLUSTER_PATTERN = /^CLUSTER(?:\s|$)/u;
+const TRANSACTION_CONTROL_PATTERN =
+  /^(?:BEGIN|START\s+TRANSACTION|COMMIT|END|ABORT|PREPARE\s+TRANSACTION)(?:\s|$)/u;
+
+/**
+ * Strips a leading BOM, whitespace, and SQL line (`--`) and block comments from the
+ * front of a statement so the keyword check below sees the real first token.
+ */
+const trimLeadingSqlComments = (sql: string): string => {
+  // Stripped via code point comparison so it isn't relied on to match a whitespace regex class.
+  let trimmed = sql.replace(/^[ \t\n\r]+/u, "");
+  while (trimmed.charCodeAt(0) === BOM_CODE_POINT) {
+    trimmed = trimmed.slice(1).replace(/^[ \t\n\r]+/u, "");
+  }
+  for (;;) {
+    if (trimmed.startsWith("--")) {
+      const idx = trimmed.indexOf("\n");
+      if (idx < 0) return "";
+      trimmed = trimmed.slice(idx + 1).replace(/^[ \t\n\r]+/u, "");
+    } else if (trimmed.startsWith("/*")) {
+      const idx = trimmed.indexOf("*/");
+      if (idx < 0) return trimmed;
+      trimmed = trimmed.slice(idx + 2).replace(/^[ \t\n\r]+/u, "");
+    } else {
+      return trimmed.trim();
+    }
+  }
+};
+
+/**
+ * Whether a migration statement cannot run inside a transaction block — `CREATE [UNIQUE] INDEX
+ * CONCURRENTLY`, `DROP INDEX CONCURRENTLY`, `REINDEX … CONCURRENTLY`, `VACUUM`, `ALTER SYSTEM`,
+ * `CLUSTER`. These fail with SQLSTATE 25001 inside the implicit transaction a migration batch
+ * creates, so `execMigrationBatch` runs them standalone.
+ */
+export const isPipelineIncompatible = (sql: string): boolean => {
+  const upper = trimLeadingSqlComments(sql).toUpperCase();
+  return (
+    CREATE_INDEX_CONCURRENTLY_PATTERN.test(upper) ||
+    DROP_INDEX_CONCURRENTLY_PATTERN.test(upper) ||
+    REINDEX_CONCURRENTLY_PATTERN.test(upper) ||
+    VACUUM_PATTERN.test(upper) ||
+    ALTER_SYSTEM_PATTERN.test(upper) ||
+    CLUSTER_PATTERN.test(upper)
+  );
+};
+
+/** Whether the statement owns a transaction boundary that must not be nested. */
+export const hasTransactionControl = (sql: string): boolean => {
+  const upper = trimLeadingSqlComments(sql).toUpperCase();
+  const words = upper.split(/\s+/u);
+  if (words[0] === "ROLLBACK") {
+    const toIndex = words[1] === "WORK" || words[1] === "TRANSACTION" ? 2 : 1;
+    // ROLLBACK [WORK | TRANSACTION] TO [SAVEPOINT] rewinds the current
+    // transaction without ending it, so it still needs the CLI-managed wrapper.
+    return words[toIndex] !== "TO";
+  }
+  return TRANSACTION_CONTROL_PATTERN.test(upper);
+};
+

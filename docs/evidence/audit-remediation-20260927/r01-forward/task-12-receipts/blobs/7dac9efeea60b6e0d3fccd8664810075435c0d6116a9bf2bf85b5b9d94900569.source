@@ -1,0 +1,176 @@
+F.FFFF.FFFFFEFFFFFF.F
+======================================================================
+ERROR: test_missing_error_failed_array_mode_version_and_cardinality_rejected (__main__.Tests.test_missing_error_failed_array_mode_version_and_cardinality_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 35, in test_missing_error_failed_array_mode_version_and_cardinality_rejected
+    r=copy.deepcopy(self.r);del r['error'];self.save(r,'missing')
+                                           ~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 11, in save
+    else:f.write_bytes(raw)
+         ~~~~~~~~~~~~~^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 796, in write_bytes
+    with self.open(mode='wb') as f:
+         ~~~~~~~~~^^^^^^^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-accept-6e4a87c2419b\\fixtures\\test_missing_error_failed_array_mode_version_and_cardinality_rejectedmissing.json'
+
+======================================================================
+FAIL: test_canonical_contracts_are_not_unioned (__main__.Tests.test_canonical_contracts_are_not_unioned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 22, in test_canonical_contracts_are_not_unioned
+    with self.assertRaises(ValueError):b.identity(self.raw,wrong)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_every_raw_canonical_git_byte_identity_is_required (__main__.Tests.test_every_raw_canonical_git_byte_identity_is_required) (k='rawSha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 17, in test_every_raw_canonical_git_byte_identity_is_required
+    with self.subTest(k=k),self.assertRaises(ValueError):b.identity(self.raw,wrong)
+                           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_every_raw_canonical_git_byte_identity_is_required (__main__.Tests.test_every_raw_canonical_git_byte_identity_is_required) (k='canonicalSha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 17, in test_every_raw_canonical_git_byte_identity_is_required
+    with self.subTest(k=k),self.assertRaises(ValueError):b.identity(self.raw,wrong)
+                           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_every_raw_canonical_git_byte_identity_is_required (__main__.Tests.test_every_raw_canonical_git_byte_identity_is_required) (k='rawGitBlob')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 17, in test_every_raw_canonical_git_byte_identity_is_required
+    with self.subTest(k=k),self.assertRaises(ValueError):b.identity(self.raw,wrong)
+                           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_every_raw_canonical_git_byte_identity_is_required (__main__.Tests.test_every_raw_canonical_git_byte_identity_is_required) (k='rawBytes')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 17, in test_every_raw_canonical_git_byte_identity_is_required
+    with self.subTest(k=k),self.assertRaises(ValueError):b.identity(self.raw,wrong)
+                           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_error_failed_array_mode_version_and_cardinality_rejected (__main__.Tests.test_missing_error_failed_array_mode_version_and_cardinality_rejected) (patch={'error': 'failure'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 34, in test_missing_error_failed_array_mode_version_and_cardinality_rejected
+    with self.subTest(patch=patch),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_error_failed_array_mode_version_and_cardinality_rejected (__main__.Tests.test_missing_error_failed_array_mode_version_and_cardinality_rejected) (patch={'failedFinalFlags': ['failed']})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 34, in test_missing_error_failed_array_mode_version_and_cardinality_rejected
+    with self.subTest(patch=patch),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_error_failed_array_mode_version_and_cardinality_rejected (__main__.Tests.test_missing_error_failed_array_mode_version_and_cardinality_rejected) (patch={'mode': 'modern'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 34, in test_missing_error_failed_array_mode_version_and_cardinality_rejected
+    with self.subTest(patch=patch),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_error_failed_array_mode_version_and_cardinality_rejected (__main__.Tests.test_missing_error_failed_array_mode_version_and_cardinality_rejected) (patch={'receiptVersion': True})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 34, in test_missing_error_failed_array_mode_version_and_cardinality_rejected
+    with self.subTest(patch=patch),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_error_failed_array_mode_version_and_cardinality_rejected (__main__.Tests.test_missing_error_failed_array_mode_version_and_cardinality_rejected) (patch={'refusals': [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 34, in test_missing_error_failed_array_mode_version_and_cardinality_rejected
+    with self.subTest(patch=patch),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_false_string_numeric_and_extra_flags_rejected (__main__.Tests.test_missing_false_string_numeric_and_extra_flags_rejected) (value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 28, in test_missing_false_string_numeric_and_extra_flags_rejected
+    with self.subTest(value=value),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_false_string_numeric_and_extra_flags_rejected (__main__.Tests.test_missing_false_string_numeric_and_extra_flags_rejected) (value=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 28, in test_missing_false_string_numeric_and_extra_flags_rejected
+    with self.subTest(value=value),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_false_string_numeric_and_extra_flags_rejected (__main__.Tests.test_missing_false_string_numeric_and_extra_flags_rejected) (value='true')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 28, in test_missing_false_string_numeric_and_extra_flags_rejected
+    with self.subTest(value=value),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_false_string_numeric_and_extra_flags_rejected (__main__.Tests.test_missing_false_string_numeric_and_extra_flags_rejected) (value=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 28, in test_missing_false_string_numeric_and_extra_flags_rejected
+    with self.subTest(value=value),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+                                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_false_string_numeric_and_extra_flags_rejected (__main__.Tests.test_missing_false_string_numeric_and_extra_flags_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 30, in test_missing_false_string_numeric_and_extra_flags_rejected
+    with self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_modified_archive_rejected (__main__.Tests.test_modified_archive_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 19, in test_modified_archive_rejected
+    with self.assertRaises(ValueError):b.identity(self.raw+b'changed',self.pin)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reordered_missing_changed_original_texts_rejected (__main__.Tests.test_reordered_missing_changed_original_texts_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-accept-6e4a87c2419b\tests.py", line 42, in test_reordered_missing_changed_original_texts_rejected
+    with self.assertRaises(ValueError):b.ordered({'rulingCount':68,'rulings':rows},{'allOrderedOriginalEntries':changed})
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.079s
+
+FAILED (failures=17, errors=1)

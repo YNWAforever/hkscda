@@ -1,0 +1,1 @@
+select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),'')) hash from "public"."volunteer_daily_policy_preview" t

@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-03T03:14:33.431150+00:00",
+  "rulingCount": 67,
+  "previousAudit": "controller-rulings-audit-v34.json",
+  "oldPrefixOrdinalTextUnchanged": true,
+  "ledgerFinalTextsEqual": true,
+  "originalReasonCostTextsPreserved": true,
+  "newRulingReasonAndCostPresent": true,
+  "beforeLedgerSha256": "0a02cff919740c39bc212aae6faa813c0bd57c400670d9cf9f2afc9515b681bf",
+  "beforeFinalInputsSha256": "13ec4ed063ebc70a2cf8e655216e83ce5a060ad3b4a6bd88e6c90cc281016c0e",
+  "newRulingEvidence": "task-12-null-audit-expectation-native-bridge-ruling67.md"
+}

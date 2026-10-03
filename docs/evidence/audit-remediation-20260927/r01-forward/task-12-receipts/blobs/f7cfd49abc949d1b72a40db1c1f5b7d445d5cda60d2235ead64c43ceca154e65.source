@@ -1,0 +1,52 @@
+# R01 forward schema repair — 2026-10-01
+
+Continuation of approved T01/R01 implementation, not a new product design. Binding spec: the original implementation plan and the user's work rules in this conversation; existing source call contracts and current releaseManifest define required signatures. Do not rewrite historical reports.
+
+## Global Constraints
+
+- Work from clean isolated main 4bbd4a4dffbd053328e92c03281a23d1d4ebe682. Primary155 unrelated paths are preserved. Production alias is same-SHA READY; mainCI36833019358 allfive SUCCESS.
+- Fresh production readonly catalog 2026-10-01T09:15:56Z:154publictables/304publicfunctions/ledger112. Offline checker146requirements/44issues, exit1. This is a failure reproduction, not a ready claim.
+- Only isolated DBs, synthetic rows, provider sandbox and email test sink. No production DML/DDL/actor-RPC, whole legacy replay, reset, fake ledger, paid branch, real payment/email/refund/content publication or schedule activation.
+- Preserve #130 atomic audit, signed upload intent, fingerprint/idempotency, body limit, suspension recheck and media commit-before-public. Preserve #133 narrowly scoped CMS-revision fallback and existing public-data tables.
+- Strict TypeScript/server-only boundaries; RLS and explicit table/column grants; SECURITY DEFINER only where existing service RPC architecture requires it, postgres owner and empty pinned search_path, exact service-only EXECUTE/revocation. Role/permission rechecked inside audited transaction.
+- Generate every new migration filename through pinned Supabase CLI migration new; forward changes only, retain original migrations. Existing-object type/body/constraint/grant differences need explicit review; never hide them with blind IF EXISTS skipping.
+- Before a migration, create real failure tests, observe RED; then minimum fix/GREEN. SQL role/owner/defaultACL/metadata/rows/audit/retry/partial-failure checks and full local typecheck/tests/lint/build are required. Fresh exact-head CI mandatory for review. Not-run stays not-run.
+- New checkout stays disabled, existing signed webhooks/reconciliation remain compatible, committed payment success never reverts because receipt/email fails.
+- Each domain is its own reviewable PR. Controller prepares per-task branch/PR after review; tasks may share the test-only catalog clone harness. No new production migration or new release authority inferred from original46 merger.
+
+## Shared test interface
+
+Task1 provides test-only tooling for a guarded, zero-production-data production-schema clone. Capture only schema via existing authenticated CLI/read-only MCP; do not decrypt or restore a production data backup. Existing loopback template audit_pr135_20260929 at127.0.0.1:52322 is synthetic and read-only. Create a uniquely named disposable local clone through existing supabase_db_hkscda-audit-integration-fresh container; never reset/terminate sessions on an existing stack. Restore public/private production schema only into that new clone, retaining synthetic managed Auth/Storage prerequisites. Verify normalized catalog matches actual production projection, owners/default ACL/grants/RLS and required prerequisites. No network/provider-bearing SQL primitive may execute during rehearsal. Do not change cluster roles, existing DBs, Docker engines or cron schedules. Inability to create an exact compatible clone must be reported as a concrete blocker, not replaced with a fabricated match.
+
+Reuse source-side loopback full-suite environment: clear inherited *TEST_DATABASE_URL/*ALLOW_LOCAL_FIXTURES; set CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:57322/postgres and SUPABASE_LOCAL_URL=http://127.0.0.1:52321. Build uses only loopback54329/ci-placeholder keys. Other feature DB tests opt in only against the guarded new clone. Never print keys or data.
+
+## Common task steps
+
+1. Read exact requirement and legacy source definitions/callers using indexed graph hkscda-r01-forward-20261001, then SQL/direct-read fallback where graph excludes migrations. Read current AGENTS/CLAUDE and relevant instructions.
+2. Record fresh read-only preflight, exact signatures/returns/owners/body hashes/full ACL/grant options/RLS/indexes/constraints and synthetic row invariants. Existing good objects are preserved.
+3. Write and run real failing DB regressions against missing production-state objects. Reject direct unauthorized roles, audit-failure partial commits, stale role/version, identity mismatch and malformed/replayed inputs as applicable. Tests assert meaningful behavior, not only source strings.
+4. Generate one focused forward migration, apply only to the new synthetic clone, run GREEN plus second apply/idempotency, expected preservation/default-ACL/temp-shadowing checks; require no unintended data/backfill or function replacement.
+5. Run full local gates and applicable isolated DB/RLS gates. Record command/exit/source/environment; skipped/external gates explicit. Update this task's evidence and current R01 tracker without rewriting historical evidence.
+6. Commit explicit paths, self-review, report to controller. Do not push/merge/apply production. No subagents. Controller supplies independent task review and prepares one PR for this domain.
+
+## Review Focus
+
+Unchecked catalog facets, private/helper prerequisites, exact argument names and types/return contracts, inherited grants, existing modern version triggers, service suspension fencing, transactional audit rollback, duplicate/concurrent retries, function replacement scope, existing data/immutable money/event preservation, and schema-only restore of production owners/default ACLs. Public146-requirement GREEN alone is insufficient for behavioral compatibility or hosted/provider UAT.
+
+### Task 12: Group enquiry atomic command
+
+Controller SQL routing: 20260926060314_atomic_group_enquiry_audit.sql. Preserve current role matrix, server-only route boundary and atomic audit; no notifications or publication.
+
+Scope (public schema, exact current manifest/call contracts): `update_group_enquiry_with_audit`.
+
+Files: focused new migration; adjacent domain database tests or supabase/rls-tests; task evidence under docs/evidence/audit-remediation-20260927/r01-forward/; current tracker. Preserve unrelated source and migrations.
+
+Follow Common task steps. Expected: before fix missing-target regression fails; after exact forward migration meaningful role/transaction/idempotency tests exit0 and no unintended metadata/data drift. Task12 does not close the other 43 baseline requirements. Source code-complete/schema-ready in isolation is distinct from applied/deployed/operationally-enabled.
+
+
+
+
+Controller engineering context from accepted preceding source work: preserve explicit LF when generating forward SQL on Windows. Python write_text default newline conversion made newly created pg_proc.prosrc CRLF while reviewed legacy/current modern bodies were exactLF, triggering correct55000 preflight refusal before actor tests. Use an explicit LF writer and bind raw/canonical SHA256/Gitblobs; retain strict exact source/body metadata checks and do not normalize away arbitrary existing definitions. Do not modify inputs during an active frozen rehearsal. This is source generation guidance only, not a change to safety/ACL/deployment authority.
+Controller fresh readonly metadata2026-10-01T18:02:39.810589Z confirms allpublic overloads of this task declared target names absent; ledger112. Sharedreceipt task-8-12-controller-preflight.json. No actor/data/provider/productionmutation. Conditional cumulative hosted gap count after allprecedingfocusedTasks2 onward and this task, with blockedTask1five columns excluded:44->5. Production remains44 until separateapprovedapplication. Own freshsourceBASE/graph/dependentCIconditions suppliedatdispatch; do not use conditionalclonecount as release readiness.
+
+Controller cross-task compatibility lesson from actual Task5 discovery, 2026-10-01: production service_role has no auth.users SELECT/UPDATE, but has private schema USAGE and existing private service-only SECDEF actor bridges. An INVOKER RPC cannot directly add Auth-table row locking without checking this privilege boundary. Do not grant Auth/table/cluster privileges or convert public RPCs to SECDEF to bypass a failure. Inspect exact current role/suspension/ban semantics and transaction locks; report a demonstrated missing actor fence with real owned-clone RED to controller before a known-body replacement/new helper. Preserve unrelated helpers and unknown-profile55000. Task5's separately ruled private archive bridge is task-specific and still awaiting its own independent acceptance; do not copy/reuse it across domains by assumption. Exact managed Auth privilege fidelity must be proved, not inferred from a lab GREEN; all source/template/provider/prod boundaries remain unchanged.

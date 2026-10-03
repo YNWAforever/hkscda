@@ -1,0 +1,11 @@
+{
+  "command": [
+    "bun",
+    "x",
+    "supabase@2.118.0",
+    "migration",
+    "new",
+    "r01_group_enquiry_forward"
+  ],
+  "at": "2026-10-03T00:53:22.601Z"
+}

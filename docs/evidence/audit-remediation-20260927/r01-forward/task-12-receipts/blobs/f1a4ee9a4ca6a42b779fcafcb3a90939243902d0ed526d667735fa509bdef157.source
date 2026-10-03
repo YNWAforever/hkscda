@@ -1,0 +1,1 @@
+[{"value": [{"name": "auth.users", "rules": false, "rewrites": 0, "persistence": "p"}, {"name": "public.admin_user", "rules": false, "rewrites": 0, "persistence": "p"}, {"name": "public.audit_log", "rules": false, "rewrites": 0, "persistence": "p"}, {"name": "public.group_enquiries", "rules": false, "rewrites": 0, "persistence": "p"}]}]

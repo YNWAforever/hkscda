@@ -1,0 +1,1 @@
+grant execute on function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) to service_role with grant option

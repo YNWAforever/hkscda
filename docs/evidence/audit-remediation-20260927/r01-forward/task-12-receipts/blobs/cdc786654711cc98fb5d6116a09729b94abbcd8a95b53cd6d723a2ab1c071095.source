@@ -1,0 +1,22 @@
+"""R68 metadata-only preclosing qualifier. Raw manifests are transport, not acceptance."""
+import hashlib,json,pathlib,re,subprocess,sys
+BASE='f4e96e3484d135d179caea835d913552d96d2dcb'
+SOURCE='de35b17745ef9da3114e7dc4ba8c64df38e46702'
+NATIVE_SOURCE='208050fd6bdbe78f3a05de6853e0319055f6e014'
+COMPOSITION_FLAGS=['schemaParity','fullScannerPassed','dependenciesBound','firstApply','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','testPassed','zeroRowsAfter','catalogAfterBehaviorPreserved','normalDrop','templatePreserved','modernPreserved','frozenInputsPreserved']
+GATE_FLAGS=['finalProfilesQualified','sourceFrozen','frozenInputsPreserved','templatePreserved']
+NATIVE_FLAGS=['fullF4BaselineObserved','fullScannerPassed','beforeRowsObserved','afterRowsObserved','zeroRowsBefore','zeroRowsAfter','firstApply','nativeNextObserved','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','fixtureConnectionIdentity','mixedRefusalsPassed','catalogAfterRefusalsPreserved','nativeBehaviorPassed','catalogAfterBehaviorPreserved','finalCatalogPreserved','normalCleanup','protectedSourcesPreserved','frozenInputsPreserved']
+FINAL_FLAGS=['originalArchivePairsVerified','fourExistingBasePinsVerified','auditAndTask11Unchanged','currentSourceFreezeVerified','qualifiedNative208BridgeVerified','threeCurrentCompositionsVerified','fourActualLocalGatesVerified','all68OriginalRulingsVerified','stagedArchiveGitIdentitiesVerified']
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def require(value,message):
+ if not value:raise ValueError(message)
+def canonical(raw,mode):
+ text=raw.replace(b'\r\n',b'\n')
+ return sha(text)if mode=='raw-lf'else sha(json.dumps(text.decode('utf-8'),ensure_ascii=False,separators=(',',':')).encode())
+def identity(raw,b,mode='raw-lf'):
+ pass
+def contract(r,kind,mode,flags,counts):
+ pass
+def ordered(ledger,final):
+ pass

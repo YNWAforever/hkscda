@@ -1,0 +1,3 @@
+NOTICE:  trigger "audit_animals" for relation "public.animals" does not exist, skipping
+NOTICE:  trigger "audit_animal_profile_internal" for relation "public.animal_profile_internal" does not exist, skipping
+NOTICE:  trigger "audit_animal_match" for relation "public.animal_match" does not exist, skipping

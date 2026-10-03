@@ -1,0 +1,1 @@
+{"originalFailure": "Catalog after behavior differs", "afterKeys": ["catalog", "supplemental"], "afterBehaviorKeys": ["catalog", "supplemental", "rows"], "catalogAndSupplementalEqual": true, "correction": "Exact wrapper key contracts plus independently saved rows; no catalog normalization or DB rerun"}

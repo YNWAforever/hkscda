@@ -1,0 +1,217 @@
+-- Enquiries remain canonical; assigning an operational group stores a factual
+-- contact snapshot and never turns an enquiry into confirmed headcount implicitly.
+create table public.volunteer_group_request (
+ id uuid primary key default gen_random_uuid(),activity_id uuid not null references public.volunteer_activity(id),
+ enquiry_id uuid not null references public.group_enquiries(id),submitted_by uuid not null references auth.users(id),
+ contact_snapshot jsonb not null,headcount integer not null check(headcount>0 and headcount<=100000),
+ status text not null default 'pending' check(status in('pending','confirmed','cancelled')),
+ revision bigint not null default 1,created_at timestamptz not null default clock_timestamp()
+);
+create unique index volunteer_group_active_enquiry on public.volunteer_group_request(activity_id,enquiry_id) where status in('pending','confirmed');
+create table public.volunteer_change_preview (
+ id uuid primary key default gen_random_uuid(),actor_user_id uuid not null references auth.users(id),kind text not null check(kind in('group','move')),
+ candidate jsonb not null,fingerprint text not null,expires_at timestamptz not null,created_at timestamptz not null default clock_timestamp()
+);
+create table public.volunteer_operation_event (
+ id uuid primary key default gen_random_uuid(),actor_user_id uuid not null references auth.users(id),kind text not null,
+ entity_id uuid not null,before_fact jsonb not null,after_fact jsonb not null,reason text not null check(length(trim(reason))>0),created_at timestamptz not null default clock_timestamp()
+);
+alter table public.volunteer_group_request enable row level security;
+alter table public.volunteer_change_preview enable row level security;
+alter table public.volunteer_operation_event enable row level security;
+revoke all on public.volunteer_group_request,public.volunteer_change_preview,public.volunteer_operation_event from anon,authenticated,service_role;
+grant select on public.volunteer_group_request,public.volunteer_change_preview,public.volunteer_operation_event to service_role;
+create trigger volunteer_operation_event_immutable before update or delete on public.volunteer_operation_event for each row execute function public.volunteer_immutable_fact();
+create function public.volunteer_group_snapshot_guard() returns trigger language plpgsql set search_path=public,pg_temp as $$
+begin if new.contact_snapshot is distinct from old.contact_snapshot or new.enquiry_id<>old.enquiry_id or new.submitted_by<>old.submitted_by then raise exception 'immutable_group_snapshot' using errcode='42501';end if;return new;end $$;
+create trigger volunteer_group_snapshot before update on public.volunteer_group_request for each row execute function public.volunteer_group_snapshot_guard();
+
+create function public.volunteer_group_activity_guard() returns trigger language plpgsql set search_path=public,pg_temp as $$
+begin
+ if old.policy_version_id is not null then
+  if new.group_headcount<>old.group_headcount and coalesce(current_setting('hkscda.group_command',true),'')<>'apply' then raise exception 'group_change_requires_review' using errcode='42501';end if;
+  if (new.shelter_key,new.template_key) is distinct from (old.shelter_key,old.template_key) and coalesce(current_setting('hkscda.policy_command',true),'')<>'apply' then raise exception 'policy_identity_requires_review' using errcode='42501';end if;
+  if new.status='published' and old.status<>'published' and coalesce(current_setting('hkscda.policy_command',true),'')<>'apply' then raise exception 'publication_requires_policy_review' using errcode='42501';end if;
+ end if;return new;
+end $$;
+create trigger volunteer_group_activity_change before update on public.volunteer_activity for each row execute function public.volunteer_group_activity_guard();
+
+create function public.volunteer_change_fingerprint(p_activity uuid,p_other uuid,p_body jsonb,p_now timestamptz) returns text
+language sql stable security definer set search_path=public,pg_temp as $$
+ select md5(public.volunteer_policy_fingerprint(public.volunteer_policy_manifest(case when p_other is null then jsonb_build_array(p_activity) else jsonb_build_array(p_activity,p_other) end,p_body,p_now))||
+ coalesce((select jsonb_agg(to_jsonb(g) order by g.id)::text from public.volunteer_group_request g where g.activity_id in(p_activity,p_other)),'')||
+ coalesce((select jsonb_agg(to_jsonb(s) order by s.template_key,s.effective_from)::text from public.volunteer_policy_schedule s),'')||coalesce((select jsonb_agg(to_jsonb(t) order by t.id)::text from public.volunteer_terms_version t),'')||
+ (p_now>=public.volunteer_policy_window(p_body#>'{booking,group_close}',(select starts_at from public.volunteer_activity where id=p_activity),p_body->>'timezone'))::text);
+$$;
+revoke all on function public.volunteer_change_fingerprint(uuid,uuid,jsonb,timestamptz) from public,anon,authenticated,service_role;
+
+-- Preview uses the same evaluator against temporary candidate bindings, then
+-- rolls back the entire inner savepoint. No preview occupancy or policy is kept.
+-- Shared session applicability check, including empty group candidates.
+create function public.volunteer_policy_session_reason(p_body jsonb,p_status text,p_starts_at timestamptz,p_group_headcount integer,p_now timestamptz) returns text
+language plpgsql immutable set search_path=public,pg_temp as $$
+declare service_date date:=(p_starts_at at time zone (p_body->>'timezone'))::date;begin
+ if p_status<>'published' or p_starts_at<=p_now or not (p_body#>>'{schedule,enabled}')::boolean then return 'activity_closed';end if;
+ if (p_body#>>'{schedule,effective_from}' is not null and service_date<(p_body#>>'{schedule,effective_from}')::date) or (p_body#>>'{schedule,effective_until}' is not null and service_date>(p_body#>>'{schedule,effective_until}')::date) then return 'date_closed';end if;
+ if (p_body#>>'{booking,scenario}'='confirmed_group' and p_group_headcount=0) or (p_body#>>'{booking,scenario}'='no_confirmed_group' and p_group_headcount>0) then return 'group_scenario_mismatch';end if;
+ if not (p_body#>'{schedule,weekdays}' @> jsonb_build_array(extract(dow from service_date)::integer)) or p_body#>'{schedule,excluded_dates}' @> to_jsonb(array[service_date::text]) then return 'date_closed';end if;
+ return null;
+end $$;
+revoke all on function public.volunteer_policy_session_reason(jsonb,text,timestamptz,integer,timestamptz) from public,anon,authenticated,service_role;
+
+create function public.volunteer_group_candidate(p_activity uuid,p_version uuid,p_headcount integer,p_now timestamptz) returns jsonb
+language plpgsql security definer set search_path=public,pg_temp as $$
+declare body jsonb;a public.volunteer_activity%rowtype;b record;check_result jsonb;issues jsonb:='[]';cap integer;minimum integer;result jsonb;begin
+ select * into a from public.volunteer_activity where id=p_activity;
+ select v.body into body from public.volunteer_policy_version v where v.id=p_version;
+ if body is null or jsonb_array_length(public.volunteer_validate_policy(body))>0 then return jsonb_build_object('issues',jsonb_build_array('target_policy_incomplete'));end if;
+ if body->>'shelter' is distinct from a.shelter_key or (a.starts_at at time zone (body->>'timezone'))::time<>(body#>>'{schedule,start_time}')::time or (a.ends_at at time zone (body->>'timezone'))::time<>(body#>>'{schedule,end_time}')::time then return jsonb_build_object('issues',jsonb_build_array('paired_policy_time_or_shelter_mismatch'));end if;
+ check_result:=to_jsonb(public.volunteer_policy_session_reason(body,a.status,a.starts_at,p_headcount,p_now));
+ if check_result is not null then return jsonb_build_object('issues',jsonb_build_array(check_result));end if;
+ if p_headcount>0 and (p_headcount<(body#>>'{capacity,group_size,minimum}')::integer or p_headcount>(body#>>'{capacity,group_size,maximum}')::integer or (body#>>'{capacity,visitors,state}'='value' and p_headcount>(body#>>'{capacity,visitors,value}')::integer)) then return jsonb_build_object('issues',jsonb_build_array('group_headcount_out_of_range'));end if;
+ cap:=(body#>>'{capacity,volunteers,value}')::integer;
+ if body#>>'{capacity,shared_total,state}'='value' then cap:=least(cap,(body#>>'{capacity,shared_total,value}')::integer-case when (body#>>'{capacity,group_in_shared_total}')::boolean then p_headcount else 0 end);end if;
+ select coalesce(sum((value->>'minimum')::integer),0) into minimum from jsonb_array_elements(body->'roles');
+ if body#>>'{capacity,role_count_model}'='leader_in_assistants' then minimum:=minimum-coalesce((select (value->>'minimum')::integer from jsonb_array_elements(body->'roles') where value->>'key'='leader'),0);end if;
+ if cap<minimum or cap<0 then return jsonb_build_object('issues',jsonb_build_array('group_core_capacity_impossible'));end if;
+ begin
+  perform set_config('hkscda.policy_command','apply',true);perform set_config('hkscda.group_command','apply',true);
+  update public.volunteer_activity set policy_version_id=p_version,group_headcount=p_headcount,capacity=cap,template_key=body->>'template_key',shelter_key=body->>'shelter' where id=p_activity;
+  perform public.volunteer_bind_daily_policy(body,(a.starts_at at time zone (body->>'timezone'))::date);
+  for b in select * from public.volunteer_registration where activity_id=p_activity and status in('approved','pending') order by id loop
+   check_result:=public.volunteer_policy_evaluate(p_activity,b.profile_id,b.duty_role,p_now,b.id);
+   if not coalesce((check_result->>'allowed')::boolean,false) then issues:=issues||jsonb_build_array(jsonb_build_object('registration_id',b.id,'reason',check_result->>'reason'));end if;
+  end loop;
+  result:=jsonb_build_object('issues',issues,'volunteer_capacity',cap,'group_headcount',p_headcount,'policy_version_id',p_version,'scenario',body#>>'{booking,scenario}');
+  raise exception 'rollback_group_preview' using errcode='PZ001';
+ exception when sqlstate 'PZ001' then null;end;
+ return result;
+end $$;
+revoke all on function public.volunteer_group_candidate(uuid,uuid,integer,timestamptz) from public,anon,authenticated,service_role;
+
+create function public.volunteer_operation_command(p_actor uuid,p_command jsonb) returns jsonb
+language plpgsql security definer set search_path=public,pg_temp as $$
+declare action text:=p_command->>'action';staff boolean;email text;stamp timestamptz;id uuid;op text;key_name text;allowed text[];
+ a public.volunteer_activity%rowtype;dest public.volunteer_activity%rowtype;g public.volunteer_group_request%rowtype;enquiry public.group_enquiries%rowtype;b public.volunteer_registration%rowtype;
+ preview public.volunteer_change_preview%rowtype;prior public.volunteer_command_result%rowtype;
+ body jsonb;target_body jsonb;candidate jsonb;result jsonb;manifest jsonb;target_key text;target_version uuid;total integer;headcount integer;late boolean;cutoff timestamptz;freeze_at timestamptz;before_fact jsonb;hash text:=md5(p_command::text);begin
+ perform pg_advisory_xact_lock(hashtextextended('volunteer-domain',0));stamp:=clock_timestamp();
+ select u.email into email from auth.users u where u.id=p_actor and u.email_confirmed_at is not null and (u.banned_until is null or u.banned_until<=stamp);
+ if email is null then raise exception 'verified_actor_required' using errcode='42501';end if;
+ staff:=exists(select 1 from public.admin_user where auth_user_id=p_actor and role in('staff','admin') and status='active');
+ allowed:=case action when 'list' then array['action'] when 'request' then array['action','activity_id','enquiry_id','headcount','idempotency_key'] when 'group_preview' then array['action','request_id','expected_revision','operation','headcount','acknowledge_late_change'] when 'group_apply' then array['action','preview_id','idempotency_key','reason'] when 'move_preview' then array['action','registration_id','expected_updated_at','activity_id','role'] when 'move_apply' then array['action','preview_id','idempotency_key','reason'] else null end;
+ if allowed is null then raise exception 'invalid_volunteer_operation' using errcode='22023';end if;
+ for key_name in select jsonb_object_keys(p_command) loop if not key_name=any(allowed) then raise exception 'invalid_volunteer_operation' using errcode='22023';end if;end loop;
+ if action in('request','group_apply','move_apply') then
+  if nullif(p_command->>'idempotency_key','') is null then raise exception 'idempotency_required' using errcode='22023';end if;
+  select * into prior from public.volunteer_command_result where actor_user_id=p_actor and operation=action and idempotency_key=(p_command->>'idempotency_key')::uuid;
+  if found then if prior.payload_hash<>hash then return jsonb_build_object('kind','conflict','reason','idempotency_payload_changed');end if;return prior.result;end if;
+ end if;
+ if action='list' then
+  return jsonb_build_object('staff',staff,
+   'activities',(select coalesce(jsonb_agg(jsonb_build_object('id',la.id,'title',la.title,'starts_at',la.starts_at,'capacity',la.capacity,'group_headcount',la.group_headcount,'scenario',v.body#>>'{booking,scenario}','roles',case when jsonb_array_length(v.body->'roles')=0 then '[{"key":"volunteer","label":"一般義工"}]'::jsonb else v.body->'roles' end) order by la.starts_at),'[]'::jsonb) from public.volunteer_activity la join public.volunteer_policy_version v on v.id=la.policy_version_id where la.starts_at>stamp and la.status='published'),
+   'enquiries',(select coalesce(jsonb_agg(jsonb_build_object('id',e.id,'organisation',e.organisation,'contact_name',e.contact_name,'participant_count',e.participant_count) order by e.created_at desc),'[]'::jsonb) from public.group_enquiries e where (staff or lower(e.contact_email::text)=lower(email)) and e.status<>'closed'),
+   'requests',(select coalesce(jsonb_agg(to_jsonb(r) order by r.created_at desc),'[]'::jsonb) from public.volunteer_group_request r where staff or r.submitted_by=p_actor),
+   'registrations',(select coalesce(jsonb_agg(jsonb_build_object('id',r.id,'activity_id',r.activity_id,'contact_name',r.contact_name,'status',r.status,'duty_role',r.duty_role,'updated_at',r.updated_at) order by la.starts_at),'[]'::jsonb) from public.volunteer_registration r join public.volunteer_profile v on v.id=r.profile_id join public.volunteer_activity la on la.id=r.activity_id where la.starts_at>stamp and r.status in('pending','approved','waitlisted') and (staff or v.auth_user_id=p_actor)));
+ elsif action='request' then
+  select * into enquiry from public.group_enquiries where public.group_enquiries.id=(p_command->>'enquiry_id')::uuid;
+  if not found then return jsonb_build_object('kind','not_found');end if;
+  if not staff and lower(enquiry.contact_email::text)<>lower(email) then raise exception 'inquiry_owner_required' using errcode='42501';end if;
+  select * into a from public.volunteer_activity where public.volunteer_activity.id=(p_command->>'activity_id')::uuid for update;
+  if not found or a.starts_at<=stamp or a.status<>'published' then return jsonb_build_object('kind','denied','reason','activity_closed');end if;
+  select v.body into body from public.volunteer_policy_version v where v.id=a.policy_version_id;
+  if body is null or body#>>'{booking,group_open,mode}'='disabled' or stamp<public.volunteer_policy_window(body#>'{booking,group_open}',a.starts_at,body->>'timezone') or stamp>=public.volunteer_policy_window(body#>'{booking,group_close}',a.starts_at,body->>'timezone') then return jsonb_build_object('kind','denied','reason','group_window_closed');end if;
+  headcount:=(p_command->>'headcount')::integer;if headcount is null or headcount<1 or headcount>100000 then raise exception 'invalid_headcount' using errcode='22023';end if;
+  if exists(select 1 from public.volunteer_group_request r where r.activity_id=a.id and r.enquiry_id=enquiry.id and r.status in('pending','confirmed')) then return jsonb_build_object('kind','conflict','reason','duplicate_group_request');end if;
+  insert into public.volunteer_group_request(activity_id,enquiry_id,submitted_by,contact_snapshot,headcount) values(a.id,enquiry.id,p_actor,jsonb_build_object('organisation',enquiry.organisation,'contact_name',enquiry.contact_name,'contact_email',enquiry.contact_email,'contact_phone',enquiry.contact_phone,'participant_age_profile',enquiry.participant_age_profile,'source_enquiry_id',enquiry.id,'captured_at',stamp),headcount) returning public.volunteer_group_request.id into id;
+  result:=jsonb_build_object('kind','requested','request_id',id,'revision',1,'status','pending');
+ elsif action='group_preview' then
+  if not staff then raise exception 'volunteer_forbidden' using errcode='42501';end if;
+  select * into g from public.volunteer_group_request where public.volunteer_group_request.id=(p_command->>'request_id')::uuid for update;
+  if not found then return jsonb_build_object('kind','not_found');end if;
+  if g.revision is distinct from (p_command->>'expected_revision')::bigint or g.status='cancelled' then return jsonb_build_object('kind','conflict');end if;
+  op:=p_command->>'operation';if op is null or op not in('confirm','cancel') then raise exception 'invalid_group_operation' using errcode='22023';end if;
+  select * into a from public.volunteer_activity where public.volunteer_activity.id=g.activity_id for update;
+  if a.starts_at<=stamp or a.status<>'published' then return jsonb_build_object('kind','denied','reason','activity_closed');end if;
+  select v.body into body from public.volunteer_policy_version v where v.id=a.policy_version_id;
+  cutoff:=public.volunteer_policy_window(body#>'{booking,group_close}',a.starts_at,body->>'timezone');
+  freeze_at:=case when body#>>'{booking,group_freeze}'='at_session_start' then a.starts_at else cutoff end;late:=stamp>=freeze_at;
+  if op='confirm' and g.status='pending' and (body#>>'{booking,group_open,mode}'='disabled' or stamp<public.volunteer_policy_window(body#>'{booking,group_open}',a.starts_at,body->>'timezone') or stamp>=cutoff) then return jsonb_build_object('kind','denied','reason','group_window_closed');end if;
+  if late and body#>>'{booking,late_group_change}'='manual_review' and not coalesce((p_command->>'acknowledge_late_change')::boolean,false) then return jsonb_build_object('kind','denied','reason','late_group_review_required');end if;
+  headcount:=case when op='cancel' then 0 else (p_command->>'headcount')::integer end;
+  if headcount is null or headcount<0 or headcount>100000 or (op='confirm' and headcount=0) then raise exception 'invalid_headcount' using errcode='22023';end if;
+  total:=a.group_headcount-case when g.status='confirmed' then g.headcount else 0 end+headcount;
+  target_key:=body#>>array['booking','scenario_templates',case when total>0 then 'with_group' else 'without_group' end];
+  if target_key is null and body#>>'{booking,scenario}'=(case when total>0 then 'confirmed_group' else 'no_confirmed_group' end) then target_version:=a.policy_version_id;
+  elsif target_key is not null then select s.version_id into target_version from public.volunteer_policy_schedule s where s.template_key=target_key and s.effective_from<=a.starts_at and (s.effective_until is null or s.effective_until>a.starts_at) order by s.effective_from desc limit 1;end if;
+  if target_version is null then return jsonb_build_object('kind','denied','reason','paired_policy_not_published');end if;
+  select v.body into target_body from public.volunteer_policy_version v where v.id=target_version;
+  if target_body#>>'{booking,scenario}'<>(case when total>0 then 'confirmed_group' else 'no_confirmed_group' end) then return jsonb_build_object('kind','denied','reason','paired_policy_scenario_mismatch');end if;
+  manifest:=public.volunteer_group_candidate(a.id,target_version,total,stamp);
+  if jsonb_array_length(manifest->'issues')>0 then return jsonb_build_object('kind','denied','reason','group_policy_conflict','manifest',manifest);end if;
+  candidate:=jsonb_build_object('request_id',g.id,'revision',g.revision,'activity_id',a.id,'version_id',target_version,'body',target_body,'operation',op,'headcount',headcount,'total',total,'manifest',manifest,'late',late);
+  insert into public.volunteer_change_preview(actor_user_id,kind,candidate,fingerprint,expires_at) values(p_actor,'group',candidate,public.volunteer_change_fingerprint(a.id,null,target_body,stamp),stamp+interval '5 minutes') returning public.volunteer_change_preview.id into id;
+  return jsonb_build_object('kind','preview','preview_id',id,'manifest',manifest,'late',late,'contact_snapshot',g.contact_snapshot);
+ elsif action='move_preview' then
+  select * into b from public.volunteer_registration where public.volunteer_registration.id=(p_command->>'registration_id')::uuid for update;
+  if not found then return jsonb_build_object('kind','not_found');end if;
+  if not staff and not exists(select 1 from public.volunteer_profile v where v.id=b.profile_id and v.auth_user_id=p_actor) then raise exception 'registration_owner_required' using errcode='42501';end if;
+  if b.updated_at is distinct from (p_command->>'expected_updated_at')::timestamptz then return jsonb_build_object('kind','conflict');end if;
+  select * into a from public.volunteer_activity where public.volunteer_activity.id=b.activity_id;select * into dest from public.volunteer_activity where public.volunteer_activity.id=(p_command->>'activity_id')::uuid;
+  if dest.id is null then return jsonb_build_object('kind','not_found');end if;
+  if a.starts_at<=stamp or b.attendance_status<>'not_marked' or b.status not in('approved','pending','waitlisted') or dest.id=a.id then return jsonb_build_object('kind','denied','reason','registration_not_reschedulable');end if;
+  select v.body into target_body from public.volunteer_policy_version v where v.id=dest.policy_version_id;
+  manifest:=public.volunteer_policy_evaluate(dest.id,b.profile_id,p_command->>'role',stamp,b.id);
+  if not coalesce((manifest->>'allowed')::boolean,false) then return manifest||jsonb_build_object('kind','denied');end if;
+  if not exists(select 1 from public.volunteer_terms_acceptance t join public.volunteer_terms_version v on v.id=t.version_id where t.profile_id=b.profile_id and v.published_at<=stamp and (target_body#>>'{terms,reconsent}'='existing_acceptance_valid' or t.version_id=coalesce((target_body#>>'{terms,version_id}')::uuid,(select tv.id from public.volunteer_terms_version tv where tv.published_at<=stamp order by tv.published_at desc limit 1)))) then return jsonb_build_object('kind','denied','reason','volunteer_terms_consent_required');end if;
+  candidate:=jsonb_build_object('registration_id',b.id,'updated_at',b.updated_at,'activity_id',a.id,'destination_id',dest.id,'role',p_command->>'role','body',target_body,'source_policy_version_id',a.policy_version_id,'destination_policy_version_id',dest.policy_version_id);
+  insert into public.volunteer_change_preview(actor_user_id,kind,candidate,fingerprint,expires_at) values(p_actor,'move',candidate,public.volunteer_change_fingerprint(a.id,dest.id,target_body,stamp),stamp+interval '5 minutes') returning public.volunteer_change_preview.id into id;
+  return jsonb_build_object('kind','preview','preview_id',id,'manifest',manifest);
+ else
+  if nullif(trim(p_command->>'reason'),'') is null then raise exception 'reason_required' using errcode='22023';end if;
+  select * into preview from public.volunteer_change_preview where public.volunteer_change_preview.id=(p_command->>'preview_id')::uuid and actor_user_id=p_actor for update;
+  if not found then return jsonb_build_object('kind','not_found');end if;
+  candidate:=preview.candidate;target_body:=candidate->'body';
+  if preview.kind<>(case when action='group_apply' then 'group' else 'move' end) or preview.expires_at<=stamp or preview.fingerprint<>public.volunteer_change_fingerprint((candidate->>'activity_id')::uuid,(candidate->>'destination_id')::uuid,target_body,stamp) then return jsonb_build_object('kind','conflict');end if;
+  if action='group_apply' then
+   if not staff then raise exception 'volunteer_forbidden' using errcode='42501';end if;
+   select * into g from public.volunteer_group_request where public.volunteer_group_request.id=(candidate->>'request_id')::uuid for update;
+   if g.revision<>(candidate->>'revision')::bigint then return jsonb_build_object('kind','conflict');end if;
+   select * into a from public.volunteer_activity where public.volunteer_activity.id=g.activity_id for update;
+   if a.starts_at<=stamp or a.status<>'published' then return jsonb_build_object('kind','conflict','reason','activity_closed');end if;
+   select v.body into body from public.volunteer_policy_version v where v.id=a.policy_version_id;
+   cutoff:=public.volunteer_policy_window(body#>'{booking,group_close}',a.starts_at,body->>'timezone');
+   freeze_at:=case when body#>>'{booking,group_freeze}'='at_session_start' then a.starts_at else cutoff end;
+   if (stamp>=freeze_at) is distinct from (candidate->>'late')::boolean then return jsonb_build_object('kind','conflict','reason','group_freeze_changed');end if;
+   if candidate->>'operation'='confirm' and g.status='pending' and (body#>>'{booking,group_open,mode}'='disabled' or stamp<public.volunteer_policy_window(body#>'{booking,group_open}',a.starts_at,body->>'timezone') or stamp>=cutoff) then return jsonb_build_object('kind','conflict','reason','group_window_closed');end if;
+   perform public.volunteer_persist_releases(a.id,stamp);
+   manifest:=public.volunteer_group_candidate(a.id,(candidate->>'version_id')::uuid,(candidate->>'total')::integer,stamp);
+   if jsonb_array_length(manifest->'issues')>0 then return jsonb_build_object('kind','conflict','manifest',manifest);end if;
+   before_fact:=to_jsonb(g);
+   perform set_config('hkscda.policy_command','apply',true);perform set_config('hkscda.group_command','apply',true);
+   update public.volunteer_activity set policy_version_id=(candidate->>'version_id')::uuid,policy_revision=policy_revision+1,group_headcount=(candidate->>'total')::integer,capacity=(manifest->>'volunteer_capacity')::integer,template_key=target_body->>'template_key',shelter_key=target_body->>'shelter',min_age=(target_body#>>'{eligibility,min_age}')::integer,auto_approve=(target_body#>>'{booking,auto_approve}')::boolean,allow_waitlist=(target_body#>>'{booking,allow_waitlist}')::boolean where public.volunteer_activity.id=a.id;
+   perform public.volunteer_bind_daily_policy(target_body,(a.starts_at at time zone (target_body->>'timezone'))::date);
+   perform set_config('hkscda.policy_command','',true);perform set_config('hkscda.group_command','',true);
+   update public.volunteer_group_request set headcount=case when candidate->>'operation'='cancel' then public.volunteer_group_request.headcount else (candidate->>'headcount')::integer end,status=case when candidate->>'operation'='cancel' then 'cancelled' else 'confirmed' end,revision=revision+1 where public.volunteer_group_request.id=g.id returning * into g;
+   id:=g.id;result:=jsonb_build_object('kind','applied','request',to_jsonb(g),'manifest',manifest);
+  else
+   select * into b from public.volunteer_registration where public.volunteer_registration.id=(candidate->>'registration_id')::uuid for update;
+   if not staff and not exists(select 1 from public.volunteer_profile v where v.id=b.profile_id and v.auth_user_id=p_actor) then raise exception 'registration_owner_required' using errcode='42501';end if;
+   if b.updated_at is distinct from (candidate->>'updated_at')::timestamptz then return jsonb_build_object('kind','conflict');end if;
+   if b.attendance_status<>'not_marked' or b.status not in('approved','pending','waitlisted') or exists(select 1 from public.volunteer_activity x where x.id=b.activity_id and x.starts_at<=stamp) then return jsonb_build_object('kind','conflict','reason','registration_not_reschedulable');end if;
+   perform public.volunteer_persist_releases((candidate->>'destination_id')::uuid,stamp);
+   before_fact:=to_jsonb(b);manifest:=public.volunteer_policy_evaluate((candidate->>'destination_id')::uuid,b.profile_id,candidate->>'role',stamp,b.id);
+   if not coalesce((manifest->>'allowed')::boolean,false) then return manifest||jsonb_build_object('kind','conflict');end if;
+   update public.volunteer_registration set activity_id=(candidate->>'destination_id')::uuid,duty_role=candidate->>'role',status_reason='rescheduled_with_review' where public.volunteer_registration.id=b.id returning * into b;
+   perform set_config('hkscda.group_command','',true);
+   id:=b.id;result:=jsonb_build_object('kind','applied','registration',to_jsonb(b),'source_policy_version_id',candidate->'source_policy_version_id','destination_policy_version_id',candidate->'destination_policy_version_id');
+  end if;
+  insert into public.volunteer_operation_event(actor_user_id,kind,entity_id,before_fact,after_fact,reason) values(p_actor,action,id,before_fact,result,p_command->>'reason');
+ end if;
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor,'volunteer_operation.'||action,'volunteer_operation',id::text,result);
+ insert into public.volunteer_operation_outbox(dedup_key,kind,payload) values(action||':'||id::text||':'||(p_command->>'idempotency_key'),'volunteer_operation_changed',result);
+ insert into public.volunteer_command_result(actor_user_id,operation,idempotency_key,payload_hash,result) values(p_actor,action,(p_command->>'idempotency_key')::uuid,hash,result);
+ return result;
+end $$;
+revoke all on function public.volunteer_operation_command(uuid,jsonb) from public,anon,authenticated;
+grant execute on function public.volunteer_operation_command(uuid,jsonb) to service_role;

@@ -1,0 +1,7 @@
+import pathlib,json,hashlib,subprocess,sys
+o=pathlib.Path(__file__).parent;s=(o/'tests-fix1.py').read_text(encoding='utf-8');assert s.count("p.parent/'fixtures'")==3
+(o/'tests-final.py').write_bytes(s.replace("p.parent/'fixtures'","p.parent/'fixtures-fix1'").encode())
+cmd=[sys.executable,'-B',str(o/'tests-final.py')]
+for name in ['binder-fix1.py','tests-final.py','final-tests.py']:(o/('final-'+name+'.source')).write_bytes((o/name).read_bytes())
+(o/'final-tests.invocation.json').write_bytes((json.dumps({'command':cmd,'cwd':str(pathlib.Path.cwd()),'sourceHashes':{n:hashlib.sha256((o/n).read_bytes()).hexdigest()for n in ['binder-fix1.py','tests-final.py','final-tests.py']}})+'\n').encode())
+p=subprocess.run(cmd,capture_output=True);(o/'final-tests.stdout.log').write_bytes(p.stdout);(o/'final-tests.stderr.log').write_bytes(p.stderr);(o/'final-tests.exit.json').write_bytes((json.dumps({'exit':p.returncode,'stdoutSha256':hashlib.sha256(p.stdout).hexdigest(),'stderrSha256':hashlib.sha256(p.stderr).hexdigest()})+'\n').encode());print(p.stderr.decode());sys.exit(p.returncode)

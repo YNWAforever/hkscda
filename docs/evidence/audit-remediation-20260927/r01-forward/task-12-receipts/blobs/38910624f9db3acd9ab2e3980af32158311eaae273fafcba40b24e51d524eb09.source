@@ -1,0 +1,204 @@
+-- Keep duplicate evidence before enforcing one live draft per update and recipient.
+create table if not exists public.recipient_notification_draft_duplicate_archive (
+  like public.recipient_notification_draft including defaults,
+  kept_id uuid not null,
+  archived_at timestamptz not null default clock_timestamp()
+);
+alter table public.recipient_notification_draft_duplicate_archive enable row level security;
+revoke all on public.recipient_notification_draft_duplicate_archive from anon, authenticated;
+grant select on public.recipient_notification_draft_duplicate_archive to service_role;
+
+with ranked as (
+  select id,
+         first_value(id) over (
+           partition by story_update_id, channel, recipient_contact
+           order by case status
+             when 'sent_manually' then 0
+             when 'copied' then 1
+             when 'dismissed' then 2
+             else 3 end,
+             created_at, id
+         ) as kept_id,
+         row_number() over (
+           partition by story_update_id, channel, recipient_contact
+           order by case status
+             when 'sent_manually' then 0
+             when 'copied' then 1
+             when 'dismissed' then 2
+             else 3 end,
+             created_at, id
+         ) as rank
+  from public.recipient_notification_draft
+), archived as (
+  insert into public.recipient_notification_draft_duplicate_archive
+  select draft.*, ranked.kept_id, clock_timestamp()
+  from public.recipient_notification_draft draft
+  join ranked on ranked.id = draft.id
+  where ranked.rank > 1
+  returning id
+)
+delete from public.recipient_notification_draft draft
+where draft.id in (select id from archived);
+
+create unique index if not exists recipient_notification_draft_delivery_target_idx
+  on public.recipient_notification_draft (story_update_id, channel, recipient_contact);
+
+create or replace function public.cms_promotion_command(p_actor uuid, p_command jsonb)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_kind text := p_command->>'kind';
+  v_content_id uuid;
+  v_update_id uuid;
+  v_id uuid;
+  v_status text;
+  v_count integer;
+begin
+  if not exists (
+    select 1
+    from public.admin_user a
+    join auth.users u on u.id = a.auth_user_id
+    where a.auth_user_id = p_actor
+      and a.status = 'active'
+      and a.role in ('staff', 'admin')
+      and u.email_confirmed_at is not null
+      and (u.banned_until is null or u.banned_until <= clock_timestamp())
+  ) then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+
+  if v_kind = 'social_generate' then
+    v_content_id := (p_command->>'content_id')::uuid;
+    v_update_id := (p_command->>'story_update_id')::uuid;
+    if not exists (select 1 from public.content_item where id = v_content_id) then
+      raise exception 'content not found' using errcode = '22023';
+    end if;
+    if v_update_id is not null and not exists (
+      select 1 from public.story_update
+      where id = v_update_id and content_item_id = v_content_id
+        and visibility = 'public' and is_authoring_active = true
+    ) then
+      raise exception 'public story update not found' using errcode = '22023';
+    end if;
+    if jsonb_typeof(p_command->'rows') is distinct from 'array'
+       or jsonb_array_length(p_command->'rows') > 100
+       or exists (
+         select 1 from jsonb_array_elements(p_command->'rows') entry
+         where (entry->>'content_item_id') is distinct from v_content_id::text
+           or (entry->>'story_update_id') is distinct from v_update_id::text
+           or entry->>'platform' not in ('facebook', 'instagram', 'whatsapp')
+           or entry->>'language' is distinct from 'zh-HK'
+           or nullif(btrim(entry->>'copy_text'), '') is null
+           or jsonb_typeof(entry->'hashtags') is distinct from 'array'
+           or entry->>'status' is distinct from 'draft'
+       )
+    then
+      raise exception 'invalid social copy rows' using errcode = '22023';
+    end if;
+
+    insert into public.social_copy_variant (
+      content_item_id, story_update_id, platform, language, copy_text, hashtags, status,
+      created_by
+    )
+    select v_content_id, v_update_id, entry.platform, 'zh-HK',
+           entry.copy_text, coalesce(entry.hashtags, array[]::text[]), 'draft', p_actor
+    from jsonb_to_recordset(p_command->'rows') as entry(
+      platform text, copy_text text, hashtags text[]
+    );
+    get diagnostics v_count = row_count;
+    insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+    values (p_actor, 'content.social_copy.generate', 'social_copy_variant',
+            v_content_id::text,
+            jsonb_build_object('count', v_count, 'storyUpdateId', v_update_id,
+                               'platform', p_command->>'platform'));
+    return jsonb_build_object('count', v_count);
+  end if;
+
+  if v_kind = 'draft_generate' then
+    v_update_id := (p_command->>'story_update_id')::uuid;
+    select content_item_id into v_content_id
+    from public.story_update
+    where id = v_update_id and visibility = 'public' and is_authoring_active = true;
+    if v_content_id is null then
+      raise exception 'public story update not found' using errcode = '22023';
+    end if;
+    if jsonb_typeof(p_command->'rows') is distinct from 'array'
+       or jsonb_array_length(p_command->'rows') > 500
+       or exists (
+         select 1 from jsonb_array_elements(p_command->'rows') entry
+         where (entry->>'story_update_id') is distinct from v_update_id::text
+           or (entry->>'content_item_id') is distinct from v_content_id::text
+           or entry->>'channel' not in ('email', 'whatsapp')
+           or nullif(btrim(entry->>'recipient_contact'), '') is null
+           or nullif(btrim(entry->>'recipient_name'), '') is null
+           or nullif(btrim(entry->>'body'), '') is null
+           or entry->>'status' is distinct from 'draft'
+       )
+    then
+      raise exception 'invalid notification draft rows' using errcode = '22023';
+    end if;
+
+    insert into public.recipient_notification_draft (
+      story_update_id, content_item_id, adoption_case_id, supporter_id, channel,
+      recipient_name, recipient_contact, subject, body, status, created_by
+    )
+    select v_update_id, v_content_id, entry.adoption_case_id, entry.supporter_id,
+           entry.channel, entry.recipient_name, entry.recipient_contact, entry.subject,
+           entry.body, 'draft', p_actor
+    from jsonb_to_recordset(p_command->'rows') as entry(
+      adoption_case_id uuid, supporter_id uuid, channel text,
+      recipient_name text, recipient_contact text, subject text, body text
+    )
+    on conflict (story_update_id, channel, recipient_contact) do nothing;
+    get diagnostics v_count = row_count;
+    insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+    values (p_actor, 'content.notification_draft.generate',
+            'recipient_notification_draft', v_update_id::text,
+            jsonb_build_object('count', v_count));
+    return jsonb_build_object('count', v_count);
+  end if;
+
+  if v_kind = 'social_status' then
+    v_id := (p_command->>'id')::uuid;
+    v_status := p_command->>'status';
+    if v_status not in ('draft', 'copied', 'archived') then
+      raise exception 'invalid social copy status' using errcode = '22023';
+    end if;
+    update public.social_copy_variant set status = v_status, updated_by = p_actor
+    where id = v_id returning id into v_id;
+    if not found then
+      raise exception 'social copy not found' using errcode = '22023';
+    end if;
+    insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+    values (p_actor, 'content.social_copy.status', 'social_copy_variant',
+            v_id::text, jsonb_build_object('status', v_status));
+    return jsonb_build_object('ok', true);
+  end if;
+
+  if v_kind = 'draft_status' then
+    v_id := (p_command->>'id')::uuid;
+    v_status := p_command->>'status';
+    if v_status not in ('draft', 'copied', 'sent_manually', 'dismissed') then
+      raise exception 'invalid notification draft status' using errcode = '22023';
+    end if;
+    update public.recipient_notification_draft set status = v_status, updated_by = p_actor
+    where id = v_id returning id into v_id;
+    if not found then
+      raise exception 'notification draft not found' using errcode = '22023';
+    end if;
+    insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+    values (p_actor, 'content.notification_draft.status',
+            'recipient_notification_draft', v_id::text,
+            jsonb_build_object('status', v_status));
+    return jsonb_build_object('ok', true);
+  end if;
+
+  raise exception 'invalid CMS promotion command' using errcode = '22023';
+end
+$$;
+
+revoke all on function public.cms_promotion_command(uuid, jsonb) from public, anon, authenticated;
+grant execute on function public.cms_promotion_command(uuid, jsonb) to service_role;

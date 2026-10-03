@@ -1,0 +1,3 @@
+NOTICE:  policy "staff can read adoption applications" for relation "public.adoption_applications" does not exist, skipping
+NOTICE:  policy "staff can update adoption applications" for relation "public.adoption_applications" does not exist, skipping
+NOTICE:  policy "staff can delete adoption applications" for relation "public.adoption_applications" does not exist, skipping

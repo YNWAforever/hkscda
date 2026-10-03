@@ -1,0 +1,11 @@
+4 | import {rawSha,gitBlob} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-12-binding";
+5 | const base=".superpowers/sdd/r01-forward-schema-plan-20261001/", native=base+"task-12-native-retry-210608b8ea6c4f21bcff693bbd73a74d/";
+6 | const path=native+"f4-group-baseline.json", n=JSON.parse(await readFile(path,"utf8"));
+7 | const modernPath=base+"task-12-capture-frozen-modern-20261003/receipt.json", modern=JSON.parse(await readFile(modernPath,"utf8"));
+8 | const oldTargets=n.functions.filter((f:Record<string,unknown>)=>f.schema==="public"&&f.name==="update_group_enquiry_with_audit");
+9 | if(JSON.stringify(oldTargets)!==JSON.stringify(modern.oldTargets))throw Error("Observed native old tuple differs from independently observed modern old");
+                                                                            ^
+error: Observed native old tuple differs from independently observed modern old
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-native-proposal.ts:9:73
+
+Bun v1.3.14 (Windows x64)

@@ -1,0 +1,56 @@
+{
+  "receiptVersion": 1,
+  "mode": "66-original-ruling-texts",
+  "error": null,
+  "rulingCount": 66,
+  "bindings": [
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\rulings-inventory-intermediate.json",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-rulings-inventory-intermediate.json.source",
+      "rawSha256": "0a02cff919740c39bc212aae6faa813c0bd57c400670d9cf9f2afc9515b681bf",
+      "canonicalSha256": "e42953638ac281d89d45c0b4aab00b697db029fd588a6cbefcf32f89e26558e2",
+      "rawGitBlob": "6c49859e5d0d3caa9195c5f2adc4488962bf52f5",
+      "rawBytes": 132054
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\final-rulings-report-inputs-intermediate.json",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-final-rulings-report-inputs-intermediate.json.source",
+      "rawSha256": "13ec4ed063ebc70a2cf8e655216e83ce5a060ad3b4a6bd88e6c90cc281016c0e",
+      "canonicalSha256": "3274bc57b3009a32fd252f89d3956b61759c99468548fba9d389c4d42bceadf4",
+      "rawGitBlob": "5bb848e9fa113aba74bb479e22cb416311aecacf",
+      "rawBytes": 133079
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-binary-proof-path-ruling65.md",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-task-12-binary-proof-path-ruling65.md.source",
+      "rawSha256": "fc4e3f4c998cc830082cd7db664bcfb5dc621a332145309a850b8cfe4016367b",
+      "canonicalSha256": "b456a114c5b4006403f225a9c81785b250c11c569889edf14483568f9c044dc6",
+      "rawGitBlob": "5390e3a3920386343995ed5732c8767d3b86ba6f",
+      "rawBytes": 2985
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-existing-shared-input-references-ruling66.md",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-task-12-existing-shared-input-references-ruling66.md.source",
+      "rawSha256": "6c21b59060c5d37b15ee6e9ceb55b4086107881bf1179757aeeb6c780b602f78",
+      "canonicalSha256": "ae7420c3724483ab7a5006424842e80f7235829637da799ac4e3c63c65b748c1",
+      "rawGitBlob": "66c4efa9712559397327e978b39bc2c170b09124",
+      "rawBytes": 4160
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-dispatch.md",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-task-12-dispatch.md.source",
+      "rawSha256": "0e698d10f22e601a07af88281c8b6da85db44d85a6bb6bf18456dce7627d919b",
+      "canonicalSha256": "297ad2b103be01dcf68c499a7c1fd6ab021f7f4396953c02b28194a79ddf70df",
+      "rawGitBlob": "f01377c282039a9c3e6b8fb91ab3c5423147dd60",
+      "rawBytes": 36903
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\controller-rulings-audit-v34.json",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-controller-rulings-audit-v34.json.source",
+      "rawSha256": "1bbbaeca13ce6c0a73ebd30e5091e407f55132bc50f48dfde27f4b44f4d95513",
+      "canonicalSha256": "ee02318ccc8f0633562a3cf4659dbdd463f8ac2a3c2fbe0adfb0cb25fd111f1d",
+      "rawGitBlob": "4e66bdae689b619bc2b0b38c0f0e92b20d668d1e",
+      "rawBytes": 566
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+
+src\lib\groupEnquiries\atomicForward.database.test.ts:
+34 | async function reject(tx: SQL, run: () => Promise<unknown>, code: string) {
+35 |   await tx.unsafe("savepoint task12_reject");
+36 |   let error: unknown;
+37 |   try { await run(); } catch (e) { error = e; }
+38 |   await tx.unsafe("rollback to savepoint task12_reject");
+39 |   expect((error as { errno?: string } | undefined)?.errno).toBe(code);
+                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at reject (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:39:60)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:57:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:19:76)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task12 group enquiry atomic command > banned group actor cannot update an enquiry [29.58ms]
+34 | async function reject(tx: SQL, run: () => Promise<unknown>, code: string) {
+35 |   await tx.unsafe("savepoint task12_reject");
+36 |   let error: unknown;
+37 |   try { await run(); } catch (e) { error = e; }
+38 |   await tx.unsafe("rollback to savepoint task12_reject");
+39 |   expect((error as { errno?: string } | undefined)?.errno).toBe(code);
+                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at reject (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:39:60)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:57:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:19:76)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task12 group enquiry atomic command > unconfirmed group actor cannot update an enquiry [20.96ms]
+
+ 0 pass
+ 1 filtered out
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [541.00ms]

@@ -1,0 +1,4 @@
+NOTICE:  constraint "donation_acquisition_source_check" of relation "donation" does not exist, skipping
+NOTICE:  constraint "donation_acquisition_context_check" of relation "donation" does not exist, skipping
+NOTICE:  constraint "donation_acquisition_placement_check" of relation "donation" does not exist, skipping
+NOTICE:  constraint "donation_acquisition_trigger_check" of relation "donation" does not exist, skipping

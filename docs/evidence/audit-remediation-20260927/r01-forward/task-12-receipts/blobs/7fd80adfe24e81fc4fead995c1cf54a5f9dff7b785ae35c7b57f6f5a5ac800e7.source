@@ -1,0 +1,67 @@
+BEGIN;
+-- Link legacy identity explicitly without rewriting the submitted identity or consent facts.
+create table public.volunteer_legacy_identity_link (
+ registration_id uuid primary key references public.volunteer_registration(id),
+ profile_id uuid not null references public.volunteer_profile(id), actor_user_id uuid not null references auth.users(id),
+ reason text not null check(length(trim(reason)) between 1 and 1000),
+ original_snapshot jsonb not null, linked_at timestamptz not null default clock_timestamp()
+);
+alter table public.volunteer_legacy_identity_link enable row level security;
+revoke all on public.volunteer_legacy_identity_link from public,anon,authenticated,service_role;
+grant select on public.volunteer_legacy_identity_link to service_role;
+create trigger immutable_legacy_link before update or delete on public.volunteer_legacy_identity_link for each row execute function public.volunteer_immutable_fact();
+create function public.volunteer_legacy_identity_command(p_actor uuid,p_command jsonb) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare r public.volunteer_registration%rowtype; p public.volunteer_profile%rowtype; a public.volunteer_activity%rowtype; link public.volunteer_legacy_identity_link%rowtype; role_key text;
+begin
+ perform pg_advisory_xact_lock(hashtextextended('volunteer-domain',0));
+ if not exists(select 1 from auth.users u join public.admin_user au on au.auth_user_id=u.id where u.id=p_actor and u.email_confirmed_at is not null and (u.banned_until is null or u.banned_until<=clock_timestamp()) and au.status='active' and au.role in ('staff','admin')) then raise exception 'volunteer_forbidden' using errcode='42501'; end if;
+ if p_command->>'action'='list_legacy' then return jsonb_build_object('registrations',(select coalesce(jsonb_agg(jsonb_build_object('id',r.id,'contact_name',r.contact_name,'contact_email',r.contact_email,'status',r.status,'updated_at',r.updated_at,'title',a.title,'starts_at',a.starts_at,'policy_bound',a.policy_version_id is not null) order by a.starts_at),'[]') from public.volunteer_registration r join public.volunteer_activity a on a.id=r.activity_id where r.profile_id is null and r.registration_type='individual' and r.participant_count=1 and r.status in ('pending','waitlisted') and a.starts_at>clock_timestamp())); end if;
+ if p_command->>'action'<>'link_legacy' or length(trim(coalesce(p_command->>'reason',''))) not between 1 and 1000 then raise exception 'invalid_legacy_link' using errcode='22023'; end if;
+ select * into r from public.volunteer_registration where id=(p_command->>'registration_id')::uuid for update;
+ if not found then return jsonb_build_object('kind','not_found'); end if;
+ select * into link from public.volunteer_legacy_identity_link where registration_id=r.id;
+ if found then return jsonb_build_object('kind',case when link.profile_id=(p_command->>'profile_id')::uuid and link.reason=trim(p_command->>'reason') then 'linked' else 'conflict' end); end if;
+ if r.updated_at is distinct from (p_command->>'expected_updated_at')::timestamptz then return jsonb_build_object('kind','conflict'); end if;
+ select * into a from public.volunteer_activity where id=r.activity_id;
+ select * into p from public.volunteer_profile where id=(p_command->>'profile_id')::uuid;
+ if p.id is null or p.status<>'active' or not exists(select 1 from auth.users where id=p.auth_user_id and email_confirmed_at is not null and (banned_until is null or banned_until<=clock_timestamp())) then raise exception 'verified_profile_required' using errcode='42501'; end if;
+ if r.profile_id is not null or r.registration_type<>'individual' or r.participant_count<>1 or r.status not in ('pending','waitlisted') or a.starts_at<=clock_timestamp() or r.attendance_status<>'not_marked' then raise exception 'legacy_record_not_linkable' using errcode='22023'; end if;
+ role_key:=coalesce(r.duty_role,'volunteer');
+ if a.policy_version_id is not null and not exists(select 1 from public.volunteer_policy_version v cross join lateral jsonb_array_elements(v.body->'roles') role where v.id=a.policy_version_id and role->>'key'=role_key) then raise exception 'legacy_role_not_in_policy' using errcode='22023'; end if;
+ insert into public.volunteer_legacy_identity_link(registration_id,profile_id,actor_user_id,reason,original_snapshot) values(r.id,p.id,p_actor,trim(p_command->>'reason'),to_jsonb(r));
+ update public.volunteer_registration set profile_id=p.id,duty_role=role_key where id=r.id;
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor,'volunteer_registration.link_legacy','volunteer_registration',r.id::text,jsonb_build_object('profile_id',p.id,'reason',trim(p_command->>'reason'),'original_policy_version_id',r.booking_policy_version_id,'original_terms_acceptance_id',r.terms_acceptance_id));
+ return jsonb_build_object('kind','linked','registration_id',r.id,'profile_id',p.id,'requires_policy',a.policy_version_id is null,'requires_current_consent',true);
+end $$;
+revoke all on function public.volunteer_legacy_identity_command(uuid,jsonb) from public,anon,authenticated;
+grant execute on function public.volunteer_legacy_identity_command(uuid,jsonb) to service_role;
+create or replace function public.volunteer_enforce_registration_policy() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+declare a public.volunteer_activity%rowtype; evaluation jsonb; p jsonb; required_terms uuid;
+begin
+ if tg_op='UPDATE' and old.attendance_status in ('attended','completed') and new.status<>'approved' then raise exception 'attendance_correction_required' using errcode='22023'; end if;
+ select * into a from public.volunteer_activity where id=new.activity_id;
+ if tg_op='UPDATE' and old.profile_id is null and new.profile_id is not null and new.status=old.status and new.activity_id=old.activity_id and new.booking_policy_version_id is not distinct from old.booking_policy_version_id and new.terms_acceptance_id is not distinct from old.terms_acceptance_id and new.duty_role=coalesce(old.duty_role,'volunteer') and exists(select 1 from public.volunteer_legacy_identity_link l where l.registration_id=new.id and l.profile_id=new.profile_id and l.original_snapshot->>'updated_at'=to_jsonb(old)->>'updated_at') then return new; end if;
+ if a.policy_version_id is null then
+  if a.starts_at>clock_timestamp() and new.status in ('pending','approved','waitlisted') and (tg_op='INSERT' or new.status is distinct from old.status or new.activity_id is distinct from old.activity_id) then raise exception 'current_policy_required' using errcode='22023'; end if;
+  return new;
+ end if;
+ if tg_op='UPDATE' and (new.profile_id,new.booking_policy_version_id,new.terms_acceptance_id) is distinct from (old.profile_id,old.booking_policy_version_id,old.terms_acceptance_id) then raise exception 'immutable_booking_identity' using errcode='42501'; end if;
+
+ if new.status in ('pending','approved','waitlisted') and (tg_op='INSERT' or new.status is distinct from old.status or new.activity_id is distinct from old.activity_id or new.duty_role is distinct from old.duty_role) then
+ if new.profile_id is null or new.participant_count<>1 or new.registration_type<>'individual' then raise exception 'verified_profile_required' using errcode='42501'; end if;
+ select body into p from public.volunteer_policy_version where id=a.policy_version_id;
+ if new.status='waitlisted' then
+  if coalesce((p#>>'{booking,allow_waitlist}')::boolean,false) is not true then raise exception 'waitlist_disabled' using errcode='22023'; end if;
+  if p#>>'{booking,waitlist_limit,state}'='value' and (select count(*) from public.volunteer_registration where activity_id=a.id and status='waitlisted' and id<>new.id)>=(p#>>'{booking,waitlist_limit,value}')::integer then raise exception 'waitlist_full' using errcode='22023'; end if;
+ end if;
+ required_terms:=(p#>>'{terms,version_id}')::uuid;
+ if required_terms is null then select id into required_terms from public.volunteer_terms_version where published_at<=clock_timestamp() order by published_at desc limit 1; end if;
+ if p#>>'{terms,reconsent}'='require_current' and not exists(select 1 from public.volunteer_terms_acceptance ac join public.volunteer_terms_version tv on tv.id=ac.version_id where ac.profile_id=new.profile_id and ac.version_id=required_terms and tv.published_at<=clock_timestamp()) then raise exception 'current_terms_required' using errcode='22023'; end if;
+ perform public.volunteer_persist_releases(a.id,clock_timestamp());
+ evaluation:=public.volunteer_policy_evaluate(a.id,new.profile_id,new.duty_role,clock_timestamp(),case when tg_op='UPDATE' then new.id else null end);
+ if not (evaluation->>'allowed')::boolean and not (new.status='waitlisted' and evaluation->>'reason' in ('capacity_full','role_full','tier_quota_full','daily_quota_full','reserved_for_core_role')) then raise exception 'volunteer_policy_denied:%',evaluation->>'reason' using errcode='22023'; end if;
+ if not exists(select 1 from public.volunteer_terms_acceptance where id=new.terms_acceptance_id and profile_id=new.profile_id) and not exists(select 1 from public.volunteer_legacy_identity_link l join public.volunteer_terms_acceptance ac on ac.profile_id=l.profile_id where l.registration_id=new.id and l.profile_id=new.profile_id and ac.version_id=required_terms) then raise exception 'terms_required' using errcode='22023'; end if;
+ end if;
+ return new;
+end $$;
+COMMIT;

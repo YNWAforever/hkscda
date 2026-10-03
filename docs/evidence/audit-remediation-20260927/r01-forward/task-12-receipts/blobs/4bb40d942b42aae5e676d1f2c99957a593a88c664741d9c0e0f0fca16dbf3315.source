@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\serviceSloganCopy.test.ts:
+138 |       expect.arrayContaining(["scripts/seed-admin.js", "vite.config.ts", "eslint.config.js"]),
+139 |     );
+140 | 
+141 |     const attributes = proofAttributes(auditFilePaths);
+142 |     const obsoleteFiles = await scanObsoleteFiles(auditFilePaths, attributes);
+143 |     expect(obsoleteFiles).toEqual([]);
+                                ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipts\blobs\9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\serviceSloganCopy.test.ts:143:27)
+(fail) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [7278.02ms]
+
+ 0 pass
+ 6 filtered out
+ 1 fail
+ 7 expect() calls
+Ran 1 test across 1 file. [7.39s]

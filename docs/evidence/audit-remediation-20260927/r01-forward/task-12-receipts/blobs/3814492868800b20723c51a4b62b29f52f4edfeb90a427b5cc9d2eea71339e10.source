@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-03T00:53:21.222Z",
+  "commands": [
+    {
+      "name": "version",
+      "args": [
+        "bun",
+        "x",
+        "supabase@2.118.0",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "2.118.0\n",
+      "stderr": "A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n"
+    },
+    {
+      "name": "help",
+      "args": [
+        "bun",
+        "x",
+        "supabase@2.118.0",
+        "migration",
+        "new",
+        "--help"
+      ],
+      "exit": 0,
+      "stdout": "DESCRIPTION\n  Create an empty migration script.\n\nUSAGE\n  supabase migration new [flags] <migration name>\n\nARGUMENTS\n  migration name string    Name for the new migration file.\n\nGLOBAL FLAGS\n  --help, -h                                                          Show help information\n  --version, -v                                                       Show version information\n  --wizard                                                            Start wizard mode for a command\n  --completions <bash|zsh|fish|sh>                                    Print shell completion script (choices: bash, zsh, fish, sh)\n  --log-level <all|trace|debug|info|warn|warning|error|fatal|none>    Sets the minimum log level (choices: all, trace, debug, info, warn, warning, error, fatal, none)\n  --output-format choice                                              Output format: text (default), json, or stream-json (NDJSON) (choices: text, json, stream-json)\n  --output, -o choice                                                 output format of status variables (choices: env, pretty, json, toml, yaml, table, csv)\n  --profile string                                                    use a specific profile for connecting to Supabase API\n  --debug                                                             output debug logs to stderr\n  --workdir string                                                    path to the directory containing your supabase/ folder; used exactly as given, with no ancestor directory search (defaults to searching upward from the current directory)\n  --experimental                                                      enable experimental features\n  --network-id string                                                 use the specified docker network instead of a generated one\n  --yes                                                               answer yes to all prompts\n  --dns-resolver choice                                               lookup domain names using the specified resolver (choices: native, https)\n  --create-ticket                                                     create a support ticket for any CLI error\n  --agent choice                                                      Override agent detection: yes, no, or auto (default auto) (choices: auto, yes, no)\n",
+      "stderr": "A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n"
+    },
+    {
+      "name": "creation",
+      "args": [
+        "bun",
+        "x",
+        "supabase@2.118.0",
+        "migration",
+        "new",
+        "r01_group_enquiry_forward"
+      ],
+      "exit": 0,
+      "stdout": "{\"path\":\"C:\\\\Users\\\\laich\\\\Documents\\\\HKCSDA\\\\HKCSDA\\\\hkscda\\\\.worktrees\\\\audit-r01-adoption-upload-20261001\\\\supabase\\\\migrations\\\\20261003005322_r01_group_enquiry_forward.sql\",\"message\":\"Migration created\"}\n",
+      "stderr": "A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n"
+    }
+  ]
+}

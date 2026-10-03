@@ -1,0 +1,11 @@
+{
+  "receiptVersion": 1,
+  "receiptType": "automatic-approval-rejection",
+  "action": "R65 anchored Task11/Task12 binary receipts/blobs proof predicate with Task12 portable positives and negatives",
+  "result": "REJECTED_BEFORE_MUTATION",
+  "reason": "This patch broadens a repository-wide secret/content audit¡¦s binary-file exemption to Task12, weakening a persistent security control without trusted user authorization for that exact exception.",
+  "predicateUnchanged": true,
+  "sourceRawSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+  "retryOrWorkaroundPerformed": false,
+  "qualification": "Actual tool rejection retained; final archive audit blocked. Other source/database work continues."
+}

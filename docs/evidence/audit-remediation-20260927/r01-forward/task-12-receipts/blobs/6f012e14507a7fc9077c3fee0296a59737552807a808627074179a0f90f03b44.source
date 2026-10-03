@@ -1,0 +1,17 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {resolve} from "node:path";
+import {isDeepStrictEqual} from "node:util";
+import {vector,vectorSql,projectionSql} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-12-vector";
+import {rawSha,gitBlob} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-12-binding";
+const base=".superpowers/sdd/r01-forward-schema-plan-20261001/", native=base+"task-12-native-retry-210608b8ea6c4f21bcff693bbd73a74d/";
+const path=native+"f4-group-baseline.json", n=JSON.parse(await readFile(path,"utf8"));
+const modernPath=base+"task-12-capture-frozen-modern-20261003/receipt.json", modern=JSON.parse(await readFile(modernPath,"utf8"));
+const oldTargets=n.functions.filter((f:Record<string,unknown>)=>f.schema==="public"&&f.name==="update_group_enquiry_with_audit");
+if(!isDeepStrictEqual(oldTargets,modern.oldTargets))throw Error("Observed native old tuple differs from independently observed modern old");
+const bindings:Record<string,unknown>={};
+for(const p of [path,native+"after-readonly.json",native+"receipt.json",modernPath,base+"task-12-native-baseline.py",base+"task-12-native-queries.ts","docs/evidence/audit-remediation-20260927/r01-forward/task-12-vector.ts","docs/evidence/audit-remediation-20260927/r01-forward/task-12-targets.ts"]){const b=await readFile(p);bindings[p]={rawSha256:rawSha(b),rawBytes:b.length,rawGitBlob:gitBlob(b)}}
+const value={receiptVersion:1,receiptType:"native-source-proposal",mode:"metadata-only-next-unobserved",nativeAddress:path,bindings,vector:vector(n),oldTargets,nextExpectedFromModern:modern.nextTargets,nativeNextObserved:false,domainRowsAfterObserved:false,sourceAdmission:false,vectorFields:["catalog","helpers","auth","native","indexes","shapes"],catalogGlobalFields:["schemas","defaults","roles","memberships","extensions","extensionMembers","databaseOwner","sequences"],catalogScopedFields:["relations","columns","constraints","indexes","triggers","policies","types"],correlation:"One complete vector plus that profile's exact old or expected next tuple; no independently mixed field allowlists. Missing/old replaces only this target; next no-op. Entire outside-target catalog and complete vector compared after. Native NEXT expectation derives from independently observed modern next, native old tuple equals modern old; actual native NEXT observation remains mandatory in frozen final candidate integration."};
+await writeFile(resolve(base,"task-12-native-proposal.json"),JSON.stringify(value,null,2)+"\n");
+await writeFile(resolve(base,"task-12-native-vector.sql.source"),vectorSql+"\n");
+await writeFile(resolve(base,"task-12-native-projection.sql.source"),projectionSql+"\n");
+console.log(JSON.stringify({proposal:rawSha(await readFile(base+"task-12-native-proposal.json")),vectorSql:rawSha(await readFile(base+"task-12-native-vector.sql.source")),projectionSql:rawSha(await readFile(base+"task-12-native-projection.sql.source")),bindings}));

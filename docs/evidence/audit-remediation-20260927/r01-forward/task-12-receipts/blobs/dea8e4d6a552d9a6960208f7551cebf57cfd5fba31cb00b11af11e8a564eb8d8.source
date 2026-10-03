@@ -1,0 +1,870 @@
+[
+  {
+    "nspname": "_realtime",
+    "relname": "extensions"
+  },
+  {
+    "nspname": "_realtime",
+    "relname": "feature_flags"
+  },
+  {
+    "nspname": "_realtime",
+    "relname": "schema_migrations"
+  },
+  {
+    "nspname": "_realtime",
+    "relname": "tenants"
+  },
+  {
+    "nspname": "auth",
+    "relname": "audit_log_entries"
+  },
+  {
+    "nspname": "auth",
+    "relname": "custom_oauth_providers"
+  },
+  {
+    "nspname": "auth",
+    "relname": "flow_state"
+  },
+  {
+    "nspname": "auth",
+    "relname": "identities"
+  },
+  {
+    "nspname": "auth",
+    "relname": "instances"
+  },
+  {
+    "nspname": "auth",
+    "relname": "mfa_amr_claims"
+  },
+  {
+    "nspname": "auth",
+    "relname": "mfa_challenges"
+  },
+  {
+    "nspname": "auth",
+    "relname": "mfa_factors"
+  },
+  {
+    "nspname": "auth",
+    "relname": "mfa_recovery_code_sets"
+  },
+  {
+    "nspname": "auth",
+    "relname": "mfa_recovery_codes"
+  },
+  {
+    "nspname": "auth",
+    "relname": "oauth_authorizations"
+  },
+  {
+    "nspname": "auth",
+    "relname": "oauth_client_states"
+  },
+  {
+    "nspname": "auth",
+    "relname": "oauth_clients"
+  },
+  {
+    "nspname": "auth",
+    "relname": "oauth_consents"
+  },
+  {
+    "nspname": "auth",
+    "relname": "one_time_tokens"
+  },
+  {
+    "nspname": "auth",
+    "relname": "refresh_tokens"
+  },
+  {
+    "nspname": "auth",
+    "relname": "saml_providers"
+  },
+  {
+    "nspname": "auth",
+    "relname": "saml_relay_states"
+  },
+  {
+    "nspname": "auth",
+    "relname": "schema_migrations"
+  },
+  {
+    "nspname": "auth",
+    "relname": "scim_tokens"
+  },
+  {
+    "nspname": "auth",
+    "relname": "scim_users"
+  },
+  {
+    "nspname": "auth",
+    "relname": "sessions"
+  },
+  {
+    "nspname": "auth",
+    "relname": "sso_domains"
+  },
+  {
+    "nspname": "auth",
+    "relname": "sso_providers"
+  },
+  {
+    "nspname": "auth",
+    "relname": "users"
+  },
+  {
+    "nspname": "auth",
+    "relname": "webauthn_challenges"
+  },
+  {
+    "nspname": "auth",
+    "relname": "webauthn_credentials"
+  },
+  {
+    "nspname": "private",
+    "relname": "animal_replacement_batch"
+  },
+  {
+    "nspname": "private",
+    "relname": "animal_replacement_row"
+  },
+  {
+    "nspname": "private",
+    "relname": "crm_export_artifact"
+  },
+  {
+    "nspname": "public",
+    "relname": "about_page_content"
+  },
+  {
+    "nspname": "public",
+    "relname": "admin_user"
+  },
+  {
+    "nspname": "public",
+    "relname": "adopter_profile"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_application_animal_preference"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_application_detail"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_application_photo"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_application_visit_preference"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_applications"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_assignment_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_assignment_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_attachment"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_case"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_fee"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_fees"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_followup"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_guide_publish_requests"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_guide_releases"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_instruction_pages"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_instruction_publish_requests"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_instruction_revisions"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_intake_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_rules"
+  },
+  {
+    "nspname": "public",
+    "relname": "adoption_upload_intent"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_draft"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_draft_image_upload_intent"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_match"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_position"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_profile_internal"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_publication_media_copy"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_publication_preview"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_publication_publish_receipt"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_publication_version"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_review_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "animal_review_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "animals"
+  },
+  {
+    "nspname": "public",
+    "relname": "annual_reports"
+  },
+  {
+    "nspname": "public",
+    "relname": "arrival_source"
+  },
+  {
+    "nspname": "public",
+    "relname": "audit_log"
+  },
+  {
+    "nspname": "public",
+    "relname": "board_member"
+  },
+  {
+    "nspname": "public",
+    "relname": "care_topics"
+  },
+  {
+    "nspname": "public",
+    "relname": "checkout_admission"
+  },
+  {
+    "nspname": "public",
+    "relname": "checkout_method_approval"
+  },
+  {
+    "nspname": "public",
+    "relname": "checkout_policy"
+  },
+  {
+    "nspname": "public",
+    "relname": "cms_review_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "cms_review_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "consent"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_link"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_media"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_media_session"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_public_asset"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_publication_prepare"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_publish_request"
+  },
+  {
+    "nspname": "public",
+    "relname": "content_revision"
+  },
+  {
+    "nspname": "public",
+    "relname": "coordinator_status"
+  },
+  {
+    "nspname": "public",
+    "relname": "coordinator_status_history"
+  },
+  {
+    "nspname": "public",
+    "relname": "crm_assignment_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "crm_assignment_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "crm_export_job"
+  },
+  {
+    "nspname": "public",
+    "relname": "crm_tag_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "crm_tag_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "document_assets"
+  },
+  {
+    "nspname": "public",
+    "relname": "dog_friendly_estates"
+  },
+  {
+    "nspname": "public",
+    "relname": "donation"
+  },
+  {
+    "nspname": "public",
+    "relname": "donation_delivery_job"
+  },
+  {
+    "nspname": "public",
+    "relname": "editorial_content_review"
+  },
+  {
+    "nspname": "public",
+    "relname": "faq_entry"
+  },
+  {
+    "nspname": "public",
+    "relname": "finance_bank_match_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "finance_bank_match_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "group_enquiries"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_application"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_attachment"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_attachment_upload_intent"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_command_result"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_event"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_intake_draft"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_intake_preview"
+  },
+  {
+    "nspname": "public",
+    "relname": "internship_intake_version"
+  },
+  {
+    "nspname": "public",
+    "relname": "knowledge_posts"
+  },
+  {
+    "nspname": "public",
+    "relname": "living_area"
+  },
+  {
+    "nspname": "public",
+    "relname": "mail_delivery_event"
+  },
+  {
+    "nspname": "public",
+    "relname": "manual_gift_request"
+  },
+  {
+    "nspname": "public",
+    "relname": "message"
+  },
+  {
+    "nspname": "public",
+    "relname": "message_template"
+  },
+  {
+    "nspname": "public",
+    "relname": "payment"
+  },
+  {
+    "nspname": "public",
+    "relname": "payment_public_config"
+  },
+  {
+    "nspname": "public",
+    "relname": "payment_public_config_publish_requests"
+  },
+  {
+    "nspname": "public",
+    "relname": "public_status_token"
+  },
+  {
+    "nspname": "public",
+    "relname": "receipt"
+  },
+  {
+    "nspname": "public",
+    "relname": "receipt_sequence"
+  },
+  {
+    "nspname": "public",
+    "relname": "recipient_notification_draft"
+  },
+  {
+    "nspname": "public",
+    "relname": "recipient_notification_draft_duplicate_archive"
+  },
+  {
+    "nspname": "public",
+    "relname": "recurring_mandate"
+  },
+  {
+    "nspname": "public",
+    "relname": "rescue_story_profile"
+  },
+  {
+    "nspname": "public",
+    "relname": "site_config"
+  },
+  {
+    "nspname": "public",
+    "relname": "site_document_slots"
+  },
+  {
+    "nspname": "public",
+    "relname": "social_copy_variant"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_allocation_command"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_assignment"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_contact_verification"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_delivery_outbox"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_followup_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_followup_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_payment_allocation"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_payment_instruction_snapshot"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_payment_proof"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_payment_source"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_period"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_pledge"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_preference"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_proof_review_command"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_proof_submission_command"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_proof_upload_intent"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_refund"
+  },
+  {
+    "nspname": "public",
+    "relname": "sponsorship_staff_proof_upload_intent"
+  },
+  {
+    "nspname": "public",
+    "relname": "story_update"
+  },
+  {
+    "nspname": "public",
+    "relname": "successful_adoption"
+  },
+  {
+    "nspname": "public",
+    "relname": "supporter"
+  },
+  {
+    "nspname": "public",
+    "relname": "supporter_consent_intent"
+  },
+  {
+    "nspname": "public",
+    "relname": "supporter_role"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_activity"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_assessment_policy_draft"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_assessment_policy_version"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_attendance_event"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_change_preview"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_command_result"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_credential"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_credential_definition"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_daily_policy_binding"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_daily_policy_history"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_daily_policy_preview"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_group_request"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_legacy_identity_link"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_monthly_assessment"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_monthly_assessment_result"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_operation_event"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_operation_outbox"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_draft"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_preview"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_schedule"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_source"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_source_preview"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_source_version"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_policy_version"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_profile"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_profile_event"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_profile_review_assignment"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_registration"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_release_transition"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_review_bulk_item"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_review_bulk_operation"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_runtime_job_run"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_shelter_definition"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_task_completion"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_terms_acceptance"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_terms_version"
+  },
+  {
+    "nspname": "public",
+    "relname": "volunteer_tier_candidate"
+  },
+  {
+    "nspname": "public",
+    "relname": "webhook_event"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_09_27"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_09_28"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_09_29"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_09_30"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_10_01"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_10_02"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "messages_2026_10_03"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "schema_migrations"
+  },
+  {
+    "nspname": "realtime",
+    "relname": "subscription"
+  },
+  {
+    "nspname": "storage",
+    "relname": "buckets"
+  },
+  {
+    "nspname": "storage",
+    "relname": "buckets_analytics"
+  },
+  {
+    "nspname": "storage",
+    "relname": "buckets_vectors"
+  },
+  {
+    "nspname": "storage",
+    "relname": "iceberg_namespaces"
+  },
+  {
+    "nspname": "storage",
+    "relname": "iceberg_tables"
+  },
+  {
+    "nspname": "storage",
+    "relname": "migrations"
+  },
+  {
+    "nspname": "storage",
+    "relname": "objects"
+  },
+  {
+    "nspname": "storage",
+    "relname": "s3_multipart_uploads"
+  },
+  {
+    "nspname": "storage",
+    "relname": "s3_multipart_uploads_parts"
+  },
+  {
+    "nspname": "storage",
+    "relname": "vector_indexes"
+  },
+  {
+    "nspname": "supabase_functions",
+    "relname": "hooks"
+  },
+  {
+    "nspname": "supabase_functions",
+    "relname": "migrations"
+  },
+  {
+    "nspname": "supabase_migrations",
+    "relname": "schema_migrations"
+  },
+  {
+    "nspname": "vault",
+    "relname": "secrets"
+  }
+]

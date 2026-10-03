@@ -1,0 +1,11 @@
+{
+  "command": [
+    "bun",
+    "x",
+    "supabase@2.118.0",
+    "migration",
+    "new",
+    "--help"
+  ],
+  "at": "2026-10-03T00:53:22.169Z"
+}

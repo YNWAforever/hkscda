@@ -1,0 +1,144 @@
+{
+  "qualification": "Exact17.11/Auth component, not fullCI bootstrap",
+  "finalHelper": {
+    "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+    "name": "uid",
+    "owner": "supabase_auth_admin",
+    "result": "uuid",
+    "schema": "auth",
+    "bodyMd5": "cdef18c69c4f4cbbced2eaf81e628b49",
+    "identity": "",
+    "language": "sql",
+    "arguments": "",
+    "definition": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n$function$\n",
+    "completeProc": {
+      "oid": "16501",
+      "proacl": [
+        "=X/supabase_auth_admin",
+        "supabase_auth_admin=X/supabase_auth_admin",
+        "dashboard_user=X/supabase_auth_admin"
+      ],
+      "probin": null,
+      "prosrc": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "14",
+      "proname": "uid",
+      "prorows": 0,
+      "pronargs": 0,
+      "proowner": "16504",
+      "proconfig": null,
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "2950",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": null,
+      "proargtypes": [],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "s",
+      "proleakproof": false,
+      "pronamespace": "16457",
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "pronargdefaults": 0
+    },
+    "effectiveAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_auth_admin",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "dashboard_user",
+        "grantor": "supabase_auth_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definitionMd5": "ea3b41bf29e2ad573067939329aa088e",
+    "defaultExpression": null
+  },
+  "proposedMigrationProfile": {
+    "schema": "auth",
+    "name": "uid",
+    "args": "",
+    "allargs": "",
+    "defaults": 0,
+    "default_expression": null,
+    "result": "uuid",
+    "owner": "supabase_auth_admin",
+    "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+    "config": null,
+    "definer": false,
+    "cost": 100,
+    "strict": false,
+    "parallel": "u",
+    "volatility": "s",
+    "body": "cdef18c69c4f4cbbced2eaf81e628b49",
+    "definition": "ea3b41bf29e2ad573067939329aa088e"
+  },
+  "versusDedicatedModern": {
+    "fields": {},
+    "pg_proc": {}
+  },
+  "versusAcceptedTemplate": {
+    "fields": {
+      "bodyMd5": {
+        "actual": "cdef18c69c4f4cbbced2eaf81e628b49",
+        "known": "772430c79a4272a214d3e200a170c0c3"
+      },
+      "definition": {
+        "actual": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n$function$\n",
+        "known": "CREATE OR REPLACE FUNCTION auth.uid()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\r\n  select \r\n  coalesce(\r\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\r\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\r\n  )::uuid\r\n$function$\n"
+      },
+      "definitionMd5": {
+        "actual": "ea3b41bf29e2ad573067939329aa088e",
+        "known": "5dd851706ecb5893606782fd9e2cbf83"
+      }
+    },
+    "pg_proc": {
+      "oid": {
+        "actual": "16501",
+        "known": "24038"
+      },
+      "prosrc": {
+        "actual": "\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n",
+        "known": "\r\n  select \r\n  coalesce(\r\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\r\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\r\n  )::uuid\r\n"
+      },
+      "pronamespace": {
+        "actual": "16457",
+        "known": "23605"
+      }
+    }
+  },
+  "sources": {
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\receipt.json": {
+      "sha256": "8230202bbf559c986f845662f4bc9dbe421256362f507ef8e779378f5907efbd",
+      "bytes": 971556
+    },
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-stageb-20261002T091944Z\\after-auth-catalog.json": {
+      "sha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+      "bytes": 642250
+    },
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-capture-20261002T090135Z\\modern-helpers.json": {
+      "sha256": "c5ba4e2477468e2dcaf3bd18e13472601d39000aa10ea970d166a838c4bda51e",
+      "bytes": 24364
+    },
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-fix-4-capture-20261002T090135Z\\template-helpers.json": {
+      "sha256": "0f24aab36dff047a74e2a044d32e216be727b9ecaefe266f886ae106d8586114",
+      "bytes": 24460
+    }
+  }
+}

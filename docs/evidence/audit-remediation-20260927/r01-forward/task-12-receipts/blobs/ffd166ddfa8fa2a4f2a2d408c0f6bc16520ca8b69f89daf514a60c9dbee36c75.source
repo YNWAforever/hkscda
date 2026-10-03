@@ -1,0 +1,8 @@
+{
+  "statements": [
+    "-- Provisions the content-media Storage bucket that\n-- src/lib/content/repository.server.ts's mediaPublicUrl() already assumes\n-- exists (it unconditionally calls\n-- client.storage.from(row.storage_bucket).getPublicUrl(...)). Mirrors the\n-- site-documents bucket's exact shape\n-- (20260718100000_public_documents_and_donation_purpose.sql): a public\n-- bucket, with no explicit storage.objects RLS policy needed. storage.objects\n-- has row level security enabled by default with no permissive policy for\n-- anon/authenticated, so direct writes are already denied for those roles;\n-- uploads go through signed upload URLs, which Supabase Storage authorizes\n-- via the URL's own token rather than storage.objects RLS, and are issued\n-- only by the service-role client (src/lib/content/repository.server.ts's\n-- createSignedUploadUrl, called from an admin-authenticated API route).\ninsert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)\nvalues (\n  'content-media',\n  'content-media',\n  true,\n  8388608,\n  array['image/jpeg', 'image/png', 'image/webp']\n)\non conflict (id) do update set\n  public = excluded.public,\n  file_size_limit = excluded.file_size_limit,\n  allowed_mime_types = excluded.allowed_mime_types"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

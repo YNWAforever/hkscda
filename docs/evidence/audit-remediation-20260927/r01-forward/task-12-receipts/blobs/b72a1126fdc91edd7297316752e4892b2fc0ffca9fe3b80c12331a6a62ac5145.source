@@ -1,0 +1,9 @@
+NOTICE:  constraint "donation_custom_purpose_length_check" of relation "donation" does not exist, skipping
+NOTICE:  policy "staff can manage document assets" for relation "public.document_assets" does not exist, skipping
+NOTICE:  policy "staff can manage site document slots" for relation "public.site_document_slots" does not exist, skipping
+NOTICE:  policy "staff can manage annual reports" for relation "public.annual_reports" does not exist, skipping
+NOTICE:  policy "staff can manage site config" for relation "public.site_config" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.document_assets" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.site_document_slots" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.annual_reports" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.site_config" does not exist, skipping

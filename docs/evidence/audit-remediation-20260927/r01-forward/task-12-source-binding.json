@@ -1,0 +1,213 @@
+{
+  "status": "LOCAL_SOURCE_VERIFIED_CONDITIONAL_REVIEW_CI",
+  "sourceCommit": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+  "sourceTree": "a13aade6f0acef843d8f16f6193757d0f3b2c6e9",
+  "baseCommit": "f4e96e3484d135d179caea835d913552d96d2dcb",
+  "qualifiedNativeSourceCommit": "208050fd6bdbe78f3a05de6853e0319055f6e014",
+  "nativeQualification": "R67: source208 actual five psql cases and full native metadata integration; native-local Bun NOT RUN. Sole de35 supporting Bun assertion delta is unexecuted by native entry. Current three Bun compositions are separate actual evidence.",
+  "rulingCount": 68,
+  "migration": {
+    "path": "supabase/migrations/20261003005322_r01_group_enquiry_forward.sql",
+    "rawBytes": 1286399,
+    "rawSha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+    "rawGitBlob": "c7c7da6b9c5e0a315c90d5fcc248b603170cf23f",
+    "lineEndings": "LF"
+  },
+  "rawTranslation": {
+    "path": "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\translation.json",
+    "sha256": "ad35e06c551cd425724d99034a9dac9793a968f43bba7380c94ed682c446006f",
+    "locators": 41773,
+    "uniqueNewRawBlobsAtPublication": 1893,
+    "uniqueNewRawBytesAtPublication": 604303253,
+    "exactExistingBasePins": 4,
+    "referenceOccurrences": 35,
+    "qualification": "Transport identities only; not readiness acceptance."
+  },
+  "preclosingAcceptance": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/receipt.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/52227de837408b81b0c617935000f92b16b4b97949be9853226ce16c3afc153c.source",
+    "rawSha256": "52227de837408b81b0c617935000f92b16b4b97949be9853226ce16c3afc153c",
+    "canonicalSha256": "52227de837408b81b0c617935000f92b16b4b97949be9853226ce16c3afc153c",
+    "rawGitBlob": "f1cca6652be8a2c0847e461380216f02791eebd5",
+    "rawBytes": 37028,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "preclosingExecutable": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/binder-fix1.py",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45.source",
+    "rawSha256": "a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45",
+    "canonicalSha256": "a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45",
+    "rawGitBlob": "e51c77c54d8fab18cdc1765aabb38f06288b0e21",
+    "rawBytes": 19121,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "preclosingTests": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/tests-fix1.py",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e7c0cb03577ceedbb4f5e22697e14083734559029b0a0265a7ee37b9f15384f5.source",
+    "rawSha256": "e7c0cb03577ceedbb4f5e22697e14083734559029b0a0265a7ee37b9f15384f5",
+    "canonicalSha256": "e7c0cb03577ceedbb4f5e22697e14083734559029b0a0265a7ee37b9f15384f5",
+    "rawGitBlob": "207d5a82a133b52c8a10e50f1a0478ff8e9be39a",
+    "rawBytes": 5757,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "preclosingPortableInvocation": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/fix1-green.invocation.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/fa492ff75be322af569494dcc50d5e408d613adb8a379b632d82872cb343c671.source",
+    "rawSha256": "fa492ff75be322af569494dcc50d5e408d613adb8a379b632d82872cb343c671",
+    "canonicalSha256": "fa492ff75be322af569494dcc50d5e408d613adb8a379b632d82872cb343c671",
+    "rawGitBlob": "a67847ff5a85426e1ac6cc10560f6aa8017c7810",
+    "rawBytes": 631,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "preclosingPortableExit": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/fix1-green.exit.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/cc28fdb15ba91810bc235fcf1ae5863f4f5530fcc39e95ade8782fac20fea10e.source",
+    "rawSha256": "cc28fdb15ba91810bc235fcf1ae5863f4f5530fcc39e95ade8782fac20fea10e",
+    "canonicalSha256": "cc28fdb15ba91810bc235fcf1ae5863f4f5530fcc39e95ade8782fac20fea10e",
+    "rawGitBlob": "13b13cef340f444ac70c650aff2042abc324631a",
+    "rawBytes": 180,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "preclosingActualInvocation": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/fix1-accept.invocation.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/de55d193b4e8c0d07333f4595efc7fb39eabfd42268b965044aa8e8fdda0a6ec.source",
+    "rawSha256": "de55d193b4e8c0d07333f4595efc7fb39eabfd42268b965044aa8e8fdda0a6ec",
+    "canonicalSha256": "de55d193b4e8c0d07333f4595efc7fb39eabfd42268b965044aa8e8fdda0a6ec",
+    "rawGitBlob": "46bcf9b8e42a05a154b1df426c6d133558fc852c",
+    "rawBytes": 632,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "preclosingActualExit": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/fix1-accept.exit.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e3ba4c1d9625e788728ad00c389a86097b8705c128c74ec46793e99d6a6a8989.source",
+    "rawSha256": "e3ba4c1d9625e788728ad00c389a86097b8705c128c74ec46793e99d6a6a8989",
+    "canonicalSha256": "e3ba4c1d9625e788728ad00c389a86097b8705c128c74ec46793e99d6a6a8989",
+    "rawGitBlob": "0fde322b8e717bff3605736537fadfb4112f154c",
+    "rawBytes": 180,
+    "evidenceKind": "new-task12-postpublication-metadata"
+  },
+  "nativeReceipt": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-final-a3b891334d5e498888d663e3b5df776d/receipt.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/c8b30d254aa690e7bf50bcee5a4fc4964fd2365e9c49f733bc616bda5d0344cf.source",
+    "evidenceKind": "new-task12-original-proof",
+    "rawSha256": "c8b30d254aa690e7bf50bcee5a4fc4964fd2365e9c49f733bc616bda5d0344cf",
+    "canonicalSha256": "c8b30d254aa690e7bf50bcee5a4fc4964fd2365e9c49f733bc616bda5d0344cf",
+    "rawGitBlob": "98a4adf13da4584ac5a5da4d2de37c4a9ab43c5a",
+    "rawBytes": 21456318
+  },
+  "sourceFreeze": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-source-freeze.json",
+  "sourceToFinalMetadataBridge": "Source commit binds frozen executed code. Later metadata commits add byte archives/reports only; final HEAD/tree/clean are separately observed after commit, never claimed inside their own committed bytes.",
+  "compositions": {
+    "hosted": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-hosted-final-fix1-20261003/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e81a498d1cbd010065a3368fe78efcbcb6674596b958a6ab520de196339ac470.source",
+      "evidenceKind": "new-task12-original-proof",
+      "rawSha256": "e81a498d1cbd010065a3368fe78efcbcb6674596b958a6ab520de196339ac470",
+      "canonicalSha256": "e81a498d1cbd010065a3368fe78efcbcb6674596b958a6ab520de196339ac470",
+      "rawGitBlob": "3fd06317fb3e1d5a4335ad34a2d8a2731f059a56",
+      "rawBytes": 16243283
+    },
+    "modern": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-modern-final-20261003/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/d2473cb22332e814387417a99849007c5954e7dc0a84517a1ebba312c8e3177d.source",
+      "evidenceKind": "new-task12-original-proof",
+      "rawSha256": "d2473cb22332e814387417a99849007c5954e7dc0a84517a1ebba312c8e3177d",
+      "canonicalSha256": "d2473cb22332e814387417a99849007c5954e7dc0a84517a1ebba312c8e3177d",
+      "rawGitBlob": "f741f13fd2de5c1fc6e027d95b99bd1e68c4e057",
+      "rawBytes": 16174045
+    },
+    "component": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-component-final-20261003/receipt.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/7e6b0012a622cdc9040a1a39fb8a9a4cd86d3b1cb880439b85c58f0ff6ddcea7.source",
+      "evidenceKind": "new-task12-original-proof",
+      "rawSha256": "7e6b0012a622cdc9040a1a39fb8a9a4cd86d3b1cb880439b85c58f0ff6ddcea7",
+      "canonicalSha256": "7e6b0012a622cdc9040a1a39fb8a9a4cd86d3b1cb880439b85c58f0ff6ddcea7",
+      "rawGitBlob": "3db0f960196fbb4e41aee8ba7149aae197d712b9",
+      "rawBytes": 16174254
+    }
+  },
+  "localGates": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-gates-1790998209712022900/receipt.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/fdf11fb79fcbf39bc938dabfcf165a81022c82031c122e1acf25fc295a6616d3.source",
+    "evidenceKind": "new-task12-original-proof",
+    "rawSha256": "fdf11fb79fcbf39bc938dabfcf165a81022c82031c122e1acf25fc295a6616d3",
+    "canonicalSha256": "fdf11fb79fcbf39bc938dabfcf165a81022c82031c122e1acf25fc295a6616d3",
+    "rawGitBlob": "214ccbb006ec56f597825e73aed14f2de9965f12",
+    "rawBytes": 16116529
+  },
+  "final68Authority": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-final68.json",
+    "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/bb42723d7754b065d9c6dac8a77f4285263bf78c54eb4a140c56027538ac143b.source",
+    "evidenceKind": "new-task12-original-proof",
+    "rawSha256": "bb42723d7754b065d9c6dac8a77f4285263bf78c54eb4a140c56027538ac143b",
+    "canonicalSha256": "bb42723d7754b065d9c6dac8a77f4285263bf78c54eb4a140c56027538ac143b",
+    "rawGitBlob": "ebd33fb4c66fd917c9bf7eabfa70a0057d871782",
+    "rawBytes": 3326
+  },
+  "closingGitVerified": false,
+  "freshFiveCiVerified": false,
+  "independentReviewComplete": false,
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "overallR01": "partial",
+  "heldTask1FiveColumnsUnchanged": true,
+  "heldTask8TwoTargetsUnchanged": true,
+  "r65": "Actual auto-review rejection retained; unapplied. R66 references only four preexisting exact f4 Task11 artifacts. No audit predicate/attributes/exclusions or old Task11 file changes.",
+  "finalPortableNamespace": {
+    "tests-final.py": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/tests-final.py",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/a9239199264f1a2d16618ca521293b768755f38d8bb480861c35d197974e5e63.source",
+      "rawSha256": "a9239199264f1a2d16618ca521293b768755f38d8bb480861c35d197974e5e63",
+      "canonicalSha256": "a9239199264f1a2d16618ca521293b768755f38d8bb480861c35d197974e5e63",
+      "rawGitBlob": "a4d7bd1836afd94f9aa8052c694ba7844c9c09f9",
+      "rawBytes": 5772,
+      "evidenceKind": "new-task12-postpublication-metadata"
+    },
+    "final-tests.py": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/final-tests.py",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/eed8bc2fddfd73a7de24b6c27ff2c4ebd39122d6ae60459476f4f061e300d3ab.source",
+      "rawSha256": "eed8bc2fddfd73a7de24b6c27ff2c4ebd39122d6ae60459476f4f061e300d3ab",
+      "canonicalSha256": "eed8bc2fddfd73a7de24b6c27ff2c4ebd39122d6ae60459476f4f061e300d3ab",
+      "rawGitBlob": "e6e572d6ec814bc5050621475f2faeafd258a486",
+      "rawBytes": 1084,
+      "evidenceKind": "new-task12-postpublication-metadata"
+    },
+    "final-tests.invocation.json": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/final-tests.invocation.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/24a70d0ceccd60e442c96f59c0865c3dc1c6405fb482e2835d1a388f4a212f5a.source",
+      "rawSha256": "24a70d0ceccd60e442c96f59c0865c3dc1c6405fb482e2835d1a388f4a212f5a",
+      "canonicalSha256": "24a70d0ceccd60e442c96f59c0865c3dc1c6405fb482e2835d1a388f4a212f5a",
+      "rawGitBlob": "621753679d61ab2823aa000b51f8deedb3815229",
+      "rawBytes": 636,
+      "evidenceKind": "new-task12-postpublication-metadata"
+    },
+    "final-tests.exit.json": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/final-tests.exit.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/a5712dc914d38aa45fd8b773f7d0825f140b0c0a6633642126fd775aabe3024a.source",
+      "rawSha256": "a5712dc914d38aa45fd8b773f7d0825f140b0c0a6633642126fd775aabe3024a",
+      "canonicalSha256": "a5712dc914d38aa45fd8b773f7d0825f140b0c0a6633642126fd775aabe3024a",
+      "rawGitBlob": "706903afb25b6b5d23c6b41f2fd5bd9bad1b2ede",
+      "rawBytes": 180,
+      "evidenceKind": "new-task12-postpublication-metadata"
+    },
+    "final-binder-fix1.py.source": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/final-binder-fix1.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45.source",
+      "rawSha256": "a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45",
+      "canonicalSha256": "a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45",
+      "rawGitBlob": "e51c77c54d8fab18cdc1765aabb38f06288b0e21",
+      "rawBytes": 19121,
+      "evidenceKind": "new-task12-postpublication-metadata"
+    },
+    "final-tests-final.py.source": {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-accept-6e4a87c2419b/final-tests-final.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/a9239199264f1a2d16618ca521293b768755f38d8bb480861c35d197974e5e63.source",
+      "rawSha256": "a9239199264f1a2d16618ca521293b768755f38d8bb480861c35d197974e5e63",
+      "canonicalSha256": "a9239199264f1a2d16618ca521293b768755f38d8bb480861c35d197974e5e63",
+      "rawGitBlob": "a4d7bd1836afd94f9aa8052c694ba7844c9c09f9",
+      "rawBytes": 5772,
+      "evidenceKind": "new-task12-postpublication-metadata"
+    }
+  }
+}

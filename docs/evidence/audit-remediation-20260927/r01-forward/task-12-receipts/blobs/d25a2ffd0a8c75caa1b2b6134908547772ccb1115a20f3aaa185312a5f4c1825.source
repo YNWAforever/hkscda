@@ -1,0 +1,20 @@
+create function public.record_volunteer_promotion_review(p_actor uuid,p_registration uuid,p_reason text)
+returns boolean language plpgsql security definer set search_path=public,pg_temp as $$
+declare r public.volunteer_registration%rowtype;profile_revision bigint;session_revision bigint;new_id uuid;
+begin
+ perform pg_advisory_xact_lock(hashtextextended('volunteer-domain',0));
+ if not exists(select 1 from public.admin_user where auth_user_id=p_actor and status='active' and role in ('admin','staff')) then raise exception 'volunteer_forbidden' using errcode='42501';end if;
+ if p_reason not in ('current_terms_required','verified_profile_required','terms_required','current_policy_required','credentials_required','minimum_age_not_met','tier_not_allowed','role_not_allowed','overlapping_duty','duplicate_booking','group_scenario_mismatch') then raise exception 'invalid_promotion_review_reason' using errcode='22023';end if;
+ select * into r from public.volunteer_registration where id=p_registration for update;
+ if not found or r.status not in ('pending','waitlisted') then return false;end if;
+ select revision into profile_revision from public.volunteer_profile where id=r.profile_id;
+ select policy_revision into session_revision from public.volunteer_activity where id=r.activity_id;
+ insert into public.volunteer_operation_outbox(dedup_key,kind,payload)
+ values('promotion_review:'||r.id::text||':'||coalesce(profile_revision,0)::text||':'||coalesce(session_revision,0)::text,
+ 'volunteer_qualification_review',jsonb_build_object('registration_id',r.id,'profile_id',r.profile_id,'profile_revision',profile_revision,'policy_revision',session_revision,'reason',p_reason))
+ on conflict(dedup_key) do nothing returning id into new_id;
+ if new_id is not null then insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor,'volunteer_registration.promotion_review_required','volunteer_registration',r.id::text,jsonb_build_object('reason',p_reason,'profile_revision',profile_revision,'policy_revision',session_revision));end if;
+ return new_id is not null;
+end; $$;
+revoke all on function public.record_volunteer_promotion_review(uuid,uuid,text) from public,anon,authenticated;
+grant execute on function public.record_volunteer_promotion_review(uuid,uuid,text) to service_role;

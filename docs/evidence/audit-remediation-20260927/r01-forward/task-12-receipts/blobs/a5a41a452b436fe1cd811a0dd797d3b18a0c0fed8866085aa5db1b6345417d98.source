@@ -1,0 +1,13 @@
+{
+  "statements": [
+    "-- Donation lifecycle integrity: enforce idempotency at the database layer for\n-- the two places application logic could race or replay into duplicates —\n-- donation acknowledgement emails and consent ledger entries.\n--\n-- These are partial/composite UNIQUE indexes, so they are the authoritative\n-- guard even if a retry, concurrent webhook delivery, or double-click slips\n-- past the application-level checks.\n\nbegin",
+    "-- 1) One donation-acknowledgement message per (supporter, donation).\n--    The reconcile path claims this row before sending email; the unique index\n--    guarantees a redelivered/concurrent success event cannot double-send.\n--    Pre-dedupe any historical duplicates (keep the earliest physical row) so\n--    the index can be created on existing data.\ndelete from public.message m\nusing public.message d\nwhere m.channel = 'email'\n  and m.payload ->> 'kind' = 'donation_acknowledgement'\n  and d.channel = 'email'\n  and d.payload ->> 'kind' = 'donation_acknowledgement'\n  and m.supporter_id = d.supporter_id\n  and (m.payload ->> 'donationId') = (d.payload ->> 'donationId')\n  and m.ctid > d.ctid",
+    "create unique index if not exists message_donation_ack_unique\n  on public.message (supporter_id, (payload ->> 'donationId'))\n  where channel = 'email' and payload ->> 'kind' = 'donation_acknowledgement'",
+    "-- 2) De-duplicate the consent ledger. Repeated identical opt-in/opt-out events\n--    (same supporter/channel/status/source/timestamp) are replays, not new\n--    legal consent. Pre-dedupe historical duplicates, then enforce uniqueness.\ndelete from public.consent c\nusing public.consent d\nwhere c.supporter_id = d.supporter_id\n  and c.channel = d.channel\n  and c.status = d.status\n  and c.source = d.source\n  and c.\"timestamp\" = d.\"timestamp\"\n  and c.ctid > d.ctid",
+    "create unique index if not exists consent_dedup_unique\n  on public.consent (supporter_id, channel, status, source, \"timestamp\")",
+    "commit"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": true,
+  "incompatible": false
+}

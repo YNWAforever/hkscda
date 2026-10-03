@@ -1,0 +1,201 @@
+[
+    {
+        "Id": "d2f80fe0b897bc4c657f0f4966a10a13ab71cc71fcd08b44fc347de023632eb3",
+        "Created": "2026-10-03T02:35:44.769951487Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "node",
+            "dist/scripts/migrate-call.js"
+        ],
+        "State": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-03T02:35:45.70191804Z",
+            "FinishedAt": "2026-10-03T02:35:48.231951247Z"
+        },
+        "Image": "sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+        "ResolvConfPath": "/var/lib/docker/containers/4c5491ebf16f6c242b025050ca3b196ea408be4cecf3481eaca19908a6bb15f1/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/4c5491ebf16f6c242b025050ca3b196ea408be4cecf3481eaca19908a6bb15f1/hostname",
+        "HostsPath": "/var/lib/docker/containers/4c5491ebf16f6c242b025050ca3b196ea408be4cecf3481eaca19908a6bb15f1/hosts",
+        "LogPath": "/var/lib/docker/containers/d2f80fe0b897bc4c657f0f4966a10a13ab71cc71fcd08b44fc347de023632eb3/d2f80fe0b897bc4c657f0f4966a10a13ab71cc71fcd08b44fc347de023632eb3-json.log",
+        "Name": "/hkscda-task12-storage-a3b891334d5e498888d663e3b5df776d",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "container:4c5491ebf16f6c242b025050ca3b196ea408be4cecf3481eaca19908a6bb15f1",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 536870912,
+            "NanoCpus": 1000000000,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 1073741824,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "4c5491ebf16f",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "5000/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "DB_INSTALL_ROLES=false",
+                "DATABASE_URL=postgresql://supabase_storage_admin:postgres@127.0.0.1:5432/postgres",
+                "FILE_SIZE_LIMIT=52428800",
+                "TENANT_ID=stub",
+                "DB_MIGRATIONS_FREEZE_AT=",
+                "ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogImFub24iLCAiaWF0IjogMTYwMDAwMDAwMCwgImV4cCI6IDIwMDAwMDAwMDB9.v5i7KIYptX5v9eTpU587RfmpRJ1XepDJqidgXdbIT7I",
+                "SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiAic3VwYWJhc2UtZGVtbyIsICJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpYXQiOiAxNjAwMDAwMDAwLCAiZXhwIjogMjAwMDAwMDAwMH0.T5dbZwo6cSM9BhLc7GB5KDyOAvLxNurNnFd8Ex0K9PY",
+                "PGRST_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+                "STORAGE_BACKEND=file",
+                "STORAGE_FILE_BACKEND_PATH=/mnt",
+                "REGION=stub",
+                "GLOBAL_S3_BUCKET=stub",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NODE_VERSION=24.21.0",
+                "YARN_VERSION=1.22.22",
+                "VERSION=1.79.28"
+            ],
+            "Cmd": [
+                "node",
+                "dist/scripts/migrate-call.js"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "NONE"
+                ]
+            },
+            "Image": "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "SandboxID": "",
+            "SandboxKey": "",
+            "Ports": {},
+            "Networks": {}
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:9dbfa08985d7a68cffec9b9e563faad8c3f107bf042ab7dc0feda91faa6cd7d4",
+            "size": 2958,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

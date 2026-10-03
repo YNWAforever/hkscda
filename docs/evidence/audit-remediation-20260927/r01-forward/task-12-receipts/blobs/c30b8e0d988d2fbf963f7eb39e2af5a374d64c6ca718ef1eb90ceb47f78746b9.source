@@ -1,0 +1,10 @@
+{
+  "command": [
+    "docker",
+    "image",
+    "inspect",
+    "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}
