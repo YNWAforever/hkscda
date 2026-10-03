@@ -1,0 +1,20 @@
+{
+  "historicalBinderSha256": "a8d40283dff5e3936ba3be8a9847adfe868cedfa3100771e88d59f467f08eb45",
+  "historicalManifestInputs": [
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\translation.json",
+      "sourceCopy": "translation.json.source",
+      "rawSha256": "ad35e06c551cd425724d99034a9dac9793a968f43bba7380c94ed682c446006f",
+      "rawBytes": 27098622
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\closing-translation.json",
+      "sourceCopy": "closing-translation.json.source",
+      "rawSha256": "40aa9d2199d718f8e4f487bacfc76fd8ab659459e07bd4b2cb89481bcae96145",
+      "rawBytes": 216702
+    }
+  ],
+  "runtimeSourceCommit": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+  "qualifiedNativeSourceCommit": "208050fd6bdbe78f3a05de6853e0319055f6e014",
+  "qualification": "Ignored metadata-consumer repair only; historic scripts/receipts/fixtures/caches and both committed transports remain unchanged."
+}

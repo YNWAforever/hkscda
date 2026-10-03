@@ -53,3 +53,13 @@ All 68 exact original reason/cost texts are retained, including historical 66-te
 - [Post-publication metadata translation](task-12-receipts/closing-translation.json) — R68 scripts, negative fixtures, actual invocations and controller metadata copies.
 
 The worker did not push. Controller final Git binding, fresh scoped review, draft PR and five individual exact-head CI results are separate remaining work.
+
+## T12-I1 correction (additive; same scoped re-review pending)
+
+The scoped reviewer found that the original R68 consumer accepted incomplete or duplicated row lists. The supplied historical compositions still have actual complete164/163/163 zero rows; their DB execution and original acceptance/source/transport records are retained as history. This is a metadata-consumer defect, corrected under existing R68 without SQL/native/scanner/audit/attributes/suite/DB/gate changes or reruns.
+
+The new qualifier derives sorted r/p relation names from each actual saved public/private catalog and adds auth.users. It requires fixed hosted164/modern163/component163 cardinality, unique exact expected/receipt/behavior inventories, exact row keys and string-literal zero counts. The main acceptance path calls the same shared pure validator exercised by synthetic fixtures. Qualified portable RED is28tests/12failures+1malformed-key error/exit1; corrected GREEN is28tests/0fail/exit0. A fresh actual metadata-only invocation exits0 with nine fixed literal flags true, nullerror and emptyfailed flags; no old passing receipt is relabeled as a new run.
+
+[Fix1 source and executable binding](task-12-fix1-source-binding.json) records exact new source/tests/driver/prearchives/invocation/log/exit/receipt addresses and catalog-derived inventories. [Additive Fix1 transport](task-12-receipts/fix1-translation.json) archives only the new namespace, including meaningful negative fixtures and both actual failure/success outputs. The original41773 and closing340 transport locators and task-12-source-binding.json remain byte-for-byte unchanged. Root historical230 Git binding actually exits0 and is preserved with its original-path/raw-hash prearchive, distinct from pending Fix1 closing Git.
+
+Native remains source208 qualified under R67/native-localBun NOT RUN; runtime source remains de35. R52 shared-modern limits,574 local skips,52 baseline lint warnings, all68 original authority texts, Task1five/Task8two holds and overallpartial status remain. Same scoped reviewer acceptance, fresh five individual exact-head CI and all external/production/release gates remain pending.

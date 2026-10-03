@@ -1,0 +1,1 @@
+{"command": ["git", "ls-files", "--stage", "-z"], "exit": 0, "stdoutSha256": "98d0810de4d24606b8ab0c9ebec48d23e5fa76b68dca3fd53d0a913c961231db", "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}

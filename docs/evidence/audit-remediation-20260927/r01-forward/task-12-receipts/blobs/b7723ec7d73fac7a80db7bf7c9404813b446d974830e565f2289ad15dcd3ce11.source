@@ -1,0 +1,35 @@
+"""Actual old-path/new-path metadata preservation and staged Git checks; no audit/DB/gate run."""
+import pathlib,json,hashlib,subprocess,sys
+root=pathlib.Path.cwd();out=pathlib.Path(__file__).parent;prefix='docs/evidence/audit-remediation-20260927/r01-forward/';old='230cc55ddfb8dc317fd421ea37600c7e51d3eded';flags=['oldManifestsByteIdentical','oldOriginalAndArchivePairsPreserved','oldArchiveGit230IdentitiesPreserved','newCorrectionPairsVerified','newArchiveStagedGitIdentitiesVerified','runtimeAndHeldSourcesUnchanged'];r={'receiptVersion':1,'mode':'task12-i1-staged-metadata-preservation','error':None,'requiredFinalFlags':flags,'failedFinalFlags':[],**{f:False for f in flags},'historicalHead':old,'runtimeSourceCommit':'de35b17745ef9da3114e7dc4ba8c64df38e46702','qualifiedNativeSourceCommit':'208050fd6bdbe78f3a05de6853e0319055f6e014','closingGitVerified':False,'sameReviewerApproved':False,'freshFiveCiVerified':False,'productionApplied':False};commands=[]
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def run(args):
+ i=len(commands);(out/f'close{i}.invocation.json').write_bytes((json.dumps(args)+'\n').encode());p=subprocess.run(args,capture_output=True);(out/f'close{i}.stdout.source').write_bytes(p.stdout);(out/f'close{i}.stderr.source').write_bytes(p.stderr);record={'command':args,'exit':p.returncode,'stdoutSha256':sha(p.stdout),'stderrSha256':sha(p.stderr)};commands.append(record);(out/f'close{i}.exit.json').write_bytes((json.dumps(record)+'\n').encode());
+ if p.returncode:raise ValueError('Metadata/Git command failed')
+ return p.stdout
+def pairs(entries,seen):
+ for e in entries:
+  assert e['originalPath']not in seen;seen.add(e['originalPath']);raw=(root/e['originalPath']).read_bytes();assert raw==(root/e['archivePath']).read_bytes();assert sha(raw)==e['rawSha256']and sha(raw.replace(b'\r\n',b'\n'))==e['canonicalSha256']and blob(raw)==e['rawGitBlob']and len(raw)==e['rawBytes']
+try:
+ (out/'close-executed.source').write_bytes(pathlib.Path(__file__).read_bytes());assert run(['git','rev-parse','HEAD']).strip().decode()==old
+ oldEntries=[]
+ for name,count in [('translation.json',41773),('closing-translation.json',340)]:
+  path=prefix+'task-12-receipts/'+name;raw=(root/path).read_bytes();assert raw==(out/(name+'.source')).read_bytes()and raw==run(['git','cat-file','blob',old+':'+path]);value=json.loads(raw);assert len(value['entries'])==count;oldEntries.extend(value['entries'])
+ r['oldManifestsByteIdentical']=True;seen=set();pairs(oldEntries,seen);assert len(seen)==42113;r['oldOriginalAndArchivePairsPreserved']=True;r['oldOriginalLocators']=41773;r['oldClosingLocators']=340
+ oldArchive={}
+ for e in oldEntries:oldArchive[e['archivePath']]=e['rawGitBlob']
+ tree={}
+ for row in run(['git','ls-tree','-r','-z',old,'--',prefix+'task-12-receipts/blobs',prefix+'task-11-receipts/blobs']).split(b'\0'):
+  if row:meta,path=row.split(b'\t',1);tree[path.decode()]=meta.split()[2].decode()
+ assert len(oldArchive)==2018 and all(tree.get(p)==oid for p,oid in oldArchive.items());r['oldArchiveGit230IdentitiesPreserved']=True;r['oldImmutableArchivePaths']=len(oldArchive)
+ new=json.loads((root/prefix/'task-12-receipts/fix1-translation.json').read_bytes());assert new['receiptVersion']==1 and new['mode']=='task12-i1-additive-metadata-transport'and new['error']is None and len(new['entries'])==329;pairs(new['entries'],seen);r['newCorrectionPairsVerified']=True;r['newCorrectionLocators']=329
+ newPaths=sorted({e['archivePath']for e in new['entries']if e['archivePath']not in oldArchive})
+ run(['git','add','--',*newPaths,prefix+'task-12-receipts/fix1-translation.json',prefix+'task-12-fix1-source-binding.json',prefix+'task-12-evidence.md'])
+ index={}
+ for row in run(['git','ls-files','--stage','-z']).split(b'\0'):
+  if row:meta,path=row.split(b'\t',1);index[path.decode()]=meta.split()[1].decode()
+ assert all(index.get(e['archivePath'])==e['rawGitBlob']for e in new['entries']);r['newArchiveStagedGitIdentitiesVerified']=True;r['newArchivePaths']=len(newPaths)
+ assert run(['git','diff',old,'--','.github','src','supabase',prefix+'task-12-source-binding.json',prefix+'task-12-source-freeze.json',prefix+'task-12-receipts/translation.json',prefix+'task-12-receipts/closing-translation.json',prefix+'task-11-receipts','docs/evidence/audit-remediation-20260927/tracker.csv','docs/evidence/audit-remediation-20260927/migration-manifest.csv'])==b'';r['runtimeAndHeldSourcesUnchanged']=True
+ run(['git','diff','--cached','--check']);r['qualification']='Actual metadata-only preservation/staged check; no audit, suite, DB, native or four-gate rerun. Corrected R68 acceptance remains a separate actual receipt. Closing Git/same reviewer/five CI pending.'
+except Exception as e:r['error']=str(e)
+r['commands']=commands;r['failedFinalFlags']=[f for f in flags if r[f]is not True];r['eligible']=r['error']is None and not r['failedFinalFlags'];(out/'close-receipt.json').write_bytes((json.dumps(r,indent=2)+'\n').encode());print(json.dumps({'eligible':r['eligible'],'error':r['error'],'failedFinalFlags':r['failedFinalFlags'],'oldLocators':r.get('oldOriginalLocators',0)+r.get('oldClosingLocators',0),'newLocators':r.get('newCorrectionLocators',0)}));sys.exit(0 if r['eligible']else 1)
