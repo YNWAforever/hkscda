@@ -1,0 +1,14 @@
+NOTICE:  extension "pgcrypto" already exists, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.admin_user" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.supporter" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.supporter_role" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.consent" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.recurring_mandate" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.donation" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.payment" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.receipt_sequence" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.receipt" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.message_template" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.message" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.webhook_event" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.audit_log" does not exist, skipping

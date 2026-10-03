@@ -1,0 +1,98 @@
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-11-native-profile.test.ts:
+(pass) separately versioned native qualification accepts the exact complete pair [3.76ms]
+(pass) native qualification rejects redReceiptBound=false [1.92ms]
+(pass) native qualification rejects redReceiptBound=undefined [1.90ms]
+(pass) native qualification rejects redReceiptBound=true [1.89ms]
+(pass) native qualification rejects redReceiptBound=1 [0.71ms]
+(pass) native qualification rejects captureBound=false [0.69ms]
+(pass) native qualification rejects captureBound=undefined [0.68ms]
+(pass) native qualification rejects captureBound=true [0.76ms]
+(pass) native qualification rejects captureBound=1 [0.74ms]
+(pass) native qualification rejects sourceBound=false [0.71ms]
+(pass) native qualification rejects sourceBound=undefined [0.79ms]
+(pass) native qualification rejects sourceBound=true [0.67ms]
+(pass) native qualification rejects sourceBound=1 [0.68ms]
+(pass) native qualification rejects nativeAssemblyBound=false [1.10ms]
+(pass) native qualification rejects nativeAssemblyBound=undefined [0.74ms]
+(pass) native qualification rejects nativeAssemblyBound=true [0.70ms]
+(pass) native qualification rejects nativeAssemblyBound=1 [0.69ms]
+(pass) native qualification rejects managedJobsBound=false [0.67ms]
+(pass) native qualification rejects managedJobsBound=undefined [1.35ms]
+(pass) native qualification rejects managedJobsBound=true [1.11ms]
+(pass) native qualification rejects managedJobsBound=1 [1.13ms]
+(pass) native qualification rejects migrationsBound=false [1.12ms]
+(pass) native qualification rejects migrationsBound=undefined [1.07ms]
+(pass) native qualification rejects migrationsBound=true [1.06ms]
+(pass) native qualification rejects migrationsBound=1 [1.06ms]
+(pass) native qualification rejects fullScannerPassed=false [1.10ms]
+(pass) native qualification rejects fullScannerPassed=undefined [1.12ms]
+(pass) native qualification rejects fullScannerPassed=true [1.09ms]
+(pass) native qualification rejects fullScannerPassed=1 [0.72ms]
+(pass) native qualification rejects zeroRows=false [0.96ms]
+(pass) native qualification rejects zeroRows=undefined [1.11ms]
+(pass) native qualification rejects zeroRows=true [0.72ms]
+(pass) native qualification rejects zeroRows=1 [0.70ms]
+(pass) native qualification rejects rollbackPreserved=false [0.73ms]
+(pass) native qualification rejects rollbackPreserved=undefined [0.80ms]
+(pass) native qualification rejects rollbackPreserved=true [0.76ms]
+(pass) native qualification rejects rollbackPreserved=1 [0.74ms]
+(pass) native qualification rejects normalCleanup=false [0.70ms]
+(pass) native qualification rejects normalCleanup=undefined [0.69ms]
+(pass) native qualification rejects normalCleanup=true [0.99ms]
+(pass) native qualification rejects normalCleanup=1 [0.69ms]
+(pass) native qualification rejects protectedSourcesPreserved=false [0.70ms]
+(pass) native qualification rejects protectedSourcesPreserved=undefined [0.69ms]
+(pass) native qualification rejects protectedSourcesPreserved=true [0.72ms]
+(pass) native qualification rejects protectedSourcesPreserved=1 [0.85ms]
+(pass) native qualification rejects prerequisitePairBound=false [0.90ms]
+(pass) native qualification rejects prerequisitePairBound=undefined [0.70ms]
+(pass) native qualification rejects prerequisitePairBound=true [0.68ms]
+(pass) native qualification rejects prerequisitePairBound=1 [0.69ms]
+(pass) native qualification rejects wrong prerequisite {"receiptType":"capture"} [0.76ms]
+(pass) native qualification rejects wrong prerequisite {"mode":"component"} [0.69ms]
+(pass) native qualification rejects wrong prerequisite {"error":"missing archive"} [0.70ms]
+(pass) native qualification rejects wrong prerequisite {"failedFinalFlags":["normalCleanup"]} [0.68ms]
+(pass) native qualification rejects wrong prerequisite {"requiredFinalFlags":[]} [0.69ms]
+(pass) native qualification rejects wrong prerequisite {"originalReceiptSha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.77ms]
+(pass) native qualification rejects wrong prerequisite {"captureSha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.68ms]
+(pass) native qualification rejects wrong prerequisite {"migrationInventorySha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.68ms]
+(pass) native qualification rejects wrong prerequisite {"inputInventorySha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.71ms]
+(pass) native qualification rejects wrong prerequisite {"sourceHead":"unknown"} [0.74ms]
+(pass) native qualification rejects wrong prerequisite {"baselineSource":"unknown"} [0.68ms]
+(pass) native qualification rejects wrong prerequisite {"financeExit":0} [0.69ms]
+(pass) native qualification rejects wrong prerequisite {"baselineMigrationCount":181} [0.81ms]
+(pass) native qualification rejects wrong prerequisite {"managedKinds":["auth","storage","realtime"]} [0.72ms]
+(pass) native qualification rejects wrong prerequisite {"normalCleanupCount":3} [0.70ms]
+(pass) native qualification rejects wrong prerequisite {"fixtureScope":["auth.users"]} [0.70ms]
+(pass) native qualification rejects wrong prerequisite {"originalTransportPreArchived":true} [0.69ms]
+(pass) native qualification rejects wrong prerequisite {"CLIIdentityKnown":true} [0.92ms]
+(pass) native qualification rejects wrong prerequisite {"nativeLocalBunBehaviorRun":true} [1.18ms]
+(pass) native qualification rejects wrong prerequisite {"productionApplied":true} [0.78ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask1FiveColumnRepairApplied":true} [0.71ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask8ScannerProposalApplied":true} [0.89ms]
+(pass) unknown helper body and native catalog plus historical helper mixture reject [1.19ms]
+(pass) historical catalog plus native helper mixture and unknown ACL reject [1.09ms]
+(pass) metadata ordering is part of the exact observed pair [1.05ms]
+69 |     canonicalSha256: createHash("sha256").update("fixture\n").digest("hex"),
+70 |     rawGitBlob: createHash("sha1").update("blob " + raw.length + "\0").update(raw).digest("hex"), bytes: raw.length,
+71 |   };
+72 |   expect(() => assertNativeArchiveBinding(raw, entry)).not.toThrow();
+73 |   expect(() => assertNativeArchiveBinding(Buffer.from("changed\r\n"), entry)).toThrow();
+74 |   for (const key of Object.keys(entry)) expect(() => assertNativeArchiveBinding(raw, { ...entry, [key]: undefined })).toThrow();
+                                                                                                                           ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-native-profile.test.ts:74:119)
+(fail) actual raw archive verifier rejects changed bytes, missing hashes and canonical drift [4.35ms]
+
+1 tests failed:
+(fail) actual raw archive verifier rejects changed bytes, missing hashes and canonical drift [4.35ms]
+
+ 74 pass
+ 1 fail
+ 78 expect() calls
+Ran 75 tests across 1 file. [226.00ms]

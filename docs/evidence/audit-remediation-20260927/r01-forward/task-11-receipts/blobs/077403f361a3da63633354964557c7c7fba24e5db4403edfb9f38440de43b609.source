@@ -1,0 +1,97 @@
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-11-native-profile.test.ts:
+28 |     committedPartialTask1SourceApplied: true,
+29 |     pair: structuredClone(prerequisites),
+30 |   };
+31 | }
+32 | test("separately versioned native qualification accepts the exact complete pair", () => {
+33 |   expect(() => contract.assertNativeQualification(fixture())).not.toThrow();
+                                                                       ^
+error: expect(received).not.toThrow()
+
+Error name: "Error"
+Error message: "Ineligible Task11 capture flags/mode/type"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-native-profile.test.ts:33:67)
+(fail) separately versioned native qualification accepts the exact complete pair [2.49ms]
+(pass) native qualification rejects redReceiptBound=false [0.94ms]
+(pass) native qualification rejects redReceiptBound=undefined [1.01ms]
+(pass) native qualification rejects redReceiptBound=true [0.78ms]
+(pass) native qualification rejects redReceiptBound=1 [0.76ms]
+(pass) native qualification rejects captureBound=false [0.74ms]
+(pass) native qualification rejects captureBound=undefined [0.81ms]
+(pass) native qualification rejects captureBound=true [0.78ms]
+(pass) native qualification rejects captureBound=1 [0.81ms]
+(pass) native qualification rejects sourceBound=false [0.78ms]
+(pass) native qualification rejects sourceBound=undefined [0.74ms]
+(pass) native qualification rejects sourceBound=true [0.86ms]
+(pass) native qualification rejects sourceBound=1 [1.29ms]
+(pass) native qualification rejects nativeAssemblyBound=false [1.24ms]
+(pass) native qualification rejects nativeAssemblyBound=undefined [0.91ms]
+(pass) native qualification rejects nativeAssemblyBound=true [0.83ms]
+(pass) native qualification rejects nativeAssemblyBound=1 [0.78ms]
+(pass) native qualification rejects managedJobsBound=false [0.78ms]
+(pass) native qualification rejects managedJobsBound=undefined [0.83ms]
+(pass) native qualification rejects managedJobsBound=true [0.78ms]
+(pass) native qualification rejects managedJobsBound=1 [0.78ms]
+(pass) native qualification rejects migrationsBound=false [0.73ms]
+(pass) native qualification rejects migrationsBound=undefined [0.76ms]
+(pass) native qualification rejects migrationsBound=true [0.75ms]
+(pass) native qualification rejects migrationsBound=1 [0.76ms]
+(pass) native qualification rejects fullScannerPassed=false [0.76ms]
+(pass) native qualification rejects fullScannerPassed=undefined [0.73ms]
+(pass) native qualification rejects fullScannerPassed=true [0.72ms]
+(pass) native qualification rejects fullScannerPassed=1 [0.77ms]
+(pass) native qualification rejects zeroRows=false [0.73ms]
+(pass) native qualification rejects zeroRows=undefined [0.74ms]
+(pass) native qualification rejects zeroRows=true [0.73ms]
+(pass) native qualification rejects zeroRows=1 [0.73ms]
+(pass) native qualification rejects rollbackPreserved=false [0.80ms]
+(pass) native qualification rejects rollbackPreserved=undefined [1.18ms]
+(pass) native qualification rejects rollbackPreserved=true [0.79ms]
+(pass) native qualification rejects rollbackPreserved=1 [0.74ms]
+(pass) native qualification rejects normalCleanup=false [0.73ms]
+(pass) native qualification rejects normalCleanup=undefined [0.85ms]
+(pass) native qualification rejects normalCleanup=true [0.75ms]
+(pass) native qualification rejects normalCleanup=1 [0.78ms]
+(pass) native qualification rejects protectedSourcesPreserved=false [1.17ms]
+(pass) native qualification rejects protectedSourcesPreserved=undefined [1.24ms]
+(pass) native qualification rejects protectedSourcesPreserved=true [1.26ms]
+(pass) native qualification rejects protectedSourcesPreserved=1 [1.25ms]
+(pass) native qualification rejects prerequisitePairBound=false [1.29ms]
+(pass) native qualification rejects prerequisitePairBound=undefined [1.25ms]
+(pass) native qualification rejects prerequisitePairBound=true [1.15ms]
+(pass) native qualification rejects prerequisitePairBound=1 [0.80ms]
+(pass) native qualification rejects wrong prerequisite {"receiptType":"capture"} [1.66ms]
+(pass) native qualification rejects wrong prerequisite {"mode":"component"} [1.23ms]
+(pass) native qualification rejects wrong prerequisite {"error":"missing archive"} [0.96ms]
+(pass) native qualification rejects wrong prerequisite {"failedFinalFlags":["normalCleanup"]} [1.52ms]
+(pass) native qualification rejects wrong prerequisite {"requiredFinalFlags":[]} [1.24ms]
+(pass) native qualification rejects wrong prerequisite {"originalReceiptSha256":"0000000000000000000000000000000000000000000000000000000000000000"} [1.04ms]
+(pass) native qualification rejects wrong prerequisite {"captureSha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.98ms]
+(pass) native qualification rejects wrong prerequisite {"migrationInventorySha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.93ms]
+(pass) native qualification rejects wrong prerequisite {"inputInventorySha256":"0000000000000000000000000000000000000000000000000000000000000000"} [0.85ms]
+(pass) native qualification rejects wrong prerequisite {"sourceHead":"unknown"} [0.80ms]
+(pass) native qualification rejects wrong prerequisite {"baselineSource":"unknown"} [0.81ms]
+(pass) native qualification rejects wrong prerequisite {"financeExit":0} [1.04ms]
+(pass) native qualification rejects wrong prerequisite {"baselineMigrationCount":181} [1.41ms]
+(pass) native qualification rejects wrong prerequisite {"managedKinds":["auth","storage","realtime"]} [1.41ms]
+(pass) native qualification rejects wrong prerequisite {"normalCleanupCount":3} [1.24ms]
+(pass) native qualification rejects wrong prerequisite {"fixtureScope":["auth.users"]} [0.90ms]
+(pass) native qualification rejects wrong prerequisite {"originalTransportPreArchived":true} [1.32ms]
+(pass) native qualification rejects wrong prerequisite {"CLIIdentityKnown":true} [1.28ms]
+(pass) native qualification rejects wrong prerequisite {"nativeLocalBunBehaviorRun":true} [1.12ms]
+(pass) native qualification rejects wrong prerequisite {"productionApplied":true} [1.21ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask1FiveColumnRepairApplied":true} [1.13ms]
+(pass) native qualification rejects wrong prerequisite {"heldTask8ScannerProposalApplied":true} [0.91ms]
+(pass) unknown helper body and native catalog plus historical helper mixture reject [1.07ms]
+(pass) historical catalog plus native helper mixture and unknown ACL reject [0.87ms]
+(pass) metadata ordering is part of the exact observed pair [0.87ms]
+
+1 tests failed:
+(fail) separately versioned native qualification accepts the exact complete pair [2.49ms]
+
+ 73 pass
+ 1 fail
+ 74 expect() calls
+Ran 74 tests across 1 file. [133.00ms]

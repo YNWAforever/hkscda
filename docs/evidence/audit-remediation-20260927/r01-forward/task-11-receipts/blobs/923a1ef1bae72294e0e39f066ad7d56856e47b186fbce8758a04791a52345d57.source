@@ -1,0 +1,9 @@
+# Supplemental native pair refinement (pending R57)
+
+Controller refinement supersedes only the independent-alternatives wording in the immutable original proposal.json (8109 bytes, SHA256 a9eeae3a19a1480424d177a68b4cf696528f79e0550913ed98c431f8687e477d).
+
+The actual supplemental complete native catalogue and complete 11-helper array must remain one correlated observed pair. A Task11-only native selector after exact complete catalogue equality selects only the native helper array. The historical catalogue path retains only its pre-existing historical helper alternatives and behavior. No independent catalogue/helper alternatives may introduce new cross combinations.
+
+Portable regression and owned integration must reject both native-catalogue plus historical-helper and historical-catalogue plus native-helper mixtures with 55000/ineligible. Exact native pair and existing historical behavior remain eligible. No per-field allowlist, normalization or additional target/Auth/native/index/shape literal is proposed. All other original proposal qualifications apply, including derived-only original RED transport and pre-execution original GREEN transaction archive.
+
+This file records proposal refinement only. No source/profile change or new environment execution is admitted or performed here.

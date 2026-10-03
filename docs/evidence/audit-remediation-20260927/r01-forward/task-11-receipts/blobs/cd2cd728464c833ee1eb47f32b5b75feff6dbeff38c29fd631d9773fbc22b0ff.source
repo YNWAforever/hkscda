@@ -1,0 +1,15 @@
+"""Bind actual R57/R58 source bridge; metadata-only, no source repair."""
+import pathlib,json,hashlib,difflib,re
+s=pathlib.Path('.superpowers/sdd/r01-forward-schema-plan-20261001');o=s/'task-11-fix3-rehearse-source-bridge';o.mkdir(exist_ok=False)
+def sha(b):return hashlib.sha256(b).hexdigest()
+def bound(p):
+ b=p.read_bytes();return {'path':p.as_posix(),'rawSha256':sha(b),'canonicalSha256':sha(b.replace(b'\r\n',b'\n')),'bytes':len(b),'rawGitBlob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
+source=[]
+for folder in ['task-11-fix3-native-integration-d774592d308c406995319b830ac9eade','task-11-fix3-native-integration-86d10b772bdb48dfa016dd2ebd784746']:
+ p=s/folder;r=json.loads((p/'receipt.json').read_text(encoding='utf-8'));b=[x for x in r['inputBindings']if x['label']=='exact-existing-refusal-source'];assert len(b)==1;archive=p/b[0]['archive'];assert bound(archive)['rawSha256']==b[0]['rawSha256'];source.append(archive)
+current=pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts');old=source[0].read_bytes();new=source[1].read_bytes();assert new==current.read_bytes()
+oldLF=old.replace(b'\r\n',b'\n');newLF=new.replace(b'\r\n',b'\n');line=b'  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling58.source",\n';assert newLF.replace(line,b'',1)==oldLF
+mutation=lambda b:re.search(rb'const mutations = \[([\s\S]*?)\n  \];',b.replace(b'\r\n',b'\n')).group()
+assert mutation(old)==mutation(new)
+diff=''.join(difflib.unified_diff(oldLF.decode().splitlines(True),newLF.decode().splitlines(True),fromfile='actual-R57-rehearse',tofile='actual-R58-rehearse'));(o/'canonical.diff.txt').write_text(diff,encoding='utf-8',newline='\n')
+r={'R57':bound(source[0]),'R58':bound(source[1]),'current':bound(current),'canonicalMutationBlockSha256':sha(mutation(old)),'mutationParserAndAll14FixturesIdentical':True,'currentEqualsActualR58Archive':True,'sourceBridge':'One additional R58 authority source path in composition frozen-input array. Semantic provenance input addition, not merely formatting; all other canonical bytes and fourteen mutation fixture bytes unchanged. No product/candidate/guard behavior change.','diff':bound(o/'canonical.diff.txt')};(o/'receipt.json').write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps(r))

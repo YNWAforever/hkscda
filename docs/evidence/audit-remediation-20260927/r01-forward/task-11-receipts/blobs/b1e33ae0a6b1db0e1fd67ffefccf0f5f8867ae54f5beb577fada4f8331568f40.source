@@ -1,0 +1,57 @@
+BEGIN;
+-- Lets a fostered animal be published, while still never showing an adopted one.
+--
+-- 20260911140000 introduced publication_state but deliberately left
+-- `status = 'available'` in the public policy, because relaxing it is a WIDENING
+-- change and the risk was unquantified: "applicants would see animals that
+-- already have homes."
+--
+-- Source data settles it. Among the 263 animals the association currently offers
+-- for adoption or sponsorship, the legacy status codes decode unambiguously
+-- against the lifecycle columns:
+--
+--     S  185 animals   3 with adopted_at   -- in the shelter
+--     F   65 animals   1 with adopted_at   -- in foster care
+--     A   13 animals  11 with adopted_at   -- adopted
+--
+-- So the population blocked by `status = 'available'` is **65 fostered animals**,
+-- a quarter of the catalogue, and the population that must stay hidden is the 13
+-- adopted ones. Those are different sets, and the harm is avoided by naming the
+-- excluded state rather than by requiring a single permitted one.
+--
+-- A fostered animal is in temporary care and still needs a permanent home --
+-- that is what fostering is. Hiding it from the adoption catalogue is the defect,
+-- not the protection. An adopted animal already has a home and stays excluded.
+--
+-- This IS a widening change and is written to be bounded and reversible:
+--
+--   * It admits exactly one additional care state, 'fostered'. 'adopted' remains
+--     excluded, so nobody can apply for an animal that already has a home.
+--   * Every other conjunct is unchanged: archived records stay hidden, and
+--     publication_state = 'published' still gates every row -- so staff can
+--     withhold any individual animal regardless of its care state.
+--   * Reverting is a one-word change back to `status = 'available'`.
+--
+-- Idempotent: the policy and index are dropped and recreated.
+
+drop policy if exists "public read available" on public.animals;
+create policy "public read available" on public.animals for select
+using (
+  status in ('available', 'fostered')
+  and retired_at is null
+  and publication_state = 'published'
+  and (adoption_eligible or sponsorship_eligible)
+);
+-- The supporting index has to match the new predicate or it stops being used.
+drop index if exists public.animals_public_catalogue_idx;
+create index if not exists animals_public_catalogue_idx
+  on public.animals (type)
+  where status in ('available', 'fostered')
+    and retired_at is null
+    and publication_state = 'published'
+    and (adoption_eligible or sponsorship_eligible);
+comment on column public.animals.status is
+  'Care/case state: available, fostered or adopted. Public visibility is governed by '
+  'publication_state; this column only excludes adopted animals from the public '
+  'catalogues, since they already have homes. A fostered animal is still seeking one.';
+COMMIT;

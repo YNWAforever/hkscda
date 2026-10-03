@@ -1,0 +1,143 @@
+BEGIN;
+-- An ambiguous save response cannot prove that a freshly uploaded draft image
+-- is unreferenced. Track issued paths and clean only those never attached to a
+-- committed animal draft after a grace period.
+create table public.animal_draft_image_upload_intent (
+  storage_path text primary key,
+  animal_id uuid not null,
+  created_at timestamptz not null default pg_catalog.clock_timestamp(),
+  expires_at timestamptz not null,
+  attached_at timestamptz,
+  cleanup_claimed_at timestamptz,
+  constraint animal_draft_image_upload_path
+    check (storage_path like animal_id::text || '/%'),
+  constraint animal_draft_image_upload_expiry
+    check (expires_at > created_at)
+);
+create index animal_draft_image_upload_cleanup_idx
+  on public.animal_draft_image_upload_intent (expires_at)
+  where attached_at is null;
+alter table public.animal_draft_image_upload_intent enable row level security;
+revoke all on public.animal_draft_image_upload_intent from public, anon, authenticated;
+grant select, insert, update, delete on public.animal_draft_image_upload_intent to service_role;
+create function public.reserve_animal_draft_image_upload(
+  p_animal_id uuid,
+  p_storage_path text
+) returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_path text;
+begin
+  if p_animal_id is null or p_storage_path is null then
+    raise exception 'invalid_animal_draft_upload_intent' using errcode = '22023';
+  end if;
+
+  insert into public.animal_draft_image_upload_intent (
+    storage_path, animal_id, expires_at
+  ) values (
+    p_storage_path, p_animal_id, pg_catalog.clock_timestamp() + interval '1 day'
+  )
+  on conflict (storage_path) do update
+  set expires_at = greatest(
+    public.animal_draft_image_upload_intent.expires_at,
+    excluded.expires_at
+  )
+  where public.animal_draft_image_upload_intent.animal_id = excluded.animal_id
+    and public.animal_draft_image_upload_intent.cleanup_claimed_at is null
+  returning storage_path into v_path;
+
+  if v_path is null then
+    raise exception 'animal_draft_upload_cleanup_in_progress' using errcode = '55000';
+  end if;
+end;
+$$;
+revoke all on function public.reserve_animal_draft_image_upload(uuid, text)
+  from public, anon, authenticated;
+grant execute on function public.reserve_animal_draft_image_upload(uuid, text)
+  to service_role;
+create function public.mark_animal_draft_image_attached()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+declare
+  v_path text;
+  v_claimed_at timestamptz;
+begin
+  for v_path in
+    select distinct paths.path
+    from (
+      select nullif(new.body->>'draft_image_path', '') as path
+      union all
+      select nullif(photo->>'draft_path', '') as path
+      from pg_catalog.jsonb_array_elements(
+        case when pg_catalog.jsonb_typeof(new.body->'gallery') = 'array'
+          then new.body->'gallery'
+          else '[]'::jsonb
+        end
+      ) as photo
+    ) as paths
+    where paths.path is not null
+      and paths.path like new.id::text || '/%'
+  loop
+    select intent.cleanup_claimed_at into v_claimed_at
+    from public.animal_draft_image_upload_intent as intent
+    where intent.storage_path = v_path
+      and intent.animal_id = new.id
+    for update;
+
+    if found then
+      if v_claimed_at is not null then
+        raise exception 'animal draft image is being cleaned up' using errcode = '55000';
+      end if;
+      update public.animal_draft_image_upload_intent
+      set attached_at = pg_catalog.clock_timestamp()
+      where storage_path = v_path;
+    end if;
+  end loop;
+  return new;
+end;
+$$;
+revoke all on function public.mark_animal_draft_image_attached()
+  from public, anon, authenticated;
+grant execute on function public.mark_animal_draft_image_attached()
+  to service_role;
+create trigger animal_draft_image_attached
+  after insert or update of body on public.animal_draft
+  for each row execute function public.mark_animal_draft_image_attached();
+create function public.claim_expired_animal_draft_image_uploads(
+  p_cutoff timestamptz,
+  p_limit integer default 50
+)
+returns table (animal_id uuid, storage_path text, claimed_at timestamptz)
+language sql
+security invoker
+set search_path = ''
+as $$
+  with candidates as (
+    select intent.storage_path
+    from public.animal_draft_image_upload_intent as intent
+    where intent.attached_at is null
+      and intent.expires_at < p_cutoff
+      and (
+        intent.cleanup_claimed_at is null
+        or intent.cleanup_claimed_at < pg_catalog.clock_timestamp() - interval '1 hour'
+      )
+    order by intent.expires_at, intent.storage_path
+    limit least(greatest(coalesce(p_limit, 50), 1), 50)
+    for update skip locked
+  )
+  update public.animal_draft_image_upload_intent as intent
+  set cleanup_claimed_at = pg_catalog.clock_timestamp()
+  from candidates
+  where intent.storage_path = candidates.storage_path
+  returning intent.animal_id, intent.storage_path, intent.cleanup_claimed_at;
+$$;
+revoke all on function public.claim_expired_animal_draft_image_uploads(timestamptz, integer)
+  from public, anon, authenticated;
+grant execute on function public.claim_expired_animal_draft_image_uploads(timestamptz, integer)
+  to service_role;
+COMMIT;

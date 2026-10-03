@@ -1,0 +1,2 @@
+NOTICE:  trigger "enforce_current_adoption_animal" for relation "public.adoption_application_animal_preference" does not exist, skipping
+NOTICE:  trigger "enforce_current_sponsorship_animal" for relation "public.sponsorship_preference" does not exist, skipping

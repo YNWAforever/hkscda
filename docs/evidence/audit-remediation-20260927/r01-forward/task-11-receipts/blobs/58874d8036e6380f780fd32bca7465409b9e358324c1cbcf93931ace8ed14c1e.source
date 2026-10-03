@@ -1,0 +1,11 @@
+{
+  "command": [
+    "bun",
+    "x",
+    "supabase@2.118.0",
+    "migration",
+    "new",
+    "r01_finance_callback_forward"
+  ],
+  "at": "2026-10-02T17:09:44.889Z"
+}

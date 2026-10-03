@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 147, in <module>
+    integration( finance, before, counts )
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 77, in integration
+    result=transport('refusal-'+label,raw)
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 57, in transport
+    raw=sql.encode()if isinstance(sql,str)else sql;path=out/(label+'.transaction.source');path.write_bytes(raw);receipt.setdefault('transactionTransports',[]).append({'label':label,'archive':path.name,'rawSha256':sha(raw),'rawGitBlob':blob(raw),'bytes':len(raw),'preArchived':True});save();return psql(raw,required)
+                                                                                                                                                                                                                                                                                                         ~~~~^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 28, in psql
+    def psql(sql,required=True):return run(['docker','exec','-i',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres'],sql.encode()if isinstance(sql,str)else sql,required)
+                                       ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-native-integration.py", line 19, in run
+    if required and r.returncode:raise RuntimeError('Owned command failed '+str(args)+' stderr='+r.stderr.decode('utf-8',errors='replace')[-2500:])
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned command failed ['docker', 'exec', '-i', 'hkscda-task11-fix3-pg-d774592d308c406995319b830ac9eade', 'psql', '-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'postgres'] stderr=ERROR:  42501: permission denied to set role "supabase_admin"
+LOCATION:  call_string_check_hook, guc.c:6938
+

@@ -1,0 +1,61 @@
+{
+  "command": [
+    "bun",
+    "test",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts"
+  ],
+  "exit": 0,
+  "elapsedSeconds": 0.742715300002601,
+  "bindings": [
+    {
+      "path": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-focused.py",
+      "archive": "s0.source",
+      "bytes": 1780,
+      "rawSha256": "f0a1097286423820dd0dfd7ec13fdeed91e90a620f68812fa80da38926fa7327",
+      "canonicalSha256": "f0a1097286423820dd0dfd7ec13fdeed91e90a620f68812fa80da38926fa7327",
+      "rawGitBlob": "ab99f2a3c435293ce9cb77a762adca1347930b7d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts",
+      "archive": "s1.source",
+      "bytes": 6920,
+      "rawSha256": "cc6daaa2cdc568bf12e92b9cb43a579878a320f3ee07b1c3cf451e44ab6ecb33",
+      "canonicalSha256": "cc6daaa2cdc568bf12e92b9cb43a579878a320f3ee07b1c3cf451e44ab6ecb33",
+      "rawGitBlob": "9c93b676357e3049207ce66fd4fbdc3fa1a27be6"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json",
+      "archive": "s2.source",
+      "bytes": 167255,
+      "rawSha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+      "canonicalSha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+      "rawGitBlob": "16cb38084ed62561915e889b13b2ab09569b0ca2"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+      "archive": "s3.source",
+      "bytes": 6504,
+      "rawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+      "canonicalSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+      "rawGitBlob": "a02daf181c80e177e0db239ceb6b1cc25e276d3d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.ts",
+      "archive": "s4.source",
+      "bytes": 12771,
+      "rawSha256": "e3b7caca3dd1edf7bc88a96ff27b277ee305bf5c3aef7068363478db457ac0aa",
+      "canonicalSha256": "e3b7caca3dd1edf7bc88a96ff27b277ee305bf5c3aef7068363478db457ac0aa",
+      "rawGitBlob": "570576943c9b78a8c4641b76ddf49abac66ead34"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-qualify.ts",
+      "archive": "s5.source",
+      "bytes": 3433,
+      "rawSha256": "f4d91a14a121c01fa98045cd896f4fd9561f65614fe1490ac326e346e0bb9c53",
+      "canonicalSha256": "f4d91a14a121c01fa98045cd896f4fd9561f65614fe1490ac326e346e0bb9c53",
+      "rawGitBlob": "20fa51ace471a5dab605001a17b24533a5d6c310"
+    }
+  ],
+  "stdoutSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+  "stderrSha256": "0e76c68731bcfabe3ae9abbbcaa5f5229fcb8540a40d091bd9f8c1f7ecda3af7"
+}

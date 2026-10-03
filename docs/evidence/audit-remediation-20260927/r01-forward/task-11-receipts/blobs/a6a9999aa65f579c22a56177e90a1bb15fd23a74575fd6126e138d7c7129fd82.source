@@ -1,0 +1,5 @@
+NOTICE:  trigger "set_updated_at" for relation "public.sponsorship_period" does not exist, skipping
+NOTICE:  trigger "assert_sponsorship_allocation_valid" for relation "public.sponsorship_payment_allocation" does not exist, skipping
+NOTICE:  trigger "reject_sponsorship_allocation_rewrite" for relation "public.sponsorship_payment_allocation" does not exist, skipping
+NOTICE:  policy "staff can read sponsorship periods" for relation "public.sponsorship_period" does not exist, skipping
+NOTICE:  policy "staff can read sponsorship allocations" for relation "public.sponsorship_payment_allocation" does not exist, skipping

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/migration-apply.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "937709cd4fb433eefc6dcafc5e7a9a03d8471d6f",
+  "rawSha256": "17c3bea8046bb26f1fdd7f0234d34b30d6258a4bfcd8959813152528270ec208",
+  "bytes": 34379
+}

@@ -1,0 +1,370 @@
+/** Real owned Task11 composition and metadata refusals. No shared role changes. */
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { createHash } from "node:crypto";
+import {
+  captureProductionSchema,
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  hash,
+  snapshot,
+  localSourceState,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {
+  fixtureScope,
+  dependencies,
+  names,
+  functionsQuery,
+  authQuery,
+  nativeQuery,
+  indexDetailsQuery,
+  shapesQuery,
+} from "./task-11-profile";
+import { assertComposition, compositionFlags } from "./task-11-receipt";
+import { gaps } from "./task-11-gap";
+const root = resolve(import.meta.dir, "../../../.."),
+  mode = process.argv[2],
+  out = resolve(process.argv[3] ?? "");
+if (
+  !["hosted", "modern", "component"].includes(mode) ||
+  process.env.R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES !== "1" ||
+  !out.startsWith(resolve(root, ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-"))
+)
+  throw Error("Own Task11 composition opt-in/mode/output required");
+const migration = "supabase/migrations/20261002170945_r01_finance_callback_forward.sql";
+const componentSource =
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json";
+const vendorSource =
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json";
+const paths = [
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gap.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-qualify.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-native-qualification-fix3-1790980738046/receipt.json",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-generator-1790980976505/receipt.json",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling57.source",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling58.source",
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling59.source",
+  "supabase/rls-tests/helpers/productionSchemaClone.ts",
+  migration,
+  "src/lib/donations/financeCallbackForward.database.test.ts",
+  "src/lib/donations/financeCallbackFixtureGuard.ts",
+  "src/lib/donations/reconcile.server.ts",
+  "src/lib/donations/reconcile.server.test.ts",
+  "src/lib/operations/releaseSchema.ts",
+  "src/lib/operations/releaseManifest.ts",
+  componentSource,
+  vendorSource,
+  ...dependencies.map(([f]) => "supabase/migrations/" + f),
+];
+const sha = (b: Buffer) => createHash("sha256").update(b).digest("hex");
+await mkdir(out, { recursive: true });
+const frozenInputs: Record<string, unknown> = {};
+for (const [i, p] of paths.entries()) {
+  const b = await readFile(resolve(root, p));
+  const proc = Bun.spawn(["git", "hash-object", "--no-filters", resolve(root, p)], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const [blob, err, exit] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ]);
+  if (exit !== 0 || err) throw Error("Frozen Git binding failed " + p);
+  frozenInputs[p] = {
+    rawSha256: sha(b),
+    canonicalSha256: hash(b.toString().replaceAll("\r\n", "\n")),
+    rawGitBlob: blob.trim(),
+    rawBytes: b.length,
+    archive: "s" + i + ".source",
+  };
+  await copyFile(resolve(root, p), resolve(out, "s" + i + ".source"));
+}
+const requiredFinalFlags = [...compositionFlags];
+const r: Record<string, unknown> = {
+  receiptType: "composition",
+  mode,
+  out,
+  at: new Date().toISOString(),
+  sourceBase: "d45b849d300f76700efcf5450a9b426e32cc372f",
+  frozenInputs,
+  requiredFinalFlags,
+  fixtureScope,
+  dependencies,
+  error: null,
+  failedFinalFlags: [],
+  task1Applied: false,
+  task8Applied: false,
+  productionApplied: false,
+  deployed: false,
+  operationallyEnabled: false,
+};
+const modern = "postgresql://postgres:postgres@127.0.0.1:57322/postgres";
+let modernBefore: string | undefined;
+let c: Awaited<ReturnType<typeof createProductionClone>> | undefined;
+try {
+  modernBefore = await localSourceState(modern);
+  r.stage = "capture";
+  const cap =
+    mode === "hosted" ? await captureProductionSchema() : await captureModernLocalSchema();
+  r.sourceCatalogHash = hash(cap.catalog);
+  c = await createProductionClone(cap);
+  const db = c.sql;
+  r.clone = c.name;
+  r.schemaParity = true;
+  r.zeroApplicationTables = c.tableCount;
+  await assertSafeFixtureTables(db, fixtureScope);
+  r.fullScannerPassed = true;
+  r.stage = "dependencies";
+  for (const [f, h] of dependencies) {
+    const b = await readFile(resolve(root, "supabase/migrations", f));
+    if (sha(b) !== h) throw Error("Dependency bytes differ " + f);
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(b.toString());
+    });
+  }
+  r.dependenciesBound = true;
+  if (mode === "component") {
+    const sourceObject = JSON.parse(await readFile(resolve(root, componentSource), "utf8"));
+    const vendorObject = JSON.parse(await readFile(resolve(root, vendorSource), "utf8"));
+    if (
+      hash(await readFile(resolve(root, componentSource), "utf8")) !==
+        "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77" ||
+      !vendorObject.functions.some(
+        (f: Record<string, unknown>) =>
+          f.schema === "auth" &&
+          f.name === "uid" &&
+          f.definition === sourceObject.finalHelper.definition,
+      )
+    )
+      throw Error("Historical actual vendor source binding differs");
+    await db.begin(async (tx) => {
+      await tx`set local role supabase_auth_admin`;
+      await tx.unsafe(sourceObject.finalHelper.definition);
+    });
+    r.qualification =
+      "Own PG17.6 reconstruction consumes historically actual Task9 vendor LF/afterAuth artifacts newly bound, installed and observed here; not a fresh full17.11 bootstrap or vendor fetch";
+  }
+  await assertSafeFixtureTables(db, fixtureScope);
+  const extra = async (sql = db) => ({
+    auth: (await sql.unsafe(authQuery))[0].value,
+    native: (await sql.unsafe(nativeQuery))[0].value,
+    indexes: (await sql.unsafe(indexDetailsQuery))[0].value,
+    shapes: (await sql.unsafe(shapesQuery))[0].value,
+    helpers: (await sql.unsafe(functionsQuery)).filter(
+      (f) => !(f.schema === "public" && names.includes(f.name)),
+    ),
+  });
+  const mutationState = async (sql: typeof db) =>
+    hash([await snapshot(sql), await extra(sql), await sql.unsafe(functionsQuery)]);
+  const strip = (s: Record<string, unknown>) => ({
+    ...s,
+    functions: (s.functions as Record<string, unknown>[]).filter(
+      (f) => !(f.schema === "public" && names.includes(String(f.name))),
+    ),
+  });
+  const before = await snapshot(db),
+    beforeExtra = await extra();
+  r.before = before;
+  r.beforeExtra = beforeExtra;
+  r.beforeGaps = await gaps(before);
+  r.beforeGapCount = (r.beforeGaps as unknown[]).length;
+  const rowTables = (before.relations as { schema: string; name: string; kind: string }[])
+    .filter((t) => ["r", "p"].includes(t.kind))
+    .map((t) => t.schema + "." + t.name)
+    .concat("auth.users")
+    .sort();
+  r.expectedRowTables = rowTables;
+  const candidate = await readFile(resolve(root, migration), "utf8");
+  const apply = async () =>
+    db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(candidate);
+    });
+  r.stage = "first-apply";
+  await apply();
+  r.firstApply = true;
+  const after = await snapshot(db);
+  r.after = after;
+  r.afterExtra = await extra();
+  r.afterGaps = await gaps(after);
+  r.afterGapCount = (r.afterGaps as unknown[]).length;
+  r.outsideTargetsPreserved = hash(strip(before)) === hash(strip(after));
+  r.supplementalPreserved = hash(beforeExtra) === hash(r.afterExtra);
+  r.stage = "second-apply";
+  await apply();
+  r.secondApply = true;
+  r.secondApplyPreserved = hash(after) === hash(await snapshot(db));
+  await assertSafeFixtureTables(db, fixtureScope);
+  const refusals = [];
+  const rollback = new Error("Task11 metadata mutation rollback");
+  const mutations = [
+    ["receiptRLS", "alter table public.receipt disable row level security"],
+    ["receiptDefault", "alter table public.receipt alter column tax_year set default 2025"],
+    ["receiptColumnGrant", "grant update(status) on public.receipt to authenticated"],
+    [
+      "creatorDefaultACL",
+      "alter default privileges for role postgres in schema public revoke execute on functions from authenticated",
+    ],
+    ["receiptIndex", "alter table public.receipt drop constraint receipt_receipt_no_key"],
+    ["nativeReceiptFK", "alter table public.receipt disable trigger all"],
+    ["receiptPersistence", "alter table public.receipt_sequence set unlogged"],
+    [
+      "issueHelperCost",
+      "alter function public.issue_receipt(uuid,uuid,integer,integer,timestamptz) cost 101",
+    ],
+    ["allocatorCost", "alter function private.allocate_receipt_number(integer) cost 101"],
+    [
+      "targetGrantOption",
+      "grant execute on function public.void_receipt_with_audit(uuid,uuid,uuid) to service_role with grant option",
+    ],
+    [
+      "browserTargetExecute",
+      "grant execute on function public.issue_receipt_with_audit(uuid,uuid,integer,integer,timestamptz,uuid) to authenticated",
+    ],
+    ["targetCost", "alter function public.fail_pending_provider_payment(uuid,uuid) cost 101"],
+    [
+      "targetSearchPath",
+      "alter function public.refund_provider_payment_atomically(uuid,uuid) set search_path='public'",
+    ],
+    ["targetStrict", "alter function public.void_donation_receipts_with_audit(uuid,text) strict"],
+  ];
+  r.stage = "refusals";
+  for (const [label, change] of mutations) {
+    try {
+      await db.begin(async (tx) => {
+        const original = await mutationState(tx as typeof db);
+        await tx`set local role supabase_admin`;
+        await tx.unsafe(change);
+        await tx`set local role postgres`;
+        const changed = await mutationState(tx as typeof db);
+        if (changed === original)
+          throw Error("Refusal fixture did not change captured metadata:" + label);
+        await tx.unsafe("savepoint task11_candidate_refusal");
+        let err: unknown;
+        try {
+          await tx.unsafe(candidate);
+        } catch (e) {
+          err = e;
+        }
+        await tx.unsafe("rollback to savepoint task11_candidate_refusal");
+        const preserved = changed === (await mutationState(tx as typeof db));
+        const code = (err as { errno?: string } | undefined)?.errno;
+        refusals.push({ label, code, preserved });
+        if (code !== "55000" || !preserved)
+          throw Error("Actual fail-closed refusal absent:" + label + ":" + String(err));
+        throw rollback;
+      });
+    } catch (e) {
+      if (e !== rollback) throw e;
+    }
+  }
+  r.refusals = refusals;
+  r.refusalsPassed =
+    refusals.length === mutations.length &&
+    refusals.every((x) => x.code === "55000" && x.preserved === true);
+  r.stage = "behavior";
+  const args = [
+    "bun",
+    "test",
+    "--timeout",
+    "15000",
+    "src/lib/donations/financeCallbackForward.database.test.ts",
+    "src/lib/donations/reconcile.server.test.ts",
+  ];
+  const p = Bun.spawn(args, {
+    cwd: root,
+    env: { ...process.env, R01_FINANCE_CALLBACK_TEST_DATABASE_URL: c.url },
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const [stdout, stderr, exit] = await Promise.all([
+    new Response(p.stdout).text(),
+    new Response(p.stderr).text(),
+    p.exited,
+  ]);
+  await writeFile(resolve(out, "tests.stdout.log"), stdout);
+  await writeFile(resolve(out, "tests.stderr.log"), stderr);
+  r.testCommand = args;
+  r.testExit = exit;
+  r.testPassed = exit === 0;
+  r.testSummary = (stdout + stderr)
+    .split("\n")
+    .filter((s) => /^ \d+ (pass|fail|skip|expect)/.test(s));
+  if (exit) console.log((stdout + stderr).slice(-8500));
+  const counts = await db.unsafe(
+    "select n.nspname,c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where (n.nspname in('public','private') or n.nspname='auth' and c.relname='users') and c.relkind in('r','p') order by 1,2",
+  );
+  const rows = [];
+  for (const t of counts) {
+    const value = (
+      await db.unsafe('select count(*)::text n from "' + t.nspname + '"."' + t.relname + '"')
+    )[0].n;
+    rows.push({ table: t.nspname + "." + t.relname, count: value });
+  }
+  r.rowCountsAfter = rows;
+  r.zeroRowsAfter =
+    JSON.stringify(rows.map((t) => t.table).sort()) === JSON.stringify(rowTables) &&
+    rows.every((x) => x.count === "0");
+  r.catalogAfterBehaviorPreserved = hash(after) === hash(await snapshot(db));
+} catch (e) {
+  r.error = String(e);
+} finally {
+  if (c) {
+    try {
+      await c.close();
+      r.normalDrop = true;
+    } catch (e) {
+      r.normalDrop = false;
+      r.error = [r.error, String(e)].filter(Boolean).join("; ");
+    }
+    r.templatePreserved = c.templatePreserved;
+  }
+  if (modernBefore) {
+    try {
+      r.modernPreserved = modernBefore === (await localSourceState(modern));
+    } catch (e) {
+      r.modernPreserved = false;
+      r.error = [r.error, String(e)].filter(Boolean).join("; ");
+    }
+  }
+  r.frozenInputsPreserved = true;
+  for (const [p, entry] of Object.entries(frozenInputs))
+    if (sha(await readFile(resolve(root, p))) !== (entry as { rawSha256: string }).rawSha256)
+      r.frozenInputsPreserved = false;
+  r.failedFinalFlags = requiredFinalFlags.filter((flag) => r[flag] !== true);
+  r.eligible = false;
+  try {
+    assertComposition(r, mode as "hosted" | "modern" | "component");
+    r.eligible = true;
+  } catch (e) {
+    if (!r.error && !(r.failedFinalFlags as string[]).length) r.error = String(e);
+  }
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(r, null, 2) + "\n");
+  console.log(
+    JSON.stringify({
+      out,
+      mode,
+      stage: r.stage,
+      eligible: r.eligible,
+      error: r.error,
+      failedFinalFlags: r.failedFinalFlags,
+      testExit: r.testExit,
+      testSummary: r.testSummary,
+    }),
+  );
+  process.exitCode = r.eligible ? 0 : 1;
+}

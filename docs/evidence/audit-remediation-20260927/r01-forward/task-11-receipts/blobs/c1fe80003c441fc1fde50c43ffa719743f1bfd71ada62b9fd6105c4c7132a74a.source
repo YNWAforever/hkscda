@@ -1,0 +1,20 @@
++ ulimit -n
++ '[' -n '' ']'
++ export ERL_CRASH_DUMP=/tmp/erl_crash.dump
++ ERL_CRASH_DUMP=/tmp/erl_crash.dump
++ '[' false = true ']'
++ [[ -n '' ]]
++ echo 'Running migrations'
++ /app/bin/migrate
++ '[' true = true ']'
++ echo 'Seeding selfhosted Realtime'
++ /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)'
+** (Jason.DecodeError) unexpected end of input at position 0
+    (jason 1.4.5) lib/jason.ex:92: Jason.decode!/2
+    /app/lib/realtime-2.140.3/priv/repo/seeds.exs:28: (file)
+    /app/lib/realtime-2.140.3/priv/repo/seeds.exs:17: (file)
+    (stdlib 7.3.0.1) erl_eval.erl:924: :erl_eval.do_apply/7
+    (stdlib 7.3.0.1) erl_eval.erl:1387: :erl_eval.eval_map_fields/6
+    (stdlib 7.3.0.1) erl_eval.erl:474: :erl_eval.expr/6
+[os_mon] memory supervisor port (memsup): Erlang has closed
+[os_mon] cpu supervisor port (cpu_sup): Erlang has closed

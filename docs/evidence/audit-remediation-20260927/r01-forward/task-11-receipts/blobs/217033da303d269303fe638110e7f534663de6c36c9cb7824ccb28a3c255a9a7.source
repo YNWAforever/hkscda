@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-02T17:34:57.093Z",
+  "file": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+  "sha256": "ff4d1c36bc06edc71b334f07e4c6950eb69f7bc1e231983bf52d57c891d1c1f2",
+  "bytes": 960494,
+  "inputs": [
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-shapes-hosted-1790961592384/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-shapes-modern-1790961933501/receipt.json"
+  ],
+  "exactLF": true,
+  "targets": 5,
+  "profileCount": 2
+}

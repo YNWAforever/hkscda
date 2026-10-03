@@ -1,0 +1,15 @@
+NOTICE:  constraint "content_item_cover_media_fk" of relation "content_item" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.content_item" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.content_link" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.rescue_story_profile" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.story_update" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.content_media" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.social_copy_variant" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.recipient_notification_draft" does not exist, skipping
+NOTICE:  policy "staff can manage content items" for relation "public.content_item" does not exist, skipping
+NOTICE:  policy "staff can manage content links" for relation "public.content_link" does not exist, skipping
+NOTICE:  policy "staff can manage rescue story profiles" for relation "public.rescue_story_profile" does not exist, skipping
+NOTICE:  policy "staff can manage story updates" for relation "public.story_update" does not exist, skipping
+NOTICE:  policy "staff can manage content media" for relation "public.content_media" does not exist, skipping
+NOTICE:  policy "staff can manage social copy variants" for relation "public.social_copy_variant" does not exist, skipping
+NOTICE:  policy "staff can manage recipient notification drafts" for relation "public.recipient_notification_draft" does not exist, skipping

@@ -1,0 +1,8 @@
+BEGIN;
+-- The preceding 20260927110000_crm_supporter_edit_version migration owns
+-- supporter.edit_version and both profile/role version triggers.
+-- Preserve existing versions and trigger identities; do not recreate them.
+-- Trigger invocation remains valid without a caller's direct EXECUTE grant.
+revoke all on function private.bump_supporter_edit_version()
+  from public, anon, authenticated, service_role;
+COMMIT;

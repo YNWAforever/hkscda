@@ -1,0 +1,54 @@
+{
+  "bindings": [
+    {
+      "source": "../r01-forward-repair-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/final-rulings-report-inputs-intermediate.json",
+      "owned": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-authority-59/final-rulings-report-inputs-intermediate.json",
+      "bytes": 109666,
+      "rawSha256": "55b25dd8eb92f64ddce989d28efea73c25e3dc37ee4463db9641ee62f2eb3bdc",
+      "canonicalSha256": "b40b7418d6b5151a7a60ac7544b26a44fb4ab7704d09499b92cec54cdcfab26e",
+      "rawGitBlob": "081e4014f5a4b6cc37561fd967b2d66b91b56ebf"
+    },
+    {
+      "source": "../r01-forward-repair-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/rulings-index-current.txt",
+      "owned": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-authority-59/rulings-index-current.txt",
+      "bytes": 13509,
+      "rawSha256": "8bdc942fa6da69efcebc017f12d0fb2e17a9ba414656b3748440dd242baaa636",
+      "canonicalSha256": "e41111aabf969612ed07cf4f48073f20d20c9e9f33fe46265530db90813a4514",
+      "rawGitBlob": "82aef71c610fb5d72c55d6f942724ff1f317533b"
+    },
+    {
+      "source": "../r01-forward-repair-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/controller-rulings-audit-v27.json",
+      "owned": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-authority-59/controller-rulings-audit-v27.json",
+      "bytes": 553,
+      "rawSha256": "83a9f0b9d5474bb70826dc272a30bc04c3bd82b03949f77ff1659f841e35486f",
+      "canonicalSha256": "bd6e3aec7b20958932b327ea5d34ce02c38642bdf88224342e55f46e7bc9b577",
+      "rawGitBlob": "83c62a62560907b990c2007489209026ed116f6c"
+    },
+    {
+      "source": "../r01-forward-repair-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-native-proof-path-ruling59.md",
+      "owned": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-authority-59/task-11-native-proof-path-ruling59.md",
+      "bytes": 2732,
+      "rawSha256": "f9e5bdf30d8c4c56117bbf878858a08e6075d3283db49374764e955a0fa21f37",
+      "canonicalSha256": "95de0efe24872adb785f71a48512874384d1001076a660adb461b3296b899622",
+      "rawGitBlob": "a59e436e0596692674598758ca2c0139f4b5fd05"
+    }
+  ],
+  "ledgerTopLevelKeys": [
+    "createdAtUtc",
+    "intermediateOnly",
+    "rulingsAtPreparation",
+    "allOrderedOriginalEntries",
+    "fullFinalOrderedReasonAndCostListRequired",
+    "laterRulingsMustBeAppendedAtFinalDispatch",
+    "source",
+    "previousAudit",
+    "refreshedAtUtc",
+    "newRulingsAudit",
+    "previousAuditAtR55",
+    "previousAuditAtR56",
+    "previousAuditAtR57",
+    "previousAuditAtR58",
+    "previousAuditAtR59"
+  ],
+  "qualification": "Exact original controller reason/cost ledger; no worker wording substitution."
+}

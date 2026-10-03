@@ -1,0 +1,108 @@
+/** R57: one observed native catalogue/helper pair, never independent alternatives. */
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { names, tables } from "./task-11-profile";
+export const nativeFlags = ["redReceiptBound", "captureBound", "sourceBound", "nativeAssemblyBound", "managedJobsBound", "migrationsBound", "fullScannerPassed", "zeroRows", "rollbackPreserved", "normalCleanup", "protectedSourcesPreserved", "prerequisitePairBound"] as const;
+export const nativePins = {
+  originalReceiptSha256: "73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798",
+  captureSha256: "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+  pairSha256: "9891db66252af4f637c2d9499df3dd0cec5c6665a5d7d5112720ad112ff75dcc",
+  migrationInventorySha256: "a1f21ec32b43429971369b7b59ee301e20711c7cdfecdd9bf8edb0f8c864263a",
+  inputInventorySha256: "15004fffe8993a8f1438d278c3d071d98e851093c5dc7868706260ad20d7769c",
+  sourceHead: "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  baselineSource: "d45b849d300f76700efcf5450a9b426e32cc372f",
+} as const;
+export const nativeREDDirectory = ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6";
+export const nativeRuntime = { version: "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit", user: "postgres", owner: "postgres", database: "postgres" };
+export const nativeFixtureScope = ["auth.users", "public.admin_user", "public.supporter", "public.donation", "public.payment", "public.receipt", "public.receipt_sequence", "public.audit_log", "public.supporter_consent_intent", "public.donation_delivery_job"];
+export const sha = (v: Uint8Array | string) => createHash("sha256").update(v).digest("hex");
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+function object(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw Error("Native prerequisite object required");
+  return value as Record<string, unknown>;
+}
+function rows(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) throw Error("Native prerequisite array required");
+  return value.map(object);
+}
+export function assertNativeQualification(value: unknown) {
+  const r = object(value);
+  if (r.receiptType !== "native-prerequisite-qualification-v1" || r.mode !== "full-native-d45" || r.error !== null || !same(r.failedFinalFlags, []) || !same(r.requiredFinalFlags, nativeFlags) || nativeFlags.some((k) => r[k] !== true)) throw Error("Ineligible exact native qualification flags/mode/type");
+  for (const [k, v] of Object.entries(nativePins)) if (r[k] !== v) throw Error("Native prerequisite pin differs:" + k);
+  for (const k of ["originalTransportPreArchived", "CLIIdentityKnown", "nativeLocalBunBehaviorRun", "productionApplied", "deployed", "operationallyEnabled", "heldTask1FiveColumnRepairApplied", "heldTask8ScannerProposalApplied"]) if (r[k] !== false) throw Error("Native qualification exceeds observed authority:" + k);
+  if (r.committedPartialTask1SourceApplied !== true || r.financeExit !== 3 || r.sqlstate !== "55000" || r.prerequisiteError !== "R01 finance complete prerequisite catalog differs" || r.baselineMigrationCount !== 182 || !same(r.managedKinds, ["realtime", "storage", "auth"]) || r.normalCleanupCount !== 4 || !same(r.fixtureScope, nativeFixtureScope)) throw Error("Native complete source/job/scanner/cleanup cardinality differs");
+  const runtime = object(r.runtime);
+  if (Object.keys(runtime).length !== 4 || Object.entries(nativeRuntime).some(([k,v]) => runtime[k] !== v)) throw Error("Native actual runtime differs");
+  const pair = object(r.pair), catalog = object(pair.catalog), helpers = rows(pair.helpers);
+  if (Object.keys(pair).sort().join(",") !== "catalog,helpers" || Object.keys(catalog).length !== 15 || helpers.length !== 11 || sha(JSON.stringify(pair)) !== nativePins.pairSha256) throw Error("Native complete correlated prerequisite pair differs");
+  return { ...r, pair: { catalog, helpers } };
+}
+export function prerequisiteProjection(catalog: Record<string, unknown>) {
+  const globalKeys = ["schemas", "defaults", "roles", "memberships", "extensions", "extensionMembers", "databaseOwner", "sequences"];
+  return Object.fromEntries([
+    ...globalKeys.map((k) => [k, catalog[k]]),
+    ...["relations", "columns", "constraints", "indexes", "triggers", "policies"].map((k) => [k, rows(catalog[k]).filter((f) => f.schema === "public" && tables.includes(String(f.table ?? f.name)))]),
+    ["types", rows(catalog.types).filter((f) => f.schema === "public" && (tables.includes(String(f.name)) || tables.some((t) => "_" + t === f.name) || (f.kind !== "c" && !String(f.name).startsWith("_"))))],
+  ]);
+}
+export function assertNativeArchiveBinding(bytes: Buffer, entry: Record<string, unknown>) {
+  const blob = createHash("sha1").update("blob " + bytes.length + "\0").update(bytes).digest("hex");
+  if (sha(bytes) !== entry.rawSha256 || blob !== entry.rawGitBlob || bytes.length !== (entry.bytes ?? entry.rawBytes)) throw Error("Native raw archive binding differs");
+  if (entry.canonicalSha256 !== undefined && sha(bytes.toString().replaceAll("\r\n", "\n")) !== entry.canonicalSha256) throw Error("Native canonical source binding differs");
+}
+/** Read every original immutable proof byte; historical tracked source binds to D45/18 Git, not current amended SQL. */
+export async function verifyNativeRED(root: string) {
+  const directory = resolve(root, nativeREDDirectory);
+  const receiptBytes = await readFile(resolve(directory, "receipt.json"));
+  if (sha(receiptBytes) !== nativePins.originalReceiptSha256) throw Error("Original native RED receipt differs");
+  const r = object(JSON.parse(receiptBytes.toString()));
+  if (r.mode !== "owned-full1711-d45-diagnostic" || r.authority !== "Ruling55" || r.sourceHead !== nativePins.sourceHead || r.baselineSource !== nativePins.baselineSource || r.error !== null) throw Error("Original native RED identity differs");
+  for (const k of ["fullD45BaselineObserved", "ownedRED", "completeMetadataAfterRollbackPreserved", "allTenRowsPreserved", "protectedSourcesPreserved", "all57CurrentInputsPreserved", "committedPartialTask1SourceApplied"]) if (r[k] !== true) throw Error("Original native RED preservation missing:" + k);
+  for (const k of ["productionApplied", "deployed", "operationallyEnabled", "heldTask1FiveColumnRepairApplied", "heldTask8ScannerProposalApplied"]) if (r[k] !== false) throw Error("Original native RED authority differs:" + k);
+  const runtime = object(JSON.parse(String(r.runtime))), scanner = object(r.scanner), assembly = object(r.nativeAssembly);
+  if (Object.entries(nativeRuntime).some(([k,v]) => runtime[k] !== v) || r.financeExit !== 3 || r.baselineMigrationCount !== 182 || scanner.fullScannerPassed !== true || scanner.metadataReads !== 4 || !same(scanner.fixtureScope, nativeFixtureScope.map((t) => t.replace(/^public\./, ""))) || ["nativeTemplateAssembly", "nativeParserCopied", "nativeClassifiersExactSlice"].some((k) => assembly[k] !== true)) throw Error("Original native runtime/scanner/assembly differs");
+  const jobs = rows(r.managedJobs), cleanup = rows(r.cleanup), inventory = rows(r.migrationInventory), inputs = rows(r.inputBindings);
+  if (!same(jobs.map((j) => j.kind), ["realtime", "storage", "auth"]) || jobs.some((j) => j.exit !== 0) || cleanup.length !== 4 || cleanup.some((c) => c.normalRemoved !== true) || inventory.length !== 182 || inventory.some((m) => m.exit !== 0) || inputs.length !== 41 || sha(JSON.stringify(inventory)) !== nativePins.migrationInventorySha256 || sha(JSON.stringify(inputs)) !== nativePins.inputInventorySha256 || !same(r.protectedBefore, r.protectedAfter)) throw Error("Original native managed/source/cleanup inventory differs");
+  const beforeRows = rows(r.domainRowsBefore), afterRows = rows(r.domainRowsAfter);
+  if (!same(beforeRows.map((t) => t.table), nativeFixtureScope) || beforeRows.some((t) => t.count !== 0) || !same(beforeRows, afterRows)) throw Error("Original native ten rows differ");
+  const files = object(r.files), proofPaths = [nativeREDDirectory + "/receipt.json"];
+  if (Object.keys(files).length !== 1912) throw Error("Original native proof file cardinality differs");
+  for (const [name, entry] of Object.entries(files)) {
+    if (!/^[a-zA-Z0-9_.-]+$/.test(name)) throw Error("Unsafe original native proof leaf");
+    assertNativeArchiveBinding(await readFile(resolve(directory, name)), object(entry));
+    proofPaths.push(nativeREDDirectory + "/" + name);
+  }
+  for (const entry of inputs) assertNativeArchiveBinding(await readFile(resolve(directory, String(entry.archive))), entry);
+  const before = await readFile(resolve(directory, "d45-baseline.json")), after = await readFile(resolve(directory, "after-rollback.json"));
+  if (sha(before) !== nativePins.captureSha256 || !before.equals(after)) throw Error("Original native complete rollback capture differs");
+  const stderr = await readFile(resolve(directory, "command-0603.stderr.log"));
+  if (sha(stderr) !== "599224c390c5484bdac74983ec012ec05c2b5cddee3bb8cc855256bdf73293da") throw Error("Original native raw 55000 differs");
+  const actual = object(JSON.parse(before.toString()));
+  const pair = { catalog: prerequisiteProjection(object(actual.catalog)), helpers: rows(actual.functions).filter((f) => !(f.schema === "public" && names.includes(String(f.name)))) };
+  if (sha(JSON.stringify(pair)) !== nativePins.pairSha256) throw Error("Original native complete pair differs");
+  return { original: r, runtime, pair, proofPaths };
+}
+/** Generator and qualification consumer both verify original evidence and every frozen archive. */
+export async function verifyNativeQualification(value: unknown, root: string, qualificationDirectory: string) {
+  const q = assertNativeQualification(value), proof = await verifyNativeRED(root);
+  if (!same(q.pair, proof.pair)) throw Error("Native qualified pair not observed");
+  const bindings = object(q.bindings);
+  const sourcePaths = ["task-11-native-profile.ts", "task-11-native-qualify.ts", "task-11-native-prerequisites.json"].map((n) => "docs/evidence/audit-remediation-20260927/r01-forward/" + n);
+  if (!same(Object.keys(bindings).sort(), [...proof.proofPaths, ...sourcePaths].sort())) throw Error("Native complete qualification frozen path set differs");
+  for (const [path, value] of Object.entries(bindings)) {
+    const entry = object(value);
+    if (!/^s\d+\.source$/.test(String(entry.archive))) throw Error("Unsafe native frozen archive leaf");
+    const current = await readFile(resolve(root, path)), archive = await readFile(resolve(qualificationDirectory, String(entry.archive)));
+    if (!current.equals(archive)) throw Error("Native qualification current/archive differs:" + path);
+    assertNativeArchiveBinding(current, entry);
+  }
+  return { ...q, bindings };
+}
+export function correlatedNativeGuards(historicalCatalogs: string[], historicalHelpers: string[], nativeCatalog: string, nativeHelpers: string) {
+  if (!historicalCatalogs.length || !historicalHelpers.length) throw Error("Historical Task11 triple guard required");
+  return {
+    catalog: ` v_native:=(v_before=${nativeCatalog});\n if not v_native and v_before not in(${historicalCatalogs.join(",")}) then raise exception 'R01 finance complete prerequisite catalog differs' using errcode='55000';end if;\n`,
+    helpers: ` if (v_native and v_actual<>${nativeHelpers}) or (not v_native and v_actual not in(${historicalHelpers.join(",")})) then raise exception 'R01 finance complete helper tuples differ' using errcode='55000';end if;\n`,
+  };
+}

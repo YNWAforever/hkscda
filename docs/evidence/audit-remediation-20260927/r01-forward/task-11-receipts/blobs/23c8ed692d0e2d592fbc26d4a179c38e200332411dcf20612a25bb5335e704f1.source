@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-config.toml-read.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "de871c6fde27867ad1c235361b4e96a68f8c8c12",
+  "rawSha256": "a407b40d3c58c02ffea55c360ffd3107803347f6e4e3e02b8f894703254fa529",
+  "bytes": 92970
+}

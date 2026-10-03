@@ -1,0 +1,1019 @@
+$ vite build
+[nitro:vercel] i Using nodejs24.x runtime.
+[nitro:vercel] i Using web entry format.
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/help.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-help.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/donate.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-donate.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/knowledge.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-knowledge.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/publicTruth.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-publicTruth.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/seoSurfaces.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-seoSurfaces.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/sitemap[.]xml.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-sitemap[.]xml.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/stories.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-stories.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/supporter.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-supporter.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/volunteer.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-volunteer.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/__root.visual.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-__root.visual.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/about/cccp.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\about\-cccp.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/about/tnr.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\about\-tnr.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/about/team.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\about\-team.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/reset-password.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\admin\-reset-password.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/login.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\admin\-login.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/adoption/apply.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\adoption\-apply.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/adoption/instructions.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\adoption\-instructions.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/animals/listingSsr.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\animals\-listingSsr.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/donations.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\-donations.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/index.visual.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-index.visual.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/report/adoption.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\report\-adoption.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/report/audit.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\report\-audit.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/sponsors_.pledge.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-sponsors_.pledge.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/volunteer/group.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\volunteer\-group.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/about/index.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\about\-index.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/adoption-preview.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\admin\content\-adoption-preview.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/adoption.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\admin\content\-adoption.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/volunteers/group-enquiries.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\admin\volunteers\-group-enquiries.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/knowledge.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\admin\content\-knowledge.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/adoption/status.$token.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\adoption\-status.$token.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/adoption-information.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\-adoption-information.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/knowledge.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\-knowledge.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/task-overview.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\-task-overview.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/adoption/applications.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\adoption\-applications.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/internships/attachment.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\internships\-attachment.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/jobs/adoption-uploads.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\jobs\-adoption-uploads.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/jobs/public-media-repair.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\jobs\-public-media-repair.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/sponsorships/pledges.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\sponsorships\-pledges.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/jobs/public-uploads.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\jobs\-public-uploads.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/supporter/preferences.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\supporter\-preferences.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/sponsorships/terms.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\sponsorships\-terms.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/supporter/records.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\supporter\-records.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/supporter/recovery.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\supporter\-recovery.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/sponsors_.status.$token.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\-sponsors_.status.$token.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/volunteer/group-enquiries.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\volunteer\-group-enquiries.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/volunteer/status.$token.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\volunteer\-status.$token.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/adoptions/assignment-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\adoptions\-assignment-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/animals/review-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\animals\-review-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/content/review-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\content\-review-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/finance/bank-statement-preview.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\finance\-bank-statement-preview.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/finance/bank-match-operations.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\finance\-bank-match-operations.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/finance/delivery-jobs.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\finance\-delivery-jobs.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/sponsorships/followup-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\sponsorships\-followup-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/supporters/format-preview.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\supporters\-format-preview.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/supporters/tag-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\supporters\-tag-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/volunteers/group-enquiries.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\volunteers\-group-enquiries.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/volunteers/reviewer-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\volunteers\-reviewer-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/sponsorships/pledges.legacyRetry.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\sponsorships\-pledges.legacyRetry.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/adoption/applications/photo-upload-urls.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\adoption\applications\-photo-upload-urls.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/sponsorships/pledges/proof-upload-url.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\sponsorships\pledges\-proof-upload-url.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/supporter/receipts/$receiptId.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\supporter\receipts\-$receiptId.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/supporters/assignment-bulk.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\supporters\-assignment-bulk.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/supporter/recovery.activation.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\supporter\-recovery.activation.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/supporter/recovery.boundaries.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\supporter\-recovery.boundaries.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/supporters/assignment-assignees.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\supporters\-assignment-assignees.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/sponsorships/pledges/reminder-draft.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\sponsorships\pledges\-reminder-draft.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/api/admin/animals/publication/index.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\routes\api\admin\animals\publication\-index.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+vite v7.3.2 building client environment for production...
+transforming...
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/report/audit.tsx" will not be code-split and will increase your bundle size:
+- AnnualReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/report/adoption.tsx" will not be code-split and will increase your bundle size:
+- AdoptionImpactReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/governance.tsx" will not be code-split and will increase your bundle size:
+- AdminGovernancePage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/faq.tsx" will not be code-split and will increase your bundle size:
+- AdminFaqPage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/payment-methods.tsx" will not be code-split and will increase your bundle size:
+- AdminPaymentMethodsPage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/about/team.tsx" will not be code-split and will increase your bundle size:
+- TeamLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/knowledge.tsx" will not be code-split and will increase your bundle size:
+- AdminKnowledgeContentPage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/adoption-preview.tsx" will not be code-split and will increase your bundle size:
+- AdoptionInstructionsPreviewPage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/adoption.tsx" will not be code-split and will increase your bundle size:
+- AdminAdoptionInformationPage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/admin/content/about.tsx" will not be code-split and will increase your bundle size:
+- AdminAboutPagesPage
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+✓ 2590 modules transformed.
+rendering chunks...
+computing gzip size...
+.vercel/output/static/assets/dog-smiling-480-6fqpAZW2.jpg               46.02 kB
+.vercel/output/static/assets/dog-smiling-768-BZd4Dj1C.jpg               92.46 kB
+.vercel/output/static/assets/dog-recovering-e6pf9Ekn.jpg               113.09 kB
+.vercel/output/static/assets/dog-smiling-1024-DZg1fOfE.jpg             143.66 kB
+.vercel/output/static/assets/dog-smiling-BtKTrXtF.jpg                  317.40 kB
+.vercel/output/static/assets/VolunteerAdminShell-DJ2VYEVo.css            5.69 kB │ gzip:   1.60 kB
+.vercel/output/static/assets/index-DUcA6ScH.css                          9.05 kB │ gzip:   2.12 kB
+.vercel/output/static/assets/styles-B7u6K0AW.css                       331.98 kB │ gzip:  77.45 kB
+.vercel/output/static/assets/internships-CmwG0peT.js                     0.11 kB │ gzip:   0.12 kB
+.vercel/output/static/assets/applications-XaCNJ-dz.js                    0.16 kB │ gzip:   0.15 kB
+.vercel/output/static/assets/dog-D7LaXllp.js                             0.17 kB │ gzip:   0.16 kB
+.vercel/output/static/assets/cat-BaZVGQOf.js                             0.17 kB │ gzip:   0.16 kB
+.vercel/output/static/assets/operations-DfqEr0_M.js                      0.19 kB │ gzip:   0.18 kB
+.vercel/output/static/assets/useDebouncedValue-ciYdlF9w.js               0.20 kB │ gzip:   0.17 kB
+.vercel/output/static/assets/circle-x-C_X9cVNW.js                        0.21 kB │ gzip:   0.18 kB
+.vercel/output/static/assets/download-CF4wasDW.js                        0.23 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/message-circle-D1b4PXf0.js                  0.24 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/circle-alert-TpDYmTyp.js                    0.25 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/external-link-Bd3W5nO8.js                   0.25 kB │ gzip:   0.20 kB
+.vercel/output/static/assets/operations-Bz2zTPgh.js                      0.26 kB │ gzip:   0.20 kB
+.vercel/output/static/assets/activities-ibly88_q.js                      0.26 kB │ gzip:   0.20 kB
+.vercel/output/static/assets/pen-line-D0Xl0zYr.js                        0.28 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/list-checks-DL4ZSyMN.js                     0.28 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/deliveryLabel-ClIp45OR.js                   0.28 kB │ gzip:   0.26 kB
+.vercel/output/static/assets/send-C32Ec6I-.js                            0.29 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/dog_._id-Bp4EPZMI.js                        0.31 kB │ gzip:   0.26 kB
+.vercel/output/static/assets/cat_._id-mGRoWqhe.js                        0.31 kB │ gzip:   0.26 kB
+.vercel/output/static/assets/documentManagementLogic-CA0QKotB.js         0.32 kB │ gzip:   0.24 kB
+.vercel/output/static/assets/calendar-Co6Mv_ai.js                        0.32 kB │ gzip:   0.24 kB
+.vercel/output/static/assets/refresh-cw-CN88QhTn.js                      0.32 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/sponsors_._id-B2NBH0Sg.js                   0.33 kB │ gzip:   0.27 kB
+.vercel/output/static/assets/save-C147Yzy0.js                            0.33 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/dog-DehwgM5W.js                             0.33 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/cat-BgOC7D2T.js                             0.33 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/_slug-SRp7LFuk.js                           0.34 kB │ gzip:   0.32 kB
+.vercel/output/static/assets/sponsors_._id-CL3ax7qI.js                   0.37 kB │ gzip:   0.34 kB
+.vercel/output/static/assets/dog_._id-C3Mq8ZMr.js                        0.37 kB │ gzip:   0.33 kB
+.vercel/output/static/assets/cat_._id-BxeXMLGg.js                        0.37 kB │ gzip:   0.33 kB
+.vercel/output/static/assets/sponsors_._id-DMKo0U0-.js                   0.40 kB │ gzip:   0.35 kB
+.vercel/output/static/assets/dog_._id-DVUMkbCo.js                        0.41 kB │ gzip:   0.37 kB
+.vercel/output/static/assets/cat_._id-CQhTgISl.js                        0.41 kB │ gzip:   0.37 kB
+.vercel/output/static/assets/sponsors-DpH-j8BA.js                        0.41 kB │ gzip:   0.36 kB
+.vercel/output/static/assets/sponsors-CDuF8Rjx.js                        0.41 kB │ gzip:   0.29 kB
+.vercel/output/static/assets/new-XRW-T2No.js                             0.44 kB │ gzip:   0.30 kB
+.vercel/output/static/assets/WorkflowSections-CW2tS1cf.js                0.48 kB │ gzip:   0.34 kB
+.vercel/output/static/assets/volunteerAdminLogic-5ykTV4rf.js             0.56 kB │ gzip:   0.34 kB
+.vercel/output/static/assets/passwordRecovery-BXra5XFb.js                0.58 kB │ gzip:   0.33 kB
+.vercel/output/static/assets/file-x-DIcEF0dK.js                          0.63 kB │ gzip:   0.28 kB
+.vercel/output/static/assets/index-C0oPmV-V.js                           0.70 kB │ gzip:   0.41 kB
+.vercel/output/static/assets/sponsorships-Bkfvuu7u.js                    0.71 kB │ gzip:   0.46 kB
+.vercel/output/static/assets/useLiveAdminActor-BOq6Bkqm.js               0.71 kB │ gzip:   0.46 kB
+.vercel/output/static/assets/badge-Cdvp2Jph.js                           0.72 kB │ gzip:   0.38 kB
+.vercel/output/static/assets/documentUpload-BJODuC1g.js                  0.72 kB │ gzip:   0.51 kB
+.vercel/output/static/assets/adopterWorkflowLogic-C2wfb7fB.js            0.81 kB │ gzip:   0.44 kB
+.vercel/output/static/assets/label-CDyJEYlS.js                           0.89 kB │ gzip:   0.55 kB
+.vercel/output/static/assets/_id.edit-C6s860XA.js                        0.89 kB │ gzip:   0.52 kB
+.vercel/output/static/assets/access-denied-BGuZDr9N.js                   1.06 kB │ gzip:   0.64 kB
+.vercel/output/static/assets/tabs-B3REWybs.js                            1.11 kB │ gzip:   0.46 kB
+.vercel/output/static/assets/StatusBadge-B9HT-fNe.js                     1.30 kB │ gzip:   0.53 kB
+.vercel/output/static/assets/ExportButton-fvDoUgpi.js                    1.35 kB │ gzip:   0.80 kB
+.vercel/output/static/assets/caseWorkflowLogic-DtHXpWJQ.js               1.56 kB │ gzip:   0.78 kB
+.vercel/output/static/assets/table-BHQGjm-n.js                           1.56 kB │ gzip:   0.54 kB
+.vercel/output/static/assets/useListQueryState-B4ob4i9V.js               1.98 kB │ gzip:   0.93 kB
+.vercel/output/static/assets/dialog-DBuWN_3c.js                          1.99 kB │ gzip:   0.80 kB
+.vercel/output/static/assets/contentAdminLogic-C6wYdHw3.js               2.17 kB │ gzip:   1.05 kB
+.vercel/output/static/assets/privacy-C5lpm2Vv.js                         2.19 kB │ gzip:   1.22 kB
+.vercel/output/static/assets/DataTable-BTrAmHVU.js                       2.35 kB │ gzip:   0.91 kB
+.vercel/output/static/assets/switch-C6fqSsec.js                          2.49 kB │ gzip:   1.25 kB
+.vercel/output/static/assets/tasks-z5kHvgeE.js                           2.52 kB │ gzip:   1.24 kB
+.vercel/output/static/assets/adoption-B_lB8Nwr.js                        2.59 kB │ gzip:   1.44 kB
+.vercel/output/static/assets/audit-jgPAQY4q.js                           2.65 kB │ gzip:   1.29 kB
+.vercel/output/static/assets/PolicyChangeSummary-sCk8euFK.js             2.89 kB │ gzip:   1.65 kB
+.vercel/output/static/assets/team-DCZxgFIP.js                            3.10 kB │ gzip:   1.54 kB
+.vercel/output/static/assets/status._token-BhR01NKg.js                   3.15 kB │ gzip:   1.43 kB
+.vercel/output/static/assets/knowledge-vQtUV3zT.js                       3.17 kB │ gzip:   1.36 kB
+.vercel/output/static/assets/BulkReview-CX0JaajA.js                      3.53 kB │ gzip:   1.66 kB
+.vercel/output/static/assets/reset-password-BnJ6i6iu.js                  3.72 kB │ gzip:   1.40 kB
+.vercel/output/static/assets/checkbox-B1cI9QsK.js                        3.85 kB │ gzip:   1.69 kB
+.vercel/output/static/assets/AnimalDetail-CtN8iTm3.js                    3.96 kB │ gzip:   1.72 kB
+.vercel/output/static/assets/new-Cd7yulYC.js                             4.18 kB │ gzip:   1.54 kB
+.vercel/output/static/assets/tasks-CN0l6Zwk.js                           4.25 kB │ gzip:   1.92 kB
+.vercel/output/static/assets/login-DBYkzqcP.js                           4.90 kB │ gzip:   1.38 kB
+.vercel/output/static/assets/VolunteerAdminShell-Deu8Xv6V.js             4.99 kB │ gzip:   2.10 kB
+.vercel/output/static/assets/simulation-BpKEPIHf.js                      5.05 kB │ gzip:   2.27 kB
+.vercel/output/static/assets/_slug-ZLLkJTng.js                           5.47 kB │ gzip:   1.87 kB
+.vercel/output/static/assets/tasks-rh07rKKH.js                           5.99 kB │ gzip:   2.38 kB
+.vercel/output/static/assets/InternshipForm-FnGETbdI.js                  6.04 kB │ gzip:   2.68 kB
+.vercel/output/static/assets/_id-B-G-L50z.js                             6.15 kB │ gzip:   2.27 kB
+.vercel/output/static/assets/inbox-nKZoADny.js                           6.39 kB │ gzip:   2.24 kB
+.vercel/output/static/assets/sources-Dd0PxuZc.js                         6.62 kB │ gzip:   2.39 kB
+.vercel/output/static/assets/SupporterFormDialog-ddgk83Oy.js             6.89 kB │ gzip:   2.72 kB
+.vercel/output/static/assets/annual-reports-orRKM9G9.js                  7.22 kB │ gzip:   2.39 kB
+.vercel/output/static/assets/catalogue-BCyJSyMc.js                       7.26 kB │ gzip:   3.18 kB
+.vercel/output/static/assets/help-aSBFClMP.js                            8.09 kB │ gzip:   2.91 kB
+.vercel/output/static/assets/_id-DrNz-yAl.js                             8.29 kB │ gzip:   3.10 kB
+.vercel/output/static/assets/adopters-CUqXmW3P.js                        8.75 kB │ gzip:   2.49 kB
+.vercel/output/static/assets/group-enquiries-BOdmPmJP.js                 8.97 kB │ gzip:   3.04 kB
+.vercel/output/static/assets/assessments-BnmTvurJ.js                     9.11 kB │ gzip:   2.96 kB
+.vercel/output/static/assets/schemas-CBK2bmYA.js                         9.48 kB │ gzip:   3.75 kB
+.vercel/output/static/assets/documents-A6toroWA.js                       9.50 kB │ gzip:   3.28 kB
+.vercel/output/static/assets/sponsors_.status._token-BAfJStJQ.js         9.63 kB │ gzip:   3.32 kB
+.vercel/output/static/assets/access-DMyncQ0N.js                          9.67 kB │ gzip:   3.51 kB
+.vercel/output/static/assets/index-DhviQ1-f.js                           9.73 kB │ gzip:   3.63 kB
+.vercel/output/static/assets/instructions-CkCOP9nk.js                    9.87 kB │ gzip:   2.91 kB
+.vercel/output/static/assets/internships-DkeW1o-1.js                    10.20 kB │ gzip:   3.71 kB
+.vercel/output/static/assets/volunteers-BwbMrGZS.js                     10.34 kB │ gzip:   3.65 kB
+.vercel/output/static/assets/reports-BhuVkSj4.js                        10.35 kB │ gzip:   3.34 kB
+.vercel/output/static/assets/status._token-CfLBSwH0.js                  10.80 kB │ gzip:   3.45 kB
+.vercel/output/static/assets/VolunteerOperations-lK4ujLH9.js            11.03 kB │ gzip:   3.93 kB
+.vercel/output/static/assets/people-CZEzAADh.js                         11.68 kB │ gzip:   4.41 kB
+.vercel/output/static/assets/qualifications-BkvAz4kM.js                 11.69 kB │ gzip:   4.20 kB
+.vercel/output/static/assets/TaskPanel-BQnAuH3d.js                      13.49 kB │ gzip:   3.69 kB
+.vercel/output/static/assets/daily-settings-sU6JGJJe.js                 13.54 kB │ gzip:   4.55 kB
+.vercel/output/static/assets/ContentReview-QKQo00PD.js                  14.05 kB │ gzip:   4.10 kB
+.vercel/output/static/assets/statuses-BsCIeLgz.js                       14.34 kB │ gzip:   4.12 kB
+.vercel/output/static/assets/index-DmLfVJjB.js                          14.87 kB │ gzip:   5.32 kB
+.vercel/output/static/assets/_id-Ky2qujmG.js                            15.07 kB │ gzip:   4.31 kB
+.vercel/output/static/assets/content-DtquUhkU.js                        15.47 kB │ gzip:   4.81 kB
+.vercel/output/static/assets/adoption-guides-DfxAERp1.js                16.04 kB │ gzip:   4.51 kB
+.vercel/output/static/assets/intake-D4tsGddd.js                         20.14 kB │ gzip:   5.15 kB
+.vercel/output/static/assets/AnimalForm-Ds6NYPus.js                     24.84 kB │ gzip:   7.26 kB
+.vercel/output/static/assets/donate-fPbFR1CL.js                         25.16 kB │ gzip:   8.76 kB
+.vercel/output/static/assets/adminPageCopy-D4ks95II.js                  28.04 kB │ gzip:   9.06 kB
+.vercel/output/static/assets/animals-DL6lhtDG.js                        28.25 kB │ gzip:   6.89 kB
+.vercel/output/static/assets/supporters-zVyrjUpc.js                     28.36 kB │ gzip:   9.04 kB
+.vercel/output/static/assets/_id-BbGbx9Xt.js                            31.95 kB │ gzip:   8.42 kB
+.vercel/output/static/assets/_id-gzaGH2UW.js                            32.17 kB │ gzip:   8.61 kB
+.vercel/output/static/assets/VolunteerActivityWorkspace-DJoZAJVI.js     33.86 kB │ gzip:  11.02 kB
+.vercel/output/static/assets/settings-CsZ1j7Y1.js                       39.11 kB │ gzip:   9.93 kB
+.vercel/output/static/assets/PledgeReviewLane-yWLQJU3v.js               41.01 kB │ gzip:  12.12 kB
+.vercel/output/static/assets/index-wwUP2W3y.js                          46.03 kB │ gzip:  13.84 kB
+.vercel/output/static/assets/select-DO9NwObY.js                         49.28 kB │ gzip:  17.58 kB
+.vercel/output/static/assets/_id-CrBjEot0.js                            59.97 kB │ gzip:  15.21 kB
+.vercel/output/static/assets/index-DpZEzZoI.js                       1,156.42 kB │ gzip: 344.12 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 37.77s
+vite v7.3.2 building ssr environment for production...
+transforming...
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/report/audit.tsx" will not be code-split and will increase your bundle size:
+- AnnualReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/report/adoption.tsx" will not be code-split and will increase your bundle size:
+- AdoptionImpactReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/src/routes/about/team.tsx" will not be code-split and will increase your bundle size:
+- TeamLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+"createRequestHandler", "defineHandlerCallback", "transformPipeableStreamWithRouter" and "transformReadableStreamWithRouter" are imported from external module "@tanstack/router-core/ssr/server" but never used in "node_modules/@tanstack/start-server-core/dist/esm/index.js".
+"RawStream" is imported from external module "@tanstack/router-core" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+"hydrate" and "json" are imported from external module "@tanstack/router-core/ssr/client" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+✓ 1000 modules transformed.
+rendering chunks...
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-480-6fqpAZW2.jpg                       46.02 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-768-BZd4Dj1C.jpg                       92.46 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-recovering-e6pf9Ekn.jpg                       113.09 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-1024-DZg1fOfE.jpg                     143.66 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-BtKTrXtF.jpg                          317.40 kB
+node_modules/.nitro/vite/services/ssr/assets/NotoSansHK-Regular-DtlzxZzw.ttf                 7,071.44 kB
+node_modules/.nitro/vite/services/ssr/assets/VolunteerAdminShell-DJ2VYEVo.css                    5.69 kB
+node_modules/.nitro/vite/services/ssr/assets/router-DUcA6ScH.css                                 9.05 kB
+node_modules/.nitro/vite/services/ssr/assets/styles-B7u6K0AW.css                               331.98 kB
+node_modules/.nitro/vite/services/ssr/assets/appUrl.server-KzUxci4E.js                           0.11 kB
+node_modules/.nitro/vite/services/ssr/assets/__23tanstack-start-plugin-adapters-Cwee5PKy.js      0.14 kB
+node_modules/.nitro/vite/services/ssr/assets/createServerRpc-Y-ZZB6MC.js                         0.31 kB
+node_modules/.nitro/vite/services/ssr/assets/useDebouncedValue-dFvnu_Er.js                       0.39 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-Cwx4un4D.js                       0.43 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-BZgCkBwe.js                       0.47 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-BrG4pFqK.js                       0.51 kB
+node_modules/.nitro/vite/services/ssr/assets/_slug-6ovGDnKb.js                                   0.53 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-C1fHsxMX.js                                0.57 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-B_8_dgur.js                                0.57 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-BQtEHlhy.js                           0.58 kB
+node_modules/.nitro/vite/services/ssr/assets/label-B8IBbX7r.js                                   0.60 kB
+node_modules/.nitro/vite/services/ssr/assets/documentManagementLogic-JHAcByZS.js                 0.67 kB
+node_modules/.nitro/vite/services/ssr/assets/WorkflowSections-BIWCO7IO.js                        0.74 kB
+node_modules/.nitro/vite/services/ssr/assets/resilientLoader-twYjqFiO.js                         0.86 kB
+node_modules/.nitro/vite/services/ssr/assets/publicListing.server-BCTnuUqs.js                    0.95 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-DXCqIE6f.js                       0.95 kB
+node_modules/.nitro/vite/services/ssr/assets/badge-CHx9Es0z.js                                   0.99 kB
+node_modules/.nitro/vite/services/ssr/assets/checkbox-CuOZm3SF.js                                1.00 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-B0rgpu_U.js                    1.01 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-CzC4rieb.js                    1.07 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-B0z6QnFh.js                    1.08 kB
+node_modules/.nitro/vite/services/ssr/assets/documentUpload-B0mCwRkX.js                          1.09 kB
+node_modules/.nitro/vite/services/ssr/assets/animal-CfvEdYX_.js                                  1.10 kB
+node_modules/.nitro/vite/services/ssr/assets/publicImpact.functions-Cs3AYujj.js                  1.12 kB
+node_modules/.nitro/vite/services/ssr/assets/volunteerAdminLogic-C3u8u8ho.js                     1.13 kB
+node_modules/.nitro/vite/services/ssr/assets/switch-CfOhSuPI.js                                  1.14 kB
+node_modules/.nitro/vite/services/ssr/assets/passwordRecovery-Dz6_EYlc.js                        1.17 kB
+node_modules/.nitro/vite/services/ssr/assets/checkoutPolicy.functions-BIAd_zbZ.js                1.23 kB
+node_modules/.nitro/vite/services/ssr/assets/instructions-CQ5Siv-L.js                            1.25 kB
+node_modules/.nitro/vite/services/ssr/assets/tabs-d6LP-5px.js                                    1.66 kB
+node_modules/.nitro/vite/services/ssr/assets/adopterWorkflowLogic-Cpe2Smmf.js                    1.66 kB
+node_modules/.nitro/vite/services/ssr/assets/_slug-CdAOJSnP.js                                   1.70 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-nNswOkDf.js                                1.70 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-D-MjurSk.js                                1.70 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-BKXEWCim.js                           1.71 kB
+node_modules/.nitro/vite/services/ssr/assets/publicStoriesPage.functions-BM2T3PoL.js             1.73 kB
+node_modules/.nitro/vite/services/ssr/assets/internships-zh9ZHPIf.js                             1.77 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-DVHnbPBS.js                    1.88 kB
+node_modules/.nitro/vite/services/ssr/assets/useLiveAdminActor-RW6CIFuy.js                       1.88 kB
+node_modules/.nitro/vite/services/ssr/assets/applications-Dlg_Md_z.js                            1.88 kB
+node_modules/.nitro/vite/services/ssr/assets/operations-Boi_DR-C.js                              1.89 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-1DDACeui.js                                     1.90 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-B_7lqFqi.js                                     1.90 kB
+node_modules/.nitro/vite/services/ssr/assets/StatusBadge-Dv238qOt.js                             1.93 kB
+node_modules/.nitro/vite/services/ssr/assets/operations-YuoqqRkJ.js                              2.01 kB
+node_modules/.nitro/vite/services/ssr/assets/activities-ZZV_esah.js                              2.03 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-BFXDJfmm.js                                2.07 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-BKH3i6A7.js                                2.07 kB
+node_modules/.nitro/vite/services/ssr/assets/start-D4eGQozS.js                                   2.08 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-CbE0jnD8.js                           2.11 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-C_hiz4Tt.js                                     2.12 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-CVW6veic.js                                     2.12 kB
+node_modules/.nitro/vite/services/ssr/assets/calendar-Bnk2D4Oa.js                                2.14 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-DFfLq-QZ.js                           2.15 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-CKXMLfC-.js                                2.16 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-DrtajBc9.js                                2.16 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors-qO_zj8WX.js                                2.21 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-C_gx0nFf.js                    2.24 kB
+node_modules/.nitro/vite/services/ssr/assets/publicStory.functions-CGxgh7T8.js                   2.24 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors-DPya6nRO.js                                2.26 kB
+node_modules/.nitro/vite/services/ssr/assets/new-BvLZrU4I.js                                     2.32 kB
+node_modules/.nitro/vite/services/ssr/assets/table-CG1kRqOX.js                                   2.42 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsorships-h7GLvG8W.js                            2.48 kB
+node_modules/.nitro/vite/services/ssr/assets/ExportButton-B2OalJov.js                            2.52 kB
+node_modules/.nitro/vite/services/ssr/assets/publicAnimal.functions-C1Wc_WBh.js                  2.88 kB
+node_modules/.nitro/vite/services/ssr/assets/publicImpact.functions-DPhEhdOp.js                  3.07 kB
+node_modules/.nitro/vite/services/ssr/assets/_id.edit-DrZ1POI4.js                                3.12 kB
+node_modules/.nitro/vite/services/ssr/assets/access-denied-C1HyI_Tw.js                           3.26 kB
+node_modules/.nitro/vite/services/ssr/assets/dialog-D5yPHM30.js                                  3.27 kB
+node_modules/.nitro/vite/services/ssr/assets/publicListing.functions-5W9-qMUd.js                 3.32 kB
+node_modules/.nitro/vite/services/ssr/assets/caseWorkflowLogic-qA1t0Nlb.js                       3.35 kB
+node_modules/.nitro/vite/services/ssr/assets/checkoutPolicy.server-CxAsxxS_.js                   3.40 kB
+node_modules/.nitro/vite/services/ssr/assets/publicProfile-diGIMT3a.js                           3.42 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-Dxwc4bWB.js                       3.54 kB
+node_modules/.nitro/vite/services/ssr/assets/publicImpact.server-eGOn2v8j.js                     3.72 kB
+node_modules/.nitro/vite/services/ssr/assets/contentAdminLogic-B_p6QWwG.js                       3.75 kB
+node_modules/.nitro/vite/services/ssr/assets/useListQueryState-B1LHE2aY.js                       3.88 kB
+node_modules/.nitro/vite/services/ssr/assets/privacy-DHwWoJT7.js                                 4.29 kB
+node_modules/.nitro/vite/services/ssr/assets/PolicyChangeSummary-CS9KOqAd.js                     4.31 kB
+node_modules/.nitro/vite/services/ssr/assets/DataTable-BOGig6yf.js                               4.41 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-CPIWIi4x.js                       4.64 kB
+node_modules/.nitro/vite/services/ssr/assets/select-D2QCkQWf.js                                  4.97 kB
+node_modules/.nitro/vite/services/ssr/assets/adoption-DjPibYUb.js                                5.08 kB
+node_modules/.nitro/vite/services/ssr/assets/tasks-DvrBL6Td.js                                   5.38 kB
+node_modules/.nitro/vite/services/ssr/assets/BulkReview-CeFTVPSO.js                              5.66 kB
+node_modules/.nitro/vite/services/ssr/assets/audit-BgaRx-oB.js                                   5.70 kB
+node_modules/.nitro/vite/services/ssr/assets/team-owJ2B-df.js                                    5.93 kB
+node_modules/.nitro/vite/services/ssr/assets/AnimalDetail-DllJ2b1w.js                            6.34 kB
+node_modules/.nitro/vite/services/ssr/assets/publicStoriesPage.server-lUuA8Ea4.js                6.34 kB
+node_modules/.nitro/vite/services/ssr/assets/status._token-uua0M8fs.js                           6.39 kB
+node_modules/.nitro/vite/services/ssr/assets/knowledge-CZHRaBSi.js                               6.53 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-Mf7ufzbg.js                       6.71 kB
+node_modules/.nitro/vite/services/ssr/assets/schemas-DySz_7Rg.js                                 7.40 kB
+node_modules/.nitro/vite/services/ssr/assets/reset-password-DxYoAf8G.js                          7.49 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase.server-hj0iN7sy.js                         7.53 kB
+node_modules/.nitro/vite/services/ssr/assets/tasks-BS6A4w6M.js                                   8.55 kB
+node_modules/.nitro/vite/services/ssr/assets/VolunteerAdminShell-BAho_15P.js                     8.65 kB
+node_modules/.nitro/vite/services/ssr/assets/login-X-ASs8gj.js                                   8.92 kB
+node_modules/.nitro/vite/services/ssr/assets/new-_pBVObgj.js                                     9.31 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-CvcgLXWS.js                       9.42 kB
+node_modules/.nitro/vite/services/ssr/assets/catalogue-DuTeUXuK.js                               9.88 kB
+node_modules/.nitro/vite/services/ssr/assets/simulation-9HJ0fqLW.js                             10.37 kB
+node_modules/.nitro/vite/services/ssr/assets/_slug-BeKNQWja.js                                  10.76 kB
+node_modules/.nitro/vite/services/ssr/assets/InternshipForm-D1U7REU3.js                         11.92 kB
+node_modules/.nitro/vite/services/ssr/assets/tasks-CFbbk7Z2.js                                  12.25 kB
+node_modules/.nitro/vite/services/ssr/index.js                                                  12.29 kB
+node_modules/.nitro/vite/services/ssr/assets/help-Btzp1te4.js                                   12.46 kB
+node_modules/.nitro/vite/services/ssr/assets/inbox-BDWXg4TP.js                                  12.78 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-Bu_zsG3Q.js                                    12.79 kB
+node_modules/.nitro/vite/services/ssr/assets/SupporterFormDialog-BIxgd_f7.js                    13.49 kB
+node_modules/.nitro/vite/services/ssr/assets/sources-D6Fg4sR1.js                                14.13 kB
+node_modules/.nitro/vite/services/ssr/assets/annual-reports-sJF7NQVZ.js                         14.75 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-DHjTPTrL.js                                    15.07 kB
+node_modules/.nitro/vite/services/ssr/assets/instructions-vjwmz-iD.js                           15.11 kB
+node_modules/.nitro/vite/services/ssr/assets/assessments-BUeofwoB.js                            15.29 kB
+node_modules/.nitro/vite/services/ssr/assets/group-enquiries-Ao46xN0I.js                        16.12 kB
+node_modules/.nitro/vite/services/ssr/assets/index-CeAMuHtW.js                                  16.26 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_.status._token-CHYypBk3.js                16.32 kB
+node_modules/.nitro/vite/services/ssr/assets/volunteers-5diyvzzZ.js                             16.59 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase-DQ7LQCWy.js                               16.79 kB
+node_modules/.nitro/vite/services/ssr/assets/adopters-DnDOY0Ek.js                               17.93 kB
+node_modules/.nitro/vite/services/ssr/assets/access-BVDmXPba.js                                 17.95 kB
+node_modules/.nitro/vite/services/ssr/assets/status._token-COi8dbJM.js                          18.02 kB
+node_modules/.nitro/vite/services/ssr/assets/internships-C_euHv7W.js                            18.14 kB
+node_modules/.nitro/vite/services/ssr/assets/documents-Db9IDEeW.js                              18.14 kB
+node_modules/.nitro/vite/services/ssr/assets/reports-qKtvd56_.js                                20.46 kB
+node_modules/.nitro/vite/services/ssr/assets/VolunteerOperations-BbWC4Qze.js                    20.94 kB
+node_modules/.nitro/vite/services/ssr/assets/qualifications-gmiAp_3f.js                         21.93 kB
+node_modules/.nitro/vite/services/ssr/assets/people-D9TpuW9z.js                                 22.90 kB
+node_modules/.nitro/vite/services/ssr/assets/service-BESZys-T.js                                23.91 kB
+node_modules/.nitro/vite/services/ssr/assets/TaskPanel-BvXJuKSv.js                              25.93 kB
+node_modules/.nitro/vite/services/ssr/assets/ContentReview-o-kGi40v.js                          26.10 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-BIJ4d_4q.js                                    26.52 kB
+node_modules/.nitro/vite/services/ssr/assets/daily-settings-CuGbUIC9.js                         26.83 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase.server-BvwU3ZHG.js                        28.46 kB
+node_modules/.nitro/vite/services/ssr/assets/content-D3eJhTk3.js                                28.69 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-AIWEa12v.js             29.96 kB
+node_modules/.nitro/vite/services/ssr/assets/index-g33pyG80.js                                  30.40 kB
+node_modules/.nitro/vite/services/ssr/assets/statuses-BK4-m2Fq.js                               30.78 kB
+node_modules/.nitro/vite/services/ssr/assets/adoption-guides-CRVUYWey.js                        33.19 kB
+node_modules/.nitro/vite/services/ssr/assets/donate-CPYXvZ7K.js                                 34.66 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-D8YDv9To.js                      35.93 kB
+node_modules/.nitro/vite/services/ssr/assets/adminPageCopy-QEQDqtR0.js                          39.35 kB
+node_modules/.nitro/vite/services/ssr/assets/intake-H-bwdqDL.js                                 41.61 kB
+node_modules/.nitro/vite/services/ssr/assets/AnimalForm-CsPGESv-.js                             48.05 kB
+node_modules/.nitro/vite/services/ssr/assets/server-AodbtKTx.js                                 49.24 kB
+node_modules/.nitro/vite/services/ssr/assets/supporters-uCNcttS1.js                             54.38 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-UxjfsrMf.js                                    54.73 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-DUfKX_Pa.js                                    57.27 kB
+node_modules/.nitro/vite/services/ssr/assets/animals-BCdPwuU1.js                                58.43 kB
+node_modules/.nitro/vite/services/ssr/assets/VolunteerActivityWorkspace-Dt6ZqxVr.js             59.63 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-DSyeBrKO.js                      67.68 kB
+node_modules/.nitro/vite/services/ssr/assets/settings-CGURxMNT.js                               71.71 kB
+node_modules/.nitro/vite/services/ssr/assets/PledgeReviewLane-B3252SBQ.js                       81.16 kB
+node_modules/.nitro/vite/services/ssr/assets/index-Cxf91BTd.js                                  82.60 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-DhDp_mHt.js                                    99.44 kB
+node_modules/.nitro/vite/services/ssr/assets/router-CGeEYNj7.js                              1,644.90 kB
+✓ built in 16.18s
+
+[nitro] o Building [Nitro] (preset: vercel, compatibility: 2026-10-03)
+[nitro] √ Generated public .vercel/output/static
+vite v7.3.2 building nitro environment for production...
+transforming...
+node_modules/@tanstack/react-router/dist/esm/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/index.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/ClientOnly.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/ClientOnly.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useNavigate.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useNavigate.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/RouterProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/RouterProvider.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useBlocker.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useBlocker.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouterState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouterState.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/HeadContent.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/HeadContent.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useLocation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useLocation.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Match.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Match.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/link.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/link.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useMatch.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useMatch.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Matches.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Matches.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Asset.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Asset.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouter.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouter.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/utils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/utils.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/routerContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/routerContext.js" was ignored.
+node_modules/@radix-ui/react-tabs/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tabs/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-alert-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-alert-dialog/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-router/dist/esm/matchContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/matchContext.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Transitioner.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Transitioner.js" was ignored.
+node_modules/@radix-ui/react-label/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-label/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-select/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-select/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-checkbox/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-checkbox/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-switch/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-switch/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutationState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutationState.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useIsFetching.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useIsFetching.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutation.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useBaseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useBaseQuery.js" was ignored.

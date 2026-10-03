@@ -1,0 +1,7 @@
+{
+  "exit": 1,
+  "productInputsChanged": false,
+  "observedError": "KeyError: 'frozenInputs' line52; capture producer actual bindings key; composition/gates/generator use frozenInputs",
+  "command": "python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-bind.py SOURCE",
+  "toolChunk": "0de37a"
+}

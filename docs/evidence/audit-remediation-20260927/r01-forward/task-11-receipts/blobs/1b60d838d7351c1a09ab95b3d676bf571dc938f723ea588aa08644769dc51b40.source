@@ -1,0 +1,8 @@
+{
+  "statements": [
+    "-- Forward-only repair: list_legacy SQL aliases collided with PL/pgSQL records r/a.\n-- Preserve the existing function's authorization, link mutation, attributes and ACL.\ndo $migration$\ndeclare\n function_definition text := pg_get_functiondef('public.volunteer_legacy_identity_command(uuid,jsonb)'::regprocedure);\n old_fragment text := $fragment$jsonb_build_object('registrations',(select coalesce(jsonb_agg(jsonb_build_object('id',r.id,'contact_name',r.contact_name,'contact_email',r.contact_email,'status',r.status,'updated_at',r.updated_at,'title',a.title,'starts_at',a.starts_at,'policy_bound',a.policy_version_id is not null) order by a.starts_at),'[]') from public.volunteer_registration r join public.volunteer_activity a on a.id=r.activity_id where r.profile_id is null and r.registration_type='individual' and r.participant_count=1 and r.status in ('pending','waitlisted') and a.starts_at>clock_timestamp()))$fragment$;\n new_fragment text;\nbegin\n if (length(function_definition)-length(replace(function_definition,old_fragment,'')))/length(old_fragment) <> 1 then\n  raise exception 'Expected exactly one legacy list fragment; review current function before applying alias repair';\n end if;\n new_fragment := replace(replace(replace(replace(old_fragment,\n  'r.','legacy_registration.'),'a.','legacy_activity.'),\n  'public.volunteer_registration r ','public.volunteer_registration legacy_registration '),\n  'public.volunteer_activity a ','public.volunteer_activity legacy_activity ');\n execute replace(function_definition,old_fragment,new_fragment);\nend $migration$"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

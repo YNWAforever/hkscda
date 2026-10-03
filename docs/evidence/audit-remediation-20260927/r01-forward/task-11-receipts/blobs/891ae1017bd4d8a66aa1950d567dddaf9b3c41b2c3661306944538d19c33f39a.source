@@ -1,0 +1,102 @@
+{
+  "receiptType": "fix1-focused",
+  "mode": "modern",
+  "requiredFinalFlags": [
+    "fullScannerPassed",
+    "dependenciesBound",
+    "migrationApplied",
+    "catalogPreserved",
+    "zeroRowsAfter",
+    "normalDrop",
+    "templatePreserved",
+    "modernPreserved",
+    "frozenInputsPreserved"
+  ],
+  "error": null,
+  "failedFinalFlags": [],
+  "frozenInputs": {
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-focused.ts": "af76d9ac80e7c7875def4667fe529878240b2c6f0aa9169b26f3352b347c589f",
+    "src/lib/donations/financeCallbackForward.database.test.ts": "35fd36e5579f80fba07cbf3661c7dfe5618bbe15f9918afbb7fb320e76df23a9",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+    "supabase/migrations/20261002170945_r01_finance_callback_forward.sql": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+    "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e"
+  },
+  "expectedTestExit": 0,
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "schemaParity": true,
+  "clone": "r01_clone_f188dc1e89ab41e48bef4b985fb19af8",
+  "fullScannerPassed": true,
+  "dependenciesBound": true,
+  "migrationApplied": true,
+  "command": [
+    "bun",
+    "test",
+    "--timeout",
+    "15000",
+    "src/lib/donations/financeCallbackForward.database.test.ts",
+    "--test-name-pattern",
+    "system void late audit failure"
+  ],
+  "testExit": 0,
+  "expectedTestObserved": true,
+  "catalogPreserved": true,
+  "rows": [
+    {
+      "path": "auth.users",
+      "count": 0
+    },
+    {
+      "path": "admin_user",
+      "count": 0
+    },
+    {
+      "path": "supporter",
+      "count": 0
+    },
+    {
+      "path": "donation",
+      "count": 0
+    },
+    {
+      "path": "payment",
+      "count": 0
+    },
+    {
+      "path": "receipt",
+      "count": 0
+    },
+    {
+      "path": "receipt_sequence",
+      "count": 0
+    },
+    {
+      "path": "audit_log",
+      "count": 0
+    },
+    {
+      "path": "supporter_consent_intent",
+      "count": 0
+    },
+    {
+      "path": "donation_delivery_job",
+      "count": 0
+    }
+  ],
+  "zeroRowsAfter": true,
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "eligible": true
+}

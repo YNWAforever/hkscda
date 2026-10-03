@@ -1,0 +1,2 @@
+NOTICE:  trigger "set_updated_at" for relation "public.group_enquiries" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.knowledge_posts" does not exist, skipping

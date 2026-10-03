@@ -1,0 +1,18 @@
+{
+  "statements": [
+    "alter table public.adoption_followup\n  drop constraint if exists adoption_followup_adoption_case_id_not_null",
+    "alter table public.adoption_followup\n  alter column adoption_case_id drop not null,\n  add column if not exists adopter_profile_id uuid references public.adopter_profile(id) on delete set null,\n  add column if not exists animal_id uuid references public.animals(id) on delete set null,\n  add column if not exists task_type text not null default 'followup',\n  add column if not exists priority text not null default 'normal',\n  add column if not exists due_at timestamptz,\n  add column if not exists assigned_to text,\n  add column if not exists contact_channel text,\n  add column if not exists outcome text,\n  add column if not exists next_step_at timestamptz",
+    "alter table public.adoption_followup\n  drop constraint if exists adoption_followup_link_required,\n  add constraint adoption_followup_link_required\n    check (\n      adoption_case_id is not null\n      or adopter_profile_id is not null\n      or animal_id is not null\n    )",
+    "alter table public.adoption_followup\n  drop constraint if exists adoption_followup_priority_check,\n  add constraint adoption_followup_priority_check\n    check (priority in ('low', 'normal', 'high', 'urgent'))",
+    "alter table public.adoption_followup\n  drop constraint if exists adoption_followup_contact_channel_check,\n  add constraint adoption_followup_contact_channel_check\n    check (\n      contact_channel is null\n      or contact_channel in ('phone', 'whatsapp', 'email', 'in_person', 'internal')\n    )",
+    "create index if not exists adoption_followup_status_due_idx\n  on public.adoption_followup (status_id, due_at)",
+    "create index if not exists adoption_followup_case_due_idx\n  on public.adoption_followup (adoption_case_id, due_at)",
+    "create index if not exists adoption_followup_adopter_due_idx\n  on public.adoption_followup (adopter_profile_id, due_at)",
+    "create index if not exists adoption_followup_animal_due_idx\n  on public.adoption_followup (animal_id, due_at)",
+    "create index if not exists adoption_followup_assigned_due_idx\n  on public.adoption_followup (assigned_to, due_at)",
+    "create index if not exists adoption_followup_overdue_idx\n  on public.adoption_followup (due_at)\n  where completed_at is null"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

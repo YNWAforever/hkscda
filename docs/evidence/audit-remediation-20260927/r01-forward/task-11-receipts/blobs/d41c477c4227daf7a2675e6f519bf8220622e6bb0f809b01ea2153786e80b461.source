@@ -1,0 +1,4 @@
+NOTICE:  constraint "donation_contact_language_check" of relation "donation" does not exist, skipping
+NOTICE:  constraint "donation_contact_snapshot_length_check" of relation "donation" does not exist, skipping
+NOTICE:  trigger "record_public_consent_intents" for relation "public.donation" does not exist, skipping
+NOTICE:  trigger "record_public_consent_intents" for relation "public.volunteer_registration" does not exist, skipping

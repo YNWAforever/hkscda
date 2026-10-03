@@ -1,0 +1,10 @@
+import hashlib,json,pathlib,subprocess,sys,time
+s=pathlib.Path('.superpowers/sdd/r01-forward-schema-plan-20261001');o=s/('task-11-fix3-focused-'+sys.argv[1]+'-'+str(time.time_ns()));o.mkdir()
+inputs=[pathlib.Path(__file__),pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts'),pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json'),pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts')]
+inputs += [p for p in [pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.ts'),pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-qualify.ts')]if p.exists()]
+bindings=[]
+for i,p in enumerate(inputs):
+ b=p.read_bytes();a=f's{i}.source';(o/a).write_bytes(b);bindings.append({'path':p.as_posix(),'archive':a,'bytes':len(b),'rawSha256':hashlib.sha256(b).hexdigest(),'canonicalSha256':hashlib.sha256(b.replace(b'\r\n',b'\n')).hexdigest(),'rawGitBlob':subprocess.check_output(['git','hash-object','--no-filters',str(p)],text=True).strip()})
+cmd=['bun','test','docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts'];t=time.monotonic();r=subprocess.run(cmd,capture_output=True)
+(o/'stdout.log').write_bytes(r.stdout);(o/'stderr.log').write_bytes(r.stderr)
+receipt={'command':cmd,'exit':r.returncode,'elapsedSeconds':time.monotonic()-t,'bindings':bindings,'stdoutSha256':hashlib.sha256(r.stdout).hexdigest(),'stderrSha256':hashlib.sha256(r.stderr).hexdigest()};(o/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',newline='\n');print(json.dumps({'out':str(o),'exit':r.returncode}));print(r.stderr.decode('utf-8',errors='replace')[-4000:]);sys.exit(r.returncode)

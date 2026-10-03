@@ -1,0 +1,10 @@
+{
+  "step": "- name: Run Task11 finance callback transaction tests\n        run: bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts\n        env:\n          R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: \"1\"\n          R01_FINANCE_CALLBACK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres\n",
+  "real1711NonSkippedFinanceStep": "PENDING_CONTROLLER_CI",
+  "localCIExecution": "NOT_RUN",
+  "prerequisite": "existing real rls-matrix Supabase startup",
+  "CIAndGitHubFlags": "Both required exactly true by source guard; provided by GitHub Actions runner",
+  "packageTestDbBroadened": false,
+  "acceptedDedicatedStep": true,
+  "originalFourCheckRed": "Historical observed gap; test:db inclusion is not required by dedicated-step solution"
+}

@@ -1,0 +1,11 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\donations\financeCallbackFixtureGuard.test.ts:
+(pass) finance fixture guard admits only exact opted GitHub CI and existing owned clone [1.18ms]
+(pass) finance CI guard refuses missing or nonliteral flags and non-CI use [0.20ms]
+(pass) finance CI guard refuses wrong host port database user protocol and suffix [0.10ms]
+
+ 3 pass
+ 0 fail
+ 26 expect() calls
+Ran 3 tests across 1 file. [82.00ms]

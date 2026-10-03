@@ -1,0 +1,101 @@
+# Task11 Fix3 — owned prerequisite diagnosis; scope decision pending
+
+Source remains clean at `18c3c6ea06a25292b6e172e99cd381ed7d4409dc`, tree `d76af23ba1db9c908058429e61e5ec629f58f7e1`. All 57 current Fix1 bindings remain exact. The five target contracts, two manual actor fences, three system bodies, SQL `968852` LF bytes / `33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4`, scanner5352, historical source archives and held Task1/Task8 proposals are unchanged. No tracked Fix3 amendment or commit exists.
+
+## Actual CI RED
+
+Draft PR194 head18, run37063035577 attempt1, RLS job111024767122 failed during local stack startup. All migrations through Task10 applied; finance rejected with55000 `R01 finance complete prerequisite catalog differs`. Finance behavior did not execute. OWN routing copy `task-11-fix3-diagnosis-1790974606735/ci.failed.raw.log` preserves root's144667-byte raw log / SHA46fb477560a1a954eaed574a925e4ef76fc515f4cc3252a8721ae23044e26760. Four individual CI jobs succeeded; RLS failed and finance step skipped. Aggregate success is not finance proof.
+
+## Authority and qualification
+
+Ruling55 is copied exactly as `task-11-fix3-diagnosis-1790974606735/ruling55.source`. It authorizes only a uniquely owned no-port/no-mount/network-none synthetic PG namespace, exact observed official image versions/digests, complete managed migration jobs and D45 Git migration replay, metadata/scanner checks, and a transactional unchanged-finance diagnostic. It admits no new catalog/helper tuple, generator/body/grant/role/native/scanner amendment or held repair. Existing52322 template,57322 modern and other stacks remain protected.
+
+The CI log establishes PG17.11.0.002, Realtime2.140.3, Storage1.79.28 and Auth2.197.0 images. Their exact observed digests and image inspection metadata are in each actual driver receipt. Two missing official public images were acquired under R55; acquisition transcripts are preserved in the routing directory. Actual CI bunx CLI version was not emitted. This rehearsal uses bound official pinned2.118 native source assembly; it does not claim exact CI CLI identity or fresh production/hosted behavior.
+
+Initial routing through legacy Go source was insufficient. The bound native TypeScript start command routes through start.handler → startDatabase → runFreshDbSetup → native setup/migration apply. Native `applyApiPrivileges` leaves an unset `api.auto_expose_new_tables` unchanged (`Option.getOrElse(...true)`), unlike the Go routine's default false. Native Realtime uses `supabase_admin`, unlike the routed Go environment. Native `splitAndTrim` invokes JS `.trim()`, removing a leading BOM; Go `strings.TrimSpace` retains it. Earlier Go-default statements are diagnostic assembly mistakes, not facts about actual CI setup.
+
+Exact native migration-file/split/apply/db-setup/routing/config/templates and upstream Git blobs are bound in `task-11-fix3-diagnosis-1790974606735/vendor/*.receipt.json`. The actual native parser is executed unchanged through an owned wrapper, with original Git LF+BOM bytes and separately archived statement/transport bytes. The wrapper reinserts terminators and selects a psql transaction envelope using an exact extracted native classifier; it rejects unsupported nontransactional/pipeline-incompatible input. It does not rewrite SQL strings or historical migrations. The transport is a qualified native-source rehearsal, not execution of the full CLI application.
+
+## Preserved actual iterations
+
+Every binder was archived before launch. Historical receipts remain immutable. Original command arrays, raw stdout/stderr, source archives, input SHA/Git blob bindings, image metadata, actual exits and cleanup are authoritative in each `receipt.json`.
+
+- v1 `task-11-fix3-baseline-cad58e39daaf43aab76df20131bdb852`: exit1 Windows long-path archive failure; two Git reads only, no Docker create, no managed job/catalog/domain RED. Historical prospective qualification is not successful-bootstrap credit.
+- v2 `task-11-fix3-baseline-b19aa2b7ff644e6ea62c1874bd34f16b`: exit1 literal PG tag inspection failed before create; exact CI PG digest was cached and subsequently inspected by digest. No substitute image used.
+- v3 `task-11-fix3-baseline-077fd23379da48e592f2f4ee782cdcee`: PG17.11 initialized; Realtime exit1 `Jason.DecodeError` from empty JWKS. No D45 replay/full catalog/finance RED. Both owned containers normally removed.
+- v4 `task-11-fix3-baseline-9c291d811f4c4b04bcfb3910526c27a4`: three actual managed jobs exit0; D45 migration20260718120000 failed on BOM in direct psql transport. This also used legacy Go API defaults/Realtime role and is an assembly mismatch. No full-baseline/domain RED credit; four owned containers normally removed.
+- Native lookup print failed cp950 after two sources had been acquired; both source receipts and actual print failure were preserved. Initial wrapper relative import check failed before DB launch; corrected absolute-path wrapper actual check exit0: D45 Gitblobeb86582054912258b19f0e23f3b43b17a06382a2 /4842 bytes /SHA052078df1028b0af17086e45071c72a3f4b0d3b9bab35fc74f8b5ebe59e69f2b produced16 statements, rawBOMtrue/firstParsedBOMfalse.
+- v5 `task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85`: actual three managed jobs exit0 and all182 D45 Git migrations exit0 through20261002111418. Complete catalog/functions/Auth/native/indexes/shapes observed; all ten scoped tables zero. Unchanged scanner then exit1, before unchanged-finance transaction or fixture DML. Four owned containers normally removed; protected before/after hashes exact and current57 exact.
+
+Actual v5 command: `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline.py`; prelaunch archive `task-11-fix3-diagnosis-1790974606735/baseline-driver-v5.before-launch.source`; executed driver/native transport/scanner query sources are bound by the v5 receipt before consumption. The unchanged full scanner executes its actual metadata queries through an owned read-only Docker psql adapter; each SELECT uses pg_catalog/read-only scope. No fixture or provider/network primitive was executed.
+
+## v5 immutable evidence
+
+Relative paths below are under OWN `.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/`:
+
+- `receipt.json`:1003069 bytes, SHAdd8ea5245cff5499865fab8886c518944676a28aa2431056bad92b8ece9e4329.
+- `d45-baseline.json`:3341952 bytes, SHA9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603; complete captured functions include full owner/ACL/default/config/body/definition/native fields.
+- `command-0599.stderr.log`:580 bytes, SHAcac5657d6b07d8f7607f1365063232e68c0fb2660aaeaac6e24a0e0c80ae0387, actual scanner exit1: `Unsafe fixture trigger path: public.set_updated_at; no provider/network primitive executed` at unchanged helper860.
+- `offline-diagnosis/complete-prerequisite-differences.json`:730599 bytes, SHA9992085854e810459a80628e564d2bc97d49d18b2a45fb1949e6548bf1214339.
+- `complete-handoff/all-prerequisite-differences.json`:3995048 bytes, SHAa16015a3afa674bf7f7a066e4d5cdff89348bbcc65e5ab8b6340a27fb3f150c0. Exact complete catalog/Auth/native/index/shape/helper admitted-versus-observed arrays are retained.
+- `complete-handoff/handoff.json`: complete evidence/source/current57/raw/canonical/computed Git-blob identities, actual scanner invocation/exit, scoped trigger paths, full tuple/body/ACL/native provenance, source/transport bindings and cleanup.
+- `complete-handoff/aligned-metadata-differences.json`: complete keyed catalogue/helper differences with no omission or normalization. Analysis binders archived before metadata-only execution in routing directory.
+
+Computed raw Git-blob identities for ignored diagnostics are byte addresses, not claims of committed Git archive objects. Original committed264 archives/current57 source provenance remains historical/current as applicable; no new source-package translation is generated here.
+
+## Concrete scanner prerequisite blocker
+
+`public.set_updated_at()` is PLpgSQL, resulttrigger, ownerpostgres, SECURITY INVOKER, confignull, no extension/library. Complete stored source:
+
+```sql
+begin
+  new.updated_at = now();
+  return new;
+end;
+```
+
+BodyMD5 `9b1889f56258bf9d6554213c05019c76`; definitionMD5 `4d6804d5850641a33867814c9e76a714`. Raw/effective EXECUTE ACL is PUBLIC,postgres,anon,authenticated,service_role, all grantorpostgres/non-grantable. Native provenance and full fields are in the saved scanner rows and full function capture. Source migration20260623160506_phase_2_donations_mvp.sql Gitblob8298ff8d908d265dfebc53b98c7b001347c41420 /13500 GitLF bytes /SHAce4831774402e83ef42a3bfcb10bb40ce66b39f94e9ce5b656b9e45327cbd7b2; actual parsed transport13474 bytes /SHAbe2df760ffa4c2dc88fcaa29d72ead4cce665ec9aaab023fd6d4978b3899e4cb. BEFORE UPDATE row triggers connect all nine scoped public tables to this function; auth.users has no such trigger. Scanner ownCoreScope is false because confignull; the actual unchanged conservative operator/call closure refuses the path.
+
+No scanner amendment or held Task8 patch is applied. The controller requested no further environment launch pending a scope decision. There is no actual post-finance prerequisite capture: finance was never run, scanner failed, and normal cleanup followed. Protected template/modern before/after hashes are separate exact evidence and are not post-finance catalog proof.
+
+## Complete observed prerequisite differences
+
+Offline expected-to-observed catalogue comparison finds11 differences against hosted and18 against modern/component. Nearest modern/component profile has no changes to globals, databaseOwner, native structures or index tuples. Exact changes:
+
+- Five existing Task1 service column grants: donation.idempotency_key/idempotency_fingerprint and payment.idempotency_key SELECT+INSERT; payment.checkout_url/checkout_attempted_at SELECT+UPDATE.
+- Twelve supporter columns have authenticated INSERT+UPDATE grants; corresponding table-level authenticated INSERT+UPDATE absent.
+- Donation fingerprint check includes explicit `idempotency_fingerprint IS NOT NULL`.
+- Full helper array11→16 adds five existing exact functions: fail_pending_provider_payment, issue_receipt_with_audit, refund_provider_payment_atomically, void_donation_receipts_with_audit, void_receipt_with_audit. Component auth.uid already equals cdef18/ea3b; private.bump_supporter_edit_version body/definition differs from component's domain replay. Full tuples/ACLs/configs are archived; no tuple admitted by analogy.
+
+Auth and shapes guards match one existing complete tuple; indexes match modern; native matches hosted. These independent matching facets do not make the complete prerequisite profile accepted. D45's182 migration list includes already committed Task1 partial source and other existing predecessors; it excludes only the held five-column ACL repair and held Task8 proposal. Do not describe this full bootstrap as Task1 unapplied.
+
+No source correction is proposed as accepted: the observed scanner blocker requires a controller scope decision before another environment or any guard admission. Actual CI55000 is preserved; no owned finance55000 is claimed. No DB/application gate reruns, source freeze regeneration, provider/production action, push, PR or merge was performed in this diagnosis.
+
+## Subsequent corrections and R56 boundary (append-only)
+
+The earlier paragraphs are historical diagnosis, with these explicit corrections:
+
+1. Direct `set_updated_at` trigger paths cover **seven** scoped tables: admin_user, supporter, donation, payment, receipt, receipt_sequence, audit_log. The full unchanged scanner closure is **ten** tables including auth.users, supporter_consent_intent and donation_delivery_job. The earlier claim of nine direct public paths was inaccurate.
+2. The v5 scanner failure is a confirmed **diagnostic adapter OID typing mismatch**, not a product scanner defect. PostgreSQL psql JSON returns OID strings; actual Bun1.3.14 SQL returns uint32 numbers. The sole falsely unreviewed equality operator was public.citext_eq because planner OID strings101/105 failed strict numeric comparisons. Bound offline unchanged pure classifiers with exact numeric fields show directUnsafe, afterUnknownUnsafe and afterPropagationUnsafe allfalse for set_updated_at, and no unsafe called names. Its existing confignull remains unchanged. No search_path pinning, helper body or scanner change is needed or admitted.
+3. Earlier derived helper comparisons used stale target aliases. The five alleged extra helpers were exactly this task's five targets and must be excluded. Original invalid-filter analyses remain immutable. Corrected `complete-handoff-v2/all-prerequisite-differences.json` derives names from bound task-11-profile.ts,3857214 bytes /SHAc1e1c4123a91f525386baf459878bba58b2283483562cf3cfb84637c8023387b. Actual helpers11→11 have no missing/extra tuples. Relative to component, only private.bump_supporter_edit_version body/definition differs; all other tuple fields remain exact. `complete-handoff-v2/target-check/receipt.json` confirms all five actual target rows have cardinality1 and each matches one already admitted exact complete target tuple. This is offline tuple evidence, not behavior proof.
+
+The actual legacy supporter helper originates in D45 migration20260927110000_crm_supporter_edit_version.sql, Gitblobc3602d23a07d1da68ccb7f5afb7d38b772132d63, SHA d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c. The later20260928113000 fence changes ACL only. Task6 and Task9 preserve both reviewed legacy definitions; no earlier task's tuple has been admitted here by analogy.
+
+Supplementary actual typing evidence: `task-11-fix3-typing-binding-1790978252674173700/receipt.json`, SHA487e57bc728dd8297895fe751c0c87f0617153fa3f7447ba7e461db9b5dc4253, eight actual commands all0/errornull, immediate protected before/after exact and current57 exact. Raw command-2 logs bind scalar/OID-array Bun numeric types; command-3 binds the exact expression query on protected metadata (89 rows, all operatorOids empty arrays; not nonempty finance-expression evidence); command-4 binds the offline extracted-classifier run. Runtime is Bun1.3.14 and protected synthetic PG17.6, explicitly distinct from owned PG17.11 assembly.
+
+`task-11-fix3-array-json-probe-1790978529384/receipt.json` additionally observes constant wire operatorOids[101,105] numbers versus PostgreSQL JSON["101","105"] strings with exact protected before/after. It is a constant representation probe, not actual finance dependency data. Root independently bound these probes, corrected v2 comparisons and v5 raw/current/Git evidence; its initial mistaken ignored-input Git audit remains separately preserved.
+
+Exact Ruling56 is copied as `task-11-fix3-diagnosis-1790974606735/ruling56.source`. It admits only an ignored finite known-query OID codec and one fresh owned R55 rehearsal. No source/profile/tuple/ACL/helper amendment is admitted. The codec recognizes four exact scanner query hashes; only function rows.oid, operator rows.oid/implementationOid/restrictionOid/joinOid, and expression rows.operatorOids elements receive strict uint32 conversion. Existing planner nulls are preserved; missing fields, invalid values, wrong query or non-array expression values fail closed. Raw psql JSON is retained separately from typed transport. No catalogue/profile conversion or recursive numeric coercion occurs.
+
+Actual focused codec command: `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-codec-test.py` → `bun test .../task-11-fix3-oid-codec.test.ts`; owned receipt `task-11-fix3-codec-test-1790978814939438900/receipt.json`: exit0,4pass/0fail/50expect calls,199ms, raw stdout/stderr retained. Actual saved metadata preservation, uint32/null boundaries, array element/field errors, unknown query and untouched nested numeric strings are covered. Driver/query adapter/codec were archived before the single newly admitted v6 rehearsal. Its result remains pending at this report boundary; no success is inferred.
+
+
+## R56 v6 actual RED and source proposal (pending admission)
+
+Actual driver exit0; managed3 exit0,182 D45 migrations exit0,unchanged5352 scanner PASS/full10. Unchanged finance exit3 at55000 complete prerequisite catalog differs. Complete before/after captures identical SHA9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603,ten rows zero and four normal cleanup records. Protected template/modern/current57 exact; source18 unchanged.
+
+There was no pre-execution combined finance transaction archive. New post-execution derived bytes are explicitly qualified and bound to archived executed driver+i040; they are not an original transport archive. Literal trailing ROLLBACK did not run after ON_ERROR_STOP: connection closure aborted the failed transaction.
+
+Exact v2 metadata count correction:16 column ACL changes (five committed Task1 service columns plus ELEVEN supporter columns), not earlier17/12. One supporter table ACL and fingerprint constraint also differ. V2 exact helper11/11 has no missing/extra functions.
+
+Proposal only: task-11-fix3-v6-profile-proposal/proposal.json and proposed-complete-native-prerequisites.json. Add only the complete actual native catalogue/helper tuple through a separately qualified supplemental input, preserving historical triple and all five target/Auth/native/index/shape alternatives. No source/profile change admitted or performed. Native2.118 assembly qualification remains; CI CLI identity unknown. Future proof must archive transport before launch.

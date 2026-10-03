@@ -1,0 +1,8 @@
+ M docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts
+ M docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json
+ M docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts
+ M supabase/migrations/20261002170945_r01_finance_callback_forward.sql
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.ts
+?? docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-qualify.ts

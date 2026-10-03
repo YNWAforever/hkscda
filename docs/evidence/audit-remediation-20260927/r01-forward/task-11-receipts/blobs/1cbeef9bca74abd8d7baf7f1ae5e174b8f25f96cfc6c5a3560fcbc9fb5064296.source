@@ -1,0 +1,16 @@
+{
+  "finalProfiles": {
+    "hosted": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-hosted-fix1-final-1790971373441/receipt.json",
+    "modern": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-modern-fix1-final-1790971435069/receipt.json",
+    "component": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-component-fix1-final-1790971465755/receipt.json"
+  },
+  "gate": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-gates-1790971979851361400/receipt.json",
+  "captures": [
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-fix1-hosted-1790970332372/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-fix1-modern-1790970376563/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-fix1-component-1790970390785/receipt.json"
+  ],
+  "generator": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-generator-1790970689879/receipt.json",
+  "sourceBase": "d45b849d300f76700efcf5450a9b426e32cc372f",
+  "fixBase": "56defe4f5eaa111ffda57848f394c395c914ffd4"
+}

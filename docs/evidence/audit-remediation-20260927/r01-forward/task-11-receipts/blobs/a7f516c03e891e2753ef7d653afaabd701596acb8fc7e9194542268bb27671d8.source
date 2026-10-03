@@ -1,0 +1,11 @@
+
+.superpowers\sdd\r01-forward-schema-plan-20261001\task-11-fix3-oid-codec.test.ts:
+(pass) actual saved raw rows preserve all other fields and receive exact numeric OIDs [110.84ms]
+(pass) finite operator scalar/null contract and boundaries [5.84ms]
+(pass) exact expression OID arrays stay arrays with strict elements and required fields [0.62ms]
+(pass) query/row/trigger mismatch fails closed, never general recursive coercion [1.18ms]
+
+ 4 pass
+ 0 fail
+ 50 expect() calls
+Ran 4 tests across 1 file. [199.00ms]

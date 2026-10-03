@@ -1,0 +1,3 @@
+NOTICE:  extension "pgcrypto" already exists, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_application_detail" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_intake_item" does not exist, skipping

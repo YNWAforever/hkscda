@@ -1,0 +1,2 @@
+NOTICE:  trigger "enforce_annual_report_asset" for relation "public.annual_reports" does not exist, skipping
+NOTICE:  trigger "protect_published_annual_report_asset" for relation "public.document_assets" does not exist, skipping

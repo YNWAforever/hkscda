@@ -1,0 +1,4 @@
+import base64,hashlib,json,pathlib,subprocess
+out=pathlib.Path('.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor')
+for name in ['file.go','apply.go']:
+ args=['gh','api','repos/supabase/cli/contents/apps/cli-go/pkg/migration/'+name+'?ref=v2.118.0'];r=subprocess.run(args,capture_output=True);stem='migration-'+name;(out/(stem+'.github.json')).write_bytes(r.stdout);(out/(stem+'.stderr.log')).write_bytes(r.stderr);assert r.returncode==0;info=json.loads(r.stdout);raw=base64.b64decode(info['content']);assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==info['sha'];(out/(stem+'.source')).write_bytes(raw);(out/(stem+'.receipt.json')).write_text(json.dumps({'command':args,'exit':r.returncode,'upstreamGitBlob':info['sha'],'rawSha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)},indent=2)+'\n',encoding='utf-8',newline='\n');print(raw.decode())

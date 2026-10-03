@@ -1,0 +1,78 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+24 |           await tx`set local role service_role`;
+25 |           let error: unknown;
+26 |           await tx.unsafe("savepoint task11_missing");
+27 |           try { await tx.unsafe(statement); } catch (e) { error = e; }
+28 |           await tx.unsafe("rollback to savepoint task11_missing");
+29 |           expect((error as { errno?: string } | undefined)?.errno).not.toBe("42883");
+                                                                            ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "42883"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:29:72)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 finance callback production gaps > fail_pending_provider_payment resolves current API signature before input rejection [22.21ms]
+24 |           await tx`set local role service_role`;
+25 |           let error: unknown;
+26 |           await tx.unsafe("savepoint task11_missing");
+27 |           try { await tx.unsafe(statement); } catch (e) { error = e; }
+28 |           await tx.unsafe("rollback to savepoint task11_missing");
+29 |           expect((error as { errno?: string } | undefined)?.errno).not.toBe("42883");
+                                                                            ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "42883"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:29:72)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 finance callback production gaps > refund_provider_payment_atomically resolves current API signature before input rejection [5.47ms]
+24 |           await tx`set local role service_role`;
+25 |           let error: unknown;
+26 |           await tx.unsafe("savepoint task11_missing");
+27 |           try { await tx.unsafe(statement); } catch (e) { error = e; }
+28 |           await tx.unsafe("rollback to savepoint task11_missing");
+29 |           expect((error as { errno?: string } | undefined)?.errno).not.toBe("42883");
+                                                                            ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "42883"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:29:72)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 finance callback production gaps > void_receipt_with_audit resolves current API signature before input rejection [5.74ms]
+24 |           await tx`set local role service_role`;
+25 |           let error: unknown;
+26 |           await tx.unsafe("savepoint task11_missing");
+27 |           try { await tx.unsafe(statement); } catch (e) { error = e; }
+28 |           await tx.unsafe("rollback to savepoint task11_missing");
+29 |           expect((error as { errno?: string } | undefined)?.errno).not.toBe("42883");
+                                                                            ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "42883"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:29:72)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 finance callback production gaps > void_donation_receipts_with_audit resolves current API signature before input rejection [5.07ms]
+24 |           await tx`set local role service_role`;
+25 |           let error: unknown;
+26 |           await tx.unsafe("savepoint task11_missing");
+27 |           try { await tx.unsafe(statement); } catch (e) { error = e; }
+28 |           await tx.unsafe("rollback to savepoint task11_missing");
+29 |           expect((error as { errno?: string } | undefined)?.errno).not.toBe("42883");
+                                                                            ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "42883"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:29:72)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 finance callback production gaps > issue_receipt_with_audit resolves current API signature before input rejection [5.20ms]
+
+ 0 pass
+ 2 filtered out
+ 5 fail
+ 5 expect() calls
+Ran 5 tests across 1 file. [224.00ms]

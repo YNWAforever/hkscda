@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\serviceSloganCopy.test.ts:
+(pass) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [10554.50ms]
+(pass) service slogan correction > publishes volunteer group and knowledge routes while retaining the audit report [0.68ms]
+(pass) bounded slogan reads preserve UTF8, binary-NUL filtering, order and read errors [41.48ms]
+(pass) slogan scan awaits every ordered result with at most eight active reads [60.50ms]
+
+ 4 pass
+ 0 fail
+ 17 expect() calls
+Ran 4 tests across 1 file. [10.88s]

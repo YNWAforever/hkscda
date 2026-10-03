@@ -1,0 +1,1 @@
+{"statementCount":22,"ownTransaction":false,"incompatible":false,"transactionMode":"transactional","rawBOM":false,"firstParsedBOM":false,"normalization":"Actual pinned native parseMigrationContent/splitAndTrim; terminator reinsertion and psql transaction transport separately archived"}

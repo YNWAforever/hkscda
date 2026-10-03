@@ -1,0 +1,53 @@
+"""Bind actual Fix3 receipts, current freeze and complete append-only raw archives."""
+import datetime,hashlib,json,pathlib,subprocess,sys,re
+sys.stdout.reconfigure(encoding='utf-8')
+root=pathlib.Path.cwd();s=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';e=root/'docs/evidence/audit-remediation-20260927/r01-forward';prefix=e.relative_to(root).as_posix()+'/'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def blob(b):return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+def bind(p):
+ b=p.read_bytes();return {'path':p.relative_to(root).as_posix(),'rawBytes':len(b),'rawSha256':sha(b),'canonicalSha256':sha(b.replace(b'\r\n',b'\n')),'rawGitBlob':blob(b)}
+def load(p):return json.loads(p.read_text(encoding='utf-8'))
+def git(*args):return subprocess.check_output(['git',*args]).decode().strip()
+names=['task-11-native-qualification-fix3-1790980738046','task-11-generator-1790980976505','task-11-fix3-native-integration-2384e770021a4f95bf5d0380ef950f95','task-11-hosted-fix3-final-1790983717764','task-11-modern-fix3-final-1790983801931','task-11-component-fix3-final-1790983835958']
+gate=sorted(s.glob('task-11-fix1-gates-*/receipt.json'))[-1];names.append(gate.parent.name)
+proofs=[];current={};executed=[]
+for n in names:
+ p=s/n/'receipt.json';r=load(p)
+ assert r.get('error') is None and r.get('failedFinalFlags')==[],n
+ assert all(r.get(k) is True for k in r['requiredFinalFlags']),n
+ entries=r.get('frozenInputs',r.get('bindings',{}))
+ for path,b in entries.items():
+  raw=(p.parent/b['archive']).read_bytes()
+  assert sha(raw)==b['rawSha256'],(n,path)
+  assert sha(raw.replace(b'\r\n',b'\n'))==b['canonicalSha256'],(n,path)
+  assert blob(raw)==b['rawGitBlob'],(n,path)
+  archived={**b,'path':path,'actualExecutedArchive':bind(p.parent/b['archive']),'currentMatches':(root/path).exists() and sha((root/path).read_bytes())==b['rawSha256']}
+  executed.append({'receipt':bind(p),'input':archived})
+  if r['receiptType'] in ['composition','gates']:
+   assert archived['currentMatches'],(n,path)
+   if path in current:assert current[path]['rawSha256']==b['rawSha256']
+   current[path]=bind(root/path)
+   index=git('ls-files','--stage','--',path)
+   current[path]['sourceTrackedInIndex']=bool(index)
+   current[path]['sourceGitBlob']=index.split()[1] if index else None
+ proofs.append({'binding':bind(p),'receiptType':r['receiptType'],'mode':r['mode'],'literalFlags':{k:r[k] for k in r['requiredFinalFlags']},'error':r['error'],'failedFinalFlags':r['failedFinalFlags'],'inputCount':len(entries),'completeCapturedMetadata':'Full original receipt preserved in raw translation; no tuple projection replaces it.'})
+trans=e/'task-11-receipts/translation.json';t=load(trans);unique={}
+for x in t['entries']:
+ p=root/x['archivePath'];b=p.read_bytes()
+ assert sha(b)==x['rawSha256'] and blob(b)==x['gitBlob']
+ assert sha(b.replace(b'\r\n',b'\n'))==x['canonicalSha256']
+ unique[x['archivePath']]=bind(p)
+old=git('ls-tree','-r','18c3c6ea06a25292b6e172e99cd381ed7d4409dc','--',prefix+'task-11-receipts/blobs').splitlines()
+for x in old:
+ meta,path=x.split('\t');assert blob((root/path).read_bytes())==meta.split()[2]
+sql=root/'supabase/migrations/20261002170945_r01_finance_callback_forward.sql'
+assert sha(sql.read_bytes())=='47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde'
+oldsql=subprocess.check_output(['git','show','18c3c6ea:supabase/migrations/20261002170945_r01_finance_callback_forward.sql'])
+chunks=lambda b:re.findall(rb'execute \$definition\$(.*?)\$definition\$',b,re.S)
+assert len(chunks(oldsql))==5 and chunks(oldsql)==chunks(sql.read_bytes())
+ledger=load(s/'task-11-fix3-authority-59/final-rulings-report-inputs-intermediate.json');assert len(ledger['allOrderedOriginalEntries'])==59
+manifest={'status':'Qualified source validation; SAME review and actual five CI/non-skipped17.11 finance pending','baseline':'18c3c6ea06a25292b6e172e99cd381ed7d4409dc','originalTaskBase':'d45b849d300f76700efcf5450a9b426e32cc372f','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sourceCommit':None,'sourceTree':None,'proofs':proofs,'currentBindings':list(current.values()),'actualExecutedInputBindings':executed,'translationBinding':bind(trans),'uniqueArchiveGitBindings':list(unique.values()),'archiveCounts':{'entries':len(t['entries']),'uniqueBlobs':len(unique),'uniqueBytes':sum(v['rawBytes'] for v in unique.values()),'original264Preserved':len(old)==264},'candidate':bind(sql),'fiveTargetDefinitionsByteIdentical':True,'orderedAuthority':bind(s/'task-11-fix3-authority-59/final-rulings-report-inputs-intermediate.json'),'orderedRulingCount':59,'qualifications':['Original R56 RED combined transport derived-only, not originally prearchived.','R59 complete metadata integration uses actual PG17.11 and pinned2.118 native source assembly; exact CI CLI unknown.','Native-local Bun finance behavior NOT RUN; separate three guarded clone behavior proofs.','Mixed negatives are byte-extracted PostgreSQL guard-only checks, not full-candidate schema replays.','R52 limits shared modern full-suite state preservation claims.','Historical generator/qualification executable archives are authoritative when later current paths changed only for proof authority.']}
+if len(sys.argv)>1:
+ manifest['sourceCommit']=sys.argv[1];manifest['sourceTree']=git('rev-parse',sys.argv[1]+'^{tree}')
+(e/'task-11-fix3-source-binding.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'current':len(current),'executed':len(executed),'proofs':len(proofs),'archives':manifest['archiveCounts'],'gate':gate.relative_to(root).as_posix()}))

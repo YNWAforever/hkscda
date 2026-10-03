@@ -1,0 +1,52 @@
+{
+  "atUtc": "2026-10-02T22:55:18.577761+00:00",
+  "scope": "Independent metadata-only qualification/generation binding; no DB or application suites rerun",
+  "allMatched": true,
+  "errors": [],
+  "counts": {
+    "task-11-native-qualification-fix3-1790980738046ArchivedBindings": 1916,
+    "task-11-generator-1790980976505ArchivedBindings": 1946,
+    "task-11-fix3-step-qualify-1790980900717639800Inputs": 23,
+    "task-11-fix3-step-generate-1790980975221505300Inputs": 23
+  },
+  "changedCurrentHistoricalInputs": [],
+  "qualificationReceipt": {
+    "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-native-qualification-fix3-1790980738046\\receipt.json",
+    "rawSha256": "9ba7f2095b4f07d62f23d7088032cf39b7692e77ded794f6ecc63265ae0b4dda"
+  },
+  "generatorReceipt": {
+    "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-generator-1790980976505\\receipt.json",
+    "rawSha256": "04e836df9fcddb144f2923de49c90d65e54d7f31ae9655d5d0437944580f8f0b"
+  },
+  "candidate": {
+    "file": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+    "bytes": 1072499,
+    "sha256": "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde",
+    "rawGitBlob": "3c595e8ccc332e46cd988d0569968b4c92f53597",
+    "GitHEADClaim": "pending final commit"
+  },
+  "runtime": {
+    "user": "postgres",
+    "owner": "postgres",
+    "version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+    "database": "postgres"
+  },
+  "requiredQualificationFlags": [
+    "redReceiptBound",
+    "captureBound",
+    "sourceBound",
+    "nativeAssemblyBound",
+    "managedJobsBound",
+    "migrationsBound",
+    "fullScannerPassed",
+    "zeroRows",
+    "rollbackPreserved",
+    "normalCleanup",
+    "protectedSourcesPreserved",
+    "prerequisitePairBound"
+  ],
+  "nativeLocalBunBehavior": "not-run",
+  "originalREDCombinedTransport": "post-execution derived only; original receipt retained",
+  "originalCLIIdentity": "unknown; pinned official native assembly not exact CI CLI claim",
+  "next": "ONE native metadata integration, three behavior profiles, four gates, final Git bindings, SAME scoped review, all five actual CI jobs"
+}

@@ -1,0 +1,1 @@
+begin read only;select array[101::oid,105::oid] as "operatorOids",to_jsonb(array[101::oid,105::oid]) as "jsonOperatorOids";rollback;

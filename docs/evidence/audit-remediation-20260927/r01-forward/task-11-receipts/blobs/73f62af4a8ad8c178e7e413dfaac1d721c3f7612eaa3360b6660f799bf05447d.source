@@ -1,0 +1,161 @@
+{
+  "mode": "owned-full1711-d45-diagnostic",
+  "authority": "Ruling55",
+  "sourceHead": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "baselineSource": "d45b849d300f76700efcf5450a9b426e32cc372f",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-baseline-cad58e39daaf43aab76df20131bdb852",
+  "pg": "hkscda-task11-fix3-pg-cad58e39daaf43aab76df20131bdb852",
+  "CLIQualification": "Pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Fresh actual PG17.11 full managed+D45 catalog, not Task9 reconstruction.",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "command-0000.stdout.log",
+      "stderr": "command-0000.stderr.log",
+      "stdoutSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stdout": "command-0001.stdout.log",
+      "stderr": "command-0001.stderr.log",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "images": {},
+  "inputBindings": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline.py",
+      "rawSha256": "d00a2602e56de1b93349ac771be32ce7af5f852b65c3390be7a5574ebfc5cbba",
+      "canonicalSha256": "d00a2602e56de1b93349ac771be32ce7af5f852b65c3390be7a5574ebfc5cbba",
+      "rawGitBlob": "9d4adae35cc87aaa21ef781727434ac24d0737cc",
+      "bytes": 15528,
+      "archive": "executed-driver.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-queries.ts",
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "canonicalSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "rawGitBlob": "4418915ccb9a7ef3f9a321276967ad273a2e4479",
+      "bytes": 3502,
+      "archive": "query-reader.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling55.source",
+      "rawSha256": "fc8dfb9a88872fa58d6bf1b22c49df18fd35600109b67750ac6d7b7199849b21",
+      "canonicalSha256": "1d92acc670c4f5e2c48acdcb886b81814ac25005bfb6fc444dc5cd4fbd65a9bd",
+      "rawGitBlob": "b5bec5e34d0bd46dc8243498dc78b726fe630918",
+      "bytes": 2020,
+      "archive": "authority.source"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a",
+      "bytes": 43142,
+      "archive": "unchanged-full-scanner.source"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "canonicalSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67",
+      "bytes": 6391,
+      "archive": "profile-query-source.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/queries.json",
+      "rawSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "canonicalSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "rawGitBlob": "24756524f6ebd29e23cf140dc96195a2abc1c2d5",
+      "bytes": 16923,
+      "archive": "actual-queries.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/vendor/v2.118.0-internal_db_start_start.go.source",
+      "rawSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "canonicalSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "rawGitBlob": "dc8327c816d5bf9ff773d9901954cdd9f16137b8",
+      "bytes": 14962,
+      "archive": "vendor-v2.118.0-internal_db_start_start.go.source.source"
+    }
+  ],
+  "migrationInventory": [],
+  "managedJobs": [],
+  "error": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\laich\\\\Documents\\\\HKCSDA\\\\HKCSDA\\\\hkscda\\\\.worktrees\\\\audit-r01-adoption-upload-20261001\\\\.superpowers\\\\sdd\\\\r01-forward-schema-plan-20261001\\\\task-11-fix3-baseline-cad58e39daaf43aab76df20131bdb852\\\\vendor-v2.118.0-internal_db_start_templates__supabase.sql.source.source'",
+  "cleanup": [],
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "heldTask1FiveColumnRepairApplied": false,
+  "heldTask8ScannerProposalApplied": false,
+  "all57CurrentInputsPreserved": true,
+  "files": {
+    "actual-queries.source": {
+      "rawSha256": "fb2d66396ef93f2a81ce9e8363c9688722d934c1d716dcb4a7ff26ccbf2acc7a",
+      "bytes": 16923,
+      "rawGitBlob": "24756524f6ebd29e23cf140dc96195a2abc1c2d5"
+    },
+    "authority.source": {
+      "rawSha256": "fc8dfb9a88872fa58d6bf1b22c49df18fd35600109b67750ac6d7b7199849b21",
+      "bytes": 2020,
+      "rawGitBlob": "b5bec5e34d0bd46dc8243498dc78b726fe630918"
+    },
+    "command-0000.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0000.stdout.log": {
+      "rawSha256": "cf77d1e923d0be938277eb4fad3fd3aa8918148c6838bab4f2c488d98481fc64",
+      "bytes": 41,
+      "rawGitBlob": "d75c8cebbdd19b4bc5d2caf582ca3b3cf80efd80"
+    },
+    "command-0001.stderr.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "command-0001.stdout.log": {
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "executed-driver.source": {
+      "rawSha256": "d00a2602e56de1b93349ac771be32ce7af5f852b65c3390be7a5574ebfc5cbba",
+      "bytes": 15528,
+      "rawGitBlob": "9d4adae35cc87aaa21ef781727434ac24d0737cc"
+    },
+    "profile-query-source.source": {
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "bytes": 6391,
+      "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+    },
+    "query-reader.source": {
+      "rawSha256": "eb8fe9f1371896d97319542a9585b7ca41bdc560348b5e700dec4611cfefae33",
+      "bytes": 3502,
+      "rawGitBlob": "4418915ccb9a7ef3f9a321276967ad273a2e4479"
+    },
+    "unchanged-full-scanner.source": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142,
+      "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "vendor-v2.118.0-internal_db_start_start.go.source.source": {
+      "rawSha256": "74dcad0650efe727c68564b5453b5586dbbb31464104bef8e647976ee0be54c7",
+      "bytes": 14962,
+      "rawGitBlob": "dc8327c816d5bf9ff773d9901954cdd9f16137b8"
+    }
+  }
+}

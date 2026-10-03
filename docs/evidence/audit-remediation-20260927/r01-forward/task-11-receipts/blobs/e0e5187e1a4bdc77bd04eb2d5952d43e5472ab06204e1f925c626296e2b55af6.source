@@ -1,0 +1,1259 @@
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+Using language tag "en-US" for ICU locale "en_US.UTF-8".
+The database cluster will be initialized with this locale configuration:
+  locale provider:   icu
+  default collation: en-US
+  LC_COLLATE:  en_US.UTF-8
+  LC_CTYPE:    en_US.UTF-8
+  LC_MESSAGES: en_US.UTF-8
+  LC_MONETARY: en_US.UTF-8
+  LC_NUMERIC:  en_US.UTF-8
+  LC_TIME:     en_US.UTF-8
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    /nix/var/nix/profiles/default/bin/pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start.... 2026-10-02 21:39:13.504 UTC [47] LOG:  pgaudit extension initialized
+ 2026-10-02 21:39:13.512 UTC [47] LOG:  pgsodium primary server secret key loaded
+ 2026-10-02 21:39:13.516 UTC [47] LOG:  vault primary server secret key loaded
+ 2026-10-02 21:39:13.540 UTC [47] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit
+ 2026-10-02 21:39:13.543 UTC [47] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+ 2026-10-02 21:39:13.549 UTC [57] LOG:  database system was shut down at 2026-10-02 21:39:12 UTC
+ 2026-10-02 21:39:13.557 UTC [47] LOG:  database system is ready to accept connections
+ 2026-10-02 21:39:13.557 UTC [60] FATAL:  role "postgres" does not exist
+ 2026-10-02 21:39:13.560 UTC [47] LOG:  background worker "pg_net 0.20.4 worker" (PID 60) exited with exit code 1
+ 2026-10-02 21:39:13.562 UTC [61] LOG:  pg_cron scheduler started
+ done
+server started
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/init-scripts
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/migrate.sh
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/init-scripts/00-schema.sql
+[local] 2026-10-02 21:39:13.631 UTC [72] postgres@postgres LOG:  statement: CREATE USER pgbouncer;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.633 UTC [72] postgres@postgres LOG:  statement: REVOKE ALL PRIVILEGES ON SCHEMA public FROM pgbouncer;
+REVOKE
+[local] 2026-10-02 21:39:13.634 UTC [72] postgres@postgres LOG:  statement: CREATE SCHEMA pgbouncer AUTHORIZATION pgbouncer;
+CREATE SCHEMA
+[local] 2026-10-02 21:39:13.635 UTC [72] postgres@postgres LOG:  statement: CREATE OR REPLACE FUNCTION pgbouncer.get_auth(p_usename TEXT)
+	RETURNS TABLE(username TEXT, password TEXT) AS
+	$$
+	BEGIN
+	    RAISE WARNING 'PgBouncer auth request: %', p_usename;
+	
+	    RETURN QUERY
+	    SELECT usename::TEXT, passwd::TEXT FROM pg_catalog.pg_shadow
+	    WHERE usename = p_usename;
+	END;
+	$$ LANGUAGE plpgsql 
+	SET search_path = ''
+	SECURITY DEFINER;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.638 UTC [72] postgres@postgres LOG:  statement: REVOKE ALL ON FUNCTION pgbouncer.get_auth(p_usename TEXT) FROM PUBLIC;
+REVOKE
+[local] 2026-10-02 21:39:13.639 UTC [72] postgres@postgres LOG:  statement: GRANT EXECUTE ON FUNCTION pgbouncer.get_auth(p_usename TEXT) TO pgbouncer;
+GRANT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/init-scripts/00000000000000-initial-schema.sql
+[local] 2026-10-02 21:39:13.648 UTC [74] postgres@postgres LOG:  statement: create publication supabase_realtime;
+CREATE PUBLICATION
+[local] 2026-10-02 21:39:13.649 UTC [74] postgres@postgres LOG:  statement: alter user  supabase_admin with superuser createdb createrole replication bypassrls;
+ALTER ROLE
+[local] 2026-10-02 21:39:13.650 UTC [74] postgres@postgres LOG:  statement: create user supabase_replication_admin with login replication;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.651 UTC [74] postgres@postgres LOG:  statement: create user supabase_etl_admin with login replication bypassrls;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.652 UTC [74] postgres@postgres LOG:  statement: grant pg_read_all_data to supabase_etl_admin;
+GRANT ROLE
+[local] 2026-10-02 21:39:13.654 UTC [74] postgres@postgres LOG:  statement: grant create on database postgres to supabase_etl_admin;
+GRANT
+[local] 2026-10-02 21:39:13.655 UTC [74] postgres@postgres LOG:  statement: create role supabase_read_only_user with login bypassrls;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.656 UTC [74] postgres@postgres LOG:  statement: grant pg_read_all_data to supabase_read_only_user;
+GRANT ROLE
+[local] 2026-10-02 21:39:13.657 UTC [74] postgres@postgres LOG:  statement: create schema if not exists extensions;
+CREATE SCHEMA
+[local] 2026-10-02 21:39:13.658 UTC [74] postgres@postgres LOG:  statement: create extension if not exists "uuid-ossp"      with schema extensions;
+CREATE EXTENSION
+[local] 2026-10-02 21:39:13.670 UTC [74] postgres@postgres LOG:  statement: create extension if not exists pgcrypto         with schema extensions;
+CREATE EXTENSION
+[local] 2026-10-02 21:39:13.678 UTC [74] postgres@postgres LOG:  statement: create role anon                nologin noinherit;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.679 UTC [74] postgres@postgres LOG:  statement: create role authenticated       nologin noinherit;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.679 UTC [74] postgres@postgres LOG:  statement: create role service_role        nologin noinherit bypassrls;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.680 UTC [74] postgres@postgres LOG:  statement: create user authenticator noinherit;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.681 UTC [74] postgres@postgres LOG:  statement: grant anon              to authenticator;
+GRANT ROLE
+[local] 2026-10-02 21:39:13.682 UTC [74] postgres@postgres LOG:  statement: grant authenticated     to authenticator;
+GRANT ROLE
+[local] 2026-10-02 21:39:13.683 UTC [74] postgres@postgres LOG:  statement: grant service_role      to authenticator;
+GRANT ROLE
+[local] 2026-10-02 21:39:13.684 UTC [74] postgres@postgres LOG:  statement: grant supabase_admin    to authenticator;
+GRANT ROLE
+[local] 2026-10-02 21:39:13.685 UTC [74] postgres@postgres LOG:  statement: grant usage                     on schema public to postgres, anon, authenticated, service_role;
+GRANT
+[local] 2026-10-02 21:39:13.686 UTC [74] postgres@postgres LOG:  statement: alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.687 UTC [74] postgres@postgres LOG:  statement: alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.688 UTC [74] postgres@postgres LOG:  statement: alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.689 UTC [74] postgres@postgres LOG:  statement: grant usage                     on schema extensions to postgres, anon, authenticated, service_role;
+GRANT
+[local] 2026-10-02 21:39:13.690 UTC [74] postgres@postgres LOG:  statement: alter user supabase_admin SET search_path TO public, extensions;
+ALTER ROLE
+[local] 2026-10-02 21:39:13.692 UTC [74] postgres@postgres LOG:  statement: alter default privileges for user supabase_admin in schema public grant all
+	    on sequences to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.693 UTC [74] postgres@postgres LOG:  statement: alter default privileges for user supabase_admin in schema public grant all
+	    on tables to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.694 UTC [74] postgres@postgres LOG:  statement: alter default privileges for user supabase_admin in schema public grant all
+	    on functions to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.695 UTC [74] postgres@postgres LOG:  statement: alter role anon set statement_timeout = '3s';
+ALTER ROLE
+[local] 2026-10-02 21:39:13.696 UTC [74] postgres@postgres LOG:  statement: alter role authenticated set statement_timeout = '8s';
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/init-scripts/00000000000001-auth-schema.sql
+[local] 2026-10-02 21:39:13.705 UTC [76] postgres@postgres LOG:  statement: CREATE SCHEMA IF NOT EXISTS auth AUTHORIZATION supabase_admin;
+CREATE SCHEMA
+[local] 2026-10-02 21:39:13.707 UTC [76] postgres@postgres LOG:  statement: CREATE TABLE auth.users (
+	    instance_id uuid NULL,
+	    id uuid NOT NULL UNIQUE,
+	    aud varchar(255) NULL,
+	    "role" varchar(255) NULL,
+	    email varchar(255) NULL UNIQUE,
+	    encrypted_password varchar(255) NULL,
+	    confirmed_at timestamptz NULL,
+	    invited_at timestamptz NULL,
+	    confirmation_token varchar(255) NULL,
+	    confirmation_sent_at timestamptz NULL,
+	    recovery_token varchar(255) NULL,
+	    recovery_sent_at timestamptz NULL,
+	    email_change_token varchar(255) NULL,
+	    email_change varchar(255) NULL,
+	    email_change_sent_at timestamptz NULL,
+	    last_sign_in_at timestamptz NULL,
+	    raw_app_meta_data jsonb NULL,
+	    raw_user_meta_data jsonb NULL,
+	    is_super_admin bool NULL,
+	    created_at timestamptz NULL,
+	    updated_at timestamptz NULL,
+	    CONSTRAINT users_pkey PRIMARY KEY (id)
+	);
+CREATE TABLE
+[local] 2026-10-02 21:39:13.712 UTC [76] postgres@postgres LOG:  statement: CREATE INDEX users_instance_id_email_idx ON auth.users USING btree (instance_id, email);
+CREATE INDEX
+[local] 2026-10-02 21:39:13.714 UTC [76] postgres@postgres LOG:  statement: CREATE INDEX users_instance_id_idx ON auth.users USING btree (instance_id);
+CREATE INDEX
+[local] 2026-10-02 21:39:13.715 UTC [76] postgres@postgres LOG:  statement: comment on table auth.users is 'Auth: Stores user login data within a secure schema.';
+COMMENT
+[local] 2026-10-02 21:39:13.716 UTC [76] postgres@postgres LOG:  statement: CREATE TABLE auth.refresh_tokens (
+	    instance_id uuid NULL,
+	    id bigserial NOT NULL,
+	    "token" varchar(255) NULL,
+	    user_id varchar(255) NULL,
+	    revoked bool NULL,
+	    created_at timestamptz NULL,
+	    updated_at timestamptz NULL,
+	    CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id)
+	);
+CREATE TABLE
+[local] 2026-10-02 21:39:13.720 UTC [76] postgres@postgres LOG:  statement: CREATE INDEX refresh_tokens_instance_id_idx ON auth.refresh_tokens USING btree (instance_id);
+CREATE INDEX
+[local] 2026-10-02 21:39:13.721 UTC [76] postgres@postgres LOG:  statement: CREATE INDEX refresh_tokens_instance_id_user_id_idx ON auth.refresh_tokens USING btree (instance_id, user_id);
+CREATE INDEX
+[local] 2026-10-02 21:39:13.723 UTC [76] postgres@postgres LOG:  statement: CREATE INDEX refresh_tokens_token_idx ON auth.refresh_tokens USING btree (token);
+CREATE INDEX
+[local] 2026-10-02 21:39:13.724 UTC [76] postgres@postgres LOG:  statement: comment on table auth.refresh_tokens is 'Auth: Store of tokens used to refresh JWT tokens once they expire.';
+COMMENT
+[local] 2026-10-02 21:39:13.724 UTC [76] postgres@postgres LOG:  statement: CREATE TABLE auth.instances (
+	    id uuid NOT NULL,
+	    uuid uuid NULL,
+	    raw_base_config text NULL,
+	    created_at timestamptz NULL,
+	    updated_at timestamptz NULL,
+	    CONSTRAINT instances_pkey PRIMARY KEY (id)
+	);
+CREATE TABLE
+[local] 2026-10-02 21:39:13.726 UTC [76] postgres@postgres LOG:  statement: comment on table auth.instances is 'Auth: Manages users across multiple sites.';
+COMMENT
+[local] 2026-10-02 21:39:13.727 UTC [76] postgres@postgres LOG:  statement: CREATE TABLE auth.audit_log_entries (
+	    instance_id uuid NULL,
+	    id uuid NOT NULL,
+	    payload json NULL,
+	    created_at timestamptz NULL,
+	    CONSTRAINT audit_log_entries_pkey PRIMARY KEY (id)
+	);
+CREATE TABLE
+[local] 2026-10-02 21:39:13.728 UTC [76] postgres@postgres LOG:  statement: CREATE INDEX audit_logs_instance_id_idx ON auth.audit_log_entries USING btree (instance_id);
+CREATE INDEX
+[local] 2026-10-02 21:39:13.729 UTC [76] postgres@postgres LOG:  statement: comment on table auth.audit_log_entries is 'Auth: Audit trail for user actions.';
+COMMENT
+[local] 2026-10-02 21:39:13.730 UTC [76] postgres@postgres LOG:  statement: CREATE TABLE auth.schema_migrations (
+	    "version" varchar(255) NOT NULL,
+	    CONSTRAINT schema_migrations_pkey PRIMARY KEY ("version")
+	);
+CREATE TABLE
+[local] 2026-10-02 21:39:13.731 UTC [76] postgres@postgres LOG:  statement: comment on table auth.schema_migrations is 'Auth: Manages updates to the auth system.';
+COMMENT
+INSERT 0 7
+[local] 2026-10-02 21:39:13.734 UTC [76] postgres@postgres LOG:  statement: create or replace function auth.uid() returns uuid as $$
+	  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
+	$$ language sql stable;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.736 UTC [76] postgres@postgres LOG:  statement: create or replace function auth.role() returns text as $$
+	  select nullif(current_setting('request.jwt.claim.role', true), '')::text;
+	$$ language sql stable;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.737 UTC [76] postgres@postgres LOG:  statement: create or replace function auth.email() returns text as $$
+	  select nullif(current_setting('request.jwt.claim.email', true), '')::text;
+	$$ language sql stable;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.738 UTC [76] postgres@postgres LOG:  statement: GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
+GRANT
+[local] 2026-10-02 21:39:13.739 UTC [76] postgres@postgres LOG:  statement: CREATE USER supabase_auth_admin NOINHERIT CREATEROLE LOGIN NOREPLICATION;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.740 UTC [76] postgres@postgres LOG:  statement: GRANT ALL PRIVILEGES ON SCHEMA auth TO supabase_auth_admin;
+GRANT
+[local] 2026-10-02 21:39:13.741 UTC [76] postgres@postgres LOG:  statement: GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO supabase_auth_admin;
+GRANT
+[local] 2026-10-02 21:39:13.743 UTC [76] postgres@postgres LOG:  statement: GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA auth TO supabase_auth_admin;
+GRANT
+[local] 2026-10-02 21:39:13.745 UTC [76] postgres@postgres LOG:  statement: ALTER USER supabase_auth_admin SET search_path = "auth";
+ALTER ROLE
+[local] 2026-10-02 21:39:13.746 UTC [76] postgres@postgres LOG:  statement: ALTER table "auth".users OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.747 UTC [76] postgres@postgres LOG:  statement: ALTER table "auth".refresh_tokens OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.749 UTC [76] postgres@postgres LOG:  statement: ALTER table "auth".audit_log_entries OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.750 UTC [76] postgres@postgres LOG:  statement: ALTER table "auth".instances OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.753 UTC [76] postgres@postgres LOG:  statement: ALTER table "auth".schema_migrations OWNER TO supabase_auth_admin;
+ALTER TABLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/init-scripts/00000000000002-storage-schema.sql
+[local] 2026-10-02 21:39:13.762 UTC [78] postgres@postgres LOG:  statement: CREATE SCHEMA IF NOT EXISTS storage AUTHORIZATION supabase_admin;
+CREATE SCHEMA
+[local] 2026-10-02 21:39:13.764 UTC [78] postgres@postgres LOG:  statement: CREATE USER supabase_storage_admin NOINHERIT CREATEROLE LOGIN NOREPLICATION;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.764 UTC [78] postgres@postgres LOG:  statement: ALTER USER supabase_storage_admin SET search_path = "storage";
+ALTER ROLE
+[local] 2026-10-02 21:39:13.765 UTC [78] postgres@postgres LOG:  statement: GRANT CREATE ON DATABASE postgres TO supabase_storage_admin;
+GRANT
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/init-scripts/00000000000003-post-setup.sql
+[local] 2026-10-02 21:39:13.779 UTC [80] postgres@postgres LOG:  statement: ALTER ROLE supabase_admin SET search_path TO "\$user",public,auth,extensions;
+ALTER ROLE
+[local] 2026-10-02 21:39:13.780 UTC [80] postgres@postgres LOG:  statement: ALTER ROLE postgres SET search_path TO "\$user",public,extensions;
+ALTER ROLE
+[local] 2026-10-02 21:39:13.781 UTC [80] postgres@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.grant_pg_cron_access()
+	RETURNS event_trigger
+	LANGUAGE plpgsql
+	AS $$
+	DECLARE
+	  schema_is_cron bool;
+	BEGIN
+	  schema_is_cron = (
+	    SELECT n.nspname = 'cron'
+	    FROM pg_event_trigger_ddl_commands() AS ev
+	    LEFT JOIN pg_catalog.pg_namespace AS n
+	      ON ev.objid = n.oid
+	  );
+	
+	  IF schema_is_cron
+	  THEN
+	    grant usage on schema cron to postgres with grant option;
+	
+	    alter default privileges in schema cron grant all on tables to postgres with grant option;
+	    alter default privileges in schema cron grant all on functions to postgres with grant option;
+	    alter default privileges in schema cron grant all on sequences to postgres with grant option;
+	
+	    alter default privileges for user supabase_admin in schema cron grant all
+	        on sequences to postgres with grant option;
+	    alter default privileges for user supabase_admin in schema cron grant all
+	        on tables to postgres with grant option;
+	    alter default privileges for user supabase_admin in schema cron grant all
+	        on functions to postgres with grant option;
+	
+	    grant all privileges on all tables in schema cron to postgres with grant option;
+	
+	  END IF;
+	
+	END;
+	$$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.783 UTC [80] postgres@postgres LOG:  statement: CREATE EVENT TRIGGER issue_pg_cron_access ON ddl_command_end WHEN TAG in ('CREATE SCHEMA')
+	EXECUTE PROCEDURE extensions.grant_pg_cron_access();
+CREATE EVENT TRIGGER
+[local] 2026-10-02 21:39:13.785 UTC [80] postgres@postgres LOG:  statement: COMMENT ON FUNCTION extensions.grant_pg_cron_access IS 'Grants access to pg_cron';
+COMMENT
+[local] 2026-10-02 21:39:13.786 UTC [80] postgres@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.grant_pg_net_access()
+	RETURNS event_trigger
+	LANGUAGE plpgsql
+	AS $$
+	BEGIN
+	  IF EXISTS (
+	    SELECT 1
+	    FROM pg_event_trigger_ddl_commands() AS ev
+	    JOIN pg_extension AS ext
+	    ON ev.objid = ext.oid
+	    WHERE ext.extname = 'pg_net'
+	  )
+	  THEN
+	    IF NOT EXISTS (
+	      SELECT 1
+	      FROM pg_roles
+	      WHERE rolname = 'supabase_functions_admin'
+	    )
+	    THEN
+	      CREATE USER supabase_functions_admin NOINHERIT CREATEROLE LOGIN NOREPLICATION;
+	    END IF;
+	
+	    GRANT USAGE ON SCHEMA net TO supabase_functions_admin, postgres, anon, authenticated, service_role;
+	
+	    ALTER function net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) SECURITY DEFINER;
+	    ALTER function net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) SECURITY DEFINER;
+	
+	    ALTER function net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) SET search_path = net;
+	    ALTER function net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) SET search_path = net;
+	
+	    REVOKE ALL ON FUNCTION net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) FROM PUBLIC;
+	    REVOKE ALL ON FUNCTION net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) FROM PUBLIC;
+	
+	    GRANT EXECUTE ON FUNCTION net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
+	    GRANT EXECUTE ON FUNCTION net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
+	  END IF;
+	END;
+	$$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.788 UTC [80] postgres@postgres LOG:  statement: COMMENT ON FUNCTION extensions.grant_pg_net_access IS 'Grants access to pg_net';
+COMMENT
+DO
+[local] 2026-10-02 21:39:13.790 UTC [80] postgres@postgres LOG:  statement: CREATE ROLE dashboard_user NOSUPERUSER CREATEDB CREATEROLE REPLICATION;
+CREATE ROLE
+[local] 2026-10-02 21:39:13.791 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON DATABASE postgres TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.792 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON SCHEMA auth TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.792 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON SCHEMA extensions TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.793 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON ALL TABLES IN SCHEMA auth TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.794 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON ALL TABLES IN SCHEMA extensions TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.794 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON ALL SEQUENCES IN SCHEMA auth TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.795 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON ALL SEQUENCES IN SCHEMA extensions TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.795 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON ALL ROUTINES IN SCHEMA auth TO dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.796 UTC [80] postgres@postgres LOG:  statement: GRANT ALL ON ALL ROUTINES IN SCHEMA extensions TO dashboard_user;
+GRANT
+DO
+[local] 2026-10-02 21:39:13.805 UTC [82] postgres@postgres LOG:  statement: ALTER USER supabase_admin WITH PASSWORD 'postgres'
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/00-extension.sql
+[local] 2026-10-02 21:39:13.814 UTC [84] supabase_admin@postgres LOG:  statement: CREATE SCHEMA IF NOT exists extensions;
+CREATE SCHEMA
+[local] 2026-10-02 21:39:13.814 UTC [84] supabase_admin@postgres LOG:  statement: CREATE EXTENSION IF NOT EXISTS pg_stat_statements with schema extensions;
+CREATE EXTENSION
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/10000000000000_demote-postgres.sql
+[local] 2026-10-02 21:39:13.839 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON DATABASE postgres TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.840 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON SCHEMA auth TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.841 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON SCHEMA extensions TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.842 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL TABLES IN SCHEMA auth TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.843 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL TABLES IN SCHEMA extensions TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.844 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL SEQUENCES IN SCHEMA auth TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.844 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL SEQUENCES IN SCHEMA extensions TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.845 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL ROUTINES IN SCHEMA auth TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.846 UTC [86] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL ROUTINES IN SCHEMA extensions TO postgres;
+GRANT
+DO
+[local] 2026-10-02 21:39:13.849 UTC [86] supabase_admin@postgres LOG:  statement: ALTER ROLE postgres NOSUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20211115181400_update-auth-permissions.sql
+[local] 2026-10-02 21:39:13.857 UTC [88] supabase_admin@postgres LOG:  statement: GRANT ALL PRIVILEGES ON SCHEMA auth TO supabase_auth_admin;
+GRANT
+[local] 2026-10-02 21:39:13.858 UTC [88] supabase_admin@postgres LOG:  statement: GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO supabase_auth_admin;
+GRANT
+[local] 2026-10-02 21:39:13.859 UTC [88] supabase_admin@postgres LOG:  statement: GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA auth TO supabase_auth_admin;
+GRANT
+[local] 2026-10-02 21:39:13.860 UTC [88] supabase_admin@postgres LOG:  statement: ALTER table IF EXISTS "auth".users OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.861 UTC [88] supabase_admin@postgres LOG:  statement: ALTER table IF EXISTS "auth".refresh_tokens OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.862 UTC [88] supabase_admin@postgres LOG:  statement: ALTER table IF EXISTS "auth".audit_log_entries OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.862 UTC [88] supabase_admin@postgres LOG:  statement: ALTER table IF EXISTS "auth".instances OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.863 UTC [88] supabase_admin@postgres LOG:  statement: ALTER table IF EXISTS "auth".schema_migrations OWNER TO supabase_auth_admin;
+ALTER TABLE
+[local] 2026-10-02 21:39:13.864 UTC [88] supabase_admin@postgres LOG:  statement: GRANT USAGE ON SCHEMA auth TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.864 UTC [88] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL TABLES IN SCHEMA auth TO postgres, dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.865 UTC [88] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL SEQUENCES IN SCHEMA auth TO postgres, dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.866 UTC [88] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL ROUTINES IN SCHEMA auth TO postgres, dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.867 UTC [88] supabase_admin@postgres LOG:  statement: ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON TABLES TO postgres, dashboard_user;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.868 UTC [88] supabase_admin@postgres LOG:  statement: ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON SEQUENCES TO postgres, dashboard_user;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.869 UTC [88] supabase_admin@postgres LOG:  statement: ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON ROUTINES TO postgres, dashboard_user;
+ALTER DEFAULT PRIVILEGES
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20211118015519_create-realtime-schema.sql
+[local] 2026-10-02 21:39:13.876 UTC [90] supabase_admin@postgres LOG:  statement: CREATE SCHEMA IF NOT EXISTS realtime;
+CREATE SCHEMA
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20211122051245_update-realtime-permissions.sql
+[local] 2026-10-02 21:39:13.884 UTC [92] supabase_admin@postgres LOG:  statement: GRANT USAGE ON SCHEMA realtime TO postgres;
+GRANT
+[local] 2026-10-02 21:39:13.885 UTC [92] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL TABLES IN SCHEMA realtime TO postgres, dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.886 UTC [92] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL SEQUENCES IN SCHEMA realtime TO postgres, dashboard_user;
+GRANT
+[local] 2026-10-02 21:39:13.886 UTC [92] supabase_admin@postgres LOG:  statement: GRANT ALL ON ALL ROUTINES IN SCHEMA realtime TO postgres, dashboard_user;
+GRANT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20211124212715_update-auth-owner.sql
+DO
+DO
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20211130151719_update-realtime-permissions.sql
+[local] 2026-10-02 21:39:13.899 UTC [96] supabase_admin@postgres LOG:  statement: ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON TABLES TO postgres, dashboard_user;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.900 UTC [96] supabase_admin@postgres LOG:  statement: ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON SEQUENCES TO postgres, dashboard_user;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.901 UTC [96] supabase_admin@postgres LOG:  statement: ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON ROUTINES TO postgres, dashboard_user;
+ALTER DEFAULT PRIVILEGES
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220118070449_enable-safeupdate-postgrest.sql
+[local] 2026-10-02 21:39:13.908 UTC [98] supabase_admin@postgres LOG:  statement: ALTER ROLE authenticator SET session_preload_libraries = 'safeupdate';
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220126121436_finer-postgrest-triggers.sql
+[local] 2026-10-02 21:39:13.913 UTC [100] supabase_admin@postgres LOG:  statement: drop event trigger if exists api_restart;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.914 UTC [100] supabase_admin@postgres LOG:  statement: drop function if exists extensions.notify_api_restart();
+DROP FUNCTION
+[local] 2026-10-02 21:39:13.914 UTC [100] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.pgrst_ddl_watch() RETURNS event_trigger AS $$
+	DECLARE
+	  cmd record;
+	BEGIN
+	  FOR cmd IN SELECT * FROM pg_event_trigger_ddl_commands()
+	  LOOP
+	    IF cmd.command_tag IN (
+	      'CREATE SCHEMA', 'ALTER SCHEMA'
+	    , 'CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO', 'ALTER TABLE'
+	    , 'CREATE FOREIGN TABLE', 'ALTER FOREIGN TABLE'
+	    , 'CREATE VIEW', 'ALTER VIEW'
+	    , 'CREATE MATERIALIZED VIEW', 'ALTER MATERIALIZED VIEW'
+	    , 'CREATE FUNCTION', 'ALTER FUNCTION'
+	    , 'CREATE TRIGGER'
+	    , 'CREATE TYPE'
+	    , 'CREATE RULE'
+	    , 'COMMENT'
+	    )
+	    -- don't notify in case of CREATE TEMP table or other objects created on pg_temp
+	    AND cmd.schema_name is distinct from 'pg_temp'
+	    THEN
+	      NOTIFY pgrst, 'reload schema';
+	    END IF;
+	  END LOOP;
+	END; $$ LANGUAGE plpgsql;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.915 UTC [100] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.pgrst_drop_watch() RETURNS event_trigger AS $$
+	DECLARE
+	  obj record;
+	BEGIN
+	  FOR obj IN SELECT * FROM pg_event_trigger_dropped_objects()
+	  LOOP
+	    IF obj.object_type IN (
+	      'schema'
+	    , 'table'
+	    , 'foreign table'
+	    , 'view'
+	    , 'materialized view'
+	    , 'function'
+	    , 'trigger'
+	    , 'type'
+	    , 'rule'
+	    )
+	    AND obj.is_temporary IS false -- no pg_temp objects
+	    THEN
+	      NOTIFY pgrst, 'reload schema';
+	    END IF;
+	  END LOOP;
+	END; $$ LANGUAGE plpgsql;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.916 UTC [100] supabase_admin@postgres LOG:  statement: DROP EVENT TRIGGER IF EXISTS pgrst_ddl_watch;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.916 UTC [100] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER pgrst_ddl_watch
+	  ON ddl_command_end
+	  EXECUTE PROCEDURE extensions.pgrst_ddl_watch();
+CREATE EVENT TRIGGER
+[local] 2026-10-02 21:39:13.917 UTC [100] supabase_admin@postgres LOG:  statement: DROP EVENT TRIGGER IF EXISTS pgrst_drop_watch;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.917 UTC [100] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER pgrst_drop_watch
+	  ON sql_drop
+	  EXECUTE PROCEDURE extensions.pgrst_drop_watch();
+CREATE EVENT TRIGGER
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220224211803_fix-postgrest-supautils.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220317095840_pg_graphql.sql
+[local] 2026-10-02 21:39:13.931 UTC [104] supabase_admin@postgres LOG:  statement: create schema if not exists graphql_public;
+CREATE SCHEMA
+[local] 2026-10-02 21:39:13.933 UTC [104] supabase_admin@postgres LOG:  statement: drop function if exists graphql_public.graphql(text, text, jsonb);
+DROP FUNCTION
+[local] 2026-10-02 21:39:13.933 UTC [104] supabase_admin@postgres LOG:  statement: create or replace function graphql_public.graphql(
+	    "operationName" text default null,
+	    query text default null,
+	    variables jsonb default null,
+	    extensions jsonb default null
+	)
+	    returns jsonb
+	    language plpgsql
+	as $$
+	    DECLARE
+	        server_version float;
+	    BEGIN
+	        server_version = (SELECT (SPLIT_PART((select version()), ' ', 2))::float);
+	
+	        IF server_version >= 14 THEN
+	            RETURN jsonb_build_object(
+	                'data', null::jsonb,
+	                'errors', array['pg_graphql extension is not enabled.']
+	            );
+	        ELSE
+	            RETURN jsonb_build_object(
+	                'data', null::jsonb,
+	                'errors', array['pg_graphql is only available on projects running Postgres 14 onwards.']
+	            );
+	        END IF;
+	    END;
+	$$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.935 UTC [104] supabase_admin@postgres LOG:  statement: grant usage on schema graphql_public to postgres, anon, authenticated, service_role;
+GRANT
+[local] 2026-10-02 21:39:13.936 UTC [104] supabase_admin@postgres LOG:  statement: alter default privileges in schema graphql_public grant all on tables to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.937 UTC [104] supabase_admin@postgres LOG:  statement: alter default privileges in schema graphql_public grant all on functions to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.937 UTC [104] supabase_admin@postgres LOG:  statement: alter default privileges in schema graphql_public grant all on sequences to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.938 UTC [104] supabase_admin@postgres LOG:  statement: alter default privileges for user supabase_admin in schema graphql_public grant all
+	    on sequences to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.939 UTC [104] supabase_admin@postgres LOG:  statement: alter default privileges for user supabase_admin in schema graphql_public grant all
+	    on tables to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.940 UTC [104] supabase_admin@postgres LOG:  statement: alter default privileges for user supabase_admin in schema graphql_public grant all
+	    on functions to postgres, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:13.940 UTC [104] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.grant_pg_graphql_access()
+	RETURNS event_trigger
+	LANGUAGE plpgsql
+	AS $func$
+	    DECLARE
+	    func_is_graphql_resolve bool;
+	    BEGIN
+	    func_is_graphql_resolve = (
+	        SELECT n.proname = 'resolve'
+	        FROM pg_event_trigger_ddl_commands() AS ev
+	        LEFT JOIN pg_catalog.pg_proc AS n
+	        ON ev.objid = n.oid
+	    );
+	
+	    IF func_is_graphql_resolve
+	    THEN
+	        grant usage on schema graphql to postgres, anon, authenticated, service_role;
+	        grant all on function graphql.resolve to postgres, anon, authenticated, service_role;
+	
+	        alter default privileges in schema graphql grant all on tables to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on functions to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on sequences to postgres, anon, authenticated, service_role;
+	
+	        DROP FUNCTION IF EXISTS graphql_public.graphql;
+	        create or replace function graphql_public.graphql(
+	            "operationName" text default null,
+	            query text default null,
+	            variables jsonb default null,
+	            extensions jsonb default null
+	        )
+	            returns jsonb
+	            language sql
+	        as $$
+	            SELECT graphql.resolve(query, coalesce(variables, '{}'));
+	        $$;
+	
+	        grant execute on function graphql.resolve to postgres, anon, authenticated, service_role;
+	    END IF;
+	
+	    END;
+	$func$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.941 UTC [104] supabase_admin@postgres LOG:  statement: DROP EVENT TRIGGER IF EXISTS issue_pg_graphql_access;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.941 UTC [104] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER issue_pg_graphql_access ON ddl_command_end WHEN TAG in ('CREATE FUNCTION')
+	EXECUTE PROCEDURE extensions.grant_pg_graphql_access();
+CREATE EVENT TRIGGER
+[local] 2026-10-02 21:39:13.942 UTC [104] supabase_admin@postgres LOG:  statement: COMMENT ON FUNCTION extensions.grant_pg_graphql_access IS 'Grants access to pg_graphql';
+COMMENT
+[local] 2026-10-02 21:39:13.943 UTC [104] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.set_graphql_placeholder()
+	RETURNS event_trigger
+	LANGUAGE plpgsql
+	AS $func$
+	    DECLARE
+	    graphql_is_dropped bool;
+	    BEGIN
+	    graphql_is_dropped = (
+	        SELECT ev.schema_name = 'graphql_public'
+	        FROM pg_event_trigger_dropped_objects() AS ev
+	        WHERE ev.schema_name = 'graphql_public'
+	    );
+	
+	    IF graphql_is_dropped
+	    THEN
+	        create or replace function graphql_public.graphql(
+	            "operationName" text default null,
+	            query text default null,
+	            variables jsonb default null,
+	            extensions jsonb default null
+	        )
+	            returns jsonb
+	            language plpgsql
+	        as $$
+	            DECLARE
+	                server_version float;
+	            BEGIN
+	                server_version = (SELECT (SPLIT_PART((select version()), ' ', 2))::float);
+	
+	                IF server_version >= 14 THEN
+	                    RETURN jsonb_build_object(
+	                        'data', null::jsonb,
+	                        'errors', array['pg_graphql extension is not enabled.']
+	                    );
+	                ELSE
+	                    RETURN jsonb_build_object(
+	                        'data', null::jsonb,
+	                        'errors', array['pg_graphql is only available on projects running Postgres 14 onwards.']
+	                    );
+	                END IF;
+	            END;
+	        $$;
+	    END IF;
+	
+	    END;
+	$func$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.944 UTC [104] supabase_admin@postgres LOG:  statement: DROP EVENT TRIGGER IF EXISTS issue_graphql_placeholder;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.944 UTC [104] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER issue_graphql_placeholder ON sql_drop WHEN TAG in ('DROP EXTENSION')
+	EXECUTE PROCEDURE extensions.set_graphql_placeholder();
+CREATE EVENT TRIGGER
+[local] 2026-10-02 21:39:13.945 UTC [104] supabase_admin@postgres LOG:  statement: COMMENT ON FUNCTION extensions.set_graphql_placeholder IS 'Reintroduces placeholder function for graphql_public.graphql';
+COMMENT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220321174452_fix-postgrest-alter-type-event-trigger.sql
+[local] 2026-10-02 21:39:13.951 UTC [106] supabase_admin@postgres LOG:  statement: drop event trigger if exists api_restart;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.952 UTC [106] supabase_admin@postgres LOG:  statement: drop function if exists extensions.notify_api_restart();
+DROP FUNCTION
+[local] 2026-10-02 21:39:13.952 UTC [106] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.pgrst_ddl_watch() RETURNS event_trigger AS $$
+	DECLARE
+	  cmd record;
+	BEGIN
+	  FOR cmd IN SELECT * FROM pg_event_trigger_ddl_commands()
+	  LOOP
+	    IF cmd.command_tag IN (
+	      'CREATE SCHEMA', 'ALTER SCHEMA'
+	    , 'CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO', 'ALTER TABLE'
+	    , 'CREATE FOREIGN TABLE', 'ALTER FOREIGN TABLE'
+	    , 'CREATE VIEW', 'ALTER VIEW'
+	    , 'CREATE MATERIALIZED VIEW', 'ALTER MATERIALIZED VIEW'
+	    , 'CREATE FUNCTION', 'ALTER FUNCTION'
+	    , 'CREATE TRIGGER'
+	    , 'CREATE TYPE', 'ALTER TYPE'
+	    , 'CREATE RULE'
+	    , 'COMMENT'
+	    )
+	    -- don't notify in case of CREATE TEMP table or other objects created on pg_temp
+	    AND cmd.schema_name is distinct from 'pg_temp'
+	    THEN
+	      NOTIFY pgrst, 'reload schema';
+	    END IF;
+	  END LOOP;
+	END; $$ LANGUAGE plpgsql;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.955 UTC [106] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.pgrst_drop_watch() RETURNS event_trigger AS $$
+	DECLARE
+	  obj record;
+	BEGIN
+	  FOR obj IN SELECT * FROM pg_event_trigger_dropped_objects()
+	  LOOP
+	    IF obj.object_type IN (
+	      'schema'
+	    , 'table'
+	    , 'foreign table'
+	    , 'view'
+	    , 'materialized view'
+	    , 'function'
+	    , 'trigger'
+	    , 'type'
+	    , 'rule'
+	    )
+	    AND obj.is_temporary IS false -- no pg_temp objects
+	    THEN
+	      NOTIFY pgrst, 'reload schema';
+	    END IF;
+	  END LOOP;
+	END; $$ LANGUAGE plpgsql;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.956 UTC [106] supabase_admin@postgres LOG:  statement: DROP EVENT TRIGGER IF EXISTS pgrst_ddl_watch;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.957 UTC [106] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER pgrst_ddl_watch
+	  ON ddl_command_end
+	  EXECUTE PROCEDURE extensions.pgrst_ddl_watch();
+CREATE EVENT TRIGGER
+[local] 2026-10-02 21:39:13.957 UTC [106] supabase_admin@postgres LOG:  statement: DROP EVENT TRIGGER IF EXISTS pgrst_drop_watch;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:13.958 UTC [106] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER pgrst_drop_watch
+	  ON sql_drop
+	  EXECUTE PROCEDURE extensions.pgrst_drop_watch();
+CREATE EVENT TRIGGER
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220322085208_gotrue-session-limit.sql
+[local] 2026-10-02 21:39:13.965 UTC [108] supabase_admin@postgres LOG:  statement: ALTER ROLE supabase_auth_admin SET idle_in_transaction_session_timeout TO 60000;
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220404205710_pg_graphql-on-by-default.sql
+[local] 2026-10-02 21:39:13.971 UTC [110] supabase_admin@postgres LOG:  statement: create or replace function extensions.grant_pg_graphql_access()
+	    returns event_trigger
+	    language plpgsql
+	AS $func$
+	DECLARE
+	    func_is_graphql_resolve bool;
+	BEGIN
+	    func_is_graphql_resolve = (
+	        SELECT n.proname = 'resolve'
+	        FROM pg_event_trigger_ddl_commands() AS ev
+	        LEFT JOIN pg_catalog.pg_proc AS n
+	        ON ev.objid = n.oid
+	    );
+	
+	    IF func_is_graphql_resolve
+	    THEN
+	        grant usage on schema graphql to postgres, anon, authenticated, service_role;
+	        grant all on function graphql.resolve to postgres, anon, authenticated, service_role;
+	
+	        alter default privileges in schema graphql grant all on tables to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on functions to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on sequences to postgres, anon, authenticated, service_role;
+	
+	        -- Update public wrapper to pass all arguments through to the pg_graphql resolve func
+	        DROP FUNCTION IF EXISTS graphql_public.graphql;
+	        create or replace function graphql_public.graphql(
+	            "operationName" text default null,
+	            query text default null,
+	            variables jsonb default null,
+	            extensions jsonb default null
+	        )
+	            returns jsonb
+	            language sql
+	        as $$
+	            -- This changed
+	            select graphql.resolve(
+	                query := query,
+	                variables := coalesce(variables, '{}'),
+	                "operationName" := "operationName",
+	                extensions := extensions
+	            );
+	        $$;
+	
+	        grant execute on function graphql.resolve to postgres, anon, authenticated, service_role;
+	    END IF;
+	
+	END;
+	$func$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.974 UTC [110] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.set_graphql_placeholder()
+	RETURNS event_trigger
+	LANGUAGE plpgsql
+	AS $func$
+	    DECLARE
+	    graphql_is_dropped bool;
+	    BEGIN
+	    graphql_is_dropped = (
+	        SELECT ev.schema_name = 'graphql_public'
+	        FROM pg_event_trigger_dropped_objects() AS ev
+	        WHERE ev.schema_name = 'graphql_public'
+	    );
+	
+	    IF graphql_is_dropped
+	    THEN
+	        create or replace function graphql_public.graphql(
+	            "operationName" text default null,
+	            query text default null,
+	            variables jsonb default null,
+	            extensions jsonb default null
+	        )
+	            returns jsonb
+	            language plpgsql
+	        as $$
+	            DECLARE
+	                server_version float;
+	            BEGIN
+	                server_version = (SELECT (SPLIT_PART((select version()), ' ', 2))::float);
+	
+	                IF server_version >= 14 THEN
+	                    RETURN jsonb_build_object(
+	                        'errors', jsonb_build_array(
+	                            jsonb_build_object(
+	                                'message', 'pg_graphql extension is not enabled.'
+	                            )
+	                        )
+	                    );
+	                ELSE
+	                    RETURN jsonb_build_object(
+	                        'errors', jsonb_build_array(
+	                            jsonb_build_object(
+	                                'message', 'pg_graphql is only available on projects running Postgres 14 onwards.'
+	                            )
+	                        )
+	                    );
+	                END IF;
+	            END;
+	        $$;
+	    END IF;
+	
+	    END;
+	$func$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.975 UTC [110] supabase_admin@postgres LOG:  statement: create or replace function graphql_public.graphql(
+	    "operationName" text default null,
+	    query text default null,
+	    variables jsonb default null,
+	    extensions jsonb default null
+	)
+	    returns jsonb
+	    language plpgsql
+	as $$
+	    DECLARE
+	        server_version float;
+	    BEGIN
+	        server_version = (SELECT (SPLIT_PART((select version()), ' ', 2))::float);
+	
+	        IF server_version >= 14 THEN
+	            RETURN jsonb_build_object(
+	                'errors', jsonb_build_array(
+	                    jsonb_build_object(
+	                        'message', 'pg_graphql extension is not enabled.'
+	                    )
+	                )
+	            );
+	        ELSE
+	            RETURN jsonb_build_object(
+	                'errors', jsonb_build_array(
+	                    jsonb_build_object(
+	                        'message', 'pg_graphql is only available on projects running Postgres 14 onwards.'
+	                    )
+	                )
+	            );
+	        END IF;
+	    END;
+	$$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:13.976 UTC [110] supabase_admin@postgres LOG:  statement: drop extension if exists pg_graphql;
+DROP EXTENSION
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220609081115_grant-supabase-auth-admin-and-supabase-storage-admin-to-postgres.sql
+[local] 2026-10-02 21:39:13.994 UTC [112] supabase_admin@postgres LOG:  statement: grant supabase_auth_admin, supabase_storage_admin to postgres;
+GRANT ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220613123923_pg_graphql-pg-dump-perms.sql
+[local] 2026-10-02 21:39:14.001 UTC [114] supabase_admin@postgres LOG:  statement: create or replace function extensions.grant_pg_graphql_access()
+	    returns event_trigger
+	    language plpgsql
+	AS $func$
+	DECLARE
+	    func_is_graphql_resolve bool;
+	BEGIN
+	    func_is_graphql_resolve = (
+	        SELECT n.proname = 'resolve'
+	        FROM pg_event_trigger_ddl_commands() AS ev
+	        LEFT JOIN pg_catalog.pg_proc AS n
+	        ON ev.objid = n.oid
+	    );
+	
+	    IF func_is_graphql_resolve
+	    THEN
+	        -- Update public wrapper to pass all arguments through to the pg_graphql resolve func
+	        DROP FUNCTION IF EXISTS graphql_public.graphql;
+	        create or replace function graphql_public.graphql(
+	            "operationName" text default null,
+	            query text default null,
+	            variables jsonb default null,
+	            extensions jsonb default null
+	        )
+	            returns jsonb
+	            language sql
+	        as $$
+	            select graphql.resolve(
+	                query := query,
+	                variables := coalesce(variables, '{}'),
+	                "operationName" := "operationName",
+	                extensions := extensions
+	            );
+	        $$;
+	
+	        -- This hook executes when `graphql.resolve` is created. That is not necessarily the last
+	        -- function in the extension so we need to grant permissions on existing entities AND
+	        -- update default permissions to any others that are created after `graphql.resolve`
+	        grant usage on schema graphql to postgres, anon, authenticated, service_role;
+	        grant select on all tables in schema graphql to postgres, anon, authenticated, service_role;
+	        grant execute on all functions in schema graphql to postgres, anon, authenticated, service_role;
+	        grant all on all sequences in schema graphql to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on tables to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on functions to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on sequences to postgres, anon, authenticated, service_role;
+	    END IF;
+	
+	END;
+	$func$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:14.004 UTC [114] supabase_admin@postgres LOG:  statement: drop extension if exists pg_graphql;
+DROP EXTENSION
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20220713082019_pg_cron-pg_net-temp-perms-fix.sql
+DO
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20221028101028_set_authenticator_timeout.sql
+[local] 2026-10-02 21:39:14.040 UTC [118] supabase_admin@postgres LOG:  statement: alter role authenticator set statement_timeout = '8s';
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20221103090837_revoke_admin.sql
+[local] 2026-10-02 21:39:14.047 UTC [120] supabase_admin@postgres LOG:  statement: revoke supabase_admin from authenticator;
+REVOKE ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20221207154255_create_pgsodium_and_vault.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20230201083204_grant_auth_roles_to_postgres.sql
+[local] 2026-10-02 21:39:14.084 UTC [124] supabase_admin@postgres LOG:  statement: grant anon, authenticated, service_role to postgres;
+GRANT ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20230224042246_grant_extensions_perms_for_postgres.sql
+[local] 2026-10-02 21:39:14.090 UTC [126] supabase_admin@postgres LOG:  statement: grant all privileges on all tables in schema extensions to postgres with grant option;
+GRANT
+[local] 2026-10-02 21:39:14.092 UTC [126] supabase_admin@postgres LOG:  statement: grant all privileges on all routines in schema extensions to postgres with grant option;
+GRANT
+[local] 2026-10-02 21:39:14.094 UTC [126] supabase_admin@postgres LOG:  statement: grant all privileges on all sequences in schema extensions to postgres with grant option;
+GRANT
+[local] 2026-10-02 21:39:14.094 UTC [126] supabase_admin@postgres LOG:  statement: alter default privileges in schema extensions grant all on tables to postgres with grant option;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:14.095 UTC [126] supabase_admin@postgres LOG:  statement: alter default privileges in schema extensions grant all on routines to postgres with grant option;
+ALTER DEFAULT PRIVILEGES
+[local] 2026-10-02 21:39:14.096 UTC [126] supabase_admin@postgres LOG:  statement: alter default privileges in schema extensions grant all on sequences to postgres with grant option;
+ALTER DEFAULT PRIVILEGES
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20230306081037_grant_pg_monitor_to_postgres.sql
+[local] 2026-10-02 21:39:14.102 UTC [128] supabase_admin@postgres LOG:  statement: grant pg_monitor to postgres;
+GRANT ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20230327032006_grant_auth_roles_to_supabase_storage_admin.sql
+[local] 2026-10-02 21:39:14.108 UTC [130] supabase_admin@postgres LOG:  statement: grant anon, authenticated, service_role to supabase_storage_admin;
+GRANT ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20230529180330_alter_api_roles_for_inherit.sql
+[local] 2026-10-02 21:39:14.114 UTC [132] supabase_admin@postgres LOG:  statement: ALTER ROLE authenticated inherit;
+ALTER ROLE
+[local] 2026-10-02 21:39:14.115 UTC [132] supabase_admin@postgres LOG:  statement: ALTER ROLE anon inherit;
+ALTER ROLE
+[local] 2026-10-02 21:39:14.115 UTC [132] supabase_admin@postgres LOG:  statement: ALTER ROLE service_role inherit;
+ALTER ROLE
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20231013070755_grant_authenticator_to_supabase_storage_admin.sql
+[local] 2026-10-02 21:39:14.124 UTC [134] supabase_admin@postgres LOG:  statement: grant authenticator to supabase_storage_admin;
+GRANT ROLE
+[local] 2026-10-02 21:39:14.125 UTC [134] supabase_admin@postgres LOG:  statement: revoke anon, authenticated, service_role from supabase_storage_admin;
+REVOKE ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20231017062225_grant_pg_graphql_permissions_for_custom_roles.sql
+[local] 2026-10-02 21:39:14.132 UTC [136] supabase_admin@postgres LOG:  statement: create or replace function extensions.grant_pg_graphql_access()
+	    returns event_trigger
+	    language plpgsql
+	AS $func$
+	DECLARE
+	    func_is_graphql_resolve bool;
+	BEGIN
+	    func_is_graphql_resolve = (
+	        SELECT n.proname = 'resolve'
+	        FROM pg_event_trigger_ddl_commands() AS ev
+	        LEFT JOIN pg_catalog.pg_proc AS n
+	        ON ev.objid = n.oid
+	    );
+	
+	    IF func_is_graphql_resolve
+	    THEN
+	        -- Update public wrapper to pass all arguments through to the pg_graphql resolve func
+	        DROP FUNCTION IF EXISTS graphql_public.graphql;
+	        create or replace function graphql_public.graphql(
+	            "operationName" text default null,
+	            query text default null,
+	            variables jsonb default null,
+	            extensions jsonb default null
+	        )
+	            returns jsonb
+	            language sql
+	        as $$
+	            select graphql.resolve(
+	                query := query,
+	                variables := coalesce(variables, '{}'),
+	                "operationName" := "operationName",
+	                extensions := extensions
+	            );
+	        $$;
+	
+	        -- This hook executes when `graphql.resolve` is created. That is not necessarily the last
+	        -- function in the extension so we need to grant permissions on existing entities AND
+	        -- update default permissions to any others that are created after `graphql.resolve`
+	        grant usage on schema graphql to postgres, anon, authenticated, service_role;
+	        grant select on all tables in schema graphql to postgres, anon, authenticated, service_role;
+	        grant execute on all functions in schema graphql to postgres, anon, authenticated, service_role;
+	        grant all on all sequences in schema graphql to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on tables to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on functions to postgres, anon, authenticated, service_role;
+	        alter default privileges in schema graphql grant all on sequences to postgres, anon, authenticated, service_role;
+	
+	        -- Allow postgres role to allow granting usage on graphql and graphql_public schemas to custom roles
+	        grant usage on schema graphql_public to postgres with grant option;
+	        grant usage on schema graphql to postgres with grant option;
+	    END IF;
+	
+	END;
+	$func$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:14.135 UTC [136] supabase_admin@postgres LOG:  statement: drop extension if exists pg_graphql;
+DROP EXTENSION
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20231020085357_revoke_writes_on_cron_job_from_postgres.sql
+DO
+[local] 2026-10-02 21:39:14.155 UTC [138] supabase_admin@postgres LOG:  statement: CREATE OR REPLACE FUNCTION extensions.grant_pg_cron_access() RETURNS event_trigger
+	    LANGUAGE plpgsql
+	    AS $$
+	BEGIN
+	  IF EXISTS (
+	    SELECT
+	    FROM pg_event_trigger_ddl_commands() AS ev
+	    JOIN pg_extension AS ext
+	    ON ev.objid = ext.oid
+	    WHERE ext.extname = 'pg_cron'
+	  )
+	  THEN
+	    grant usage on schema cron to postgres with grant option;
+	
+	    alter default privileges in schema cron grant all on tables to postgres with grant option;
+	    alter default privileges in schema cron grant all on functions to postgres with grant option;
+	    alter default privileges in schema cron grant all on sequences to postgres with grant option;
+	
+	    alter default privileges for user supabase_admin in schema cron grant all
+	        on sequences to postgres with grant option;
+	    alter default privileges for user supabase_admin in schema cron grant all
+	        on tables to postgres with grant option;
+	    alter default privileges for user supabase_admin in schema cron grant all
+	        on functions to postgres with grant option;
+	
+	    grant all privileges on all tables in schema cron to postgres with grant option;
+	    revoke all on table cron.job from postgres;
+	    grant select on table cron.job to postgres with grant option;
+	  END IF;
+	END;
+	$$;
+CREATE FUNCTION
+[local] 2026-10-02 21:39:14.158 UTC [138] supabase_admin@postgres LOG:  statement: drop event trigger if exists issue_pg_cron_access;
+DROP EVENT TRIGGER
+[local] 2026-10-02 21:39:14.159 UTC [138] supabase_admin@postgres LOG:  statement: alter function extensions.grant_pg_cron_access owner to supabase_admin;
+ALTER FUNCTION
+[local] 2026-10-02 21:39:14.160 UTC [138] supabase_admin@postgres LOG:  statement: CREATE EVENT TRIGGER issue_pg_cron_access ON ddl_command_end
+	         WHEN TAG IN ('CREATE EXTENSION')
+	   EXECUTE FUNCTION extensions.grant_pg_cron_access();
+CREATE EVENT TRIGGER
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20231130133139_set_lock_timeout_to_authenticator_role.sql
+[local] 2026-10-02 21:39:14.172 UTC [140] supabase_admin@postgres LOG:  statement: ALTER ROLE authenticator set lock_timeout to '8s';
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20240124080435_alter_lo_export_lo_import_owner.sql
+[local] 2026-10-02 21:39:14.179 UTC [142] supabase_admin@postgres LOG:  statement: alter function pg_catalog.lo_export owner to supabase_admin;
+ALTER FUNCTION
+[local] 2026-10-02 21:39:14.180 UTC [142] supabase_admin@postgres LOG:  statement: alter function pg_catalog.lo_import(text) owner to supabase_admin;
+ALTER FUNCTION
+[local] 2026-10-02 21:39:14.181 UTC [142] supabase_admin@postgres LOG:  statement: alter function pg_catalog.lo_import(text, oid) owner to supabase_admin;
+ALTER FUNCTION
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20240606060239_grant_predefined_roles_to_postgres.sql
+[local] 2026-10-02 21:39:14.187 UTC [144] supabase_admin@postgres LOG:  statement: grant pg_read_all_data, pg_signal_backend to postgres;
+GRANT ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20241031003909_create_orioledb.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20241215003910_backfill_pgmq_metadata.sql
+DO
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250205060043_disable_log_statement_on_internal_roles.sql
+[local] 2026-10-02 21:39:14.212 UTC [150] supabase_admin@postgres LOG:  statement: alter role supabase_admin set log_statement = none;
+ALTER ROLE
+[local] 2026-10-02 21:39:14.213 UTC [150] supabase_admin@postgres LOG:  statement: alter role supabase_auth_admin set log_statement = none;
+ALTER ROLE
+[local] 2026-10-02 21:39:14.214 UTC [150] supabase_admin@postgres LOG:  statement: alter role supabase_storage_admin set log_statement = none;
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250205144616_move_orioledb_to_extensions_schema.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250218031949_pgsodium_mask_role.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250220051611_pg_net_perms_fix.sql
+CREATE FUNCTION
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250312095419_pgbouncer_ownership.sql
+ALTER FUNCTION
+GRANT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250402065937_alter_internal_event_triggers_owner_to_supabase_admin.sql
+DROP EVENT TRIGGER
+ALTER FUNCTION
+CREATE EVENT TRIGGER
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250402093753_grant_subscription_to_postgres_16_and_above.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250417190610_update_pgbouncer_get_auth.sql
+CREATE FUNCTION
+GRANT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250421084701_revoke_admin_roles_from_postgres.sql
+REVOKE ROLE
+DO
+DO
+REVOKE ROLE
+REVOKE
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250605172253_grant_with_admin_to_postgres_16_and_above.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250623125453_tmp_grant_storage_tables_to_postgres_with_grant_option.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250709135250_grant_storage_schema_to_postgres_with_grant_option.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20250710151649_supabase_read_only_user_default_transaction_read_only.sql
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20251001204436_predefined_role_grants.sql
+GRANT ROLE
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20251105172723_grant_pg_reload_conf_to_postgres.sql
+GRANT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20251121132723_correct_search_path_pgbouncer.sql
+CREATE FUNCTION
+REVOKE
+REVOKE
+GRANT
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20260211120934_supabase_privileged_role.sql
+DO
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20260413000000_fix-authenticator-session-preload-libraries.sql
+ALTER ROLE
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20260421000000_pg_graphql-off-by-default.sql
+DROP EXTENSION
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20260421000001_rescope_pg_graphql_access_trigger.sql
+CREATE FUNCTION
+DROP EVENT TRIGGER
+CREATE EVENT TRIGGER
+/docker-entrypoint-initdb.d/migrate.sh: running /docker-entrypoint-initdb.d/migrations/20260730000000_revoke_trigger_on_cron_tables_from_postgres.sql
+DO
+CREATE FUNCTION
+/docker-entrypoint-initdb.d/migrate.sh: running /etc/postgresql.schema.sql
+ALTER DATABASE
+ALTER DATABASE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+CREATE SCHEMA
+ALTER SCHEMA
+BEGIN
+CREATE SCHEMA
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+CREATE TABLE
+INSERT 0 1
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+COMMENT
+CREATE FUNCTION
+DO
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER TABLE
+ALTER TABLE
+ALTER FUNCTION
+GRANT ROLE
+DO
+DO
+CREATE FUNCTION
+COMMENT
+DO
+INSERT 0 1
+ALTER FUNCTION
+ALTER FUNCTION
+REVOKE
+GRANT
+COMMIT
+CREATE DATABASE
+You are now connected to database "_supabase" as user "supabase_admin".
+CREATE SCHEMA
+ALTER SCHEMA
+CREATE SCHEMA
+ALTER SCHEMA
+You are now connected to database "postgres" as user "supabase_admin".
+   pg_stat_statements_reset    
+-------------------------------
+ 2026-10-02 21:39:14.511139+00
+(1 row)
+
+ pg_stat_reset 
+---------------
+ 
+(1 row)
+
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/migrations
+
+waiting for server to shut down.... 2026-10-02 21:39:14.512 UTC [47] LOG:  received fast shutdown request
+ 2026-10-02 21:39:14.514 UTC [47] LOG:  aborting any active transactions
+ 2026-10-02 21:39:14.514 UTC [61] LOG:  pg_cron scheduler shutting down
+ 2026-10-02 21:39:14.516 UTC [47] LOG:  background worker "logical replication launcher" (PID 62) exited with exit code 1
+ 2026-10-02 21:39:14.516 UTC [47] LOG:  background worker "pg_cron launcher" (PID 61) exited with exit code 1
+ 2026-10-02 21:39:14.516 UTC [55] LOG:  shutting down
+ 2026-10-02 21:39:14.518 UTC [55] LOG:  checkpoint starting: shutdown immediate
+[local] 2026-10-02 21:39:14.731 UTC [207] postgres@postgres FATAL:  the database system is shutting down
+ 2026-10-02 21:39:14.999 UTC [55] LOG:  checkpoint complete: wrote 1162 buffers (7.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.012 s, sync=0.465 s, total=0.483 s; sync files=435, longest=0.004 s, average=0.002 s; distance=6116 kB, estimate=6116 kB; lsn=0/1AE62B8, redo lsn=0/1AE62B8
+ 2026-10-02 21:39:15.011 UTC [47] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+

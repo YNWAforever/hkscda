@@ -1,0 +1,30 @@
+{
+  "command": [
+    "bun",
+    "test",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-oid-codec.test.ts"
+  ],
+  "exit": 0,
+  "bindings": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-codec-test.py",
+      "archive": "i0.source",
+      "rawSha256": "aaab213a248d7e3f249ae1d0ab41ad5d4d9f2d509407caeae3bf16ce4a3dddc1",
+      "bytes": 1221
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-oid-codec.ts",
+      "archive": "i1.source",
+      "rawSha256": "fd0180753fd8a2658b041be44ce77e364e00cc80d04fbfa0f46e2284eebd9fec",
+      "bytes": 2159
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-oid-codec.test.ts",
+      "archive": "i2.source",
+      "rawSha256": "965706b68dccb4c6a0a909e2b817d14ed92a202145f1f5a1067e618d0e8a48a2",
+      "bytes": 3272
+    }
+  ],
+  "stdoutSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+  "stderrSha256": "a7f516c03e891e2753ef7d653afaabd701596acb8fc7e9194542268bb27671d8"
+}

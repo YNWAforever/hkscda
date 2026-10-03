@@ -1,0 +1,34 @@
+Spec Compliance: APPROVED. T11-F1-M1 is CLOSED at 18c3c6ea06a25292b6e172e99cd381ed7d4409dc.
+
+Task quality: APPROVED for this documentary increment. No new Critical, Important or Minor findings.
+
+# Task11 documentary Fix2 — same-seat scoped review
+
+## Scope
+
+Reviewed the prepared 7712-byte package once: BASE 74e5bb6ce7765dcc96d34eddea75db4c4803c911 to HEAD 18c3c6ea06a25292b6e172e99cd381ed7d4409dc, tree d76af23ba1db9c908058429e61e5ec629f58f7e1. Its single tracked change is docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md. Also read the worker's task-11-fix2-document-binding.json and controller's task-11-controller-fix2-document-bridge.json.
+
+## Finding disposition and checks
+
+- **T11-F1-M1 CLOSED:** [task-11-evidence.md:172](C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md:172) now gives `bun docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-capture.ts component OWNOUT`. This supplies the required argv[2] mode and argv[3] output previously verified at task-11-component-capture.ts:3–4. No source reread or command rerun was needed.
+- **Historical evidence preserved:** [task-11-evidence.md:174](C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md:174) explicitly distinguishes the corrected example from actual executed commands and unchanged historical receipts, raw archives, translation, frozen inputs and source. It identifies the old verification as historical and the new document-only binding as a separate sidecar.
+- **Metadata bridge checked:** worker and independent controller sidecars agree on HEAD/tree, the sole changed path, document Git blob c4664bc86d15ee3962f6d010575cbbe655ad99b3 and raw SHA256 398bd0625a8f34a1dfa903fec29bdaca34489a81e084712023b7843862158b71. Controller confirms all57 current inputs and all264 previously independently bound archive Git identities unchanged. Worker additionally records all50 gate inputs and manifest/translation preservation. These are consumed prepared binding results, not newly re-derived Git proof from this reviewer.
+
+## Strengths
+
+The correction is limited to the faulty example and a clear provenance qualification. It repairs the copyable invocation while preserving actual execution history and avoiding unnecessary proof regeneration.
+
+## Findings
+
+- Critical: none.
+- Important: none.
+- Minor introduced by Fix2: none.
+- T11-M1 remains the previously qualified/deferred baseline: 51 refresh warnings plus one HelpWidget hooks warning. This increment does not claim to fix them.
+
+## Acceptance boundaries
+
+Fix1 scoped source/spec/quality acceptance and closed T11-I1/I2/M2 dispositions remain inherited. R52 shared-modern aggregate limitations remain; no exclusive fixture/catalog/Auth/ACL/native preservation claim is added. The component remains a PG17.6 reconstruction of historical Task9 evidence, not fresh fullPG17.11.
+
+Fresh actual five individual CI job results and required non-skipped finance execution on real PG17.11 remain controller acceptance gates for the final candidate. This report approves neither production/release readiness nor held Task1/Task8 proposals.
+
+No original/Fix1 source rereview, tests, DB/bootstrap/app gates, Git commands, discovery, subagents or source/index/branch changes occurred. The only write was this ignored report.

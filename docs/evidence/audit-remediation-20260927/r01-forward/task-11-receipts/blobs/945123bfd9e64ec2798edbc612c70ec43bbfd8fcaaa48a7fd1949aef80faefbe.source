@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-11-capture-producer.test.ts:
+(pass) shared capture producer qualifies exact hosted setup and flags [1.38ms]
+(pass) shared capture producer qualifies exact modern setup and flags [0.10ms]
+(pass) shared capture producer qualifies exact component setup and flags [0.50ms]
+(pass) shared capture producer fails closed at capture:modern [0.57ms]
+(pass) shared capture producer fails closed at create [0.12ms]
+(pass) shared capture producer fails closed at scan [0.10ms]
+(pass) shared capture producer fails closed at dependencies [0.08ms]
+(pass) shared capture producer fails closed at metadata [0.06ms]
+(pass) shared capture producer fails closed at close [0.07ms]
+(pass) shared capture producer fails closed at template [0.05ms]
+(pass) shared capture producer fails closed at frozen [0.04ms]
+(pass) shared capture producer rejects missing component truth and unknown modes [0.33ms]
+(pass) shared capture producer rejects changed source and nonliteral cleanup truth [0.25ms]
+
+ 13 pass
+ 0 fail
+ 60 expect() calls
+Ran 13 tests across 1 file. [178.00ms]

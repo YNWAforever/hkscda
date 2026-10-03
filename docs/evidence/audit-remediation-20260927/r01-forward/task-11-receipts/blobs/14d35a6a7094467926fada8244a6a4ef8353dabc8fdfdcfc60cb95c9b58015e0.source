@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/sql-split.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "0f3fb1665c211f9bb451c71c5d53c7dfa114293b",
+  "rawSha256": "2d2e707f9463081e3806726a161d424ed90f9c1025f7acfc0bed2e1f69e1bda7",
+  "bytes": 11187
+}

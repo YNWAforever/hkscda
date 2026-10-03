@@ -1,0 +1,17 @@
+{
+  "mode": "modern",
+  "command": [
+    "bun",
+    "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-11-rehearse.ts",
+    "modern",
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-modern-fix3-final-1790983801931"
+  ],
+  "exit": 0,
+  "elapsedSeconds": 34.02704670000821,
+  "environment": {
+    "R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES": "1",
+    "inheritedTestDatabaseAndFixtureOptionsRemoved": true
+  },
+  "stdoutSha256": "1aa84486b0b78be0365e00b80e5225222105796bd7daaec9e9fafa397b0d1fc0",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "alter table public.webhook_event\n  add column if not exists processing_started_at timestamptz,\n  add column if not exists processing_expires_at timestamptz,\n  add column if not exists processing_owner text",
+    "create index if not exists webhook_event_processing_idx\n  on public.webhook_event (provider, provider_event_id, processed_at, processing_expires_at)"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

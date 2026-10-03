@@ -1,0 +1,4 @@
+NOTICE:  constraint "adoption_followup_adoption_case_id_not_null" of relation "adoption_followup" does not exist, skipping
+NOTICE:  constraint "adoption_followup_link_required" of relation "adoption_followup" does not exist, skipping
+NOTICE:  constraint "adoption_followup_priority_check" of relation "adoption_followup" does not exist, skipping
+NOTICE:  constraint "adoption_followup_contact_channel_check" of relation "adoption_followup" does not exist, skipping

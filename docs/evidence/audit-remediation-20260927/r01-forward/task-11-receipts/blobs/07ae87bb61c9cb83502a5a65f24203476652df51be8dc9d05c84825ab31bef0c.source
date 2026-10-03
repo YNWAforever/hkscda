@@ -1,0 +1,45 @@
+{
+  "command": [
+    "bun",
+    "test",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts"
+  ],
+  "exit": 1,
+  "elapsedSeconds": 0.1783368999895174,
+  "bindings": [
+    {
+      "path": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-focused.py",
+      "archive": "s0.source",
+      "bytes": 1780,
+      "rawSha256": "f0a1097286423820dd0dfd7ec13fdeed91e90a620f68812fa80da38926fa7327",
+      "canonicalSha256": "f0a1097286423820dd0dfd7ec13fdeed91e90a620f68812fa80da38926fa7327",
+      "rawGitBlob": "ab99f2a3c435293ce9cb77a762adca1347930b7d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.test.ts",
+      "archive": "s1.source",
+      "bytes": 4621,
+      "rawSha256": "b0ec84681a9ac7c4adad8bffcac2c0ed6c07580be5d5345e737afa33d17086a9",
+      "canonicalSha256": "b0ec84681a9ac7c4adad8bffcac2c0ed6c07580be5d5345e737afa33d17086a9",
+      "rawGitBlob": "de259d525f46227a7af3ca3240d3174bd00e8837"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json",
+      "archive": "s2.source",
+      "bytes": 167255,
+      "rawSha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+      "canonicalSha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+      "rawGitBlob": "16cb38084ed62561915e889b13b2ab09569b0ca2"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+      "archive": "s3.source",
+      "bytes": 6504,
+      "rawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+      "canonicalSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+      "rawGitBlob": "a02daf181c80e177e0db239ceb6b1cc25e276d3d"
+    }
+  ],
+  "stdoutSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+  "stderrSha256": "077403f361a3da63633354964557c7c7fba24e5db4403edfb9f38440de43b609"
+}

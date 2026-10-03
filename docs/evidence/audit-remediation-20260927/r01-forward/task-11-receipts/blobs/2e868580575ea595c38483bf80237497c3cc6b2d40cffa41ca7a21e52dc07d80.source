@@ -1,0 +1,24 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\donations\financeCallbackFixtureGuard.test.ts:
+3 | const ciUrl="postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+4 | const ci={CI:"true",GITHUB_ACTIONS:"true",R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES:"1"};
+5 | test("finance fixture guard admits only exact opted GitHub CI and existing owned clone",()=>{
+6 |  expect(assertFinanceFixtureUrl(ciUrl,ci)).toBe(ciUrl);
+7 |  const clone="postgresql://supabase_admin:postgres@127.0.0.1:52322/r01_clone_"+"a".repeat(32);
+8 |  expect(assertFinanceFixtureUrl(clone,{R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES:"1"})).toBe(clone);
+                                                                                            ^
+error: expect(received).toBe(expected)
+
+Expected: "postgresql://supabase_admin:postgres@127.0.0.1:52322/r01_clone_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+Received: "r01_clone_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackFixtureGuard.test.ts:8:89)
+(fail) finance fixture guard admits only exact opted GitHub CI and existing owned clone [7.60ms]
+(pass) finance CI guard refuses missing or nonliteral flags and non-CI use [0.53ms]
+(pass) finance CI guard refuses wrong host port database user protocol and suffix [0.18ms]
+
+ 2 pass
+ 1 fail
+ 26 expect() calls
+Ran 3 tests across 1 file. [106.00ms]

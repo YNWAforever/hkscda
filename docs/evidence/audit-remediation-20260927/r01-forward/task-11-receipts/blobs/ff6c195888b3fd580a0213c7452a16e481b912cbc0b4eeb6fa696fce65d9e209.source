@@ -1,0 +1,17 @@
+{
+  "mode": "component",
+  "command": [
+    "bun",
+    "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-11-rehearse.ts",
+    "component",
+    ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-component-fix3-final-1790983835958"
+  ],
+  "exit": 0,
+  "elapsedSeconds": 34.83601910001016,
+  "environment": {
+    "R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES": "1",
+    "inheritedTestDatabaseAndFixtureOptionsRemoved": true
+  },
+  "stdoutSha256": "5cf4a13ede39044616a9915222e42191c688d0a88eeee73f00b34d0540a38027",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

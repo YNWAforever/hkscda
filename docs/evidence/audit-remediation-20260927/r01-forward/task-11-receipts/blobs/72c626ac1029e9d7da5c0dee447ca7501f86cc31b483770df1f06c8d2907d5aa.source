@@ -1,0 +1,66 @@
+BEGIN;
+-- An expired final claim, or a deferred final claim, must become staff-retryable.
+create or replace function public.claim_volunteer_operation_outbox(
+  p_limit integer,
+  p_lease_until timestamptz
+)
+returns setof public.volunteer_operation_outbox
+language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  update public.volunteer_operation_outbox o
+  set status = 'failed',
+      claimed_until = null,
+      last_error = 'notification_attempts_exhausted'
+  where o.kind in ('volunteer_monthly_assessment_notification', 'volunteer_policy_reminder')
+    and (
+      o.status = 'queued'
+      or (o.status = 'claimed' and o.claimed_until < clock_timestamp())
+    )
+    and o.available_at <= clock_timestamp()
+    and o.attempts - o.retry_attempt_base >= coalesce(
+      (o.payload->>'max_attempts')::integer,
+      (
+        select (v.body#>>'{notifications,max_attempts}')::integer
+        from public.volunteer_monthly_assessment a
+        join public.volunteer_assessment_policy_version v on v.id = a.policy_version_id
+        where a.id = (o.payload->>'assessment_id')::uuid
+      ),
+      1
+    );
+
+  return query
+  update public.volunteer_operation_outbox o
+  set status = 'claimed',
+      attempts = o.attempts + 1,
+      claimed_until = least(p_lease_until, clock_timestamp() + interval '10 minutes')
+  where o.id in (
+    select q.id
+    from public.volunteer_operation_outbox q
+    where q.kind in ('volunteer_monthly_assessment_notification', 'volunteer_policy_reminder')
+      and (
+        q.status in ('queued', 'failed')
+        or (q.status = 'claimed' and q.claimed_until < clock_timestamp())
+      )
+      and q.available_at <= clock_timestamp()
+      and q.attempts - q.retry_attempt_base < coalesce(
+        (q.payload->>'max_attempts')::integer,
+        (
+          select (v.body#>>'{notifications,max_attempts}')::integer
+          from public.volunteer_monthly_assessment a
+          join public.volunteer_assessment_policy_version v on v.id = a.policy_version_id
+          where a.id = (q.payload->>'assessment_id')::uuid
+        ),
+        1
+      )
+    order by q.available_at, q.id
+    for update skip locked
+    limit least(greatest(p_limit, 1), 100)
+  )
+  returning o.*;
+end;
+$$;
+revoke all on function public.claim_volunteer_operation_outbox(integer,timestamptz)
+  from public, anon, authenticated;
+grant execute on function public.claim_volunteer_operation_outbox(integer,timestamptz)
+  to service_role;
+COMMIT;

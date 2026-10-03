@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli-go/pkg/migration/file.go?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "e74d322c78cf95d163f893fe836db7ae2af5f219",
+  "rawSha256": "560a3d2bdcc74acb3e778acc2d76552d7860d3e73de27de9a1ebb6eabe0c2bcb",
+  "bytes": 8341
+}

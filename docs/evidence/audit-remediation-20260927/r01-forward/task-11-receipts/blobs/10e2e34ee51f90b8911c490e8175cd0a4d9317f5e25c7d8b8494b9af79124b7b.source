@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-11-capture-producer.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './task-11-capture-producer' from 'C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-capture-producer.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [211.00ms]

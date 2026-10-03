@@ -1,0 +1,62 @@
+-- Queue receipt and acknowledgement recovery in the same transaction that
+-- makes a donation succeeded. Existing webhook and reconciliation paths stay active.
+create function public.queue_donation_delivery_on_success()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_payment_id uuid;
+  v_job_id uuid;
+begin
+  if new.status <> 'succeeded' or old.status = 'succeeded' then return new; end if;
+  select p.id into v_payment_id from public.payment p
+    where p.donation_id = new.id and p.status = 'succeeded'
+    order by p.received_at desc nulls last, p.id desc limit 1;
+  if v_payment_id is null then return new; end if;
+  insert into public.donation_delivery_job(donation_id, payment_id)
+    values(new.id, v_payment_id) on conflict do nothing returning id into v_job_id;
+  if v_job_id is not null then
+    insert into public.audit_log(actor_user_id, action, entity, entity_id, detail)
+      values(null, 'donation.delivery_queued', 'donation_delivery_job', v_job_id::text,
+        jsonb_build_object('donationId',new.id,'paymentId',v_payment_id));
+  end if;
+  return new;
+end $$;
+revoke all on function public.queue_donation_delivery_on_success() from public, anon, authenticated;
+create trigger donation_success_delivery_job
+  after update of status on public.donation
+  for each row when (new.status = 'succeeded' and old.status is distinct from new.status)
+  execute function public.queue_donation_delivery_on_success();
+
+-- Listing is read-only. The existing claim RPC takes the lease and fences
+-- competing workers; a scheduler may list the same ID safely.
+create function public.list_due_donation_delivery_jobs(p_limit integer default 10)
+returns table(id uuid) language sql security definer set search_path = public, pg_temp as $$
+  select j.id from public.donation_delivery_job j
+    where (j.status = 'pending'
+      or (j.status = 'retryable' and (j.next_attempt_at is null or j.next_attempt_at <= now()))
+      or (j.status = 'processing' and j.lease_until <= now()))
+    order by coalesce(j.next_attempt_at,j.created_at),j.id
+    limit least(greatest(coalesce(p_limit,10),1),25)
+$$;
+revoke all on function public.list_due_donation_delivery_jobs(integer) from public, anon, authenticated;
+grant execute on function public.list_due_donation_delivery_jobs(integer) to service_role;
+
+-- An authorized manual retry starts a fresh bounded attempt window.
+create or replace function public.retry_donation_delivery_job_with_audit(p_job_id uuid,p_actor_user_id uuid)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare v_id uuid;
+begin
+  if not exists(select 1 from public.admin_user where auth_user_id=p_actor_user_id and status='active' and role in ('admin','treasurer')) then
+    raise exception 'delivery_retry_forbidden' using errcode='42501';
+  end if;
+  update public.donation_delivery_job
+    set status='pending', attempts=0, next_attempt_at=null, error_code=null,
+      lease_until=null, lease_owner=null, updated_at=now()
+    where id=p_job_id and status in ('retryable','attention_required')
+    returning id into v_id;
+  if v_id is null then return false; end if;
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
+    values(p_actor_user_id,'donation.delivery_retry','donation_delivery_job',p_job_id::text,'{}'::jsonb);
+  return true;
+end $$;
+revoke all on function public.retry_donation_delivery_job_with_audit(uuid,uuid) from public,anon,authenticated;
+grant execute on function public.retry_donation_delivery_job_with_audit(uuid,uuid) to service_role;

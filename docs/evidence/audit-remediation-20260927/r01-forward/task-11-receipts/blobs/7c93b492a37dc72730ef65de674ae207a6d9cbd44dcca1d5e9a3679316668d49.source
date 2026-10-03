@@ -1,0 +1,33 @@
+{
+  "statements": [
+    "create table if not exists public.sponsorship_pledge (\n  id uuid primary key default gen_random_uuid(),\n  supporter_id uuid not null references public.supporter(id),\n  monthly_tier text not null check (monthly_tier in ('100', '300', '500', 'custom')),\n  amount_cents integer not null check (amount_cents > 0),\n  currency text not null default 'HKD',\n  language text not null check (language in ('zh-HK', 'en')),\n  notes text,\n  status text not null default 'pending_payment' check (status in ('pending_payment', 'provisional', 'active', 'needs_followup', 'cancelled')),\n  created_at timestamptz not null default now(),\n  updated_at timestamptz not null default now()\n)",
+    "create table if not exists public.sponsorship_preference (\n  id uuid primary key default gen_random_uuid(),\n  pledge_id uuid not null references public.sponsorship_pledge(id) on delete cascade,\n  sponsor_animal_id uuid references public.animals(id) on delete set null,\n  rank integer not null check (rank between 1 and 10),\n  animal_name_snapshot text not null,\n  animal_type_snapshot text not null check (animal_type_snapshot in ('sponsor')),\n  created_at timestamptz not null default now(),\n  unique (pledge_id, rank),\n  unique (pledge_id, sponsor_animal_id)\n)",
+    "create table if not exists public.sponsorship_payment_proof (\n  id uuid primary key default gen_random_uuid(),\n  pledge_id uuid not null unique references public.sponsorship_pledge(id) on delete cascade,\n  storage_bucket text not null default 'sponsorship-payment-proof' check (storage_bucket = 'sponsorship-payment-proof'),\n  storage_path text not null,\n  file_name text not null,\n  file_type text not null check (file_type in ('image/jpeg', 'image/png', 'image/webp', 'application/pdf')),\n  file_size integer not null check (file_size > 0 and file_size <= 8388608),\n  payment_method text not null check (payment_method in ('fps', 'bank_transfer', 'payme', 'paypal', 'give_asia')),\n  reference text,\n  amount_cents integer not null check (amount_cents > 0),\n  payment_date date not null,\n  review_status text not null default 'pending' check (review_status in ('pending', 'approved', 'rejected')),\n  created_at timestamptz not null default now(),\n  unique (storage_bucket, storage_path)\n)",
+    "do $$\nbegin\n  execute 'drop trigger if exists set_updated_at on public.sponsorship_pledge';\n  execute 'create trigger set_updated_at before update on public.sponsorship_pledge for each row execute function public.set_updated_at()';\nend $$",
+    "create index if not exists sponsorship_pledge_supporter_idx\n  on public.sponsorship_pledge (supporter_id)",
+    "create index if not exists sponsorship_pledge_status_idx\n  on public.sponsorship_pledge (status)",
+    "create index if not exists sponsorship_preference_pledge_rank_idx\n  on public.sponsorship_preference (pledge_id, rank)",
+    "alter table public.sponsorship_pledge enable row level security",
+    "alter table public.sponsorship_preference enable row level security",
+    "alter table public.sponsorship_payment_proof enable row level security",
+    "grant select on public.sponsorship_pledge to authenticated",
+    "grant select on public.sponsorship_preference to authenticated",
+    "grant select on public.sponsorship_payment_proof to authenticated",
+    "grant select, insert, update, delete on public.sponsorship_pledge to service_role",
+    "grant select, insert, update, delete on public.sponsorship_preference to service_role",
+    "grant select, insert, update, delete on public.sponsorship_payment_proof to service_role",
+    "revoke all on public.sponsorship_pledge from anon",
+    "revoke all on public.sponsorship_preference from anon",
+    "revoke all on public.sponsorship_payment_proof from anon",
+    "create policy \"staff can read sponsorship pledges\"\n  on public.sponsorship_pledge for select\n  to authenticated\n  using (private.has_admin_role(array['staff', 'admin']))",
+    "create policy \"staff can read sponsorship preferences\"\n  on public.sponsorship_preference for select\n  to authenticated\n  using (private.has_admin_role(array['staff', 'admin']))",
+    "create policy \"staff can read sponsorship payment proofs\"\n  on public.sponsorship_payment_proof for select\n  to authenticated\n  using (private.has_admin_role(array['staff', 'admin']))",
+    "insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)\nvalues (\n  'sponsorship-payment-proof',\n  'sponsorship-payment-proof',\n  false,\n  8388608,\n  array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']\n)\non conflict (id) do update\nset public = excluded.public,\n    file_size_limit = excluded.file_size_limit,\n    allowed_mime_types = excluded.allowed_mime_types",
+    "create policy \"staff can read sponsorship payment proof files\"\n  on storage.objects for select\n  to authenticated\n  using (\n    bucket_id = 'sponsorship-payment-proof'\n    and private.has_admin_role(array['staff', 'admin'])\n  )",
+    "alter table public.public_status_token\n  drop constraint if exists public_status_token_entity_type_check",
+    "alter table public.public_status_token\n  add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge'))"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}
