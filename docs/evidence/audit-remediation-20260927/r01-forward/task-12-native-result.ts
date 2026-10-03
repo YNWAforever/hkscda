@@ -1,0 +1,13 @@
+export const nativeResultFlags=["fullF4BaselineObserved","fullScannerPassed","beforeRowsObserved","afterRowsObserved","zeroRowsBefore","zeroRowsAfter","firstApply","nativeNextObserved","secondApply","secondApplyPreserved","outsideTargetsPreserved","supplementalPreserved","refusalsPassed","fixtureConnectionIdentity","mixedRefusalsPassed","catalogAfterRefusalsPreserved","nativeBehaviorPassed","catalogAfterBehaviorPreserved","finalCatalogPreserved","normalCleanup","protectedSourcesPreserved","frozenInputsPreserved"] as const;
+export function assertNativeResult(value:unknown){
+ if(!value||typeof value!=="object"||Array.isArray(value))throw Error("Native candidate object required");
+ const r=value as Record<string,unknown>;
+ if(r.receiptVersion!==1||r.receiptType!=="native-metadata-integration-v1"||r.mode!=="owned-full1711-f4-group-candidate"||r.authority!=="Ruling64"||r.error!==null||JSON.stringify(r.failedFinalFlags)!=="[]"||JSON.stringify(r.requiredFinalFlags)!==JSON.stringify(nativeResultFlags)||nativeResultFlags.some(k=>r[k]!==true)||r.nativeLocalBunBehaviorRun!==false)throw Error("Incomplete native candidate qualification");
+ const scope=["auth.users","public.admin_user","public.group_enquiries","public.audit_log"];
+ for(const key of ["domainRowsBefore","domainRowsAfter"]){const rows=r[key]as {table:string;count:number}[];if(!Array.isArray(rows)||rows.length!==4||JSON.stringify(rows.map(t=>t.table))!==JSON.stringify(scope)||rows.some(t=>t.count!==0))throw Error("Actual four native before/after zero row observations required");}
+ for(const [key,count]of [["migrationInventory",183],["managedJobs",3],["cleanup",4],["refusals",14],["mixedRefusals",2],["nativeBehavior",5],["nativeNextTargets",1]]as const)if(!Array.isArray(r[key])||r[key].length!==count)throw Error("Exact native candidate cardinality required: "+key);
+ if((r.migrationInventory as {exit:number}[]).some(m=>m.exit!==0)||(r.managedJobs as {exit:number}[]).some(m=>m.exit!==0)||(r.cleanup as {normalRemoved:boolean}[]).some(c=>c.normalRemoved!==true)||(r.refusals as {code:string;preserved:boolean;changed:boolean}[]).some(c=>c.code!=="55000"||c.preserved!==true||c.changed!==true)||(r.mixedRefusals as {code:string;preserved:boolean;exit:number}[]).some(c=>c.code!=="55000"||c.preserved!==true||c.exit!==3)||(r.nativeBehavior as {exit:number;rollback:boolean}[]).some(c=>c.exit!==0||c.rollback!==true))throw Error("Native actual apply/refusal/cleanup observations differ");
+ const target=(r.nativeNextTargets as Record<string,unknown>[])[0];
+ if(target.body!=="2769396f44ea208f010b60be0a8077ee"||target.definition!=="5385cdfd05d569b1bc57feaefa187ece"||JSON.stringify(target.config)!=='["search_path=public, pg_temp"]')throw Error("Actual native NEXT differs");
+ return r;
+}

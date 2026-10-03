@@ -277,6 +277,12 @@ jobs:
           R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: "1"
           R01_FINANCE_CALLBACK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
+      - name: Run Task12 group enquiry transaction tests
+        run: bun test --timeout 15000 src/lib/groupEnquiries/atomicForward.database.test.ts
+        env:
+          R01_GROUP_ENQUIRY_ALLOW_LOCAL_FIXTURES: "1"
+          R01_GROUP_ENQUIRY_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Run RLS behavioral tests
         run: bun run test:rls
 
