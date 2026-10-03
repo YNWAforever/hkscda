@@ -8,7 +8,7 @@ import {queryKind,decodeScannerRows} from "./task-12-native-codec";
 import {protectedCapture} from "./task-12-protected";
 import {mutations} from "./task-12-refusals";
 import {vector} from "./task-12-vector";
-import {isDeepStrictEqual} from "node:util";
+import {unknownMixedVectors} from "./task-12-mixed-vectors";
 const [mode,container,output,label]=process.argv.slice(2),out=resolve(output??"");
 if(!out.startsWith(resolve(".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-")))throw Error("Exact owned output required");
 if(mode==="emit"){
@@ -18,9 +18,8 @@ if(mode==="emit"){
  const profiles=await Promise.all(inputs.captures.map(async(p:string)=>JSON.parse(await readFile(p,"utf8"))));
  const native=JSON.parse(await readFile(inputs.native,"utf8"));
  await writeFile(resolve(out,"expected-next.json"),JSON.stringify(native.nextTargets,null,2)+"\n");
- const modern=vector(profiles[1]),all=[...profiles.map(vector),native.vector];
- const mixed=[{label:"native-vector-modern-helpers",vector:{...native.vector,helpers:modern.helpers}},{label:"modern-catalog-native-rest",vector:{...native.vector,catalog:modern.catalog}}];
- if(mixed.some(m=>all.some(v=>isDeepStrictEqual(v,m.vector))))throw Error("Mixed negative equals an actually observed profile");
+ const modern=vector(profiles[1]),hosted=vector(profiles[0]),all=[...profiles.map(vector),native.vector];
+ const mixed=unknownMixedVectors(native.vector,hosted,modern,all);
  await writeFile(resolve(out,"mixed-vectors.json"),JSON.stringify(mixed,null,2)+"\n");
 }else if(mode==="states"){
  const states=await protectedCapture(out,"protected-"+label);
