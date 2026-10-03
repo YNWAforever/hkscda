@@ -1,0 +1,209 @@
+{
+  "atUtc": "2026-10-03T05:37:28.776227+00:00",
+  "metadataCommandExit": 0,
+  "run": 37099925422,
+  "attempt": 1,
+  "associatedSourceSHA": "5d541e3537d6e6da6b087834a70cc98380b94d58",
+  "actualTestCheckoutSHA": "938859cf31acd84b1da576fa98d103f9f73b710c",
+  "actualTestCheckoutTree": "3d1004bf72b3780e91a80d99eb1d66018b6a55b9",
+  "sourceTreeEqual": true,
+  "aggregateConclusion": "failure",
+  "allFiveIndividualSUCCESS": false,
+  "taskAccepted": false,
+  "jobs": [
+    {
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T05:28:26Z",
+          "completed_at": "2026-10-03T05:28:27Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T05:28:27Z",
+          "completed_at": "2026-10-03T05:28:41Z"
+        },
+        {
+          "name": "Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T05:28:41Z",
+          "completed_at": "2026-10-03T05:28:42Z"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T05:28:42Z",
+          "completed_at": "2026-10-03T05:28:45Z"
+        },
+        {
+          "name": "Typecheck",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T05:28:45Z",
+          "completed_at": "2026-10-03T05:29:18Z"
+        },
+        {
+          "name": "Test",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-10-03T05:29:18Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        },
+        {
+          "name": "Lint",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-03T05:30:05Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        },
+        {
+          "name": "Build",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-03T05:30:05Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        },
+        {
+          "name": "Route tree is current",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-03T05:30:05Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        },
+        {
+          "name": "Post Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-03T05:30:05Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-03T05:30:05Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-03T05:30:05Z",
+          "completed_at": "2026-10-03T05:30:05Z"
+        }
+      ]
+    },
+    {
+      "name": "performance-verify",
+      "status": "completed",
+      "conclusion": "skipped",
+      "steps": []
+    },
+    {
+      "name": "brand-verify",
+      "status": "completed",
+      "conclusion": "skipped",
+      "steps": []
+    },
+    {
+      "name": "a11y-verify",
+      "status": "completed",
+      "conclusion": "skipped",
+      "steps": []
+    },
+    {
+      "name": "rls-matrix",
+      "status": "completed",
+      "conclusion": "skipped",
+      "steps": []
+    }
+  ],
+  "verify": {
+    "typecheck": "success",
+    "test": "failure",
+    "actualTestExit": 1,
+    "lint": "not-run",
+    "build": "not-run",
+    "routeTree": "not-run",
+    "rawLogBytes": 861562,
+    "rawLogSha256": "eaa74488f3e635a24574fcc0e96b39d8eff7d39de2a14a56cd11d19e5fc89ece",
+    "literalPassLines": 4246,
+    "literalSkipLines": 1266,
+    "literalFailNames": [
+      "service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [858.28ms]"
+    ]
+  },
+  "blocker": "unchanged content audit detected four fresh Task12 aliases of exact immutable f4 proof bytes introduced by additive Fix1 publisher",
+  "fourHashes": [
+    "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+    "642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c",
+    "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166",
+    "f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2"
+  ],
+  "affectedFix1TransportEntries": [
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-i1-9c681e47a302/g0.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source",
+      "rawSha256": "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166",
+      "rawBytes": 533,
+      "rawGitBlob": "9c3b7503a1d71e4f1ba933e8b152990550935191"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-i1-9c681e47a302/g2.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source",
+      "rawSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "rawBytes": 11205,
+      "rawGitBlob": "7a5866dc7e338d282ec026141659fb643d4e2e83"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-i1-9c681e47a302/g4.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source",
+      "rawSha256": "642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c",
+      "rawBytes": 671,
+      "rawGitBlob": "b2af4e51b9c0e4b5cb2a4e5fbb20c237d51be925"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-i1-9c681e47a302/g6.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2.source",
+      "rawSha256": "f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2",
+      "rawBytes": 547,
+      "rawGitBlob": "f01abb41a2ff6c2e25eb210f72423fc3cb19d2f3"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-i1-9c681e47a302/g61.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source",
+      "rawSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "rawBytes": 11205,
+      "rawGitBlob": "7a5866dc7e338d282ec026141659fb643d4e2e83"
+    }
+  ],
+  "brand": "not-run",
+  "a11y": "not-run",
+  "performance": "not-run",
+  "rls": "not-run",
+  "groupPG1711": "not-run",
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false
+}

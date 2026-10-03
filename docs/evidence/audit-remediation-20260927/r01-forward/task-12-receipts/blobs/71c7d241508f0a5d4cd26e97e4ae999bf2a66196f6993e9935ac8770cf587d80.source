@@ -1,0 +1,4 @@
+import pathlib,sys
+from driver import execute
+OUT=pathlib.Path(__file__).parent
+sys.exit(execute('commit',[sys.executable,'-B',str(OUT/'commit.py')],[__file__,OUT/'driver.py',OUT/'commit.py',OUT/'package.py',OUT/'references.py']))

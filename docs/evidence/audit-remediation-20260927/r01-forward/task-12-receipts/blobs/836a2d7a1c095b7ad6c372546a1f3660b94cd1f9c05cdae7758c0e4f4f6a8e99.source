@@ -1,0 +1,13 @@
+"""Additive closing transport; original and Fix2 primary transports are immutable."""
+import pathlib,json,subprocess
+import references as r
+from package import collect
+ROOT=pathlib.Path.cwd();OUT=pathlib.Path(__file__).parent
+old=json.loads((ROOT/r.PREFIX/'task-12-receipts/fix2-translation.json').read_bytes());seen={e['originalPath']for e in old['entries']}
+entries=collect(sorted(p for p in OUT.rglob('*')if p.is_file()and p.relative_to(ROOT).as_posix()not in seen))
+path=r.PREFIX+'task-12-receipts/fix2-closing-translation.json'
+(ROOT/path).write_bytes((json.dumps({'receiptVersion':1,'mode':'task12-r69-additive-closing-transport','error':None,'baseHead':r.BASE,'entries':entries,'primaryTransportUnchanged':True,'qualification':'Metadata staging and actual final staged focused-audit records only. Git closure is a separate post-commit observation.'},indent=2)+'\n').encode())
+paths=sorted({e['archivePath']for e in entries if e['referenceOrigin']!='existing-immutable-f4-input'}|{path})
+(OUT/'tail-paths.txt').write_text('\n'.join(paths)+'\n');args=['git','add','--pathspec-from-file='+str(OUT/'tail-paths.txt')]
+(OUT/'tail-stage.invocation.json').write_text(json.dumps(args)+'\n');p=subprocess.run(args,capture_output=True);(OUT/'tail-stage.stdout.source').write_bytes(p.stdout);(OUT/'tail-stage.stderr.source').write_bytes(p.stderr);(OUT/'tail-stage.exit.json').write_text(json.dumps({'exit':p.returncode})+'\n');assert p.returncode==0
+print(json.dumps({'closingLocators':len(entries),'primaryLocators':len(old['entries']),'existingF4References':sum(e['referenceOrigin']=='existing-immutable-f4-input'for e in entries)}))

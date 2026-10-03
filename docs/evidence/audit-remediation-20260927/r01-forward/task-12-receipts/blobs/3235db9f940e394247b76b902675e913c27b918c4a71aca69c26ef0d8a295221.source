@@ -1,0 +1,41 @@
+"""Explicit final additive metadata publication and post-commit Git observation."""
+import pathlib,json,subprocess,sys
+import references as r
+from package import collect
+ROOT=pathlib.Path.cwd();OUT=pathlib.Path(__file__).parent;commands=[]
+def run(label,args):
+    (OUT/(label+'.invocation.json')).write_bytes((json.dumps(args)+'\n').encode());p=subprocess.run(args,capture_output=True)
+    (OUT/(label+'.stdout.source')).write_bytes(p.stdout);(OUT/(label+'.stderr.source')).write_bytes(p.stderr)
+    rec={'args':args,'exit':p.returncode,'stdoutSha256':r.sha(p.stdout),'stderrSha256':r.sha(p.stderr)};commands.append(rec);(OUT/(label+'.exit.json')).write_bytes((json.dumps(rec)+'\n').encode())
+    if p.returncode:raise ValueError('Final Git command failed: '+label)
+    return p.stdout
+(OUT/'commit-executed.source').write_bytes(pathlib.Path(__file__).read_bytes())
+assert run('commit-base',['git','rev-parse','HEAD']).strip().decode()==r.BASE
+assert json.loads((OUT/'correct-stage-receipt.json').read_bytes())['actualFocusedAudit']=={'exit':0,'pass':7,'fail':0,'assertions':38}
+all_entries=[];seen=set()
+for name in ['fix2-translation.json','fix2-closing-translation.json']:
+    v=json.loads((ROOT/r.PREFIX/'task-12-receipts'/name).read_bytes());assert v['receiptVersion']==1 and v['error']is None
+    for e in v['entries']:assert e['originalPath']not in seen;seen.add(e['originalPath']);all_entries.append(e)
+new=collect(sorted(p for p in OUT.rglob('*')if p.is_file()and p.relative_to(ROOT).as_posix()not in seen));all_entries+=new
+path=r.PREFIX+'task-12-receipts/fix2-final-translation.json'
+(ROOT/path).write_bytes((json.dumps({'receiptVersion':1,'mode':'task12-r69-additive-final-metadata-transport','error':None,'baseHead':r.BASE,'entries':new,'qualification':'Only previously unarchived closing/publisher/Git-prelaunch bytes; actual post-commit result is observed outside the self-committed metadata.'},indent=2)+'\n').encode())
+paths=sorted({e['archivePath']for e in new if e['referenceOrigin']!='existing-immutable-f4-input'}|{path})
+(OUT/'final-add-paths.txt').write_bytes(('\n'.join(paths)+'\n').encode());run('commit-add',['git','add','--pathspec-from-file='+str(OUT/'final-add-paths.txt')])
+index={}
+for row in run('commit-index',['git','ls-files','--stage','-z']).split(b'\0'):
+    if row:meta,p=row.split(b'\t',1);index[p.decode()]=meta.split()[1].decode()
+for e in all_entries:
+    raw=(ROOT/e['originalPath']).read_bytes();r.validate_entry(raw,e);assert raw==(ROOT/e['archivePath']).read_bytes()and index[e['archivePath']]==e['rawGitBlob']
+assert all(r.alias_path(s)not in index for s in r.PINS)
+run('commit-check',['git','diff','--cached','--check'])
+protected=['.github','src','supabase','.gitattributes',r.PREFIX+'task-11-receipts',r.PREFIX+'task-12-source-binding.json',r.PREFIX+'task-12-fix1-source-binding.json',r.PREFIX+'task-12-source-freeze.json',*[r.PREFIX+'task-12-receipts/'+n for n in ['translation.json','closing-translation.json','fix1-translation.json','fix1-closing-translation.json']]]
+assert run('commit-protected',['git','diff',r.BASE,'--',*protected])==b''
+names=run('commit-scope',['git','diff','--cached','--name-status',r.BASE]).decode().splitlines()
+deletions={line.split('\t')[1]for line in names if line.startswith('D\t')};assert deletions=={r.alias_path(s)for s in r.PINS}
+assert all(line.split('\t')[1].startswith(r.PREFIX)for line in names)
+(OUT/'commit-message.txt').write_bytes(b'fix(audit): reference immutable group proof inputs under R69\n')
+run('commit-actual',['git','commit','--file='+str(OUT/'commit-message.txt')])
+head=run('commit-head',['git','rev-parse','HEAD']).strip().decode();tree=run('commit-tree',['git','rev-parse','HEAD^{tree}']).strip().decode();parent=run('commit-parent',['git','rev-parse','HEAD^']).strip().decode();assert parent==r.BASE
+assert run('commit-clean',['git','status','--porcelain'])==b''
+receipt={'receiptVersion':1,'mode':'task12-r69-postcommit-git-observation','error':None,'baseHead':r.BASE,'finalHead':head,'finalTree':tree,'parent':parent,'clean':True,'newPrimaryAndClosingAndFinalLocators':len(all_entries),'newFinalLocators':len(new),'newPairsAndIndexIdentitiesVerified':True,'withdrawnAliases':sorted(deletions),'protectedDiffEmpty':True,'rulingCount':69,'commands':commands,'sameReviewerApproved':False,'freshFiveCiVerified':False,'productionApplied':False,'task12Accepted':False,'nativeLocalBun':'NOT_RUN','overallR01':'partial'}
+(OUT/'commit-receipt.json').write_bytes((json.dumps(receipt,indent=2)+'\n').encode());print(json.dumps({'finalHead':head,'finalTree':tree,'clean':True,'newLocators':len(all_entries),'newFinalLocators':len(new)}))

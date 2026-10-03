@@ -1,0 +1,29 @@
+...F.F.....
+======================================================================
+FAIL: test_exact_five_existing_references (__main__.References.test_exact_five_existing_references)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-fix2-71ce490a\tests.py", line 13, in test_exact_five_existing_references
+    self.assertEqual([e['archivePath']for e in actual],[r.pin_path(s)for s in r.OCCURRENCES.values()])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['doc[51 chars]ask-12-receipts/blobs/9a10e08a4ae74e315f5f63d6[648 chars]rce'] != ['doc[51 chars]ask-11-receipts/blobs/9a10e08a4ae74e315f5f63d6[648 chars]rce']
+
+First differing element 0:
+'docs[50 chars]ask-12-receipts/blobs/9a10e08a4ae74e315f5f63d6[43 chars]urce'
+'docs[50 chars]ask-11-receipts/blobs/9a10e08a4ae74e315f5f63d6[43 chars]urce'
+
+Diff is 2200 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_no_current_fresh_alias (__main__.References.test_no_current_fresh_alias)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-fix2-71ce490a\tests.py", line 15, in test_no_current_fresh_alias
+    self.assertTrue(all('/task-11-receipts/'in e['archivePath']for e in current(fixture())))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.010s
+
+FAILED (failures=2)

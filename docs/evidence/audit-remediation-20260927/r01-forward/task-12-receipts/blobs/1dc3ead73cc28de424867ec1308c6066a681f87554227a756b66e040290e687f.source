@@ -1,0 +1,18 @@
+"""Withdraw only R69's four aliases, preserving the raw originals reversibly."""
+import pathlib,json,subprocess
+import references as r
+ROOT=pathlib.Path.cwd().resolve();OUT=pathlib.Path(__file__).parent.resolve();prepared=json.loads((OUT/'prepared.json').read_bytes())
+assert prepared['baseHead']==r.BASE and prepared['error']is None and len(prepared['pins'])==4
+records=[]
+for pin in prepared['pins']:
+    src=(ROOT/pin['failedAliasPath']).resolve();dest=(OUT/'withdrawn'/src.name).resolve();existing=(ROOT/pin['existingPath']).resolve()
+    assert src.is_relative_to(ROOT)and dest.is_relative_to(OUT)and OUT.is_relative_to(ROOT)and src!=dest and not dest.exists()
+    raw=src.read_bytes();assert raw==existing.read_bytes()==(ROOT/pin['preservedCopy']).read_bytes()and r.sha(raw)==pin['sha256']and r.blob(raw)==pin['gitBlob']
+    records.append({'source':str(src),'destination':str(dest),'sha256':pin['sha256'],'bytes':len(raw)})
+# No recursive move/delete and no computed shell command; all four absolute paths checked above.
+args=['git','rm','--cached','--',*[p['failedAliasPath']for p in prepared['pins']]]
+(OUT/'withdraw-git.invocation.json').write_text(json.dumps(args)+'\n');p=subprocess.run(args,capture_output=True)
+(OUT/'withdraw-git.stdout.source').write_bytes(p.stdout);(OUT/'withdraw-git.stderr.source').write_bytes(p.stderr);(OUT/'withdraw-git.exit.json').write_text(json.dumps({'exit':p.returncode})+'\n');assert p.returncode==0
+for record in records:
+    dest=pathlib.Path(record['destination']);dest.parent.mkdir(exist_ok=True);pathlib.Path(record['source']).rename(dest);assert r.sha(dest.read_bytes())==record['sha256']
+(OUT/'withdrawal-receipt.json').write_text(json.dumps({'receiptVersion':1,'mode':'task12-r69-four-alias-withdrawal','error':None,'records':records,'trackedPayloadsWithdrawn':4,'failedGitHeadPreserved':r.BASE,'auditPolicyChanged':False},indent=2)+'\n');print('4 exact aliases reversibly withdrawn')

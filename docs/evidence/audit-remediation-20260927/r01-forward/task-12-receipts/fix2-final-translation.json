@@ -1,0 +1,180 @@
+{
+  "receiptVersion": 1,
+  "mode": "task12-r69-additive-final-metadata-transport",
+  "error": null,
+  "baseHead": "5d541e3537d6e6da6b087834a70cc98380b94d58",
+  "entries": [
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-base.exit.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/8f4499c5c498880d650fa4bde4e0f324289af0c313a3abb4980a6a327ab96aa1.source",
+      "rawSha256": "8f4499c5c498880d650fa4bde4e0f324289af0c313a3abb4980a6a327ab96aa1",
+      "canonicalSha256": "8f4499c5c498880d650fa4bde4e0f324289af0c313a3abb4980a6a327ab96aa1",
+      "rawGitBlob": "8b4a3a2a23cca1ad07c9728d96058c677bccaf20",
+      "rawBytes": 218,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-base.invocation.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/4b39e2feefa868c2615389582225f1e68a00cde4e315c919ecceebcc73248fc7.source",
+      "rawSha256": "4b39e2feefa868c2615389582225f1e68a00cde4e315c919ecceebcc73248fc7",
+      "canonicalSha256": "4b39e2feefa868c2615389582225f1e68a00cde4e315c919ecceebcc73248fc7",
+      "rawGitBlob": "382e519a8c7a99f76122ff2449304583be3d77b6",
+      "rawBytes": 29,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-base.stderr.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.source",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "rawBytes": 0,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-base.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/0bd1f987701e06fc08f085a78d794b252e84dfc6f58c361739d63043d09abc4b.source",
+      "rawSha256": "0bd1f987701e06fc08f085a78d794b252e84dfc6f58c361739d63043d09abc4b",
+      "canonicalSha256": "0bd1f987701e06fc08f085a78d794b252e84dfc6f58c361739d63043d09abc4b",
+      "rawGitBlob": "2c509c96d201121ca95d0508674f33969c815da6",
+      "rawBytes": 41,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-commit.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/3235db9f940e394247b76b902675e913c27b918c4a71aca69c26ef0d8a295221.source",
+      "rawSha256": "3235db9f940e394247b76b902675e913c27b918c4a71aca69c26ef0d8a295221",
+      "canonicalSha256": "3235db9f940e394247b76b902675e913c27b918c4a71aca69c26ef0d8a295221",
+      "rawGitBlob": "1e215ec7aedcb3ab13c3636957f1eb7c1590fb10",
+      "rawBytes": 4639,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-driver.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/91a42e8b8a4edf3e4026a4fbe035afa38d40edec9a87eb087b7c60aa6385b20c.source",
+      "rawSha256": "91a42e8b8a4edf3e4026a4fbe035afa38d40edec9a87eb087b7c60aa6385b20c",
+      "canonicalSha256": "91a42e8b8a4edf3e4026a4fbe035afa38d40edec9a87eb087b7c60aa6385b20c",
+      "rawGitBlob": "ba0cd418d609bf20a7df6b2616ec7b52447b582b",
+      "rawBytes": 2032,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-executed.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/3235db9f940e394247b76b902675e913c27b918c4a71aca69c26ef0d8a295221.source",
+      "rawSha256": "3235db9f940e394247b76b902675e913c27b918c4a71aca69c26ef0d8a295221",
+      "canonicalSha256": "3235db9f940e394247b76b902675e913c27b918c4a71aca69c26ef0d8a295221",
+      "rawGitBlob": "1e215ec7aedcb3ab13c3636957f1eb7c1590fb10",
+      "rawBytes": 4639,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-package.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/176bb528128f40a56e2052ad185762c30499fb3cc91f485977ffcc635c65a636.source",
+      "rawSha256": "176bb528128f40a56e2052ad185762c30499fb3cc91f485977ffcc635c65a636",
+      "canonicalSha256": "176bb528128f40a56e2052ad185762c30499fb3cc91f485977ffcc635c65a636",
+      "rawGitBlob": "a55c030efb65bc399ee06811a4a8cfa375c1e534",
+      "rawBytes": 7727,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-references.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/c807b34998ac1bfe124e2ef082514d5b1b31197704687970fe6a7af2900c35e6.source",
+      "rawSha256": "c807b34998ac1bfe124e2ef082514d5b1b31197704687970fe6a7af2900c35e6",
+      "canonicalSha256": "c807b34998ac1bfe124e2ef082514d5b1b31197704687970fe6a7af2900c35e6",
+      "rawGitBlob": "d109ee075f65aef6eb7c025db66224e57d9f3386",
+      "rawBytes": 3507,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit-run-commit.py.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/71c7d241508f0a5d4cd26e97e4ae999bf2a66196f6993e9935ac8770cf587d80.source",
+      "rawSha256": "71c7d241508f0a5d4cd26e97e4ae999bf2a66196f6993e9935ac8770cf587d80",
+      "canonicalSha256": "71c7d241508f0a5d4cd26e97e4ae999bf2a66196f6993e9935ac8770cf587d80",
+      "rawGitBlob": "87468f14a73c1554c551451a57201c28cf3732dd",
+      "rawBytes": 231,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/commit.invocation.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/4e86c6caee935128be455b27806d203ef7812582b9d344284f2ec67b54d56a55.source",
+      "rawSha256": "4e86c6caee935128be455b27806d203ef7812582b9d344284f2ec67b54d56a55",
+      "canonicalSha256": "279282ca8485c9f863048a4510ab989d33014115261607aaa880899b7fa1bb52",
+      "rawGitBlob": "b3c9494e157d480362957b4e094029439bdbe6b0",
+      "rawBytes": 3169,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail-paths.txt",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/42a223625675a5022368e12eb68dec8d9341a2f144c764b9566d2e3d924cd69b.source",
+      "rawSha256": "42a223625675a5022368e12eb68dec8d9341a2f144c764b9566d2e3d924cd69b",
+      "canonicalSha256": "3cfbf0d2ce159454392ab86f96f4022433c6eef89ec896a4225ad1e097014f57",
+      "rawGitBlob": "fb5a304df57390a76e9a513fce02c022fa8313f0",
+      "rawBytes": 7253,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail-stage.exit.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/267aefd78a72c9453478263faba0b4430d9c3bd7f3b3f027154ac04225645a88.source",
+      "rawSha256": "267aefd78a72c9453478263faba0b4430d9c3bd7f3b3f027154ac04225645a88",
+      "canonicalSha256": "5bc232b82de377a5655a39a2af9d7ae0fc868de5b9df957e18905cb914606c88",
+      "rawGitBlob": "4d598bfdb80424d5e3004a3ddacedb70a719c810",
+      "rawBytes": 13,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail-stage.invocation.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/d31824933f08fd097c844c2826aa19faa5a82ce9ca8537f1ea0e0db3eb69cff9.source",
+      "rawSha256": "d31824933f08fd097c844c2826aa19faa5a82ce9ca8537f1ea0e0db3eb69cff9",
+      "canonicalSha256": "66b65e22e1ae36f176b74ab099d75b6f9d76a1565313af62029dd88bd7771ad4",
+      "rawGitBlob": "7205f09d1853b3297fa9a13b8ebf505cdbbea577",
+      "rawBytes": 232,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail-stage.stderr.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.source",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "rawBytes": 0,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail-stage.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.source",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "rawBytes": 0,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail.exit.json",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/3caf43f5ea3d26423a680aec3a428ab51ef56e5a93541d8e31c9b527d1bd8a28.source",
+      "rawSha256": "3caf43f5ea3d26423a680aec3a428ab51ef56e5a93541d8e31c9b527d1bd8a28",
+      "canonicalSha256": "12bfca6e7af9aca7fd9fc15deb8f053fac72b73a65218af72d0667967938b370",
+      "rawGitBlob": "21f239cd0c84f4aca4195abda31549b7c39dc951",
+      "rawBytes": 181,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail.stderr.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.source",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonicalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawGitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "rawBytes": 0,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    },
+    {
+      "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/tail.stdout.source",
+      "archivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/5d56d05e1c73c3fbab6627745e55533d64ca86b7f7240fea44d6161fb1fbcb6d.source",
+      "rawSha256": "5d56d05e1c73c3fbab6627745e55533d64ca86b7f7240fea44d6161fb1fbcb6d",
+      "canonicalSha256": "a92ca8dd70aa4a9ee5c23c9e490f9ac5eeb90b522000ea0c18a5804eae5d30f7",
+      "rawGitBlob": "d87b863d75a80c5619dc289bd9bede54c9570bd4",
+      "rawBytes": 76,
+      "referenceOrigin": "new-task12-fix2-metadata"
+    }
+  ],
+  "qualification": "Only previously unarchived closing/publisher/Git-prelaunch bytes; actual post-commit result is observed outside the self-committed metadata."
+}

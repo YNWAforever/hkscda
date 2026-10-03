@@ -1,0 +1,5 @@
+import pathlib,sys
+from driver import execute
+OUT=pathlib.Path(__file__).parent
+mode=sys.argv[1];assert mode in ['prepare-close-correction','close-correct','tail']
+sys.exit(execute(mode,[sys.executable,'-B',str(OUT/(mode+'.py'))],[__file__,OUT/'driver.py',OUT/(mode+'.py'),OUT/'references.py']+([OUT/'package.py']if mode=='tail'else[])))

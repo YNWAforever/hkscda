@@ -1,0 +1,43 @@
+"""Bind failed Git, four immutable inputs, old manifests, and exact authority bytes."""
+import pathlib,json,subprocess
+import references as r
+ROOT=pathlib.Path.cwd();OUT=pathlib.Path(__file__).parent;MASTER=ROOT.parent/'r01-forward-repair-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001'
+commands=[]
+def run(args):
+    i=len(commands);(OUT/f'p{i}.invocation.json').write_text(json.dumps(args)+'\n');p=subprocess.run(args,capture_output=True)
+    (OUT/f'p{i}.stdout.source').write_bytes(p.stdout);(OUT/f'p{i}.stderr.source').write_bytes(p.stderr)
+    item={'args':args,'exit':p.returncode,'stdoutSha256':r.sha(p.stdout),'stderrSha256':r.sha(p.stderr)};commands.append(item);(OUT/f'p{i}.exit.json').write_text(json.dumps(item)+'\n')
+    if p.returncode:raise ValueError('Git input binding failed')
+    return p.stdout
+def attrs(path,cached=False):
+    args=['git','check-attr','-z']+(['--cached']if cached else[])+['text','diff','merge','--',path];v=run(args).split(b'\0');assert v.pop()==b''and len(v)==9
+    return {v[i+1].decode():v[i+2].decode()for i in range(0,9,3)if v[i].decode()==path}
+assert run(['git','rev-parse','HEAD']).strip().decode()==r.BASE
+assert run(['git','status','--porcelain'])==b''
+pin_records=[]
+for digest,(size,oid)in r.PINS.items():
+    old=r.pin_path(digest);alias=r.alias_path(digest);raw=(ROOT/old).read_bytes()
+    current_attrs=attrs(old);cached_attrs=attrs(old,True)
+    r.validate_pin(digest,raw,oid,current_attrs);r.validate_pin(digest,raw,oid,cached_attrs)
+    assert raw==run(['git','cat-file','blob',r.F4+':'+old])==run(['git','cat-file','blob',r.BASE+':'+alias])==(ROOT/alias).read_bytes()
+    assert attrs(alias)==cached_attrs
+    dest=OUT/'preserved-aliases'/(digest+'.source');dest.parent.mkdir(exist_ok=True);dest.write_bytes(raw)
+    pin_records.append({'sha256':digest,'bytes':size,'gitBlob':oid,'existingPath':old,'failedAliasPath':alias,'preservedCopy':str(dest.relative_to(ROOT)).replace('\\','/'),'attributes':current_attrs})
+all_entries=[];manifests=[]
+for name,count in [('translation.json',41773),('closing-translation.json',340),('fix1-translation.json',329),('fix1-closing-translation.json',42)]:
+    p=r.PREFIX+'task-12-receipts/'+name;raw=(ROOT/p).read_bytes();assert raw==run(['git','cat-file','blob',r.BASE+':'+p]);value=json.loads(raw);assert len(value['entries'])==count
+    (OUT/(name+'.historical.source')).write_bytes(raw);manifests.append({'path':p,'sha256':r.sha(raw),'gitBlob':r.blob(raw),'bytes':len(raw),'entries':count});all_entries.extend(value['entries'])
+assert len(all_entries)==42484 and len({e['originalPath']for e in all_entries})==42484
+mapped=r.effective(all_entries);remaps=[{'originalPath':e['originalPath'],'historicalArchivePath':e['historicalArchivePath'],'effectiveArchivePath':e['archivePath'],'rawSha256':e['rawSha256'],'rawBytes':e['rawBytes'],'rawGitBlob':e['rawGitBlob']}for e in mapped if'historicalArchivePath'in e]
+assert len(remaps)==5
+(OUT/'effective-historical-transport.json').write_text(json.dumps({'receiptVersion':1,'mode':'task12-r69-effective-historical-reference-transport','historicalHead':r.BASE,'originalLocators':42484,'exactRemaps':remaps,'entries':mapped,'error':None},indent=2)+'\n')
+origins=[]
+for name in ['task-12-fix1-duplicate-existing-references-ruling69.md','rulings-inventory-intermediate.json','final-rulings-report-inputs-intermediate.json','task-12-controller-ci-37099925422-verify.raw.log','task-12-controller-ci-37099925422-failed-receipt.json']:
+    p=MASTER/name;raw=p.read_bytes();dest=OUT/(name+'.source');dest.write_bytes(raw);origins.append({'originalPath':str(p),'prearchive':str(dest.relative_to(ROOT)).replace('\\','/'),'sha256':r.sha(raw),'bytes':len(raw),'gitBlob':r.blob(raw)})
+for value in ['rulings-inventory-intermediate.json','final-rulings-report-inputs-intermediate.json']:
+    print(value,list(json.loads((MASTER/value).read_bytes())))
+protected=[]
+for path in [r.PREFIX+'task-12-source-binding.json',r.PREFIX+'task-12-fix1-source-binding.json',r.PREFIX+'task-12-source-freeze.json',str(pathlib.Path(r.OWN)/'binder-correct.py'),str(pathlib.Path(r.OWN)/'tests-correct.py'),str(pathlib.Path(r.OWN)/'run-correct.py'),str(pathlib.Path(r.OWN)/'receipt.json'),str(pathlib.Path(r.OWN)/'green.exit.json'),'.superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-final68.json','supabase/migrations/20261003005322_r01_group_enquiry_forward.sql']:
+    raw=(ROOT/path).read_bytes();protected.append({'path':path,'sha256':r.sha(raw),'gitBlob':r.blob(raw),'bytes':len(raw)})
+(OUT/'prepared.json').write_text(json.dumps({'receiptVersion':1,'mode':'task12-r69-input-bindings','error':None,'baseHead':r.BASE,'pins':pin_records,'historicalManifests':manifests,'origins':origins,'protectedInputs':protected,'exactRemaps':remaps,'commands':commands},indent=2)+'\n')
+print(json.dumps({'pins':4,'remaps':5,'historicalLocators':42484,'error':None}))

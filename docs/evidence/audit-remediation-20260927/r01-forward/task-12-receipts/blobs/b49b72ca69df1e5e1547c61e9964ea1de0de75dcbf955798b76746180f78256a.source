@@ -1,0 +1,13 @@
+"""Preserve failed new JSON serialization; correct only its LF transport encoding."""
+import pathlib,json
+import references as r
+ROOT=pathlib.Path.cwd();OUT=pathlib.Path(__file__).parent
+records=[]
+for name in ['task-12-receipts/fix2-translation.json','task-12-fix2-source-binding.json']:
+    path=ROOT/r.PREFIX/name;raw=path.read_bytes();saved=OUT/('failed-crlf-'+path.name+'.source');assert not saved.exists();saved.write_bytes(raw)
+    new=raw.replace(b'\r\n',b'\n');assert json.loads(new)==json.loads(raw);path.write_bytes(new)
+    records.append({'path':path.relative_to(ROOT).as_posix(),'oldSha256':r.sha(raw),'preserved':saved.relative_to(ROOT).as_posix(),'newSha256':r.sha(new),'onlyCrLfToLf':True})
+old=(OUT/'close.py').read_bytes();text=old.decode().replace("run('stage-", "run('correct-stage-").replace("run('protected-diff'", "run('correct-protected-diff'").replace("'stage-audit-test.source'", "'correct-stage-audit-test.source'").replace("'stage-audit.stderr.source'", "'correct-stage-audit.stderr.source'").replace("'stage-receipt.json'", "'correct-stage-receipt.json'").replace("'stage-paths.txt'", "'correct-stage-paths.txt'")
+(OUT/'close-correct.py').write_bytes(text.encode())
+(OUT/'serialization-correction.json').write_bytes((json.dumps({'receiptVersion':1,'mode':'task12-r69-new-output-lf-correction','error':None,'records':records,'oldClosingDriverSha256':r.sha(old),'newClosingDriverSha256':r.sha(text.encode()),'historicalManifestsChanged':False},indent=2)+'\n').encode())
+print(json.dumps({'newJsonLfOutputs':2,'oldDriverPreserved':True}))
