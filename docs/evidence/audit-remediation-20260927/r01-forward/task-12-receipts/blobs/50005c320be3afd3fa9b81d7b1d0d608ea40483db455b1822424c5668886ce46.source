@@ -1,0 +1,4 @@
+[codex/audit-r01-group-enquiry-20261003 208050fd] test: reject only unknown correlated group fixtures
+ 3 files changed, 31 insertions(+), 4 deletions(-)
+ create mode 100644 docs/evidence/audit-remediation-20260927/r01-forward/task-12-mixed-vectors.test.ts
+ create mode 100644 docs/evidence/audit-remediation-20260927/r01-forward/task-12-mixed-vectors.ts

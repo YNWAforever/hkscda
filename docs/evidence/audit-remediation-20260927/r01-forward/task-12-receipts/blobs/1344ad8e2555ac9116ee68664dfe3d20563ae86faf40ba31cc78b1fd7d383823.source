@@ -1,0 +1,19 @@
+"""Preserve the historical executable and reproduce its row boundary in a new namespace."""
+import pathlib,json,hashlib
+out=pathlib.Path(__file__).parent;root=pathlib.Path.cwd();old=out.parent/'task-12-accept-6e4a87c2419b/binder-fix1.py';raw=old.read_bytes()
+assert not(out/'binder.py').exists()
+(out/'historical-binder.source').write_bytes(raw);(out/'review.source').write_bytes((out.parent/'task-12-review.md').read_bytes())
+s=raw.decode('utf-8');call="behavior_snapshot(after,behavior,r['rowCountsAfter'])";assert s.count(call)==1
+s=s.replace(call,'composition_observations(mode,r,after,behavior)')
+weak="""
+def composition_observations(mode,r,after,behavior):
+ contract(r,'composition',mode,COMPOSITION_FLAGS,{'refusals':14,'fixtureScope':4,'dependencies':10})
+ behavior_snapshot(after,behavior,r['rowCountsAfter'])
+ require([x['table']for x in r['rowCountsAfter']]==r['expectedRowTables']and all(x['count']=='0'for x in r['rowCountsAfter']),'Actual after rows differ')
+ return r['expectedRowTables']
+"""
+s=s.replace('def main():',weak+'\ndef main():');(out/'binder.py').write_bytes(s.encode())
+entries=[]
+for name in ['translation.json','closing-translation.json']:
+ p=root/'docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts'/name;b=p.read_bytes();(out/(name+'.source')).write_bytes(b);entries.append({'originalPath':str(p),'sourceCopy':name+'.source','rawSha256':hashlib.sha256(b).hexdigest(),'rawBytes':len(b)})
+(out/'historical-inputs.json').write_bytes((json.dumps({'historicalBinderSha256':hashlib.sha256(raw).hexdigest(),'historicalManifestInputs':entries,'runtimeSourceCommit':'de35b17745ef9da3114e7dc4ba8c64df38e46702','qualifiedNativeSourceCommit':'208050fd6bdbe78f3a05de6853e0319055f6e014','qualification':'Ignored metadata-consumer repair only; historic scripts/receipts/fixtures/caches and both committed transports remain unchanged.'},indent=2)+'\n').encode())

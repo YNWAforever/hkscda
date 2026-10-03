@@ -1,0 +1,26 @@
+"""Stage explicit additive files and audit the actual staged candidate; no other gates."""
+import pathlib,json,subprocess,sys
+import references as r
+ROOT=pathlib.Path.cwd();OUT=pathlib.Path(__file__).parent;commands=[]
+def run(label,args):
+    (OUT/(label+'.invocation.json')).write_text(json.dumps(args)+'\n');p=subprocess.run(args,capture_output=True)
+    (OUT/(label+'.stdout.source')).write_bytes(p.stdout);(OUT/(label+'.stderr.source')).write_bytes(p.stderr)
+    rec={'args':args,'exit':p.returncode,'stdoutSha256':r.sha(p.stdout),'stderrSha256':r.sha(p.stderr)};commands.append(rec);(OUT/(label+'.exit.json')).write_text(json.dumps(rec)+'\n')
+    if p.returncode:raise ValueError('Closing command failed: '+label)
+    return p.stdout
+trans=json.loads((ROOT/r.PREFIX/'task-12-receipts/fix2-translation.json').read_bytes());assert trans['receiptVersion']==1 and trans['mode']=='task12-r69-additive-qualified-transport'and trans['error']is None
+for e in trans['entries']:
+    raw=(ROOT/e['originalPath']).read_bytes();r.validate_entry(raw,e);assert raw==(ROOT/e['archivePath']).read_bytes()
+paths=sorted({e['archivePath']for e in trans['entries']if e['referenceOrigin']!='existing-immutable-f4-input'}|{r.PREFIX+'task-12-receipts/fix2-translation.json',r.PREFIX+'task-12-fix2-source-binding.json',r.PREFIX+'task-12-evidence.md'})
+(OUT/'correct-stage-paths.txt').write_text('\n'.join(paths)+'\n',encoding='utf8');run('correct-stage-add',['git','add','--pathspec-from-file='+str(OUT/'correct-stage-paths.txt')])
+index={}
+for row in run('correct-stage-index',['git','ls-files','--stage','-z']).split(b'\0'):
+    if row:meta,path=row.split(b'\t',1);index[path.decode()]=meta.split()[1].decode()
+assert all(index.get(e['archivePath'])==e['rawGitBlob']for e in trans['entries'])
+assert all(r.alias_path(s)not in index for s in r.PINS)
+run('correct-stage-check',['git','diff','--cached','--check'])
+assert run('correct-protected-diff',['git','diff',r.BASE,'--','.github','src','supabase','.gitattributes',r.PREFIX+'task-11-receipts',r.PREFIX+'task-12-source-binding.json',r.PREFIX+'task-12-fix1-source-binding.json',r.PREFIX+'task-12-source-freeze.json',*[r.PREFIX+'task-12-receipts/'+n for n in ['translation.json','closing-translation.json','fix1-translation.json','fix1-closing-translation.json']]])==b''
+(OUT/'correct-stage-audit-test.source').write_bytes((ROOT/'src/lib/content/serviceSloganCopy.test.ts').read_bytes())
+run('correct-stage-audit',['C:/Users/laich/.bun/bin/bun.exe','test','src/lib/content/serviceSloganCopy.test.ts'])
+assert b'7 pass'in(OUT/'correct-stage-audit.stderr.source').read_bytes()and b'0 fail'in(OUT/'correct-stage-audit.stderr.source').read_bytes()and b'38 expect()'in(OUT/'correct-stage-audit.stderr.source').read_bytes()
+(OUT/'correct-stage-receipt.json').write_text(json.dumps({'receiptVersion':1,'mode':'task12-r69-additive-stage-and-focused-audit','error':None,'newLocators':len(trans['entries']),'newPairsVerified':True,'newArchiveIndexIdentitiesVerified':True,'exactFourAliasesAbsent':True,'protectedDiffEmpty':True,'actualFocusedAudit':{'exit':0,'pass':7,'fail':0,'assertions':38},'commands':commands,'closingGitVerified':False,'freshFiveCiVerified':False},indent=2)+'\n');print(json.dumps({'staged':len(paths),'newLocators':len(trans['entries']),'focusedAuditExit':0}))

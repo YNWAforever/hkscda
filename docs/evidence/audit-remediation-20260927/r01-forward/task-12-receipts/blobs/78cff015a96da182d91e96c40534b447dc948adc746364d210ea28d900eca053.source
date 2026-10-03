@@ -1,0 +1,78 @@
+"""R69 metadata consumer: independently bind all old correspondence and finite substitutions."""
+import pathlib,json,subprocess,sys
+import references as r
+ROOT=pathlib.Path.cwd();OUT=pathlib.Path(__file__).parent
+FLAGS=['historicalManifestsUnchanged','all42484OriginalPairsVerified','allHistoricalGitObjectsBound','exactFourF4PinsAndAttributesVerified','onlyFiveEffectiveSubstitutions','oldRuntimeAndMetadataAcceptanceUnchanged','historical68AndCurrent69OriginalTextsBound','portableAndFocusedAuditActualGreen','protectedGitScopeUnchanged']
+receipt={'receiptVersion':1,'mode':'task12-r69-qualified-reference-consumer','error':None,'requiredFinalFlags':FLAGS,'failedFinalFlags':[],**{k:False for k in FLAGS},'baseHead':r.BASE,'runtimeSourceCommit':'de35b17745ef9da3114e7dc4ba8c64df38e46702','qualifiedNativeSourceCommit':'208050fd6bdbe78f3a05de6853e0319055f6e014','closingGitVerified':False,'sameReviewerApproved':False,'freshFiveCiVerified':False,'productionApplied':False,'deployed':False,'overallR01':'partial','nativeLocalBun':'NOT_RUN'}
+commands=[]
+def run(args):
+    i=len(commands);(OUT/f'q{i}.invocation.json').write_text(json.dumps(args)+'\n');p=subprocess.run(args,capture_output=True)
+    (OUT/f'q{i}.stdout.source').write_bytes(p.stdout);(OUT/f'q{i}.stderr.source').write_bytes(p.stderr)
+    item={'args':args,'exit':p.returncode,'stdoutSha256':r.sha(p.stdout),'stderrSha256':r.sha(p.stderr)};commands.append(item);(OUT/f'q{i}.exit.json').write_text(json.dumps(item)+'\n')
+    if p.returncode:raise ValueError('Git correspondence read failed')
+    return p.stdout
+def tuples(value,key):return [(e['ordinal'],e['text'])for e in value[key]]
+def attrs(path):
+    fields=run(['git','check-attr','-z','--cached','text','diff','merge','--',path]).split(b'\0');assert fields.pop()==b''and len(fields)==9
+    assert all(fields[i].decode()==path for i in range(0,9,3));return {fields[i+1].decode():fields[i+2].decode()for i in range(0,9,3)}
+try:
+    prepared=json.loads((OUT/'prepared.json').read_bytes());assert prepared['error']is None and prepared['baseHead']==r.BASE
+    assert run(['git','rev-parse','HEAD']).strip().decode()==r.BASE
+    tree={}
+    for row in run(['git','ls-tree','-r','-z',r.BASE,'--',r.PREFIX]).split(b'\0'):
+        if row:meta,path=row.split(b'\t',1);tree[path.decode()]=meta.split()[2].decode()
+    old=[]
+    for m in prepared['historicalManifests']:
+        raw=(ROOT/m['path']).read_bytes();assert r.sha(raw)==m['sha256']and r.blob(raw)==tree[m['path']]and raw==(OUT/(pathlib.Path(m['path']).name+'.historical.source')).read_bytes()
+        entries=json.loads(raw)['entries'];assert len(entries)==m['entries'];old.extend(entries)
+    receipt['historicalManifestsUnchanged']=True
+    effective=r.effective(old);assert len(effective)==42484 and len({e['originalPath']for e in effective})==42484
+    saved=json.loads((OUT/'effective-historical-transport.json').read_bytes());assert saved['entries']==effective and saved['originalLocators']==42484 and saved['error']is None
+    archive_cache={};archive_objects={}
+    for e in effective:
+        raw=(ROOT/e['originalPath']).read_bytes();r.validate_entry(raw,e)
+        path=e['archivePath']
+        if path not in archive_cache:
+            actual=(ROOT/path).read_bytes();r.validate_entry(actual,e);archive_cache[path]=(r.sha(actual),r.blob(actual),len(actual))
+        assert archive_cache[path]==(r.sha(raw),r.blob(raw),len(raw))
+        historical=e.get('historicalArchivePath',path);assert tree[historical]==e['rawGitBlob'];archive_objects[historical]=e['rawGitBlob']
+    receipt['all42484OriginalPairsVerified']=True;receipt['allHistoricalGitObjectsBound']=True;receipt['oldOriginalLocators']=42484;receipt['historicalArchiveObjects']=len(archive_objects)
+    receipt['onlyFiveEffectiveSubstitutions']=sum('historicalArchivePath'in e for e in effective)==5
+    index={}
+    for row in run(['git','ls-files','--stage','-z']).split(b'\0'):
+        if row:meta,path=row.split(b'\t',1);index[path.decode()]=meta.split()[1].decode()
+    for pin in prepared['pins']:
+        path=pin['existingPath'];digest=pin['sha256'];raw=(ROOT/path).read_bytes();a=attrs(path)
+        r.validate_pin(digest,raw,index[path],a);assert raw==run(['git','cat-file','blob',r.F4+':'+path])
+        assert pin['failedAliasPath']not in index and not(ROOT/pin['failedAliasPath']).exists()
+        assert raw==(ROOT/pin['preservedCopy']).read_bytes()==(OUT/'withdrawn'/(digest+'.source')).read_bytes()
+    assert all(index.get(e['archivePath'])==e['rawGitBlob']for e in effective)
+    receipt['exactFourF4PinsAndAttributesVerified']=True
+    for item in prepared['protectedInputs']:
+        raw=(ROOT/item['path']).read_bytes();assert r.sha(raw)==item['sha256']and r.blob(raw)==item['gitBlob']and len(raw)==item['bytes']
+    historic=json.loads((ROOT/r.OWN/'receipt.json').read_bytes())
+    expected=['originalArchivePairsVerified','fourExistingBasePinsVerified','auditAndTask11Unchanged','currentSourceFreezeVerified','qualifiedNative208BridgeVerified','threeCurrentCompositionsVerified','fourActualLocalGatesVerified','all68OriginalRulingsVerified','stagedArchiveGitIdentitiesVerified']
+    assert historic['receiptVersion']==1 and historic['mode']=='task12-r68-preclosing'and historic['requiredFinalFlags']==expected and historic['eligible']is True and historic['error']is None and historic['failedFinalFlags']==[]and all(historic[f]is True for f in expected)
+    assert historic['sourceCommit']==receipt['runtimeSourceCommit']and historic['nativeSourceCommit']==receipt['qualifiedNativeSourceCommit']
+    assert json.loads((ROOT/r.OWN/'green.exit.json').read_bytes())['exit']==0
+    for profile,count in [('hosted',164),('modern',163),('component',163)]:
+        v=historic['compositions'][profile];assert v['catalogDerivedExpectedRowCount']==count and len(v['catalogDerivedExpectedRowTables'])==count and len(set(v['catalogDerivedExpectedRowTables']))==count and 'auth.users'in v['catalogDerivedExpectedRowTables']
+    receipt['oldRuntimeAndMetadataAcceptanceUnchanged']=True
+    authority=json.loads((ROOT/'.superpowers/sdd/r01-forward-schema-plan-20261001/task-12-authority-final68.json').read_bytes());assert authority['rulingCount']==68 and authority['error']is None
+    oldledger=json.loads((ROOT/authority['bindings'][0]['archivePath']).read_bytes());oldinputs=json.loads((ROOT/authority['bindings'][1]['archivePath']).read_bytes())
+    ledger=json.loads((OUT/'rulings-inventory-intermediate.json.source').read_bytes());inputs=json.loads((OUT/'final-rulings-report-inputs-intermediate.json.source').read_bytes())
+    oldpairs=tuples(oldledger,'rulings');pairs=tuples(ledger,'rulings')
+    assert ledger['rulingCount']==69 and [n for n,text in pairs]==list(range(1,70))and pairs==tuples(inputs,'allOrderedOriginalEntries')and pairs[:68]==oldpairs==tuples(oldinputs,'allOrderedOriginalEntries')
+    for item in prepared['origins']:
+        raw=(ROOT/item['prearchive']).read_bytes();assert raw==pathlib.Path(item['originalPath']).read_bytes()and r.sha(raw)==item['sha256']and r.blob(raw)==item['gitBlob']
+    receipt['historical68AndCurrent69OriginalTextsBound']=True;receipt['rulingCount']=69
+    for label,want in [('audit-red',1),('red',1),('green',0),('audit-green',0)]:
+        exitrec=json.loads((OUT/(label+'.exit.json')).read_bytes());assert exitrec['exit']==want and r.sha((OUT/(label+'.stdout.source')).read_bytes())==exitrec['stdoutSha256']and r.sha((OUT/(label+'.stderr.source')).read_bytes())==exitrec['stderrSha256']
+    assert b'Ran 14 tests'in(OUT/'green.stderr.source').read_bytes()and b'OK'in(OUT/'green.stderr.source').read_bytes()
+    assert b'7 pass'in(OUT/'audit-green.stderr.source').read_bytes()and b'0 fail'in(OUT/'audit-green.stderr.source').read_bytes()and b'38 expect()'in(OUT/'audit-green.stderr.source').read_bytes()
+    receipt['portableAndFocusedAuditActualGreen']=True
+    assert run(['git','diff',r.BASE,'--','.github','src','supabase','.gitattributes',r.PREFIX+'task-11-receipts',r.PREFIX+'task-12-source-binding.json',r.PREFIX+'task-12-fix1-source-binding.json',r.PREFIX+'task-12-source-freeze.json',*[m['path']for m in prepared['historicalManifests']]])==b''
+    receipt['protectedGitScopeUnchanged']=True
+except Exception as error:receipt['error']=repr(error)
+receipt['commands']=commands;receipt['failedFinalFlags']=[f for f in FLAGS if receipt[f]is not True];receipt['eligible']=receipt['error']is None and not receipt['failedFinalFlags']
+(OUT/'qualification-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({'eligible':receipt['eligible'],'error':receipt['error'],'failedFinalFlags':receipt['failedFinalFlags']}));sys.exit(0 if receipt['eligible']else 1)

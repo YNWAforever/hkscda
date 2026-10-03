@@ -1,0 +1,12 @@
+{
+  "statements": [
+    "-- A verified photo-upload challenge grants one short-lived application attempt.\n-- Keep the bearer status token out of this table; only its hash is stored.\ncreate table if not exists public.adoption_upload_intent (\n  application_id uuid primary key,\n  photo_paths text[] not null\n    check (cardinality(photo_paths) between 1 and 6),\n  status_token_hash text not null unique\n    check (status_token_hash ~ '^[0-9a-f]{64}$'),\n  created_at timestamptz not null default now(),\n  expires_at timestamptz not null,\n  submitted_at timestamptz,\n  constraint adoption_upload_intent_expiry_after_creation\n    check (expires_at > created_at)\n)",
+    "create index if not exists adoption_upload_intent_cleanup_idx\n  on public.adoption_upload_intent (expires_at)\n  where submitted_at is null",
+    "alter table public.adoption_upload_intent enable row level security",
+    "revoke all on public.adoption_upload_intent from public, anon, authenticated",
+    "grant select, insert, update, delete on public.adoption_upload_intent to service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

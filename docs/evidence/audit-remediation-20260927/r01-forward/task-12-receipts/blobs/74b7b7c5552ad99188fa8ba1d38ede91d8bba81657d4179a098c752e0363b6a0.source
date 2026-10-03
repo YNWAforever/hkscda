@@ -1,0 +1,54 @@
+[
+    {
+        "Id": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+        "RepoTags": [
+            "public.ecr.aws/supabase/gotrue:v2.197.0"
+        ],
+        "RepoDigests": [
+            "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-09T15:34:47.361073768Z",
+        "Config": {
+            "User": "supabase",
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOTRUE_DB_MIGRATIONS_PATH=/usr/local/etc/auth/migrations"
+            ],
+            "Cmd": [
+                "auth"
+            ],
+            "WorkingDir": "/",
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 30448532,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c",
+                "sha256:8370e7cf6735d16303bda920754d65945c1e424318a392da69a50148b36403e4",
+                "sha256:018f16b76b268374654847a5986c61a3c5e4fbb6351bd6957b0001b9a560c791",
+                "sha256:2702dd875913bbabd0e8d87c13ca4fe791eb0e5d505bf91841c4c2b27db79685",
+                "sha256:5bd184afc51ff1ba4c007ad9ae440623e505848bf2a986d17bd220fef2d8c49d",
+                "sha256:691149aaee259a37d7419c279e4c5e3d75b69a25acb2cd78cc0e7eed825f0efb"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-26T18:37:34.628420644Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+            "size": 1609
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "public.ecr.aws/supabase/gotrue"
+                }
+            ]
+        }
+    }
+]

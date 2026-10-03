@@ -1,0 +1,24 @@
+{
+  "command": [
+    "docker",
+    "create",
+    "--name",
+    "hkscda-task12-pg-a3b891334d5e498888d663e3b5df776d",
+    "--network",
+    "none",
+    "--cpus",
+    "1",
+    "--memory",
+    "1g",
+    "--no-healthcheck",
+    "-e",
+    "POSTGRES_PASSWORD=postgres",
+    "-e",
+    "JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+    "-e",
+    "JWT_EXP=3600",
+    "public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

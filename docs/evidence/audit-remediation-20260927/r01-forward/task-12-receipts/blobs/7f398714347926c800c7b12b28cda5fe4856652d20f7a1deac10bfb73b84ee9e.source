@@ -1,0 +1,22 @@
+{
+  "args": [
+    "C:\\Users\\laich\\.bun\\bin\\bun.exe",
+    "test",
+    "src/lib/content/serviceSloganCopy.test.ts"
+  ],
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "sources": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\driver.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\audit-red-driver.py.source",
+      "sha256": "91a42e8b8a4edf3e4026a4fbe035afa38d40edec9a87eb087b7c60aa6385b20c",
+      "bytes": 2032
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\src\\lib\\content\\serviceSloganCopy.test.ts",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\audit-red-serviceSloganCopy.test.ts.source",
+      "sha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "bytes": 11205
+    }
+  ]
+}

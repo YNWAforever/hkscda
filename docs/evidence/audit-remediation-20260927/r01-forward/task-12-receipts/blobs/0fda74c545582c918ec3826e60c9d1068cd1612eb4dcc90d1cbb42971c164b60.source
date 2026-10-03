@@ -1,0 +1,26 @@
+[
+  {
+    "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-final-composition-binding.json",
+    "archivePath": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-final-task-12-controller-final-composition-binding.json.source",
+    "rawSha256": "f10ceaa82a234e0e2ead9181002be04aca47f201d5959d1105d7588dc897093e",
+    "rawBytes": 3160898
+  },
+  {
+    "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-final-gates-binding.json",
+    "archivePath": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-final-task-12-controller-final-gates-binding.json.source",
+    "rawSha256": "e165e43f87b87edfc78224e0451fe844a0586b93caecbb82d8bccdb6e68cc890",
+    "rawBytes": 996250
+  },
+  {
+    "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-native-source-bridge-binding.json",
+    "archivePath": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-final-task-12-controller-native-source-bridge-binding.json.source",
+    "rawSha256": "eee41f730e09f333448d5171ba45268fca24e6965873675feac4cfb2c17888e9",
+    "rawBytes": 52752
+  },
+  {
+    "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-native-final-raw-binding.json",
+    "archivePath": ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-controller-final-task-12-controller-native-final-raw-binding.json.source",
+    "rawSha256": "8293a61be6d61ecb3789d30c39ab0938d43ee4499927c8b135868f93bbae0530",
+    "rawBytes": 1805729
+  }
+]

@@ -1,0 +1,2 @@
+NOTICE:  trigger "bump_supporter_edit_version" for relation "public.supporter" does not exist, skipping
+NOTICE:  trigger "bump_supporter_edit_version_from_role" for relation "public.supporter_role" does not exist, skipping

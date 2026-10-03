@@ -1,0 +1,15 @@
+import {readFile,writeFile} from "node:fs/promises";
+import {resolve} from "node:path";
+import {createHash} from "node:crypto";
+import {assertSafeFixtureTables} from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {fixtureScope} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile";
+const directory=resolve(".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-baseline-6fcec64d703040d09232813f5a2ac37e");
+const output=resolve(".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-offline-expression.source");
+let index=0;
+const stop=new Error("Offline exact query captured; no database operation");
+const adapter={unsafe:async(query:string)=>{
+ if(query==="set local search_path=pg_catalog")return [];
+ if(index<3)return JSON.parse(await readFile(resolve(directory,"scanner-"+index+++".typed.json"),"utf8"));
+ await writeFile(output,query,{flag:"wx"});console.log(JSON.stringify({output,sha256:createHash("sha256").update(query).digest("hex"),bytes:Buffer.byteLength(query),fixtureScope}));throw stop;
+},begin:async(fn:(tx:typeof adapter)=>Promise<unknown>)=>fn(adapter)};
+try{await assertSafeFixtureTables(adapter as Parameters<typeof assertSafeFixtureTables>[0],fixtureScope)}catch(e){if(e!==stop)throw e}

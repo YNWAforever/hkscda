@@ -1,0 +1,9 @@
+{
+  "command": [
+    "git",
+    "status",
+    "--porcelain"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

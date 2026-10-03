@@ -1,0 +1,2 @@
+NOTICE:  trigger "animal_catalog_membership_defaults" for relation "public.animals" does not exist, skipping
+NOTICE:  policy "admin full access" for relation "public.animals" does not exist, skipping

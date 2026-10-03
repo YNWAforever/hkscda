@@ -1,0 +1,2 @@
+NOTICE:  trigger "volunteer_verified_attendance_policy" for relation "public.volunteer_attendance_event" does not exist, skipping
+NOTICE:  trigger "volunteer_assessment_senior_candidate" for relation "public.volunteer_monthly_assessment_result" does not exist, skipping

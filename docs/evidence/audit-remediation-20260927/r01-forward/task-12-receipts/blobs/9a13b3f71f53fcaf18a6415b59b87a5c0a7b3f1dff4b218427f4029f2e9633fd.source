@@ -1,0 +1,54 @@
+{
+  "receiptVersion": 1,
+  "receiptType": "observed-archive-audit-red",
+  "testCommand": [
+    "bun",
+    "test",
+    "--timeout",
+    "30000",
+    "src/lib/content/serviceSloganCopy.test.ts",
+    "--test-name-pattern",
+    "uses the approved replacement"
+  ],
+  "observedToolExit": 1,
+  "testSummary": {
+    "pass": 0,
+    "fail": 1,
+    "filtered": 6,
+    "expects": 7
+  },
+  "qualification": "Recorded from actual tool exit and saved raw log; no audit rerun",
+  "predicateAmended": false,
+  "bindings": {
+    "src/lib/content/serviceSloganCopy.test.ts": {
+      "rawSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "bytes": 11205,
+      "rawGitBlob": "7a5866dc7e338d282ec026141659fb643d4e2e83"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-archive-audit-red.log": {
+      "rawSha256": "4bb40d942b42aae5e676d1f2c99957a593a88c664741d9c0e0f0fca16dbf3315",
+      "bytes": 1183,
+      "rawGitBlob": "3fb094c48b9674e6c8bc6f8f25a8328584e69f72"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-archive-attributes.log": {
+      "rawSha256": "c7c72fb2e41552939cde51fe582a07fa5efff237315e7b1e7e943cb0c93937c8",
+      "bytes": 484,
+      "rawGitBlob": "5bf67280ae4d23fa1de396fedc82cd763163831c"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-archive-predicate-proposal.diff": {
+      "rawSha256": "d12626c8ddff59f02c2f6b447e894e5b7bb73b1f18c59b6ba2df1fcaf590f5ff",
+      "bytes": 714,
+      "rawGitBlob": "e6c8253e7c0f731ce67bd9959ca35c1495ce0562"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/.gitattributes": {
+      "rawSha256": "8a79d4f6803af9fdeadc15c1869eec1189eb7b8258d96cf903d374a89fdb036a",
+      "bytes": 30,
+      "rawGitBlob": "4bcb04e164f7644c782cc455ba36ac8ac9943390"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source": {
+      "rawSha256": "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166",
+      "bytes": 533,
+      "rawGitBlob": "9c3b7503a1d71e4f1ba933e8b152990550935191"
+    }
+  }
+}

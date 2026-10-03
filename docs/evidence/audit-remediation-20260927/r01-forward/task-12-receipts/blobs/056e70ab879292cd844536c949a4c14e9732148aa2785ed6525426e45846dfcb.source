@@ -1,0 +1,1 @@
+["git", "check-attr", "-z", "text", "diff", "merge", "--", "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/blobs/642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source"]

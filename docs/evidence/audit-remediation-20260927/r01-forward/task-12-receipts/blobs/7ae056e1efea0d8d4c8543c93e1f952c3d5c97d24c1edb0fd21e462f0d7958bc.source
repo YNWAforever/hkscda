@@ -1,0 +1,13 @@
+{
+  "command": [
+    "docker",
+    "ps",
+    "-a",
+    "--filter",
+    "name=^/hkscda-task12-pg-a3b891334d5e498888d663e3b5df776d$",
+    "--format",
+    "{{.ID}}"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

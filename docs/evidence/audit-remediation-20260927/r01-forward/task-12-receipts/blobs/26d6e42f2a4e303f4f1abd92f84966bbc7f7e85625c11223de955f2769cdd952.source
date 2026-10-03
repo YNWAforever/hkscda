@@ -1,0 +1,203 @@
+{
+  "comparisons": [
+    {
+      "profile": "hosted",
+      "nativeEqualFacets": [
+        "auth",
+        "native",
+        "indexes",
+        "shapes"
+      ]
+    },
+    {
+      "profile": "modern",
+      "nativeEqualFacets": [
+        "catalog",
+        "auth",
+        "indexes",
+        "shapes"
+      ]
+    },
+    {
+      "profile": "component",
+      "nativeEqualFacets": [
+        "catalog",
+        "helpers",
+        "auth",
+        "indexes",
+        "shapes"
+      ]
+    },
+    {
+      "profile": "native",
+      "nativeEqualFacets": [
+        "catalog",
+        "helpers",
+        "auth",
+        "native",
+        "indexes",
+        "shapes"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "label": "native-catalog-from-hosted",
+      "facet": "catalog",
+      "source": "hosted",
+      "matches": []
+    },
+    {
+      "label": "native-catalog-from-modern",
+      "facet": "catalog",
+      "source": "modern",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-catalog-from-component",
+      "facet": "catalog",
+      "source": "component",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-helpers-from-hosted",
+      "facet": "helpers",
+      "source": "hosted",
+      "matches": []
+    },
+    {
+      "label": "native-helpers-from-modern",
+      "facet": "helpers",
+      "source": "modern",
+      "matches": []
+    },
+    {
+      "label": "native-helpers-from-component",
+      "facet": "helpers",
+      "source": "component",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-auth-from-hosted",
+      "facet": "auth",
+      "source": "hosted",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-auth-from-modern",
+      "facet": "auth",
+      "source": "modern",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-auth-from-component",
+      "facet": "auth",
+      "source": "component",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-native-from-hosted",
+      "facet": "native",
+      "source": "hosted",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-native-from-modern",
+      "facet": "native",
+      "source": "modern",
+      "matches": [
+        "component"
+      ]
+    },
+    {
+      "label": "native-native-from-component",
+      "facet": "native",
+      "source": "component",
+      "matches": [
+        "component"
+      ]
+    },
+    {
+      "label": "native-indexes-from-hosted",
+      "facet": "indexes",
+      "source": "hosted",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-indexes-from-modern",
+      "facet": "indexes",
+      "source": "modern",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-indexes-from-component",
+      "facet": "indexes",
+      "source": "component",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-shapes-from-hosted",
+      "facet": "shapes",
+      "source": "hosted",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-shapes-from-modern",
+      "facet": "shapes",
+      "source": "modern",
+      "matches": [
+        "native"
+      ]
+    },
+    {
+      "label": "native-shapes-from-component",
+      "facet": "shapes",
+      "source": "component",
+      "matches": [
+        "native"
+      ]
+    }
+  ],
+  "unknown": [
+    {
+      "label": "native-catalog-from-hosted",
+      "facet": "catalog",
+      "source": "hosted",
+      "matches": []
+    },
+    {
+      "label": "native-helpers-from-hosted",
+      "facet": "helpers",
+      "source": "hosted",
+      "matches": []
+    },
+    {
+      "label": "native-helpers-from-modern",
+      "facet": "helpers",
+      "source": "modern",
+      "matches": []
+    }
+  ]
+}

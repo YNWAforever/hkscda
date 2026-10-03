@@ -1,0 +1,10 @@
+{
+  "command": [
+    "git",
+    "cat-file",
+    "blob",
+    "03996ba66b831a99a5c018f2d94582e0af8d8f40"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

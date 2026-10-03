@@ -1,0 +1,34 @@
+{
+  "args": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\close-correct.py"
+  ],
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "sources": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\run-close-correct.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\close-correct-run-close-correct.py.source",
+      "sha256": "4c0eee9b974e987a530db930a4cd9c663e6fff0b2dbab07810dec8b6d7ab9de8",
+      "bytes": 338
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\driver.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\close-correct-driver.py.source",
+      "sha256": "91a42e8b8a4edf3e4026a4fbe035afa38d40edec9a87eb087b7c60aa6385b20c",
+      "bytes": 2032
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\close-correct.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\close-correct-close-correct.py.source",
+      "sha256": "1a900fc56249189253787eaf63e5a8f34d3146b356b99b5667534971b90e1fd6",
+      "bytes": 3307
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\references.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\close-correct-references.py.source",
+      "sha256": "c807b34998ac1bfe124e2ef082514d5b1b31197704687970fe6a7af2900c35e6",
+      "bytes": 3507
+    }
+  ]
+}

@@ -1,0 +1,2829 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:
+(pass) portable fully qualified capture validates without ignored receipts [3.82ms]
+(pass) capture rejects schemaParity=false [0.24ms]
+(pass) capture rejects schemaParity=undefined [0.06ms]
+(pass) capture rejects schemaParity=1 [0.38ms]
+(pass) capture rejects schemaParity=true [0.39ms]
+(pass) capture rejects fullScannerPassed=false [0.05ms]
+(pass) capture rejects fullScannerPassed=undefined [0.05ms]
+(pass) capture rejects fullScannerPassed=1 [0.06ms]
+(pass) capture rejects fullScannerPassed=true [0.42ms]
+(pass) capture rejects dependenciesBound=false [0.07ms]
+(pass) capture rejects dependenciesBound=undefined [0.07ms]
+(pass) capture rejects dependenciesBound=1 [0.03ms]
+(pass) capture rejects dependenciesBound=true [0.04ms]
+(pass) capture rejects catalogPreserved=false [0.04ms]
+(pass) capture rejects catalogPreserved=undefined [0.13ms]
+(pass) capture rejects catalogPreserved=1 [0.06ms]
+(pass) capture rejects catalogPreserved=true [0.09ms]
+(pass) capture rejects normalDrop=false [0.06ms]
+(pass) capture rejects normalDrop=undefined [0.04ms]
+(pass) capture rejects normalDrop=1 [0.04ms]
+(pass) capture rejects normalDrop=true [0.06ms]
+(pass) capture rejects templatePreserved=false [0.04ms]
+(pass) capture rejects templatePreserved=undefined [0.06ms]
+(pass) capture rejects templatePreserved=1 [0.05ms]
+(pass) capture rejects templatePreserved=true [0.04ms]
+(pass) capture rejects modernPreserved=false [0.05ms]
+(pass) capture rejects modernPreserved=undefined [0.06ms]
+(pass) capture rejects modernPreserved=1 [0.04ms]
+(pass) capture rejects modernPreserved=true [0.05ms]
+(pass) capture rejects frozenInputsPreserved=false [0.08ms]
+(pass) capture rejects frozenInputsPreserved=undefined [0.06ms]
+(pass) capture rejects frozenInputsPreserved=1 [0.04ms]
+(pass) capture rejects frozenInputsPreserved=true [0.04ms]
+(pass) capture refuses mode/type/error contract {"receiptVersion":0} [0.16ms]
+(pass) capture refuses mode/type/error contract {"mode":"modern"} [0.05ms]
+(pass) capture refuses mode/type/error contract {"mode":"component"} [0.18ms]
+(pass) capture refuses mode/type/error contract {"receiptVersion":1,"receiptType":"composition"} [0.08ms]
+(pass) capture refuses mode/type/error contract {"error":"cleanup failed"} [0.10ms]
+(pass) capture refuses mode/type/error contract {"failedFinalFlags":["normalDrop"]} [0.04ms]
+(pass) capture refuses mode/type/error contract {"requiredFinalFlags":[]} [0.03ms]
+(pass) oldTargets requires exactly one [0.25ms]
+(pass) oldTargets requires exactly one [0.09ms]
+(pass) oldTargets requires exactly one [0.04ms]
+(pass) oldTargets requires exactly one [0.03ms]
+(pass) nextTargets requires exactly one [0.06ms]
+(pass) nextTargets requires exactly one [0.05ms]
+(pass) nextTargets requires exactly one [0.04ms]
+(pass) nextTargets requires exactly one [0.03ms]
+(pass) unrelated named functions cannot qualify as Task12 targets [0.12ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_actor_user_id uuid",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute args [3.27ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "bad",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute allargs [0.62ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 1,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute defaults [0.53ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: "null::uuid",
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute default_expression [0.47ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "void",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute result [0.41ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute config [0.45ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: false,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute definer [0.42ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "sql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute language [0.47ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "p",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute kind [0.42ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 101,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute cost [0.40ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 1,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute rows [0.39ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: true,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute strict [0.35ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: true,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute leakproof [0.55ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "s",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute parallel [0.85ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "s",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute volatility [0.55ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "helper",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute support [0.46ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "text",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute variadic [0.38ms]
+79 |   const r = portableCapture();
+80 |   r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+81 |   expect(() => assertCapture(r, "hosted")).toThrow();
+82 | });
+83 | for(const [key,value]of Object.entries({args:"p_actor_user_id uuid",allargs:"bad",defaults:1,default_expression:"null::uuid",result:"void",config:["search_path=public"],definer:false,language:"sql",kind:"p",cost:101,rows:1,strict:true,leakproof:true,parallel:"s",volatility:"s",support:"helper",variadic:"text",modes:["i"]}))
+84 |  test("capture rejects altered exact target attribute "+key,()=>{const r=portableCapture();Object.assign(r.nextTargets[0],{[key]:value});expect(()=>assertCapture(r,"hosted")).toThrow()});
+                                                                                                                                                                                    ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: [ "i" ],
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  shapes: [
+    {
+      name: "synthetic0",
+    }, {
+      name: "synthetic1",
+    }, {
+      name: "synthetic2",
+    }, {
+      name: "synthetic3",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic9", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3" ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:84:176)
+(fail) capture rejects altered exact target attribute modes [0.35ms]
+(pass) unexpected effective Auth serviceSelect cannot qualify [0.22ms]
+(pass) unexpected effective Auth serviceUpdate cannot qualify [0.07ms]
+(pass) unexpected effective Auth serviceColumnSelect cannot qualify [0.05ms]
+(pass) unexpected effective Auth serviceColumnUpdate cannot qualify [0.06ms]
+(pass) portable fully qualified composition requires an explicit consumer [1.09ms]
+(pass) composition rejects schemaParity=false [0.15ms]
+(pass) composition rejects schemaParity=undefined [0.11ms]
+(pass) composition rejects schemaParity=1 [0.08ms]
+(pass) composition rejects schemaParity=true [0.04ms]
+(pass) composition rejects fullScannerPassed=false [0.03ms]
+(pass) composition rejects fullScannerPassed=undefined [0.02ms]
+(pass) composition rejects fullScannerPassed=1 [0.08ms]
+(pass) composition rejects fullScannerPassed=true [0.08ms]
+(pass) composition rejects dependenciesBound=false [0.07ms]
+(pass) composition rejects dependenciesBound=undefined [0.06ms]
+(pass) composition rejects dependenciesBound=1 [0.07ms]
+(pass) composition rejects dependenciesBound=true [0.06ms]
+(pass) composition rejects firstApply=false [0.03ms]
+(pass) composition rejects firstApply=undefined [0.03ms]
+(pass) composition rejects firstApply=1 [0.04ms]
+(pass) composition rejects firstApply=true [0.04ms]
+(pass) composition rejects secondApply=false [0.04ms]
+(pass) composition rejects secondApply=undefined [0.03ms]
+(pass) composition rejects secondApply=1 [0.03ms]
+(pass) composition rejects secondApply=true [0.03ms]
+(pass) composition rejects secondApplyPreserved=false [0.03ms]
+(pass) composition rejects secondApplyPreserved=undefined [0.05ms]
+(pass) composition rejects secondApplyPreserved=1 [0.03ms]
+(pass) composition rejects secondApplyPreserved=true [0.03ms]
+(pass) composition rejects outsideTargetsPreserved=false [0.14ms]
+(pass) composition rejects outsideTargetsPreserved=undefined [0.05ms]
+(pass) composition rejects outsideTargetsPreserved=1 [0.06ms]
+(pass) composition rejects outsideTargetsPreserved=true [0.04ms]
+(pass) composition rejects supplementalPreserved=false [0.05ms]
+(pass) composition rejects supplementalPreserved=undefined [0.03ms]
+(pass) composition rejects supplementalPreserved=1 [0.04ms]
+(pass) composition rejects supplementalPreserved=true [0.03ms]
+(pass) composition rejects refusalsPassed=false [0.07ms]
+(pass) composition rejects refusalsPassed=undefined [0.14ms]
+(pass) composition rejects refusalsPassed=1 [0.14ms]
+(pass) composition rejects refusalsPassed=true [0.04ms]
+(pass) composition rejects testPassed=false [0.07ms]
+(pass) composition rejects testPassed=undefined [0.03ms]
+(pass) composition rejects testPassed=1 [0.04ms]
+(pass) composition rejects testPassed=true [0.03ms]
+(pass) composition rejects zeroRowsAfter=false [0.03ms]
+(pass) composition rejects zeroRowsAfter=undefined [0.03ms]
+(pass) composition rejects zeroRowsAfter=1 [0.04ms]
+(pass) composition rejects zeroRowsAfter=true [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=false [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=undefined [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=1 [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=true [0.03ms]
+(pass) composition rejects normalDrop=false [0.03ms]
+(pass) composition rejects normalDrop=undefined [0.03ms]
+(pass) composition rejects normalDrop=1 [0.03ms]
+(pass) composition rejects normalDrop=true [0.03ms]
+(pass) composition rejects templatePreserved=false [0.03ms]
+(pass) composition rejects templatePreserved=undefined [0.07ms]
+(pass) composition rejects templatePreserved=1 [0.06ms]
+(pass) composition rejects templatePreserved=true [0.04ms]
+(pass) composition rejects modernPreserved=false [0.04ms]
+(pass) composition rejects modernPreserved=undefined [0.02ms]
+(pass) composition rejects modernPreserved=1 [0.02ms]
+(pass) composition rejects modernPreserved=true [0.03ms]
+(pass) composition rejects frozenInputsPreserved=false [0.03ms]
+(pass) composition rejects frozenInputsPreserved=undefined [0.01ms]
+(pass) composition rejects frozenInputsPreserved=1 [0.03ms]
+(pass) composition rejects frozenInputsPreserved=true [0.01ms]
+(pass) composition rejects fixed contract {"receiptVersion":0} [0.13ms]
+(pass) composition rejects fixed contract {"mode":"modern"} [0.03ms]
+(pass) composition rejects fixed contract {"mode":"component"} [0.02ms]
+(pass) composition rejects fixed contract {"receiptVersion":1,"receiptType":"capture"} [0.01ms]
+(pass) composition rejects fixed contract {"error":"cleanup observation failed"} [0.02ms]
+(pass) composition rejects fixed contract {"failedFinalFlags":["modernPreserved"]} [0.02ms]
+(pass) composition rejects fixed contract {"requiredFinalFlags":[]} [0.01ms]
+(pass) composition rejects fixed contract {"testExit":1} [0.02ms]
+(pass) composition rejects fixed contract {"rowCountsAfter":[]} [0.03ms]
+(pass) composition rejects fixed contract {"refusals":[]} [0.23ms]
+(pass) portable component capture requires both additional exact flags [0.27ms]
+(pass) portable modern composition uses its actual cardinality [0.36ms]
+(pass) portable component composition uses its actual cardinality [0.25ms]
+(pass) portable four local gates validate without ignored receipts [0.23ms]
+(pass) local gates reject finalProfilesQualified=false [0.04ms]
+(pass) local gates reject finalProfilesQualified=undefined
+(pass) local gates reject finalProfilesQualified=1
+(pass) local gates reject finalProfilesQualified=true
+(pass) local gates reject sourceFrozen=false
+(pass) local gates reject sourceFrozen=undefined
+(pass) local gates reject sourceFrozen=1
+(pass) local gates reject sourceFrozen=true [0.02ms]
+(pass) local gates reject frozenInputsPreserved=false
+(pass) local gates reject frozenInputsPreserved=undefined [0.02ms]
+(pass) local gates reject frozenInputsPreserved=1
+(pass) local gates reject frozenInputsPreserved=true
+(pass) local gates reject templatePreserved=false
+(pass) local gates reject templatePreserved=undefined [0.01ms]
+(pass) local gates reject templatePreserved=1
+(pass) local gates reject templatePreserved=true [0.02ms]
+(pass) local gates reject fixed contract {"mode":"hosted"} [0.06ms]
+(pass) local gates reject fixed contract {"error":"cleanup observation failed"}
+(pass) local gates reject fixed contract {"failedFinalFlags":["templatePreserved"]}
+(pass) local gates reject fixed contract {"requiredFinalFlags":[]}
+(pass) local gates reject fixed contract {"gates":[]}
+(pass) local gates reject fixed contract {"databaseReceipts":{"hosted":"synthetic","modern":"synthetic"}} [0.06ms]
+(pass) nonzero or duplicated local gate cannot qualify [0.09ms]
+
+18 tests failed:
+(fail) capture rejects altered exact target attribute args [3.27ms]
+(fail) capture rejects altered exact target attribute allargs [0.62ms]
+(fail) capture rejects altered exact target attribute defaults [0.53ms]
+(fail) capture rejects altered exact target attribute default_expression [0.47ms]
+(fail) capture rejects altered exact target attribute result [0.41ms]
+(fail) capture rejects altered exact target attribute config [0.45ms]
+(fail) capture rejects altered exact target attribute definer [0.42ms]
+(fail) capture rejects altered exact target attribute language [0.47ms]
+(fail) capture rejects altered exact target attribute kind [0.42ms]
+(fail) capture rejects altered exact target attribute cost [0.40ms]
+(fail) capture rejects altered exact target attribute rows [0.39ms]
+(fail) capture rejects altered exact target attribute strict [0.35ms]
+(fail) capture rejects altered exact target attribute leakproof [0.55ms]
+(fail) capture rejects altered exact target attribute parallel [0.85ms]
+(fail) capture rejects altered exact target attribute volatility [0.55ms]
+(fail) capture rejects altered exact target attribute support [0.46ms]
+(fail) capture rejects altered exact target attribute variadic [0.38ms]
+(fail) capture rejects altered exact target attribute modes [0.35ms]
+
+ 155 pass
+ 18 fail
+ 184 expect() calls
+Ran 173 tests across 1 file. [102.00ms]

@@ -1,0 +1,28 @@
+{
+  "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166": {
+    "bytes": 533,
+    "paths": [
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-baseline-6fcec64d703040d09232813f5a2ac37e/command-0125.stdout.log",
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-baseline-6fcec64d703040d09232813f5a2ac37e/m0029.source",
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-retry-210608b8ea6c4f21bcff693bbd73a74d/command-0122.stdout.log",
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-retry-210608b8ea6c4f21bcff693bbd73a74d/m0029.source"
+    ],
+    "existingTask11Archive": true
+  },
+  "642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c": {
+    "bytes": 671,
+    "paths": [
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-baseline-6fcec64d703040d09232813f5a2ac37e/m0029.source.parsed.json",
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-retry-210608b8ea6c4f21bcff693bbd73a74d/m0029.source.parsed.json"
+    ],
+    "existingTask11Archive": true
+  },
+  "f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2": {
+    "bytes": 547,
+    "paths": [
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-baseline-6fcec64d703040d09232813f5a2ac37e/m0029.source.transport.source",
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-retry-210608b8ea6c4f21bcff693bbd73a74d/m0029.source.transport.source"
+    ],
+    "existingTask11Archive": true
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-03T02:12:28.292210+00:00",
+  "rulingCount": 66,
+  "previousAudit": "controller-rulings-audit-v33.json",
+  "oldPrefixOrdinalTextUnchanged": true,
+  "ledgerFinalTextsEqual": true,
+  "originalReasonCostTextsPreserved": true,
+  "newRulingReasonAndCostPresent": true,
+  "beforeLedgerSha256": "767fb82e94832e235bbd2bcf2518969345ddc7c6bd420543c500927747c8d416",
+  "beforeFinalInputsSha256": "12e6da166e7d63528e68300c0631cc3ec4bc42aa478ea185a82b6903f09c008b",
+  "newRulingEvidence": "task-12-existing-shared-input-references-ruling66.md"
+}

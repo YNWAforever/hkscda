@@ -1,0 +1,27 @@
+import pathlib,json
+o=pathlib.Path(__file__).parent
+(o/'accept-red.receipt.source').write_bytes((o/'receipt.json').read_bytes())
+s=(o/'binder.py').read_text(encoding='utf-8')
+old="require(after==behavior,'Catalog after behavior differs')"
+assert s.count(old)==1
+s=s.replace(old,"behavior_snapshot(after,behavior,r['rowCountsAfter'])")
+insert="""
+def behavior_snapshot(after,behavior,rows):
+ require(set(after)=={'catalog','supplemental'}and set(behavior)=={'catalog','supplemental','rows'},'Saved behavior wrapper differs')
+ require(after['catalog']==behavior['catalog']and after['supplemental']==behavior['supplemental'],'Catalog after behavior differs')
+ require(type(behavior['rows'])is list and behavior['rows']==rows and all(x.get('count')=='0'for x in rows),'Saved actual behavior rows differ')
+"""
+s=s.replace('def main():',insert+'\ndef main():')
+(o/'binder-fix1.py').write_bytes(s.encode())
+t=(o/'tests.py').read_text(encoding='utf-8').replace("with_name('binder.py')","with_name('binder-fix1.py')")
+extra=""" def test_saved_behavior_wrapper_checks_rows_separately(self):
+  a={'catalog':{'synthetic':[]},'supplemental':{'synthetic':[]}};rows=[{'table':'synthetic','count':'0'}];v=dict(a,rows=rows);b.behavior_snapshot(a,v,rows)
+ def test_saved_behavior_missing_extra_changed_facets_and_rows_rejected(self):
+  a={'catalog':{'synthetic':[]},'supplemental':{'synthetic':[]}};rows=[{'table':'synthetic','count':'0'}];v=dict(a,rows=rows)
+  for i,patch in enumerate([dict(a),dict(v,unknown=True),dict(v,catalog={'changed':True}),dict(v,rows=[{'table':'synthetic','count':'1'}])]):
+   self.save(patch,str(i))
+   with self.assertRaises(ValueError):b.behavior_snapshot(a,patch,rows)
+"""
+t=t.replace("if __name__=='__main__':",extra+"if __name__=='__main__':")
+(o/'tests-fix1.py').write_bytes(t.encode())
+(o/'fix1-diagnosis.json').write_bytes((json.dumps({'originalFailure':'Catalog after behavior differs','afterKeys':['catalog','supplemental'],'afterBehaviorKeys':['catalog','supplemental','rows'],'catalogAndSupplementalEqual':True,'correction':'Exact wrapper key contracts plus independently saved rows; no catalog normalization or DB rerun'})+'\n').encode())

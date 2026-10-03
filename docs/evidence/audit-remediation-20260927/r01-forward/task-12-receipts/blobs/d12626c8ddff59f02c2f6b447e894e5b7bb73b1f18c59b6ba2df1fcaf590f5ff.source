@@ -1,0 +1,11 @@
+--- a/src/lib/content/serviceSloganCopy.test.ts
++++ b/src/lib/content/serviceSloganCopy.test.ts
+@@
+-  /^docs\/evidence\/audit-remediation-20260927\/r01-forward\/task-11-receipts\/blobs\/[a-f0-9]{64}\.source$/;
++  /^docs\/evidence\/audit-remediation-20260927\/r01-forward\/task-(?:11|12)-receipts\/blobs\/[a-f0-9]{64}\.source$/;
+
+The unchanged predicate additionally requires text, diff and merge each equal
+"unset". Portable cases will accept the exact Task12 path only with all three
+attributes, and reject Task12 plaintext or absent/incomplete attributes,
+non-content-addressed names, paths outside Task12 receipts/blobs, and Task13.
+Existing Task11, source/config/script/document scans and Git failures remain.

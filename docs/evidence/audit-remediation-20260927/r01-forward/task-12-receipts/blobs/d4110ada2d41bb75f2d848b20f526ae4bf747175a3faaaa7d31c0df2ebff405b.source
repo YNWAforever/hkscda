@@ -1,0 +1,1 @@
+{"fullScannerPassed":true,"fixtureScope":["auth.users","admin_user","group_enquiries","audit_log"],"metadataReads":4,"adapterQualification":"Unchanged full scanner; each metadata SELECT uses an owned read-only transaction. begin callback's pg_catalog scope is preserved; no writes or network-bearing function invoked."}

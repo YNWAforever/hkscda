@@ -1,0 +1,1544 @@
+{
+  "receiptVersion": 1,
+  "receiptType": "preclosing-package-acceptance",
+  "mode": "task12-r68-preclosing",
+  "sourceCommit": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+  "nativeSourceCommit": "208050fd6bdbe78f3a05de6853e0319055f6e014",
+  "requiredFinalFlags": [
+    "originalArchivePairsVerified",
+    "fourExistingBasePinsVerified",
+    "auditAndTask11Unchanged",
+    "currentSourceFreezeVerified",
+    "qualifiedNative208BridgeVerified",
+    "threeCurrentCompositionsVerified",
+    "fourActualLocalGatesVerified",
+    "all68OriginalRulingsVerified",
+    "stagedArchiveGitIdentitiesVerified"
+  ],
+  "error": null,
+  "failedFinalFlags": [],
+  "originalArchivePairsVerified": true,
+  "fourExistingBasePinsVerified": true,
+  "auditAndTask11Unchanged": true,
+  "currentSourceFreezeVerified": true,
+  "qualifiedNative208BridgeVerified": true,
+  "threeCurrentCompositionsVerified": true,
+  "fourActualLocalGatesVerified": true,
+  "all68OriginalRulingsVerified": true,
+  "stagedArchiveGitIdentitiesVerified": true,
+  "closingGitVerified": false,
+  "freshFiveCiVerified": false,
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "originalArchivePairs": 41773,
+  "compositions": {
+    "hosted": {
+      "receiptSha256": "e81a498d1cbd010065a3368fe78efcbcb6674596b958a6ab520de196339ac470",
+      "sourceCommit": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+      "frozenInputs": 79,
+      "fullCandidateRefusals": 14,
+      "tests": {
+        "pass": 38,
+        "fail": 0,
+        "expects": 142
+      },
+      "protectedPairs": 438,
+      "catalogDerivedExpectedRowCount": 164,
+      "catalogDerivedExpectedRowTables": [
+        "auth.users",
+        "private.animal_replacement_batch",
+        "private.animal_replacement_row",
+        "private.crm_export_artifact",
+        "private.supporter_recovery_challenge",
+        "public.about_page_content",
+        "public.admin_user",
+        "public.adopter_profile",
+        "public.adoption_application_animal_preference",
+        "public.adoption_application_detail",
+        "public.adoption_application_photo",
+        "public.adoption_application_visit_preference",
+        "public.adoption_applications",
+        "public.adoption_assignment_bulk_item",
+        "public.adoption_assignment_bulk_operation",
+        "public.adoption_attachment",
+        "public.adoption_case",
+        "public.adoption_fee",
+        "public.adoption_fees",
+        "public.adoption_followup",
+        "public.adoption_guide_publish_requests",
+        "public.adoption_guide_releases",
+        "public.adoption_instruction_pages",
+        "public.adoption_instruction_publish_requests",
+        "public.adoption_instruction_revisions",
+        "public.adoption_intake_item",
+        "public.adoption_rules",
+        "public.adoption_upload_intent",
+        "public.animal_draft",
+        "public.animal_draft_image_upload_intent",
+        "public.animal_match",
+        "public.animal_position",
+        "public.animal_profile_internal",
+        "public.animal_publication_media_copy",
+        "public.animal_publication_preview",
+        "public.animal_publication_publish_receipt",
+        "public.animal_publication_version",
+        "public.animal_review_bulk_item",
+        "public.animal_review_bulk_operation",
+        "public.animals",
+        "public.annual_reports",
+        "public.arrival_source",
+        "public.audit_log",
+        "public.board_member",
+        "public.care_topics",
+        "public.checkout_admission",
+        "public.checkout_method_approval",
+        "public.checkout_policy",
+        "public.cms_review_bulk_item",
+        "public.cms_review_bulk_operation",
+        "public.consent",
+        "public.content_item",
+        "public.content_link",
+        "public.content_media",
+        "public.content_media_session",
+        "public.content_public_asset",
+        "public.content_publication_prepare",
+        "public.content_publish_request",
+        "public.content_revision",
+        "public.coordinator_status",
+        "public.coordinator_status_history",
+        "public.crm_assignment_bulk_item",
+        "public.crm_assignment_bulk_operation",
+        "public.crm_export_job",
+        "public.crm_tag_bulk_item",
+        "public.crm_tag_bulk_operation",
+        "public.document_assets",
+        "public.dog_friendly_estates",
+        "public.donation",
+        "public.donation_delivery_job",
+        "public.editorial_content_review",
+        "public.faq_entry",
+        "public.finance_bank_match_item",
+        "public.finance_bank_match_operation",
+        "public.group_enquiries",
+        "public.internship_application",
+        "public.internship_attachment",
+        "public.internship_attachment_upload_intent",
+        "public.internship_command_result",
+        "public.internship_event",
+        "public.internship_intake_draft",
+        "public.internship_intake_preview",
+        "public.internship_intake_version",
+        "public.knowledge_posts",
+        "public.living_area",
+        "public.mail_delivery_event",
+        "public.manual_gift_request",
+        "public.message",
+        "public.message_template",
+        "public.payment",
+        "public.payment_public_config",
+        "public.payment_public_config_publish_requests",
+        "public.public_status_token",
+        "public.receipt",
+        "public.receipt_sequence",
+        "public.recipient_notification_draft",
+        "public.recipient_notification_draft_duplicate_archive",
+        "public.recurring_mandate",
+        "public.rescue_story_profile",
+        "public.site_config",
+        "public.site_document_slots",
+        "public.social_copy_variant",
+        "public.sponsorship_allocation_command",
+        "public.sponsorship_assignment",
+        "public.sponsorship_contact_verification",
+        "public.sponsorship_delivery_outbox",
+        "public.sponsorship_followup_bulk_item",
+        "public.sponsorship_followup_bulk_operation",
+        "public.sponsorship_payment_allocation",
+        "public.sponsorship_payment_instruction_snapshot",
+        "public.sponsorship_payment_proof",
+        "public.sponsorship_payment_source",
+        "public.sponsorship_period",
+        "public.sponsorship_pledge",
+        "public.sponsorship_preference",
+        "public.sponsorship_proof_review_command",
+        "public.sponsorship_proof_submission_command",
+        "public.sponsorship_proof_upload_intent",
+        "public.sponsorship_refund",
+        "public.sponsorship_staff_proof_upload_intent",
+        "public.story_update",
+        "public.successful_adoption",
+        "public.supporter",
+        "public.supporter_consent_intent",
+        "public.supporter_role",
+        "public.volunteer_activity",
+        "public.volunteer_assessment_policy_draft",
+        "public.volunteer_assessment_policy_version",
+        "public.volunteer_attendance_event",
+        "public.volunteer_bulk_operation",
+        "public.volunteer_change_preview",
+        "public.volunteer_command_result",
+        "public.volunteer_credential",
+        "public.volunteer_credential_definition",
+        "public.volunteer_daily_policy_binding",
+        "public.volunteer_daily_policy_history",
+        "public.volunteer_daily_policy_preview",
+        "public.volunteer_group_request",
+        "public.volunteer_legacy_identity_link",
+        "public.volunteer_monthly_assessment",
+        "public.volunteer_monthly_assessment_result",
+        "public.volunteer_operation_event",
+        "public.volunteer_operation_outbox",
+        "public.volunteer_policy_draft",
+        "public.volunteer_policy_preview",
+        "public.volunteer_policy_schedule",
+        "public.volunteer_policy_source",
+        "public.volunteer_policy_source_preview",
+        "public.volunteer_policy_source_version",
+        "public.volunteer_policy_version",
+        "public.volunteer_profile",
+        "public.volunteer_profile_event",
+        "public.volunteer_profile_review_assignment",
+        "public.volunteer_registration",
+        "public.volunteer_release_transition",
+        "public.volunteer_review_bulk_item",
+        "public.volunteer_review_bulk_operation",
+        "public.volunteer_runtime_job_run",
+        "public.volunteer_shelter_definition",
+        "public.volunteer_task_completion",
+        "public.volunteer_terms_acceptance",
+        "public.volunteer_terms_version",
+        "public.volunteer_tier_candidate",
+        "public.webhook_event"
+      ],
+      "catalogDerivedInventorySha256": "c03fcffb34f26ae750da1fd621e1930e230e651b9cbf1e444f206db992ab9dc2"
+    },
+    "modern": {
+      "receiptSha256": "d2473cb22332e814387417a99849007c5954e7dc0a84517a1ebba312c8e3177d",
+      "sourceCommit": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+      "frozenInputs": 79,
+      "fullCandidateRefusals": 14,
+      "tests": {
+        "pass": 38,
+        "fail": 0,
+        "expects": 142
+      },
+      "protectedPairs": 438,
+      "catalogDerivedExpectedRowCount": 163,
+      "catalogDerivedExpectedRowTables": [
+        "auth.users",
+        "private.animal_replacement_batch",
+        "private.animal_replacement_row",
+        "private.crm_export_artifact",
+        "public.about_page_content",
+        "public.admin_user",
+        "public.adopter_profile",
+        "public.adoption_application_animal_preference",
+        "public.adoption_application_detail",
+        "public.adoption_application_photo",
+        "public.adoption_application_visit_preference",
+        "public.adoption_applications",
+        "public.adoption_assignment_bulk_item",
+        "public.adoption_assignment_bulk_operation",
+        "public.adoption_attachment",
+        "public.adoption_case",
+        "public.adoption_fee",
+        "public.adoption_fees",
+        "public.adoption_followup",
+        "public.adoption_guide_publish_requests",
+        "public.adoption_guide_releases",
+        "public.adoption_instruction_pages",
+        "public.adoption_instruction_publish_requests",
+        "public.adoption_instruction_revisions",
+        "public.adoption_intake_item",
+        "public.adoption_rules",
+        "public.adoption_upload_intent",
+        "public.animal_draft",
+        "public.animal_draft_image_upload_intent",
+        "public.animal_match",
+        "public.animal_position",
+        "public.animal_profile_internal",
+        "public.animal_publication_media_copy",
+        "public.animal_publication_preview",
+        "public.animal_publication_publish_receipt",
+        "public.animal_publication_version",
+        "public.animal_review_bulk_item",
+        "public.animal_review_bulk_operation",
+        "public.animals",
+        "public.annual_reports",
+        "public.arrival_source",
+        "public.audit_log",
+        "public.board_member",
+        "public.care_topics",
+        "public.checkout_admission",
+        "public.checkout_method_approval",
+        "public.checkout_policy",
+        "public.cms_review_bulk_item",
+        "public.cms_review_bulk_operation",
+        "public.consent",
+        "public.content_item",
+        "public.content_link",
+        "public.content_media",
+        "public.content_media_session",
+        "public.content_public_asset",
+        "public.content_publication_prepare",
+        "public.content_publish_request",
+        "public.content_revision",
+        "public.coordinator_status",
+        "public.coordinator_status_history",
+        "public.crm_assignment_bulk_item",
+        "public.crm_assignment_bulk_operation",
+        "public.crm_export_job",
+        "public.crm_tag_bulk_item",
+        "public.crm_tag_bulk_operation",
+        "public.document_assets",
+        "public.dog_friendly_estates",
+        "public.donation",
+        "public.donation_delivery_job",
+        "public.editorial_content_review",
+        "public.faq_entry",
+        "public.finance_bank_match_item",
+        "public.finance_bank_match_operation",
+        "public.group_enquiries",
+        "public.internship_application",
+        "public.internship_attachment",
+        "public.internship_attachment_upload_intent",
+        "public.internship_command_result",
+        "public.internship_event",
+        "public.internship_intake_draft",
+        "public.internship_intake_preview",
+        "public.internship_intake_version",
+        "public.knowledge_posts",
+        "public.living_area",
+        "public.mail_delivery_event",
+        "public.manual_gift_request",
+        "public.message",
+        "public.message_template",
+        "public.payment",
+        "public.payment_public_config",
+        "public.payment_public_config_publish_requests",
+        "public.public_status_token",
+        "public.receipt",
+        "public.receipt_sequence",
+        "public.recipient_notification_draft",
+        "public.recipient_notification_draft_duplicate_archive",
+        "public.recurring_mandate",
+        "public.rescue_story_profile",
+        "public.site_config",
+        "public.site_document_slots",
+        "public.social_copy_variant",
+        "public.sponsorship_allocation_command",
+        "public.sponsorship_assignment",
+        "public.sponsorship_contact_verification",
+        "public.sponsorship_delivery_outbox",
+        "public.sponsorship_followup_bulk_item",
+        "public.sponsorship_followup_bulk_operation",
+        "public.sponsorship_payment_allocation",
+        "public.sponsorship_payment_instruction_snapshot",
+        "public.sponsorship_payment_proof",
+        "public.sponsorship_payment_source",
+        "public.sponsorship_period",
+        "public.sponsorship_pledge",
+        "public.sponsorship_preference",
+        "public.sponsorship_proof_review_command",
+        "public.sponsorship_proof_submission_command",
+        "public.sponsorship_proof_upload_intent",
+        "public.sponsorship_refund",
+        "public.sponsorship_staff_proof_upload_intent",
+        "public.story_update",
+        "public.successful_adoption",
+        "public.supporter",
+        "public.supporter_consent_intent",
+        "public.supporter_role",
+        "public.volunteer_activity",
+        "public.volunteer_assessment_policy_draft",
+        "public.volunteer_assessment_policy_version",
+        "public.volunteer_attendance_event",
+        "public.volunteer_bulk_operation",
+        "public.volunteer_change_preview",
+        "public.volunteer_command_result",
+        "public.volunteer_credential",
+        "public.volunteer_credential_definition",
+        "public.volunteer_daily_policy_binding",
+        "public.volunteer_daily_policy_history",
+        "public.volunteer_daily_policy_preview",
+        "public.volunteer_group_request",
+        "public.volunteer_legacy_identity_link",
+        "public.volunteer_monthly_assessment",
+        "public.volunteer_monthly_assessment_result",
+        "public.volunteer_operation_event",
+        "public.volunteer_operation_outbox",
+        "public.volunteer_policy_draft",
+        "public.volunteer_policy_preview",
+        "public.volunteer_policy_schedule",
+        "public.volunteer_policy_source",
+        "public.volunteer_policy_source_preview",
+        "public.volunteer_policy_source_version",
+        "public.volunteer_policy_version",
+        "public.volunteer_profile",
+        "public.volunteer_profile_event",
+        "public.volunteer_profile_review_assignment",
+        "public.volunteer_registration",
+        "public.volunteer_release_transition",
+        "public.volunteer_review_bulk_item",
+        "public.volunteer_review_bulk_operation",
+        "public.volunteer_runtime_job_run",
+        "public.volunteer_shelter_definition",
+        "public.volunteer_task_completion",
+        "public.volunteer_terms_acceptance",
+        "public.volunteer_terms_version",
+        "public.volunteer_tier_candidate",
+        "public.webhook_event"
+      ],
+      "catalogDerivedInventorySha256": "a76ea4c9245c7a26ad4cdfce60f41ea595432f5d45f5459f04ad8ec34f0aa049"
+    },
+    "component": {
+      "receiptSha256": "7e6b0012a622cdc9040a1a39fb8a9a4cd86d3b1cb880439b85c58f0ff6ddcea7",
+      "sourceCommit": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+      "frozenInputs": 79,
+      "fullCandidateRefusals": 14,
+      "tests": {
+        "pass": 38,
+        "fail": 0,
+        "expects": 142
+      },
+      "protectedPairs": 438,
+      "catalogDerivedExpectedRowCount": 163,
+      "catalogDerivedExpectedRowTables": [
+        "auth.users",
+        "private.animal_replacement_batch",
+        "private.animal_replacement_row",
+        "private.crm_export_artifact",
+        "public.about_page_content",
+        "public.admin_user",
+        "public.adopter_profile",
+        "public.adoption_application_animal_preference",
+        "public.adoption_application_detail",
+        "public.adoption_application_photo",
+        "public.adoption_application_visit_preference",
+        "public.adoption_applications",
+        "public.adoption_assignment_bulk_item",
+        "public.adoption_assignment_bulk_operation",
+        "public.adoption_attachment",
+        "public.adoption_case",
+        "public.adoption_fee",
+        "public.adoption_fees",
+        "public.adoption_followup",
+        "public.adoption_guide_publish_requests",
+        "public.adoption_guide_releases",
+        "public.adoption_instruction_pages",
+        "public.adoption_instruction_publish_requests",
+        "public.adoption_instruction_revisions",
+        "public.adoption_intake_item",
+        "public.adoption_rules",
+        "public.adoption_upload_intent",
+        "public.animal_draft",
+        "public.animal_draft_image_upload_intent",
+        "public.animal_match",
+        "public.animal_position",
+        "public.animal_profile_internal",
+        "public.animal_publication_media_copy",
+        "public.animal_publication_preview",
+        "public.animal_publication_publish_receipt",
+        "public.animal_publication_version",
+        "public.animal_review_bulk_item",
+        "public.animal_review_bulk_operation",
+        "public.animals",
+        "public.annual_reports",
+        "public.arrival_source",
+        "public.audit_log",
+        "public.board_member",
+        "public.care_topics",
+        "public.checkout_admission",
+        "public.checkout_method_approval",
+        "public.checkout_policy",
+        "public.cms_review_bulk_item",
+        "public.cms_review_bulk_operation",
+        "public.consent",
+        "public.content_item",
+        "public.content_link",
+        "public.content_media",
+        "public.content_media_session",
+        "public.content_public_asset",
+        "public.content_publication_prepare",
+        "public.content_publish_request",
+        "public.content_revision",
+        "public.coordinator_status",
+        "public.coordinator_status_history",
+        "public.crm_assignment_bulk_item",
+        "public.crm_assignment_bulk_operation",
+        "public.crm_export_job",
+        "public.crm_tag_bulk_item",
+        "public.crm_tag_bulk_operation",
+        "public.document_assets",
+        "public.dog_friendly_estates",
+        "public.donation",
+        "public.donation_delivery_job",
+        "public.editorial_content_review",
+        "public.faq_entry",
+        "public.finance_bank_match_item",
+        "public.finance_bank_match_operation",
+        "public.group_enquiries",
+        "public.internship_application",
+        "public.internship_attachment",
+        "public.internship_attachment_upload_intent",
+        "public.internship_command_result",
+        "public.internship_event",
+        "public.internship_intake_draft",
+        "public.internship_intake_preview",
+        "public.internship_intake_version",
+        "public.knowledge_posts",
+        "public.living_area",
+        "public.mail_delivery_event",
+        "public.manual_gift_request",
+        "public.message",
+        "public.message_template",
+        "public.payment",
+        "public.payment_public_config",
+        "public.payment_public_config_publish_requests",
+        "public.public_status_token",
+        "public.receipt",
+        "public.receipt_sequence",
+        "public.recipient_notification_draft",
+        "public.recipient_notification_draft_duplicate_archive",
+        "public.recurring_mandate",
+        "public.rescue_story_profile",
+        "public.site_config",
+        "public.site_document_slots",
+        "public.social_copy_variant",
+        "public.sponsorship_allocation_command",
+        "public.sponsorship_assignment",
+        "public.sponsorship_contact_verification",
+        "public.sponsorship_delivery_outbox",
+        "public.sponsorship_followup_bulk_item",
+        "public.sponsorship_followup_bulk_operation",
+        "public.sponsorship_payment_allocation",
+        "public.sponsorship_payment_instruction_snapshot",
+        "public.sponsorship_payment_proof",
+        "public.sponsorship_payment_source",
+        "public.sponsorship_period",
+        "public.sponsorship_pledge",
+        "public.sponsorship_preference",
+        "public.sponsorship_proof_review_command",
+        "public.sponsorship_proof_submission_command",
+        "public.sponsorship_proof_upload_intent",
+        "public.sponsorship_refund",
+        "public.sponsorship_staff_proof_upload_intent",
+        "public.story_update",
+        "public.successful_adoption",
+        "public.supporter",
+        "public.supporter_consent_intent",
+        "public.supporter_role",
+        "public.volunteer_activity",
+        "public.volunteer_assessment_policy_draft",
+        "public.volunteer_assessment_policy_version",
+        "public.volunteer_attendance_event",
+        "public.volunteer_bulk_operation",
+        "public.volunteer_change_preview",
+        "public.volunteer_command_result",
+        "public.volunteer_credential",
+        "public.volunteer_credential_definition",
+        "public.volunteer_daily_policy_binding",
+        "public.volunteer_daily_policy_history",
+        "public.volunteer_daily_policy_preview",
+        "public.volunteer_group_request",
+        "public.volunteer_legacy_identity_link",
+        "public.volunteer_monthly_assessment",
+        "public.volunteer_monthly_assessment_result",
+        "public.volunteer_operation_event",
+        "public.volunteer_operation_outbox",
+        "public.volunteer_policy_draft",
+        "public.volunteer_policy_preview",
+        "public.volunteer_policy_schedule",
+        "public.volunteer_policy_source",
+        "public.volunteer_policy_source_preview",
+        "public.volunteer_policy_source_version",
+        "public.volunteer_policy_version",
+        "public.volunteer_profile",
+        "public.volunteer_profile_event",
+        "public.volunteer_profile_review_assignment",
+        "public.volunteer_registration",
+        "public.volunteer_release_transition",
+        "public.volunteer_review_bulk_item",
+        "public.volunteer_review_bulk_operation",
+        "public.volunteer_runtime_job_run",
+        "public.volunteer_shelter_definition",
+        "public.volunteer_task_completion",
+        "public.volunteer_terms_acceptance",
+        "public.volunteer_terms_version",
+        "public.volunteer_tier_candidate",
+        "public.webhook_event"
+      ],
+      "catalogDerivedInventorySha256": "a76ea4c9245c7a26ad4cdfce60f41ea595432f5d45f5459f04ad8ec34f0aa049"
+    }
+  },
+  "correction": "T12-I1 complete catalog-derived row observations; historical compositions inspected, not rerun",
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": [
+        "bun",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 46.14,
+      "log": "typecheck.log",
+      "logSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "gate": "tests",
+      "command": [
+        "bun",
+        "test",
+        "--isolate",
+        "--timeout",
+        "30000"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 104.21,
+      "log": "tests.log",
+      "logSha256": "a8f6c86816c2199f5989f1bbd997a5f2a034ec321226c593e59f9f0f4119e654",
+      "summary": [
+        "\n 4300 pass",
+        " 574 skip",
+        " 0 fail",
+        " 12226 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": [
+        "bun",
+        "run",
+        "lint"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 55.24,
+      "log": "lint.log",
+      "logSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "summary": [
+        "\u2716 52 problems (0 errors, 52 warnings)"
+      ]
+    },
+    {
+      "gate": "build",
+      "command": [
+        "bun",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 86.79,
+      "log": "build.log",
+      "logSha256": "853a614dd0d62c8502dc8c6df44c11d90931f281326ad88f0b84666cf110f467"
+    }
+  ],
+  "sharedModernQualification": "R52: full-suite shared modern aggregate observations; no exclusive catalog/Auth/native/ACL preservation claim",
+  "native": {
+    "actualSourceCommit": "208050fd6bdbe78f3a05de6853e0319055f6e014",
+    "nativeLocalBun": "NOT_RUN",
+    "psqlCases": 5,
+    "fullCandidateRefusals": 14,
+    "guardOnlyRefusals": 2,
+    "rawFiles": 4918,
+    "inputBindings": 107,
+    "commands": 703,
+    "R67SupportingAssertionBridge": true
+  },
+  "rulingCount": 68,
+  "archivePaths": 1897,
+  "qualification": "Local metadata acceptance only. Closing Git, fresh five-job CI, independent review and production readiness remain separate pending controller gates.",
+  "gitCommands": [
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "f4e96e3484d135d179caea835d913552d96d2dcb:docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "check-attr",
+        "--cached",
+        "text",
+        "diff",
+        "merge",
+        "--",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "a66cf013bce69e472739f0f736251b784db4521b8e20282080c5796ea1fe6979",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "f4e96e3484d135d179caea835d913552d96d2dcb:docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "check-attr",
+        "--cached",
+        "text",
+        "diff",
+        "merge",
+        "--",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "404ef7680449619ccd5d8d8de7dc28740f24ceac3e666de40aea7f527bbdcf6e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "f4e96e3484d135d179caea835d913552d96d2dcb:docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "check-attr",
+        "--cached",
+        "text",
+        "diff",
+        "merge",
+        "--",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "c58b1edad6e6b36a6895f458213bcf10aacc4b3d87d7e326cd4e513290132dfc",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "f4e96e3484d135d179caea835d913552d96d2dcb:docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "check-attr",
+        "--cached",
+        "text",
+        "diff",
+        "merge",
+        "--",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2.source"
+      ],
+      "exit": 0,
+      "stdoutSha256": "2c3cdf40ce86433e346169036a0a14d458a1c07dc383eda8156a63de775dd6de",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "f4e96e3484d135d179caea835d913552d96d2dcb",
+        "--",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts",
+        "src/lib/content/serviceSloganCopy.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702^{tree}"
+      ],
+      "exit": 0,
+      "stdoutSha256": "28607ebddae9f40e46d0c8b3e7e3a3e501f0ca5fff76a5a56213359b695268f3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:.github/workflows/ci.yml"
+      ],
+      "exit": 0,
+      "stdoutSha256": "3e8009fda08dee8331713817563cf13aaac1e3a50d8147a3195783fec54e1ace",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:bun.lock"
+      ],
+      "exit": 0,
+      "stdoutSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-binding.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "62f654908aff038c87811a5242c0459df3ee4000e73a2c69d6460f0062aee23a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-capture-producer.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "dda2875f4c3e37b170b9f536d10c1ac257359b4f7df56387d8a70e4b1c216162",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-capture-producer.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "cc356040ace8f796683235258f9b1d9b25a924e567c3892d53517394f2436543",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-capture.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "62e0ed74a574165c9fc91c019476765e7790b6fba9631fde2142b921a6713713",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-cli.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "34282eb1c44cd7341752570fbdf09d75ff09f44282d2df2e67b64f4b56648eb4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-component-capture.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "80edeb6823456606d9f6c2543925c4caf28232659c1764a2a757dab0440a8253",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-finance-expression.fixture.txt"
+      ],
+      "exit": 0,
+      "stdoutSha256": "ea2f714672ff8cb7ac30a6634e9563a052492f5bc43e68859888e6b1acef879d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-freeze.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e575fe0deeb61aa72c6cd59782ad0ae928f90adbcffc1666b0507f7f78fe2aec",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-gap.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-gates.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "d2d232eac18dc2c1a3190cf69b6efa36a6c13a2aa538a0955675f259d46c390e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-generate.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "ef709a96b4aa0768d16a5d55f4a2995e446e0f503b6f5c39c20063f30afbb811",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-mixed-vectors.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "649a2b82372fb8b1870053697b303cc2ce60ef04ad0b878e746d1282c64422db",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-mixed-vectors.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "a63c96e5b8f8c22d590d917c7d5b2cc36ec50657570447723487707e9530f2b7",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-codec.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "7af5a541c1a8e6b315b1cc2d4efae7fadcc8f6f1143e04178f5d1203f467b592",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-codec.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "d0b5674411990934e45b00c1dfbe64ac78e8f7e43f84505d6e1f02bee1350f6a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-expression.fixture.txt"
+      ],
+      "exit": 0,
+      "stdoutSha256": "c3c6840a089aab8ebbf222c6543cf072e6c77add8401a2cbfcc63326006a816e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-functions.fixture.txt"
+      ],
+      "exit": 0,
+      "stdoutSha256": "be5256c2f3091c0bd012696b52b91d26697f2a108a44b481e6adbd0a22e178e7",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-integration.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "2a2961c8aef77b2821679ad85bd76202b01eefa876c9db56f47a609415263714",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-operators.fixture.txt"
+      ],
+      "exit": 0,
+      "stdoutSha256": "5cd67e7fa70d8a430f52a963531e4bf5bfd70f97123ead50bc50f5ad1098b673",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-prerequisites.json"
+      ],
+      "exit": 0,
+      "stdoutSha256": "b1ac911771ade3a1309447e8df5748b0d1ba2b187f604686f52193b70e4fe447",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-profile.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "f6e161f804dbb75298f2951cda337a6f50f18f830f5149f873883a648e9b3b4f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-profile.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "071aa7be274660fc105a098eccfca308080f052b48f223d9e0a5771f38d5d935",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-qualify.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "05c5a3c7641e20856477fabbb7f571c7016e2d219536329be2d5d260edf333de",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-query-reader.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "ae920c5661d752db0e984bad08d2d03a78d0e915d96832c9c16278893b1c2a6d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-result.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "f4f37c0d3adbba59a841ef526e092a31dee5f9508200a19a82995a5c3c3ae597",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-result.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "046bbb4d5b12f4b1b0bcc73ba080835f3027dbead4c3f42f14d2044855435de1",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-triggers.fixture.txt"
+      ],
+      "exit": 0,
+      "stdoutSha256": "985720de78041b6407e881c19cdf8ee561e78182cdfa1c35c50c5bf2f608f698",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-native-verify.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "0e0cd8c56fe1676ad65d81e42d8359c834ad012e81229a79f626749da16da9b8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-package-reference.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e85305aa56c2bf23cd1af56cca6d0308bf8fa250e3d8ee0e8fa6a82fcec8210a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-package-reference.test.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "dbfb8060cca95fc482def3c4e8f8332988df43501a9059fab0cd3ba25ec31ae5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-package-verify.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "cd9eb10241a53ffed931b63a060476d0de60ae2de30b82a2300713cbebf1641d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-package.py"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e2bb8d9f0b7b779f7fd77b910a78b8df4efa1812d899aff9cba83f850f3ea9d4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile-inputs.json"
+      ],
+      "exit": 0,
+      "stdoutSha256": "42b1d7bb2cfadd5a100ea8bef7d94f39dd6810727078ca6c75e3b37659a64eef",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "22a2165d482fd3984c063d35424bcce9c36b9cb77a537611ebf71a99a10c2a9b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-protected.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "2b5650873ba1e4d8251b3dedfc698906f38737517836f264d130c08532cb2cf4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "689d4a245619621495bfc5146376e0b3e8c1978400bfde6d686e67041d7672b6",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "dfc8c4ea84778d4aa9f72dbbf4007acbbebd134f2fa2868b64d91c33a8a9fd58",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-red.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "94fdc4fd7baaf225bc59d1f024ad58249e9e9dfeec992ce26a637061135be369",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-refusals.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "86eac3aa311baa99034bff00c41c3257c31d3420b9484af6bae4476e2188b136",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-rehearse.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "07b716d31feb3282e0458b217707b300cfcb60df040b4f82ca56bfb72ebed030",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-render.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "13d582aed99e9b4f11686a1f0a00dd4e1556aaacb5939e1cc4c8272af97ab86f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-targets.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e8d205323a97b20ab962b64923ab81d9fc24507d40ab3f624d8c72fa20796a17",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-12-vector.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e94ffdbdc6382c17c69115832c33ec7920b3c48925304227d42ea07b1de00731",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:eslint.config.js"
+      ],
+      "exit": 0,
+      "stdoutSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:package.json"
+      ],
+      "exit": 0,
+      "stdoutSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/admin/access.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/content/serviceSloganCopy.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/groupEnquiries/atomicForward.database.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "fadde1ae3c9a8c4aa4750be4005b18305ae1e72ae01f928609f333af0c7475d0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/groupEnquiries/atomicForwardFixtureGuard.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "3181a127f7028ba81e546f637aa15b04ef2279caa300509d3f54f94d550901c0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/groupEnquiries/atomicForwardFixtureGuard.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "f5dc2d6cba34743d53231e930bc71b0cdbfe1d408293c8a0d011555e9a95ec09",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/groupEnquiries/repository.server.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "1e6a173cb3b8b3b628857a842c969306aed8395c98782a40c71b2b9f964d4c36",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/groupEnquiries/service.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "c27c75bda2cf5b229772fb2496bba46cbb77a3225db4268bcd3800889f249f6c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/groupEnquiries/service.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "ed6110a5babe7be5b750eed4286531bc430e93e43e13241e27b8e23aaabf371d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/operations/releaseManifest.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/lib/operations/releaseSchema.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:src/routes/api/admin/volunteers/group-enquiries.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "165d0dffd8addc5bbdd699d95d65005dde5456c7ce2bc15eda4b33fdc10bb002",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:supabase/migrations/20260926060314_atomic_group_enquiry_audit.sql"
+      ],
+      "exit": 0,
+      "stdoutSha256": "6dee675834e610f0e173d94bd332e38c789f50cd27a23470f5fc567bd4c0a4b7",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:supabase/migrations/20261003005322_r01_group_enquiry_forward.sql"
+      ],
+      "exit": 0,
+      "stdoutSha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:supabase/rls-tests/helpers/productionSchemaClone.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:tsconfig.json"
+      ],
+      "exit": 0,
+      "stdoutSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702:vite.config.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "208050fd6bdbe78f3a05de6853e0319055f6e014",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+        "--",
+        "src/lib/groupEnquiries/atomicForward.database.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "f2377b4acb7f44301b9104bf6828f8c26b362755ecb9cd348533e13a7be06237",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "208050fd6bdbe78f3a05de6853e0319055f6e014",
+        "de35b17745ef9da3114e7dc4ba8c64df38e46702"
+      ],
+      "exit": 0,
+      "stdoutSha256": "0aa51a1fdb8e2f1a137725fd7c15e07e2c97379f010950ffce857fa5b6aa78d9",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--stage",
+        "-z"
+      ],
+      "exit": 0,
+      "stdoutSha256": "4e1c7b7887e6e91005d88e5c892b8b79a60d4630ad7970c5dbe7d37f408c6d02",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "eligible": true
+}

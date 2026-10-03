@@ -1,0 +1,11 @@
+18 |  const profiles=await Promise.all(inputs.captures.map(async(p:string)=>JSON.parse(await readFile(p,"utf8"))));
+19 |  const native=JSON.parse(await readFile(inputs.native,"utf8"));
+20 |  await writeFile(resolve(out,"expected-next.json"),JSON.stringify(native.nextTargets,null,2)+"\n");
+21 |  const modern=vector(profiles[1]),all=[...profiles.map(vector),native.vector];
+22 |  const mixed=[{label:"native-vector-modern-helpers",vector:{...native.vector,helpers:modern.helpers}},{label:"modern-catalog-native-rest",vector:{...native.vector,catalog:modern.catalog}}];
+23 |  if(mixed.some(m=>all.some(v=>isDeepStrictEqual(v,m.vector))))throw Error("Mixed negative equals an actually observed profile");
+                                                                         ^
+error: Mixed negative equals an actually observed profile
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-query-reader.ts:23:69
+
+Bun v1.3.14 (Windows x64)

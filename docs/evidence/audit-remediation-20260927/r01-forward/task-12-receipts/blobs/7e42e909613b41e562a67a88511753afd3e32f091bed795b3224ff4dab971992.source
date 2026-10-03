@@ -1,0 +1,36 @@
+"""Metadata-only bridge: preserve native208 identity and observe the one unexecuted test assertion."""
+import hashlib,json,pathlib,subprocess
+root=pathlib.Path.cwd();own=root/'.superpowers/sdd/r01-forward-schema-plan-20261001'
+p=own/'task-12-native-final-a3b891334d5e498888d663e3b5df776d/receipt.json'
+raw=p.read_bytes();r=json.loads(raw);freeze=json.loads((root/'docs/evidence/audit-remediation-20260927/r01-forward/task-12-source-freeze.json').read_text())
+sha=lambda b:hashlib.sha256(b).hexdigest()
+blob=lambda b:hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+assert r['sourceHead']=='208050fd6bdbe78f3a05de6853e0319055f6e014'
+assert r['error'] is None and r['failedFinalFlags']==[] and r['strictConsumerExit']==0
+assert all(r.get(k) is True for k in r['requiredFinalFlags'])
+changed=[]
+for path,b in r['frozenInputs'].items():
+ archived=(p.parent/b['archive']).read_bytes()
+ assert sha(archived)==b['rawSha256'] and sha(archived.replace(b'\r\n',b'\n'))==b['canonicalSha256'] and blob(archived)==b['rawGitBlob'] and len(archived)==b['bytes']
+ current=(root/path).read_bytes()
+ if sha(current)!=b['rawSha256']:
+  changed.append({'path':path,'oldRawSha256':b['rawSha256'],'newRawSha256':sha(current),'nativeArchive':b['archive']})
+assert len(changed)==1 and changed[0]['path']=='src/lib/groupEnquiries/atomicForward.database.test.ts'
+diff=subprocess.check_output(['git','diff',r['sourceHead'],freeze['sourceCommit'],'--','src/lib/groupEnquiries/atomicForward.database.test.ts'])
+assert b'-        expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: "new" });' in diff
+assert b'+        expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: null });' in diff
+(own/'task-12-native-source-bridge-diff.source').write_bytes(diff)
+for binding in r['inputBindings']:
+ archived=(p.parent/binding['archive']).read_bytes()
+ assert sha(archived)==binding['rawSha256'] and sha(archived.replace(b'\r\n',b'\n'))==binding['canonicalSha256'] and blob(archived)==binding['rawGitBlob'] and len(archived)==binding['bytes']
+ if binding['label'] not in ['frozen-current','source-freeze']:
+  assert sha((root/binding['path']).read_bytes())==binding['rawSha256'],binding['label']
+result={'receiptVersion':1,'mode':'native208-one-unexecuted-test-assertion-bridge','error':None,
+ 'nativeSourceCommit':r['sourceHead'],'finalCompositionSourceCommit':freeze['sourceCommit'],
+ 'nativeReceiptSha256':sha(raw),'nativeReceiptRawGitBlob':blob(raw),'nativeReceiptBytes':len(raw),
+ 'originalNativeSourceFreezePreserved':True,'nativeRelabeledAsFinalSource':False,
+ 'nativeSourceFreezeMetadataChanged':True,'nativeExecutedInputsUnchanged':True,'all107CanonicalRawGitIdentitiesVerified':True,
+ 'supportingSourceChanges':changed,'sourceDiffArchive':'task-12-native-source-bridge-diff.source',
+ 'sourceDiffSha256':sha(diff),'qualification':'Native208 executed five psql cases, not this supporting Bun test. The only code change is an audit assertion corrected to immutable legacy patch->status. Final current Bun compositions and exact-head CI are separate fresh coverage. No native rerun or production action.'}
+(own/'task-12-native-source-bridge.json').write_text(json.dumps(result,indent=2)+'\n',newline='\n')
+print(json.dumps(result))

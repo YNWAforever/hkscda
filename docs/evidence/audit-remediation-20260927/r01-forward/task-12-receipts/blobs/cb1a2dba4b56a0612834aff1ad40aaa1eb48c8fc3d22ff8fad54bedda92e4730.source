@@ -1,0 +1,139 @@
+"""R68 metadata-only preclosing qualifier. Raw manifests are transport, not acceptance."""
+import hashlib,json,pathlib,re,subprocess,sys
+BASE='f4e96e3484d135d179caea835d913552d96d2dcb'
+SOURCE='de35b17745ef9da3114e7dc4ba8c64df38e46702'
+NATIVE_SOURCE='208050fd6bdbe78f3a05de6853e0319055f6e014'
+COMPOSITION_FLAGS=['schemaParity','fullScannerPassed','dependenciesBound','firstApply','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','testPassed','zeroRowsAfter','catalogAfterBehaviorPreserved','normalDrop','templatePreserved','modernPreserved','frozenInputsPreserved']
+GATE_FLAGS=['finalProfilesQualified','sourceFrozen','frozenInputsPreserved','templatePreserved']
+NATIVE_FLAGS=['fullF4BaselineObserved','fullScannerPassed','beforeRowsObserved','afterRowsObserved','zeroRowsBefore','zeroRowsAfter','firstApply','nativeNextObserved','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','fixtureConnectionIdentity','mixedRefusalsPassed','catalogAfterRefusalsPreserved','nativeBehaviorPassed','catalogAfterBehaviorPreserved','finalCatalogPreserved','normalCleanup','protectedSourcesPreserved','frozenInputsPreserved']
+FINAL_FLAGS=['originalArchivePairsVerified','fourExistingBasePinsVerified','auditAndTask11Unchanged','currentSourceFreezeVerified','qualifiedNative208BridgeVerified','threeCurrentCompositionsVerified','fourActualLocalGatesVerified','all68OriginalRulingsVerified','stagedArchiveGitIdentitiesVerified']
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def require(value,message):
+ if not value:raise ValueError(message)
+def canonical(raw,mode):
+ require(mode in ['raw-lf','json-string-lf'],'Unknown canonical contract')
+ text=raw.replace(b'\r\n',b'\n')
+ return sha(text)if mode=='raw-lf'else sha(json.dumps(text.decode('utf-8'),ensure_ascii=False,separators=(',',':')).encode())
+def identity(raw,b,mode='raw-lf'):
+ require(isinstance(b,dict),'Identity object missing')
+ expected={'rawSha256':sha(raw),'canonicalSha256':canonical(raw,mode),'rawGitBlob':blob(raw),'rawBytes':len(raw)}
+ for k,v in expected.items():
+  require(type(b.get(k)) is type(v) and b[k]==v,'Identity mismatch: '+k)
+
+def pair(original,archive,b,mode='raw-lf'):
+ require(original.is_file() and archive.is_file(),'Original/archive missing')
+ raw=original.read_bytes();require(archive.read_bytes()==raw,'Original/archive bytes differ');identity(raw,b,mode)
+def contract(r,kind,mode,flags,counts):
+ require(type(r.get('receiptVersion')) is int and r['receiptVersion']==1,'Receipt version differs')
+ require(r.get('receiptType')==kind and r.get('mode')==mode,'Receipt type/mode differs')
+ require('error'in r and r['error'] is None,'Receipt error missing/non-null')
+ require(type(r.get('failedFinalFlags')) is list and r['failedFinalFlags']==[],'Failed flags missing/nonempty')
+ require(r.get('requiredFinalFlags')==flags,'Required literal flags differ')
+ for flag in flags:require(r.get(flag) is True,'Literal true required: '+flag)
+ for key,count in counts.items():require(type(r.get(key)) is list and len(r[key])==count,'Cardinality differs: '+key)
+def ordered(ledger,final):
+ require(type(ledger.get('rulingCount')) is int and ledger['rulingCount']==68,'Ruling count differs')
+ rows=ledger.get('rulings');other=final.get('allOrderedOriginalEntries')
+ require(type(rows) is list and type(other) is list and len(rows)==len(other)==68,'Original ruling cardinality differs')
+ for i,(a,b)in enumerate(zip(rows,other),1):
+  require(type(a.get('ordinal')) is int and type(b.get('ordinal')) is int and a['ordinal']==b['ordinal']==i,'Original ordinal differs')
+  require(type(a.get('text')) is str and bool(a['text']) and a['text']==b.get('text'),'Original text differs')
+
+def gates(rows,folder):
+ expected=[('typecheck',['bun','run','typecheck']),('tests',['bun','test','--isolate','--timeout','30000']),('lint',['bun','run','lint']),('build',['bun','run','build'])]
+ require(type(rows)is list and len(rows)==4,'Exactly four gates required')
+ for r,(name,command)in zip(rows,expected):
+  require(r.get('gate')==name and r.get('command')==command and type(r.get('exit'))is int and r['exit']==0,'Actual gate failed/differs')
+  require(sha((folder/r['log']).read_bytes())==r['logSha256'],'Gate log mismatch')
+
+def pending(r):
+ for flag in ['closingGitVerified','freshFiveCiVerified','productionApplied','deployed','operationallyEnabled']:
+  require(r.get(flag)is False,'Pending boundary mislabeled: '+flag)
+
+PREFIX='docs/evidence/audit-remediation-20260927/r01-forward/'
+PINS=['9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166','5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e','642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c','f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2']
+TARGET='update_group_enquiry_with_audit'
+def load(p):return json.loads(p.read_bytes())
+def without_target(c):
+ d=dict(c);d['functions']=[f for f in d['functions'] if not(f['schema']=='public'and f['name']==TARGET)];return d
+def extra_without_target(c):
+ d=dict(c);d['helpers']=[f for f in d['helpers'] if not(f['schema']=='public'and f['name']==TARGET)];return d
+
+def main():
+ root=pathlib.Path.cwd();own=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';out=pathlib.Path(__file__).parent
+ result={'receiptVersion':1,'receiptType':'preclosing-package-acceptance','mode':'task12-r68-preclosing','sourceCommit':SOURCE,'nativeSourceCommit':NATIVE_SOURCE,'requiredFinalFlags':FINAL_FLAGS,'error':None,'failedFinalFlags':[],**{f:False for f in FINAL_FLAGS},**{f:False for f in ['closingGitVerified','freshFiveCiVerified','productionApplied','deployed','operationallyEnabled']}}
+ commands=[]
+ def git(args):
+  i=len(commands);cmd=['git',*args];(out/f'g{i}.invocation.json').write_bytes((json.dumps(cmd)+'\n').encode());p=subprocess.run(cmd,cwd=root,capture_output=True);(out/f'g{i}.stdout.source').write_bytes(p.stdout);(out/f'g{i}.stderr.source').write_bytes(p.stderr);commands.append({'command':cmd,'exit':p.returncode,'stdoutSha256':sha(p.stdout),'stderrSha256':sha(p.stderr)});require(p.returncode==0,'Git command failed');return p.stdout
+ try:
+  pending(result)
+  translation=load(root/PREFIX/'task-12-receipts/translation.json')
+  require(type(translation.get('receiptVersion'))is int and translation['receiptVersion']==1 and translation.get('mode')=='task12-raw-proofs-exact-four-existing-references'and translation.get('error')is None and translation.get('baseCommit')==BASE,'Raw translation contract differs')
+  for key in ['auditPolicyChanged','task11Writes','r65Applied']:require(translation.get(key)is False,'Raw translation policy differs')
+  require(type(translation['sharedPins'])is dict and len(translation['sharedPins'])==4 and sorted(p['rawSha256']for p in translation['sharedPins'].values())==sorted(PINS),'Exact four shared pins differ')
+  seen=set();archives={}
+  for e in translation['entries']:
+   require(e['originalPath']not in seen,'Duplicate original locator');seen.add(e['originalPath']);original=root/e['originalPath'];archive=root/e['archivePath'];pair(original,archive,e);archives[e['archivePath']]=e['rawGitBlob']
+   if e['rawSha256']in PINS:
+    require(e['evidenceKind']=='existing-base-shared-input'and e['archivePath']==PREFIX+'task-11-receipts/blobs/'+e['rawSha256']+'.source','Shared routing differs')
+   else:require(e['evidenceKind']=='new-task12-original-proof'and e['archivePath']==PREFIX+'task-12-receipts/blobs/'+e['rawSha256']+'.source','New payload routed outside Task12')
+  require(bool(seen),'Empty package');result['originalArchivePairsVerified']=True;result['originalArchivePairs']=len(seen)
+  for pin in translation['sharedPins'].values():
+   path=pin.get('archivePath',pin.get('path'));require(path==PREFIX+'task-11-receipts/blobs/'+pin['rawSha256']+'.source','Base pin path differs');raw=git(['cat-file','blob',BASE+':'+path]);require(raw==(root/path).read_bytes()and sha(raw)==pin['rawSha256']and blob(raw)==pin['rawGitBlob'],'Existing base bytes differ')
+   attrs=git(['check-attr','--cached','text','diff','merge','--',path]).decode();require(len(attrs.splitlines())==3 and all(line.endswith(': unset')for line in attrs.splitlines()),'Three base attributes differ')
+  result['fourExistingBasePinsVerified']=True
+  require(git(['diff',BASE,'--',PREFIX+'task-11-receipts','src/lib/content/serviceSloganCopy.test.ts'])==b'','Task11/audit source changed');result['auditAndTask11Unchanged']=True
+  freeze=load(root/PREFIX/'task-12-source-freeze.json');require(type(freeze['receiptVersion'])is int and freeze['receiptVersion']==1 and freeze['error']is None and freeze['sourceCommit']==SOURCE and freeze['sourceBase']==BASE and len(freeze['bindings'])==66,'Current source freeze differs');require(git(['rev-parse',SOURCE+'^{tree}']).strip().decode()==freeze['sourceTree'],'Source tree differs')
+  for path,b in freeze['bindings'].items():
+   pair(root/path,root/b['archivePath'],b);require(git(['cat-file','blob',SOURCE+':'+path])==(root/path).read_bytes(),'Source Git bytes differ')
+  result['currentSourceFreezeVerified']=True
+  compositions={};fixed=None
+  for mode,leaf in [('hosted','task-12-hosted-final-fix1-20261003'),('modern','task-12-modern-final-20261003'),('component','task-12-component-final-20261003')]:
+   folder=own/leaf;r=load(folder/'receipt.json');contract(r,'composition',mode,COMPOSITION_FLAGS,{'refusals':14,'fixtureScope':4,'dependencies':10});require(r['sourceCommit']==SOURCE and r['sourceBase']==BASE and r['sourceFreeze']==freeze,'Composition source differs');require(len(r['frozenInputs'])==79,'Composition frozen cardinality differs')
+   current={}
+   for path,b in r['frozenInputs'].items():pair(root/path,folder/b['archive'],b);current[path]={k:b[k]for k in ['rawSha256','canonicalSha256','rawGitBlob','rawBytes']}
+   if fixed is None:fixed=current
+   else:require(fixed==current,'Three frozen input sets differ')
+   require(all(x['code']=='55000'and x['preserved']is True for x in r['refusals']),'Composition refusal differs');require(type(r['testExit'])is int and r['testExit']==0,'Composition test exit differs');log=(folder/'tests.stderr.log').read_bytes()+(folder/'tests.stdout.log').read_bytes();require(all(token in log for token in [b'38 pass',b'0 fail',b'142 expect() calls']),'Composition summary differs')
+   before=load(folder/'before.json');after=load(folder/'after.json');behavior=load(folder/'after-behavior.json');require(before['catalog']==r['before']and after['catalog']==r['after']and before['supplemental']==r['beforeExtra']and after['supplemental']==r['afterExtra'],'Saved catalog differs');require(without_target(before['catalog'])==without_target(after['catalog'])and extra_without_target(before['supplemental'])==extra_without_target(after['supplemental']),'Outside target changed');require(after==behavior,'Catalog after behavior differs')
+   require(r['protectedBefore']==r['protectedAfter'],'Protected snapshot differs');pairs=list(folder.glob('protected-before-*.json'));require(len(pairs)==438,'Protected cardinality differs')
+   for p in pairs:require(p.read_bytes()==p.with_name(p.name.replace('protected-before-','protected-after-',1)).read_bytes(),'Saved protected pair differs')
+   require([x['table']for x in r['rowCountsAfter']]==r['expectedRowTables']and all(x['count']=='0'for x in r['rowCountsAfter']),'Actual after rows differ');require((r['beforeGapCount'],r['afterGapCount'])==((8,7)if mode=='hosted'else(1,1)),'Conditional gaps differ')
+   compositions[mode]={'receiptSha256':sha((folder/'receipt.json').read_bytes()),'sourceCommit':r['sourceCommit'],'frozenInputs':79,'fullCandidateRefusals':14,'tests':{'pass':38,'fail':0,'expects':142},'protectedPairs':438}
+  result['threeCurrentCompositionsVerified']=True;result['compositions']=compositions
+  folder=own/'task-12-gates-1790998209712022900';r=load(folder/'receipt.json');contract(r,'gates','local',GATE_FLAGS,{'gates':4});require(r['sourceCommit']==SOURCE,'Gate source differs');gates(r['gates'],folder)
+  for entry in r['gates']:require(load(folder/(entry['gate']+'.invocation.json'))['command']==entry['command'],'Saved gate invocation differs')
+  require({p:{k:b[k]for k in ['rawSha256','canonicalSha256','rawGitBlob','rawBytes']}for p,b in r['frozenInputs'].items()}==fixed,'Gate source input set differs')
+  for path,b in r['frozenInputs'].items():pair(root/path,folder/b['archive'],b)
+  require(r['protectedBefore']['template']==r['protectedAfter']['template']and r['sharedModernAggregateChanged']is True and r['sharedModernQualification'].startswith('R52:'),'Shared environment qualification differs');log=(folder/'tests.log').read_bytes();require(all(t in log for t in [b'4300 pass',b'574 skip',b'0 fail',b'12226 expect() calls']),'Full test summary differs');result['fourActualLocalGatesVerified']=True;result['gates']=r['gates'];result['sharedModernQualification']=r['sharedModernQualification']
+  folder=own/'task-12-native-final-a3b891334d5e498888d663e3b5df776d';n=load(folder/'receipt.json');contract(n,'native-group-final-integration','native-final-candidate-integration',NATIVE_FLAGS,{'managedJobs':3,'migrationInventory':183,'cleanup':4,'refusals':14,'mixedRefusals':2,'nativeBehavior':5,'nativeNextTargets':1,'domainRowsBefore':4,'domainRowsAfter':4,'commands':703,'inputBindings':107});require(n['sourceHead']==NATIVE_SOURCE and n['baselineSource']==BASE and n['nativeLocalBunBehaviorRun']is False,'Native source/coverage differs')
+  require(sha((folder/'receipt.json').read_bytes())=='c8b30d254aa690e7bf50bcee5a4fc4964fd2365e9c49f733bc616bda5d0344cf','Native receipt differs')
+  for name,b in n['files'].items():raw=(folder/name).read_bytes();require(sha(raw)==b['rawSha256']and blob(raw)==b['rawGitBlob']and len(raw)==b['bytes'],'Native raw file differs')
+  require(len(n['files'])==4918,'Native raw cardinality differs')
+  for command in n['commands']:
+   for stream in ['stdout','stderr']:require(sha((folder/command[stream]).read_bytes())==command[stream+'Sha256'],'Native command log differs')
+  bridge=load(own/'task-12-native-source-bridge.json');require(bridge['receiptVersion']==1 and bridge['error']is None and bridge['nativeSourceCommit']==NATIVE_SOURCE and bridge['finalCompositionSourceCommit']==SOURCE and bridge['nativeRelabeledAsFinalSource']is False,'R67 bridge contract differs')
+  diff=git(['diff',NATIVE_SOURCE,SOURCE,'--','src/lib/groupEnquiries/atomicForward.database.test.ts']);require(b'-        expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: "new" });'in diff and b'+        expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: null });'in diff,'Sole assertion bridge differs');require(git(['diff','--name-only',NATIVE_SOURCE,SOURCE]).decode().splitlines()==['src/lib/groupEnquiries/atomicForward.database.test.ts'],'Unexpected source bridge change')
+  for b in n['inputBindings']:
+   pin=dict(b,rawBytes=b['bytes']);raw=(folder/b['archive']).read_bytes();identity(raw,pin);current=(root/b['path']).read_bytes()
+   if b['path']=='src/lib/groupEnquiries/atomicForward.database.test.ts':require(sha(raw)=='6f6d3797fb2a1e5af7c3d023e3f5270c9ecd43d48c989836a9b8608f9124e667'and sha(current)=='fadde1ae3c9a8c4aa4750be4005b18305ae1e72ae01f928609f333af0c7475d0','Supporting assertion old/new differs')
+   elif b['path']!=PREFIX+'task-12-source-freeze.json':require(current==raw,'Native executable input changed')
+  tables=['auth.users','public.admin_user','public.group_enquiries','public.audit_log']
+  for key in ['domainRowsBefore','domainRowsAfter']:require([v['table']for v in n[key]]==tables and all(type(v['count'])is int and v['count']==0 for v in n[key]),'Native actual rows differ')
+  require(all(v['code']=='55000'and v['changed']is True and v['preserved']is True and len(v['identities'])==3 and all(i=={'current_user':'postgres','session_user':'supabase_admin'}for i in v['identities'])for v in n['refusals']),'Native full refusals differ');require(all(v['code']=='55000'and v['exit']==3 and v['preserved']is True for v in n['mixedRefusals']),'Guard-only refusals differ');require(all(v['exit']==0 and v['rollback']is True for v in n['nativeBehavior']),'Native psql behavior differs');require(all(v['normalRemoved']is True for v in n['cleanup'])and n['protectedBefore']==n['protectedAfter'],'Native cleanup/protected differs');result['qualifiedNative208BridgeVerified']=True;result['native']={'actualSourceCommit':NATIVE_SOURCE,'nativeLocalBun':'NOT_RUN','psqlCases':5,'fullCandidateRefusals':14,'guardOnlyRefusals':2,'rawFiles':4918,'inputBindings':107,'commands':703,'R67SupportingAssertionBridge':True}
+  authority=load(own/'task-12-authority-final68.json');require(authority['receiptVersion']==1 and authority['mode']=='68-original-current-ruling-texts'and authority['error']is None and authority['rulingCount']==68,'Authority contract differs')
+  for b in authority['bindings']:pair(pathlib.Path(b['originalPath']),root/b['archivePath'],b)
+  ledger=load(root/authority['bindings'][0]['archivePath']);final=load(root/authority['bindings'][1]['archivePath']);ordered(ledger,final)
+  for count,filename in [(66,'task-12-authority-freeze.json'),(67,'task-12-authority-final67.json')]:
+   old=load(own/filename);rows=load(root/old['bindings'][0]['archivePath'])['rulings'];require([(v['ordinal'],v['text'])for v in rows]==[(v['ordinal'],v['text'])for v in ledger['rulings'][:count]],'Historical original texts changed')
+  result['all68OriginalRulingsVerified']=True;result['rulingCount']=68
+  index={}
+  for line in git(['ls-files','--stage','-z']).split(b'\0'):
+   if line:meta,path=line.split(b'\t',1);index[path.decode()]=meta.split()[1].decode()
+  for path,oid in archives.items():require(index.get(path)==oid,'Staged archive Git differs: '+path)
+  result['stagedArchiveGitIdentitiesVerified']=True;result['archivePaths']=len(archives);result['qualification']='Local metadata acceptance only. Closing Git, fresh five-job CI, independent review and production readiness remain separate pending controller gates.'
+ except Exception as e:result['error']=str(e)
+ result['gitCommands']=commands;result['failedFinalFlags']=[f for f in FINAL_FLAGS if result[f]is not True];result['eligible']=result['error']is None and not result['failedFinalFlags'];pending(result);(out/'receipt.json').write_bytes((json.dumps(result,indent=2)+'\n').encode());print(json.dumps({'eligible':result['eligible'],'error':result['error'],'failedFinalFlags':result['failedFinalFlags'],'receipt':str(out/'receipt.json')}));return 0 if result['eligible']else 1
+
+if __name__=='__main__':sys.exit(main())

@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- Forward repair: production table defaults grant service_role ALL privileges.\n-- These three tables are read-only to the service client; guarded owner RPCs\n-- continue to perform their normal writes. Preserve every existing row and RPC.\n-- Precreate an empty duplicate archive so later separately approved owner-only\n-- archival/deduplication can reuse it without inheriting mutable service grants.\ncreate table if not exists public.recipient_notification_draft_duplicate_archive (\n  like public.recipient_notification_draft including defaults,\n  kept_id uuid not null,\n  archived_at timestamptz not null default clock_timestamp()\n)",
+    "alter table public.recipient_notification_draft_duplicate_archive enable row level security",
+    "do $$\ndeclare\n  v_relation regclass;\n  v_columns text;\nbegin\n  foreach v_relation in array array[\n    'public.recipient_notification_draft_duplicate_archive'::regclass,\n    'public.crm_export_job'::regclass,\n    'public.sponsorship_payment_instruction_snapshot'::regclass\n  ] loop\n    -- Table REVOKE alone does not remove independently granted column rights.\n    execute pg_catalog.format(\n      'revoke all privileges on table %s from public, anon, authenticated, service_role',\n      v_relation\n    );\n    select pg_catalog.string_agg(pg_catalog.quote_ident(a.attname), ',' order by a.attnum)\n      into v_columns\n      from pg_catalog.pg_attribute a\n      where a.attrelid = v_relation and a.attnum > 0 and not a.attisdropped;\n    if v_columns is not null then\n      execute pg_catalog.format(\n        'revoke all privileges (%s) on table %s from public, anon, authenticated, service_role',\n        v_columns, v_relation\n      );\n    end if;\n    execute pg_catalog.format('grant select on table %s to service_role', v_relation);\n  end loop;\nend;\n$$"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

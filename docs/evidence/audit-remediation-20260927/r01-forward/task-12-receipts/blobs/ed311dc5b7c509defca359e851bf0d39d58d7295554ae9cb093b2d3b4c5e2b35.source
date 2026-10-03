@@ -1,0 +1,77 @@
+FFFFF.FFF..
+======================================================================
+FAIL: test_each_identity_field_required (__main__.ReferenceTests.test_each_identity_field_required) (key='rawSha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 30, in test_each_identity_field_required
+    with self.subTest(key=key), self.assertRaises(ValueError):
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_identity_field_required (__main__.ReferenceTests.test_each_identity_field_required) (key='rawBytes')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 30, in test_each_identity_field_required
+    with self.subTest(key=key), self.assertRaises(ValueError):
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_identity_field_required (__main__.ReferenceTests.test_each_identity_field_required) (key='rawGitBlob')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 30, in test_each_identity_field_required
+    with self.subTest(key=key), self.assertRaises(ValueError):
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_identity_field_required (__main__.ReferenceTests.test_each_identity_field_required) (key='baseCommit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 30, in test_each_identity_field_required
+    with self.subTest(key=key), self.assertRaises(ValueError):
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_identity_field_required (__main__.ReferenceTests.test_each_identity_field_required) (key='archivePath')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 30, in test_each_identity_field_required
+    with self.subTest(key=key), self.assertRaises(ValueError):
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_existing_payload_requires_validated_identity (__main__.ReferenceTests.test_existing_payload_requires_validated_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 39, in test_existing_payload_requires_validated_identity
+    with self.assertRaises(ValueError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_missing_base_object_rejected (__main__.ReferenceTests.test_missing_base_object_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 25, in test_missing_base_object_rejected
+    with self.assertRaises(ValueError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_modified_bytes_rejected (__main__.ReferenceTests.test_modified_bytes_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-package-reference.test.py", line 21, in test_modified_bytes_rejected
+    with self.assertRaises(ValueError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.004s
+
+FAILED (failures=8)

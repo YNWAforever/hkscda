@@ -1,0 +1,13 @@
+{
+  "statements": [
+    "-- Explicitly public, reviewed legacy profile facts. Internal source/provenance stays private.\nCREATE OR REPLACE FUNCTION private.is_valid_animal_public_profile(profile jsonb)\nRETURNS boolean LANGUAGE plpgsql IMMUTABLE SET search_path=pg_catalog,pg_temp AS $$\nDECLARE field text; value jsonb; content text; max_length integer;\nBEGIN\n IF jsonb_typeof(profile) IS DISTINCT FROM 'object' THEN RETURN false; END IF;\n FOR field,value IN SELECT * FROM jsonb_each(profile) LOOP\n  IF field NOT IN ('code','birthday','neutered','suitability','personality','health','story','recordDate') THEN RETURN false; END IF;\n  IF value='null'::jsonb THEN CONTINUE; END IF;\n  IF field='neutered' THEN\n   IF jsonb_typeof(value)<>'boolean' THEN RETURN false; END IF;\n   CONTINUE;\n  END IF;\n  IF jsonb_typeof(value)<>'string' THEN RETURN false; END IF;\n  content:=value#>>'{}';\n  IF field IN ('birthday','recordDate') THEN\n   IF content !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN RETURN false; END IF;\n   BEGIN\n    PERFORM make_date(substring(content,1,4)::integer,substring(content,6,2)::integer,substring(content,9,2)::integer);\n   EXCEPTION WHEN datetime_field_overflow THEN RETURN false;\n   END;\n  ELSIF field='suitability' THEN\n   IF content NOT IN ('newbie','experienced') THEN RETURN false; END IF;\n  ELSIF field='code' THEN\n   IF content !~ '^[A-Za-z0-9][A-Za-z0-9 _()./-]{0,63}$' THEN RETURN false; END IF;\n  ELSE\n   max_length:=CASE field WHEN 'personality' THEN 1000 WHEN 'health' THEN 2000 ELSE 8000 END;\n   IF length(content)>max_length OR content ~ '[<>@]' OR content ~* '(https?://|www[.])'\n    OR regexp_replace(content,'[0-9]{4}-[0-9]{2}-[0-9]{2}','','g') ~ '[+0-9][0-9 ()-]{6,}[0-9]' THEN RETURN false; END IF;\n  END IF;\n END LOOP;\n RETURN true;\nEND;\n$$",
+    "REVOKE ALL ON FUNCTION private.is_valid_animal_public_profile(jsonb) FROM PUBLIC",
+    "GRANT EXECUTE ON FUNCTION private.is_valid_animal_public_profile(jsonb) TO authenticated,service_role",
+    "ALTER TABLE public.animals ADD COLUMN public_profile jsonb NOT NULL DEFAULT '{}'::jsonb",
+    "ALTER TABLE public.animals ADD CONSTRAINT animals_public_profile_valid CHECK(private.is_valid_animal_public_profile(public_profile))",
+    "COMMENT ON COLUMN public.animals.public_profile IS 'Allowlisted public profile only. No raw legacy payloads, staff notes, contacts or private attachments.'"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

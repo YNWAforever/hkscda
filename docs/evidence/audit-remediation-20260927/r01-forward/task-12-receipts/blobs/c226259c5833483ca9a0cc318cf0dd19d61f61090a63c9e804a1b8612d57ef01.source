@@ -1,0 +1,8 @@
+import hashlib,json,pathlib,subprocess,sys
+root=pathlib.Path.cwd();out=pathlib.Path(__file__).parent;phase=sys.argv[1]
+commands={'green':[sys.executable,str(out/'tests.py')],'package':[sys.executable,'docs/evidence/audit-remediation-20260927/r01-forward/task-12-package.py'],'pairs':[sys.executable,'docs/evidence/audit-remediation-20260927/r01-forward/task-12-package-verify.py'],'audit':['bun','test','--timeout','30000','src/lib/content/serviceSloganCopy.test.ts'],'accept':[sys.executable,str(out/'binder.py')]}
+command=commands[phase];inv=out/(phase+'.invocation.json')
+if inv.exists():raise ValueError('Preserve original invocation; phase already exists')
+for name in ['binder.py','tests.py','run.py']:(out/(phase+'-'+name+'.source')).write_bytes((out/name).read_bytes())
+inv.write_bytes((json.dumps({'command':command,'cwd':str(root),'sourceHashes':{name:hashlib.sha256((out/name).read_bytes()).hexdigest()for name in ['binder.py','tests.py','run.py']}})+'\n').encode())
+p=subprocess.run(command,cwd=root,capture_output=True);(out/(phase+'.stdout.log')).write_bytes(p.stdout);(out/(phase+'.stderr.log')).write_bytes(p.stderr);(out/(phase+'.exit.json')).write_bytes((json.dumps({'exit':p.returncode,'stdoutSha256':hashlib.sha256(p.stdout).hexdigest(),'stderrSha256':hashlib.sha256(p.stderr).hexdigest()})+'\n').encode());print(p.stdout.decode('utf-8',errors='replace'));print(p.stderr.decode('utf-8',errors='replace'));sys.exit(p.returncode)

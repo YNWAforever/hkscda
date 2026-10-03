@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.test.ts:
+(pass) Task12 exact group expression query is admitted [1.92ms]
+(pass) unchanged finite functions query and exact fields [2.40ms]
+(pass) unchanged finite operators query and exact fields [0.70ms]
+(pass) unchanged finite triggers query and exact fields [0.16ms]
+(pass) old finance and all unknown queries are rejected [0.07ms]
+(pass) finite group codec preserves exact uint32 arrays and rejects malformed wire fields [0.20ms]
+
+ 6 pass
+ 0 fail
+ 64 expect() calls
+Ran 6 tests across 1 file. [134.00ms]

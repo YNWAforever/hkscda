@@ -1,0 +1,1 @@
+{"args": ["git", "cat-file", "blob", "5d541e3537d6e6da6b087834a70cc98380b94d58:docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/fix1-translation.json"], "exit": 0, "stdoutSha256": "46f628abd7ee147950c701bc945e794aa5741781052ad4cf503b9faf08618bc6", "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}

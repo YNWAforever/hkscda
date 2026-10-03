@@ -1,0 +1,19 @@
+"""Post-publication metadata transport only; never a readiness acceptance producer."""
+import hashlib,json,pathlib
+root=pathlib.Path.cwd();own=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';prefix='docs/evidence/audit-remediation-20260927/r01-forward/';out=root/prefix/'task-12-receipts';original=json.loads((out/'translation.json').read_bytes());seen={e['originalPath']for e in original['entries']};pins=original['sharedPins'];entries=[]
+for top in sorted(own.glob('task-12-*')):
+ if top.name=='task-12-report.md':continue
+ for p in sorted(top.rglob('*'))if top.is_dir()else[top]:
+  if not p.is_file():continue
+  path=p.relative_to(root).as_posix()
+  if path in seen:continue
+  raw=p.read_bytes();sha=hashlib.sha256(raw).hexdigest();oid=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest();pin=pins.get(sha)
+  archive=root/pin['archivePath']if pin else out/'blobs'/(sha+'.source')
+  if pin:
+   if raw!=archive.read_bytes()or oid!=pin['rawGitBlob']:raise ValueError('Existing shared metadata input differs')
+  elif archive.exists():
+   if archive.read_bytes()!=raw:raise ValueError('Content collision')
+  else:archive.write_bytes(raw)
+  entries.append({'originalPath':path,'archivePath':archive.relative_to(root).as_posix(),'rawSha256':sha,'canonicalSha256':hashlib.sha256(raw.replace(b'\r\n',b'\n')).hexdigest(),'rawGitBlob':oid,'rawBytes':len(raw),'evidenceKind':'existing-base-shared-input'if pin else'new-task12-postpublication-metadata'})
+value={'receiptVersion':1,'mode':'task12-postpublication-metadata-transport','error':None,'originalTranslationSha256':hashlib.sha256((out/'translation.json').read_bytes()).hexdigest(),'entries':entries,'closingGitVerified':False,'freshFiveCiVerified':False,'productionApplied':False,'deployed':False,'operationallyEnabled':False,'qualification':'Raw metadata transports only. The separate R68 preclosing receipt and later controller Git/review/CI supply their own bounded acceptance.'}
+(out/'closing-translation.json').write_bytes((json.dumps(value,indent=2)+'\n').encode());print(json.dumps({'newMetadataLocators':len(entries),'newMetadataBytes':sum(e['rawBytes']for e in entries)}))

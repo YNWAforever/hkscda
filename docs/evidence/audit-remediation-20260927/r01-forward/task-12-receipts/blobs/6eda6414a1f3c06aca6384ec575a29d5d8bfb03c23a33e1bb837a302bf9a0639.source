@@ -1,0 +1,35 @@
+
+src\lib\content\serviceSloganCopy.test.ts:
+138 |       expect.arrayContaining(["scripts/seed-admin.js", "vite.config.ts", "eslint.config.js"]),
+139 |     );
+140 | 
+141 |     const attributes = proofAttributes(auditFilePaths);
+142 |     const obsoleteFiles = await scanObsoleteFiles(auditFilePaths, attributes);
+143 |     expect(obsoleteFiles).toEqual([]);
+                                ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipts\blobs\5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source",
++   "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipts\blobs\642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source",
++   "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipts\blobs\9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source",
++   "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipts\blobs\f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2.source",
++ ]
+
+- Expected  - 1
++ Received  + 6
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\serviceSloganCopy.test.ts:143:27)
+(fail) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [28948.43ms]
+(pass) service slogan correction > publishes volunteer group and knowledge routes while retaining the audit report [1.03ms]
+(pass) bounded slogan reads preserve UTF8, binary-NUL filtering, order and read errors [175.14ms]
+(pass) slogan scan awaits every ordered result with at most eight active reads [48.60ms]
+(pass) only exact Task11 proof paths with all three explicit binary attributes are opaque [15.37ms]
+(pass) actual slogan scan rejects obsolete ordinary and unqualified proof text [19.95ms]
+(pass) Git proof attribute batches require every path and record without hiding errors [21.92ms]
+
+ 6 pass
+ 1 fail
+ 38 expect() calls
+Ran 7 tests across 1 file. [29.62s]

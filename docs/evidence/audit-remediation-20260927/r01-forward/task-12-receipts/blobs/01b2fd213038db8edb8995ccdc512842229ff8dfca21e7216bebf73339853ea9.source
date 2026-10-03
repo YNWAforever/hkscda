@@ -1,0 +1,24 @@
+{
+  "receiptVersion": 1,
+  "mode": "task12-r69-new-output-lf-correction",
+  "error": null,
+  "records": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/fix2-translation.json",
+      "oldSha256": "488032cf381de41f3da8c7a243e2c551e539536f1ed3bf83b7004d26b678e017",
+      "preserved": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/failed-crlf-fix2-translation.json.source",
+      "newSha256": "3e8f40c7f572633b1c1c7678edc4cb3dbed3c987219f4d28fe1c8463f8269dd0",
+      "onlyCrLfToLf": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-fix2-source-binding.json",
+      "oldSha256": "590cd6f71dae4f48ac098aa93fdd9e06c2a7833fe30a36e60c9f4fe343e94fb0",
+      "preserved": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-fix2-71ce490a/failed-crlf-task-12-fix2-source-binding.json.source",
+      "newSha256": "88b055c75ac8f5ce737f2b44ea19dc90574af4b4ab369886dfd98d41d667b4b7",
+      "onlyCrLfToLf": true
+    }
+  ],
+  "oldClosingDriverSha256": "ec3bc63c24225126f281d0f74a76aae91828619205b23eb0088552cdccbbebfd",
+  "newClosingDriverSha256": "1a900fc56249189253787eaf63e5a8f34d3146b356b99b5667534971b90e1fd6",
+  "historicalManifestsChanged": false
+}

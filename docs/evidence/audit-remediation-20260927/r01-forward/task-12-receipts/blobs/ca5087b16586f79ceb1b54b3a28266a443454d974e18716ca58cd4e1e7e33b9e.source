@@ -1,0 +1,111 @@
+BEGIN;
+-- Add a monotonic edit token to every supporter profile and role mutation.
+-- The existing seven-argument CRM RPC remains callable by older app code.
+alter table public.supporter
+  add column if not exists edit_version bigint not null default 1
+  check (edit_version > 0);
+create or replace function private.bump_supporter_edit_version()
+returns trigger language plpgsql set search_path = ''
+as $$
+begin
+  new.edit_version := old.edit_version + 1;
+  return new;
+end;
+$$;
+drop trigger if exists bump_supporter_edit_version on public.supporter;
+create trigger bump_supporter_edit_version
+  before update on public.supporter
+  for each row execute function private.bump_supporter_edit_version();
+create or replace function private.bump_supporter_edit_version_from_role()
+returns trigger language plpgsql set search_path = ''
+as $$
+begin
+  if tg_op = 'UPDATE' and old.supporter_id is distinct from new.supporter_id then
+    update public.supporter set edit_version = edit_version where id = old.supporter_id;
+  end if;
+  update public.supporter set edit_version = edit_version
+  where id = case when tg_op = 'DELETE' then old.supporter_id else new.supporter_id end;
+  return null;
+end;
+$$;
+drop trigger if exists bump_supporter_edit_version_from_role on public.supporter_role;
+create trigger bump_supporter_edit_version_from_role
+  after insert or update or delete on public.supporter_role
+  for each row execute function private.bump_supporter_edit_version_from_role();
+create or replace function public.mutate_crm_supporter_if_version_with_audit(
+  p_supporter_id uuid,
+  p_expected_version bigint,
+  p_input jsonb,
+  p_roles jsonb,
+  p_actor_user_id uuid,
+  p_at timestamptz,
+  p_detail jsonb
+)
+returns jsonb language plpgsql security invoker set search_path = ''
+as $$
+declare
+  v_supporter public.supporter%rowtype;
+  v_current_roles text[];
+  v_new_roles text[];
+begin
+  if p_supporter_id is null or p_expected_version is null or p_expected_version < 1
+    or p_input is null or jsonb_typeof(p_input) <> 'object' then
+    raise exception 'invalid_supporter_payload' using errcode = '22023';
+  end if;
+  if not exists (
+    select 1 from public.admin_user
+    where auth_user_id = p_actor_user_id and status = 'active'
+      and role in ('treasurer', 'admin')
+  ) then
+    raise exception 'supporter_edit_forbidden' using errcode = '42501';
+  end if;
+  select * into v_supporter from public.supporter
+  where id = p_supporter_id for update;
+  if not found then
+    raise exception 'supporter_not_found' using errcode = 'P4040';
+  end if;
+  if v_supporter.edit_version <> p_expected_version then
+    raise exception 'supporter_version_conflict' using errcode = 'P4090';
+  end if;
+  if p_roles is not null and
+    (jsonb_typeof(p_roles) <> 'array' or jsonb_array_length(p_roles) = 0) then
+    raise exception 'invalid_supporter_roles' using errcode = '22023';
+  end if;
+
+  update public.supporter set
+    name = case when p_input ? 'name' then p_input->>'name' else name end,
+    phone = case when p_input ? 'phone' then p_input->>'phone' else phone end,
+    language = case when p_input ? 'language' then p_input->>'language' else language end,
+    tags = case when p_input ? 'tags'
+      then array(select jsonb_array_elements_text(p_input->'tags')) else tags end,
+    deleted_at = case when p_input ? 'deleted_at'
+      then (p_input->>'deleted_at')::timestamptz else deleted_at end
+  where id = p_supporter_id;
+
+  if p_roles is not null then
+    select array_agg(role order by role) into v_current_roles
+      from public.supporter_role where supporter_id = p_supporter_id;
+    select array_agg(role order by role) into v_new_roles
+      from jsonb_array_elements_text(p_roles) as role;
+    if v_current_roles is distinct from v_new_roles then
+      delete from public.supporter_role where supporter_id = p_supporter_id;
+      insert into public.supporter_role(supporter_id, role)
+      select p_supporter_id, role from jsonb_array_elements_text(p_roles) as role;
+    end if;
+  end if;
+
+  insert into public.audit_log(actor_user_id, action, entity, entity_id, "timestamp", detail)
+  values (p_actor_user_id, 'supporter.update', 'supporter',
+    p_supporter_id::text, p_at, coalesce(p_detail, '{}'::jsonb));
+  select * into v_supporter from public.supporter where id = p_supporter_id;
+  return jsonb_build_object('id', v_supporter.id, 'email', v_supporter.email,
+    'editVersion', v_supporter.edit_version);
+end;
+$$;
+revoke all on function public.mutate_crm_supporter_if_version_with_audit(
+  uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb
+) from public, anon, authenticated;
+grant execute on function public.mutate_crm_supporter_if_version_with_audit(
+  uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb
+) to service_role;
+COMMIT;

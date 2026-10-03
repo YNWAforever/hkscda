@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- Resolve an expired upload intent and its partial application under row locks.\n-- The intent stays in place until Storage deletion succeeds, so the job can retry.\ncreate or replace function public.cleanup_expired_adoption_application(\n  p_application_id uuid\n) returns text\nlanguage plpgsql\nsecurity definer\nset search_path = public, pg_temp\nas $$\ndeclare\n  v_intent public.adoption_upload_intent%rowtype;\nbegin\n  select * into v_intent\n  from public.adoption_upload_intent\n  where application_id = p_application_id\n  for update;\n\n  if not found or v_intent.submitted_at is not null\n    or v_intent.expires_at >= clock_timestamp() - interval '1 hour' then\n    return 'defer';\n  end if;\n\n  -- Lock the parent before testing for a committed case. A concurrent case\n  -- insert needs a foreign-key key-share lock on this row.\n  perform 1\n  from public.adoption_applications\n  where id = p_application_id\n  for update;\n\n  if found then\n    if exists (\n      select 1 from public.adoption_case\n      where public_application_id = p_application_id\n    ) then\n      return 'completed';\n    end if;\n\n    delete from public.adoption_applications where id = p_application_id;\n  end if;\n\n  return 'purged';\nend;\n$$",
+    "revoke all on function public.cleanup_expired_adoption_application(uuid)\n  from public, anon, authenticated",
+    "grant execute on function public.cleanup_expired_adoption_application(uuid)\n  to service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

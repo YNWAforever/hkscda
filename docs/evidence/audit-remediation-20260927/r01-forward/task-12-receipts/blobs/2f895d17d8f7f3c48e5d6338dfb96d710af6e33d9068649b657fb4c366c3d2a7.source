@@ -1,0 +1,49 @@
+"""Create a distinct corrected executable; never overwrite any previously executed input."""
+import pathlib
+out=pathlib.Path(__file__).parent;s=(out/'binder.py').read_text(encoding='utf-8')
+start=s.index('def behavior_snapshot(');end=s.index('\ndef main():',start)
+replacement="""def expected_row_inventory(mode,catalog):
+ require(type(mode)is str and mode in ['hosted','modern','component'],'Unknown composition row profile')
+ final_count=164 if mode=='hosted'else 163
+ require(type(catalog)is dict and type(catalog.get('relations'))is list,'Saved relation catalog required')
+ names=[]
+ for relation in catalog['relations']:
+  require(type(relation)is dict and type(relation.get('schema'))is str and relation['schema']in ['public','private']and type(relation.get('name'))is str and bool(relation['name'])and type(relation.get('kind'))is str and relation['kind']in ['r','p','i','I','v','m','S','f'],'Malformed saved relation identity')
+  if relation['kind']in ['r','p']:names.append(relation['schema']+'.'+relation['name'])
+ require(len(names)==final_count-1 and len(set(names))==final_count-1,'Saved catalog profile cardinality/uniqueness differs')
+ inventory=sorted(['auth.users',*names])
+ require(len(inventory)==final_count and len(set(inventory))==final_count and inventory.count('auth.users')==1,'Complete catalog plus Auth inventory differs')
+ return inventory
+
+def observed_rows(rows,inventory,label):
+ require(type(rows)is list and len(rows)==len(inventory),'Fixed row observation cardinality differs: '+label)
+ names=[]
+ for row in rows:
+  require(type(row)is dict and set(row)=={'table','count'}and type(row.get('table'))is str and bool(row['table'])and type(row.get('count'))is str and row['count']=='0','Malformed/nonzero row observation: '+label)
+  names.append(row['table'])
+ require(len(set(names))==len(inventory)and names==inventory,'Complete unique sorted row inventory differs: '+label)
+
+def behavior_snapshot(mode,after,behavior,r):
+ require(type(after)is dict and type(behavior)is dict and set(after)=={'catalog','supplemental'}and set(behavior)=={'catalog','supplemental','rows'},'Saved behavior wrapper differs')
+ require(after['catalog']==behavior['catalog']and after['supplemental']==behavior['supplemental'],'Catalog after behavior differs')
+ inventory=expected_row_inventory(mode,after['catalog'])
+ expected=r.get('expectedRowTables')
+ require(type(expected)is list and len(expected)==len(inventory)and all(type(name)is str for name in expected)and len(set(expected))==len(inventory)and expected==inventory,'Receipt expected inventory is not complete catalog plus Auth')
+ observed_rows(r.get('rowCountsAfter'),inventory,'receipt')
+ observed_rows(behavior['rows'],inventory,'saved behavior')
+ require(r['rowCountsAfter']==behavior['rows'],'Receipt/saved behavior rows differ')
+ return inventory
+
+def composition_observations(mode,r,after,behavior):
+ require(type(mode)is str and mode in ['hosted','modern','component'],'Unknown composition row profile')
+ count=164 if mode=='hosted'else 163
+ contract(r,'composition',mode,COMPOSITION_FLAGS,{'refusals':14,'fixtureScope':4,'dependencies':10,'rowCountsAfter':count,'expectedRowTables':count})
+ return behavior_snapshot(mode,after,behavior,r)
+"""
+s=s[:start]+replacement+s[end:]
+call='composition_observations(mode,r,after,behavior)';assert s.count(call)==1;s=s.replace(call,'inventory=composition_observations(mode,r,after,behavior)')
+weak="require([x['table']for x in r['rowCountsAfter']]==r['expectedRowTables']and all(x['count']=='0'for x in r['rowCountsAfter']),'Actual after rows differ');";assert s.count(weak)==1;s=s.replace(weak,'')
+old="'protectedPairs':438}";assert s.count(old)==1;s=s.replace(old,"'protectedPairs':438,'catalogDerivedExpectedRowCount':len(inventory),'catalogDerivedExpectedRowTables':inventory,'catalogDerivedInventorySha256':sha(json.dumps(inventory,separators=(',',':')).encode())}")
+s=s.replace("result['threeCurrentCompositionsVerified']=True;result['compositions']=compositions","result['threeCurrentCompositionsVerified']=True;result['compositions']=compositions;result['correction']='T12-I1 complete catalog-derived row observations; historical compositions inspected, not rerun'")
+assert not(out/'binder-correct.py').exists();(out/'binder-correct.py').write_bytes(s.encode())
+t=(out/'tests.py').read_text(encoding='utf-8');assert t.count("out/'binder.py'")==1;(out/'tests-correct.py').write_bytes(t.replace("out/'binder.py'","out/'binder-correct.py'").encode())

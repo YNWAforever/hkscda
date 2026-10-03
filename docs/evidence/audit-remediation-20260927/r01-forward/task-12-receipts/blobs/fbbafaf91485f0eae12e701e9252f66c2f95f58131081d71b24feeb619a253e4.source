@@ -1,0 +1,13 @@
+{
+  "command": [
+    "git",
+    "ls-tree",
+    "-r",
+    "-z",
+    "f4e96e3484d135d179caea835d913552d96d2dcb",
+    "--",
+    "supabase/migrations"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

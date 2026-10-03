@@ -1,0 +1,37 @@
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { assertCapture } from "./task-12-receipt";
+import { freeze, preserved, rawSha, type Binding } from "./task-12-binding";
+import { render } from "./task-12-render";
+import { targetDefinitions } from "./task-12-targets";
+import { verifyNativeProfile } from "./task-12-native-verify";
+import { isDeepStrictEqual } from "node:util";
+const root=process.cwd(), input=process.argv[2], file=process.argv[3];
+if(!input || file!=="supabase/migrations/20261003005322_r01_group_enquiry_forward.sql")throw Error("Exact actual CLI-created Task12 filename required");
+const inputs=JSON.parse(await readFile(input,"utf8"));
+if(!Array.isArray(inputs.captures)||inputs.captures.length!==3||typeof inputs.native!=="string")throw Error("Exact current capture triple and R64 native source qualification required");
+const out=resolve(".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-generator-"+Date.now());
+await mkdir(out,{recursive:true});
+const profiles=[];
+for(const [i,p]of inputs.captures.entries()){
+ const r=assertCapture(JSON.parse(await readFile(p,"utf8")),(["hosted","modern","component"]as const)[i]);
+ if(!await preserved(root,dirname(p),r.bindings as Record<string,Binding>))throw Error("Actual captured raw/canonical/Git/archive source binding differs: "+p);
+ profiles.push(r);
+}
+const native=await verifyNativeProfile(JSON.parse(await readFile(inputs.native,"utf8")),root,String(JSON.parse(await readFile(inputs.native,"utf8")).out));
+if(!isDeepStrictEqual(native.nextTargets,profiles[1].nextTargets))throw Error("Derived native NEXT differs from current observed modern rendering");
+profiles.push(native);
+const prefix="docs/evidence/audit-remediation-20260927/r01-forward/";
+const bindings=await freeze(root,out,[input,...inputs.captures,inputs.native,...["generate","render","vector","binding","receipt","targets","profile","protected","native-profile","native-verify","native-qualify"].map(n=>prefix+"task-12-"+n+".ts"),...profiles.flatMap(r=>Object.keys(r.bindings as Record<string,unknown>))]);
+const definitions=await targetDefinitions(root);
+if(definitions.length!==1)throw Error("Exact Task12 one target required");
+const sql=render(profiles,definitions[0].next);
+if(sql.includes("\r"))throw Error("Exact LF migration required");
+await writeFile(resolve(out,"candidate.sql.source"),sql,{flag:"wx"});
+await writeFile(file,sql);
+const requiredFinalFlags=["qualifiedCaptures","oneTarget","exactLF","frozenInputsPreserved"];
+const receipt={receiptVersion:1,receiptType:"generator",mode:"four-correlated-source-profiles",error:null,requiredFinalFlags,failedFinalFlags:[]as string[],qualifiedCaptures:true,oneTarget:true,exactLF:true,frozenInputsPreserved:await preserved(root,out,bindings),bindings,file,rawSha256:rawSha(sql),rawBytes:Buffer.byteLength(sql),nativeAdmission:"R64-metadata-only",nativeNextObserved:false,productionApplied:false};
+receipt.failedFinalFlags=requiredFinalFlags.filter(k=>(receipt as Record<string,unknown>)[k]!==true);
+await writeFile(resolve(out,"receipt.json"),JSON.stringify(receipt,null,2)+"\n");
+if(receipt.failedFinalFlags.length)throw Error("Task12 generator source freeze failed");
+console.log(JSON.stringify({out,file,rawSha256:receipt.rawSha256,nativeAdmission:"R64-metadata-only",nativeNextObserved:false}));

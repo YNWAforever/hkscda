@@ -1,0 +1,14 @@
+
+src\lib\content\serviceSloganCopy.test.ts:
+(pass) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [15841.35ms]
+(pass) service slogan correction > publishes volunteer group and knowledge routes while retaining the audit report [0.40ms]
+(pass) bounded slogan reads preserve UTF8, binary-NUL filtering, order and read errors [35.89ms]
+(pass) slogan scan awaits every ordered result with at most eight active reads [39.18ms]
+(pass) only exact Task11 proof paths with all three explicit binary attributes are opaque [1.25ms]
+(pass) actual slogan scan rejects obsolete ordinary and unqualified proof text [15.35ms]
+(pass) Git proof attribute batches require every path and record without hiding errors [1.65ms]
+
+ 7 pass
+ 0 fail
+ 38 expect() calls
+Ran 7 tests across 1 file. [16.10s]

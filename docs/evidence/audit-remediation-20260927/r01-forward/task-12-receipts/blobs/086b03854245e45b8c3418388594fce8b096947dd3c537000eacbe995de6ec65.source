@@ -1,0 +1,41 @@
+{
+  "atUtc": "2026-10-03T04:41:52.403842+00:00",
+  "rootAction": "Independent Git/original/archive metadata reads only; no app/DB/test/CI execution",
+  "allMatched": true,
+  "errors": [],
+  "head": "230cc55ddfb8dc317fd421ea37600c7e51d3eded",
+  "tree": "d957351a042123890a9809763898b9b328e84e8f",
+  "source": "de35b17745ef9da3114e7dc4ba8c64df38e46702",
+  "sourceTree": "a13aade6f0acef843d8f16f6193757d0f3b2c6e9",
+  "currentSources": 66,
+  "originalTranslationLocators": 41773,
+  "closingTranslationLocators": 340,
+  "uniqueOriginalPaths": 42113,
+  "uniqueArchiveGitPaths": 2018,
+  "uniqueArchiveBytes": 611782673,
+  "exactExistingBasePins": 4,
+  "task11PreservedPaths": 1458,
+  "all68OrderedOriginalTexts": true,
+  "sourceToFinalMetadataPaths": 2021,
+  "sourceToFinalExecutableDelta": [],
+  "manifestMetadata": {
+    "rawBytes": 14551,
+    "rawSha256": "4e611bcfc9fd291cf3452efc4abf5787471ad52474f2539dd9d65b611b07c592",
+    "canonicalSha256": "4e611bcfc9fd291cf3452efc4abf5787471ad52474f2539dd9d65b611b07c592",
+    "rawGitBlob": "c04fd55f1f2e9c5f836b1873954068a4911c2b5d"
+  },
+  "translationMetadata": {
+    "rawBytes": 27098622,
+    "rawSha256": "ad35e06c551cd425724d99034a9dac9793a968f43bba7380c94ed682c446006f",
+    "canonicalSha256": "ad35e06c551cd425724d99034a9dac9793a968f43bba7380c94ed682c446006f",
+    "rawGitBlob": "e355af9d57a92e99e845d888402e001a49f380e5"
+  },
+  "closingTranslationMetadata": {
+    "rawBytes": 216702,
+    "rawSha256": "40aa9d2199d718f8e4f487bacfc76fd8ab659459e07bd4b2cb89481bcae96145",
+    "canonicalSha256": "40aa9d2199d718f8e4f487bacfc76fd8ab659459e07bd4b2cb89481bcae96145",
+    "rawGitBlob": "955a2fa5efe55e8fd007ec27807895d2052cd170"
+  },
+  "qualification": "Final source-local closure only. Independent complete f4..HEAD review and new five actual individual CI/non-skipped PG17.11 group tests pending. Native source208 remains qualified, native-local Bun NOT RUN; no production/release authority.",
+  "metadataExit": 0
+}

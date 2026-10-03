@@ -1,0 +1,59 @@
+EEE
+======================================================================
+ERROR: test_complete_component_inventory (__main__.Tests.test_complete_component_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 9, in test_complete_component_inventory
+    def test_complete_component_inventory(self):self.assertEqual(len(self.call('component')),163)
+                                                                     ~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 6, in call
+    f=json.loads((out/'fixtures'/(name+'.json')).read_bytes());return b.composition_observations(f['mode'],f['receipt'],f['after'],f['behavior'])
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\fixtures\\component.json'
+
+======================================================================
+ERROR: test_complete_hosted_inventory (__main__.Tests.test_complete_hosted_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 7, in test_complete_hosted_inventory
+    def test_complete_hosted_inventory(self):self.assertEqual(len(self.call('hosted')),164)
+                                                                  ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 6, in call
+    f=json.loads((out/'fixtures'/(name+'.json')).read_bytes());return b.composition_observations(f['mode'],f['receipt'],f['after'],f['behavior'])
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\fixtures\\hosted.json'
+
+======================================================================
+ERROR: test_complete_modern_inventory (__main__.Tests.test_complete_modern_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 8, in test_complete_modern_inventory
+    def test_complete_modern_inventory(self):self.assertEqual(len(self.call('modern')),163)
+                                                                  ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 6, in call
+    f=json.loads((out/'fixtures'/(name+'.json')).read_bytes());return b.composition_observations(f['mode'],f['receipt'],f['after'],f['behavior'])
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\fixtures\\modern.json'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.004s
+
+FAILED (errors=3)
