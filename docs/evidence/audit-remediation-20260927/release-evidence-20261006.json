@@ -3176,5 +3176,26 @@
     }
   },
   "freshPublicationReceipt": "conditional-merge-receipt-20261006.md",
-  "freshPublicationEvidence": "conditional-merge-evidence-20261006.json"
+  "freshPublicationEvidence": "conditional-merge-evidence-20261006.json",
+  "rawPreservationFollowup": {
+    "testedSourceSha": "887a0c71a8b363dd6eb8c4f6742969d980c1d51c",
+    "evidence": "raw-preservation-followup-20261006.json",
+    "evidenceSha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce",
+    "receipt": "raw-preservation-followup-20261006.md",
+    "receiptSha256": "cdfca53b35383278eac09dec3c8bd558ef5a7abcf38f98ec551a156055ed2a2f",
+    "modern170006StrictRaw": "PASS after observed setup autoanalyze; zero exemptions",
+    "historicalR265": "FAIL retained",
+    "release": "HOLD #183 real actor RED / exact source approvals pending"
+  },
+  "latestBoundCI20261006": {
+    "sourceSha": "887a0c71a8b363dd6eb8c4f6742969d980c1d51c",
+    "run": 37415957277,
+    "attempt": 1,
+    "checkoutSha": "3ca4dc41d33b05ff83bc1ff87b5e1a952623f787",
+    "tree": "b5acddf0847fb0676350d4e94c13b094b7be6adc",
+    "fiveJobs": "SUCCESS",
+    "requiredSteps": "SUCCESS",
+    "evidence": "raw-preservation-followup-20261006.json",
+    "evidenceSha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce"
+  }
 }

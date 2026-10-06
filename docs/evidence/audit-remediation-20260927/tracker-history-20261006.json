@@ -365,6 +365,46 @@
       },
       "capturedAtUtc": "2026-10-06 04:47:53 UTC",
       "reason": "Before actual Task13/Task14 publication and fresh CI reconciliation"
+    },
+    {
+      "tracker": "docs/evidence/audit-remediation-20260927/tracker.csv",
+      "beforeRawSha256": "e40433dc19b3fd3397b6909bc9033dccc642e2ee7e77daddf529bc28e5fcb992",
+      "row": {
+        "issue_id": "R01",
+        "baseline_status": "公開需知已修；其餘相容性待查／修",
+        "tasks": "T01、T02",
+        "implementation_status": "partial overall: reviewed drafts #183-#197; Task13 source e5a published #196, fresh PG17.11 CI passed; Task1 fiveACL and Task8 exact scanner proposal unapplied",
+        "code_complete": "partial overall; Task13 reviewed source published and fresh CI passed; source holds remain",
+        "schema_ready": "isolated qualified: Task13 PG17.11 CI1pass36assertions; separate RLS129pass9skip; old17.6 strengthening57/namedNoOp111; strict raw pg_statistic+inventory55000 failed; no production schema admission",
+        "deployed": "partial (#182 readonly clamp at main4bb); new #183-#197 unmerged/unapplied",
+        "operationally_enabled": "no new R01 activation; existing readonly clamp only; checkout/payment/new delivery/media schedules off",
+        "current_sha": "e5a28c47b839fa12b770d1e639b0a74368021675",
+        "pr_commit": "drafts #183-#197 unmerged; Task13 #196 e5a28c47b839fa12b770d1e639b0a74368021675; package #197 tested source3dd2af008b9f1c4886b650d9ef805fab146d79ef",
+        "test_evidence": "conditional-merge-receipt-20261006.md + conditional-merge-evidence-20261006.json; fresh local type/lint/build0; explicit unit4279pass634skip0fail; original6FAIL retained; #196 run37413919942/#197 run37413943076 all5jobs+requiredDBsteps SUCCESS; checkout trees bound; strict raw R265 remains held",
+        "owner_blocker": "Task1/Task8 exact source-only approval pending after historical auto-review rejection; strict raw restoration root cause unresolved; separate named production migration approval/backup/hosted and provider UAT; conditional merge approval does not waive failing gates"
+      },
+      "capturedAtUtc": "2026-10-06T05:36:59.164036+00:00",
+      "reason": "Before source887 fresh-CI and observed setup-autoanalyze/strict modern raw-proof follow-up"
+    },
+    {
+      "tracker": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+      "beforeRawSha256": "d71cc169ab95a9ef328ee6bfb5a28265291782849d51278cf7b216e594938a1d",
+      "row": {
+        "issue_id": "R01",
+        "baseline_status": "公開需知已修；其餘相容性待查／修",
+        "tasks": "T01、T02",
+        "implementation_status": "partial overall: reviewed drafts #183-#197; Task13 source e5a published #196, fresh PG17.11 CI passed; Task1 fiveACL and Task8 exact scanner proposal unapplied",
+        "code_complete": "partial overall; Task13 reviewed source published and fresh CI passed; source holds remain",
+        "schema_ready": "isolated qualified: Task13 PG17.11 CI1pass36assertions; separate RLS129pass9skip; old17.6 strengthening57/namedNoOp111; strict raw pg_statistic+inventory55000 failed; no production schema admission",
+        "deployed": "partial (#182 readonly clamp at main4bb); new #183-#197 unmerged/unapplied",
+        "operationally_enabled": "no new R01 activation; existing readonly clamp only; checkout/payment/new delivery/media schedules off",
+        "current_sha": "e5a28c47b839fa12b770d1e639b0a74368021675",
+        "pr_commit": "drafts #183-#197 unmerged; Task13 #196 e5a28c47b839fa12b770d1e639b0a74368021675; package #197 tested source3dd2af008b9f1c4886b650d9ef805fab146d79ef",
+        "test_evidence": "conditional-merge-receipt-20261006.md + conditional-merge-evidence-20261006.json; fresh local type/lint/build0; explicit unit4279pass634skip0fail; original6FAIL retained; #196 run37413919942/#197 run37413943076 all5jobs+requiredDBsteps SUCCESS; checkout trees bound; strict raw R265 remains held",
+        "owner_blocker": "Task1/Task8 exact source-only approval pending after historical auto-review rejection; strict raw restoration root cause unresolved; separate named production migration approval/backup/hosted and provider UAT; conditional merge approval does not waive failing gates"
+      },
+      "capturedAtUtc": "2026-10-06T05:36:59.164036+00:00",
+      "reason": "Before source887 fresh-CI and observed setup-autoanalyze/strict modern raw-proof follow-up"
     }
   ]
 }
