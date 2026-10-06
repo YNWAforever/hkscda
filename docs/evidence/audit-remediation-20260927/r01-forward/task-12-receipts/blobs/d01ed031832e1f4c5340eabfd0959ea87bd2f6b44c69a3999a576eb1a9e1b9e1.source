@@ -1,0 +1,1 @@
+alter function private.require_active_admin_user() cost 101

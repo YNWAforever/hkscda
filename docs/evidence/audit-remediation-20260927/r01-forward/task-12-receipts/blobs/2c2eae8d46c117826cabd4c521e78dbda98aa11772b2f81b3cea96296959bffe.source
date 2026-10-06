@@ -1,0 +1,45 @@
+"""Finite R69 data references. This changes no audit policy or historical manifest."""
+import hashlib
+PREFIX='docs/evidence/audit-remediation-20260927/r01-forward/'
+BASE='5d541e3537d6e6da6b087834a70cc98380b94d58'
+F4='f4e96e3484d135d179caea835d913552d96d2dcb'
+OWN='.superpowers/sdd/r01-forward-schema-plan-20261001/task-12-i1-9c681e47a302/'
+PINS={
+ '9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166':(533,'9c3b7503a1d71e4f1ba933e8b152990550935191'),
+ '5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e':(11205,'7a5866dc7e338d282ec026141659fb643d4e2e83'),
+ '642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c':(671,'b2af4e51b9c0e4b5cb2a4e5fbb20c237d51be925'),
+ 'f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2':(547,'f01abb41a2ff6c2e25eb210f72423fc3cb19d2f3')}
+OCCURRENCES={OWN+'g'+str(n)+'.stdout.source':sha for n,sha in [(0,list(PINS)[0]),(2,list(PINS)[1]),(4,list(PINS)[2]),(6,list(PINS)[3]),(61,list(PINS)[1])]}
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def pin_path(digest):
+    if digest not in PINS:raise ValueError('Unknown immutable pin')
+    return PREFIX+'task-11-receipts/blobs/'+digest+'.source'
+def alias_path(digest):
+    if digest not in PINS:raise ValueError('Unknown historical alias')
+    return PREFIX+'task-12-receipts/blobs/'+digest+'.source'
+def validate_pin(digest,raw,git_oid,attributes):
+    if digest not in PINS or type(raw)is not bytes:raise ValueError('Unknown or malformed pin')
+    size,oid=PINS[digest]
+    if sha(raw)!=digest or len(raw)!=size or blob(raw)!=oid or git_oid!=oid:raise ValueError('Altered immutable pin')
+    if attributes!={'text':'unset','diff':'unset','merge':'unset'}:raise ValueError('Missing explicit pin attributes')
+def validate_entry(raw,e):
+    if type(raw)is not bytes or type(e.get('rawBytes'))is not int:raise ValueError('Malformed transport')
+    if len(raw)!=e['rawBytes'] or sha(raw)!=e['rawSha256'] or blob(raw)!=e['rawGitBlob'] or sha(raw.replace(b'\r\n',b'\n'))!=e['canonicalSha256']:raise ValueError('Raw transport mismatch')
+def effective(entries):
+    found=set();result=[]
+    for e in entries:
+        e=dict(e);original=e['originalPath'];digest=OCCURRENCES.get(original)
+        if digest:
+            if original in found:raise ValueError('Duplicate historical occurrence')
+            found.add(original);size,oid=PINS[digest]
+            if e['archivePath']!=alias_path(digest) or e['rawSha256']!=digest or e['rawBytes']!=size or type(e['rawBytes'])is not int or e['rawGitBlob']!=oid:raise ValueError('Altered historical occurrence')
+            e['historicalArchivePath']=e['archivePath'];e['historicalArchiveCommit']=BASE
+            e['archivePath']=pin_path(digest);e['referenceOrigin']='existing-immutable-f4-input'
+        elif e['archivePath'] in {alias_path(s)for s in PINS}:raise ValueError('Unknown fresh alias occurrence')
+        result.append(e)
+    if found!=set(OCCURRENCES):raise ValueError('Missing exact historical occurrence')
+    return result
+def publish_path(raw):
+    digest=sha(raw)
+    return pin_path(digest) if digest in PINS else PREFIX+'task-12-receipts/blobs/'+digest+'.source'

@@ -1,0 +1,29 @@
+"""Prearchive and record the bounded Task12 Fix2 commands; never replay DB gates."""
+import pathlib, hashlib, json, subprocess, sys
+ROOT=pathlib.Path.cwd(); OUT=pathlib.Path(__file__).parent
+def digest(b):return hashlib.sha256(b).hexdigest()
+def execute(label,args,sources):
+    bindings=[]
+    for p in sources:
+        p=pathlib.Path(p); raw=p.read_bytes(); dest=OUT/(label+'-'+p.name+'.source')
+        if dest.exists():assert dest.read_bytes()==raw
+        else:dest.write_bytes(raw)
+        bindings.append({'path':str(p),'prearchive':str(dest),'sha256':digest(raw),'bytes':len(raw)})
+    inv={'args':args,'cwd':str(ROOT),'sources':bindings}
+    (OUT/(label+'.invocation.json')).write_text(json.dumps(inv,indent=2)+'\n',encoding='utf8')
+    p=subprocess.run(args,cwd=ROOT,capture_output=True)
+    (OUT/(label+'.stdout.source')).write_bytes(p.stdout);(OUT/(label+'.stderr.source')).write_bytes(p.stderr)
+    record={'exit':p.returncode,'stdoutSha256':digest(p.stdout),'stderrSha256':digest(p.stderr)}
+    (OUT/(label+'.exit.json')).write_text(json.dumps(record)+'\n',encoding='utf8')
+    print(json.dumps(record));return p.returncode
+if __name__=='__main__':
+    mode=sys.argv[1]
+    if mode=='audit-red':
+        sys.exit(execute(mode,[str(pathlib.Path.home()/'.bun/bin/bun.exe'),'test','src/lib/content/serviceSloganCopy.test.ts'],[__file__,ROOT/'src/lib/content/serviceSloganCopy.test.ts']))
+    elif mode=='audit-green':
+        sys.exit(execute(mode,[str(pathlib.Path.home()/'.bun/bin/bun.exe'),'test','src/lib/content/serviceSloganCopy.test.ts'],[__file__,ROOT/'src/lib/content/serviceSloganCopy.test.ts']))
+    elif mode in ('red','green'):
+        sys.exit(execute(mode,[sys.executable,'-B',str(OUT/'tests.py'),mode],[__file__,OUT/'tests.py',OUT/'references.py']))
+    elif mode in ('prepare','withdraw','qualify','package','close','commit'):
+        sys.exit(execute(mode,[sys.executable,'-B',str(OUT/(mode+'.py'))],[__file__,OUT/(mode+'.py'),OUT/'references.py']))
+    else:raise ValueError('Unknown bounded command')

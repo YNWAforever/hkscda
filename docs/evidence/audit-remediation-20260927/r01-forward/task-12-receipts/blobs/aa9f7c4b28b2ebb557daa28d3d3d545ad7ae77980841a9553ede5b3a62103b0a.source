@@ -1,0 +1,53 @@
+"""Synthetic finite-reference tests; no ignored receipts or catalog proof imports."""
+import unittest,sys,copy
+import references as r
+MODE=sys.argv.pop(1)
+def fixture():
+    return [{'originalPath':p,'archivePath':r.alias_path(s),'rawSha256':s,'rawBytes':r.PINS[s][0],'rawGitBlob':r.PINS[s][1],'canonicalSha256':s}for p,s in r.OCCURRENCES.items()]
+def current(entries):
+    # RED preserves the observed old publisher's unchanged Task12 alias result.
+    return copy.deepcopy(entries) if MODE=='red' else r.effective(entries)
+class References(unittest.TestCase):
+    def test_exact_five_existing_references(self):
+        actual=current(fixture())
+        self.assertEqual([e['archivePath']for e in actual],[r.pin_path(s)for s in r.OCCURRENCES.values()])
+    def test_no_current_fresh_alias(self):
+        self.assertTrue(all('/task-11-receipts/'in e['archivePath']for e in current(fixture())))
+    def test_ordinary_new_payload_still_task12(self):
+        raw=b'new synthetic metadata';self.assertEqual(r.publish_path(raw),r.PREFIX+'task-12-receipts/blobs/'+r.sha(raw)+'.source')
+    def test_unaffected_entry_unchanged(self):
+        entry={'originalPath':'synthetic','archivePath':'synthetic.source'}
+        self.assertEqual(r.effective(fixture()+[entry])[-1],entry)
+    def test_missing(self):
+        with self.assertRaises(ValueError):r.effective(fixture()[:-1])
+    def test_duplicate(self):
+        with self.assertRaises(ValueError):r.effective(fixture()+fixture()[:1])
+    def test_unknown_alias_occurrence(self):
+        e=fixture();e[0]['originalPath']='unknown'
+        with self.assertRaises(ValueError):r.effective(e)
+    def test_changed_pin_fields(self):
+        for key,value in [('archivePath','fresh'),('rawSha256','0'*64),('rawBytes',False),('rawGitBlob','0'*40)]:
+            with self.subTest(key=key):
+                e=fixture();e[0][key]=value
+                with self.assertRaises(ValueError):r.effective(e)
+    def test_unknown_pin(self):
+        with self.assertRaises(ValueError):r.pin_path('0'*64)
+    def test_altered_pin(self):
+        s=next(iter(r.PINS))
+        with self.assertRaises(ValueError):r.validate_pin(s,b'altered',r.PINS[s][1],{'text':'unset','diff':'unset','merge':'unset'})
+    def test_all_four_publisher_pins(self):
+        for digest in r.PINS:self.assertEqual(r.publish_digest(digest),r.pin_path(digest))
+    def test_missing_or_incomplete_attributes(self):
+        r.validate_attributes({'text':'unset','diff':'unset','merge':'unset'})
+        for bad in [None,{}, {'text':'unset','diff':'unset'}, {'text':'set','diff':'unset','merge':'unset'}, {'text':'unset','diff':'unset','merge':'unset','extra':'unset'}]:
+            with self.assertRaises(ValueError):r.validate_attributes(bad)
+    def test_malformed_publisher_digest(self):
+        for bad in [None,'unknown','F'*64,'0'*63]:
+            with self.assertRaises(ValueError):r.publish_digest(bad)
+    def test_synthetic_raw_identity(self):
+        raw=b'portable\r\nfixture';e={'rawSha256':r.sha(raw),'rawBytes':len(raw),'rawGitBlob':r.blob(raw),'canonicalSha256':r.sha(raw.replace(b'\r\n',b'\n'))};r.validate_entry(raw,e)
+        for changed in [b'changed',raw+b' ',None]:
+            with self.assertRaises(ValueError):r.validate_entry(changed,e)
+        e['rawBytes']=True
+        with self.assertRaises(ValueError):r.validate_entry(raw,e)
+unittest.main()

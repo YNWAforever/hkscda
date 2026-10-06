@@ -1,0 +1,11 @@
+NOTICE:  policy "admin only" for relation "public.adoption_applications" does not exist, skipping
+NOTICE:  column "processing_started_at" of relation "webhook_event" already exists, skipping
+NOTICE:  column "processing_expires_at" of relation "webhook_event" already exists, skipping
+NOTICE:  column "processing_owner" of relation "webhook_event" already exists, skipping
+NOTICE:  relation "webhook_event_processing_idx" already exists, skipping
+NOTICE:  column "acquisition_source" of relation "donation" already exists, skipping
+NOTICE:  column "acquisition_context" of relation "donation" already exists, skipping
+NOTICE:  column "acquisition_placement" of relation "donation" already exists, skipping
+NOTICE:  column "acquisition_trigger" of relation "donation" already exists, skipping
+NOTICE:  column "provider_order_ref" of relation "payment" already exists, skipping
+NOTICE:  relation "payment_provider_order_ref_idx" already exists, skipping

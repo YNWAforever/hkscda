@@ -1,0 +1,41 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.test.ts:
+1 | /** R63 finite Task12 diagnostic wire codec. Product scanner and profiles stay unchanged. */
+2 | import{createHash}from'node:crypto';
+3 | export const knownScannerQueries=Object.freeze({functions:'be5256c2f3091c0bd012696b52b91d26697f2a108a44b481e6adbd0a22e178e7',operators:'5cd67e7fa70d8a430f52a963531e4bf5bfd70f97123ead50bc50f5ad1098b673',triggers:'985720de78041b6407e881c19cdf8ee561e78182cdfa1c35c50c5bf2f608f698',expressions:'ea2f714672ff8cb7ac30a6634e9563a052492f5bc43e68859888e6b1acef879d'});
+4 | export function queryKind(query:string){const sha=createHash('sha256').update(query).digest('hex');const kind=Object.entries(knownScannerQueries).find(([,expected])=>expected===sha)?.[0];if(!kind)throw Error('Unknown exact scanner metadata query');return kind;}
+                                                                                                                                                                                                                                                          ^
+error: Unknown exact scanner metadata query
+      at queryKind (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.ts:4:247)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.test.ts:7:67)
+(fail) Task12 exact group expression query is admitted [0.84ms]
+3 | import {resolve} from "node:path";
+4 | import {queryKind,decodeScannerRows} from "./task-12-native-codec";
+5 | const group=readFileSync(resolve(import.meta.dir,"task-12-native-expression.fixture.txt"),"utf8"),finance=readFileSync(resolve(import.meta.dir,"task-12-finance-expression.fixture.txt"),"utf8");
+6 | // Portable literal query/type validation only. Neither fixture feeds SQL or catalog generation.
+7 | test("Task12 exact group expression query is admitted",()=>expect(queryKind(group)).toBe("expressions"));
+8 | test("old finance and all unknown queries are rejected",()=>{expect(()=>queryKind(finance)).toThrow();expect(()=>queryKind(group+" ")).toThrow();expect(()=>queryKind("select 1")).toThrow();});
+                                                                                                ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: "expressions"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.test.ts:8:93)
+(fail) old finance and all unknown queries are rejected [0.94ms]
+1 | /** R63 finite Task12 diagnostic wire codec. Product scanner and profiles stay unchanged. */
+2 | import{createHash}from'node:crypto';
+3 | export const knownScannerQueries=Object.freeze({functions:'be5256c2f3091c0bd012696b52b91d26697f2a108a44b481e6adbd0a22e178e7',operators:'5cd67e7fa70d8a430f52a963531e4bf5bfd70f97123ead50bc50f5ad1098b673',triggers:'985720de78041b6407e881c19cdf8ee561e78182cdfa1c35c50c5bf2f608f698',expressions:'ea2f714672ff8cb7ac30a6634e9563a052492f5bc43e68859888e6b1acef879d'});
+4 | export function queryKind(query:string){const sha=createHash('sha256').update(query).digest('hex');const kind=Object.entries(knownScannerQueries).find(([,expected])=>expected===sha)?.[0];if(!kind)throw Error('Unknown exact scanner metadata query');return kind;}
+                                                                                                                                                                                                                                                          ^
+error: Unknown exact scanner metadata query
+      at queryKind (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.ts:4:247)
+      at decodeScannerRows (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.ts:6:72)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-native-codec.test.ts:10:9)
+(fail) finite group codec preserves exact uint32 arrays and rejects malformed wire fields [0.28ms]
+
+ 0 pass
+ 3 fail
+ 1 expect() calls
+Ran 3 tests across 1 file. [98.00ms]

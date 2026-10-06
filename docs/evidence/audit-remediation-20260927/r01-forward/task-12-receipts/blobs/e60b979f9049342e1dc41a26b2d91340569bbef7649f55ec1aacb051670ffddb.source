@@ -1,0 +1,9 @@
+alter table public.animals add column if not exists gallery jsonb not null default '[]'::jsonb check (jsonb_typeof(gallery)='array' and jsonb_array_length(gallery)<=20);
+-- Public readers receive only explicitly reviewed columns. RLS still determines rows.
+-- Authenticated staff keep their existing RLS-controlled editor grants.
+revoke select on public.animals from anon, public;
+revoke select (notes, notes_en) on public.animals from anon, public;
+grant select (id,type,name,name_en,gender,age,age_en,description,description_en,status,adoption_eligible,sponsorship_eligible,retired_at,publication_state,image_url,created_at,updated_at,public_profile,gallery) on public.animals to anon;
+revoke select on public.animals from authenticated;
+revoke insert,update,delete on public.animals from authenticated;
+grant select (id,type,name,name_en,gender,age,age_en,description,description_en,status,adoption_eligible,sponsorship_eligible,retired_at,publication_state,image_url,created_at,updated_at,public_profile,gallery) on public.animals to authenticated;

@@ -1,0 +1,53 @@
+{
+  "schema": "task12-current-complete-archive-v1",
+  "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+  "archive": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-complete-20261007.zip",
+    "bytes": 7791042,
+    "sha256": "db1059a207db7b6945b78e8c3f1caf5edfe49eb18d6e90ee0fbc9bb8164a358a"
+  },
+  "index": {
+    "entry": "index.json",
+    "bytes": 2191443,
+    "sha256": "38a00aeffec7c148dd7314e6c83eedeb0ea74173925853116da2a99d63f6651e"
+  },
+  "originalPathCount": 5684,
+  "uniquePayloadCount": 483,
+  "logicalBytes": 356849902,
+  "uniqueLogicalBytes": 103366934,
+  "allOriginalPathsArchiveBytesShaRoundtripEqual": true,
+  "exactMemberSet": true,
+  "originalPathsRetained": true,
+  "actualCommand": {
+    "argv": [
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-package.py"
+    ],
+    "pid": 6564,
+    "exitOnCompletion": 0,
+    "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006"
+  },
+  "environmentKeys": [
+    "APPDATA",
+    "COMSPEC",
+    "DATABASE_URL",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "SUPABASE_LOCAL_ANON_KEY",
+    "SUPABASE_LOCAL_SERVICE_ROLE_KEY",
+    "SUPABASE_LOCAL_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "VITE_SUPABASE_ANON_KEY",
+    "VITE_SUPABASE_URL",
+    "WINDIR"
+  ],
+  "metadataEncoding": "UTF8 LF generated directly; no implicit Git normalization",
+  "productionApplied": false
+}

@@ -1,0 +1,12 @@
+NOTICE:  extension "pgcrypto" already exists, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.coordinator_status" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.living_area" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.arrival_source" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.animal_position" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_fee" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adopter_profile" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_case" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.animal_match" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.successful_adoption" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.adoption_followup" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.animal_profile_internal" does not exist, skipping

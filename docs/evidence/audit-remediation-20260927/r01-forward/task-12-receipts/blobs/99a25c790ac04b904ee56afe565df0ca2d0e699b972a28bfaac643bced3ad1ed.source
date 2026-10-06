@@ -1,0 +1,70 @@
+[
+    {
+        "Id": "sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+        "RepoTags": [
+            "public.ecr.aws/supabase/storage-api:v1.79.28"
+        ],
+        "RepoDigests": [
+            "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-30T15:50:58.693845218Z",
+        "Config": {
+            "ExposedPorts": {
+                "5000/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NODE_VERSION=24.21.0",
+                "YARN_VERSION=1.22.22",
+                "VERSION=1.79.28"
+            ],
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Cmd": [
+                "node",
+                "dist/start/server.js"
+            ],
+            "WorkingDir": "/app",
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 241757946,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:e63b02c2b5c761df2cb95e657d744f27d95da4e051235a13c80b88cd68eab188",
+                "sha256:3e3cca1d6d714685487d42af6adeaca4d2d52651fad7335853154b66755933b4",
+                "sha256:ef9c3bd6ce3f3a3714c643c5c9e93580ca138c14dc5333540cf5925fa505f99d",
+                "sha256:7c9a72471da31c8d796a6123d6453670cf9ff1ab2166fe082bd28829fb29748d",
+                "sha256:5d2d786ef552853540c11d9361b06db5a038bf3fe8e278d8c14194e5209e73b4",
+                "sha256:521d33d873dcb9bb2527b628b614072d61e7b408edc0a6e97db7d2cf0c032b1a",
+                "sha256:21202b5177f0d998193596a21dd00702b86e8bac13af9510304c9f6bf0cf9826",
+                "sha256:fdb67aae088dd6ee21c9f5a8bf8c9eae9551755f1c1e5236c3474241eea3f965",
+                "sha256:701935e79e695bead38f645eac846d33f4d7a40e3b8e4d4f1c1cd64bec563333",
+                "sha256:d4f165255ff49b7ccb24702ebdbe6b59490791950965f0423c235522b89867c3",
+                "sha256:8d78fe87cfa9772d066f07449649ee6ff946d4005b6bf237945f633868febe3e",
+                "sha256:e97dc42c77e567a4670fb1ca46f1eb62629f6c478199ca3b58f4ee1f256c34be",
+                "sha256:9998c09b27e235e7d57cf86bcabb0d1e22afd4be20c68beaedceb0827e5a84e1",
+                "sha256:87c6d8ab3d95939a679cced8dd9129a15ccf8d13a5017f395b37a03663be821f"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-02T21:04:21.917749543Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96",
+            "size": 1609
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "public.ecr.aws/supabase/storage-api"
+                }
+            ]
+        }
+    }
+]

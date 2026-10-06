@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "-- Close the remaining latent default anon write-grants.\n--\n-- Supabase's project bootstrap grants ALL privileges to anon on every public\n-- table by default. 20260628140000 fully revoked anon on the donor-PII tables;\n-- this does the same for the two other tables anon still carries grants on:\n--\n--   * animals -- the public site reads it as anon (RLS limits rows to\n--     status = 'available'), so SELECT is KEPT. The default write grants\n--     (INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER) are inert -- writes are\n--     admin-only via RLS (see 20260627091500_tighten_animals_admin_policy.sql) --\n--     but they are surplus privilege, so revoke them.\n--   * adoption_applications -- applications are written by the service-role\n--     client (src/lib/api/submit-application.functions.ts); anon needs nothing\n--     after 20260628130000 dropped the stale \"public insert\" policy. Revoke all.\n--\n-- Latent rather than exploitable today (RLS default-denies), but this removes the\n-- single-policy-away landmine. revoke is a no-op when the privilege is already\n-- absent, so this migration is safely re-runnable.\nrevoke insert, update, delete, truncate, references, trigger on public.animals from anon",
+    "revoke all on public.adoption_applications from anon"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

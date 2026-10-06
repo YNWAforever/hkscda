@@ -1,0 +1,85 @@
+{
+  "receiptVersion": 1,
+  "mode": "task12-r69-additive-stage-and-focused-audit",
+  "error": null,
+  "newLocators": 235,
+  "newPairsVerified": true,
+  "newArchiveIndexIdentitiesVerified": true,
+  "exactFourAliasesAbsent": true,
+  "protectedDiffEmpty": true,
+  "actualFocusedAudit": {
+    "exit": 0,
+    "pass": 7,
+    "fail": 0,
+    "assertions": 38
+  },
+  "commands": [
+    {
+      "args": [
+        "git",
+        "add",
+        "--pathspec-from-file=C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\correct-stage-paths.txt"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "ls-files",
+        "--stage",
+        "-z"
+      ],
+      "exit": 0,
+      "stdoutSha256": "3dd648bf8e1c1e4a3297424b5e26fb7171dfa4ff66b128b7481e4c231dd64515",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "5d541e3537d6e6da6b087834a70cc98380b94d58",
+        "--",
+        ".github",
+        "src",
+        "supabase",
+        ".gitattributes",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-source-binding.json",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-fix1-source-binding.json",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-source-freeze.json",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/translation.json",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/closing-translation.json",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/fix1-translation.json",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/fix1-closing-translation.json"
+      ],
+      "exit": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "test",
+        "src/lib/content/serviceSloganCopy.test.ts"
+      ],
+      "exit": 0,
+      "stdoutSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+      "stderrSha256": "0ff268055276a6a306d6332ac02a11803b6cd1cfef8516d23876773734df5127"
+    }
+  ],
+  "closingGitVerified": false,
+  "freshFiveCiVerified": false
+}

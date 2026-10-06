@@ -1,0 +1,1 @@
+{"args": ["git", "cat-file", "blob", "5d541e3537d6e6da6b087834a70cc98380b94d58:docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipts/fix1-closing-translation.json"], "exit": 0, "stdoutSha256": "35026f3e16ab662bd34403265164b2ee38015d06822d902249568d359985382a", "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}

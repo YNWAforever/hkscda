@@ -1,0 +1,1 @@
+alter function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) cost 101

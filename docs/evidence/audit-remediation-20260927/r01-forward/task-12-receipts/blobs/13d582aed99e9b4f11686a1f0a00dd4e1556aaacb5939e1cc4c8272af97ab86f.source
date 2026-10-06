@@ -1,0 +1,39 @@
+import { functionsQuery } from "./task-12-profile";
+import { vector, vectorSql } from "./task-12-vector";
+
+type Profile = Record<string, unknown>;
+const json = (value: unknown) => "'" + JSON.stringify(value).replaceAll("'", "''") + "'::jsonb";
+export function contracts(profiles: Profile[]) {
+  if (profiles.length < 3 || profiles.length > 4) throw Error("Exact Task12 observed profiles required");
+  return profiles.map(p => ({ vector: p.mode==="native-metadata-only"?p.vector:vector(p), oldTargets: p.oldTargets, nextTargets: p.nextTargets }));
+}
+export function render(profiles: Profile[], definition: string) {
+  const admitted = contracts(profiles);
+  const withoutTarget = `pg_catalog.jsonb_set(v_catalog,'{functions}',(select coalesce(pg_catalog.jsonb_agg(f.value order by f.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->'functions') with ordinality f(value,ordinality) where not(f.value->>'schema'='public' and f.value->>'name'='update_group_enquiry_with_audit')))`;
+  const target = `select coalesce(pg_catalog.jsonb_agg(to_jsonb(f) order by f.schema,f.name,f.args),'[]'::jsonb) into v_actual from (${functionsQuery})f where f.schema='public' and f.name='update_group_enquiry_with_audit';`;
+  return `-- R01 Task12: one group command, actor fences admitted by Rulings61/62.
+-- Exact observed metadata vectors remain correlated; unknown tuples fail before DDL.
+set local search_path = '';
+do $migration$
+declare v_catalog jsonb;v_before jsonb;v_vector jsonb;v_vector_before jsonb;v_catalog_before jsonb;v_actual jsonb;v_expected_next jsonb;v_contract jsonb;v_fn oid;
+begin
+ if current_user<>'postgres' then raise exception 'R01 group owner context differs' using errcode='55000';end if;
+ ${vectorSql}
+ v_vector_before:=v_vector;
+ v_catalog_before:=${withoutTarget};
+ ${target}
+ select p.value->'nextTargets' into v_expected_next from pg_catalog.jsonb_array_elements(${json(admitted)})p(value)
+ where p.value->'vector'=v_vector and (v_actual='[]'::jsonb or v_actual=p.value->'oldTargets' or v_actual=p.value->'nextTargets') limit 1;
+ if v_expected_next is null then raise exception 'R01 group correlated prerequisite or target tuple differs' using errcode='55000';end if;
+ if exists(select 1 from pg_catalog.pg_roles b cross join pg_catalog.pg_roles s where b.rolname in('anon','authenticated') and s.rolname in('service_role','postgres','supabase_admin') and (pg_catalog.pg_has_role(b.oid,s.oid,'USAGE') or pg_catalog.pg_has_role(b.oid,s.oid,'SET'))) then raise exception 'R01 group effective browser access differs' using errcode='55000';end if;
+ if v_actual<>v_expected_next then execute $definition$${definition}$definition$;end if;
+ ${vectorSql}
+ if v_vector<>v_vector_before or ${withoutTarget}<>v_catalog_before then raise exception 'R01 group unintended catalog drift' using errcode='55000';end if;
+ ${target}
+ if v_actual<>v_expected_next then raise exception 'R01 group final target tuple differs' using errcode='55000';end if;
+ v_fn:=pg_catalog.to_regprocedure('public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb)');
+ if v_fn is null or pg_catalog.has_function_privilege('anon',v_fn,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_fn,'EXECUTE') or not pg_catalog.has_function_privilege('service_role',v_fn,'EXECUTE') then raise exception 'R01 group final effective grants differ' using errcode='55000';end if;
+end;
+$migration$;
+`;
+}

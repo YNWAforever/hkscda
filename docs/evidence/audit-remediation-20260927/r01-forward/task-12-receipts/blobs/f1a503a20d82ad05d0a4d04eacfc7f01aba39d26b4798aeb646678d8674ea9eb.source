@@ -1,0 +1,80 @@
+create or replace function public.update_group_enquiry_with_audit(
+  p_enquiry_id uuid,
+  p_actor_user_id uuid,
+  p_expected_updated_at timestamptz,
+  p_patch jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_enquiry public.group_enquiries%rowtype;
+  v_fields jsonb;
+begin
+  perform 1 from auth.users u
+  where u.id = p_actor_user_id
+    and u.email_confirmed_at is not null
+    and (u.banned_until is null or u.banned_until <= pg_catalog.clock_timestamp())
+  for share;
+  if not found then
+    raise exception 'group_enquiry_forbidden' using errcode = '42501';
+  end if;
+
+  perform 1 from public.admin_user a
+  where a.auth_user_id = p_actor_user_id
+    and a.status = 'active'
+    and a.role in ('staff', 'admin')
+  for share;
+  if not found then
+    raise exception 'group_enquiry_forbidden' using errcode = '42501';
+  end if;
+
+  if p_patch is null or jsonb_typeof(p_patch) <> 'object'
+    or p_patch = '{}'::jsonb
+    or exists (
+      select 1 from jsonb_object_keys(p_patch) as k(key)
+      where k.key not in ('status', 'assignedTo', 'adminNotes')
+    )
+  then
+    raise exception 'invalid_group_enquiry_patch' using errcode = '22023';
+  end if;
+
+  select * into v_enquiry
+  from public.group_enquiries
+  where id = p_enquiry_id
+  for update;
+  if not found then
+    return jsonb_build_object('kind', 'not_found');
+  end if;
+  if p_expected_updated_at is null or v_enquiry.updated_at <> p_expected_updated_at then
+    return jsonb_build_object('kind', 'conflict');
+  end if;
+
+  update public.group_enquiries
+  set status = case when p_patch ? 'status' then p_patch->>'status' else status end,
+      assigned_to = case when p_patch ? 'assignedTo'
+        then (p_patch->>'assignedTo')::uuid else assigned_to end,
+      admin_notes = case when p_patch ? 'adminNotes'
+        then p_patch->>'adminNotes' else admin_notes end
+  where id = p_enquiry_id
+  returning * into v_enquiry;
+
+  select coalesce(jsonb_agg(k.key order by k.key), '[]'::jsonb)
+  into v_fields
+  from jsonb_object_keys(p_patch) as k(key);
+  insert into public.audit_log(actor_user_id, action, entity, entity_id, detail)
+  values (
+    p_actor_user_id,
+    'group_enquiries.update',
+    'group_enquiries',
+    p_enquiry_id::text,
+    jsonb_build_object('fields', v_fields, 'status', p_patch->>'status')
+  );
+
+  return jsonb_build_object('kind', 'updated', 'enquiry', to_jsonb(v_enquiry));
+end;
+$$;
+revoke all on function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) from public,anon,authenticated,service_role;
+grant execute on function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) to service_role;

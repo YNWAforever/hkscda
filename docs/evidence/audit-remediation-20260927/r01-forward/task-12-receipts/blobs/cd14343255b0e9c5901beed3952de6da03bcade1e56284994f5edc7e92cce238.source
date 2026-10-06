@@ -1,0 +1,199 @@
+-- T23 adoption bulk: guarded case owner assignment only; never approves or matches.
+-- A monotonic row version fences updates even when updated_at uses transaction time.
+alter table public.adoption_case add column bulk_row_version bigint not null default 1;
+create function private.bump_adoption_case_bulk_row_version()
+returns trigger language plpgsql set search_path='' as $$
+begin
+  new.bulk_row_version := old.bulk_row_version + 1;
+  return new;
+end $$;
+revoke all on function private.bump_adoption_case_bulk_row_version() from public,anon,authenticated;
+create trigger adoption_case_bulk_row_version_before_update
+before update on public.adoption_case for each row
+execute function private.bump_adoption_case_bulk_row_version();
+create table public.adoption_assignment_bulk_operation (
+  id uuid primary key default gen_random_uuid(),
+  actor_user_id uuid not null references auth.users(id),
+  assignee_user_id uuid not null references auth.users(id),
+  status_id uuid not null references public.coordinator_status(id),
+  min_age_days integer not null check (min_age_days between 0 and 3650),
+  filter_hash text not null check (filter_hash ~ '^[0-9a-f]{64}$'),
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null default (now()+interval '15 minutes')
+);
+create table public.adoption_assignment_bulk_item (
+  operation_id uuid not null references public.adoption_assignment_bulk_operation(id),
+  case_id uuid not null,
+  ordinal integer not null,
+  expected_updated_at timestamptz,
+  expected_row_version bigint,
+  before_assignee uuid,
+  after_assignee uuid,
+  status text not null check (status in ('pending','succeeded','skipped','conflict','failed')),
+  reason_code text,
+  applied_at timestamptz,
+  primary key(operation_id,case_id),
+  unique(operation_id,ordinal)
+);
+create index adoption_assignment_bulk_operation_actor_idx on public.adoption_assignment_bulk_operation(actor_user_id,created_at desc);
+create index adoption_assignment_bulk_item_pending_idx on public.adoption_assignment_bulk_item(operation_id,ordinal) where status='pending';
+alter table public.adoption_assignment_bulk_operation enable row level security;
+alter table public.adoption_assignment_bulk_item enable row level security;
+revoke all on public.adoption_assignment_bulk_operation, public.adoption_assignment_bulk_item from public,anon,authenticated,service_role;
+grant select on public.adoption_assignment_bulk_operation, public.adoption_assignment_bulk_item to service_role;
+
+create function private.require_adoption_assignment_bulk_actor(p_actor uuid)
+returns void language plpgsql security definer set search_path='' as $$
+begin
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+    where a.auth_user_id=p_actor and a.status='active' and a.role='admin'
+      and u.email_confirmed_at is not null
+      and (u.banned_until is null or u.banned_until<=now())
+  for share of a,u;
+  if not found then raise exception 'Adoption assignment actor unavailable' using errcode='42501'; end if;
+end $$;
+revoke all on function private.require_adoption_assignment_bulk_actor(uuid) from public,anon,authenticated,service_role;
+grant execute on function private.require_adoption_assignment_bulk_actor(uuid) to service_role;
+
+create function private.require_adoption_assignment_bulk_assignee(p_assignee uuid)
+returns void language plpgsql security definer set search_path='' as $$
+begin
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+    where a.auth_user_id=p_assignee and a.status='active' and a.role in ('staff','admin')
+      and u.email_confirmed_at is not null
+      and (u.banned_until is null or u.banned_until<=now())
+  for share of a,u;
+  if not found then raise exception 'Adoption assignment assignee unavailable' using errcode='42501'; end if;
+end $$;
+revoke all on function private.require_adoption_assignment_bulk_assignee(uuid) from public,anon,authenticated,service_role;
+grant execute on function private.require_adoption_assignment_bulk_assignee(uuid) to service_role;
+
+create function public.get_adoption_assignment_bulk_operation(p_actor uuid,p_operation uuid)
+returns jsonb language plpgsql security definer set search_path='' as $$
+declare v_op public.adoption_assignment_bulk_operation%rowtype;v_items jsonb;v_pending integer;v_succeeded integer;
+begin
+  perform private.require_adoption_assignment_bulk_actor(p_actor);
+  select * into v_op from public.adoption_assignment_bulk_operation where id=p_operation and actor_user_id=p_actor;
+  if not found then raise exception 'Adoption assignment operation unavailable' using errcode='42501';end if;
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'entityId',i.case_id,'status',i.status,'reasonCode',i.reason_code,
+    'beforeAssignee',i.before_assignee,'afterAssignee',i.after_assignee,
+    'expectedUpdatedAt',i.expected_updated_at,'expectedRowVersion',i.expected_row_version
+  ) order by i.ordinal),'[]'::jsonb),
+    count(*) filter(where i.status='pending'),count(*) filter(where i.status='succeeded')
+  into v_items,v_pending,v_succeeded
+  from public.adoption_assignment_bulk_item i where i.operation_id=p_operation;
+  return jsonb_build_object(
+    'operationId',v_op.id,'assigneeUserId',v_op.assignee_user_id,
+    'statusId',v_op.status_id,'minAgeDays',v_op.min_age_days,
+    'filterHash',v_op.filter_hash,'createdAt',v_op.created_at,'expiresAt',v_op.expires_at,
+    'state',case when v_pending=0 then 'done' when v_succeeded=0 then 'queued' else 'partial' end,
+    'items',v_items
+  );
+end $$;
+revoke all on function public.get_adoption_assignment_bulk_operation(uuid,uuid) from public,anon,authenticated;
+grant execute on function public.get_adoption_assignment_bulk_operation(uuid,uuid) to service_role;
+
+create function public.create_adoption_assignment_bulk_preview(
+  p_actor uuid,p_ids uuid[],p_assignee uuid,p_status uuid,p_min_age_days integer,p_filter_hash text
+)
+returns jsonb language plpgsql security definer set search_path='' as $$
+declare
+  v_op uuid;v_id uuid;v_case public.adoption_case%rowtype;
+  v_status text;v_reason text;v_ordinal integer:=0;
+begin
+  perform private.require_adoption_assignment_bulk_actor(p_actor);
+  perform private.require_adoption_assignment_bulk_assignee(p_assignee);
+  if p_ids is null or cardinality(p_ids)<1 or cardinality(p_ids)>1000
+     or exists(select 1 from unnest(p_ids) id where id is null)
+     or (select count(distinct id) from unnest(p_ids) id)<>cardinality(p_ids)
+     or p_min_age_days is null or p_min_age_days<0 or p_min_age_days>3650
+     or coalesce(p_filter_hash,'') !~ '^[0-9a-f]{64}$'
+     or not exists(select 1 from public.coordinator_status s where s.id=p_status
+       and s.category='adoption_case' and s.is_active and not s.is_closing and not s.is_final)
+  then raise exception 'Invalid adoption assignment preview' using errcode='22023';end if;
+  insert into public.adoption_assignment_bulk_operation(actor_user_id,assignee_user_id,status_id,min_age_days,filter_hash)
+  values(p_actor,p_assignee,p_status,p_min_age_days,p_filter_hash) returning id into v_op;
+  foreach v_id in array p_ids loop
+    v_ordinal:=v_ordinal+1;
+    select * into v_case from public.adoption_case where id=v_id;
+    if v_case.id is null then v_status:='skipped';v_reason:='not_found';
+    elsif v_case.closed_at is not null or v_case.processed then v_status:='skipped';v_reason:='unavailable';
+    elsif v_case.status_id<>p_status then v_status:='skipped';v_reason:='stage_changed';
+    elsif v_case.created_at>now()-(p_min_age_days * interval '1 day') then v_status:='skipped';v_reason:='too_recent';
+    elsif v_case.assigned_to=p_assignee then v_status:='skipped';v_reason:='already_assigned';
+    else v_status:='pending';v_reason:=null;
+    end if;
+    insert into public.adoption_assignment_bulk_item(
+      operation_id,case_id,ordinal,expected_updated_at,expected_row_version,before_assignee,after_assignee,status,reason_code
+    ) values(v_op,v_id,v_ordinal,v_case.updated_at,v_case.bulk_row_version,v_case.assigned_to,
+      case when v_status='pending' then p_assignee else v_case.assigned_to end,v_status,v_reason);
+  end loop;
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
+  values(p_actor,'adoption_assignment_bulk.preview','adoption_assignment_bulk_operation',v_op::text,
+    jsonb_build_object('assigneeUserId',p_assignee,'statusId',p_status,'minAgeDays',p_min_age_days,
+      'filterHash',p_filter_hash,'selectionCount',cardinality(p_ids)));
+  return public.get_adoption_assignment_bulk_operation(p_actor,v_op);
+end $$;
+revoke all on function public.create_adoption_assignment_bulk_preview(uuid,uuid[],uuid,uuid,integer,text) from public,anon,authenticated;
+grant execute on function public.create_adoption_assignment_bulk_preview(uuid,uuid[],uuid,uuid,integer,text) to service_role;
+
+create function public.apply_adoption_assignment_bulk_item(p_actor uuid,p_operation uuid,p_case uuid)
+returns jsonb language plpgsql security definer set search_path='' as $$
+declare
+  v_op public.adoption_assignment_bulk_operation%rowtype;
+  v_item public.adoption_assignment_bulk_item%rowtype;
+  v_case public.adoption_case%rowtype;
+  v_status text;v_reason text;v_stage_open boolean;
+begin
+  perform private.require_adoption_assignment_bulk_actor(p_actor);
+  select * into v_op from public.adoption_assignment_bulk_operation
+  where id=p_operation and actor_user_id=p_actor for update;
+  if not found then raise exception 'Adoption assignment operation unavailable' using errcode='42501';end if;
+  perform private.require_adoption_assignment_bulk_assignee(v_op.assignee_user_id);
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Adoption assignment preview expired' using errcode='P0001';end if;
+  select * into v_item from public.adoption_assignment_bulk_item
+  where operation_id=p_operation and case_id=p_case for update;
+  if not found then raise exception 'Adoption assignment item unavailable' using errcode='42501';end if;
+  if v_item.status<>'pending' then
+    return jsonb_build_object('entityId',p_case,'status',v_item.status,'reasonCode',v_item.reason_code);
+  end if;
+  perform 1 from public.coordinator_status s where s.id=v_op.status_id
+    and s.category='adoption_case' and s.is_active and not s.is_closing and not s.is_final
+    for share;
+  v_stage_open := found;
+  select * into v_case from public.adoption_case where id=p_case for update;
+  -- Lock waits can outlive the snapshot; reject before any assignment/result/audit write.
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'Adoption assignment preview expired' using errcode='P0001';end if;
+  if v_case.id is null or v_case.closed_at is not null or v_case.processed then
+    v_status:='skipped';v_reason:='unavailable';
+  elsif v_case.status_id<>v_op.status_id then v_status:='conflict';v_reason:='stage_changed';
+  elsif not v_stage_open then
+    v_status:='conflict';v_reason:='stage_closed';
+  elsif v_case.created_at>now()-(v_op.min_age_days * interval '1 day') then
+    v_status:='conflict';v_reason:='too_recent';
+  elsif v_case.bulk_row_version is distinct from v_item.expected_row_version
+     or v_case.assigned_to is distinct from v_item.before_assignee then
+    v_status:='conflict';v_reason:='version_changed';
+  else
+    update public.adoption_case
+    set assigned_to=v_op.assignee_user_id,updated_at=clock_timestamp()
+    where id=p_case;
+    insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
+    values(p_actor,'adoption_case.bulk_assign_owner','adoption_case',p_case::text,
+      jsonb_build_object('operationId',p_operation,'beforeAssignee',v_item.before_assignee,
+        'afterAssignee',v_op.assignee_user_id,'expectedRowVersion',v_item.expected_row_version));
+    v_status:='succeeded';v_reason:=null;
+  end if;
+  update public.adoption_assignment_bulk_item
+  set status=v_status,reason_code=v_reason,applied_at=clock_timestamp()
+  where operation_id=p_operation and case_id=p_case;
+  if v_status<>'succeeded' then
+    insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
+    values(p_actor,'adoption_assignment_bulk.item_result','adoption_assignment_bulk_item',p_case::text,
+      jsonb_build_object('operationId',p_operation,'status',v_status,'reasonCode',v_reason));
+  end if;
+  return jsonb_build_object('entityId',p_case,'status',v_status,'reasonCode',v_reason);
+end $$;
+revoke all on function public.apply_adoption_assignment_bulk_item(uuid,uuid,uuid) from public,anon,authenticated;
+grant execute on function public.apply_adoption_assignment_bulk_item(uuid,uuid,uuid) to service_role;

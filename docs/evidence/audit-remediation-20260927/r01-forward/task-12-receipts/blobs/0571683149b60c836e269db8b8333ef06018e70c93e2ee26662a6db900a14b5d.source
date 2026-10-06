@@ -1,0 +1,19 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "-i",
+    "hkscda-task12-pg-a3b891334d5e498888d663e3b5df776d",
+    "psql",
+    "-X",
+    "-qAt",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-U",
+    "postgres",
+    "-d",
+    "postgres"
+  ],
+  "timeoutSeconds": 120,
+  "required": false
+}

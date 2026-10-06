@@ -1,0 +1,6 @@
+import pathlib,json,subprocess,sys,hashlib
+o=pathlib.Path(__file__).parent;phase=sys.argv[1];target='tests-fix1.py'if phase=='green'else'binder-fix1.py';cmd=[sys.executable,'-B',str(o/target)];stem='fix1-'+phase
+assert not(o/(stem+'.invocation.json')).exists()
+for n in ['binder-fix1.py','tests-fix1.py','run-fix1.py']:(o/(stem+'-'+n+'.source')).write_bytes((o/n).read_bytes())
+(o/(stem+'.invocation.json')).write_bytes((json.dumps({'command':cmd,'cwd':str(pathlib.Path.cwd()),'sourceHashes':{n:hashlib.sha256((o/n).read_bytes()).hexdigest()for n in ['binder-fix1.py','tests-fix1.py','run-fix1.py']}})+'\n').encode())
+p=subprocess.run(cmd,capture_output=True);(o/(stem+'.stdout.log')).write_bytes(p.stdout);(o/(stem+'.stderr.log')).write_bytes(p.stderr);(o/(stem+'.exit.json')).write_bytes((json.dumps({'exit':p.returncode,'stdoutSha256':hashlib.sha256(p.stdout).hexdigest(),'stderrSha256':hashlib.sha256(p.stderr).hexdigest()})+'\n').encode());print(p.stdout.decode('utf-8',errors='replace'));print(p.stderr.decode('utf-8',errors='replace'));sys.exit(p.returncode)

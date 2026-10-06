@@ -1,0 +1,10 @@
+{
+  "command": [
+    "docker",
+    "image",
+    "inspect",
+    "public.ecr.aws/supabase/realtime@sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

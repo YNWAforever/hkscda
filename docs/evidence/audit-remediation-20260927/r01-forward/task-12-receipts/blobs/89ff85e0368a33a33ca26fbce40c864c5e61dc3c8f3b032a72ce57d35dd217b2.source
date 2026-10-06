@@ -1,0 +1,1 @@
+alter table public.group_enquiries alter column status set default 'closed'

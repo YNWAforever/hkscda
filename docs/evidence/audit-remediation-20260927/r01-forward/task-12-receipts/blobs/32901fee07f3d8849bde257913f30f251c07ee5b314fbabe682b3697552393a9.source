@@ -1,0 +1,58 @@
+[
+  [
+    "groupRLS",
+    "alter table public.group_enquiries disable row level security"
+  ],
+  [
+    "groupDefault",
+    "alter table public.group_enquiries alter column status set default 'closed'"
+  ],
+  [
+    "groupColumnGrant",
+    "grant update(status) on public.group_enquiries to authenticated"
+  ],
+  [
+    "creatorDefaultACL",
+    "alter default privileges for role postgres in schema public revoke execute on functions from authenticated"
+  ],
+  [
+    "groupIndex",
+    "alter table public.group_enquiries drop constraint group_enquiries_idempotency_key_key"
+  ],
+  [
+    "nativeGroupFK",
+    "alter table public.group_enquiries disable trigger all"
+  ],
+  [
+    "groupReplicaIdentity",
+    "alter table public.group_enquiries replica identity full"
+  ],
+  [
+    "authColumnACL",
+    "grant update(banned_until) on auth.users to authenticated"
+  ],
+  [
+    "actorHelperCost",
+    "alter function private.require_active_admin_user() cost 101"
+  ],
+  [
+    "targetGrantOption",
+    "grant execute on function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) to service_role with grant option"
+  ],
+  [
+    "browserTargetExecute",
+    "grant execute on function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) to authenticated"
+  ],
+  [
+    "targetCost",
+    "alter function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) cost 101"
+  ],
+  [
+    "targetSearchPath",
+    "alter function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) set search_path='public'"
+  ],
+  [
+    "targetStrict",
+    "alter function public.update_group_enquiry_with_audit(uuid,uuid,timestamptz,jsonb) strict"
+  ]
+]

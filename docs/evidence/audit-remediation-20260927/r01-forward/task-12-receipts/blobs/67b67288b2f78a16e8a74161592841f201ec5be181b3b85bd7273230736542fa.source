@@ -1,0 +1,1 @@
+BEGIN READ ONLY;select count(*)from auth.users;ROLLBACK;

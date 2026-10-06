@@ -1,0 +1,10 @@
+{
+  "command": [
+    "docker",
+    "start",
+    "-a",
+    "hkscda-task12-storage-a3b891334d5e498888d663e3b5df776d"
+  ],
+  "timeoutSeconds": 180,
+  "required": true
+}

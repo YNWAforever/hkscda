@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-12-mixed-vectors.test.ts:
+(pass) equal catalog facet is not an unknown correlated vector [3.26ms]
+(pass) an observed selected combination is refused before execution [0.18ms]
+
+ 2 pass
+ 0 fail
+ 4 expect() calls
+Ran 2 tests across 1 file. [131.00ms]

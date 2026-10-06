@@ -1,0 +1,1082 @@
+{
+  "mode": "separate-current-task12-finance-source-binding-qualification-v1",
+  "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+  "branch": "codex/audit-r01-group-source-rebind-20261007",
+  "previousFinanceBinding": "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde",
+  "newFinanceBinding": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+  "sourcePins": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+      "bytes": 6147,
+      "sha256": "0d068b9959a47a9e273829f7ff9b2f59f5e2a8d7cedeefd242638af1a5279a5b",
+      "canonicalLfSha256": "0d068b9959a47a9e273829f7ff9b2f59f5e2a8d7cedeefd242638af1a5279a5b",
+      "rawGitBlob": "de9e0c57a444efd75ed88701caf8fdd81a68dd84"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts",
+      "bytes": 547,
+      "sha256": "ade58a62a86f5bc65c0f54d2b84aa66ba08bbd0ac51980ea885f90b11518fa30",
+      "canonicalLfSha256": "ade58a62a86f5bc65c0f54d2b84aa66ba08bbd0ac51980ea885f90b11518fa30",
+      "rawGitBlob": "109fe55aac30097937e39439d55846bbd1794854"
+    },
+    {
+      "path": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "bytes": 1402952,
+      "sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+      "canonicalLfSha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+      "rawGitBlob": "50633029eb1647593d09f72baeac60096ca078b5"
+    },
+    {
+      "path": "supabase/migrations/20261003005322_r01_group_enquiry_forward.sql",
+      "bytes": 1286399,
+      "sha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+      "canonicalLfSha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+      "rawGitBlob": "c7c7da6b9c5e0a315c90d5fcc248b603170cf23f"
+    }
+  ],
+  "currentSourceFreeze": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-source-freeze-20261007.json",
+    "bytes": 16393,
+    "sha256": "7e0a5e9a4a9eb90e95c760e014db6f831e8a96e836ee4cd3039903a8d1b7844c",
+    "canonicalLfSha256": "7e0a5e9a4a9eb90e95c760e014db6f831e8a96e836ee4cd3039903a8d1b7844c",
+    "rawGitBlob": "55017f03033834a4518813d910bf2a8f10a1bd8b"
+  },
+  "archiveManifest": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-complete-20261007-manifest-lf.json",
+    "bytes": 1562,
+    "sha256": "d16b8c618cb3790406717bf31e02133f0ef39cb92017e2e2aeafabc55bcfe543",
+    "canonicalLfSha256": "d16b8c618cb3790406717bf31e02133f0ef39cb92017e2e2aeafabc55bcfe543",
+    "rawGitBlob": "2c9c1d736afa2af42d44b082eca2344e27729d61"
+  },
+  "immutableArchive": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-complete-20261007.zip",
+    "bytes": 7791042,
+    "sha256": "db1059a207db7b6945b78e8c3f1caf5edfe49eb18d6e90ee0fbc9bb8164a358a"
+  },
+  "allOriginalPathsRoundtripEqual": true,
+  "stages": [
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/receipt.json",
+      "stage": "binding_green",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-binding_green-1791323964825955500",
+            "before"
+          ],
+          "pid": 42628,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "test",
+            "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+          ],
+          "pid": 29028,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-binding_green-1791323964825955500",
+            "after"
+          ],
+          "pid": 39636,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5500235776,
+      "freeBytesAfter": 5482315776
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/receipt.json",
+      "stage": "binding_red",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-binding_red-1791323818827890100",
+            "before"
+          ],
+          "pid": 61232,
+          "exit": 1
+        }
+      ],
+      "primaryExit": null,
+      "eligible": false,
+      "error": "Before capture failed",
+      "completeSharedPreserved": null,
+      "frozenInputsPreserved": null,
+      "freeBytesBefore": 5525360640,
+      "freeBytesAfter": null
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/receipt.json",
+      "stage": "binding_red",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-binding_red-1791323924737560000",
+            "before"
+          ],
+          "pid": 52344,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "test",
+            "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+          ],
+          "pid": 20816,
+          "exit": 1
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-binding_red-1791323924737560000",
+            "after"
+          ],
+          "pid": 33760,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 1,
+      "eligible": false,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5522767872,
+      "freeBytesAfter": 5505589248
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/receipt.json",
+      "stage": "format_bridge_final",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-format_bridge_final-1791324682404331600",
+            "before"
+          ],
+          "pid": 16848,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-format-verify-v2.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-format_bridge_final-1791324682404331600"
+          ],
+          "pid": 56792,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-format_bridge_final-1791324682404331600",
+            "after"
+          ],
+          "pid": 24288,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 4462075904,
+      "freeBytesAfter": 4307759104
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/receipt.json",
+      "stage": "format_verify",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-format_verify-1791324303895557500",
+            "before"
+          ],
+          "pid": 16044,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-format-verify.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-format_verify-1791324303895557500"
+          ],
+          "pid": 24268,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-format_verify-1791324303895557500",
+            "after"
+          ],
+          "pid": 31580,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5205753856,
+      "freeBytesAfter": 5189206016
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/receipt.json",
+      "stage": "modern",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern-1791323998920476500",
+            "before"
+          ],
+          "pid": 23664,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-rehearse.ts",
+            "modern",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern-1791323998920476500/composition"
+          ],
+          "pid": 4268,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern-1791323998920476500",
+            "after"
+          ],
+          "pid": 12552,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5477941248,
+      "freeBytesAfter": 5354844160
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/receipt.json",
+      "stage": "modern_repeat",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern_repeat-1791324103961601800",
+            "before"
+          ],
+          "pid": 30932,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-rehearse-v2.ts",
+            "modern",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern_repeat-1791324103961601800/composition"
+          ],
+          "pid": 56700,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern_repeat-1791324103961601800",
+            "after"
+          ],
+          "pid": 19776,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5346852864,
+      "freeBytesAfter": 5250760704
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/receipt.json",
+      "stage": "modern_repeat",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern_repeat-1791324331039684600",
+            "before"
+          ],
+          "pid": 46148,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "bun",
+            "--no-env-file",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-rehearse-v2.ts",
+            "modern",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern_repeat-1791324331039684600/composition"
+          ],
+          "pid": 23884,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-modern_repeat-1791324331039684600",
+            "after"
+          ],
+          "pid": 51128,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5187268608,
+      "freeBytesAfter": 5091389440
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/receipt.json",
+      "stage": "source_gates",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-source_gates-1791324179951312100",
+            "before"
+          ],
+          "pid": 40924,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "python",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-gates.py",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-source_gates-1791324179951312100/gates"
+          ],
+          "pid": 60444,
+          "exit": 1
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-source_gates-1791324179951312100",
+            "after"
+          ],
+          "pid": 22460,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 1,
+      "eligible": false,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5244469248,
+      "freeBytesAfter": 5217366016
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/receipt.json",
+      "stage": "source_gates_final",
+      "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+      "commands": [
+        {
+          "label": "before",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-source_gates_final-1791324433147542100",
+            "before"
+          ],
+          "pid": 60188,
+          "exit": 0
+        },
+        {
+          "label": "primary",
+          "args": [
+            "python",
+            ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-gates.py",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-source_gates_final-1791324433147542100/gates"
+          ],
+          "pid": 13168,
+          "exit": 0
+        },
+        {
+          "label": "after",
+          "args": [
+            "bun",
+            "--no-env-file",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-states.ts",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-stage-source_gates_final-1791324433147542100",
+            "after"
+          ],
+          "pid": 23124,
+          "exit": 0
+        }
+      ],
+      "primaryExit": 0,
+      "eligible": true,
+      "error": null,
+      "completeSharedPreserved": true,
+      "frozenInputsPreserved": true,
+      "freeBytesBefore": 5093646336,
+      "freeBytesAfter": 4361293824
+    }
+  ],
+  "actualCurrentCompositions": [
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/composition/receipt.json",
+      "clone": "r01_clone_5dd826f78ecc435abe165efa1a4299b1",
+      "mode": "modern",
+      "eligible": true,
+      "testCommand": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/groupEnquiries/atomicForward.database.test.ts",
+        "src/lib/groupEnquiries/service.test.ts"
+      ],
+      "testPid": 36132,
+      "testExit": 0,
+      "testSummary": [
+        " 38 pass",
+        " 0 fail",
+        " 142 expect() calls"
+      ],
+      "firstApply": true,
+      "secondApply": true,
+      "secondApplyPreserved": true,
+      "financeAppliedTwice": null,
+      "financeSecondApplyMetadataPreserved": null,
+      "outsideTargetsPreserved": true,
+      "supplementalPreserved": true,
+      "catalogAfterBehaviorPreserved": true,
+      "refusals": [
+        {
+          "label": "groupRLS",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupDefault",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupColumnGrant",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "creatorDefaultACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupIndex",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "nativeGroupFK",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupReplicaIdentity",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "authColumnACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "actorHelperCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetGrantOption",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "browserTargetExecute",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetSearchPath",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetStrict",
+          "code": "55000",
+          "preserved": true
+        }
+      ],
+      "normalDrop": true,
+      "templatePreserved": true,
+      "modernPreserved": true,
+      "browserControlWritesDenied": true,
+      "allColumnRightsAndGrantOptionsPreserved": true,
+      "actualAllColumnRightsAndGrantOptionsCount": 504
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/composition/receipt.json",
+      "clone": "r01_clone_0cb06fc67ff6422e85915a8354570735",
+      "mode": "modern",
+      "eligible": true,
+      "testCommand": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/groupEnquiries/atomicForward.database.test.ts",
+        "src/lib/groupEnquiries/service.test.ts"
+      ],
+      "testPid": 1016,
+      "testExit": 0,
+      "testSummary": [
+        " 38 pass",
+        " 0 fail",
+        " 142 expect() calls"
+      ],
+      "firstApply": true,
+      "secondApply": true,
+      "secondApplyPreserved": true,
+      "financeAppliedTwice": true,
+      "financeSecondApplyMetadataPreserved": true,
+      "outsideTargetsPreserved": true,
+      "supplementalPreserved": true,
+      "catalogAfterBehaviorPreserved": true,
+      "refusals": [
+        {
+          "label": "groupRLS",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupDefault",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupColumnGrant",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "creatorDefaultACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupIndex",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "nativeGroupFK",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupReplicaIdentity",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "authColumnACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "actorHelperCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetGrantOption",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "browserTargetExecute",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetSearchPath",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetStrict",
+          "code": "55000",
+          "preserved": true
+        }
+      ],
+      "normalDrop": true,
+      "templatePreserved": true,
+      "modernPreserved": true,
+      "browserControlWritesDenied": true,
+      "allColumnRightsAndGrantOptionsPreserved": true,
+      "actualAllColumnRightsAndGrantOptionsCount": 504
+    },
+    {
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/composition/receipt.json",
+      "clone": "r01_clone_3af0b2abc2064470b046a5b58d3a1975",
+      "mode": "modern",
+      "eligible": true,
+      "testCommand": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/groupEnquiries/atomicForward.database.test.ts",
+        "src/lib/groupEnquiries/service.test.ts"
+      ],
+      "testPid": 14316,
+      "testExit": 0,
+      "testSummary": [
+        " 38 pass",
+        " 0 fail",
+        " 142 expect() calls"
+      ],
+      "firstApply": true,
+      "secondApply": true,
+      "secondApplyPreserved": true,
+      "financeAppliedTwice": true,
+      "financeSecondApplyMetadataPreserved": true,
+      "outsideTargetsPreserved": true,
+      "supplementalPreserved": true,
+      "catalogAfterBehaviorPreserved": true,
+      "refusals": [
+        {
+          "label": "groupRLS",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupDefault",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupColumnGrant",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "creatorDefaultACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupIndex",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "nativeGroupFK",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "groupReplicaIdentity",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "authColumnACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "actorHelperCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetGrantOption",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "browserTargetExecute",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetSearchPath",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetStrict",
+          "code": "55000",
+          "preserved": true
+        }
+      ],
+      "normalDrop": true,
+      "templatePreserved": true,
+      "modernPreserved": true,
+      "browserControlWritesDenied": true,
+      "allColumnRightsAndGrantOptionsPreserved": true,
+      "actualAllColumnRightsAndGrantOptionsCount": 504,
+      "currentSourceFreezeSeparateArtifact": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-source-freeze-20261007.json"
+    }
+  ],
+  "actualFinalSourceGates": {
+    "commands": [
+      {
+        "label": "binding-tests",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "test",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.test.ts"
+        ],
+        "pid": 40168,
+        "exit": 0,
+        "seconds": 0.5547837000049185
+      },
+      {
+        "label": "evidence-typecheck",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit",
+          "--target",
+          "ES2022",
+          "--module",
+          "ESNext",
+          "--moduleResolution",
+          "Bundler",
+          "--resolveJsonModule",
+          "--esModuleInterop",
+          "--types",
+          "bun-types",
+          "--skipLibCheck",
+          "--strict",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+        ],
+        "pid": 41736,
+        "exit": 0,
+        "seconds": 2.421713699994143
+      },
+      {
+        "label": "evidence-lint",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "node_modules/eslint/bin/eslint.js",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+        ],
+        "pid": 42844,
+        "exit": 0,
+        "seconds": 4.387177399999928
+      },
+      {
+        "label": "typecheck",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "run",
+          "typecheck"
+        ],
+        "pid": 35260,
+        "exit": 0,
+        "seconds": 54.51886770001147
+      },
+      {
+        "label": "tests",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "test",
+          "--isolate",
+          "--timeout",
+          "30000"
+        ],
+        "pid": 22020,
+        "exit": 0,
+        "seconds": 86.21448569998029
+      },
+      {
+        "label": "lint",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "run",
+          "lint"
+        ],
+        "pid": 30868,
+        "exit": 0,
+        "seconds": 48.31333830000949
+      },
+      {
+        "label": "build",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "run",
+          "build"
+        ],
+        "pid": 11440,
+        "exit": 0,
+        "seconds": 98.81527180000558
+      }
+    ],
+    "environmentKeys": [
+      "APPDATA",
+      "COMSPEC",
+      "DATABASE_URL",
+      "HOMEDRIVE",
+      "HOMEPATH",
+      "LOCALAPPDATA",
+      "PATH",
+      "PATHEXT",
+      "SUPABASE_LOCAL_ANON_KEY",
+      "SUPABASE_LOCAL_SERVICE_ROLE_KEY",
+      "SUPABASE_LOCAL_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL",
+      "SYSTEMROOT",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VITE_SUPABASE_ANON_KEY",
+      "VITE_SUPABASE_URL",
+      "WINDIR"
+    ],
+    "dotenvDisabled": true,
+    "error": null,
+    "productionApplied": false,
+    "sourceBase": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+    "frozenInputsPreserved": true,
+    "eligible": true
+  },
+  "fullSuiteSummary": {
+    "pass": 4255,
+    "skip": 633,
+    "fail": 0,
+    "assertions": 12120,
+    "tests": 4888,
+    "files": 629
+  },
+  "fullLintWarnings": 52,
+  "fullLintErrors": 0,
+  "formatterOnlyBridge": {
+    "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/profile-value-equality.json",
+    "keys": [
+      "authQuery",
+      "dependencies",
+      "fixtureScope",
+      "functionsQuery",
+      "indexDetailsQuery",
+      "names",
+      "nativeQuery",
+      "shapesQuery",
+      "tables"
+    ],
+    "allExportedRuntimeValuesAndQueriesByteEqual": true,
+    "pid": 56792,
+    "beforeSource": {
+      "bytes": 6111,
+      "sha256": "fb56e5eeef332119274f9904ec036c894567348737c473e70f022699b079b7fe"
+    },
+    "afterSource": {
+      "bytes": 6147,
+      "sha256": "0d068b9959a47a9e273829f7ff9b2f59f5e2a8d7cedeefd242638af1a5279a5b"
+    },
+    "completeRuntimeBytes": 7657,
+    "completeRuntimeSha256": "cce46046c096a18310e1aa9b0627c19179e06af889228aebad73126d4d1e550f"
+  },
+  "historicalTask12EvidencePreservedCount": 2323,
+  "historicalOriginal98Task12Acceptance": "Historical only; no acceptance inferred for current finance composition from original freeze/archives",
+  "qualifications": [
+    "Original sandbox beforeBun61232/1 CouldntReadCurrentDirectory; primary regression NOT_RUN there; exact unchanged argv escalated separately",
+    "First targeted lint attempt failed3 preexisting profile formatter sites; all4 full gates NOT_RUN there; preserved",
+    "Only3 formatter sites + current dependency hash; complete exported runtime/query bytes equal; current earlier compositions retain actual source pins",
+    "Last same-profile owned composition was already launched before controller no-replay formatter ruling arrived; completed normal cleanup; no further DB repeats",
+    "Pre-execution archive-driver AST failed a long-path string; original source retained; no archive execution occurred before narrow correction",
+    "One default-sandbox transport metadata inspection hit Windows FileNotFoundError; extended-path archive reads and every-byte roundtrip are the authoritative complete verification",
+    "Build module-directive warnings retained with actual0",
+    "633 source-suite skips are NOT positive database/provider acceptance"
+  ],
+  "notRun": [
+    "Current Task12 native-local Bun17.11 behavior and cold exact-head CI here; mandatory controller gate remains separate",
+    "Hosted/provider/JWT/future UAT",
+    "Production application of all14 R01 or Task8 SQL: DO_NOT_APPLY",
+    "Production/provider/reset/shared-role/cron/publication/push/merge actions"
+  ],
+  "historicalUnknownsUnchanged": [
+    "Oldbf0 preservation attribution",
+    "Old6c-to-f5 managed-row attribution",
+    "Task11 unintended local55321 fixture operation preservation: no before capture; UNKNOWN"
+  ],
+  "completeSharedStateContract": "All namespaces/tables including all3 _realtime tables; full modernf5/templatec653 beforeafter equality every completed stage; no exclusions/normalization/reset",
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false,
+  "actualQualifierCommand": {
+    "argv": [
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-qualify.py"
+    ],
+    "pid": 50020,
+    "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+    "exitOnSuccessfulCompletion": 0
+  },
+  "environmentKeys": [
+    "APPDATA",
+    "COMSPEC",
+    "DATABASE_URL",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "SUPABASE_LOCAL_ANON_KEY",
+    "SUPABASE_LOCAL_SERVICE_ROLE_KEY",
+    "SUPABASE_LOCAL_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "VITE_SUPABASE_ANON_KEY",
+    "VITE_SUPABASE_URL",
+    "WINDIR"
+  ],
+  "metadataEncoding": "UTF8 LF bytes generated explicitly"
+}

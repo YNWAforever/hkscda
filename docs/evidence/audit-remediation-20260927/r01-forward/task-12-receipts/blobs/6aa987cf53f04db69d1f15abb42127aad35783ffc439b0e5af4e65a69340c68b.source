@@ -1,0 +1,3717 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-12-receipt.test.ts:
+(pass) portable fully qualified capture validates without ignored receipts [7.49ms]
+(pass) capture rejects schemaParity=false [1.22ms]
+(pass) capture rejects schemaParity=undefined [0.27ms]
+(pass) capture rejects schemaParity=1 [0.06ms]
+(pass) capture rejects schemaParity=true [0.06ms]
+(pass) capture rejects fullScannerPassed=false [0.07ms]
+(pass) capture rejects fullScannerPassed=undefined [0.04ms]
+(pass) capture rejects fullScannerPassed=1 [0.03ms]
+(pass) capture rejects fullScannerPassed=true [0.04ms]
+(pass) capture rejects dependenciesBound=false [0.05ms]
+(pass) capture rejects dependenciesBound=undefined [0.04ms]
+(pass) capture rejects dependenciesBound=1 [0.05ms]
+(pass) capture rejects dependenciesBound=true [0.04ms]
+(pass) capture rejects catalogPreserved=false [0.10ms]
+(pass) capture rejects catalogPreserved=undefined [0.08ms]
+(pass) capture rejects catalogPreserved=1 [0.04ms]
+(pass) capture rejects catalogPreserved=true [0.04ms]
+(pass) capture rejects normalDrop=false [0.04ms]
+(pass) capture rejects normalDrop=undefined [0.04ms]
+(pass) capture rejects normalDrop=1 [0.04ms]
+(pass) capture rejects normalDrop=true [0.03ms]
+(pass) capture rejects templatePreserved=false [0.03ms]
+(pass) capture rejects templatePreserved=undefined [0.04ms]
+(pass) capture rejects templatePreserved=1 [0.03ms]
+(pass) capture rejects templatePreserved=true [0.04ms]
+(pass) capture rejects modernPreserved=false [0.04ms]
+(pass) capture rejects modernPreserved=undefined [0.04ms]
+(pass) capture rejects modernPreserved=1 [0.03ms]
+(pass) capture rejects modernPreserved=true [0.04ms]
+(pass) capture rejects frozenInputsPreserved=false [0.23ms]
+(pass) capture rejects frozenInputsPreserved=undefined [0.07ms]
+(pass) capture rejects frozenInputsPreserved=1 [0.03ms]
+(pass) capture rejects frozenInputsPreserved=true [0.03ms]
+(pass) capture refuses mode/type/error contract {"receiptVersion":0} [0.12ms]
+(pass) capture refuses mode/type/error contract {"mode":"modern"} [0.04ms]
+(pass) capture refuses mode/type/error contract {"mode":"component"} [0.04ms]
+(pass) capture refuses mode/type/error contract {"receiptVersion":1,"receiptType":"composition"} [0.06ms]
+(pass) capture refuses mode/type/error contract {"error":"cleanup failed"} [0.07ms]
+(pass) capture refuses mode/type/error contract {"failedFinalFlags":["normalDrop"]} [0.04ms]
+(pass) capture refuses mode/type/error contract {"requiredFinalFlags":[]} [0.03ms]
+(pass) oldTargets requires exactly one [0.17ms]
+(pass) oldTargets requires exactly one [0.07ms]
+(pass) oldTargets requires exactly one [0.04ms]
+(pass) oldTargets requires exactly one [0.04ms]
+(pass) nextTargets requires exactly one [0.07ms]
+(pass) nextTargets requires exactly one [0.05ms]
+(pass) nextTargets requires exactly one [0.06ms]
+(pass) nextTargets requires exactly one [0.05ms]
+(pass) unrelated named functions cannot qualify as Task12 targets [0.11ms]
+(pass) capture rejects altered exact target attribute args [0.08ms]
+(pass) capture rejects altered exact target attribute allargs [0.06ms]
+(pass) capture rejects altered exact target attribute defaults [0.05ms]
+(pass) capture rejects altered exact target attribute default_expression [0.05ms]
+(pass) capture rejects altered exact target attribute result [0.05ms]
+(pass) capture rejects altered exact target attribute config [0.04ms]
+(pass) capture rejects altered exact target attribute definer [0.05ms]
+(pass) capture rejects altered exact target attribute language [0.05ms]
+(pass) capture rejects altered exact target attribute kind [0.07ms]
+(pass) capture rejects altered exact target attribute cost [0.06ms]
+(pass) capture rejects altered exact target attribute rows [0.06ms]
+(pass) capture rejects altered exact target attribute strict [0.05ms]
+(pass) capture rejects altered exact target attribute leakproof [0.05ms]
+(pass) capture rejects altered exact target attribute parallel [0.05ms]
+(pass) capture rejects altered exact target attribute volatility [0.07ms]
+(pass) capture rejects altered exact target attribute support [0.07ms]
+(pass) capture rejects altered exact target attribute variadic [0.05ms]
+(pass) capture rejects altered exact target attribute modes [0.06ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: undefined,
+  protectedAfter: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {} [10.83ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: undefined,
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {} [0.75ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: "{}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"protectedAfter":"{}"} [0.46ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{}",
+  protectedAfter: "{}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"protectedBefore":"{}","protectedAfter":"{}"} [0.38ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {},
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"bindings":{}} [0.63ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"native":[]} [0.38ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"indexes":[]} [0.45ms]
+(pass) capture refuses incomplete saved proof contract {"functions":[]} [0.11ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "20261001134252_r01_adoption_upload_forward.sql", "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3" ], [ "20261001154743_r01_animal_preference_record_fields.sql", "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867" ], [ "20261001150925_r01_sponsorship_submission_forward.sql", "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c" ], [ "20261001175310_r01_internship_upload_forward.sql", "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41" ], [ "20261001193722_r01_animal_draft_archive_forward.sql", "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca" ], [ "20261001213914_r01_crm_atomic_forward.sql", "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0" ], [ "20261002011249_r01_cms_atomic_forward.sql", "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901" ], [ "20261002045253_r01_adoption_atomic_forward.sql", "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3" ], [ "20261002111418_r01_admin_access_atomic_forward.sql", "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e" ], [ "20261002170945_r01_finance_callback_forward.sql", "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde" ]
+  ],
+  fixtureScope: [ "synthetic", "synthetic", "synthetic", "synthetic" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"fixtureScope":["synthetic","synthetic","synthetic","synthetic"]} [0.44ms]
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptVersion: 1,
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "update_group_enquiry_with_audit",
+      owner: "postgres",
+      args: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      allargs: "p_enquiry_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_patch jsonb",
+      defaults: 0,
+      default_expression: null,
+      result: "jsonb",
+      config: [ "search_path=public, pg_temp" ],
+      definer: true,
+      language: "plpgsql",
+      kind: "f",
+      cost: 100,
+      rows: 0,
+      strict: false,
+      leakproof: false,
+      parallel: "u",
+      volatility: "v",
+      support: "-",
+      variadic: "-",
+      modes: null,
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  protectedBefore: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  protectedAfter: "{\"snapshot\":{\"template\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]},\"modern\":{\"catalog\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"managed\":{\"roles\":[],\"types\":[],\"views\":[],\"columns\":[],\"indexes\":[],\"schemas\":[],\"defaults\":[],\"policies\":[],\"triggers\":[],\"functions\":[],\"relations\":[],\"sequences\":[],\"extensions\":[],\"constraints\":[],\"memberships\":[],\"databaseOwner\":[],\"extensionMembers\":[]},\"rows\":[{\"schema\":\"synthetic\",\"table\":\"synthetic\",\"count\":\"0\",\"hash\":\"00000000000000000000000000000000\"}],\"sequences\":[]}},\"hash\":\"10ee34556a1e90d5e19217c32390ef7116c4ca7a668b8e6efec6135e1ddd901f\"}",
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }, {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    },
+    ... 296 more items
+  ],
+  indexes: [
+    {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }, {
+      synthetic: true,
+    }
+  ],
+  shapes: [
+    {
+      name: "auth.users",
+    }, {
+      name: "public.admin_user",
+    }, {
+      name: "public.group_enquiries",
+    }, {
+      name: "public.audit_log",
+    }
+  ],
+  bindings: {
+    synthetic: {
+      rawSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      canonicalSha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      rawGitBlob: "0000000000000000000000000000000000000000",
+      rawBytes: 1,
+      archive: "s0.source",
+    },
+  },
+  dependencies: [
+    [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "auth.users", "admin_user", "group_enquiries", "audit_log" ],
+}
+
+(fail) capture refuses incomplete saved proof contract {"dependencies":[["synthetic","0000000000000000000000000000000000000000000000000 [0.37ms]
+(pass) unexpected effective Auth serviceSelect cannot qualify [0.23ms]
+(pass) unexpected effective Auth serviceUpdate cannot qualify [0.09ms]
+(pass) unexpected effective Auth serviceColumnSelect cannot qualify [0.08ms]
+(pass) unexpected effective Auth serviceColumnUpdate cannot qualify [0.07ms]
+(pass) portable fully qualified composition requires an explicit consumer [1.08ms]
+(pass) composition rejects schemaParity=false [0.12ms]
+(pass) composition rejects schemaParity=undefined [0.06ms]
+(pass) composition rejects schemaParity=1 [0.06ms]
+(pass) composition rejects schemaParity=true [0.07ms]
+(pass) composition rejects fullScannerPassed=false [0.05ms]
+(pass) composition rejects fullScannerPassed=undefined [0.04ms]
+(pass) composition rejects fullScannerPassed=1 [0.04ms]
+(pass) composition rejects fullScannerPassed=true [0.22ms]
+(pass) composition rejects dependenciesBound=false [0.04ms]
+(pass) composition rejects dependenciesBound=undefined [0.04ms]
+(pass) composition rejects dependenciesBound=1 [0.03ms]
+(pass) composition rejects dependenciesBound=true [0.05ms]
+(pass) composition rejects firstApply=false [0.04ms]
+(pass) composition rejects firstApply=undefined [0.04ms]
+(pass) composition rejects firstApply=1 [0.02ms]
+(pass) composition rejects firstApply=true [0.02ms]
+(pass) composition rejects secondApply=false [0.03ms]
+(pass) composition rejects secondApply=undefined [0.03ms]
+(pass) composition rejects secondApply=1 [0.03ms]
+(pass) composition rejects secondApply=true [0.02ms]
+(pass) composition rejects secondApplyPreserved=false [0.02ms]
+(pass) composition rejects secondApplyPreserved=undefined [0.03ms]
+(pass) composition rejects secondApplyPreserved=1 [0.03ms]
+(pass) composition rejects secondApplyPreserved=true [0.03ms]
+(pass) composition rejects outsideTargetsPreserved=false [0.04ms]
+(pass) composition rejects outsideTargetsPreserved=undefined [0.03ms]
+(pass) composition rejects outsideTargetsPreserved=1 [0.06ms]
+(pass) composition rejects outsideTargetsPreserved=true [0.07ms]
+(pass) composition rejects supplementalPreserved=false [0.04ms]
+(pass) composition rejects supplementalPreserved=undefined [0.05ms]
+(pass) composition rejects supplementalPreserved=1 [0.05ms]
+(pass) composition rejects supplementalPreserved=true [0.04ms]
+(pass) composition rejects refusalsPassed=false [0.04ms]
+(pass) composition rejects refusalsPassed=undefined [0.03ms]
+(pass) composition rejects refusalsPassed=1 [0.04ms]
+(pass) composition rejects refusalsPassed=true [0.04ms]
+(pass) composition rejects testPassed=false [0.03ms]
+(pass) composition rejects testPassed=undefined [0.03ms]
+(pass) composition rejects testPassed=1 [0.03ms]
+(pass) composition rejects testPassed=true [0.03ms]
+(pass) composition rejects zeroRowsAfter=false [0.03ms]
+(pass) composition rejects zeroRowsAfter=undefined [0.03ms]
+(pass) composition rejects zeroRowsAfter=1 [0.03ms]
+(pass) composition rejects zeroRowsAfter=true [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=false [0.04ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=undefined [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=1 [0.03ms]
+(pass) composition rejects catalogAfterBehaviorPreserved=true [0.02ms]
+(pass) composition rejects normalDrop=false [0.03ms]
+(pass) composition rejects normalDrop=undefined [0.03ms]
+(pass) composition rejects normalDrop=1 [0.03ms]
+(pass) composition rejects normalDrop=true [0.03ms]
+(pass) composition rejects templatePreserved=false [0.03ms]
+(pass) composition rejects templatePreserved=undefined [0.04ms]
+(pass) composition rejects templatePreserved=1 [0.03ms]
+(pass) composition rejects templatePreserved=true [0.03ms]
+(pass) composition rejects modernPreserved=false [0.03ms]
+(pass) composition rejects modernPreserved=undefined [0.03ms]
+(pass) composition rejects modernPreserved=1 [0.03ms]
+(pass) composition rejects modernPreserved=true [0.02ms]
+(pass) composition rejects frozenInputsPreserved=false [0.03ms]
+(pass) composition rejects frozenInputsPreserved=undefined [0.04ms]
+(pass) composition rejects frozenInputsPreserved=1 [0.03ms]
+(pass) composition rejects frozenInputsPreserved=true [0.04ms]
+(pass) composition rejects fixed contract {"receiptVersion":0} [0.13ms]
+(pass) composition rejects fixed contract {"mode":"modern"} [0.05ms]
+(pass) composition rejects fixed contract {"mode":"component"} [0.02ms]
+(pass) composition rejects fixed contract {"receiptVersion":1,"receiptType":"capture"} [0.02ms]
+(pass) composition rejects fixed contract {"error":"cleanup observation failed"} [0.03ms]
+(pass) composition rejects fixed contract {"failedFinalFlags":["modernPreserved"]} [0.03ms]
+(pass) composition rejects fixed contract {"requiredFinalFlags":[]} [0.03ms]
+(pass) composition rejects fixed contract {"testExit":1} [0.03ms]
+(pass) composition rejects fixed contract {"rowCountsAfter":[]} [0.03ms]
+(pass) composition rejects fixed contract {"refusals":[]} [0.23ms]
+(pass) portable component capture requires both additional exact flags [0.62ms]
+(pass) portable modern composition uses its actual cardinality [0.46ms]
+(pass) portable component composition uses its actual cardinality [0.33ms]
+(pass) portable four local gates validate without ignored receipts [0.25ms]
+(pass) local gates reject finalProfilesQualified=false [0.05ms]
+(pass) local gates reject finalProfilesQualified=undefined [0.02ms]
+(pass) local gates reject finalProfilesQualified=1
+(pass) local gates reject finalProfilesQualified=true
+(pass) local gates reject sourceFrozen=false
+(pass) local gates reject sourceFrozen=undefined
+(pass) local gates reject sourceFrozen=1
+(pass) local gates reject sourceFrozen=true [0.02ms]
+(pass) local gates reject frozenInputsPreserved=false [0.01ms]
+(pass) local gates reject frozenInputsPreserved=undefined
+(pass) local gates reject frozenInputsPreserved=1
+(pass) local gates reject frozenInputsPreserved=true
+(pass) local gates reject templatePreserved=false [0.01ms]
+(pass) local gates reject templatePreserved=undefined
+(pass) local gates reject templatePreserved=1 [0.01ms]
+(pass) local gates reject templatePreserved=true [0.01ms]
+(pass) local gates reject fixed contract {"mode":"hosted"} [0.04ms]
+(pass) local gates reject fixed contract {"error":"cleanup observation failed"} [0.01ms]
+(pass) local gates reject fixed contract {"failedFinalFlags":["templatePreserved"]}
+(pass) local gates reject fixed contract {"requiredFinalFlags":[]}
+(pass) local gates reject fixed contract {"gates":[]} [0.01ms]
+(pass) local gates reject fixed contract {"databaseReceipts":{"hosted":"synthetic","modern":"synthetic"}} [0.03ms]
+(pass) nonzero or duplicated local gate cannot qualify [0.09ms]
+
+9 tests failed:
+(fail) capture refuses incomplete saved proof contract {} [10.83ms]
+(fail) capture refuses incomplete saved proof contract {} [0.75ms]
+(fail) capture refuses incomplete saved proof contract {"protectedAfter":"{}"} [0.46ms]
+(fail) capture refuses incomplete saved proof contract {"protectedBefore":"{}","protectedAfter":"{}"} [0.38ms]
+(fail) capture refuses incomplete saved proof contract {"bindings":{}} [0.63ms]
+(fail) capture refuses incomplete saved proof contract {"native":[]} [0.38ms]
+(fail) capture refuses incomplete saved proof contract {"indexes":[]} [0.45ms]
+(fail) capture refuses incomplete saved proof contract {"fixtureScope":["synthetic","synthetic","synthetic","synthetic"]} [0.44ms]
+(fail) capture refuses incomplete saved proof contract {"dependencies":[["synthetic","0000000000000000000000000000000000000000000000000 [0.37ms]
+
+ 174 pass
+ 9 fail
+ 194 expect() calls
+Ran 183 tests across 1 file. [205.00ms]

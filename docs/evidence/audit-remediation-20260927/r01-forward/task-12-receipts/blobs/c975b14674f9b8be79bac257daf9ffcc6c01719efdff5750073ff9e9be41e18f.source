@@ -1,0 +1,47 @@
+def integration(candidate,before,counts):
+ def outside(value):
+  copied=json.loads(json.dumps(value));copied['catalog']['functions']=[f for f in copied['catalog']['functions']if not(f['schema']=='public'and f['name']=='update_group_enquiry_with_audit')];copied['functions']=[f for f in copied['functions']if not(f['schema']=='public'and f['name']=='update_group_enquiry_with_audit')];return copied
+ def transport(label,sql,required=True,mutator=False):
+  raw=sql.encode()if isinstance(sql,str)else sql;path=out/(label+'.transaction.source');path.write_bytes(raw);receipt.setdefault('transactionTransports',[]).append({'label':label,'archive':path.name,'rawSha256':sha(raw),'rawGitBlob':blob(raw),'bytes':len(raw),'preArchived':True,'connectionUser':'supabase_admin'if mutator else'postgres'});save()
+  return run(['docker','exec','-i',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','supabase_admin'if mutator else'postgres','-d','postgres'],raw,required)
+ transport('first-apply',b'\\set VERBOSITY verbose\nBEGIN;\n'+candidate+b'\nCOMMIT;\n');receipt['firstApply']=True;first=capture('after-first');receipt['outsideTargetsPreserved']=outside(before)==outside(first);receipt['supplementalPreserved']=all(before[k]==first[k]for k in ['auth','native','indexes','shapes'])and outside(before)['functions']==outside(first)['functions'];assert receipt['outsideTargetsPreserved']and receipt['supplementalPreserved']
+ target=[f for f in first['functions']if f['schema']=='public'and f['name']=='update_group_enquiry_with_audit'];expected=json.loads((out/'expected-next.json').read_text());receipt['nativeNextTargets']=target;receipt['nativeNextObserved']=target==expected;assert receipt['nativeNextObserved'];save()
+ transport('second-apply',b'\\set VERBOSITY verbose\nBEGIN;\n'+candidate+b'\nCOMMIT;\n');receipt['secondApply']=True;second=capture('after-second');receipt['secondApplyPreserved']=first==second;assert first==second;save()
+ mutations=json.loads((out/'refusals.json').read_text());assert len(mutations)==14
+ values=[]
+ for k,q in queries.items():
+  if k=='fixtureScope':continue
+  expr='(select catalog from ('+q+')captured)'if k=='catalog'else'(select value from ('+q+')captured)'if k in ['auth','native','indexes','shapes']else"(select coalesce(jsonb_agg(to_jsonb(q)),'[]'::jsonb)from ("+q+')q)'
+  values.extend(["'"+k+"'",expr])
+ fullSelect='select jsonb_build_object('+','.join(values)+');\n'
+ identitySQL="DO $identity$ BEGIN IF current_user<>'postgres' OR session_user<>'supabase_admin' THEN RAISE EXCEPTION 'Owned group mutator candidate identity differs';END IF;END;$identity$;select 'TASK12_IDENTITY '||jsonb_build_object('current_user',current_user,'session_user',session_user)::text;\n"
+ receipt['refusals']=[]
+ for label,change in mutations:
+  raw='\\set VERBOSITY verbose\nBEGIN;set local search_path=pg_catalog;\n'+fullSelect+change+';\nset local role postgres;\nset local search_path=pg_catalog;\n'+identitySQL+fullSelect+'SAVEPOINT task12_refusal;\n'+identitySQL+'\\set ON_ERROR_STOP off\n'+candidate.decode()+'\n\\echo TASK12_SQLSTATE :SQLSTATE\n\\set ON_ERROR_STOP on\nROLLBACK TO SAVEPOINT task12_refusal;\nset local search_path=pg_catalog;\n'+identitySQL+fullSelect+'ROLLBACK;\n'
+  result=transport('refusal-'+label,raw,mutator=True);lines=result.stdout.decode().splitlines();snapshots=[json.loads(line)for line in lines if line.startswith('{')];codes=[line.split()[-1]for line in lines if line.startswith('TASK12_SQLSTATE ')];identities=[json.loads(line[len('TASK12_IDENTITY '):])for line in lines if line.startswith('TASK12_IDENTITY ')]
+  assert len(snapshots)==3 and snapshots[0]!=snapshots[1]and snapshots[1]==snapshots[2]and codes==['55000']and b'ERROR:  55000:'in result.stderr and len(re.findall(rb'ERROR:',result.stderr))==1,(label,codes,result.stderr[-500:]);assert identities==[{'current_user':'postgres','session_user':'supabase_admin'}]*3
+  receipt['refusals'].append({'label':label,'code':'55000','changed':True,'preserved':True,'identities':identities,'qualification':'Full unchanged candidate under postgres after owned transactional metadata mutation; complete before/changed/after captures and savepoint rollback.'});save()
+ receipt['refusalsPassed']=len(receipt['refusals'])==14;receipt['fixtureConnectionIdentity']=all(len(f['identities'])==3 for f in receipt['refusals'])
+ # These are complete observed vectors mixed into unobserved combinations, guard-only.
+ match=re.search(rb" select p.value->'nextTargets' into v_expected_next[\s\S]*? if v_expected_next is null then raise exception 'R01 group correlated prerequisite or target tuple differs' using errcode='55000';end if;",candidate);assert match;guard=match.group();(out/'mixed-exact-selector.source').write_bytes(guard);receipt['mixedGuardExtraction']={'candidateSha256':sha(candidate),'byteRange':list(match.span()),'guardSha256':sha(guard)}
+ literal=lambda value:"'"+json.dumps(value,separators=(',',':'),ensure_ascii=False).replace("'","''")+"'::jsonb"
+ receipt['mixedRefusals']=[]
+ for i,item in enumerate(json.loads((out/'mixed-vectors.json').read_text())):
+  mixedBefore=capture('mix'+str(i)+'-before');assert mixedBefore==second
+  script="\\set VERBOSITY verbose\nBEGIN;\nDO $mixed$ DECLARE v_vector jsonb:="+literal(item['vector'])+";v_actual jsonb:="+literal(target)+";v_expected_next jsonb;BEGIN\n"+guard.decode()+"\nEND;$mixed$;\nROLLBACK;\n"
+  result=transport('mix'+str(i),script,False);assert result.returncode==3 and b'ERROR:  55000: R01 group correlated prerequisite or target tuple differs'in result.stderr,(item['label'],result.stderr[-500:]);mixedAfter=capture('mix'+str(i)+'-after');assert mixedBefore==mixedAfter
+  receipt['mixedRefusals'].append({'label':item['label'],'code':'55000','exit':3,'preserved':True,'qualification':'Actual PostgreSQL guard-only block; exact byte-extracted complete correlated selector. Not a full candidate schema replay.'});save()
+ receipt['mixedRefusalsPassed']=len(receipt['mixedRefusals'])==2;final=capture('after-refusals');assert final==second;receipt['catalogAfterRefusalsPreserved']=True
+ # Domain behavior on the native engine through psql, independent of the native-local Bun gate.
+ receipt['nativeBehavior']=[]
+ for label,state,expectedCode in [('staff-update','confirmed',None),('banned-actor','banned','42501'),('unconfirmed-actor','unconfirmed','42501'),('expired-ban','expired',None),('audit-rollback','confirmed','23514')]:
+  actor=str(uuid.uuid4());enquiry=str(uuid.uuid4());keyid=str(uuid.uuid4());confirmed='null'if state=='unconfirmed'else'now()';ban="now()+interval '1 day'"if state=='banned'else"now()-interval '1 hour'"if state=='expired'else'null'
+  seed="insert into auth.users(id,email,email_confirmed_at,banned_until)values('"+actor+"','"+actor+"@example.invalid',"+confirmed+","+ban+");insert into public.admin_user(auth_user_id,email,role,status)values('"+actor+"','"+actor+"@example.invalid','staff','active');insert into public.group_enquiries(id,organisation,contact_name,contact_email,contact_phone,activity_type,participant_count,idempotency_key,updated_at)values('"+enquiry+"','Task12 native synthetic','Synthetic contact','group@example.invalid','00000000','shelter_visit',15,'"+keyid+"','2020-01-01');"
+  call="public.update_group_enquiry_with_audit('"+enquiry+"','"+actor+"','2020-01-01','{\"status\":\"in_progress\"}')"
+  extra="alter table public.audit_log add constraint task12_native_audit_reject check(action<>'group_enquiries.update');"if label=='audit-rollback'else''
+  command="DO $case$declare r jsonb;begin r:="+call+";if r->>'kind'<>'updated' then raise exception 'Native group success absent';end if;end;$case$;"if expectedCode is None else"DO $case$begin perform "+call+";raise exception 'Native group rejection absent';exception when sqlstate '"+expectedCode+"' then null;end;$case$;"
+  status='in_progress'if expectedCode is None else'new';audits=1 if expectedCode is None else 0
+  assertion="DO $assert$begin if (select status from public.group_enquiries where id='"+enquiry+"')<>'"+status+"' or (select count(*)from public.audit_log where entity_id='"+enquiry+"')<>"+str(audits)+" then raise exception 'Native group atomic observation differs';end if;end;$assert$;"
+  script='BEGIN;'+seed+extra+'set local role service_role;'+command+'set local role postgres;'+assertion+'ROLLBACK;';transport('native-case-'+label,script,mutator=True);receipt['nativeBehavior'].append({'label':label,'exit':0,'expectedCode':expectedCode,'expectedStatus':status,'expectedAudits':audits,'rollback':True});save()
+ receipt['nativeBehaviorPassed']=len(receipt['nativeBehavior'])==5;behaviorAfter=capture('after-behavior');receipt['catalogAfterBehaviorPreserved']=second==behaviorAfter;assert receipt['catalogAfterBehaviorPreserved']
+ receipt['result']='Owned native17.11 group candidate: actual NEXT, two applies,14 full-candidate refusals,two guard-only mixed vectors,five psql domain transactions. Native-local Bun NOT RUN; real exact-head CI group suite remains separately required.';save()

@@ -1,0 +1,9 @@
+{
+  "command": [
+    "git",
+    "show",
+    "f4e96e3484d135d179caea835d913552d96d2dcb:supabase/config.toml"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

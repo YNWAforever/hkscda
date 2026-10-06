@@ -1,0 +1,43 @@
+"""Portable synthetic validator branches; no actual catalog receipts are imported."""
+import copy,hashlib,importlib.util,json,pathlib,unittest
+p=pathlib.Path(__file__).with_name('binder.py');s=importlib.util.spec_from_file_location('binder',p);b=importlib.util.module_from_spec(s);s.loader.exec_module(b)
+class Tests(unittest.TestCase):
+ def setUp(self):
+  self.raw=b'synthetic UTF8 input\r\n';self.pin={'rawSha256':b.sha(self.raw),'canonicalSha256':b.canonical(self.raw,'raw-lf'),'rawGitBlob':b.blob(self.raw),'rawBytes':len(self.raw)}
+  self.r={'receiptVersion':1,'receiptType':'composition','mode':'hosted','error':None,'failedFinalFlags':[],'requiredFinalFlags':b.COMPOSITION_FLAGS,'refusals':[{}]*14,**{k:True for k in b.COMPOSITION_FLAGS}}
+ def save(self,value,name):
+  folder=p.parent/'fixtures';folder.mkdir(exist_ok=True);raw=(json.dumps(value,sort_keys=True)+'\n').encode();f=folder/(self._testMethodName+name+'.json');
+  if f.exists():self.assertEqual(f.read_bytes(),raw)
+  else:f.write_bytes(raw)
+ def test_exact_raw_identity(self):
+  self.save(self.pin,'');b.identity(self.raw,self.pin)
+ def test_every_raw_canonical_git_byte_identity_is_required(self):
+  for k in self.pin:
+   wrong=copy.deepcopy(self.pin);wrong[k]=False;self.save(wrong,k)
+   with self.subTest(k=k),self.assertRaises(ValueError):b.identity(self.raw,wrong)
+ def test_modified_archive_rejected(self):
+  with self.assertRaises(ValueError):b.identity(self.raw+b'changed',self.pin)
+ def test_canonical_contracts_are_not_unioned(self):
+  wrong=dict(self.pin,canonicalSha256=b.canonical(self.raw,'json-string-lf'));self.save(wrong,'')
+  with self.assertRaises(ValueError):b.identity(self.raw,wrong)
+ def test_complete_fixed_receipt(self):
+  self.save(self.r,'');b.contract(self.r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+ def test_missing_false_string_numeric_and_extra_flags_rejected(self):
+  for i,value in enumerate([None,False,'true',1]):
+   r=copy.deepcopy(self.r);r[b.COMPOSITION_FLAGS[0]]=value;self.save(r,str(i))
+   with self.subTest(value=value),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+  r=copy.deepcopy(self.r);r['requiredFinalFlags'].append('invented');self.save(r,'extra')
+  with self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+ def test_missing_error_failed_array_mode_version_and_cardinality_rejected(self):
+  for i,patch in enumerate([{'error':'failure'},{'failedFinalFlags':['failed']},{'mode':'modern'},{'receiptVersion':True},{'refusals':[{}]*13}]):
+   r=copy.deepcopy(self.r);r.update(patch);self.save(r,str(i))
+   with self.subTest(patch=patch),self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+  r=copy.deepcopy(self.r);del r['error'];self.save(r,'missing')
+  with self.assertRaises(ValueError):b.contract(r,'composition','hosted',b.COMPOSITION_FLAGS,{'refusals':14})
+ def test_ordered_original_texts_are_equal(self):
+  rows=[{'ordinal':i,'text':'Original synthetic reason and cost '+str(i)}for i in range(1,69)];b.ordered({'rulingCount':68,'rulings':rows},{'allOrderedOriginalEntries':rows})
+ def test_reordered_missing_changed_original_texts_rejected(self):
+  rows=[{'ordinal':i,'text':'Original synthetic reason and cost '+str(i)}for i in range(1,69)]
+  for changed in [rows[:-1],list(reversed(rows)),[dict(rows[0],text='rewritten')]+rows[1:]]:
+   with self.assertRaises(ValueError):b.ordered({'rulingCount':68,'rulings':rows},{'allOrderedOriginalEntries':changed})
+if __name__=='__main__':unittest.main()

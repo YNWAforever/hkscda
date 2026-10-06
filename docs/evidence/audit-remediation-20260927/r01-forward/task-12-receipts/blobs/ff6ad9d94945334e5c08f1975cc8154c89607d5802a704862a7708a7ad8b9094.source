@@ -1,0 +1,7 @@
+NOTICE:  schema "private" already exists, skipping
+NOTICE:  policy "staff can read adoption instruction pages" for relation "public.adoption_instruction_pages" does not exist, skipping
+NOTICE:  policy "staff can update adoption instruction pages" for relation "public.adoption_instruction_pages" does not exist, skipping
+NOTICE:  policy "staff can read adoption instruction revisions" for relation "public.adoption_instruction_revisions" does not exist, skipping
+NOTICE:  policy "staff can create adoption instruction drafts" for relation "public.adoption_instruction_revisions" does not exist, skipping
+NOTICE:  policy "staff can update adoption instruction drafts" for relation "public.adoption_instruction_revisions" does not exist, skipping
+NOTICE:  policy "staff can read adoption instruction publish requests" for relation "public.adoption_instruction_publish_requests" does not exist, skipping

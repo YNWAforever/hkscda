@@ -1,0 +1,1 @@
+{"args": ["git", "rev-parse", "HEAD"], "exit": 0, "stdoutSha256": "0bd1f987701e06fc08f085a78d794b252e84dfc6f58c361739d63043d09abc4b", "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}

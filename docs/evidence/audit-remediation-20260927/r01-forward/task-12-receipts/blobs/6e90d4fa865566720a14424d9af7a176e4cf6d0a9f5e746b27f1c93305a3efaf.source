@@ -1,0 +1,18 @@
+{
+  ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-native-baseline.py": {
+    "rawSha256": "6031d5b4e087450f72a741200becbde83d77922c0e73d9baeccfecdbe60c8c12",
+    "bytes": 16064
+  },
+  ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-native-queries.ts": {
+    "rawSha256": "6a231f98c4b1f8304157abe86d2065740cba1f0e63c12dc0f523e0a22d640975",
+    "bytes": 4254
+  },
+  ".superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-ruling63.source": {
+    "rawSha256": "92618778438079d1e95e616e383e2a7720b3e66f245ae5e81fb17b4d42557961",
+    "bytes": 3142
+  },
+  "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-native-codec.ts": {
+    "rawSha256": "d0b5674411990934e45b00c1dfbe64ac78e8f7e43f84505d6e1f02bee1350f6a",
+    "bytes": 2166
+  }
+}

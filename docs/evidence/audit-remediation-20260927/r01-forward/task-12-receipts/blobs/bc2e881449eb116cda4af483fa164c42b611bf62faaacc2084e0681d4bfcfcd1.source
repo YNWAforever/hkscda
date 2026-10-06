@@ -1,0 +1,9 @@
+{
+  "command": [
+    "git",
+    "rev-parse",
+    "HEAD"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

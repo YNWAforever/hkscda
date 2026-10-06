@@ -1,0 +1,28 @@
+{
+  "args": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\prepare.py"
+  ],
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "sources": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\driver.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\prepare-driver.py.source",
+      "sha256": "91a42e8b8a4edf3e4026a4fbe035afa38d40edec9a87eb087b7c60aa6385b20c",
+      "bytes": 2032
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\prepare.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\prepare-prepare.py.source",
+      "sha256": "bd4bae01744a84162697bd025e39b7ebf39b8f1c7ceb22811356d8b7e7c12a82",
+      "bytes": 4890
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\references.py",
+      "prearchive": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\prepare-references.py.source",
+      "sha256": "2c2eae8d46c117826cabd4c521e78dbda98aa11772b2f81b3cea96296959bffe",
+      "bytes": 3245
+    }
+  ]
+}

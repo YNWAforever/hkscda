@@ -1,0 +1,16 @@
+"""Exercise the shared function called by the actual R68 acceptance path; pure saved fixtures."""
+import pathlib,json,unittest,importlib.util
+out=pathlib.Path(__file__).parent;s=importlib.util.spec_from_file_location('binder',out/'binder-correct.py');b=importlib.util.module_from_spec(s);s.loader.exec_module(b)
+class Tests(unittest.TestCase):
+ def call(self,name):
+  f=json.loads((out/'fixtures'/(name+'.json')).read_bytes());return b.composition_observations(f['mode'],f['receipt'],f['after'],f['behavior'])
+ def test_complete_hosted_inventory(self):self.assertEqual(len(self.call('hosted')),164)
+ def test_complete_modern_inventory(self):self.assertEqual(len(self.call('modern')),163)
+ def test_complete_component_inventory(self):self.assertEqual(len(self.call('component')),163)
+def reject(name):
+ def test(self):
+  with self.assertRaises(ValueError):self.call(name)
+ return test
+for p in sorted((out/'fixtures').glob('*.json')):
+ if p.stem not in ['hosted','modern','component']:setattr(Tests,'test_reject_'+p.stem,reject(p.stem))
+if __name__=='__main__':unittest.main()

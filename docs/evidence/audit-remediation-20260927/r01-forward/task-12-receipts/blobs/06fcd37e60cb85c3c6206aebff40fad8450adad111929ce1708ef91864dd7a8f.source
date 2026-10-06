@@ -1,0 +1,11 @@
+{
+  "command": [
+    "bun",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-fix3-native-transport.ts",
+    "parse",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-native-final-a3b891334d5e498888d663e3b5df776d",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-native-final-a3b891334d5e498888d663e3b5df776d\\m0085.source"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

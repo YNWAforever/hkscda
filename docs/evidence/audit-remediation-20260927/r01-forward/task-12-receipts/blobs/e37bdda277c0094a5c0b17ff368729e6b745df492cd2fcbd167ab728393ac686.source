@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "-- RLS does not protect TRUNCATE, and runtime browser roles never need to\n-- create foreign keys or triggers. Existing Supabase default grants included\n-- these maintenance privileges on public tables, including webhook_event.\nrevoke truncate, references, trigger on all tables in schema public\n  from public, anon, authenticated",
+    "-- Project migrations create public tables as postgres. Keep future tables\n-- from regaining the same privileges through schema defaults.\nalter default privileges for role postgres in schema public\n  revoke truncate, references, trigger on tables\n  from public, anon, authenticated"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

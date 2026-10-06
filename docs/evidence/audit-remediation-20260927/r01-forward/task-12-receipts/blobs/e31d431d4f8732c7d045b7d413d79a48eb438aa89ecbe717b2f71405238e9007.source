@@ -1,0 +1,11 @@
+{
+  "statements": [
+    "create table adoption_applications (\n  id             uuid        primary key default gen_random_uuid(),\n  animal_id      uuid        references animals(id),\n  animal_name    text        not null,\n  animal_type    text        not null,\n  applicant_name text        not null,\n  phone          text        not null,\n  email          text        not null,\n  address        text        not null,\n  housing_type   text        not null,\n  family_size    integer,\n  existing_pets  text,\n  reason         text        not null,\n  status         text        not null default 'pending'\n                             check (status in ('pending', 'approved', 'rejected')),\n  created_at     timestamptz default now()\n)",
+    "alter table adoption_applications enable row level security",
+    "create policy \"admin only\"\n  on adoption_applications for all\n  using (auth.role() = 'authenticated')",
+    "create policy \"public insert\"\n  on adoption_applications for insert\n  with check (true)"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

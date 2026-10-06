@@ -1,0 +1,28 @@
+{
+  "command": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\tests.py"
+  ],
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "prearchivedInputs": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\binder.py",
+      "archive": "red-binder.py.source",
+      "rawSha256": "4d0a4fe557b1ff5b083185bdbac8e73f38f66f6528fc77018e8ce7c216bc042a",
+      "rawBytes": 19511
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\tests.py",
+      "archive": "red-tests.py.source",
+      "rawSha256": "50c5c2bbe07d15e0d9a23b71bb0857c45d1eb6fc29acbc6b0c59ce3da22ac948",
+      "rawBytes": 1068
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-i1-9c681e47a302\\run.py",
+      "archive": "red-run.py.source",
+      "rawSha256": "265153ab4d902f21cb7d2f3eac95a06b168d4ff952d3f7217a2ef3c9585d5b67",
+      "rawBytes": 1351
+    }
+  ]
+}

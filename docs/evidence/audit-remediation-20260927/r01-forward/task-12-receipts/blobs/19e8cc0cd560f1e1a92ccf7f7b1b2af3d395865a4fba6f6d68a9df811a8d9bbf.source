@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-fix2-71ce490a\close.py", line 21, in <module>
+    run('stage-check',['git','diff','--cached','--check'])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-fix2-71ce490a\close.py", line 9, in run
+    if p.returncode:raise ValueError('Closing command failed: '+label)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Closing command failed: stage-check

@@ -1,0 +1,15 @@
+{
+  "atUtc": "2026-10-03T00:37:32.200220+00:00",
+  "task": 12,
+  "branch": "codex/audit-r01-group-enquiry-20261003",
+  "base": "f4e96e3484d135d179caea835d913552d96d2dcb",
+  "baseTree": "762afdd099d4ab8c613a828644e288be0e27a545",
+  "task11CI": 37081732926,
+  "all5Verified": true,
+  "financeActualPass": 67,
+  "singleTarget": "update_group_enquiry_with_audit",
+  "clean": true,
+  "rulingsCount": 59,
+  "productionMutation": false,
+  "releaseAuthority": false
+}

@@ -1,0 +1,128 @@
+.....FFF..........FFFFFEFFFF
+======================================================================
+ERROR: test_reject_row_missing_keys (__main__.Tests.test_reject_row_missing_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+                                       ~~~~~~~~~^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 6, in call
+    f=json.loads((out/'fixtures'/(name+'.json')).read_bytes());return b.composition_observations(f['mode'],f['receipt'],f['after'],f['behavior'])
+                                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\binder.py", line 73, in composition_observations
+    require([x['table']for x in r['rowCountsAfter']]==r['expectedRowTables']and all(x['count']=='0'for x in r['rowCountsAfter']),'Actual after rows differ')
+             ~^^^^^^^^^
+KeyError: 'table'
+
+======================================================================
+FAIL: test_reject_duplicate (__main__.Tests.test_reject_duplicate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_duplicate_catalog (__main__.Tests.test_reject_duplicate_catalog)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_empty (__main__.Tests.test_reject_empty)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_malformed_relation (__main__.Tests.test_reject_malformed_relation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_missing_auth (__main__.Tests.test_reject_missing_auth)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_missing_relation (__main__.Tests.test_reject_missing_relation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_receipt_rows_unsorted (__main__.Tests.test_reject_receipt_rows_unsorted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_row_extra_keys (__main__.Tests.test_reject_row_extra_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_wrong_catalog_inventory (__main__.Tests.test_reject_wrong_catalog_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_wrong_profile_cardinality (__main__.Tests.test_reject_wrong_profile_cardinality)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_wrong_schema (__main__.Tests.test_reject_wrong_schema)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reject_wrong_table (__main__.Tests.test_reject_wrong_table)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\.superpowers\sdd\r01-forward-schema-plan-20261001\task-12-i1-9c681e47a302\tests.py", line 12, in test
+    with self.assertRaises(ValueError):self.call(name)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.015s
+
+FAILED (failures=12, errors=1)

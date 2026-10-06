@@ -1,0 +1,10 @@
+{
+  "command": [
+    "docker",
+    "image",
+    "inspect",
+    "public.ecr.aws/supabase/storage-api@sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

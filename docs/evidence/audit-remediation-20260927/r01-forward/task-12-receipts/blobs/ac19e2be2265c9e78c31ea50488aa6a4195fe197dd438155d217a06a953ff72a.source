@@ -1,0 +1,32 @@
+{
+  "receiptVersion": 1,
+  "mode": "proposed-exact-shared-input-references",
+  "implemented": false,
+  "references": [
+    {
+      "rawSha256": "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166",
+      "bytes": 533,
+      "rawGitBlob": "9c3b7503a1d71e4f1ba933e8b152990550935191",
+      "existingArchivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source",
+      "existingCommit": "f4e96e3484d135d179caea835d913552d96d2dcb",
+      "sharedInputOrigin": "supabase/migrations/20260718122000_correct_service_slogan.sql",
+      "qualification": "Actual original shared historical migration or unchanged shared audit source; current Task12 execution/archive locators remain in translation."
+    },
+    {
+      "rawSha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "bytes": 11205,
+      "rawGitBlob": "7a5866dc7e338d282ec026141659fb643d4e2e83",
+      "existingArchivePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source",
+      "existingCommit": "f4e96e3484d135d179caea835d913552d96d2dcb",
+      "sharedInputOrigin": "src/lib/content/serviceSloganCopy.test.ts",
+      "qualification": "Actual original shared historical migration or unchanged shared audit source; current Task12 execution/archive locators remain in translation."
+    }
+  ],
+  "policy": "Only these already committed immutable f4 bytes may be referenced at their existing Task11 artifact addresses. No payload is created, moved, changed or relabeled there; every other Task12 archive remains unchanged under Task12 and scanned normally. Original owned duplicate stays in ignored scratch and is mapped to this existing artifact.",
+  "duplicateHandling": {
+    "stagedOwn533ByteDuplicate": "Preserve raw ignored scratch source and original staged-path/source receipt. After explicit narrow acceptance only, remove just this new duplicate from index/workspace (no Task11 changes); retain archived original source and translation pointing to existing immutable shared input.",
+    "newArchiveRenaming": false,
+    "auditPredicateChange": false,
+    "auditAttributeChange": false
+  }
+}

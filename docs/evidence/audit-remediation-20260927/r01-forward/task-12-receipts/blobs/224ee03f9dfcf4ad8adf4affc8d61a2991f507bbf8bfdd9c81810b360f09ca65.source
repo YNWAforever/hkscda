@@ -1,0 +1,34 @@
+{
+  "receiptVersion": 1,
+  "mode": "task12-r69-four-alias-withdrawal",
+  "error": null,
+  "records": [
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\blobs\\9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source",
+      "destination": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\withdrawn\\9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166.source",
+      "sha256": "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166",
+      "bytes": 533
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\blobs\\5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source",
+      "destination": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\withdrawn\\5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e.source",
+      "sha256": "5cb1e1862df295d6a91d8173b8dfcce1a8ba65a2e46d7a35bef6acabd81f7e6e",
+      "bytes": 11205
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\blobs\\642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source",
+      "destination": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\withdrawn\\642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c.source",
+      "sha256": "642fde7b8e47fbfa7f2c0cf8acb49413b0ad9921efadcbf5d25409818d8d296c",
+      "bytes": 671
+    },
+    {
+      "source": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-12-receipts\\blobs\\f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2.source",
+      "destination": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-fix2-71ce490a\\withdrawn\\f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2.source",
+      "sha256": "f9bb15ea9c82f5df62d00d4815e4a6fb87f0fcd01507bde6e9e0a61206b452a2",
+      "bytes": 547
+    }
+  ],
+  "trackedPayloadsWithdrawn": 4,
+  "failedGitHeadPreserved": "5d541e3537d6e6da6b087834a70cc98380b94d58",
+  "auditPolicyChanged": false
+}

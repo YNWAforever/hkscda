@@ -1,0 +1,233 @@
+BEGIN;
+-- CRM large exports are private, bounded and short-lived. Apply only after catalog/grant rehearsal.
+create table public.crm_export_job (
+  id uuid primary key default gen_random_uuid(),
+  actor_user_id uuid not null references auth.users(id),
+  kind text not null check (kind in ('supporters','donations')),
+  filters jsonb not null check (jsonb_typeof(filters) = 'object'),
+  item_ids uuid[] not null check (cardinality(item_ids) <= 20000),
+  total integer generated always as (cardinality(item_ids)) stored,
+  processed_count integer not null default 0 check (processed_count >= 0 and processed_count <= cardinality(item_ids)),
+  status text not null default 'pending' check (status in ('pending','processing','ready','failed','cancelled')),
+  lease_owner uuid,
+  lease_until timestamptz,
+  attempts integer not null default 0,
+  error_code text,
+  created_at timestamptz not null default clock_timestamp(),
+  expires_at timestamptz not null default (clock_timestamp() + interval '24 hours'),
+  updated_at timestamptz not null default clock_timestamp()
+);
+create index crm_export_job_claim_idx on public.crm_export_job(status,lease_until,created_at);
+create index crm_export_job_expiry_idx on public.crm_export_job(expires_at);
+alter table public.crm_export_job enable row level security;
+revoke all on public.crm_export_job from public,anon,authenticated;
+grant select on public.crm_export_job to service_role;
+create table private.crm_export_artifact (
+  job_id uuid primary key references public.crm_export_job(id) on delete cascade,
+  csv text not null check (octet_length(csv) <= 20971520),
+  created_at timestamptz not null default clock_timestamp()
+);
+alter table private.crm_export_artifact enable row level security;
+revoke all on private.crm_export_artifact from public,anon,authenticated;
+create function private.crm_export_actor_allowed(p_actor uuid)
+returns boolean language sql stable security definer set search_path=public,pg_temp as $$
+  select exists(
+    select 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+    where a.auth_user_id=p_actor and a.status='active' and a.role in ('treasurer','admin')
+      and u.email_confirmed_at is not null
+      and (u.banned_until is null or u.banned_until<=clock_timestamp())
+  );
+$$;
+revoke all on function private.crm_export_actor_allowed(uuid) from public,anon,authenticated;
+create function public.enqueue_crm_export_job(p_actor uuid,p_kind text,p_filters jsonb)
+returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_ids uuid[]; v_job public.crm_export_job%rowtype;
+begin
+  if not private.crm_export_actor_allowed(p_actor) then
+    raise exception 'crm_export_forbidden' using errcode='42501';
+  end if;
+  if p_kind not in ('supporters','donations') or jsonb_typeof(p_filters)<>'object' then
+    raise exception 'invalid_crm_export_request' using errcode='22023';
+  end if;
+  if p_kind='supporters' then
+    select coalesce(array_agg(s.id order by s.created_at desc,s.id desc),'{}'::uuid[])
+      into v_ids from private.crm_matching_supporters(p_filters) s;
+  else
+    select coalesce(array_agg(d.id order by d.created_at desc,d.id desc),'{}'::uuid[])
+      into v_ids from private.crm_matching_supporters(p_filters) s
+      join public.donation d on d.supporter_id=s.id
+      where (p_filters->>'purpose' is null or d.purpose=p_filters->>'purpose')
+        and (p_filters->>'receiptNeeded' is null or d.receipt_requested=(p_filters->>'receiptNeeded')::boolean);
+  end if;
+  if cardinality(v_ids)>20000 then
+    raise exception 'crm_export_too_large' using errcode='P4130';
+  end if;
+  insert into public.crm_export_job(actor_user_id,kind,filters,item_ids)
+    values(p_actor,p_kind,p_filters,v_ids) returning * into v_job;
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,timestamp,detail)
+    values(p_actor,'export.job.create','crm_export',v_job.id::text,clock_timestamp(),
+      jsonb_build_object('kind',p_kind,'rowCount',v_job.total));
+  return jsonb_build_object('id',v_job.id,'kind',v_job.kind,'total',v_job.total,
+    'status',v_job.status,'processed',0,'expiresAt',v_job.expires_at);
+end;
+$$;
+create function public.claim_crm_export_job(p_owner uuid)
+returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_job public.crm_export_job%rowtype;
+begin
+  with exhausted as (
+    update public.crm_export_job set status='failed',error_code='retry_exhausted',
+      lease_owner=null,lease_until=null,updated_at=clock_timestamp()
+      where status='processing' and lease_until<clock_timestamp() and attempts>=3
+      returning id,actor_user_id,kind
+  )
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,timestamp,detail)
+    select actor_user_id,'export.job.failed','crm_export',id::text,clock_timestamp(),
+      jsonb_build_object('kind',kind,'errorCode','retry_exhausted') from exhausted;
+  select * into v_job from public.crm_export_job
+    where expires_at>clock_timestamp() and attempts<3
+      and (status='pending' or (status='processing' and lease_until<clock_timestamp()))
+    order by created_at,id for update skip locked limit 1;
+  if not found then return null; end if;
+  update public.crm_export_job set status='processing',lease_owner=p_owner,
+    lease_until=clock_timestamp()+interval '10 minutes',attempts=attempts+1,
+    updated_at=clock_timestamp() where id=v_job.id returning * into v_job;
+  return jsonb_build_object('id',v_job.id,'lease_owner',v_job.lease_owner,
+    'kind',v_job.kind,'total',v_job.total,'processed',v_job.processed_count,'attempts',v_job.attempts);
+end;
+$$;
+create function public.crm_export_job_page(p_job uuid,p_owner uuid,p_offset integer,p_limit integer)
+returns jsonb language plpgsql stable security definer set search_path=public,pg_temp as $$
+declare v_job public.crm_export_job%rowtype; v_rows jsonb;
+begin
+  select * into v_job from public.crm_export_job where id=p_job and status='processing'
+    and lease_owner=p_owner and lease_until>clock_timestamp() and expires_at>clock_timestamp();
+  if not found then raise exception 'crm_export_lease_lost' using errcode='42501'; end if;
+  if p_offset<0 or p_limit<1 or p_limit>500 then
+    raise exception 'invalid_crm_export_page' using errcode='22023';
+  end if;
+  if v_job.kind='supporters' then
+    select coalesce(jsonb_agg(private.crm_supporter_summary(i.id) order by i.ord),'[]'::jsonb)
+      into v_rows from unnest(v_job.item_ids[p_offset+1:p_offset+p_limit]) with ordinality i(id,ord);
+  else
+    select coalesce(jsonb_agg(
+      case when d.id is null or s.id is null then null else
+      jsonb_build_object('supporterId',d.supporter_id,'supporterName',s.name,
+        'supporterEmail',s.email,'donationId',d.id,'amountCents',d.amount_cents,
+        'refundedCents',case when d.status='refunded' then d.amount_cents else d.refunded_cents end,
+        'purpose',d.purpose,'customPurpose',d.custom_purpose,'status',d.status,
+        'method',d.method,'receiptRequested',d.receipt_requested,'createdAt',d.created_at,
+        'receiptNo',(select r.receipt_no from public.receipt r where r.supporter_id=d.supporter_id
+          and r.status='issued' and r.donation_ids @> array[d.id]
+          order by r.issued_at desc,r.id desc limit 1))
+      end order by i.ord),'[]'::jsonb) into v_rows
+      from unnest(v_job.item_ids[p_offset+1:p_offset+p_limit]) with ordinality i(id,ord)
+      left join public.donation d on d.id=i.id
+      left join public.supporter s on s.id=d.supporter_id;
+  end if;
+  return v_rows;
+end;
+$$;
+create function public.append_crm_export_job_page(p_job uuid,p_owner uuid,p_csv_chunk text,p_count integer)
+returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_job public.crm_export_job%rowtype; v_ready boolean;
+begin
+  select * into v_job from public.crm_export_job where id=p_job for update;
+  if not found or v_job.status<>'processing' or v_job.lease_owner is distinct from p_owner
+    or v_job.lease_until<=clock_timestamp() or v_job.expires_at<=clock_timestamp() then
+    return null;
+  end if;
+  if p_count<0 or p_count>500 or (p_count=0 and v_job.total<>0)
+    or v_job.processed_count+p_count>v_job.total
+    or p_count<>least(500,v_job.total-v_job.processed_count) then
+    raise exception 'invalid_crm_export_page' using errcode='22023';
+  end if;
+  if v_job.processed_count=0 then
+    insert into private.crm_export_artifact(job_id,csv) values(p_job,p_csv_chunk);
+  else
+    update private.crm_export_artifact set csv=csv||p_csv_chunk where job_id=p_job;
+    if not found then raise exception 'crm_export_artifact_missing' using errcode='P0001'; end if;
+  end if;
+  v_ready:=v_job.processed_count+p_count=v_job.total;
+  update public.crm_export_job set processed_count=processed_count+p_count,
+    status=case when v_ready then 'ready' else 'pending' end,
+    lease_owner=null,lease_until=null,attempts=0,error_code=null,updated_at=clock_timestamp()
+    where id=p_job;
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,timestamp,detail)
+    values(v_job.actor_user_id,case when v_ready then 'export.job.ready' else 'export.job.page' end,
+      'crm_export',p_job::text,clock_timestamp(),
+      jsonb_build_object('kind',v_job.kind,'processed',v_job.processed_count+p_count,'total',v_job.total));
+  return jsonb_build_object('status',case when v_ready then 'ready' else 'pending' end,
+    'processed',v_job.processed_count+p_count,'total',v_job.total);
+end;
+$$;
+create function public.fail_crm_export_job(p_job uuid,p_owner uuid,p_error text)
+returns boolean language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_job public.crm_export_job%rowtype;
+begin
+  update public.crm_export_job set status='failed',lease_owner=null,lease_until=null,
+    error_code=left(p_error,80),updated_at=clock_timestamp()
+    where id=p_job and status='processing' and lease_owner=p_owner
+    returning * into v_job;
+  if not found then return false; end if;
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,timestamp,detail)
+    values(v_job.actor_user_id,'export.job.failed','crm_export',p_job::text,clock_timestamp(),
+      jsonb_build_object('kind',v_job.kind,'errorCode',v_job.error_code));
+  return true;
+end;
+$$;
+create function public.crm_export_job_status(p_job uuid,p_actor uuid)
+returns jsonb language sql stable security definer set search_path=public,pg_temp as $$
+  select case when private.crm_export_actor_allowed(p_actor) then
+    (select jsonb_build_object('id',j.id,'kind',j.kind,'total',j.total,
+      'status',case when j.expires_at<=clock_timestamp() then 'expired' else j.status end,
+      'processed',j.processed_count,'errorCode',j.error_code,'expiresAt',j.expires_at)
+      from public.crm_export_job j where j.id=p_job and j.actor_user_id=p_actor)
+    else null end;
+$$;
+create function public.crm_export_job_download(p_job uuid,p_actor uuid)
+returns text language sql stable security definer set search_path=public,pg_temp as $$
+  select a.csv from public.crm_export_job j join private.crm_export_artifact a on a.job_id=j.id
+    where j.id=p_job and j.actor_user_id=p_actor and j.status='ready'
+      and j.expires_at>clock_timestamp() and private.crm_export_actor_allowed(p_actor);
+$$;
+create function public.cancel_crm_export_job(p_job uuid,p_actor uuid)
+returns boolean language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_job public.crm_export_job%rowtype;
+begin
+  if not private.crm_export_actor_allowed(p_actor) then return false; end if;
+  select * into v_job from public.crm_export_job
+    where id=p_job and actor_user_id=p_actor and status in ('pending','processing','ready')
+    for update;
+  if not found then return false; end if;
+  update public.crm_export_job set status='cancelled',lease_owner=null,lease_until=null,
+    updated_at=clock_timestamp() where id=p_job;
+  delete from private.crm_export_artifact where job_id=p_job;
+  insert into public.audit_log(actor_user_id,action,entity,entity_id,timestamp,detail)
+    values(p_actor,'export.job.cancel','crm_export',p_job::text,clock_timestamp(),
+      jsonb_build_object('kind',v_job.kind,'rowCount',v_job.total));
+  return true;
+end;
+$$;
+create function public.cleanup_expired_crm_export_jobs()
+returns integer language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_count integer;
+begin
+  delete from public.crm_export_job where expires_at<=clock_timestamp();
+  get diagnostics v_count=row_count;
+  return v_count;
+end;
+$$;
+revoke all on function public.enqueue_crm_export_job(uuid,text,jsonb),
+  public.claim_crm_export_job(uuid),public.crm_export_job_page(uuid,uuid,integer,integer),
+  public.append_crm_export_job_page(uuid,uuid,text,integer),public.fail_crm_export_job(uuid,uuid,text),
+  public.crm_export_job_status(uuid,uuid),public.crm_export_job_download(uuid,uuid),
+  public.cancel_crm_export_job(uuid,uuid),public.cleanup_expired_crm_export_jobs()
+  from public,anon,authenticated;
+grant execute on function public.enqueue_crm_export_job(uuid,text,jsonb),
+  public.claim_crm_export_job(uuid),public.crm_export_job_page(uuid,uuid,integer,integer),
+  public.append_crm_export_job_page(uuid,uuid,text,integer),public.fail_crm_export_job(uuid,uuid,text),
+  public.crm_export_job_status(uuid,uuid),public.crm_export_job_download(uuid,uuid),
+  public.cancel_crm_export_job(uuid,uuid),public.cleanup_expired_crm_export_jobs()
+  to service_role;
+COMMIT;

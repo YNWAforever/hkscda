@@ -1,0 +1,32 @@
+{
+  "command": [
+    "docker",
+    "create",
+    "--name",
+    "hkscda-task12-auth-a3b891334d5e498888d663e3b5df776d",
+    "--network",
+    "container:hkscda-task12-pg-a3b891334d5e498888d663e3b5df776d",
+    "--cpus",
+    "1",
+    "--memory",
+    "512m",
+    "--no-healthcheck",
+    "-e",
+    "API_EXTERNAL_URL=http://127.0.0.1:9999",
+    "-e",
+    "GOTRUE_LOG_LEVEL=error",
+    "-e",
+    "GOTRUE_DB_DRIVER=postgres",
+    "-e",
+    "GOTRUE_DB_DATABASE_URL=postgresql://supabase_auth_admin:postgres@127.0.0.1:5432/postgres",
+    "-e",
+    "GOTRUE_SITE_URL=http://127.0.0.1:3000",
+    "-e",
+    "GOTRUE_JWT_SECRET=task11-r55-owned-synthetic-jwt-secret-0000000000",
+    "public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+    "gotrue",
+    "migrate"
+  ],
+  "timeoutSeconds": 120,
+  "required": true
+}

@@ -1,0 +1,50 @@
+{
+  "receiptVersion": 1,
+  "mode": "67-original-current-ruling-texts",
+  "error": null,
+  "rulingCount": 67,
+  "nativeExecutionContextRulingCount": 66,
+  "prior66AuthorityPreserved": true,
+  "bindings": [
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\rulings-inventory-intermediate.json",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-final67-rulings-inventory-intermediate.json.source",
+      "rawSha256": "063768375860b5a4ab40c2e8019d38ea6f84350eaff5d9754523138b99302e77",
+      "canonicalSha256": "0e57e15d0242bd6bb4306db2e1a9dae07c03b593df8d869eaa3323e2887e5e7b",
+      "rawGitBlob": "9510355ec4469ed8463b48055cf2b04f1158b407",
+      "rawBytes": 136518
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\final-rulings-report-inputs-intermediate.json",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-final67-final-rulings-report-inputs-intermediate.json.source",
+      "rawSha256": "0bc0f03b7378af457dee4835aab4e1cda1968fa427b3106466990d841ec75ac8",
+      "canonicalSha256": "57794fd3456d126e56dd8df0919638e454ecb2e2e719240a68240654e95a7751",
+      "rawGitBlob": "0518f62148ebcded2961f28a747a25793915282f",
+      "rawBytes": 137605
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-null-audit-expectation-native-bridge-ruling67.md",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-final67-task-12-null-audit-expectation-native-bridge-ruling67.md.source",
+      "rawSha256": "69b191eecb211cc1d938d8f60d3c8d02b9e609fb33286814cc85d94811572634",
+      "canonicalSha256": "d667e5b0a242e7e261fdae9f8314ba1002d28892287a8ebc4ef6bce0b19c6d6c",
+      "rawGitBlob": "92571ddf7c1572fe645aaa26cec30e0a2699935b",
+      "rawBytes": 4407
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-dispatch.md",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-final67-task-12-dispatch.md.source",
+      "rawSha256": "86517867554bdea94f44c01020c903ba24072197fe58d26b2c98a52308b176be",
+      "canonicalSha256": "dc8ea8f265928bc425a51e5ecf9f07875bcc293094f9dba9cb8247981e72a291",
+      "rawGitBlob": "f5e3797f2946f3f96acbadf1b7d44e0c37c3e58a",
+      "rawBytes": 41239
+    },
+    {
+      "originalPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\controller-rulings-audit-v35.json",
+      "archivePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-final67-controller-rulings-audit-v35.json.source",
+      "rawSha256": "dd928c68e8dfac7232a79a3f10bed732dc18616652b4cf2ddc161826dbc7d713",
+      "canonicalSha256": "7d5fc956db7354a6c6feacff4dcf7f6b3436ba1bede3dd39053313ae9c415cff",
+      "rawGitBlob": "28e6a27242268aec8e6869a241ec5769e085c0c0",
+      "rawBytes": 570
+    }
+  ]
+}

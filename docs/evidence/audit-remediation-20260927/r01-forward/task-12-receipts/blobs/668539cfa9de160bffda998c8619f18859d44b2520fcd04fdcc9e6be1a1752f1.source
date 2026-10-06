@@ -1,0 +1,66 @@
+BEGIN;
+-- Keep species canonical; adoption and sponsorship are independent memberships.
+ALTER TABLE public.animals
+  ADD COLUMN IF NOT EXISTS adoption_eligible boolean,
+  ADD COLUMN IF NOT EXISTS sponsorship_eligible boolean,
+  ADD COLUMN IF NOT EXISTS retired_at timestamptz;
+UPDATE public.animals SET adoption_eligible=(type IN ('cat','dog')) WHERE adoption_eligible IS NULL;
+UPDATE public.animals SET sponsorship_eligible=(type='sponsor') WHERE sponsorship_eligible IS NULL;
+ALTER TABLE public.animals ALTER COLUMN adoption_eligible SET NOT NULL, ALTER COLUMN sponsorship_eligible SET NOT NULL;
+CREATE OR REPLACE FUNCTION public.set_animal_catalog_membership_defaults()
+RETURNS trigger LANGUAGE plpgsql SET search_path=public,pg_temp AS $$
+BEGIN
+  IF TG_OP='INSERT' THEN
+    NEW.adoption_eligible:=coalesce(NEW.adoption_eligible,NEW.type IN ('cat','dog'));
+    NEW.sponsorship_eligible:=coalesce(NEW.sponsorship_eligible,NEW.type='sponsor');
+  ELSIF NEW.type IS DISTINCT FROM OLD.type
+    AND (OLD.type='sponsor' OR NEW.type='sponsor')
+    AND NEW.adoption_eligible IS NOT DISTINCT FROM OLD.adoption_eligible
+    AND NEW.sponsorship_eligible IS NOT DISTINCT FROM OLD.sponsorship_eligible THEN
+    NEW.adoption_eligible:=(NEW.type IN ('cat','dog'));
+    NEW.sponsorship_eligible:=(NEW.type='sponsor');
+  END IF;
+  RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.set_animal_catalog_membership_defaults() FROM PUBLIC;
+DROP TRIGGER IF EXISTS animal_catalog_membership_defaults ON public.animals;
+CREATE TRIGGER animal_catalog_membership_defaults BEFORE INSERT OR UPDATE OF type ON public.animals
+FOR EACH ROW EXECUTE FUNCTION public.set_animal_catalog_membership_defaults();
+-- Retiring placeholders preserves every historical foreign key.
+DROP POLICY IF EXISTS "public read available" ON public.animals;
+CREATE POLICY "public read available" ON public.animals FOR SELECT
+USING (status='available' AND retired_at IS NULL AND (adoption_eligible OR sponsorship_eligible));
+-- Reapply the repository's staff/admin restriction where production still has the old broad policy.
+DROP POLICY IF EXISTS "admin full access" ON public.animals;
+DROP POLICY IF EXISTS "staff can manage animals" ON public.animals;
+CREATE POLICY "staff can manage animals" ON public.animals FOR ALL TO authenticated
+USING (private.has_admin_role(ARRAY['staff','admin']))
+WITH CHECK (private.has_admin_role(ARRAY['staff','admin']));
+CREATE TABLE private.animal_replacement_batch (
+  id uuid PRIMARY KEY,
+  source_sha256 text NOT NULL,
+  candidate_sha256 text NOT NULL,
+  state text NOT NULL CHECK (state IN ('applied','rolled_back')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE private.animal_replacement_row (
+  batch_id uuid NOT NULL REFERENCES private.animal_replacement_batch(id),
+  animal_id uuid NOT NULL,
+  operation text NOT NULL CHECK (operation IN ('insert','retire')),
+  before_image jsonb,
+  after_image jsonb NOT NULL,
+  PRIMARY KEY (batch_id,animal_id)
+);
+ALTER TABLE private.animal_replacement_batch ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private.animal_replacement_row ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON private.animal_replacement_batch,private.animal_replacement_row FROM PUBLIC,anon,authenticated;
+GRANT ALL ON private.animal_replacement_batch,private.animal_replacement_row TO service_role;
+-- Sponsorship snapshots preserve actual species for canonical legacy animals.
+ALTER TABLE public.sponsorship_preference
+  DROP CONSTRAINT sponsorship_preference_animal_type_snapshot_check;
+ALTER TABLE public.sponsorship_preference
+  ADD CONSTRAINT sponsorship_preference_animal_type_snapshot_check
+  CHECK (animal_type_snapshot IN ('cat','dog','sponsor'));
+COMMIT;

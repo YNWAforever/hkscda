@@ -1,0 +1,47 @@
+
+src\lib\groupEnquiries\atomicForward.database.test.ts:
+(pass) Task12 group enquiry atomic command > resolves current API signature before input rejection [68.57ms]
+(pass) Task12 group enquiry atomic command > banned group actor cannot update an enquiry [326.46ms]
+(pass) Task12 group enquiry atomic command > unconfirmed group actor cannot update an enquiry [1497.45ms]
+(pass) Task12 group transaction contract > staff updates allowed fields and writes one privacy-safe audit [346.90ms]
+(pass) Task12 group transaction contract > admin updates allowed fields and writes one privacy-safe audit [1239.28ms]
+(pass) Task12 group transaction contract > disabled actor is denied without mutation or audit [249.82ms]
+(pass) Task12 group transaction contract > role_changed actor is denied without mutation or audit [39.17ms]
+(pass) Task12 group transaction contract > identity_mismatch actor is denied without mutation or audit [25.61ms]
+(pass) Task12 group transaction contract > missing_auth actor is denied without mutation or audit [80.12ms]
+(pass) Task12 group transaction contract > anon cannot invoke command, read or write group table even with forged actor claims [32.03ms]
+(pass) Task12 group transaction contract > authenticated cannot invoke command, read or write group table even with forged actor claims [74.85ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {} is rejected [409.22ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {"notificationStatus":"sent"} is rejected [23.28ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {"status":"closed","contactEmail":"changed@example.invalid"} is rejected [88.34ms]
+(pass) Task12 group transaction contract > malformed or unowned patch [] is rejected [29.23ms]
+(pass) Task12 group transaction contract > malformed or unowned patch "bad" is rejected [16.38ms]
+(pass) Task12 group transaction contract > constraint failure status rolls back all changes and audit [16.97ms]
+(pass) Task12 group transaction contract > constraint failure assignedTo rolls back all changes and audit [19.05ms]
+(pass) Task12 group transaction contract > constraint failure assignedTo rolls back all changes and audit [30.80ms]
+(pass) Task12 group transaction contract > missing enquiry and stale version return exact result without an audit [38.35ms]
+(pass) Task12 group transaction contract > null actor, enquiry, version and patch preserve the existing input contract [90.78ms]
+(pass) Task12 group transaction contract > explicit null clears only assignedTo and adminNotes with bounded audit fields [331.39ms]
+(pass) Task12 group transaction contract > audit failure rolls back updated enquiry and retry remains possible [35.45ms]
+(pass) Task12 group transaction contract > temporary table shadowing cannot redirect target or audit writes [27.93ms]
+(pass) Task12 group transaction contract > expired Auth ban permits the same confirmed staff contract [14.65ms]
+(pass) Task12 group concurrent transaction fencing > disable mutation-first observes real actor row blocking and rechecked commit order [272.45ms]
+(pass) Task12 group concurrent transaction fencing > disable command-first observes real actor row blocking and rechecked commit order [135.18ms]
+(pass) Task12 group concurrent transaction fencing > role mutation-first observes real actor row blocking and rechecked commit order [475.15ms]
+(pass) Task12 group concurrent transaction fencing > role command-first observes real actor row blocking and rechecked commit order [977.97ms]
+(pass) Task12 group concurrent transaction fencing > ban mutation-first observes real actor row blocking and rechecked commit order [136.92ms]
+(pass) Task12 group concurrent transaction fencing > ban command-first observes real actor row blocking and rechecked commit order [429.31ms]
+(pass) Task12 group concurrent transaction fencing > unconfirm mutation-first observes real actor row blocking and rechecked commit order [479.52ms]
+(pass) Task12 group concurrent transaction fencing > unconfirm command-first observes real actor row blocking and rechecked commit order [362.59ms]
+(pass) Task12 group concurrent transaction fencing > concurrent and sequential same-version retries retain one mutation/audit and exact conflict [89.90ms]
+
+src\lib\groupEnquiries\service.test.ts:
+(pass) group enquiry service > persists normalized public input before notifying [7.79ms]
+(pass) group enquiry service > replays existing idempotency keys without sending duplicate notifications [0.67ms]
+(pass) group enquiry service > records a resolved delivery failure and retries the same enquiry [16.82ms]
+(pass) group enquiry service > keeps public success after notification failure and stores a bounded diagnostic [3.15ms]
+
+ 38 pass
+ 0 fail
+ 142 expect() calls
+Ran 38 tests across 2 files. [11.84s]

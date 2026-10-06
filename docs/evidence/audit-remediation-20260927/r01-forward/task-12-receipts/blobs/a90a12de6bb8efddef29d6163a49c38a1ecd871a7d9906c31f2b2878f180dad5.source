@@ -1,0 +1,1 @@
+{"args": ["git", "diff", "--cached", "--check"], "exit": 2, "stdoutSha256": "fa5a055ffc70139ebe1e12cb59fb6d38dd9229367e206936d03773b55cab6cd1", "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}

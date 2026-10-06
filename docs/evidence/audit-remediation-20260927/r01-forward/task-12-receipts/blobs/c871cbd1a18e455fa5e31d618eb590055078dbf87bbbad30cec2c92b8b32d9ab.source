@@ -1,0 +1,3 @@
+NOTICE:  trigger "enforce_published_site_document_slot_asset" for relation "public.site_document_slots" does not exist, skipping
+NOTICE:  trigger "enforce_published_knowledge_document_assets" for relation "public.knowledge_posts" does not exist, skipping
+NOTICE:  trigger "protect_published_document_references" for relation "public.document_assets" does not exist, skipping

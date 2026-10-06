@@ -1,0 +1,20 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-12-mixed-vectors.test.ts:
+4 |   const mixed = [
+5 |     { label: "native-vector-modern-helpers", vector: { ...native, helpers: modern.helpers } },
+6 |     { label: "modern-catalog-native-rest", vector: { ...native, catalog: modern.catalog } },
+7 |   ];
+8 |   if (mixed.some(m => admitted.some(v => isDeepStrictEqual(v, m.vector))))
+9 |     throw Error("Mixed negative equals an actually observed profile");
+                                                                        ^
+error: Mixed negative equals an actually observed profile
+      at unknownMixedVectors (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-mixed-vectors.ts:9:69)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-12-mixed-vectors.test.ts:10:17)
+(fail) equal catalog facet is not an unknown correlated vector [3.82ms]
+(pass) an observed selected combination is refused before execution [0.78ms]
+
+ 1 pass
+ 1 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [112.00ms]

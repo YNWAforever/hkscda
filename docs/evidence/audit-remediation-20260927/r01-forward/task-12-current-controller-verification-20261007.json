@@ -1,0 +1,399 @@
+{
+  "sourceHead": "72fedaa965bb8bd822bf34a05575d8d385042a8e",
+  "sourceOnly": true,
+  "independentArtifactVerification": {
+    "head": "72fedaa965bb8bd822bf34a05575d8d385042a8e",
+    "base": "a1fe789b26d217276b2c5e20faa7281b7c762ee5",
+    "mode": "read-only independent controller verification; no test replay or DB connection",
+    "committed": [
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts",
+        "bytes": 547,
+        "sha256": "ade58a62a86f5bc65c0f54d2b84aa66ba08bbd0ac51980ea885f90b11518fa30",
+        "blob": "109fe55aac30097937e39439d55846bbd1794854"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-complete-20261007-manifest-lf.json",
+        "bytes": 1562,
+        "sha256": "d16b8c618cb3790406717bf31e02133f0ef39cb92017e2e2aeafabc55bcfe543",
+        "blob": "2c9c1d736afa2af42d44b082eca2344e27729d61"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-complete-20261007.zip",
+        "bytes": 7791042,
+        "sha256": "db1059a207db7b6945b78e8c3f1caf5edfe49eb18d6e90ee0fbc9bb8164a358a",
+        "blob": "38e056618770d6c7dd2d98b75cedd79558790482"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-qualification-20261007-lf.json",
+        "bytes": 39457,
+        "sha256": "cc0078213134f7de8710e409e787a2bc00d91343717fedf72b8c0f5a1bac8e16",
+        "blob": "2013a4dbc3a3eae8bc8b603d4a4b02620d6dd6fa"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-source-freeze-20261007.json",
+        "bytes": 16393,
+        "sha256": "7e0a5e9a4a9eb90e95c760e014db6f831e8a96e836ee4cd3039903a8d1b7844c",
+        "blob": "55017f03033834a4518813d910bf2a8f10a1bd8b"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-tool-bindings-20261007-lf.json",
+        "bytes": 21730,
+        "sha256": "70309985836ea7c8391ba11514d73546ab8d5a83432428eb200bb4551854f529",
+        "blob": "140b1208eb792988c345d633364d91913efb31f0"
+      },
+      {
+        "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+        "bytes": 6147,
+        "sha256": "0d068b9959a47a9e273829f7ff9b2f59f5e2a8d7cedeefd242638af1a5279a5b",
+        "blob": "de9e0c57a444efd75ed88701caf8fdd81a68dd84"
+      }
+    ],
+    "archive": {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-complete-20261007.zip",
+      "bytes": 7791042,
+      "sha256": "db1059a207db7b6945b78e8c3f1caf5edfe49eb18d6e90ee0fbc9bb8164a358a"
+    },
+    "index": {
+      "entry": "index.json",
+      "bytes": 2191443,
+      "sha256": "38a00aeffec7c148dd7314e6c83eedeb0ea74173925853116da2a99d63f6651e"
+    },
+    "originalAliasCount": 5684,
+    "uniquePayloadCount": 483,
+    "closedStagePathCount": 5668,
+    "allOriginalsPayloadsBytesShaEqual": true,
+    "all14ToolsCurrentArchivedRawGitFrozenEqual": true,
+    "stages": [
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/receipt.json",
+        "exit": null,
+        "shared": null,
+        "frozen": null
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/receipt.json",
+        "exit": 1,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/receipt.json",
+        "exit": 1,
+        "shared": true,
+        "frozen": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/receipt.json",
+        "exit": 0,
+        "shared": true,
+        "frozen": true
+      }
+    ],
+    "compositions": [
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/composition/receipt.json",
+        "exit": 0,
+        "summary": [
+          " 38 pass",
+          " 0 fail",
+          " 142 expect() calls"
+        ],
+        "refusals": 14,
+        "emptyTables": 163,
+        "rights": 504,
+        "financeTwice": false
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/composition/receipt.json",
+        "exit": 0,
+        "summary": [
+          " 38 pass",
+          " 0 fail",
+          " 142 expect() calls"
+        ],
+        "refusals": 14,
+        "emptyTables": 163,
+        "rights": 504,
+        "financeTwice": true
+      },
+      {
+        "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/composition/receipt.json",
+        "exit": 0,
+        "summary": [
+          " 38 pass",
+          " 0 fail",
+          " 142 expect() calls"
+        ],
+        "refusals": 14,
+        "emptyTables": 163,
+        "rights": 504,
+        "financeTwice": true
+      }
+    ],
+    "sourceGates": [
+      {
+        "label": "binding-tests",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "test",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.test.ts"
+        ],
+        "pid": 40168,
+        "exit": 0,
+        "seconds": 0.5547837000049185
+      },
+      {
+        "label": "evidence-typecheck",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit",
+          "--target",
+          "ES2022",
+          "--module",
+          "ESNext",
+          "--moduleResolution",
+          "Bundler",
+          "--resolveJsonModule",
+          "--esModuleInterop",
+          "--types",
+          "bun-types",
+          "--skipLibCheck",
+          "--strict",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+        ],
+        "pid": 41736,
+        "exit": 0,
+        "seconds": 2.421713699994143
+      },
+      {
+        "label": "evidence-lint",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "node_modules/eslint/bin/eslint.js",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+        ],
+        "pid": 42844,
+        "exit": 0,
+        "seconds": 4.387177399999928
+      },
+      {
+        "label": "typecheck",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "run",
+          "typecheck"
+        ],
+        "pid": 35260,
+        "exit": 0,
+        "seconds": 54.51886770001147
+      },
+      {
+        "label": "tests",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "test",
+          "--isolate",
+          "--timeout",
+          "30000"
+        ],
+        "pid": 22020,
+        "exit": 0,
+        "seconds": 86.21448569998029
+      },
+      {
+        "label": "lint",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "run",
+          "lint"
+        ],
+        "pid": 30868,
+        "exit": 0,
+        "seconds": 48.31333830000949
+      },
+      {
+        "label": "build",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "run",
+          "build"
+        ],
+        "pid": 11440,
+        "exit": 0,
+        "seconds": 98.81527180000558
+      }
+    ],
+    "fullSuiteSummary": {
+      "pass": 4255,
+      "skip": 633,
+      "fail": 0,
+      "assertions": 12120,
+      "tests": 4888,
+      "files": 629
+    },
+    "formatterBridge": {
+      "keys": [
+        "authQuery",
+        "dependencies",
+        "fixtureScope",
+        "functionsQuery",
+        "indexDetailsQuery",
+        "names",
+        "nativeQuery",
+        "shapesQuery",
+        "tables"
+      ],
+      "allExportedRuntimeValuesAndQueriesByteEqual": true,
+      "pid": 56792,
+      "beforeSource": {
+        "bytes": 6111,
+        "sha256": "fb56e5eeef332119274f9904ec036c894567348737c473e70f022699b079b7fe"
+      },
+      "afterSource": {
+        "bytes": 6147,
+        "sha256": "0d068b9959a47a9e273829f7ff9b2f59f5e2a8d7cedeefd242638af1a5279a5b"
+      },
+      "completeRuntimeBytes": 7657,
+      "completeRuntimeSha256": "cce46046c096a18310e1aa9b0627c19179e06af889228aebad73126d4d1e550f"
+    },
+    "unknowns": [
+      "Oldbf0 preservation attribution",
+      "Old6c-to-f5 managed-row attribution",
+      "Task11 unintended local55321 fixture operation preservation: no before capture; UNKNOWN"
+    ],
+    "notRun": [
+      "Current Task12 native-local Bun17.11 behavior and cold exact-head CI here; mandatory controller gate remains separate",
+      "Hosted/provider/JWT/future UAT",
+      "Production application of all14 R01 or Task8 SQL: DO_NOT_APPLY",
+      "Production/provider/reset/shared-role/cron/publication/push/merge actions"
+    ],
+    "actualCommand": {
+      "argv": [
+        ".superpowers\\sdd\\sequential-merge-20261006\\verify195-current-20261007-v2.py"
+      ],
+      "pid": 48860,
+      "exitOnCompletion": 0
+    },
+    "productionApplied": false
+  },
+  "independentRawVerification": {
+    "head": "72fedaa965bb8bd822bf34a05575d8d385042a8e",
+    "completeSharedStages": [
+      {
+        "stage": "binding_green",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "binding_red",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "format_bridge_final",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "format_verify",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "modern",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "modern_repeat",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "modern_repeat",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "source_gates",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      },
+      {
+        "stage": "source_gates_final",
+        "completeProjectionsEqualAndHashesRecomputed": true
+      }
+    ],
+    "allActualInvocationArgsEqual": true,
+    "finalSevenCommandsNativeZero": true,
+    "sourceEnvironmentUnavailableAndNoOptins": true,
+    "fullTests": {
+      "pass": 4255,
+      "skip": 633,
+      "fail": 0,
+      "assertions": 12120
+    },
+    "lint": {
+      "warnings": 52,
+      "errors": 0
+    },
+    "mode": "read-only independent raw proof; no DB connections/no test replay",
+    "actualCommand": {
+      "argv": [
+        ".superpowers\\sdd\\sequential-merge-20261006\\verify195-raw-stages-20261007.py"
+      ],
+      "pid": 21724,
+      "exitOnCompletion": 0
+    }
+  },
+  "review": {
+    "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-12-current-binding-20261007-review.md",
+    "sha256": "0e07027589a02c700cac5787143d7972769bf95892874cb4d55df6fbec64f20f",
+    "sourceApproved": true
+  },
+  "nativeCurrentExactHeadCI": "PENDING mandatory before merge",
+  "historicalLocal55321Preservation": "UNKNOWN",
+  "productionApproved": false,
+  "productionApplied": false,
+  "operationallyEnabled": false
+}

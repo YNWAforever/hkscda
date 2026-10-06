@@ -1,0 +1,44 @@
+/** R64 owned-only read adapter. Calls the unchanged complete scanner. */
+import {readFile,writeFile} from "node:fs/promises";
+import {resolve} from "node:path";
+import {createHash} from "node:crypto";
+import {catalogQuery,assertSafeFixtureTables} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {functionsQuery,authQuery,nativeQuery,indexDetailsQuery,shapesQuery,fixtureScope} from "./task-12-profile";
+import {queryKind,decodeScannerRows} from "./task-12-native-codec";
+import {protectedCapture} from "./task-12-protected";
+import {mutations} from "./task-12-refusals";
+import {vector} from "./task-12-vector";
+import {unknownMixedVectors} from "./task-12-mixed-vectors";
+const [mode,container,output,label]=process.argv.slice(2),out=resolve(output??"");
+if(!out.startsWith(resolve(".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-native-")))throw Error("Exact owned output required");
+if(mode==="emit"){
+ await writeFile(resolve(out,"queries.json"),JSON.stringify({catalog:catalogQuery,functions:functionsQuery,auth:authQuery,native:nativeQuery,indexes:indexDetailsQuery,shapes:shapesQuery,fixtureScope},null,2)+"\n");
+ await writeFile(resolve(out,"refusals.json"),JSON.stringify(mutations,null,2)+"\n");
+ const inputs=JSON.parse(await readFile("docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile-inputs.json","utf8"));
+ const profiles=await Promise.all(inputs.captures.map(async(p:string)=>JSON.parse(await readFile(p,"utf8"))));
+ const native=JSON.parse(await readFile(inputs.native,"utf8"));
+ await writeFile(resolve(out,"expected-next.json"),JSON.stringify(native.nextTargets,null,2)+"\n");
+ const modern=vector(profiles[1]),hosted=vector(profiles[0]),all=[...profiles.map(vector),native.vector];
+ const mixed=unknownMixedVectors(native.vector,hosted,modern,all);
+ await writeFile(resolve(out,"mixed-vectors.json"),JSON.stringify(mixed,null,2)+"\n");
+}else if(mode==="states"){
+ const states=await protectedCapture(out,"protected-"+label);
+ console.log(JSON.stringify(states));
+}else if(mode==="scan"){
+ if(!/^hkscda-task12-pg-[0-9a-f]{32}$/.test(container??""))throw Error("Exact uniquely owned PG name required");
+ const inspect=Bun.spawnSync(["docker","inspect",container]);if(inspect.exitCode)throw Error("Owned inspect failed");
+ const state=JSON.parse(inspect.stdout.toString())[0];if(state.Name!=="/"+container||state.HostConfig.NetworkMode!=="none"||state.Mounts.length||state.HostConfig.Binds?.length||Object.keys(state.HostConfig.PortBindings??{}).length)throw Error("Owned network/volume/port binding differs");
+ const reads:Record<string,unknown>[]=[];let i=0;
+ type Adapter={unsafe:(query:string)=>Promise<Record<string,unknown>[]>;begin:(fn:(tx:Adapter)=>Promise<Record<string,unknown>[]>)=>Promise<Record<string,unknown>[]>};
+ const adapter:Adapter={unsafe:async(query:string)=>{
+  if(query==="set local search_path=pg_catalog")return [];
+  const sql="begin read only;set local search_path=pg_catalog;select coalesce(jsonb_agg(to_jsonb(q)),'[]'::jsonb) from ("+query+")q;rollback;\n",stem="scanner-"+i++;
+  await writeFile(resolve(out,stem+".sql.source"),sql,{flag:"wx"});
+  queryKind(query);
+  const command=["docker","exec","-i",container,"psql","-X","-qAt","-v","ON_ERROR_STOP=1","-U","postgres","-d","postgres"],p=Bun.spawn(command,{stdin:"pipe",stdout:"pipe",stderr:"pipe"});p.stdin.write(sql);p.stdin.end();
+  const [stdout,stderr,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);await writeFile(resolve(out,stem+".stdout.log"),stdout);await writeFile(resolve(out,stem+".stderr.log"),stderr);reads.push({command,exit,source:stem+".sql.source",stdout:stem+".stdout.log",stderr:stem+".stderr.log",querySha256:createHash("sha256").update(query).digest("hex")});await writeFile(resolve(out,"scanner-reads.json"),JSON.stringify(reads,null,2)+"\n");
+  if(exit!==0)throw Error("Owned scanner metadata query failed: "+stderr);const typed=decodeScannerRows(query,JSON.parse(stdout));const typedRaw=JSON.stringify(typed,null,2)+"\n";await writeFile(resolve(out,stem+".typed.json"),typedRaw);reads[reads.length-1].typed={archive:stem+".typed.json",rawSha256:createHash("sha256").update(typedRaw).digest("hex"),codec:"R56 exact finite known-query uint32/null fields; raw JSON retained"};await writeFile(resolve(out,"scanner-reads.json"),JSON.stringify(reads,null,2)+"\n");return typed;
+ },begin:async(fn:(tx:Adapter)=>Promise<Record<string,unknown>[]>)=>await fn(adapter)};
+ await assertSafeFixtureTables(adapter as unknown as Parameters<typeof assertSafeFixtureTables>[0],fixtureScope);
+ console.log(JSON.stringify({fullScannerPassed:true,fixtureScope,metadataReads:reads.length,adapterQualification:"Unchanged full scanner; each metadata SELECT uses an owned read-only transaction. begin callback's pg_catalog scope is preserved; no writes or network-bearing function invoked."}));
+}else throw Error("Exact emit/states/scan mode required");

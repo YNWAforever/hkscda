@@ -1,0 +1,8 @@
+import pathlib,json,subprocess,sys,hashlib
+out=pathlib.Path(__file__).parent;phase=sys.argv[1];target='binder.py'if phase=='accept'else'tests.py';command=[sys.executable,'-B',str(out/target)];assert not(out/(phase+'.invocation.json')).exists()
+inputs=[]
+for name in ['binder.py','tests.py','run.py']:
+ raw=(out/name).read_bytes();(out/(phase+'-'+name+'.source')).write_bytes(raw);inputs.append({'path':str(out/name),'archive':phase+'-'+name+'.source','rawSha256':hashlib.sha256(raw).hexdigest(),'rawBytes':len(raw)})
+for p in sorted((out/'fixtures').glob('*.json')):
+ raw=p.read_bytes();inputs.append({'path':str(p),'rawSha256':hashlib.sha256(raw).hexdigest(),'rawBytes':len(raw),'qualification':'Synthetic portable input only'})
+(out/(phase+'.invocation.json')).write_bytes((json.dumps({'command':command,'cwd':str(pathlib.Path.cwd()),'prearchivedInputs':inputs},indent=2)+'\n').encode());p=subprocess.run(command,capture_output=True);(out/(phase+'.stdout.log')).write_bytes(p.stdout);(out/(phase+'.stderr.log')).write_bytes(p.stderr);(out/(phase+'.exit.json')).write_bytes((json.dumps({'exit':p.returncode,'stdoutSha256':hashlib.sha256(p.stdout).hexdigest(),'stderrSha256':hashlib.sha256(p.stderr).hexdigest()})+'\n').encode());print(p.stdout.decode('utf-8',errors='replace'));print(p.stderr.decode('utf-8',errors='replace'));sys.exit(p.returncode)

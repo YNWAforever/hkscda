@@ -1,0 +1,32 @@
+"""Pure portable synthetic relation catalogs, never catalog proof or SQL generation input."""
+import pathlib,json,copy,importlib.util
+out=pathlib.Path(__file__).parent;s=importlib.util.spec_from_file_location('binder',out/'binder.py');b=importlib.util.module_from_spec(s);s.loader.exec_module(b)
+def fixture(mode):
+ count=163 if mode=='hosted'else162;catalog={'relations':[{'schema':'public','name':'synthetic_%03d'%i,'kind':'r'}for i in range(count)]+[{'schema':'public','name':'synthetic_view','kind':'v'},{'schema':'public','name':'synthetic_index','kind':'i'}]};expected=sorted(['auth.users']+[x['schema']+'.'+x['name']for x in catalog['relations']if x['kind']in ['r','p']]);rows=[{'table':name,'count':'0'}for name in expected];r={'receiptVersion':1,'receiptType':'composition','mode':mode,'error':None,'failedFinalFlags':[],'requiredFinalFlags':b.COMPOSITION_FLAGS,'refusals':[{}for _ in range(14)],'fixtureScope':[{}for _ in range(4)],'dependencies':[{}for _ in range(10)],**{f:True for f in b.COMPOSITION_FLAGS},'expectedRowTables':expected,'rowCountsAfter':rows};after={'catalog':catalog,'supplemental':{'synthetic':[]}};return{'mode':mode,'receipt':r,'after':after,'behavior':dict(copy.deepcopy(after),rows=copy.deepcopy(rows))}
+def set_rows(f,rows):f['receipt']['rowCountsAfter']=rows;f['receipt']['expectedRowTables']=[r.get('table')for r in rows];f['behavior']['rows']=copy.deepcopy(rows)
+cases={mode:fixture(mode)for mode in ['hosted','modern','component']}
+for name in ['empty','duplicate','missing_auth','wrong_table','wrong_profile_cardinality','wrong_catalog_inventory','duplicate_catalog','missing_relation','expected_inventory_mismatch','behavior_inventory_mismatch','receipt_rows_unsorted','behavior_extra_keys','row_extra_keys','row_missing_keys','malformed_relation','wrong_schema']:
+ f=fixture('hosted')
+ if name=='empty':set_rows(f,[])
+ elif name=='duplicate':set_rows(f,[dict(f['receipt']['rowCountsAfter'][0])for _ in range(164)])
+ elif name=='missing_auth':set_rows(f,[dict(r,table='public.synthetic_not_auth')if r['table']=='auth.users'else r for r in f['receipt']['rowCountsAfter']])
+ elif name=='wrong_table':set_rows(f,[dict(r,table='public.synthetic_not_in_catalog')if r['table']=='public.synthetic_004'else r for r in f['receipt']['rowCountsAfter']])
+ elif name=='wrong_profile_cardinality':f['mode']='modern';f['receipt']['mode']='modern'
+ elif name=='wrong_catalog_inventory':f['after']['catalog']['relations'][0]['name']='catalog_only_wrong';f['behavior']['catalog']=copy.deepcopy(f['after']['catalog'])
+ elif name=='duplicate_catalog':f['after']['catalog']['relations'][1]=copy.deepcopy(f['after']['catalog']['relations'][0]);f['behavior']['catalog']=copy.deepcopy(f['after']['catalog'])
+ elif name=='missing_relation':f['after']['catalog']['relations'].pop(0);f['behavior']['catalog']=copy.deepcopy(f['after']['catalog'])
+ elif name=='expected_inventory_mismatch':f['receipt']['expectedRowTables'][0]='public.not_auth'
+ elif name=='behavior_inventory_mismatch':f['behavior']['rows'][0]['table']='public.not_auth'
+ elif name=='receipt_rows_unsorted':set_rows(f,list(reversed(f['receipt']['rowCountsAfter'])))
+ elif name=='behavior_extra_keys':f['behavior']['unknown']=True
+ elif name=='row_extra_keys':set_rows(f,[dict(r,unknown=True)for r in f['receipt']['rowCountsAfter']])
+ elif name=='row_missing_keys':set_rows(f,[{'count':'0'}for _ in range(164)])
+ elif name=='malformed_relation':f['after']['catalog']['relations'][0]['name']=False;f['behavior']['catalog']=copy.deepcopy(f['after']['catalog'])
+ elif name=='wrong_schema':f['after']['catalog']['relations'][0]['schema']='auth';f['behavior']['catalog']=copy.deepcopy(f['after']['catalog'])
+ cases[name]=f
+for i,count in enumerate([0,False,None,'00','0.0','1',[],{},b'0'.decode()+'\n']):
+ f=fixture('hosted');set_rows(f,[dict(r,count=count)for r in f['receipt']['rowCountsAfter']]);cases['malformed_count_'+str(i)]=f
+folder=out/'fixtures';folder.mkdir(exist_ok=True)
+for name,value in cases.items():
+ path=folder/(name+'.json');raw=(json.dumps(value,sort_keys=True,separators=(',',':'))+'\n').encode();assert not path.exists();path.write_bytes(raw)
+print(json.dumps({'syntheticFixtures':len(cases),'qualification':'Pure validator input; never real catalog evidence'}))

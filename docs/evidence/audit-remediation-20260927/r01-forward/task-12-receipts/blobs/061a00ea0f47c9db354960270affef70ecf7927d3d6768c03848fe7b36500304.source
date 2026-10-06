@@ -1,0 +1,74 @@
+
+src\lib\groupEnquiries\atomicForward.database.test.ts:
+(pass) Task12 group enquiry atomic command > resolves current API signature before input rejection [27.36ms]
+(pass) Task12 group enquiry atomic command > banned group actor cannot update an enquiry [110.31ms]
+(pass) Task12 group enquiry atomic command > unconfirmed group actor cannot update an enquiry [55.94ms]
+(pass) Task12 group transaction contract > staff updates allowed fields and writes one privacy-safe audit [71.85ms]
+(pass) Task12 group transaction contract > admin updates allowed fields and writes one privacy-safe audit [80.05ms]
+(pass) Task12 group transaction contract > disabled actor is denied without mutation or audit [37.92ms]
+(pass) Task12 group transaction contract > role_changed actor is denied without mutation or audit [23.09ms]
+(pass) Task12 group transaction contract > identity_mismatch actor is denied without mutation or audit [14.00ms]
+(pass) Task12 group transaction contract > missing_auth actor is denied without mutation or audit [43.25ms]
+(pass) Task12 group transaction contract > anon cannot invoke command, read or write group table even with forged actor claims [17.69ms]
+(pass) Task12 group transaction contract > authenticated cannot invoke command, read or write group table even with forged actor claims [18.47ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {} is rejected [12.18ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {"notificationStatus":"sent"} is rejected [11.03ms]
+(pass) Task12 group transaction contract > malformed or unowned patch {"status":"closed","contactEmail":"changed@example.invalid"} is rejected [7.96ms]
+(pass) Task12 group transaction contract > malformed or unowned patch [] is rejected [11.92ms]
+(pass) Task12 group transaction contract > malformed or unowned patch "bad" is rejected [13.72ms]
+(pass) Task12 group transaction contract > constraint failure status rolls back all changes and audit [14.16ms]
+(pass) Task12 group transaction contract > constraint failure assignedTo rolls back all changes and audit [12.68ms]
+(pass) Task12 group transaction contract > constraint failure assignedTo rolls back all changes and audit [10.84ms]
+(pass) Task12 group transaction contract > missing enquiry and stale version return exact result without an audit [12.24ms]
+(pass) Task12 group transaction contract > null actor, enquiry, version and patch preserve the existing input contract [22.37ms]
+300 |       expect(next.enquiry).toMatchObject({ assigned_to: null, admin_notes: null, status: "new" });
+301 |       await tx`set local role postgres`;
+302 |       const audits = await tx`select detail from public.audit_log where entity_id=${f.enquiry}`;
+303 |       expect(audits).toHaveLength(2);
+304 |       for (const audit of audits)
+305 |         expect(audit.detail).toEqual({ fields: ["adminNotes", "assignedTo"], status: "new" });
+                                   ^
+error: expect(received).toEqual(expected)
+
+  {
+    "fields": [
+      "adminNotes",
+      "assignedTo",
+    ],
+-   "status": "new",
++   "status": null,
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:305:30)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\groupEnquiries\atomicForward.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task12 group transaction contract > explicit null clears only assignedTo and adminNotes with bounded audit fields [23.05ms]
+(pass) Task12 group transaction contract > audit failure rolls back updated enquiry and retry remains possible [21.14ms]
+(pass) Task12 group transaction contract > temporary table shadowing cannot redirect target or audit writes [21.30ms]
+(pass) Task12 group transaction contract > expired Auth ban permits the same confirmed staff contract [14.56ms]
+(pass) Task12 group concurrent transaction fencing > disable mutation-first observes real actor row blocking and rechecked commit order [83.67ms]
+(pass) Task12 group concurrent transaction fencing > disable command-first observes real actor row blocking and rechecked commit order [79.27ms]
+(pass) Task12 group concurrent transaction fencing > role mutation-first observes real actor row blocking and rechecked commit order [83.91ms]
+(pass) Task12 group concurrent transaction fencing > role command-first observes real actor row blocking and rechecked commit order [86.09ms]
+(pass) Task12 group concurrent transaction fencing > ban mutation-first observes real actor row blocking and rechecked commit order [87.52ms]
+(pass) Task12 group concurrent transaction fencing > ban command-first observes real actor row blocking and rechecked commit order [58.26ms]
+(pass) Task12 group concurrent transaction fencing > unconfirm mutation-first observes real actor row blocking and rechecked commit order [68.26ms]
+(pass) Task12 group concurrent transaction fencing > unconfirm command-first observes real actor row blocking and rechecked commit order [66.17ms]
+(pass) Task12 group concurrent transaction fencing > concurrent and sequential same-version retries retain one mutation/audit and exact conflict [78.28ms]
+
+src\lib\groupEnquiries\service.test.ts:
+(pass) group enquiry service > persists normalized public input before notifying [4.00ms]
+(pass) group enquiry service > replays existing idempotency keys without sending duplicate notifications [0.49ms]
+(pass) group enquiry service > records a resolved delivery failure and retries the same enquiry [0.94ms]
+(pass) group enquiry service > keeps public success after notification failure and stores a bounded diagnostic [1.18ms]
+
+1 tests failed:
+(fail) Task12 group transaction contract > explicit null clears only assignedTo and adminNotes with bounded audit fields [23.05ms]
+
+ 37 pass
+ 1 fail
+ 141 expect() calls
+Ran 38 tests across 2 files. [2.83s]
