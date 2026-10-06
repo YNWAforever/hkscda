@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\atomicForward.database.test.ts:
+PostgresError: there is no unique or exclusion constraint matching the ON CONFLICT specification
+    errno: "42P10",
+ severity: "ERROR",
+    where: "SQL statement \"insert into public.recipient_notification_draft (\n      story_update_id, content_item_id, adoption_case_id, supporter_id, channel,\n      recipient_name, recipient_contact, subject, body, status, created_by\n    )\n    select v_update_id, v_content_id, entry.adoption_case_id, entry.supporter_id,\n           entry.channel, entry.recipient_name, entry.recipient_contact, entry.subject,\n           entry.body, 'draft', p_actor\n    from jsonb_to_recordset(p_command->'rows') as entry(\n      adoption_case_id uuid, supporter_id uuid, channel text,\n      recipient_name text, recipient_contact text, subject text, body text\n    )\n    on conflict (story_update_id, channel, recipient_contact) do nothing\"\nPL/pgSQL function cms_promotion_command(uuid,jsonb) line 94 at SQL statement",
+     file: "plancat.c",
+  routine: "infer_arbiter_indexes",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CMS atomic forward on owned synthetic clone > recipient index prerequisite draft retry creates one live recipient without deleting evidence [48.95ms]
+
+ 0 pass
+ 25 filtered out
+ 1 fail
+Ran 1 test across 1 file. [169.00ms]

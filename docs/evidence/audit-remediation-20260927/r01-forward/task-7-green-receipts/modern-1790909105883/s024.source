@@ -1,0 +1,177 @@
+-- R01 Task 4: restore only missing internship attachment intent contracts.
+-- Reviewed existing modern objects are validated, never replaced.
+-- No real Storage deletion or other provider operation executes here.
+set local search_path = '';
+do $migration$
+declare v_table oid; v_existing boolean; v_function oid; v_actual jsonb; v_acl text[];
+begin
+  if current_user <> 'postgres' then raise exception 'R01 internship requires postgres owner context' using errcode='55000'; end if;
+  if not exists(select 1 from pg_catalog.pg_proc p where p.oid=pg_catalog.to_regprocedure('public.internship_command(uuid,jsonb)') and pg_catalog.md5(pg_catalog.pg_get_functiondef(p.oid))='84662adb879ce5365c625d7d4dfb629c') then
+    raise exception 'R01 internship actor command prerequisite differs' using errcode='55000';
+  end if;
+  if exists(select 1 from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname='internship_attachment_upload_intent' and (c.relkind is distinct from 'r' or c.relpersistence is distinct from 'p' or c.relhasrules or exists(select 1 from pg_catalog.pg_rewrite r where r.ev_class=c.oid))) then
+    raise exception 'R01 internship intent relation profile differs' using errcode='55000';
+  end if;
+
+  v_table := pg_catalog.to_regclass('public.internship_attachment_upload_intent'); v_existing := v_table is not null;
+  if v_table is null then
+    create table public.internship_attachment_upload_intent (
+  storage_path text primary key,
+  application_id uuid not null references public.internship_application(id),
+  actor uuid not null references auth.users(id),
+  created_at timestamptz not null default pg_catalog.clock_timestamp(),
+  expires_at timestamptz not null,
+  attached_at timestamptz,
+  cleanup_claimed_at timestamptz,
+  cleaned_at timestamptz,
+  constraint internship_attachment_upload_intent_path
+    check (storage_path like actor::text || '/' || application_id::text || '/%'),
+  constraint internship_attachment_upload_intent_expiry
+    check (expires_at > created_at)
+);
+    alter table public.internship_attachment_upload_intent enable row level security;
+    revoke all on public.internship_attachment_upload_intent from public, anon, authenticated, service_role;
+    grant select, insert, update, delete on public.internship_attachment_upload_intent to service_role;
+    CREATE INDEX internship_attachment_upload_intent_cleanup_idx ON public.internship_attachment_upload_intent USING btree (expires_at) WHERE ((attached_at IS NULL) AND (cleaned_at IS NULL));
+    v_table := 'public.internship_attachment_upload_intent'::pg_catalog.regclass;
+  end if;
+  select pg_catalog.jsonb_build_object(
+    'columns',(select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('name',a.attname,'position',a.attnum,'type',pg_catalog.format_type(a.atttypid,a.atttypmod),'collation',(select n.nspname||'.'||co.collname from pg_catalog.pg_collation co join pg_catalog.pg_namespace n on n.oid=co.collnamespace where co.oid=a.attcollation),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',case when a.attacl is null then '[]'::jsonb else null end,'default',pg_catalog.pg_get_expr(d.adbin,d.adrelid)) order by a.attnum) from pg_catalog.pg_attribute a left join pg_catalog.pg_attrdef d on d.adrelid=a.attrelid and d.adnum=a.attnum where a.attrelid=v_table and a.attnum>0 and not a.attisdropped),
+    'constraints',(select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('name',con.conname,'type',con.contype,'validated',con.convalidated,'definition',pg_catalog.pg_get_constraintdef(con.oid,true)) order by con.conname) from pg_catalog.pg_constraint con where con.conrelid=v_table),
+    'indexes',(select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('definition',pg_catalog.pg_get_indexdef(i.indexrelid),'valid',i.indisvalid,'ready',i.indisready,'unique',i.indisunique) order by pg_catalog.pg_get_indexdef(i.indexrelid)) from pg_catalog.pg_index i where i.indrelid=v_table)
+  ) into v_actual;
+  if v_actual is distinct from $expected${"columns":[{"acl":[],"name":"storage_path","type":"text","default":null,"notNull":true,"identity":"","position":1,"collation":"pg_catalog.default","generated":""},{"acl":[],"name":"application_id","type":"uuid","default":null,"notNull":true,"identity":"","position":2,"collation":null,"generated":""},{"acl":[],"name":"actor","type":"uuid","default":null,"notNull":true,"identity":"","position":3,"collation":null,"generated":""},{"acl":[],"name":"created_at","type":"timestamp with time zone","default":"clock_timestamp()","notNull":true,"identity":"","position":4,"collation":null,"generated":""},{"acl":[],"name":"expires_at","type":"timestamp with time zone","default":null,"notNull":true,"identity":"","position":5,"collation":null,"generated":""},{"acl":[],"name":"attached_at","type":"timestamp with time zone","default":null,"notNull":false,"identity":"","position":6,"collation":null,"generated":""},{"acl":[],"name":"cleanup_claimed_at","type":"timestamp with time zone","default":null,"notNull":false,"identity":"","position":7,"collation":null,"generated":""},{"acl":[],"name":"cleaned_at","type":"timestamp with time zone","default":null,"notNull":false,"identity":"","position":8,"collation":null,"generated":""}],"constraints":[{"name":"internship_attachment_upload_intent_actor_fkey","type":"f","validated":true,"definition":"FOREIGN KEY (actor) REFERENCES auth.users(id)"},{"name":"internship_attachment_upload_intent_application_id_fkey","type":"f","validated":true,"definition":"FOREIGN KEY (application_id) REFERENCES public.internship_application(id)"},{"name":"internship_attachment_upload_intent_expiry","type":"c","validated":true,"definition":"CHECK (expires_at > created_at)"},{"name":"internship_attachment_upload_intent_path","type":"c","validated":true,"definition":"CHECK (storage_path ~~ (((actor::text || '/'::text) || application_id::text) || '/%'::text))"},{"name":"internship_attachment_upload_intent_pkey","type":"p","validated":true,"definition":"PRIMARY KEY (storage_path)"}],"indexes":[{"ready":true,"valid":true,"unique":false,"definition":"CREATE INDEX internship_attachment_upload_intent_cleanup_idx ON public.internship_attachment_upload_intent USING btree (expires_at) WHERE ((attached_at IS NULL) AND (cleaned_at IS NULL))"},{"ready":true,"valid":true,"unique":true,"definition":"CREATE UNIQUE INDEX internship_attachment_upload_intent_pkey ON public.internship_attachment_upload_intent USING btree (storage_path)"}]}$expected$::jsonb
+    or not exists(select 1 from pg_catalog.pg_class where oid=v_table and relkind='r' and relpersistence='p' and not relhasrules and not exists(select 1 from pg_catalog.pg_rewrite where ev_class=v_table) and relrowsecurity and not relforcerowsecurity and relowner='postgres'::pg_catalog.regrole and reloptions is null and relreplident='d')
+    or exists(select 1 from pg_catalog.pg_policy where polrelid=v_table)
+    or exists(select 1 from pg_catalog.pg_trigger where tgrelid=v_table and not tgisinternal)
+    or exists(select 1 from pg_catalog.pg_constraint where conrelid=v_table and (condeferrable or condeferred)) then
+    raise exception 'R01 internship intent definition differs: internship_attachment_upload_intent' using errcode='55000';
+  end if;
+  -- Each reviewed FK owns four ordinary origin-enabled RI triggers, including
+  -- DELETE/UPDATE actions on its referenced table. Constraint validity alone
+  -- does not prove that these enforcement triggers are enabled or intact.
+  if exists(select 1 from pg_catalog.pg_constraint c where c.conrelid=v_table and c.contype='f' and (
+    (select count(*) from pg_catalog.pg_trigger t where t.tgconstraint=c.oid)<>4
+    or exists(select 1 from (values
+      ('pg_catalog."RI_FKey_check_ins"()'::pg_catalog.regprocedure,5,true),
+      ('pg_catalog."RI_FKey_check_upd"()'::pg_catalog.regprocedure,17,true),
+      ('pg_catalog."RI_FKey_noaction_del"()'::pg_catalog.regprocedure,9,false),
+      ('pg_catalog."RI_FKey_noaction_upd"()'::pg_catalog.regprocedure,17,false)
+    ) expected(function_oid,event_type,intent_side) where (
+      select count(*) from pg_catalog.pg_trigger t where t.tgconstraint=c.oid
+        and t.tgrelid=case when expected.intent_side then c.conrelid else c.confrelid end
+        and t.tgconstrrelid=case when expected.intent_side then c.confrelid else c.conrelid end
+        and t.tgconstrindid=c.conindid and t.tgfoid=expected.function_oid
+        and t.tgtype=expected.event_type and t.tgenabled='O' and t.tgisinternal
+        and t.tgparentid=0 and not t.tgdeferrable and not t.tginitdeferred
+        and t.tgnargs=0 and t.tgattr::text='' and t.tgargs=''::bytea
+        and t.tgqual is null and t.tgoldtable is null and t.tgnewtable is null
+        and (select count(*) from pg_catalog.pg_depend d where d.classid='pg_catalog.pg_trigger'::pg_catalog.regclass and d.objid=t.oid)=1
+        and exists(select 1 from pg_catalog.pg_depend d where d.classid='pg_catalog.pg_trigger'::pg_catalog.regclass and d.objid=t.oid and d.objsubid=0 and d.refclassid='pg_catalog.pg_constraint'::pg_catalog.regclass and d.refobjid=c.oid and d.refobjsubid=0 and d.deptype='i')
+    )<>1)
+  )) then
+    raise exception 'R01 internship intent FK trigger enforcement differs' using errcode='55000';
+  end if;
+  select pg_catalog.array_agg(a.privilege_type order by a.privilege_type) filter(where a.grantee='service_role'::pg_catalog.regrole) into v_acl
+    from pg_catalog.pg_class t,lateral pg_catalog.aclexplode(coalesce(t.relacl,pg_catalog.acldefault('r',t.relowner))) a where t.oid=v_table;
+  -- Existing modern tables inherited eight nongrantable service privileges.
+  -- Missing tables receive explicit CRUD only; preserve that reviewed profile.
+  if not (v_acl is not distinct from array['DELETE','INSERT','SELECT','UPDATE']::text[]
+      or (v_existing and v_acl is not distinct from array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]))
+    or (select pg_catalog.array_agg(a.privilege_type order by a.privilege_type) from pg_catalog.pg_class t,lateral pg_catalog.aclexplode(coalesce(t.relacl,pg_catalog.acldefault('r',t.relowner))) a where t.oid=v_table and a.grantee=t.relowner) is distinct from array['DELETE','INSERT','MAINTAIN','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[]
+    or exists(select 1 from pg_catalog.pg_class t,lateral pg_catalog.aclexplode(coalesce(t.relacl,pg_catalog.acldefault('r',t.relowner))) a where t.oid=v_table and (a.grantor<>t.relowner or a.is_grantable or a.grantee not in(t.relowner,'service_role'::pg_catalog.regrole)))
+    or not (pg_catalog.has_table_privilege('service_role',v_table,'SELECT') and pg_catalog.has_table_privilege('service_role',v_table,'INSERT') and pg_catalog.has_table_privilege('service_role',v_table,'UPDATE') and pg_catalog.has_table_privilege('service_role',v_table,'DELETE'))
+    or pg_catalog.has_table_privilege('anon',v_table,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')
+    or pg_catalog.has_table_privilege('authenticated',v_table,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')
+    or pg_catalog.has_any_column_privilege('anon',v_table,'SELECT,INSERT,UPDATE,REFERENCES')
+    or pg_catalog.has_any_column_privilege('authenticated',v_table,'SELECT,INSERT,UPDATE,REFERENCES') then
+    raise exception 'R01 internship intent effective privileges differ' using errcode='55000';
+  end if;
+
+  v_function := pg_catalog.to_regprocedure('public.claim_expired_internship_attachment_uploads(timestamp with time zone, integer)');
+  if v_function is null then
+    execute $definition$create function public.claim_expired_internship_attachment_uploads(
+  p_cutoff timestamptz,
+  p_limit integer default 50
+)
+returns table (storage_path text, claimed_at timestamptz)
+language sql
+set search_path = ''
+as $$
+  with candidates as (
+    select intent.storage_path
+    from public.internship_attachment_upload_intent as intent
+    where intent.attached_at is null
+      and intent.cleaned_at is null
+      and intent.expires_at < p_cutoff
+      and (
+        intent.cleanup_claimed_at is null
+        or intent.cleanup_claimed_at < pg_catalog.clock_timestamp() - interval '1 hour'
+      )
+    order by intent.expires_at
+    limit least(greatest(coalesce(p_limit, 50), 1), 50)
+    for update skip locked
+  )
+  update public.internship_attachment_upload_intent as intent
+  set cleanup_claimed_at = pg_catalog.clock_timestamp()
+  from candidates
+  where intent.storage_path = candidates.storage_path
+  returning intent.storage_path, intent.cleanup_claimed_at;
+$$;$definition$;
+    revoke all on function public.claim_expired_internship_attachment_uploads(timestamp with time zone, integer) from public, anon, authenticated, service_role;
+    grant execute on function public.claim_expired_internship_attachment_uploads(timestamp with time zone, integer) to service_role;
+    v_function := 'public.claim_expired_internship_attachment_uploads(timestamp with time zone, integer)'::pg_catalog.regprocedure;
+  end if;
+  if (select count(*) from pg_catalog.pg_proc where pronamespace='public'::pg_catalog.regnamespace and proname='claim_expired_internship_attachment_uploads')<>1 or not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.proowner='postgres'::pg_catalog.regrole and not p.prosecdef and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and l.lanname='sql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='p_cutoff timestamp with time zone, p_limit integer' and pg_catalog.pg_get_function_result(p.oid)='TABLE(storage_path text, claimed_at timestamp with time zone)' and pg_catalog.md5(pg_catalog.pg_get_functiondef(p.oid))='71fd02d46d114a6aec772c8fe7b798e3')
+    or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+    or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::pg_catalog.regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+    or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE') then
+    raise exception 'R01 internship function contract differs: claim_expired_internship_attachment_uploads' using errcode='55000';
+  end if;
+
+  v_function := pg_catalog.to_regprocedure('public.mark_internship_attachment_uploaded()');
+  if v_function is null then
+    execute $definition$create function public.mark_internship_attachment_uploaded()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+declare
+  v_claimed_at timestamptz;
+begin
+  select intent.cleanup_claimed_at into v_claimed_at
+  from public.internship_attachment_upload_intent as intent
+  where intent.storage_path = new.object_path
+  for update;
+
+  if found then
+    if v_claimed_at is not null then
+      raise exception 'internship attachment upload is being cleaned up'
+        using errcode = '55000';
+    end if;
+    update public.internship_attachment_upload_intent
+    set attached_at = pg_catalog.clock_timestamp()
+    where storage_path = new.object_path;
+  end if;
+  return new;
+end;
+$$;$definition$;
+    revoke all on function public.mark_internship_attachment_uploaded() from public, anon, authenticated, service_role;
+    grant execute on function public.mark_internship_attachment_uploaded() to service_role;
+    v_function := 'public.mark_internship_attachment_uploaded()'::pg_catalog.regprocedure;
+  end if;
+  if (select count(*) from pg_catalog.pg_proc where pronamespace='public'::pg_catalog.regnamespace and proname='mark_internship_attachment_uploaded')<>1 or not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.proowner='postgres'::pg_catalog.regrole and not p.prosecdef and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and l.lanname='plpgsql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='' and pg_catalog.pg_get_function_result(p.oid)='trigger' and pg_catalog.md5(pg_catalog.pg_get_functiondef(p.oid))='4592d14b324b3fd7db847d663cae4eaa')
+    or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+    or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::pg_catalog.regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+    or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE') then
+    raise exception 'R01 internship function contract differs: mark_internship_attachment_uploaded' using errcode='55000';
+  end if;
+
+  if not exists(select 1 from pg_catalog.pg_trigger where tgrelid='public.internship_attachment'::pg_catalog.regclass and tgname='internship_attachment_uploaded') then
+    CREATE TRIGGER internship_attachment_uploaded AFTER INSERT ON public.internship_attachment FOR EACH ROW EXECUTE FUNCTION public.mark_internship_attachment_uploaded();
+  end if;
+  if not exists(select 1 from pg_catalog.pg_trigger where tgrelid='public.internship_attachment'::pg_catalog.regclass and tgname='internship_attachment_uploaded' and not tgisinternal and tgenabled='O' and pg_catalog.pg_get_triggerdef(oid,true)='CREATE TRIGGER internship_attachment_uploaded AFTER INSERT ON public.internship_attachment FOR EACH ROW EXECUTE FUNCTION public.mark_internship_attachment_uploaded()') then
+    raise exception 'R01 internship proof trigger differs: internship_attachment_uploaded' using errcode='55000';
+  end if;
+end;
+$migration$;

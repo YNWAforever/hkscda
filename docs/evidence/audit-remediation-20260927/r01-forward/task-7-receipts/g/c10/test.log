@@ -1,0 +1,58 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\atomicForward.database.test.ts:
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks ban before audited commit [327.51ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks role before audited commit [286.09ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks disable before audited commit [288.08ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks ban before audited commit [290.26ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks role before audited commit [291.90ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks disable before audited commit [288.17ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks ban before audited commit [275.47ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks role before audited commit [274.49ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks disable before audited commit [274.82ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > missing-target promotion creates synthetic draft and actor audit atomically [16.47ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > missing-target generic content preserves fee publication audit contract [16.51ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > recipient index prerequisite draft retry creates one live recipient without deleting evidence [21.69ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > draft status is an audited state change and does not send [23.42ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > social status and repeated generation retain historical audit behavior [24.33ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > identity mismatch and malformed promotion cannot partially mutate [28.93ms]
+PostgresError: new row for relation "knowledge_posts" violates check constraint "knowledge_posts_destination_shape_check"
+      errno: "23514",
+     detail: "Failing row contains (d6816143-b94c-48c6-8411-963d8feb934b, Synthetic knowledge, Synthetic topic, Synthetic introduction, null, null, null, f, 0, 2026-10-02 01:30:50.024862+00, 2026-10-02 01:30:50.024862+00, null, null).",
+   severity: "ERROR",
+      where: "SQL statement \"insert into public.knowledge_posts (\n        title, topic, short_intro, source_name, external_url,\n        document_asset_id, zh_hk_document_asset_id, en_document_asset_id,\n        is_published, sort_order\n      ) values (\n        p_payload->>'title', p_payload->>'topic', p_payload->>'short_intro',\n        p_payload->>'source_name', p_payload->>'external_url',\n        (p_payload->>'document_asset_id')::uuid,\n        (p_payload->>'zh_hk_document_asset_id')::uuid,\n        (p_payload->>'en_document_asset_id')::uuid,\n        (p_payload->>'is_published')::boolean, (p_payload->>'sort_order')::integer\n      )\n      returning to_jsonb(knowledge_posts.*)\"\nPL/pgSQL function public.mutate_admin_content_with_audit(uuid,text,text,uuid,jsonb) line 132 at SQL statement",
+     schema: "public",
+      table: "knowledge_posts",
+ constraint: "knowledge_posts_destination_shape_check",
+       file: "execMain.c",
+    routine: "ExecConstraints",
+       code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CMS atomic forward on owned synthetic clone > all generic entities preserve row identity and actor audit [44.98ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate wrapper preserves create retry, stale version and separate publication [36.39ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > effective Auth access remains denied to direct service SQL [16.13ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > qualified commands ignore temporary table shadows [17.61ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor rejects banned confirmed staff without mutation [11.82ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate actor rejects banned confirmed staff preserving version and audit [17.58ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses banned before any audited mutation [16.94ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses unconfirmed before any audited mutation [16.20ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses disabled before any audited mutation [16.46ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses role before any audited mutation [18.53ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion audit failure rolls back every mutation [40.93ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses banned before any audited mutation [26.93ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses unconfirmed before any audited mutation [17.30ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses disabled before any audited mutation [26.72ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses role before any audited mutation [48.90ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic audit failure rolls back every mutation [40.65ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > direct anon cannot execute either atomic command [28.02ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > direct authenticated cannot execute either atomic command [22.67ms]
+
+1 tests failed:
+(fail) R01 CMS atomic forward on owned synthetic clone > all generic entities preserve row identity and actor audit [44.98ms]
+
+ 32 pass
+ 1 fail
+ 87 expect() calls
+Ran 33 tests across 1 file. [3.26s]

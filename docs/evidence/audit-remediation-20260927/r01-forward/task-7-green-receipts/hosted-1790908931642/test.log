@@ -1,0 +1,128 @@
+bun test v1.3.14 (0d9b296a)
+{"probe":"unpublished PDF","code":"23514","posts":0,"audits":0}
+{"probe":"command-first asset unpublish","blocked":true}
+
+src\lib\content\atomicForward.database.test.ts:
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks ban before audited commit [395.21ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks role before audited commit [311.33ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks disable before audited commit [287.41ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks ban before audited commit [290.07ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks role before audited commit [295.20ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks disable before audited commit [287.36ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks ban before audited commit [289.16ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks role before audited commit [311.33ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks disable before audited commit [301.84ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion revocation-first ban blocks then refuses without audit [333.04ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion revocation-first role blocks then refuses without audit [334.26ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion revocation-first disable blocks then refuses without audit [302.97ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic revocation-first ban blocks then refuses without audit [309.60ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic revocation-first role blocks then refuses without audit [301.31ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic revocation-first disable blocks then refuses without audit [296.52ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate revocation-first ban blocks then refuses without audit [303.16ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate revocation-first role blocks then refuses without audit [302.52ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate revocation-first disable blocks then refuses without audit [316.20ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > two concurrent draft retries create one recipient and retain each historical audit [59.74ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > concurrent estate versions preserve committed winner and reject stale audited update [62.08ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > draft audit failure preserves rows and versions [19.95ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate audit failure preserves rows and versions [12.93ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > missing-target promotion creates synthetic draft and actor audit atomically [12.16ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > missing-target generic content preserves fee publication audit contract [9.40ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > recipient index prerequisite draft retry creates one live recipient without deleting evidence [17.18ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > draft status is an audited state change and does not send [15.97ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > social status and repeated generation retain historical audit behavior [17.40ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > identity mismatch and malformed promotion cannot partially mutate [22.08ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > all generic entities preserve row identity and actor audit [41.02ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate wrapper preserves create retry, stale version and separate publication [27.61ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > effective Auth access remains denied to direct service SQL [13.60ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > qualified commands ignore temporary table shadows [17.68ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor rejects banned confirmed staff without mutation [12.60ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > estate actor rejects banned confirmed staff preserving version and audit [13.09ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses banned before any audited mutation [12.24ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses unconfirmed before any audited mutation [12.28ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses disabled before any audited mutation [10.30ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion actor refuses role before any audited mutation [8.98ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > promotion audit failure rolls back every mutation [12.17ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses banned before any audited mutation [11.37ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses unconfirmed before any audited mutation [12.15ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses disabled before any audited mutation [11.70ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic actor refuses role before any audited mutation [14.11ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > generic audit failure rolls back every mutation [11.63ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > direct anon cannot execute either atomic command [14.98ms]
+(pass) R01 CMS atomic forward on owned synthetic clone > direct authenticated cannot execute either atomic command [11.77ms]
+
+src\lib\content\atomicForward.estate.http.test.ts:
+(pass) generic estate deletion actor refusal maps to safe private 403 [5.95ms]
+(pass) estate permission mapping preserves Response [0.88ms]
+(pass) estate permission mapping preserves Zod [0.22ms]
+(pass) estate permission mapping preserves conflict [0.18ms]
+(pass) estate permission mapping preserves missing [0.17ms]
+Adoption information request failed {
+  requestId: "synthetic-request-id",
+  error: {
+    code: "XX000",
+    message: "internal diagnostic",
+  },
+}
+(pass) estate permission mapping preserves unknown [1.49ms]
+Adoption information request failed {
+  requestId: "synthetic-request-id",
+  error: "42501",
+}
+(pass) estate permission mapping preserves non-object [0.26ms]
+
+src\lib\content\atomicForward.http.test.ts:
+(pass) CMS actor permission refusal maps to safe private 403 [0.84ms]
+(pass) CMS permission mapping preserves Response [0.23ms]
+(pass) CMS permission mapping preserves lifecycle conflict [0.06ms]
+(pass) CMS permission mapping preserves Zod [0.12ms]
+(pass) CMS permission mapping preserves publication validation [0.03ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) CMS permission mapping preserves unknown SQLSTATE [0.07ms]
+{
+  code: "P4090",
+  message: "internal diagnostic",
+}
+(pass) CMS permission mapping preserves raw version code [0.03ms]
+42501
+(pass) CMS permission mapping preserves non-object matching text [0.02ms]
+{
+  code: "42501",
+  message: "internal diagnostic",
+}
+(pass) CMS permission mapping preserves public request500 [0.79ms]
+
+src\lib\knowledge\atomicKnowledgeForward.database.test.ts:
+(pass) generic published knowledge rejects an unpublished PDF atomically [23.08ms]
+(pass) knowledge single create and update preserve result and audit [21.72ms]
+(pass) knowledge pair create and update preserve result and audit [18.47ms]
+(pass) knowledge external create and update preserve result and audit [20.68ms]
+(pass) knowledge draft create and update preserve result and audit [13.77ms]
+(pass) knowledge pair checks every referenced published asset and preserves update [14.98ms]
+(pass) knowledge missing post retains P0002 before asset publication check [11.07ms]
+(pass) knowledge asset publication fence preserves audit-failure atomic rollback [10.49ms]
+(pass) knowledge duplicate pair references lock one actual asset [7.63ms]
+(pass) knowledge asset lock ignores temporary document table shadows [10.73ms]
+(pass) asset unpublish first blocks then refuses knowledge publication atomically [72.17ms]
+(pass) knowledge publish holds referenced asset against concurrent unpublish [36.08ms]
+
+src\lib\knowledge\atomicKnowledgeForward.http.test.ts:
+(pass) actual knowledge handler maps actor refusal to safe 403 [0.77ms]
+(pass) knowledge permission mapping preserves Response [0.49ms]
+(pass) knowledge permission mapping preserves Zod [0.21ms]
+(pass) knowledge permission mapping preserves missing [0.17ms]
+(pass) knowledge permission mapping preserves publication conflict [0.12ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) knowledge permission mapping preserves unknown SQLSTATE [0.16ms]
+42501
+(pass) knowledge permission mapping preserves non-object matching text [0.17ms]
+
+ 81 pass
+ 0 fail
+ 223 expect() calls
+Ran 81 tests across 5 files. [6.64s]

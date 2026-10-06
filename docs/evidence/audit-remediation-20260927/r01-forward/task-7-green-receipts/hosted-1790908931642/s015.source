@@ -1,0 +1,22 @@
+/** Task7 exact catalog projection, test/source tooling only. */
+export const tables = [
+  "admin_user",
+  "audit_log",
+  "content_item",
+  "story_update",
+  "social_copy_variant",
+  "recipient_notification_draft",
+  "recipient_notification_draft_duplicate_archive",
+  "adoption_fees",
+  "dog_friendly_estates",
+  "board_member",
+  "knowledge_posts",
+  "document_assets",
+  "adoption_instruction_pages",
+  "adoption_instruction_revisions",
+  "adoption_instruction_publish_requests",
+];
+export const tableList = tables.map((name) => "'public." + name + "'::regclass").join(",");
+export const indexQuery = `select jsonb_build_object('owner',pg_get_userbyid(c.relowner),'acl',c.relacl::text,'kind',c.relkind,'persistence',c.relpersistence,'options',c.reloptions,'access',am.amname,'definition',pg_get_indexdef(i.indexrelid),'table',i.indrelid::regclass::text,'nkeys',i.indnkeyatts,'natts',i.indnatts,'unique',i.indisunique,'nullsNotDistinct',i.indnullsnotdistinct,'primary',i.indisprimary,'exclusion',i.indisexclusion,'immediate',i.indimmediate,'clustered',i.indisclustered,'valid',i.indisvalid,'checkxmin',i.indcheckxmin,'ready',i.indisready,'live',i.indislive,'replicaIdentity',i.indisreplident,'keys',i.indkey::text,'flags',i.indoption::text,'predicate',pg_get_expr(i.indpred,i.indrelid),'expressions',pg_get_expr(i.indexprs,i.indrelid),'opclasses',(select jsonb_agg(n.nspname||'.'||o.opcname order by x.position) from unnest(i.indclass) with ordinality x(oid,position) join pg_opclass o on o.oid=x.oid join pg_namespace n on n.oid=o.opcnamespace),'collations',(select jsonb_agg(case when x.oid=0 then null else n.nspname||'.'||o.collname end order by x.position) from unnest(i.indcollation) with ordinality x(oid,position) left join pg_collation o on o.oid=x.oid left join pg_namespace n on n.oid=o.collnamespace)) value from pg_index i join pg_class c on c.oid=i.indexrelid join pg_namespace n on n.oid=c.relnamespace join pg_am am on am.oid=c.relam where n.nspname='public' and c.relname='recipient_notification_draft_delivery_target_idx'`;
+export const nativeQuery = `select coalesce(jsonb_agg(jsonb_build_object('constraint',c.conname,'own',c.conrelid::regclass::text,'referenced',c.confrelid::regclass::text,'type',t.tgtype,'function',t.tgfoid::regprocedure::text,'table',t.tgrelid::regclass::text,'other',t.tgconstrrelid::regclass::text,'index',t.tgconstrindid::regclass::text,'enabled',t.tgenabled,'internal',t.tgisinternal,'parent',t.tgparentid,'deferrable',t.tgdeferrable,'deferred',t.tginitdeferred,'nargs',t.tgnargs,'attr',t.tgattr::text,'args',encode(t.tgargs,'hex'),'qual',pg_get_expr(t.tgqual,t.tgrelid),'oldtable',t.tgoldtable,'newtable',t.tgnewtable,'dependencies',(select jsonb_agg(jsonb_build_object('class',d.classid::regclass::text,'subid',d.objsubid,'refclass',d.refclassid::regclass::text,'refconstraint',case when d.refclassid='pg_constraint'::regclass then (select q.conname from pg_constraint q where q.oid=d.refobjid) end,'sameconstraint',d.refobjid=c.oid,'refsubid',d.refobjsubid,'deptype',d.deptype) order by d.classid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid)) order by c.conrelid::regclass::text,c.conname,t.tgtype,t.tgrelid::regclass::text),'[]'::jsonb) value from pg_constraint c join pg_trigger t on t.tgconstraint=c.oid where c.conrelid in (${tableList}) and c.contype='f'`;
+export const triggerFunctionsQuery = `select n.nspname schema,p.proname name,pg_get_function_identity_arguments(p.oid) args,pg_get_function_arguments(p.oid) allargs,p.pronargdefaults defaults,pg_get_expr(p.proargdefaults,0) default_expression,pg_get_function_result(p.oid) result,pg_get_userbyid(p.proowner) owner,p.proacl::text acl,p.proconfig config,p.prosecdef definer,p.procost cost,p.proisstrict strict,p.proparallel parallel,p.provolatile volatility,md5(p.prosrc) body,md5(pg_get_functiondef(p.oid)) definition from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.oid in (select t.tgfoid from pg_trigger t where t.tgrelid in (${tableList}) and not t.tgisinternal) order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)`;

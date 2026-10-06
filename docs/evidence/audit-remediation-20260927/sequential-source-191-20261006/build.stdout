@@ -1,0 +1,567 @@
+[info] [nitro:vercel] Using `nodejs24.x` runtime.
+[info] [nitro:vercel] Using `web` entry format.
+[36mvite v7.3.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 2603 modules transformed.
+rendering chunks...
+computing gzip size...
+[2m.vercel/output/static/[22m[32massets/dog-smiling-480-6fqpAZW2.jpg            [39m[1m[2m   46.02 kB[22m[1m[22m
+[2m.vercel/output/static/[22m[32massets/dog-smiling-768-BZd4Dj1C.jpg            [39m[1m[2m   92.46 kB[22m[1m[22m
+[2m.vercel/output/static/[22m[32massets/dog-recovering-e6pf9Ekn.jpg             [39m[1m[2m  113.09 kB[22m[1m[22m
+[2m.vercel/output/static/[22m[32massets/dog-smiling-1024-DZg1fOfE.jpg           [39m[1m[2m  143.66 kB[22m[1m[22m
+[2m.vercel/output/static/[22m[32massets/dog-smiling-BtKTrXtF.jpg                [39m[1m[2m  317.40 kB[22m[1m[22m
+[2m.vercel/output/static/[22m[35massets/VolunteerAdminShell-DJ2VYEVo.css        [39m[1m[2m    5.69 kB[22m[1m[22m[2m │ gzip:   1.60 kB[22m
+[2m.vercel/output/static/[22m[35massets/index-DUcA6ScH.css                      [39m[1m[2m    9.05 kB[22m[1m[22m[2m │ gzip:   2.12 kB[22m
+[2m.vercel/output/static/[22m[35massets/styles-B7u6K0AW.css                     [39m[1m[2m  331.98 kB[22m[1m[22m[2m │ gzip:  77.45 kB[22m
+[2m.vercel/output/static/[22m[36massets/internships-FooYJdoY.js                 [39m[1m[2m    0.11 kB[22m[1m[22m[2m │ gzip:   0.12 kB[22m
+[2m.vercel/output/static/[22m[36massets/applications-agV9RiGU.js                [39m[1m[2m    0.15 kB[22m[1m[22m[2m │ gzip:   0.15 kB[22m
+[2m.vercel/output/static/[22m[36massets/cat-DQx8Pgoy.js                         [39m[1m[2m    0.17 kB[22m[1m[22m[2m │ gzip:   0.16 kB[22m
+[2m.vercel/output/static/[22m[36massets/dog-BX8CW7fb.js                         [39m[1m[2m    0.17 kB[22m[1m[22m[2m │ gzip:   0.16 kB[22m
+[2m.vercel/output/static/[22m[36massets/operations-BPF85gg4.js                  [39m[1m[2m    0.19 kB[22m[1m[22m[2m │ gzip:   0.17 kB[22m
+[2m.vercel/output/static/[22m[36massets/useDebouncedValue-BL_6vBa4.js           [39m[1m[2m    0.20 kB[22m[1m[22m[2m │ gzip:   0.17 kB[22m
+[2m.vercel/output/static/[22m[36massets/circle-x-4x5HEpiP.js                    [39m[1m[2m    0.21 kB[22m[1m[22m[2m │ gzip:   0.18 kB[22m
+[2m.vercel/output/static/[22m[36massets/download-B67oti2l.js                    [39m[1m[2m    0.23 kB[22m[1m[22m[2m │ gzip:   0.19 kB[22m
+[2m.vercel/output/static/[22m[36massets/message-circle-Bi166c8M.js              [39m[1m[2m    0.24 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2m.vercel/output/static/[22m[36massets/circle-alert-CIRusyLd.js                [39m[1m[2m    0.25 kB[22m[1m[22m[2m │ gzip:   0.19 kB[22m
+[2m.vercel/output/static/[22m[36massets/external-link-CLVhe9CK.js               [39m[1m[2m    0.25 kB[22m[1m[22m[2m │ gzip:   0.20 kB[22m
+[2m.vercel/output/static/[22m[36massets/operations-BzF1xqDl.js                  [39m[1m[2m    0.26 kB[22m[1m[22m[2m │ gzip:   0.20 kB[22m
+[2m.vercel/output/static/[22m[36massets/activities-Cx2KL4oo.js                  [39m[1m[2m    0.26 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2m.vercel/output/static/[22m[36massets/pen-line-BXRXo7yE.js                    [39m[1m[2m    0.28 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2m.vercel/output/static/[22m[36massets/list-checks-PEYsTxAE.js                 [39m[1m[2m    0.28 kB[22m[1m[22m[2m │ gzip:   0.19 kB[22m
+[2m.vercel/output/static/[22m[36massets/deliveryLabel-ClIp45OR.js               [39m[1m[2m    0.28 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2m.vercel/output/static/[22m[36massets/send-dgXfVU7d.js                        [39m[1m[2m    0.29 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2m.vercel/output/static/[22m[36massets/documentManagementLogic-CA0QKotB.js     [39m[1m[2m    0.32 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2m.vercel/output/static/[22m[36massets/calendar-HcKZr3u2.js                    [39m[1m[2m    0.32 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2m.vercel/output/static/[22m[36massets/refresh-cw-CpvE3qYo.js                  [39m[1m[2m    0.32 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2m.vercel/output/static/[22m[36massets/save-BMWMmQib.js                        [39m[1m[2m    0.33 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2m.vercel/output/static/[22m[36massets/cat--nGLTyMI.js                         [39m[1m[2m    0.33 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2m.vercel/output/static/[22m[36massets/dog-DUKkDjIA.js                         [39m[1m[2m    0.33 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2m.vercel/output/static/[22m[36massets/sponsors_._id-FTrS-du5.js               [39m[1m[2m    0.40 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2m.vercel/output/static/[22m[36massets/cat_._id-D_JxzuAl.js                    [39m[1m[2m    0.41 kB[22m[1m[22m[2m │ gzip:   0.36 kB[22m
+[2m.vercel/output/static/[22m[36massets/dog_._id-C1FCE0jb.js                    [39m[1m[2m    0.41 kB[22m[1m[22m[2m │ gzip:   0.36 kB[22m
+[2m.vercel/output/static/[22m[36massets/sponsors-B-a4pwvy.js                    [39m[1m[2m    0.41 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2m.vercel/output/static/[22m[36massets/sponsors-C9hoPY0u.js                    [39m[1m[2m    0.41 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2m.vercel/output/static/[22m[36massets/new-CdTr37bX.js                         [39m[1m[2m    0.44 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2m.vercel/output/static/[22m[36massets/WorkflowSections-DG-7mAww.js            [39m[1m[2m    0.48 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2m.vercel/output/static/[22m[36massets/cat_._id-DRJzbShv.js                    [39m[1m[2m    0.55 kB[22m[1m[22m[2m │ gzip:   0.43 kB[22m
+[2m.vercel/output/static/[22m[36massets/dog_._id-CCpAYbX9.js                    [39m[1m[2m    0.56 kB[22m[1m[22m[2m │ gzip:   0.43 kB[22m
+[2m.vercel/output/static/[22m[36massets/volunteerAdminLogic-BaHoWbFY.js         [39m[1m[2m    0.56 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2m.vercel/output/static/[22m[36massets/sponsors_._id-DWnyo4m9.js               [39m[1m[2m    0.57 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[2m.vercel/output/static/[22m[36massets/passwordRecovery-BXra5XFb.js            [39m[1m[2m    0.58 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2m.vercel/output/static/[22m[36massets/file-x-j1EkqT_l.js                      [39m[1m[2m    0.63 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2m.vercel/output/static/[22m[36massets/index-ufll564N.js                       [39m[1m[2m    0.70 kB[22m[1m[22m[2m │ gzip:   0.41 kB[22m
+[2m.vercel/output/static/[22m[36massets/sponsorships-DGztZARV.js                [39m[1m[2m    0.71 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2m.vercel/output/static/[22m[36massets/useLiveAdminActor-Q3_gua-z.js           [39m[1m[2m    0.71 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2m.vercel/output/static/[22m[36massets/badge-CGmGVp9Q.js                       [39m[1m[2m    0.72 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[2m.vercel/output/static/[22m[36massets/documentUpload-BJODuC1g.js              [39m[1m[2m    0.72 kB[22m[1m[22m[2m │ gzip:   0.51 kB[22m
+[2m.vercel/output/static/[22m[36massets/adopterWorkflowLogic-C2wfb7fB.js        [39m[1m[2m    0.81 kB[22m[1m[22m[2m │ gzip:   0.44 kB[22m
+[2m.vercel/output/static/[22m[36massets/label-DpAdxnbd.js                       [39m[1m[2m    0.89 kB[22m[1m[22m[2m │ gzip:   0.55 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id.edit-hQNc9JUi.js                    [39m[1m[2m    0.89 kB[22m[1m[22m[2m │ gzip:   0.52 kB[22m
+[2m.vercel/output/static/[22m[36massets/access-denied-Daney2B-.js               [39m[1m[2m    1.07 kB[22m[1m[22m[2m │ gzip:   0.64 kB[22m
+[2m.vercel/output/static/[22m[36massets/tabs-BRvS4QFj.js                        [39m[1m[2m    1.11 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2m.vercel/output/static/[22m[36massets/StatusBadge-B5Ck6_dh.js                 [39m[1m[2m    1.30 kB[22m[1m[22m[2m │ gzip:   0.54 kB[22m
+[2m.vercel/output/static/[22m[36massets/ExportButton-C9kACeF2.js                [39m[1m[2m    1.35 kB[22m[1m[22m[2m │ gzip:   0.80 kB[22m
+[2m.vercel/output/static/[22m[36massets/caseWorkflowLogic-DtHXpWJQ.js           [39m[1m[2m    1.56 kB[22m[1m[22m[2m │ gzip:   0.78 kB[22m
+[2m.vercel/output/static/[22m[36massets/table-0ImHjKWI.js                       [39m[1m[2m    1.56 kB[22m[1m[22m[2m │ gzip:   0.54 kB[22m
+[2m.vercel/output/static/[22m[36massets/useListQueryState-BsN3D5M1.js           [39m[1m[2m    1.98 kB[22m[1m[22m[2m │ gzip:   0.93 kB[22m
+[2m.vercel/output/static/[22m[36massets/dialog-BQRiYk2y.js                      [39m[1m[2m    1.99 kB[22m[1m[22m[2m │ gzip:   0.80 kB[22m
+[2m.vercel/output/static/[22m[36massets/contentAdminLogic-C6wYdHw3.js           [39m[1m[2m    2.17 kB[22m[1m[22m[2m │ gzip:   1.05 kB[22m
+[2m.vercel/output/static/[22m[36massets/privacy-C3j8_0Uj.js                     [39m[1m[2m    2.19 kB[22m[1m[22m[2m │ gzip:   1.22 kB[22m
+[2m.vercel/output/static/[22m[36massets/DataTable-Bk7DBvV4.js                   [39m[1m[2m    2.35 kB[22m[1m[22m[2m │ gzip:   0.91 kB[22m
+[2m.vercel/output/static/[22m[36massets/switch-BCMqNZ-G.js                      [39m[1m[2m    2.49 kB[22m[1m[22m[2m │ gzip:   1.25 kB[22m
+[2m.vercel/output/static/[22m[36massets/tasks-Df8k0si1.js                       [39m[1m[2m    2.51 kB[22m[1m[22m[2m │ gzip:   1.23 kB[22m
+[2m.vercel/output/static/[22m[36massets/adoption-D8843KIJ.js                    [39m[1m[2m    2.59 kB[22m[1m[22m[2m │ gzip:   1.44 kB[22m
+[2m.vercel/output/static/[22m[36massets/audit-DM4Pbo04.js                       [39m[1m[2m    2.65 kB[22m[1m[22m[2m │ gzip:   1.29 kB[22m
+[2m.vercel/output/static/[22m[36massets/PolicyChangeSummary-8GUgqucj.js         [39m[1m[2m    2.89 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
+[2m.vercel/output/static/[22m[36massets/team-B5hYP2UG.js                        [39m[1m[2m    3.10 kB[22m[1m[22m[2m │ gzip:   1.54 kB[22m
+[2m.vercel/output/static/[22m[36massets/status._token-DjkD3gJe.js               [39m[1m[2m    3.15 kB[22m[1m[22m[2m │ gzip:   1.43 kB[22m
+[2m.vercel/output/static/[22m[36massets/knowledge-Dg71gS_x.js                   [39m[1m[2m    3.17 kB[22m[1m[22m[2m │ gzip:   1.36 kB[22m
+[2m.vercel/output/static/[22m[36massets/BulkReview-Cb2D4h0L.js                  [39m[1m[2m    3.53 kB[22m[1m[22m[2m │ gzip:   1.66 kB[22m
+[2m.vercel/output/static/[22m[36massets/reset-password-B0D6MGVt.js              [39m[1m[2m    3.72 kB[22m[1m[22m[2m │ gzip:   1.40 kB[22m
+[2m.vercel/output/static/[22m[36massets/checkbox-D9tMxm98.js                    [39m[1m[2m    3.85 kB[22m[1m[22m[2m │ gzip:   1.69 kB[22m
+[2m.vercel/output/static/[22m[36massets/AnimalDetail-BOFG5U97.js                [39m[1m[2m    3.95 kB[22m[1m[22m[2m │ gzip:   1.72 kB[22m
+[2m.vercel/output/static/[22m[36massets/new-CwPzmawb.js                         [39m[1m[2m    4.18 kB[22m[1m[22m[2m │ gzip:   1.53 kB[22m
+[2m.vercel/output/static/[22m[36massets/tasks-DSwHKva3.js                       [39m[1m[2m    4.25 kB[22m[1m[22m[2m │ gzip:   1.91 kB[22m
+[2m.vercel/output/static/[22m[36massets/login-Dlkb44dB.js                       [39m[1m[2m    4.90 kB[22m[1m[22m[2m │ gzip:   1.37 kB[22m
+[2m.vercel/output/static/[22m[36massets/VolunteerAdminShell-k7jcbKSD.js         [39m[1m[2m    4.99 kB[22m[1m[22m[2m │ gzip:   2.10 kB[22m
+[2m.vercel/output/static/[22m[36massets/simulation-DlrFx860.js                  [39m[1m[2m    5.05 kB[22m[1m[22m[2m │ gzip:   2.27 kB[22m
+[2m.vercel/output/static/[22m[36massets/_slug---K622YP.js                       [39m[1m[2m    5.69 kB[22m[1m[22m[2m │ gzip:   1.97 kB[22m
+[2m.vercel/output/static/[22m[36massets/tasks-Dc4YyVz5.js                       [39m[1m[2m    5.99 kB[22m[1m[22m[2m │ gzip:   2.38 kB[22m
+[2m.vercel/output/static/[22m[36massets/InternshipForm-CQoOlmvo.js              [39m[1m[2m    6.04 kB[22m[1m[22m[2m │ gzip:   2.69 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id-BJZQTcVR.js                         [39m[1m[2m    6.15 kB[22m[1m[22m[2m │ gzip:   2.27 kB[22m
+[2m.vercel/output/static/[22m[36massets/inbox-CN8nS2cM.js                       [39m[1m[2m    6.39 kB[22m[1m[22m[2m │ gzip:   2.24 kB[22m
+[2m.vercel/output/static/[22m[36massets/sources-CI1WbKVH.js                     [39m[1m[2m    6.62 kB[22m[1m[22m[2m │ gzip:   2.39 kB[22m
+[2m.vercel/output/static/[22m[36massets/SupporterFormDialog-Aoj_f1w9.js         [39m[1m[2m    6.89 kB[22m[1m[22m[2m │ gzip:   2.72 kB[22m
+[2m.vercel/output/static/[22m[36massets/annual-reports-AKlDJszT.js              [39m[1m[2m    7.22 kB[22m[1m[22m[2m │ gzip:   2.39 kB[22m
+[2m.vercel/output/static/[22m[36massets/catalogue-xqmTLeF5.js                   [39m[1m[2m    7.26 kB[22m[1m[22m[2m │ gzip:   3.18 kB[22m
+[2m.vercel/output/static/[22m[36massets/help-BmvaRH3B.js                        [39m[1m[2m    8.09 kB[22m[1m[22m[2m │ gzip:   2.91 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id-BRQJbQRy.js                         [39m[1m[2m    8.29 kB[22m[1m[22m[2m │ gzip:   3.10 kB[22m
+[2m.vercel/output/static/[22m[36massets/adopters-CLUJr92F.js                    [39m[1m[2m    8.75 kB[22m[1m[22m[2m │ gzip:   2.50 kB[22m
+[2m.vercel/output/static/[22m[36massets/group-enquiries-DxHeRLXe.js             [39m[1m[2m    8.97 kB[22m[1m[22m[2m │ gzip:   3.04 kB[22m
+[2m.vercel/output/static/[22m[36massets/assessments-CdakFzpD.js                 [39m[1m[2m    9.11 kB[22m[1m[22m[2m │ gzip:   2.96 kB[22m
+[2m.vercel/output/static/[22m[36massets/schemas-CAd-KHWZ.js                     [39m[1m[2m    9.48 kB[22m[1m[22m[2m │ gzip:   3.75 kB[22m
+[2m.vercel/output/static/[22m[36massets/documents-D7ugmg2r.js                   [39m[1m[2m    9.50 kB[22m[1m[22m[2m │ gzip:   3.28 kB[22m
+[2m.vercel/output/static/[22m[36massets/sponsors_.status._token-Dz3ut82L.js     [39m[1m[2m    9.63 kB[22m[1m[22m[2m │ gzip:   3.32 kB[22m
+[2m.vercel/output/static/[22m[36massets/access-Bh4RTQw5.js                      [39m[1m[2m    9.67 kB[22m[1m[22m[2m │ gzip:   3.51 kB[22m
+[2m.vercel/output/static/[22m[36massets/index-yYWoB9BK.js                       [39m[1m[2m    9.73 kB[22m[1m[22m[2m │ gzip:   3.64 kB[22m
+[2m.vercel/output/static/[22m[36massets/instructions-e36dERUB.js                [39m[1m[2m    9.87 kB[22m[1m[22m[2m │ gzip:   2.91 kB[22m
+[2m.vercel/output/static/[22m[36massets/internships-BNK7MI8d.js                 [39m[1m[2m   10.20 kB[22m[1m[22m[2m │ gzip:   3.70 kB[22m
+[2m.vercel/output/static/[22m[36massets/volunteers-L7NKH9q0.js                  [39m[1m[2m   10.35 kB[22m[1m[22m[2m │ gzip:   3.65 kB[22m
+[2m.vercel/output/static/[22m[36massets/reports-B1UmUxNv.js                     [39m[1m[2m   10.35 kB[22m[1m[22m[2m │ gzip:   3.34 kB[22m
+[2m.vercel/output/static/[22m[36massets/status._token-DmXS75tv.js               [39m[1m[2m   10.80 kB[22m[1m[22m[2m │ gzip:   3.45 kB[22m
+[2m.vercel/output/static/[22m[36massets/VolunteerOperations-D-eWn4A_.js         [39m[1m[2m   11.03 kB[22m[1m[22m[2m │ gzip:   3.93 kB[22m
+[2m.vercel/output/static/[22m[36massets/people-CEfPkCKS.js                      [39m[1m[2m   11.68 kB[22m[1m[22m[2m │ gzip:   4.41 kB[22m
+[2m.vercel/output/static/[22m[36massets/qualifications-7IEDkjtt.js              [39m[1m[2m   11.69 kB[22m[1m[22m[2m │ gzip:   4.20 kB[22m
+[2m.vercel/output/static/[22m[36massets/TaskPanel-7GnoY-hq.js                   [39m[1m[2m   13.49 kB[22m[1m[22m[2m │ gzip:   3.68 kB[22m
+[2m.vercel/output/static/[22m[36massets/daily-settings-Duy4sfMG.js              [39m[1m[2m   13.54 kB[22m[1m[22m[2m │ gzip:   4.55 kB[22m
+[2m.vercel/output/static/[22m[36massets/ContentReview-B74M5f4D.js               [39m[1m[2m   14.05 kB[22m[1m[22m[2m │ gzip:   4.09 kB[22m
+[2m.vercel/output/static/[22m[36massets/statuses-_jAP_wqt.js                    [39m[1m[2m   14.34 kB[22m[1m[22m[2m │ gzip:   4.13 kB[22m
+[2m.vercel/output/static/[22m[36massets/index-C1xQh4zo.js                       [39m[1m[2m   14.87 kB[22m[1m[22m[2m │ gzip:   5.33 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id-CiS9B7BM.js                         [39m[1m[2m   15.07 kB[22m[1m[22m[2m │ gzip:   4.31 kB[22m
+[2m.vercel/output/static/[22m[36massets/content-CAit_Sww.js                     [39m[1m[2m   15.48 kB[22m[1m[22m[2m │ gzip:   4.81 kB[22m
+[2m.vercel/output/static/[22m[36massets/adoption-guides-Bidr9-S3.js             [39m[1m[2m   16.04 kB[22m[1m[22m[2m │ gzip:   4.51 kB[22m
+[2m.vercel/output/static/[22m[36massets/intake-CJV_5dja.js                      [39m[1m[2m   20.14 kB[22m[1m[22m[2m │ gzip:   5.15 kB[22m
+[2m.vercel/output/static/[22m[36massets/AnimalForm-BUrSqLXT.js                  [39m[1m[2m   24.84 kB[22m[1m[22m[2m │ gzip:   7.26 kB[22m
+[2m.vercel/output/static/[22m[36massets/donate-Dm3pyMMl.js                      [39m[1m[2m   25.16 kB[22m[1m[22m[2m │ gzip:   8.76 kB[22m
+[2m.vercel/output/static/[22m[36massets/adminPageCopy-BmRwUNzK.js               [39m[1m[2m   28.04 kB[22m[1m[22m[2m │ gzip:   9.06 kB[22m
+[2m.vercel/output/static/[22m[36massets/animals-Df7iCB3Y.js                     [39m[1m[2m   28.25 kB[22m[1m[22m[2m │ gzip:   6.90 kB[22m
+[2m.vercel/output/static/[22m[36massets/supporters-OT3JAuSO.js                  [39m[1m[2m   28.36 kB[22m[1m[22m[2m │ gzip:   9.04 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id-Cnx8GzJB.js                         [39m[1m[2m   31.95 kB[22m[1m[22m[2m │ gzip:   8.43 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id-6dxZJ5hW.js                         [39m[1m[2m   32.17 kB[22m[1m[22m[2m │ gzip:   8.61 kB[22m
+[2m.vercel/output/static/[22m[36massets/VolunteerActivityWorkspace-DA84Iimj.js  [39m[1m[2m   33.86 kB[22m[1m[22m[2m │ gzip:  11.01 kB[22m
+[2m.vercel/output/static/[22m[36massets/settings-BczbYkZP.js                    [39m[1m[2m   39.11 kB[22m[1m[22m[2m │ gzip:   9.93 kB[22m
+[2m.vercel/output/static/[22m[36massets/PledgeReviewLane-Dsu6ck5L.js            [39m[1m[2m   41.01 kB[22m[1m[22m[2m │ gzip:  12.12 kB[22m
+[2m.vercel/output/static/[22m[36massets/index-DCVOCFvF.js                       [39m[1m[2m   46.03 kB[22m[1m[22m[2m │ gzip:  13.84 kB[22m
+[2m.vercel/output/static/[22m[36massets/select-CyzmPMW5.js                      [39m[1m[2m   49.28 kB[22m[1m[22m[2m │ gzip:  17.58 kB[22m
+[2m.vercel/output/static/[22m[36massets/_id-CncvqFSR.js                         [39m[1m[2m   59.97 kB[22m[1m[22m[2m │ gzip:  15.21 kB[22m
+[2m.vercel/output/static/[22m[36massets/index-CvYC1eQn.js                       [39m[1m[33m1,149.93 kB[39m[22m[2m │ gzip: 343.33 kB[22m
+[32m✓ built in 1m 32s[39m
+[36mvite v7.3.2 [32mbuilding ssr environment for production...[36m[39m
+transforming...
+[32m✓[39m 1007 modules transformed.
+rendering chunks...
+[2mnode_modules/.nitro/vite/services/ssr/[22m[32massets/dog-smiling-480-6fqpAZW2.jpg             [39m[1m[2m   46.02 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[32massets/dog-smiling-768-BZd4Dj1C.jpg             [39m[1m[2m   92.46 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[32massets/dog-recovering-e6pf9Ekn.jpg              [39m[1m[2m  113.09 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[32massets/dog-smiling-1024-DZg1fOfE.jpg            [39m[1m[2m  143.66 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[32massets/dog-smiling-BtKTrXtF.jpg                 [39m[1m[2m  317.40 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[32massets/NotoSansHK-Regular-DtlzxZzw.ttf          [39m[1m[2m7,071.44 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[35massets/VolunteerAdminShell-DJ2VYEVo.css         [39m[1m[2m    5.69 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[35massets/router-DUcA6ScH.css                      [39m[1m[2m    9.05 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[35massets/styles-B7u6K0AW.css                      [39m[1m[2m  331.98 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/appUrl.server-KzUxci4E.js                [39m[1m[2m    0.11 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/empty-plugin-adapters-BFgPZ6_d.js        [39m[1m[2m    0.13 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/createServerRpc-CY7BaHBo.js              [39m[1m[2m    0.31 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/useDebouncedValue-dFvnu_Er.js            [39m[1m[2m    0.39 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.server-Cn1qqcTA.js            [39m[1m[2m    0.43 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.server-_Sw3leBh.js            [39m[1m[2m    0.47 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.server-B8nkjRDJ.js            [39m[1m[2m    0.51 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/label-Bcq3CBrI.js                        [39m[1m[2m    0.60 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/documentManagementLogic-JHAcByZS.js      [39m[1m[2m    0.67 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/WorkflowSections-BIWCO7IO.js             [39m[1m[2m    0.74 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/resilientLoader-twYjqFiO.js              [39m[1m[2m    0.86 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicListing.server-BGgdZ_mo.js         [39m[1m[2m    0.95 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.server-CBWcnbjI.js            [39m[1m[2m    0.95 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/badge-BJQPcJam.js                        [39m[1m[2m    0.99 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/checkbox-BmkfcU53.js                     [39m[1m[2m    1.00 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.functions-B52EpPQc.js         [39m[1m[2m    1.01 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.functions-DB2kr8K5.js         [39m[1m[2m    1.07 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.functions-Dm1hJbBv.js         [39m[1m[2m    1.08 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/documentUpload-B0mCwRkX.js               [39m[1m[2m    1.09 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicImpact.functions-QeuBd-cD.js       [39m[1m[2m    1.12 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/volunteerAdminLogic-v5tn9QN4.js          [39m[1m[2m    1.13 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/switch-BEhy5w41.js                       [39m[1m[2m    1.14 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/passwordRecovery-Dz6_EYlc.js             [39m[1m[2m    1.17 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/checkoutPolicy.functions-DK8wCOPg.js     [39m[1m[2m    1.23 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/instructions-CQ5Siv-L.js                 [39m[1m[2m    1.25 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/tabs-Bx0b_wbn.js                         [39m[1m[2m    1.66 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/adopterWorkflowLogic-Cpe2Smmf.js         [39m[1m[2m    1.66 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicStoriesPage.functions-DrmafHMi.js  [39m[1m[2m    1.73 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/dog_._id-qyclWfnd.js                     [39m[1m[2m    1.77 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/internships-DhwScQJ3.js                  [39m[1m[2m    1.77 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/start-C8SKkMWI.js                        [39m[1m[2m    1.79 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.functions-Cxzn7yQC.js         [39m[1m[2m    1.88 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/useLiveAdminActor-Bp6Zm4rX.js            [39m[1m[2m    1.88 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/applications-CpFmPNx_.js                 [39m[1m[2m    1.89 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/operations-gKd-Ff_P.js                   [39m[1m[2m    1.89 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/cat-BG6vclah.js                          [39m[1m[2m    1.90 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/dog-1yHXtefj.js                          [39m[1m[2m    1.90 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/StatusBadge-CT-nYhv_.js                  [39m[1m[2m    1.93 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/operations-D-H6PVSE.js                   [39m[1m[2m    2.01 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/activities-BW1BUIXX.js                   [39m[1m[2m    2.03 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/cat-BpqsznMW.js                          [39m[1m[2m    2.13 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/dog-CYSfePTW.js                          [39m[1m[2m    2.13 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/calendar-BuECXRCS.js                     [39m[1m[2m    2.14 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sponsors_._id-BXe_915E.js                [39m[1m[2m    2.16 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/cat_._id-DZPDFg8P.js                     [39m[1m[2m    2.16 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/dog_._id-CgWJqxZl.js                     [39m[1m[2m    2.16 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sponsors-CKBTBGPa.js                     [39m[1m[2m    2.21 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.functions-DrYPOIsz.js         [39m[1m[2m    2.24 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicStory.functions-DKItaS-Z.js        [39m[1m[2m    2.24 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sponsors-CIlQzNB_.js                     [39m[1m[2m    2.26 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/new-CKh-Zdfv.js                          [39m[1m[2m    2.32 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/table-BrO6kaMX.js                        [39m[1m[2m    2.42 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/cat_._id-CceopBSV.js                     [39m[1m[2m    2.44 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/dog_._id-DiwUGcOO.js                     [39m[1m[2m    2.44 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sponsors_._id-Df_XC-Xg.js                [39m[1m[2m    2.47 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sponsorships-CvY_wj01.js                 [39m[1m[2m    2.48 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/ExportButton-CV-sS5OI.js                 [39m[1m[2m    2.52 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicAnimal.functions-BxhqXV1s.js       [39m[1m[2m    2.88 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicImpact.functions-cdfvKQji.js       [39m[1m[2m    3.07 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id.edit-BOjHgOxe.js                     [39m[1m[2m    3.12 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/access-denied-veWtBpsD.js                [39m[1m[2m    3.26 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/dialog-iuL18vf9.js                       [39m[1m[2m    3.27 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicListing.functions-DJYBgD6k.js      [39m[1m[2m    3.32 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/caseWorkflowLogic-qA1t0Nlb.js            [39m[1m[2m    3.35 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/checkoutPolicy.server-CxAsxxS_.js        [39m[1m[2m    3.40 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicProfile-diGIMT3a.js                [39m[1m[2m    3.42 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/repository.server-Dxwc4bWB.js            [39m[1m[2m    3.54 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicImpact.server-B7EV6AQn.js          [39m[1m[2m    3.72 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/contentAdminLogic-B_p6QWwG.js            [39m[1m[2m    3.75 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/useListQueryState-B1LHE2aY.js            [39m[1m[2m    3.88 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/privacy-B0WQFFsd.js                      [39m[1m[2m    4.30 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/PolicyChangeSummary-CS9KOqAd.js          [39m[1m[2m    4.31 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/DataTable-CrbKn2ac.js                    [39m[1m[2m    4.41 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/repository.server-CPIWIi4x.js            [39m[1m[2m    4.64 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/select-yaEuVeZo.js                       [39m[1m[2m    4.97 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/adoption-C-_mW3d3.js                     [39m[1m[2m    5.08 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/tasks-HScfxxAZ.js                        [39m[1m[2m    5.38 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/BulkReview-CeFTVPSO.js                   [39m[1m[2m    5.66 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/audit-Cqxarcm3.js                        [39m[1m[2m    5.70 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/team-CsamLKSx.js                         [39m[1m[2m    5.93 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/AnimalDetail-xUvt1Teg.js                 [39m[1m[2m    6.34 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicStoriesPage.server-DUMUGWct.js     [39m[1m[2m    6.34 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/status._token-DqcUwAHd.js                [39m[1m[2m    6.40 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/knowledge-ByJb4Zu0.js                    [39m[1m[2m    6.54 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/repository.server-Mf7ufzbg.js            [39m[1m[2m    6.71 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/schemas-DySz_7Rg.js                      [39m[1m[2m    7.40 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/reset-password-D1Jo9n-K.js               [39m[1m[2m    7.49 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/supabase.server-CW3JVtyH.js              [39m[1m[2m    7.53 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/tasks-e5Z3FiPI.js                        [39m[1m[2m    8.55 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/VolunteerAdminShell-DXYMmy_y.js          [39m[1m[2m    8.65 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/login-DqPA36ZR.js                        [39m[1m[2m    8.92 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/new--_wQm_v0.js                          [39m[1m[2m    9.31 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/repository.server-CvcgLXWS.js            [39m[1m[2m    9.42 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/catalogue-DwkDSbSm.js                    [39m[1m[2m    9.88 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/simulation-CshoYgP5.js                   [39m[1m[2m   10.38 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_slug-jmMzCGz_.js                        [39m[1m[2m   11.07 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/InternshipForm-DZJhttbv.js               [39m[1m[2m   11.92 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/tasks-B4h4bexj.js                        [39m[1m[2m   12.25 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36mindex.js                                        [39m[1m[2m   12.29 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/help-BRQNdH3Y.js                         [39m[1m[2m   12.46 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/inbox-4qfTxqiM.js                        [39m[1m[2m   12.78 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id-hKa_24WD.js                          [39m[1m[2m   12.79 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/SupporterFormDialog-DUyCncpP.js          [39m[1m[2m   13.49 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sources-CNFrWehx.js                      [39m[1m[2m   14.13 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/annual-reports-BzsQy_3-.js               [39m[1m[2m   14.75 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id-CciKkwaX.js                          [39m[1m[2m   15.08 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/instructions-Ml5HWM8c.js                 [39m[1m[2m   15.12 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/assessments-B_uP8yk7.js                  [39m[1m[2m   15.30 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/group-enquiries-AzOfinv1.js              [39m[1m[2m   16.12 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/index-omAGNU9U.js                        [39m[1m[2m   16.27 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/sponsors_.status._token-C_yqP0Q_.js      [39m[1m[2m   16.32 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/volunteers-BKa8On6n.js                   [39m[1m[2m   16.59 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/supabase-DGds3ZSD.js                     [39m[1m[2m   16.84 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/adopters-ihF5g4Et.js                     [39m[1m[2m   17.93 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/access-BFCDxKAT.js                       [39m[1m[2m   17.96 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/status._token-BajXKMGK.js                [39m[1m[2m   18.02 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/internships-WhGpi6ea.js                  [39m[1m[2m   18.14 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/documents-FWsugaDm.js                    [39m[1m[2m   18.15 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/reports-wHAhbW74.js                      [39m[1m[2m   20.46 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/VolunteerOperations-h7zP_P8l.js          [39m[1m[2m   20.94 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/qualifications-CEb-ECCb.js               [39m[1m[2m   21.94 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/people-exkRy628.js                       [39m[1m[2m   22.91 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/service-BESZys-T.js                      [39m[1m[2m   23.91 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/TaskPanel-C8ZoDfj0.js                    [39m[1m[2m   25.93 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/ContentReview-DkvldYOz.js                [39m[1m[2m   26.10 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id-utD-PTto.js                          [39m[1m[2m   26.52 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/daily-settings-1m5vHFUs.js               [39m[1m[2m   26.83 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/supabase.server-IpP4Osn4.js              [39m[1m[2m   28.46 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/content-BIubSNMF.js                      [39m[1m[2m   28.70 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_tanstack-start-manifest_v-gA1K38lW.js   [39m[1m[2m   28.77 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/index-BhlqV0KV.js                        [39m[1m[2m   30.40 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/statuses-Wzu4J2Zl.js                     [39m[1m[2m   30.79 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/adoption-guides-CYCL1-YL.js              [39m[1m[2m   33.19 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/donate-B02oOYvL.js                       [39m[1m[2m   34.66 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/repository.server-D8YDv9To.js            [39m[1m[2m   35.93 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/adminPageCopy-RYf7AewU.js                [39m[1m[2m   39.35 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/intake-B7AElKfD.js                       [39m[1m[2m   41.62 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/AnimalForm-De1sAio1.js                   [39m[1m[2m   48.05 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/supporters-CWkkkUho.js                   [39m[1m[2m   54.38 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id-BUU-jq7T.js                          [39m[1m[2m   54.73 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id-BBSafXl1.js                          [39m[1m[2m   57.28 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/animals-CbmJ6vc5.js                      [39m[1m[2m   58.43 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/VolunteerActivityWorkspace-BNKTtirC.js   [39m[1m[2m   59.63 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/publicPage.server-DHsA_g01.js            [39m[1m[2m   67.68 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/settings-GT6vrAtD.js                     [39m[1m[2m   71.71 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/server-C-YQ94vR.js                       [39m[1m[2m   79.28 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/PledgeReviewLane-CpafX2yi.js             [39m[1m[2m   81.16 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/index-D-pJrIfd.js                        [39m[1m[2m   82.60 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/_id-Jtuasd2U.js                          [39m[1m[2m   99.44 kB[22m[1m[22m
+[2mnode_modules/.nitro/vite/services/ssr/[22m[36massets/router-BSFrYV6i.js                       [39m[1m[33m1,644.81 kB[39m[22m
+[32m✓ built in 19.29s[39m
+[start] [nitro] Building [[35mNitro[39m] [2m(preset: `vercel`, compatibility: `2026-10-07`)[22m
+[success] [nitro] Generated public [36m.vercel/output/static[39m
+[36mvite v7.3.2 [32mbuilding nitro environment for production...[36m[39m
+transforming...
+[32m✓[39m 2690 modules transformed.
+[info] Tracing dependencies:
+- `tslib` (1.14.1, 2.8.1)
+[success] Traced 1 dependencies (20 files) in 537ms.
+[info] Ensure your production environment matches the builder OS and architecture (`win32-x64`) to avoid native module issues.
+rendering chunks...
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/hookable.mjs                                      [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/ufo.mjs                                           [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/ohash.mjs                                         [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/ocache.mjs                                        [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/unstorage.mjs                                     [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__store.mjs                               [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/use-sync-external-store.mjs                       [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/detect-node-es.mjs                                [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tslib.mjs                                         [39m[1m[2m    0.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__react-store.mjs                         [39m[1m[2m    0.02 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-use-effect-event+[...].mjs        [39m[1m[2m    0.02 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/appUrl.server-KzUxci4E.mjs                         [39m[1m[2m    0.11 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__number.mjs                              [39m[1m[2m    0.11 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/uncrypto.mjs                                      [39m[1m[2m    0.12 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/empty-plugin-adapters-BFgPZ6_d.mjs                 [39m[1m[2m    0.13 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_chunks/render_resend_false.mjs                         [39m[1m[2m    0.16 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/get-nonce.mjs                                     [39m[1m[2m    0.16 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-use-layout-effect+[...].mjs       [39m[1m[2m    0.17 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/rou3.mjs                                          [39m[1m[2m    0.21 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-direction.mjs                     [39m[1m[2m    0.28 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/createServerRpc-CY7BaHBo.mjs                       [39m[1m[2m    0.31 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-use-callback-ref+[...].mjs        [39m[1m[2m    0.34 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__primitive.mjs                           [39m[1m[2m    0.35 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-use-previous.mjs                  [39m[1m[2m    0.39 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/useDebouncedValue-dFvnu_Er.mjs                     [39m[1m[2m    0.43 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/clsx.mjs                                          [39m[1m[2m    0.51 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_chunks/ssr-renderer.mjs                                [39m[1m[2m    0.51 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-id.mjs                            [39m[1m[2m    0.51 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/label-Bcq3CBrI.mjs                                 [39m[1m[2m    0.63 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/documentManagementLogic-JHAcByZS.mjs               [39m[1m[2m    0.67 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-use-escape-keydown+[...].mjs      [39m[1m[2m    0.69 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-label.mjs                         [39m[1m[2m    0.69 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-arrow.mjs                         [39m[1m[2m    0.71 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.server-Cn1qqcTA.mjs                     [39m[1m[2m    0.77 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.server-_Sw3leBh.mjs                     [39m[1m[2m    0.81 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/WorkflowSections-BIWCO7IO.mjs                      [39m[1m[2m    0.81 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-portal.mjs                        [39m[1m[2m    0.83 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-visually-hidden+[...].mjs         [39m[1m[2m    0.85 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.server-B8nkjRDJ.mjs                     [39m[1m[2m    0.86 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/resilientLoader-twYjqFiO.mjs                       [39m[1m[2m    0.86 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-focus-guards.mjs                  [39m[1m[2m    0.93 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-compose-refs.mjs                  [39m[1m[2m    0.96 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/badge-BJQPcJam.mjs                                 [39m[1m[2m    1.04 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/documentUpload-B0mCwRkX.mjs                        [39m[1m[2m    1.09 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/checkbox-BmkfcU53.mjs                              [39m[1m[2m    1.09 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/volunteerAdminLogic-v5tn9QN4.mjs                   [39m[1m[2m    1.13 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/switch-BEhy5w41.mjs                                [39m[1m[2m    1.16 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/passwordRecovery-Dz6_EYlc.mjs                      [39m[1m[2m    1.17 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/instructions-CQ5Siv-L.mjs                          [39m[1m[2m    1.25 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.functions-B52EpPQc.mjs                  [39m[1m[2m    1.26 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-use-size.mjs                      [39m[1m[2m    1.26 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.server-CBWcnbjI.mjs                     [39m[1m[2m    1.29 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.functions-DB2kr8K5.mjs                  [39m[1m[2m    1.32 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.functions-Dm1hJbBv.mjs                  [39m[1m[2m    1.34 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicImpact.functions-QeuBd-cD.mjs                [39m[1m[2m    1.37 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicListing.server-BGgdZ_mo.mjs                  [39m[1m[2m    1.41 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/cookie-es.mjs                                     [39m[1m[2m    1.46 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/checkoutPolicy.functions-DK8wCOPg.mjs              [39m[1m[2m    1.49 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/adopterWorkflowLogic-Cpe2Smmf.mjs                  [39m[1m[2m    1.66 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/react-style-singleton.mjs                         [39m[1m[2m    1.67 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/tabs-Bx0b_wbn.mjs                                  [39m[1m[2m    1.75 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/use-callback-ref.mjs                              [39m[1m[2m    1.75 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/dog_._id-qyclWfnd.mjs                              [39m[1m[2m    1.77 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-primitive.mjs                     [39m[1m[2m    1.90 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/useLiveAdminActor-Bp6Zm4rX.mjs                     [39m[1m[2m    1.94 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicStoriesPage.functions-DrmafHMi.mjs           [39m[1m[2m    1.98 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__history.mjs                             [39m[1m[2m    2.04 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/StatusBadge-CT-nYhv_.mjs                           [39m[1m[2m    2.05 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/start-C8SKkMWI.mjs                                 [39m[1m[2m    2.12 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/class-variance-authority.mjs                      [39m[1m[2m    2.14 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.functions-Cxzn7yQC.mjs                  [39m[1m[2m    2.14 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-use-controllable-state+[...].mjs  [39m[1m[2m    2.29 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.functions-DrYPOIsz.mjs                  [39m[1m[2m    2.50 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicStory.functions-DKItaS-Z.mjs                 [39m[1m[2m    2.55 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/isbot.mjs                                         [39m[1m[2m    2.56 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/ExportButton-CV-sS5OI.mjs                          [39m[1m[2m    2.64 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/use-sidecar.mjs                                   [39m[1m[2m    2.65 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/table-BrO6kaMX.mjs                                 [39m[1m[2m    2.65 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/seroval-plugins.mjs                               [39m[1m[2m    2.96 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicAnimal.functions-BxhqXV1s.mjs                [39m[1m[2m    3.20 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-collection.mjs                    [39m[1m[2m    3.23 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicImpact.functions-cdfvKQji.mjs                [39m[1m[2m    3.33 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/caseWorkflowLogic-qA1t0Nlb.mjs                     [39m[1m[2m    3.35 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-context.mjs                       [39m[1m[2m    3.36 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicProfile-diGIMT3a.mjs                         [39m[1m[2m    3.42 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/dialog-iuL18vf9.mjs                                [39m[1m[2m    3.44 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/checkoutPolicy.server-CxAsxxS_.mjs                 [39m[1m[2m    3.59 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/repository.server-Dxwc4bWB.mjs                     [39m[1m[2m    3.63 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicListing.functions-DJYBgD6k.mjs               [39m[1m[2m    3.69 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/contentAdminLogic-B_p6QWwG.mjs                     [39m[1m[2m    3.75 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/react-remove-scroll-bar.mjs                       [39m[1m[2m    3.96 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicImpact.server-B7EV6AQn.mjs                   [39m[1m[2m    4.05 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/useListQueryState-B1LHE2aY.mjs                     [39m[1m[2m    4.05 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/aria-hidden.mjs                                   [39m[1m[2m    4.06 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/hookform__resolvers.mjs                           [39m[1m[2m    4.15 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/internships-DhwScQJ3.mjs                           [39m[1m[2m    4.18 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/operations-gKd-Ff_P.mjs                            [39m[1m[2m    4.33 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/cat-BG6vclah.mjs                                   [39m[1m[2m    4.34 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/dog-1yHXtefj.mjs                                   [39m[1m[2m    4.34 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/applications-CpFmPNx_.mjs                          [39m[1m[2m    4.35 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/operations-D-H6PVSE.mjs                            [39m[1m[2m    4.47 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/activities-BW1BUIXX.mjs                            [39m[1m[2m    4.49 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/PolicyChangeSummary-CS9KOqAd.mjs                   [39m[1m[2m    4.57 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/cat-BpqsznMW.mjs                                   [39m[1m[2m    4.58 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/dog-CYSfePTW.mjs                                   [39m[1m[2m    4.58 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/calendar-BuECXRCS.mjs                              [39m[1m[2m    4.62 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sponsors_._id-BXe_915E.mjs                         [39m[1m[2m    4.64 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/cat_._id-DZPDFg8P.mjs                              [39m[1m[2m    4.64 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/dog_._id-CgWJqxZl.mjs                              [39m[1m[2m    4.64 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sponsors-CKBTBGPa.mjs                              [39m[1m[2m    4.69 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sponsors-CIlQzNB_.mjs                              [39m[1m[2m    4.77 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/DataTable-CrbKn2ac.mjs                             [39m[1m[2m    4.81 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/new-CKh-Zdfv.mjs                                   [39m[1m[2m    4.83 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-presence.mjs                      [39m[1m[2m    4.86 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/repository.server-CPIWIi4x.mjs                     [39m[1m[2m    4.87 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-switch.mjs                        [39m[1m[2m    4.91 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/cat_._id-CceopBSV.mjs                              [39m[1m[2m    4.96 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/dog_._id-DiwUGcOO.mjs                              [39m[1m[2m    4.96 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sponsors_._id-Df_XC-Xg.mjs                         [39m[1m[2m    4.99 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/select-yaEuVeZo.mjs                                [39m[1m[2m    5.26 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/standardwebhooks.mjs                              [39m[1m[2m    5.34 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sponsorships-CvY_wj01.mjs                          [39m[1m[2m    5.46 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id.edit-BOjHgOxe.mjs                                   [39m[1m[2m    5.72 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/access-denied-veWtBpsD.mjs                         [39m[1m[2m    5.81 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/BulkReview-CeFTVPSO.mjs                            [39m[1m[2m    6.24 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-tabs.mjs                          [39m[1m[2m    6.49 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicStoriesPage.server-DUMUGWct.mjs              [39m[1m[2m    6.81 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/repository.server-Mf7ufzbg.mjs                     [39m[1m[2m    6.88 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/privacy-B0WQFFsd.mjs                               [39m[1m[2m    6.88 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__react-query.mjs                         [39m[1m[2m    7.03 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-alert-dialog.mjs                  [39m[1m[2m    7.10 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36mindex.mjs                                               [39m[1m[2m    7.34 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/AnimalDetail-xUvt1Teg.mjs                          [39m[1m[2m    7.35 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@upstash/core-analytics.mjs                       [39m[1m[2m    7.53 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/stablelib__base64.mjs                             [39m[1m[2m    7.56 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/schemas-DySz_7Rg.mjs                               [39m[1m[2m    7.68 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/adoption-C-_mW3d3.mjs                              [39m[1m[2m    7.75 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/supabase.server-CW3JVtyH.mjs                       [39m[1m[2m    7.86 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-focus-scope.mjs                   [39m[1m[2m    8.07 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/tasks-HScfxxAZ.mjs                                 [39m[1m[2m    8.20 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/floating-ui__react-dom.mjs                        [39m[1m[2m    8.42 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/audit-Cqxarcm3.mjs                                 [39m[1m[2m    8.52 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-checkbox.mjs                      [39m[1m[2m    8.65 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/team-CsamLKSx.mjs                                  [39m[1m[2m    8.76 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/@radix-ui/react-dismissable-layer+[...].mjs       [39m[1m[2m    8.97 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/VolunteerAdminShell-DXYMmy_y.mjs                   [39m[1m[2m    9.39 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/knowledge-ByJb4Zu0.mjs                             [39m[1m[2m    9.40 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/floating-ui__utils.mjs                            [39m[1m[2m    9.47 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/status._token-DqcUwAHd.mjs                         [39m[1m[2m    9.48 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-roving-focus.mjs                  [39m[1m[2m    9.53 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/repository.server-CvcgLXWS.mjs                     [39m[1m[2m    9.53 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/catalogue-DwkDSbSm.mjs                             [39m[1m[2m    9.88 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/h3-v2.mjs                                         [39m[1m[2m    9.98 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/reset-password-D1Jo9n-K.mjs                        [39m[1m[2m   10.39 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/tasks-e5Z3FiPI.mjs                                 [39m[1m[2m   11.64 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-popper.mjs                        [39m[1m[2m   11.68 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__functions-js.mjs                        [39m[1m[2m   11.91 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/login-DqPA36ZR.mjs                                 [39m[1m[2m   12.00 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/new--_wQm_v0.mjs                                   [39m[1m[2m   12.30 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/index.mjs                                          [39m[1m[2m   12.45 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/InternshipForm-DZJhttbv.mjs                        [39m[1m[2m   12.78 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/fast-sha256.mjs                                   [39m[1m[2m   13.35 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/react-remove-scroll.mjs                           [39m[1m[2m   13.37 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/simulation-CshoYgP5.mjs                            [39m[1m[2m   13.46 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-dialog.mjs                        [39m[1m[2m   13.58 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/h3.mjs                                            [39m[1m[2m   14.32 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_slug-jmMzCGz_.mjs                                      [39m[1m[2m   14.52 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/SupporterFormDialog-DUyCncpP.mjs                   [39m[1m[2m   14.55 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/iceberg-js.mjs                                    [39m[1m[2m   15.70 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/help-BRQNdH3Y.mjs                                  [39m[1m[2m   15.80 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/tasks-B4h4bexj.mjs                                 [39m[1m[2m   16.03 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id-hKa_24WD.mjs                                        [39m[1m[2m   16.05 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/inbox-4qfTxqiM.mjs                                 [39m[1m[2m   16.26 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/supabase-DGds3ZSD.mjs                              [39m[1m[2m   17.17 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/srvx.mjs                                          [39m[1m[2m   17.43 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sources-CNFrWehx.mjs                               [39m[1m[2m   17.69 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/annual-reports-BzsQy_3-.mjs                        [39m[1m[2m   18.25 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id-CciKkwaX.mjs                                        [39m[1m[2m   18.90 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/instructions-Ml5HWM8c.mjs                          [39m[1m[2m   18.94 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-slot.mjs                          [39m[1m[2m   19.17 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/assessments-B_uP8yk7.mjs                           [39m[1m[2m   19.31 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/group-enquiries-AzOfinv1.mjs                       [39m[1m[2m   19.73 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/react.mjs                                         [39m[1m[2m   19.83 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/sponsors_.status._token-C_yqP0Q_.mjs               [39m[1m[2m   20.30 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/volunteers-BKa8On6n.mjs                            [39m[1m[2m   20.76 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/index-omAGNU9U.mjs                                 [39m[1m[2m   20.84 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/floating-ui__dom.mjs                              [39m[1m[2m   21.28 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/documents-FWsugaDm.mjs                             [39m[1m[2m   21.92 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/access-BFCDxKAT.mjs                                [39m[1m[2m   22.08 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/internships-WhGpi6ea.mjs                           [39m[1m[2m   22.18 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/status._token-BajXKMGK.mjs                         [39m[1m[2m   22.26 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/adopters-ihF5g4Et.mjs                              [39m[1m[2m   22.28 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/VolunteerOperations-h7zP_P8l.mjs                   [39m[1m[2m   22.74 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/service-BESZys-T.mjs                               [39m[1m[2m   23.92 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/floating-ui__core.mjs                             [39m[1m[2m   24.06 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/reports-wHAhbW74.mjs                               [39m[1m[2m   24.88 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/qualifications-CEb-ECCb.mjs                        [39m[1m[2m   26.30 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/people-exkRy628.mjs                                [39m[1m[2m   26.71 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/ContentReview-DkvldYOz.mjs                         [39m[1m[2m   27.68 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/TaskPanel-C8ZoDfj0.mjs                             [39m[1m[2m   28.07 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_tanstack-start-manifest_v-gA1K38lW.mjs                 [39m[1m[2m   28.77 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/supabase.server-IpP4Osn4.mjs                       [39m[1m[2m   29.08 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/daily-settings-1m5vHFUs.mjs                        [39m[1m[2m   31.28 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id-utD-PTto.mjs                                        [39m[1m[2m   31.29 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__supabase-js.mjs                         [39m[1m[2m   31.47 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/content-BIubSNMF.mjs                               [39m[1m[2m   33.14 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/lucide-react.mjs                                  [39m[1m[2m   34.85 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/index-BhlqV0KV.mjs                                 [39m[1m[2m   35.19 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/resend.mjs                                        [39m[1m[2m   35.76 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/statuses-Wzu4J2Zl.mjs                              [39m[1m[2m   36.05 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/repository.server-D8YDv9To.mjs                     [39m[1m[2m   36.18 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/adoption-guides-CYCL1-YL.mjs                       [39m[1m[2m   37.67 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/donate-B02oOYvL.mjs                                [39m[1m[2m   39.14 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/adminPageCopy-RYf7AewU.mjs                         [39m[1m[2m   39.35 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__react-router.mjs                        [39m[1m[2m   39.57 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/pdf-lib__upng.mjs                                 [39m[1m[2m   47.26 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/intake-B7AElKfD.mjs                                [39m[1m[2m   47.50 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/radix-ui__react-select.mjs                        [39m[1m[2m   50.64 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/AnimalForm-De1sAio1.mjs                            [39m[1m[2m   51.52 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__phoenix.mjs                             [39m[1m[2m   53.95 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/supporters-CWkkkUho.mjs                            [39m[1m[2m   60.12 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id-BUU-jq7T.mjs                                        [39m[1m[2m   61.80 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/upstash__ratelimit.mjs                            [39m[1m[2m   64.18 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/VolunteerActivityWorkspace-BNKTtirC.mjs            [39m[1m[2m   64.53 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id-BBSafXl1.mjs                                        [39m[1m[2m   64.58 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/react-hook-form.mjs                               [39m[1m[2m   65.14 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/animals-CbmJ6vc5.mjs                               [39m[1m[2m   65.78 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/publicPage.server-DHsA_g01.mjs                     [39m[1m[2m   68.55 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__realtime-js.mjs                         [39m[1m[2m   73.92 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__query-core.mjs                          [39m[1m[2m   75.01 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/server-C-YQ94vR.mjs                                [39m[1m[2m   78.98 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/settings-GT6vrAtD.mjs                              [39m[1m[2m   80.33 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/PledgeReviewLane-CpafX2yi.mjs                      [39m[1m[2m   86.91 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/index-D-pJrIfd.mjs                                 [39m[1m[2m   91.68 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tailwind-merge.mjs                                [39m[1m[2m   96.41 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__storage-js.mjs                          [39m[1m[2m   97.77 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/postal-mime.mjs                                   [39m[1m[2m   98.81 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/seroval.mjs                                       [39m[1m[2m   99.78 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_id-Jtuasd2U.mjs                                        [39m[1m[2m  109.06 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/zod.mjs                                           [39m[1m[2m  116.22 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/pako.mjs                                          [39m[1m[2m  121.06 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/pdf-lib__standard-fonts.mjs                       [39m[1m[2m  133.51 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__postgrest-js.mjs                        [39m[1m[2m  137.95 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/upstash__redis.mjs                                [39m[1m[2m  157.30 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/tanstack__router-core.mjs                         [39m[1m[2m  180.51 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/supabase__auth-js.mjs                             [39m[1m[2m  301.06 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/pdf-lib.mjs                                       [39m[1m[2m  480.59 kB[22m[1m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/react-dom.mjs                                     [39m[1m[33m  509.23 kB[39m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/stripe.mjs                                        [39m[1m[33m  654.92 kB[39m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_libs/pdf-lib__fontkit.mjs                              [39m[1m[33m1,138.35 kB[39m[22m
+[2m.vercel/output/functions/__server.func/[22m[36m_ssr/router-BSFrYV6i.mjs                                [39m[1m[33m1,681.61 kB[39m[22m
+[32m✓ built in 29.19s[39m
+[info] Generated [36m.vercel/output/nitro.json[39m
+[success] [nitro] You can preview this build using `npx vite preview`
+[success] [nitro] You can deploy this build using `npx nitro deploy --prebuilt`

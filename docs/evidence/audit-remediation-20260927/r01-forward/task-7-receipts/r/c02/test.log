@@ -1,0 +1,167 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\atomicForward.database.test.ts:
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks ban before audited commit [270.35ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks role before audited commit [107.94ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > promotion concurrent fence blocks disable before audited commit [71.31ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks ban before audited commit [64.79ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks role before audited commit [68.88ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > generic concurrent fence blocks disable before audited commit [100.12ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks ban before audited commit [88.82ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks role before audited commit [103.08ms]
+189 |               throw rollback;
+190 |             });
+191 |           } catch (e) {
+192 |             if (e !== rollback) result = (e as { errno?: string }).errno ?? "unexpected";
+193 |           }
+194 |           expect(result).toBe("55P03");
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "55P03"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:194:26)
+(fail) R01 CMS atomic forward on owned synthetic clone > estate concurrent fence blocks disable before audited commit [53.24ms]
+245 |     }));
+246 |   test("generic actor rejects banned confirmed staff without mutation", () =>
+247 |     fixture(async (tx, ids) => {
+248 |       await tx`update auth.users set banned_until=clock_timestamp()+interval '1 day' where id=${ids.actor}::uuid`;
+249 |       const before = await state(tx);
+250 |       expect(await errno(() => content(tx, ids))).toBe("42501");
+                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:250:51)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:26:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CMS atomic forward on owned synthetic clone > generic actor rejects banned confirmed staff without mutation [41.05ms]
+260 |             tx,
+261 |             (s) =>
+262 |               s`select public.mutate_dog_friendly_estate_with_audit(${ids.actor}::uuid,'create',${randomUUID()}::uuid,null,${{ estate_name: "Synthetic estate", district: "Synthetic district", notes: null, sort_order: 0 }}::jsonb)`,
+263 |           ),
+264 |         ),
+265 |       ).toBe("42501");
+              ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: "success"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:265:9)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\atomicForward.database.test.ts:26:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) R01 CMS atomic forward on owned synthetic clone > estate actor rejects banned confirmed staff preserving version and audit [33.51ms]
+
+ 0 pass
+ 15 filtered out
+ 11 fail
+ 11 expect() calls
+Ran 11 tests across 1 file. [1173.00ms]
