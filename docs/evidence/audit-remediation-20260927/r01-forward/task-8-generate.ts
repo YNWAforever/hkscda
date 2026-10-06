@@ -34,6 +34,14 @@ const unique = (values: unknown[]) => [
   ...new Map(values.map((v) => [JSON.stringify(v), v])).values(),
 ];
 const names = ["create_volunteer_registration_idempotent", "clone_volunteer_activity_with_audit"];
+for (const profile of profiles) {
+  const captured = profile.targets as { name: string }[];
+  if (
+    captured.some((t) => !names.includes(t.name)) ||
+    names.some((name) => captured.filter((t) => t.name === name).length > 1)
+  )
+    throw Error("Measured target profile contains an unknown name or overload");
+}
 const specs = names.map((name) => {
   const match = legacy.match(
     new RegExp(
@@ -104,10 +112,12 @@ for (const key of ["schemas", "defaults", "roles", "memberships"])
     .join(
       ",",
     )}) then raise exception 'R01 volunteer ${key} differs' using errcode='55000'; end if;\n`;
-sql += `  select value into v_target from (${targetQuery}) captured;\n  if pg_catalog.jsonb_array_length(v_target)>2 then raise exception 'R01 volunteer unexpected overload' using errcode='55000'; end if;\n`;
+sql += `  select value into v_target from (${targetQuery}) captured;\n  if exists(select 1 from pg_catalog.jsonb_array_elements(v_target) e group by e->>'name' having pg_catalog.count(*)>1) then raise exception 'R01 volunteer unexpected overload' using errcode='55000'; end if;\n  for v_actual in select e from pg_catalog.jsonb_array_elements(v_target) e loop\n    case v_actual->>'name'\n`;
 for (const s of specs) {
-  sql += `  select e into v_actual from pg_catalog.jsonb_array_elements(v_target) e where e->>'name'=${literal(s.name)};\n  if v_actual is not null and v_actual<>${json(s.old)} and (v_actual-'definition')<>${json(s.next)} then raise exception 'R01 volunteer target differs: ${s.name}' using errcode='55000'; end if;\n`;
+  sql += `    when ${literal(s.name)} then\n      if v_actual<>${json(s.old)} and (v_actual-'definition')<>${json(s.next)} then raise exception 'R01 volunteer target differs: ${s.name}' using errcode='55000'; end if;\n`;
 }
+sql +=
+  "    else raise exception 'R01 volunteer unexpected target name' using errcode='55000';\n    end case;\n  end loop;\n";
 for (const s of specs) {
   sql += `  select e into v_actual from pg_catalog.jsonb_array_elements(v_target) e where e->>'name'=${literal(s.name)};\n`;
   // Existing modern registration body, config and ACL are already reviewed; preserve them.

@@ -8,10 +8,10 @@ evidence = root / "docs/evidence/audit-remediation-20260927/r01-forward"
 accepted = {}
 for mode in ("hosted", "modern"):
     candidates = []
-    for path in (evidence / "task-8-atomic-receipts").glob(mode + "-*/receipt.json"):
+    for path in (evidence / "task-8-fix-1-receipts").glob(mode + "-*/receipt.json"):
         receipt = json.loads(path.read_text())
         flags = ["baselineRollbackPreserved", "onlyTargetsChanged", "helpersPreserved", "migrationRowsPreserved", "migrationExtraPreserved", "secondApplyPreserved", "testsCatalogPreserved", "testsRowsPreserved", "testsExtraPreserved", "templatePreserved", "modernPreserved", "frozenInputsPreserved"]
-        if receipt.get("testExit") == 0 and not receipt.get("error") and all(receipt.get(k) is True for k in flags) and len(receipt.get("refusals", [])) == 12:
+        if receipt.get("testExit") == 0 and not receipt.get("error") and all(receipt.get(k) is True for k in flags) and len(receipt.get("refusals", [])) == 14:
             candidates.append((receipt["at"], path, receipt))
     if not candidates:
         raise SystemExit("Final focused GREEN absent: " + mode)
@@ -24,7 +24,7 @@ sha = lambda raw: hashlib.sha256(raw).hexdigest()
 if any(sha((root / path).read_bytes()) != expected for path, expected in frozen.items()):
     raise SystemExit("Current source differs from focused profiles")
 paths = list(frozen) + ["supabase/rls-tests/helpers/runR01VolunteerForward.ts", "supabase/rls-tests/helpers/runR01VolunteerShapeRed.ts", "docs/evidence/audit-remediation-20260927/r01-forward/task-8-gates.py", "package.json", "bun.lock", "tsconfig.json", "eslint.config.js", "vite.config.ts"]
-out = evidence / "task-8-gates-receipts" / str(time.time_ns())
+out = evidence / "task-8-fix-1-receipts" / ("gates-" + str(time.time_ns()))
 out.mkdir(parents=True)
 (out / ".gitattributes").write_bytes(b"* -text\n")
 bindings = {}

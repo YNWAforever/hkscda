@@ -31,7 +31,9 @@ if (
   throw Error("Explicit owned Task8 mode required");
 const out = resolve(
   root,
-  "docs/evidence/audit-remediation-20260927/r01-forward/task-8-atomic-receipts",
+  process.env.R01_VOLUNTEER_FIX_ROUND === "1"
+    ? "docs/evidence/audit-remediation-20260927/r01-forward/task-8-fix-1-receipts"
+    : "docs/evidence/audit-remediation-20260927/r01-forward/task-8-atomic-receipts",
   mode + "-" + Date.now(),
 );
 await mkdir(out, { recursive: true });
@@ -45,6 +47,7 @@ if (
 const paths = [
   "supabase/rls-tests/helpers/productionSchemaClone.ts",
   "supabase/rls-tests/helpers/runR01VolunteerAtomic.ts",
+  "supabase/rls-tests/helpers/runR01VolunteerOverload.ts",
   "docs/evidence/audit-remediation-20260927/r01-forward/task-8-profile.ts",
   "docs/evidence/audit-remediation-20260927/r01-forward/task-8-generate.ts",
   "src/lib/volunteers/atomicForward.database.test.ts",
@@ -161,7 +164,7 @@ try {
       beforeExtra === hash(await extra());
     const regsig =
       "uuid,uuid,text,integer,text,text,text,text,text,integer,integer,text,text,text,text,timestamptz,boolean,boolean";
-    const negatives = [
+    const negatives: [string, string, boolean?][] = [
       ["owner context", "set local role service_role"],
       [
         "table owner",
@@ -201,15 +204,39 @@ try {
         "create table public.task8_admission_parent ();alter table public.volunteer_activity inherit public.task8_admission_parent",
       ],
       ["unlogged persistence", "alter table public.audit_log set unlogged"],
+      [
+        "partial clone installation with same-name overload",
+        `drop function public.create_volunteer_registration_idempotent(${regsig});create function public.clone_volunteer_activity_with_audit(uuid) returns uuid language sql as 'select $1'`,
+        true,
+      ],
+      [
+        "partial registration installation with same-name overload",
+        "drop function public.clone_volunteer_activity_with_audit(uuid,uuid,timestamptz);create function public.create_volunteer_registration_idempotent(uuid) returns jsonb language sql as 'select null::jsonb'",
+        true,
+      ],
     ];
-    const refusals: { name: string; errno: string; preserved: boolean }[] = [];
+    const refusals: {
+      name: string;
+      errno: string;
+      preserved: boolean;
+      setupReached: boolean;
+      beforeTargets?: unknown[];
+    }[] = [];
     receipt.refusals = refusals;
-    for (const [name, setup] of negatives) {
-      let code = "success";
+    for (const [name, setup, seedTargets] of negatives) {
+      let code = "success",
+        setupReached = false,
+        beforeTargets: unknown[] | undefined;
       try {
         await db.begin(async (tx) => {
           await tx`set local role postgres`;
+          if (seedTargets) await tx.unsafe(source);
           await tx.unsafe(setup);
+          if (seedTargets) {
+            beforeTargets = (await tx.unsafe(targetQuery))[0].value;
+            if (beforeTargets!.length !== 2) throw Error("Two-tuple partial installation required");
+          }
+          setupReached = true;
           await tx.unsafe(source);
           throw forced;
         });
@@ -221,8 +248,8 @@ try {
         beforeRows === (await rows()) &&
         beforeShape === hash((await db.unsafe(shapeQuery))[0].value) &&
         beforeExtra === hash(await extra());
-      refusals.push({ name, errno: code, preserved });
-      if (code !== "55000" || !preserved)
+      refusals.push({ name, errno: code, preserved, setupReached, beforeTargets });
+      if (!setupReached || code !== "55000" || !preserved)
         throw Error("Task8 meaningful refusal failed: " + name + " " + code);
     }
     receipt.refusals = refusals;
