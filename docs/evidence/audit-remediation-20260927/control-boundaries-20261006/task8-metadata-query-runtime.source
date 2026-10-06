@@ -1,0 +1,73 @@
+import { SQL } from "bun"; import { writeFile } from "node:fs/promises";
+const sql=new SQL("postgresql://postgres:postgres@127.0.0.1:57322/postgres",{max:1,prepare:false});
+try {
+await sql.unsafe("begin read only");
+  const rows = (await sql.unsafe(
+    "select p.oid,n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.proconfig config,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(e.extowner) \"extensionOwner\",(select nspname from pg_namespace where oid=e.extnamespace) \"extensionSchema\",d.deptype membership,pg_get_userbyid(p.proowner) owner,p.prokind kind,p.prosecdef definer,p.pronargdefaults defaults,pg_get_expr(p.proargdefaults,0) \"defaultExpression\",p.provolatile volatility,p.proparallel parallel,p.proisstrict strict,p.proleakproof leakproof,p.procost cost,p.prorows rows,p.prosupport::oid support,p.proretset \"returnsSet\",p.provariadic::oid variadic,p.protrftypes transforms,p.proallargtypes \"allArgumentTypes\",p.proargmodes \"argumentModes\",p.proargnames \"argumentNames\",p.prosqlbody::text \"sqlBody\",(select n.nspname||'.'||t.typname from pg_type t join pg_namespace n on n.oid=t.typnamespace where t.oid=p.prorettype) \"resultType\",(select jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x) \"nativeAcl\",(select jsonb_build_object('kind',a.aggkind,'directArguments',a.aggnumdirectargs,'transition',a.aggtransfn::oid,'combine',a.aggcombinefn::oid,'final',a.aggfinalfn::oid,'serial',a.aggserialfn::oid,'deserial',a.aggdeserialfn::oid,'movingTransition',a.aggmtransfn::oid,'movingInverseTransition',a.aggminvtransfn::oid,'movingFinal',a.aggmfinalfn::oid,'finalExtra',a.aggfinalextra,'movingFinalExtra',a.aggmfinalextra,'finalModify',a.aggfinalmodify,'movingFinalModify',a.aggmfinalmodify,'sortOperator',a.aggsortop,'transitionType',(select n.nspname||'.'||t.typname from pg_type t join pg_namespace n on n.oid=t.typnamespace where t.oid=a.aggtranstype),'transitionSpace',a.aggtransspace,'movingTransitionType',(select n.nspname||'.'||t.typname from pg_type t join pg_namespace n on n.oid=t.typnamespace where t.oid=a.aggmtranstype),'movingTransitionSpace',a.aggmtransspace,'initial',a.agginitval,'movingInitial',a.aggminitval) from pg_aggregate a where a.aggfnoid=p.oid) aggregation,p.pronargs arguments,array(select tn.nspname||'.'||t.typname from unnest(p.proargtypes) with ordinality a(type_oid,position) join pg_type t on t.oid=a.type_oid join pg_namespace tn on tn.oid=t.typnamespace order by a.position) \"argumentTypes\",format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' and d.refclassid='pg_extension'::regclass left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
+  )) as {
+    schema: string;
+    name: string;
+    body: string;
+    language: string;
+    system: boolean;
+    source: string;
+    config: string[] | null;
+    library: string | null;
+    extension: string | null;
+    extensionVersion: string | null;
+    owner: string;
+    arguments: number;
+    result: string;
+    oid: number;
+    argumentTypes: string[];
+    extensionOwner: string | null;
+    extensionSchema: string | null;
+    membership: string | null;
+    kind: string;
+    definer: boolean;
+    defaults: number;
+    defaultExpression: string | null;
+    volatility: string;
+    parallel: string;
+    strict: boolean;
+    leakproof: boolean;
+    cost: number;
+    rows: number;
+    support: number;
+    returnsSet: boolean;
+    variadic: number;
+    transforms: number[] | null;
+    allArgumentTypes: number[] | null;
+    argumentModes: string[] | null;
+    argumentNames: string[] | null;
+    sqlBody: string | null;
+    resultType: string;
+    nativeAcl: { grantor: string; grantee: string; privilege: string; grantable: boolean }[] | null;
+    aggregation: {
+      kind: string;
+      directArguments: number;
+      transition: number;
+      combine: number;
+      final: number;
+      serial: number;
+      deserial: number;
+      movingTransition: number;
+      movingInverseTransition: number;
+      movingFinal: number;
+      finalExtra: boolean;
+      movingFinalExtra: boolean;
+      finalModify: string;
+      movingFinalModify: string;
+      sortOperator: number;
+      transitionType: string;
+      transitionSpace: number;
+      movingTransitionType: string | null;
+      movingTransitionSpace: number;
+      initial: string | null;
+      movingInitial: string | null;
+    } | null;
+  }[];
+
+const native=rows.filter(r=>r.schema==="public"&&["min","max","citext_smaller","citext_larger","citext_lt","citext_gt"].includes(r.name)).map(({body,...r})=>({...r,bodyHasSlash:body.includes("/"),bodyBytes:body.length}));
+await writeFile(new URL("./aggregate-actual-modern.json",import.meta.url),JSON.stringify(native,null,2)+"\n",{flag:"wx"});console.log(JSON.stringify(native));await sql.unsafe("rollback");
+}finally{await sql.close();}

@@ -1,0 +1,58 @@
+from pathlib import Path
+import os, sys, json, subprocess, hashlib, datetime, time
+sys.stdout.reconfigure(encoding='utf-8')
+w=Path(__file__).parents[4].resolve()
+assert Path(subprocess.check_output(['git','rev-parse','--show-toplevel'],cwd=w).decode().strip()).resolve()==w
+d=Path(__file__).parent
+name=sys.argv[1]
+bun=r'C:/Users/laich/.bun/bin/bun.exe'
+node=r'C:/Program Files/nodejs/node.exe'
+file='20261001101333_r01_payment_idempotency_forward.sql'
+commands={
+ 'actor-red':[bun,'--no-env-file','supabase/rls-tests/helpers/runR01Forward.ts','actor-red-modern'],
+ 'payment-modern':[bun,'--no-env-file','supabase/rls-tests/helpers/runR01Forward.ts','green-modern',file],
+ 'payment-hosted':[bun,'--no-env-file','supabase/rls-tests/helpers/runR01Forward.ts','green',file],
+ 'citext-red':[bun,'--no-env-file','test','supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts'],
+ 'pure':[bun,'--no-env-file','test','supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts','supabase/rls-tests/helpers/productionSchemaCapture.test.ts','supabase/rls-tests/helpers/productionSchemaClone.test.ts'],
+ 'units':[bun,'--no-env-file','test','--isolate'],
+ 'typecheck':[node,str(w/'node_modules/typescript/bin/tsc'),'--noEmit'],
+ 'lint':[node,str(w/'node_modules/eslint/bin/eslint.js'),'src','eslint.config.js','vite.config.ts','supabase/rls-tests'],
+ 'build':[bun,'--no-env-file','run','build'],
+}
+commands['task8-scan-modern']=[bun,'--no-env-file','.superpowers/sdd/r01-forward-schema-plan-20261001/control-boundaries-20261006/scanTask8.ts','modern']
+commands['task8-scan-hosted']=[bun,'--no-env-file','.superpowers/sdd/r01-forward-schema-plan-20261001/control-boundaries-20261006/scanTask8.ts','hosted']
+commands['pure-native-json']=commands['pure']
+commands['task8-scan-modern-fixed']=commands['task8-scan-modern']
+commands['task8-typecheck']=commands['typecheck']
+commands['task8-lint']=commands['lint']
+commands['task8-units']=commands['units']
+commands['task8-build']=commands['build']
+commands['pure-fixed']=commands['pure']
+commands['units-final']=commands['units']
+commands['typecheck-final']=commands['typecheck']
+commands['payment-modern-final']=commands['payment-modern']
+commands['payment-hosted-final']=commands['payment-hosted']
+commands['units-reviewed']=commands['units']
+assert name in commands
+keys={'PATH','SYSTEMROOT','WINDIR','TEMP','TMP','LOCALAPPDATA','USERPROFILE','APPDATA','HOMEDRIVE','HOMEPATH','COMSPEC','PATHEXT','NUMBER_OF_PROCESSORS','PROCESSOR_ARCHITECTURE','PROGRAMFILES','PROGRAMFILES(X86)','PROGRAMDATA'}
+env={k:v for k,v in os.environ.items() if k.upper() in keys}
+env['PATH']=str(Path(bun).parent)+';'+env.get('PATH','')
+url='http://127.0.0.1:54329' if name.endswith('build') else 'http://127.0.0.1:59999'
+env.update({'CI':'true','VITE_SUPABASE_URL':url,'SUPABASE_URL':url,'SUPABASE_LOCAL_URL':url,'VITE_SUPABASE_ANON_KEY':'ci-placeholder-anon-key','SUPABASE_SERVICE_ROLE_KEY':'ci-placeholder-service-role-key'})
+if name in ['actor-red','payment-modern','payment-hosted','payment-modern-final','payment-hosted-final']:env['R01_FORWARD_ALLOW_LOCAL_FIXTURES']='1'
+files=['supabase/migrations/'+file,'src/lib/donations/idempotency.database.test.ts','supabase/rls-tests/helpers/runR01Forward.ts','supabase/rls-tests/helpers/paymentIntentAcl.ts','supabase/rls-tests/helpers/productionSchemaClone.ts','supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts']
+pins=[{'path':f,'sha256':hashlib.sha256((w/f).read_bytes()).hexdigest()} for f in files]
+if name.startswith('task8-scan-'):env['R01_VOLUNTEER_ALLOW_LOCAL_FIXTURES']='1'
+head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=w).decode().strip()
+at=datetime.datetime.now(datetime.timezone.utc).isoformat();start=time.monotonic()
+with (d/(name+'.stdout')).open('xb') as out,(d/(name+'.stderr')).open('xb') as err:
+ p=subprocess.Popen(commands[name],cwd=w,env=env,stdout=out,stderr=err)
+ print(json.dumps({'state':'STARTED','name':name,'pid':p.pid,'argv':commands[name],'SHA':head}),flush=True)
+ code=p.wait(timeout=600)
+r={'atUtc':at,'endUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'name':name,'argv':commands[name],'pid':p.pid,'supervisorPid':os.getpid(),'cwd':str(w),'SHA':head,'dirtyCandidatePins':pins,'exit':code,'elapsedSeconds':time.monotonic()-start,'environment':'OS-only inheritance; Bun dotenv disabled; provider credentials absent; synthetic/unavailable loopback; only focused disposable-clone optin as named','streams':[]}
+for c in ['stdout','stderr']:
+ path=d/(name+'.'+c);raw=path.read_bytes();r['streams'].append({'path':str(path),'bytes':len(raw),'SHA256':hashlib.sha256(raw).hexdigest()})
+(d/(name+'.receipt.json')).write_bytes((json.dumps(r,indent=2)+'\n').encode())
+print(json.dumps(r),flush=True)
+for c in ['stdout','stderr']:print(c+' TAIL\n'+(d/(name+'.'+c)).read_bytes()[-2600:].decode('utf-8',errors='replace'),flush=True)
+sys.exit(code)

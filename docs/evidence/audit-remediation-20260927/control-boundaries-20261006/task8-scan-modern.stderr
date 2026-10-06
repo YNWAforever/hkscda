@@ -1,0 +1,11 @@
+1064 |   for (const t of triggers)
+1065 |     if (
+1066 |       qualified.includes(t.table_name) &&
+1067 |       (network(t.function_name + "(") || !known.has(t.function_name) || unsafe.has(t.function_name))
+1068 |     )
+1069 |       throw new Error(
+                       ^
+error: Unsafe fixture trigger path: public.volunteer_enforce_registration_policy; no provider/network primitive executed
+      at assertSafeFixtureTables (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\productionSchemaClone.ts:1069:17)
+
+Bun v1.3.14 (Windows x64)
