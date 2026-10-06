@@ -79,3 +79,7 @@ Initial full suite native18376/exit1:3205pass410skip1fail10430assert; sole failu
 An ignored instrumented copy retained exact assertions and measured git71.7ms, matcher123.1ms, file reads419.6ms; native24056/exit0,2pass10assert. A separate same-environment whole-tree scan native41708/exit0 read4073 tracked files/136255832 bytes in1.53s. The subsequent ORIGINAL focused test native28852/exit0:2pass10assert in0.52s. The unchanged complete suite native58828/exit0:3206pass410skip0fail10430assert in61.08s.
 
 Measurements did not reproduce the earlier delay; its environmental cause is unconfirmed. This is retained timing-failure evidence, not a code defect claimed fixed. Instrumentation was confined to ignored scratch files. Only subsequent unchanged actual full-suite and separate gates above count as current acceptance; fresh exact-head CI is still required.
+
+### Packaging qualification
+
+First packaging attempt failed on the Windows cp950 JSON metadata read before edits; explicit UTF-8 corrected the scratch reader. The subsequent documentation commit50f0643f passed all27 raw stream/receipt byte comparisons; its overly broad final assertion additionally included the .gitattributes control file, whose expected Git LF normalization differed from working CRLF. All27 raw artifacts are exact and no raw stream was rewritten. This control-file difference is qualified separately and does not represent a failed code/DB gate.
