@@ -1,0 +1,8 @@
+
+src\lib\dependencySecurity.test.ts:
+(pass) lockfile excludes vulnerable TanStack Start versions (GHSA-qx66-fv34-fjm8) [11.29ms]
+
+ 1 pass
+ 0 fail
+ 6 expect() calls
+Ran 1 test across 1 file. [256.00ms]
