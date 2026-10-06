@@ -82,3 +82,7 @@ All fourteen new R01 forward migrations remain DO_NOT_APPLY and unapplied. No pr
 ## Local source-cache qualification
 
 Before the accepted full-suite run, a separate read-only tracked-file audit ran at the same SHA and measured its file-read stages. Its original native receipt/streams are retained in pre-suite-source-read. No source file, test assertion, exclusion or30s timeout changed. Local suite acceptance therefore describes the environment after that source read; it is not a cold-cache performance claim or a product fix. Fresh exact-head cold CI remains required.
+
+## Controller metadata recovery
+
+The original preparation wrapper exited 1 after documentation commit `3fd08ba972549245c515ab68b965b1e1cf741cbd`: its already-loaded, non-recursive receipt loop attempted to read the `pre-suite-source-read` directory as a file. The four native gates above each exited 0 at `a1eaacb6fddf1e75f7ac27ab30ba8df0d94e8ce0`. A separate recursive verification compared all 15 committed receipt/measurement files byte-for-byte with the retained originals; all matched. The control `.gitattributes` uses Git LF normalization and is excluded from raw-artifact equality. No source, SQL, assertions, timeout, or gate result was changed; this recovery is documentation only.
