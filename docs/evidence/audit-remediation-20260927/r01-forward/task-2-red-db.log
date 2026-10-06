@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\publicAdoption\uploadIntent.database.test.ts:
+PostgresError: relation "public.adoption_upload_intent" does not exist
+    errno: "42P01",
+ severity: "ERROR",
+ position: "82",
+     file: "parse_relation.c",
+  routine: "parserOpenTable",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 adoption forward schema on a guarded empty clone > current caller can query intent, fingerprint and exact cleanup signature [7.19ms]
+
+ 0 pass
+ 9 filtered out
+ 1 fail
+Ran 1 test across 1 file. [1229.00ms]
