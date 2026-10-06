@@ -6854,5 +6854,42 @@
     "production migration or activation"
   ],
   "productionMutation": false,
-  "maintenanceExemptions": 0
+  "maintenanceExemptions": 0,
+  "publicationFollowup": {
+    "capturedAtUtc": "2026-10-06T06:32:05.640321+00:00",
+    "PR": 198,
+    "url": "https://github.com/YNWAforever/hkscda/pull/198",
+    "draft": true,
+    "merged": false,
+    "publishedHead": "7b1eac3fb9acc8d046e47f974bf1cbc4db97ed34",
+    "baseSha": "98c04dc750c1be17229f7bc353d7d90e3f7e440d",
+    "sourceCommit": "4684e14b20784f4dd8fa8f665613463255a92f37",
+    "sourceCommitNativeExit": 0,
+    "evidenceCommitNativeExit": 0,
+    "push": {
+      "argv": [
+        "git",
+        "push",
+        "--set-upstream",
+        "origin",
+        "codex/audit-r01-cli-capture-array-20261006"
+      ],
+      "pid": 57156,
+      "exit": 0,
+      "head": "7b1eac3fb9acc8d046e47f974bf1cbc4db97ed34",
+      "atUtc": "2026-10-06T06:29:02.864126+00:00",
+      "endUtc": "2026-10-06T06:29:07.526129+00:00",
+      "stdout": "branch 'codex/audit-r01-cli-capture-array-20261006' set up to track 'origin/codex/audit-r01-cli-capture-array-20261006'.\n",
+      "stderr": "remote: \nremote: Create a pull request for 'codex/audit-r01-cli-capture-array-20261006' on GitHub by visiting:        \nremote:      https://github.com/YNWAforever/hkscda/pull/new/codex/audit-r01-cli-capture-array-20261006        \nremote: \nTo https://github.com/YNWAforever/hkscda.git\n * [new branch]        codex/audit-r01-cli-capture-array-20261006 -> codex/audit-r01-cli-capture-array-20261006\n",
+      "mainMerge": false,
+      "productionMigration": false
+    },
+    "firstCI": {
+      "runId": 37424039921,
+      "statusAtFirstCapture": "queued",
+      "conclusion": null,
+      "qualification": "Initial queued state only; latest documentation head still requires fresh five jobs and required DB steps"
+    },
+    "mainMerge": "HELD"
+  }
 }
