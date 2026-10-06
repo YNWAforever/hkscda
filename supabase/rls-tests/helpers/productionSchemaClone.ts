@@ -360,7 +360,49 @@ export async function captureProductionSchema(): Promise<{ schema: string; catal
         "--file",
         path,
       ]);
-      return (JSON.parse(text) as { rows: { catalog: Catalog }[] }).rows[0].catalog;
+      // Pinned CLI 2.118.0 emits a one-row JSON array, without a rows envelope.
+      // Reject unknown transport/facet shapes before any schema restore occurs.
+      const response: unknown = JSON.parse(text);
+      if (
+        !Array.isArray(response) ||
+        response.length !== 1 ||
+        response[0] === null ||
+        typeof response[0] !== "object" ||
+        Object.keys(response[0]).join() !== "catalog"
+      )
+        throw new Error("Unmeasured CLI catalog response envelope");
+      const value: unknown = (response[0] as { catalog: unknown }).catalog;
+      if (value === null || typeof value !== "object" || Array.isArray(value))
+        throw new Error("Missing CLI catalog object");
+      const catalog = value as Catalog;
+      const facets = [
+        "schemas",
+        "relations",
+        "columns",
+        "sequences",
+        "functions",
+        "constraints",
+        "indexes",
+        "triggers",
+        "policies",
+        "defaults",
+        "types",
+        "views",
+        "extensions",
+        "extensionMembers",
+        "databaseOwner",
+        "roles",
+        "memberships",
+      ];
+      if (
+        Object.keys(catalog).sort().join() !== [...facets].sort().join() ||
+        typeof catalog.databaseOwner !== "string" ||
+        !facets
+          .filter((key) => key !== "databaseOwner")
+          .every((key) => catalog[key] === null || Array.isArray(catalog[key]))
+      )
+        throw new Error("Unmeasured CLI catalog response facets");
+      return catalog;
     } finally {
       await unlink(path);
     }
