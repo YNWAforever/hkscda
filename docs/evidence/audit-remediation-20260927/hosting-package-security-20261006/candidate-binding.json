@@ -1,0 +1,28 @@
+{
+  "finalCodeSha": "aaa298ca8fb4d55650e3193ec33ef9ac718c1de5",
+  "sourceFiles": [
+    {
+      "path": "package.json",
+      "sha256": "25abbc65388f07c9c43a6e770f99422cfc60e780064006c327065ec4f4bee28a"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "9c06100e13a94c52c2de1106f3836a761fc881147d6ae7c64c307f71e11a366f"
+    },
+    {
+      "path": "src/lib/dependencySecurity.test.ts",
+      "sha256": "abb9b0b1afd259fae9a196701368c8e46fcf987a48d2e9706c92fa4c34f184d7"
+    },
+    {
+      "path": "src/routes/__root.tsx",
+      "sha256": "783017c5e269e7916cd10d3a506fec34c10d6c421a765f58f5ea2d7fe6117aeb"
+    },
+    {
+      "path": "src/routeTree.gen.ts",
+      "sha256": "fd5aa35e8b558898eb069992ada0fe28ab70d2234de19c8c7ba72d11df3bc9c0"
+    }
+  ],
+  "originalLockSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+  "patchedLockSha256": "9c06100e13a94c52c2de1106f3836a761fc881147d6ae7c64c307f71e11a366f",
+  "review": "independent static review: no Critical/Important findings; root verified generated complete line multiset and final typecheck/build"
+}
