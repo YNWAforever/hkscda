@@ -1,0 +1,32 @@
+{
+  "atUtc": "2026-10-06T14:49:34.553518+00:00",
+  "endUtc": "2026-10-06T14:51:40.050170+00:00",
+  "gate": "lint",
+  "argv": [
+    "C:/Program Files/nodejs/node.exe",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\node_modules\\eslint\\bin\\eslint.js",
+    "src",
+    "eslint.config.js",
+    "vite.config.ts",
+    "supabase/rls-tests"
+  ],
+  "pid": 44000,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006",
+  "sha": "0cc4127105237b27a80e5a8c4a1c008c84f6e3bb",
+  "tree": "08d7a57b53a0837868a5ba389b25d5f4b1351409",
+  "exit": 0,
+  "elapsedSeconds": 125.49665360001381,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\0cc4127105237b27a80e5a8c4a1c008c84f6e3bb\\lint.stdout",
+      "bytes": 13572,
+      "sha256": "ac2db444122de3fe1839ab2891736e5ba0b85a70cd5c9666064f4d9a588fa652"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\0cc4127105237b27a80e5a8c4a1c008c84f6e3bb\\lint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

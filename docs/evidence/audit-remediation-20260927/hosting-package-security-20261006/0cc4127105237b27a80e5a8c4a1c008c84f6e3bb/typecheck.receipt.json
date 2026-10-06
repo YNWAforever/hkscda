@@ -1,0 +1,29 @@
+{
+  "atUtc": "2026-10-06T14:49:32.400888+00:00",
+  "endUtc": "2026-10-06T14:51:36.772860+00:00",
+  "gate": "typecheck",
+  "argv": [
+    "C:/Program Files/nodejs/node.exe",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\node_modules\\typescript\\bin\\tsc",
+    "--noEmit"
+  ],
+  "pid": 15488,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006",
+  "sha": "0cc4127105237b27a80e5a8c4a1c008c84f6e3bb",
+  "tree": "08d7a57b53a0837868a5ba389b25d5f4b1351409",
+  "exit": 2,
+  "elapsedSeconds": 124.37195590001647,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\0cc4127105237b27a80e5a8c4a1c008c84f6e3bb\\typecheck.stdout",
+      "bytes": 832,
+      "sha256": "bea1188ff30a7baec9e7c1dd7003acc3b3c7cf78b465c0338c1c98a696363dab"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\0cc4127105237b27a80e5a8c4a1c008c84f6e3bb\\typecheck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

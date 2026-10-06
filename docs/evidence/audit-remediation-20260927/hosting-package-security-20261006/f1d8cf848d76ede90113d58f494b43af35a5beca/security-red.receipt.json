@@ -1,0 +1,30 @@
+{
+  "atUtc": "2026-10-06T14:45:14.858448+00:00",
+  "endUtc": "2026-10-06T14:45:15.219000+00:00",
+  "gate": "security-red",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "test",
+    "src/lib/dependencySecurity.test.ts"
+  ],
+  "pid": 30816,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006",
+  "sha": "f1d8cf848d76ede90113d58f494b43af35a5beca",
+  "tree": "d11a0a7869d87882c6a5241e4ac087fd1f86df68",
+  "exit": 1,
+  "elapsedSeconds": 0.3605446000001393,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\f1d8cf848d76ede90113d58f494b43af35a5beca\\security-red.stdout",
+      "bytes": 28,
+      "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\f1d8cf848d76ede90113d58f494b43af35a5beca\\security-red.stderr",
+      "bytes": 975,
+      "sha256": "2711c064e36f913d77cdbcf338360799eb3b662ca4db52220f6ea64a3c83cc57"
+    }
+  ]
+}
