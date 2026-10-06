@@ -1,0 +1,645 @@
+{
+  "mode": "separate-complete-current-task11-source-only-qualification-v1",
+  "sourceBase": "095b9a0da4dd960d459adac302d68d495b0c129e",
+  "finalSqlSha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+  "finalSqlBytes": 1402952,
+  "entireOriginal53931BusinessTailEqual": true,
+  "sourceHashes": {
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts": "003a55a07432c3b9fd656b1b3b318d765c74444c9eabe3394d14ebc63fe68162",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-profile.ts": "7fb8f1b1dac99c9c5221fc4544b2d00f3a285d849260250044f0c3823cf7f7c2",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-profile.test.ts": "56f6f25c237228727c8c52296ae1e867774e4c0d430b61741fe71487395a1bdf",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-prerequisites.json": "5e20635599df133e0eae2ea2f4d9a0b64449cdd78ce93ca1a80689687660fd93",
+    "supabase/migrations/20261002170945_r01_finance_callback_forward.sql": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+    "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f"
+  },
+  "completeArchive": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-complete-dedup-20261007.zip",
+    "bytes": 32636251,
+    "sha256": "27be2ed995f9d09f8b5f0375c2440e96f0de45bd54be01605207b95f868f0b8a"
+  },
+  "completeManifest": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-complete-dedup-20261007-manifest-lf.json",
+    "bytes": 21381,
+    "sha256": "746067a188921889f66f209c5d02629d7cd66e7e4ef52e433da034a85f0f56fa"
+  },
+  "completeRoundtripFileCount": 25111,
+  "uniquePayloadCount": 2476,
+  "uniquePayloadLogicalBytes": 406034691,
+  "completeAliasIndex": {
+    "entry": "index.json",
+    "schema": "original-path-to-content-addressed-entry-v1",
+    "bytes": 8936831,
+    "sha256": "84ed1e5b16f158c1d455462f7bc1bb0b3e3e0a628ddfaf494347f5185965fefb"
+  },
+  "priorCompleteArchiveAttemptPreservedUntracked": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-complete-20261007.zip",
+      "bytes": 140723429,
+      "sha256": "53ba8e0bba31fbb8b7e01419a9984d28a248a50b4b002b2cb169b0828d34cef2",
+      "preservedUntrackedLocalOnly": true
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-complete-20261007-manifest.json",
+      "bytes": 10147426,
+      "sha256": "68bb4b54252f2a678ef1333269b05bea724cd63a27cea61ad0c2acd6d4f438c9",
+      "preservedUntrackedLocalOnly": true
+    }
+  ],
+  "oldArchivesAndManifestsUnchanged": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-red-20261007.zip",
+      "bytes": 4852774,
+      "sha256": "aaa724589d2f356707199ee71c5289bfc6b72083b66a25d809098d66aca0d4d3"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-red-20261007-manifest.json",
+      "bytes": 523424,
+      "sha256": "f36bb4d226c222a04370e8dbfa2d3a5557598c2cd2767d9a97576c85041bb662"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-hosted-red-20261007.zip",
+      "bytes": 1826432,
+      "sha256": "02a062e2705808b993c457946ab4640f6c90c7e20c8387018a9ca2d114cfea79"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-hosted-red-20261007-manifest.json",
+      "bytes": 19117,
+      "sha256": "c652c4d516c28d9877da096fb5a3fe2f4aac4ab4effc29eb3897b2d06a376b5a"
+    }
+  ],
+  "original77HostedArchiveValidSubsetOnly": true,
+  "originalHostedTransportGapNotWaived": true,
+  "oldOmitted20TransportsNowIncluded": true,
+  "final32NestedTransportsIncluded": true,
+  "qualifiedCurrentStages": [
+    {
+      "stage": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800",
+      "originalDisplayedBeforeArgvAliased": true,
+      "originalReceiptNotRewritten": true,
+      "actualBeforeInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800/before-state.invocation.json",
+        "bytes": 804,
+        "sha256": "d482f2fae9fadffa00c20f34184c23e13eff2a4ba0c11b99da4673c4cbc922a4"
+      },
+      "actualAfterInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800/after-state.invocation.json",
+        "bytes": 803,
+        "sha256": "365a9e5c679eca244f65e342da581d0b7169f0560e3477da7780dcdd37c2c7f3"
+      },
+      "actualBeforePid": 53716,
+      "actualAfterPid": 37128,
+      "receipt": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800/receipt.json",
+        "bytes": 2229,
+        "sha256": "8926709fcf2c309bddb149813dd368fa342dd616e73fb769c2266291ec84b8fb"
+      },
+      "driver": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800/driver.source",
+        "bytes": 4738,
+        "sha256": "2794196357a718d56c5ee320350dfd0bae02f465bbbda3cee762ab294c46cbb0"
+      },
+      "fullBefore": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800/before-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "fullAfter": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-profile_test_final_green_native-1791317789025706800/after-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "completeCurrentBeforeAfterBytesEqual": true
+    },
+    {
+      "stage": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500",
+      "originalDisplayedBeforeArgvAliased": true,
+      "originalReceiptNotRewritten": true,
+      "actualBeforeInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500/before-state.invocation.json",
+        "bytes": 798,
+        "sha256": "8e8d9ea0a70c937e17f52798b33b16a3e440c7b235b6dca8a340ccb0c0417dd5"
+      },
+      "actualAfterInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500/after-state.invocation.json",
+        "bytes": 797,
+        "sha256": "352c21e9985347db138fd1525fbc8e8a377d7cf00370a9f354005f2f5fe4e045"
+      },
+      "actualBeforePid": 35336,
+      "actualAfterPid": 53088,
+      "receipt": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500/receipt.json",
+        "bytes": 2358,
+        "sha256": "217b6b012bc90536aeddb55d7d303499be2dd9b30c783a36670524737a84ad46"
+      },
+      "driver": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500/driver.source",
+        "bytes": 4738,
+        "sha256": "2794196357a718d56c5ee320350dfd0bae02f465bbbda3cee762ab294c46cbb0"
+      },
+      "fullBefore": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500/before-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "fullAfter": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-generator_reproducibility-1791317849244721500/after-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "completeCurrentBeforeAfterBytesEqual": true
+    },
+    {
+      "stage": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700",
+      "originalDisplayedBeforeArgvAliased": true,
+      "originalReceiptNotRewritten": true,
+      "actualBeforeInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700/before-state.invocation.json",
+        "bytes": 830,
+        "sha256": "b95b0c8be628ffd6516261b86dfc83800318fdd9c7a9e48e64a79a3918a21c3a"
+      },
+      "actualAfterInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700/after-state.invocation.json",
+        "bytes": 829,
+        "sha256": "bfce1603ff1feb57aa6273ed6f4b2d3b0e5e92df108497d21965715ef555b4ab"
+      },
+      "actualBeforePid": 55960,
+      "actualAfterPid": 5768,
+      "receipt": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700/receipt.json",
+        "bytes": 2280,
+        "sha256": "3af76f1b8febe2113b5a74ec387a7cef321dbb8bba9dffdd27b585203ae98738"
+      },
+      "driver": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700/driver.source",
+        "bytes": 4738,
+        "sha256": "2794196357a718d56c5ee320350dfd0bae02f465bbbda3cee762ab294c46cbb0"
+      },
+      "fullBefore": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700/before-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "fullAfter": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-hosted_green-1791318204472220700/after-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "completeCurrentBeforeAfterBytesEqual": true
+    },
+    {
+      "stage": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200",
+      "originalDisplayedBeforeArgvAliased": true,
+      "originalReceiptNotRewritten": true,
+      "actualBeforeInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200/before-state.invocation.json",
+        "bytes": 830,
+        "sha256": "c8ed7e41f1653aa28bd4f8cc224c0d79403419f15b61bcc777c2bca099ddea0c"
+      },
+      "actualAfterInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200/after-state.invocation.json",
+        "bytes": 829,
+        "sha256": "15aba3595fdfdcdf97fca27edab65700e447e6c8b647d26729e7f4cc8247b158"
+      },
+      "actualBeforePid": 57192,
+      "actualAfterPid": 46772,
+      "receipt": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200/receipt.json",
+        "bytes": 2281,
+        "sha256": "aac074726c2967beae21b083c1e5de5503d1fa144f0860e5893593f0ab236261"
+      },
+      "driver": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200/driver.source",
+        "bytes": 4738,
+        "sha256": "2794196357a718d56c5ee320350dfd0bae02f465bbbda3cee762ab294c46cbb0"
+      },
+      "fullBefore": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200/before-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "fullAfter": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-modern_green-1791318313274648200/after-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "completeCurrentBeforeAfterBytesEqual": true
+    },
+    {
+      "stage": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400",
+      "originalDisplayedBeforeArgvAliased": true,
+      "originalReceiptNotRewritten": true,
+      "actualBeforeInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400/before-state.invocation.json",
+        "bytes": 794,
+        "sha256": "bb0a9d64181a04d1c77f62375b718ef1f6c971aaa0a0e1a9c3aafef49744c414"
+      },
+      "actualAfterInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400/after-state.invocation.json",
+        "bytes": 793,
+        "sha256": "9b6eddd038d990b31cb1b874e38616d9c35634cadb2eaa3833f0aa197333e5e8"
+      },
+      "actualBeforePid": 61240,
+      "actualAfterPid": 28772,
+      "receipt": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400/receipt.json",
+        "bytes": 2406,
+        "sha256": "9ae00de9188e2f7db25ea197d0228d9a73ecbcfa9582ecf7e22b0371ea7225f5"
+      },
+      "driver": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400/driver.source",
+        "bytes": 4738,
+        "sha256": "2794196357a718d56c5ee320350dfd0bae02f465bbbda3cee762ab294c46cbb0"
+      },
+      "fullBefore": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400/before-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "fullAfter": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-native_green_repaired-1791320779536681400/after-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "completeCurrentBeforeAfterBytesEqual": true
+    },
+    {
+      "stage": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700",
+      "originalDisplayedBeforeArgvAliased": true,
+      "originalReceiptNotRewritten": true,
+      "actualBeforeInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700/before-state.invocation.json",
+        "bytes": 796,
+        "sha256": "33ea56f6b720b02245e5076a47b7080b0e6a63a4cd6e5f2699719496174c6600"
+      },
+      "actualAfterInvocationAuthoritative": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700/after-state.invocation.json",
+        "bytes": 795,
+        "sha256": "65b6eb4b1d21b6538b50a441ff1f5f8d95b8a78f6cf7356a475f8efe201f8e24"
+      },
+      "actualBeforePid": 34232,
+      "actualAfterPid": 49772,
+      "receipt": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700/receipt.json",
+        "bytes": 2164,
+        "sha256": "ad2d2af671d568215859c12035c6114a18ef02e829b710cae21f3510bf5b7dc2"
+      },
+      "driver": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700/driver.source",
+        "bytes": 4738,
+        "sha256": "2794196357a718d56c5ee320350dfd0bae02f465bbbda3cee762ab294c46cbb0"
+      },
+      "fullBefore": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700/before-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "fullAfter": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-stage-source_gates_local59999-1791321607257090700/after-shared.json",
+        "bytes": 8012515,
+        "sha256": "05064baf9cbe6c1b6801f085e93d8f45969b450213c6dc239d150b138f2380e8"
+      },
+      "completeCurrentBeforeAfterBytesEqual": true
+    }
+  ],
+  "currentNativeReceipt": {
+    "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-cold-green-final-1693bc327a7a45efb750123bd6548fc0/receipt.json",
+    "bytes": 1645915,
+    "sha256": "5322a60ca18e5975b524f962de0646817091ba4f9d5e53fb8eebc69f44895a4d"
+  },
+  "nativeProtocolScope": "PG170011 metadata only; native-local Bun finance behavior NOT_RUN",
+  "nativeRequiredFlags": [
+    "browserControlWritesDenied",
+    "allColumnRightsAndGrantOptionsPreserved",
+    "observedColdPairMatched",
+    "fullD45BaselineObserved",
+    "fullScannerPassed",
+    "firstApply",
+    "secondApply",
+    "secondApplyPreserved",
+    "outsideTargetsPreserved",
+    "supplementalPreserved",
+    "refusalsPassed",
+    "fixtureConnectionIdentity",
+    "purePositivePairsPassed",
+    "mixedRefusalsPassed",
+    "pureCatalogRefusalsPassed",
+    "currentGeneratorBound",
+    "zeroRowsAfter",
+    "normalCleanup",
+    "protectedSourcesPreserved",
+    "frozenInputsPreserved"
+  ],
+  "nativeFailedFlags": [],
+  "nativePositivePairs": 7,
+  "nativeExactGuardRefusals": 10,
+  "nativeFullCandidateRefusals": 19,
+  "nativeControlDenialRecords": [
+    {
+      "table": "donation",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "anon"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "anon"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_fingerprint",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "anon"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_fingerprint",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "anon"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_fingerprint",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "donation",
+      "column": "idempotency_fingerprint",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "payment",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "anon"
+    },
+    {
+      "table": "payment",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "anon"
+    },
+    {
+      "table": "payment",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "payment",
+      "column": "idempotency_key",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_url",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "anon"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_url",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "anon"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_url",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_url",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_attempted_at",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "anon"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_attempted_at",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "anon"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_attempted_at",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "INSERT",
+      "role_name": "authenticated"
+    },
+    {
+      "table": "payment",
+      "column": "checkout_attempted_at",
+      "allowed": false,
+      "grantable": false,
+      "privilege": "UPDATE",
+      "role_name": "authenticated"
+    }
+  ],
+  "nativeBeforeAfterRightsCount": 504,
+  "nativeActualBeforeAfterZeroTableCount": 10,
+  "currentSourceGateReceipt": {
+    "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-cold-gates-1791321608838809400/receipt.json",
+    "bytes": 2117,
+    "sha256": "d828aea40bedaa02826269febbdb8335ecfcf0de1158c8343f6ec9acbe98bc67"
+  },
+  "actualSourceGateCommands": [
+    {
+      "name": "evidence-typecheck",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Bundler",
+        "--resolveJsonModule",
+        "--esModuleInterop",
+        "--types",
+        "bun-types",
+        "--skipLibCheck",
+        "--strict",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-profile.ts",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-profile.test.ts",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts"
+      ],
+      "pid": 45716,
+      "exit": 0,
+      "seconds": 2.023832600010792
+    },
+    {
+      "name": "typecheck",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "typecheck"
+      ],
+      "pid": 3996,
+      "exit": 0,
+      "seconds": 32.33499410000513
+    },
+    {
+      "name": "test",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "--isolate",
+        "--timeout",
+        "30000"
+      ],
+      "pid": 28916,
+      "exit": 0,
+      "seconds": 56.27106509997975
+    },
+    {
+      "name": "lint",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "lint"
+      ],
+      "pid": 11924,
+      "exit": 0,
+      "seconds": 46.750135900016176
+    },
+    {
+      "name": "build",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "build"
+      ],
+      "pid": 12712,
+      "exit": 0,
+      "seconds": 70.71365259998129
+    }
+  ],
+  "sourceUnits": {
+    "pass": 3908,
+    "skip": 599,
+    "fail": 0,
+    "assertions": 11622,
+    "files": 620,
+    "skipsAreNotDatabaseOrProviderAcceptance": true
+  },
+  "oldSourceGate55321Execution": {
+    "originalFailureRetained": true,
+    "local55321And55322Preservation": "UNKNOWN_NO_BEFORE_CAPTURE",
+    "unintendedFixtureWritesNotLabelledPreserved": true,
+    "noRepairResetCleanupOrApplicationRowQueryAfterward": true
+  },
+  "historicalbf0AggregatePreservation": "FAILED_UNKNOWN_ATTRIBUTION_NOT_WAIVED",
+  "historical6cToF5ManagedRowHashDriftRetained": true,
+  "currentFullSharedHashes": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "f5b51515bcf790adf7928168478ef94eabbf7331a84420fe744ab7f04e75028b"
+  },
+  "originalRawPathsRetained": true,
+  "noDeleteMovePrune": true,
+  "actualColdCI170011Finance67ZeroSkipStillRequiredBeforeMerge": true,
+  "task12UnchangedSeparateRebindRequired": true,
+  "productionApplied": false,
+  "providerActions": false,
+  "pushMergeActivation": false,
+  "qualificationArgv": [
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-write-complete-qualification-dedup-20261007.py"
+  ],
+  "qualificationPid": 39004,
+  "sandboxPermissions": "require_escalated",
+  "originalRawManifestPreservedUntracked": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-complete-dedup-20261007-manifest.json",
+    "bytes": 21790,
+    "sha256": "022d8969c8d03a1fe266a8512fbe5167e47dc70b5830ba1ce49f2a5e5c23c271"
+  },
+  "originalRawQualificationPreservedUntracked": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-green-qualification.json",
+    "bytes": 25144,
+    "sha256": "bf56d0932b0352b12a68d3f9cd0d5d7719c2c22195b2e782e325252bff19ac1a"
+  },
+  "publicationMetadataTransform": {
+    "mode": "separately-versioned-LF-publication-only",
+    "receiptPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-evidence-lf-publication-20261007.json",
+    "manifestExactCRLFToLFOnly": true,
+    "manifestParsedJsonEqual": true,
+    "driver": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-publish-lf-evidence-20261007.py",
+      "bytes": 3333,
+      "sha256": "a3a18b9cd13842a13909f690424b7d1614a60b78ac10e1912cf899f5fabe69b3"
+    },
+    "driverUtf8Source": "import copy,hashlib,json,os,pathlib,sys\nroot=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001'\nprefix='docs/evidence/audit-remediation-20260927/r01-forward/'\nsha=lambda raw:hashlib.sha256(raw).hexdigest()\ndef bind(path,raw):return {'path':path,'bytes':len(raw),'sha256':sha(raw)}\nmanifestOld=prefix+'task-11-cold-complete-dedup-20261007-manifest.json'\nmanifestNew=prefix+'task-11-cold-complete-dedup-20261007-manifest-lf.json'\nqualOld=prefix+'task-11-cold-green-qualification.json';qualNew=prefix+'task-11-cold-green-qualification-lf.json'\noldM=(root/manifestOld).read_bytes();newM=oldM.replace(b'\\r\\n',b'\\n')\nassert oldM!=newM and b'\\r'not in newM and json.loads(oldM)==json.loads(newM)\nassert not(root/manifestNew).exists();(root/manifestNew).write_bytes(newM)\noldQ=(root/qualOld).read_bytes();oldObject=json.loads(oldQ);newObject=copy.deepcopy(oldObject)\ndriverPath='.superpowers/sdd/r01-forward-schema-plan-20261001/'+pathlib.Path(__file__).name\ndriverRaw=pathlib.Path(__file__).read_bytes();receiptPath='.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-evidence-lf-publication-20261007.json'\nnewObject['completeManifest']=bind(manifestNew,newM)\nnewObject['originalRawManifestPreservedUntracked']=bind(manifestOld,oldM)\nnewObject['originalRawQualificationPreservedUntracked']=bind(qualOld,oldQ)\nnewObject['publicationMetadataTransform']={'mode':'separately-versioned-LF-publication-only','receiptPath':receiptPath,\n 'manifestExactCRLFToLFOnly':True,'manifestParsedJsonEqual':True,'driver':bind(driverPath,driverRaw),\n 'driverUtf8Source':driverRaw.decode('utf-8'),'actualPid':os.getpid(),'actualArgv':sys.argv,\n 'sandboxPermissions':os.environ.get('R01_TASK11_SANDBOX_PERMISSIONS','use_default'),\n 'sourceSqlArchiveIndexAndGateInputsUnchanged':True,'noRuntimeReruns':True}\nrecovered=copy.deepcopy(newObject)\nfor key in ('originalRawManifestPreservedUntracked','originalRawQualificationPreservedUntracked','publicationMetadataTransform'):del recovered[key]\nrecovered['completeManifest']=oldObject['completeManifest'];assert recovered==oldObject\nnewQ=(json.dumps(newObject,indent=2)+'\\n').encode('utf-8');assert b'\\r'not in newQ\nassert not(root/qualNew).exists();(root/qualNew).write_bytes(newQ)\nassert (root/manifestOld).read_bytes()==oldM and(root/qualOld).read_bytes()==oldQ\nr={'mode':'publication-LF-transform-and-explicit-qualifier-rebind-v1','actualPid':os.getpid(),'actualArgv':sys.argv,\n 'manifestOriginal':bind(manifestOld,oldM),'manifestPublished':bind(manifestNew,newM),'manifestExactNewlineOnly':True,\n 'manifestParsedJsonEqual':True,'qualificationOriginal':bind(qualOld,oldQ),'qualificationPublished':bind(qualNew,newQ),\n 'qualifierChangedFieldsOnly':['completeManifest','originalRawManifestPreservedUntracked','originalRawQualificationPreservedUntracked','publicationMetadataTransform'],\n 'qualifierRecoveredOldObjectEqual':True,'allOriginalOutputsUnchanged':True,'driver':bind(driverPath,driverRaw),\n 'sourceSqlArchiveIndexAndGateInputsUnchanged':True,'noRuntimeReruns':True,'productionApplied':False}\nassert not(root/receiptPath).exists();(root/receiptPath).write_bytes((json.dumps(r,indent=2)+'\\n').encode('utf-8'))\nprint(json.dumps({'receipt':receiptPath,'manifest':r['manifestPublished'],'qualification':r['qualificationPublished'],'allOriginalOutputsUnchanged':True}))\n",
+    "actualPid": 41068,
+    "actualArgv": [
+      ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-publish-lf-evidence-20261007.py"
+    ],
+    "sandboxPermissions": "require_escalated",
+    "sourceSqlArchiveIndexAndGateInputsUnchanged": true,
+    "noRuntimeReruns": true
+  }
+}
