@@ -10,6 +10,7 @@ import {
   hash,
   localSourceState,
 } from "./productionSchemaClone";
+import { oldColumnRights, assertPaymentAclConversion } from "./paymentIntentAcl";
 
 async function assertOriginalModernPreserved(url: string, before: string) {
   if ((await localSourceState(url)) !== before)
@@ -67,6 +68,7 @@ async function run() {
     };
     const beforeFacts = await facts(),
       before = await snapshot(db);
+    const beforeRights = await oldColumnRights(db);
     receipt.legacyFactsBeforeHash = beforeFacts;
     if (green) {
       const file = basename(process.argv[3] ?? "");
@@ -105,12 +107,10 @@ async function run() {
       ])
         if (hash(before[facet]) !== hash(first[facet]))
           throw new Error("Unintended metadata drift: " + facet);
-      const relationInvariant = (catalog: typeof before) =>
-        (catalog.relations as { name: string; kind: string }[]).filter(
-          (r) => !["donation_idempotency_key_idx", "payment_idempotency_key_idx"].includes(r.name),
-        );
-      if (hash(relationInvariant(before)) !== hash(relationInvariant(first)))
-        throw new Error("Original relation metadata drift");
+      assertPaymentAclConversion(before, first);
+      const afterRights = await oldColumnRights(db);
+      if (hash(beforeRights) !== hash(afterRights))
+        throw new Error("Original column effective rights/grant options changed");
       const [shadow] = await db.unsafe(
         "select idempotency_key,idempotency_fingerprint from pg_temp.donation",
       );
@@ -119,6 +119,16 @@ async function run() {
       await db.unsafe("drop table pg_temp.donation;drop table pg_temp.payment;set search_path=''");
       const rejected: { case: string; sqlState: string; restored: boolean }[] = [];
       const cases = [
+        [
+          "explicit-control-column-grant",
+          "grant update(checkout_url) on public.payment to anon",
+          "55000",
+        ],
+        [
+          "unexpected-write-grantor",
+          "grant update on public.payment to service_role with grant option;set local role service_role;grant update on public.payment to authenticated;reset role",
+          "55000",
+        ],
         [
           "wrong-column-type",
           "alter table public.donation alter column idempotency_key type text using idempotency_key::text",
@@ -161,6 +171,31 @@ async function run() {
           throw new Error("Preflight negative case failed: " + label + " " + actual);
         rejected.push({ case: label, sqlState: actual, restored });
       }
+      const variantRollback = new Error("R01 rollback synthetic grant-option variant");
+      let grantOptionVariant = false;
+      try {
+        await db.begin(async (tx) => {
+          await tx.unsafe(
+            "grant insert,update on public.donation,public.payment to authenticated with grant option;grant references(provider_ref) on public.payment to anon with grant option",
+          );
+          const variantBefore = await snapshot(tx),
+            rightsBefore = await oldColumnRights(tx);
+          await tx.unsafe(text);
+          const variantAfter = await snapshot(tx);
+          assertPaymentAclConversion(variantBefore, variantAfter);
+          if (hash(rightsBefore) !== hash(await oldColumnRights(tx)))
+            throw new Error("Synthetic grant option not preserved");
+          await tx.unsafe(text);
+          if (hash(variantAfter) !== hash(await snapshot(tx)))
+            throw new Error("Grant-option variant second apply drift");
+          grantOptionVariant = true;
+          throw variantRollback;
+        });
+      } catch (error) {
+        if (error !== variantRollback) throw error;
+      }
+      if (hash(await snapshot(db)) !== hash(second))
+        throw new Error("Grant-option variant not rolled back");
       receipt.migration = {
         file,
         canonicalSha256: hash(text.replaceAll("\r\n", "\n")),
@@ -171,6 +206,10 @@ async function run() {
         metadataPreserved: true,
         tempShadowPreserved: true,
         rejected,
+        oldColumnRightsHash: hash(afterRights),
+        oldColumnRightsAssertions: afterRights.length,
+        exactOldColumnAclConversion: true,
+        grantOptionVariant,
       };
     }
     const args = [

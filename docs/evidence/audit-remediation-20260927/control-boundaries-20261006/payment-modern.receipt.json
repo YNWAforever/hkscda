@@ -1,0 +1,57 @@
+{
+  "atUtc": "2026-10-06T14:01:36.124624+00:00",
+  "endUtc": "2026-10-06T14:01:52.527618+00:00",
+  "name": "payment-modern",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "supabase/rls-tests/helpers/runR01Forward.ts",
+    "green-modern",
+    "20261001101333_r01_payment_idempotency_forward.sql"
+  ],
+  "pid": 35320,
+  "supervisorPid": 61808,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "SHA": "a3125547139dee5c022c1701b063e431790dcec3",
+  "dirtyCandidatePins": [
+    {
+      "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+      "sha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88"
+    },
+    {
+      "path": "src/lib/donations/idempotency.database.test.ts",
+      "sha256": "ed4a8ffea28115fee0e5e766d7953f50e9e7b3d3492856cc2ff69336099d0c65"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/runR01Forward.ts",
+      "sha256": "76df6bc268bf8bebc652da17b636c98c3c42b482d31348b0f32bc109bdc219e3"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/paymentIntentAcl.ts",
+      "sha256": "eee071f14ea1951ba09e86186f0e7d8da4921a050f0d416266da3b550a548668"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "sha256": "c4481c8c119818477580e567f4ed33676398d53a95feb1de1a048953899773e5"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts",
+      "sha256": "0375959baa1825ee88268a84d9777fb079c582016dff6f49c737f7700ff15952"
+    }
+  ],
+  "exit": 0,
+  "elapsedSeconds": 16.403012099995976,
+  "environment": "OS-only inheritance; Bun dotenv disabled; provider credentials absent; synthetic/unavailable loopback; only focused disposable-clone optin as named",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\control-boundaries-20261006\\payment-modern.stdout",
+      "bytes": 2760,
+      "SHA256": "fea3cddbf2141e4fcd69f12192a41255f41444163c459e8fb7dc1dda58494b6d"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\control-boundaries-20261006\\payment-modern.stderr",
+      "bytes": 0,
+      "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
