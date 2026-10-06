@@ -1,0 +1,13 @@
+
+src\lib\content\adultCatCopy.test.ts:
+(pass) adult cat copy audit > keeps contradictory wording out of tracked source and seed content [440.63ms]
+(pass) adult cat copy audit > uses the canonical sentence publicly and narrowly repairs CMS bodies [0.39ms]
+
+src\lib\content\serviceSloganCopy.test.ts:
+(pass) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [773.08ms]
+(pass) service slogan correction > publishes volunteer group and knowledge routes while retaining the audit report [0.56ms]
+
+ 4 pass
+ 0 fail
+ 17 expect() calls
+Ran 4 tests across 2 files. [1297.00ms]
