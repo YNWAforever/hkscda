@@ -1,0 +1,49 @@
+from pathlib import Path
+import datetime, hashlib, json, os, subprocess, sys, time
+
+sys.stdout.reconfigure(encoding='utf-8')
+w = Path(__file__).parents[3].resolve()
+assert Path(subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=w).decode().strip()).resolve() == w
+name = sys.argv[1]
+assert name in ['typecheck', 'test', 'lint', 'build', 'security-red', 'security-green', 'install-patched', 'install-frozen', 'copy-audit']
+bun = 'C:/Users/laich/.bun/bin/bun.exe'
+node = 'C:/Program Files/nodejs/node.exe'
+commands = {
+    'copy-audit': [bun, '--no-env-file', 'test', '--isolate', '--timeout', '30000', 'src/lib/content/adultCatCopy.test.ts', 'src/lib/content/serviceSloganCopy.test.ts'],
+    'security-red': [bun, '--no-env-file', 'test', 'src/lib/dependencySecurity.test.ts'],
+    'security-green': [bun, '--no-env-file', 'test', 'src/lib/dependencySecurity.test.ts'],
+    'install-patched': [bun, '--no-env-file', 'add', '--exact', '--ignore-scripts', '@tanstack/react-start@1.168.60', '@tanstack/react-router@1.170.41', '@tanstack/router-plugin@1.168.42'],
+    'install-frozen': [bun, '--no-env-file', 'install', '--frozen-lockfile', '--ignore-scripts'],
+    'typecheck': [node, str(w/'node_modules/typescript/bin/tsc'), '--noEmit'],
+    'test': [bun, '--no-env-file', 'test', '--isolate', '--timeout', '30000'],
+    'lint': [node, str(w/'node_modules/eslint/bin/eslint.js'), 'src', 'eslint.config.js', 'vite.config.ts', 'supabase/rls-tests'],
+    'build': [bun, '--no-env-file', 'run', 'build'],
+}
+keys = {'PATH','SYSTEMROOT','WINDIR','TEMP','TMP','LOCALAPPDATA','USERPROFILE','APPDATA','HOMEDRIVE','HOMEPATH','COMSPEC','PATHEXT','NUMBER_OF_PROCESSORS','PROCESSOR_ARCHITECTURE','PROGRAMFILES','PROGRAMFILES(X86)','PROGRAMDATA'}
+env = {k: v for k, v in os.environ.items() if k.upper() in keys}
+env['PATH'] = str(Path(bun).parent)+';'+env.get('PATH','')
+url = 'http://127.0.0.1:54329' if name == 'build' else 'http://127.0.0.1:59999'
+env.update({'CI':'true','VITE_SUPABASE_URL':url,'SUPABASE_URL':url,'SUPABASE_LOCAL_URL':url,'VITE_SUPABASE_ANON_KEY':'ci-placeholder-anon-key','SUPABASE_SERVICE_ROLE_KEY':'ci-placeholder-service-role-key'})
+sha = subprocess.check_output(['git','rev-parse','HEAD'],cwd=w).decode().strip()
+tree = subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=w).decode().strip()
+d = Path(__file__).parent/sha
+d.mkdir(exist_ok=True)
+at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+start = time.monotonic()
+with (d/(name+'.stdout')).open('xb') as out, (d/(name+'.stderr')).open('xb') as err:
+    p = subprocess.Popen(commands[name],cwd=w,env=env,stdout=out,stderr=err)
+    print(json.dumps({'state':'STARTED','gate':name,'pid':p.pid,'sha':sha}),flush=True)
+    code = p.wait(timeout=600)
+assert sha == subprocess.check_output(['git','rev-parse','HEAD'],cwd=w).decode().strip()
+r = {'atUtc':at,'endUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'gate':name,'argv':commands[name],'pid':p.pid,'cwd':str(w),'sha':sha,'tree':tree,'exit':code,'elapsedSeconds':time.monotonic()-start,'environment':'OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins','streams':[]}
+for stream in ['stdout','stderr']:
+    path = d/(name+'.'+stream)
+    raw = path.read_bytes()
+    r['streams'].append({'path':str(path),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()})
+with (d/(name+'.receipt.json')).open('x',encoding='utf-8') as f:
+    json.dump(r,f,indent=2)
+    f.write('\n')
+print(json.dumps(r),flush=True)
+for stream in ['stdout','stderr']:
+    print(stream+' TAIL\n'+(d/(name+'.'+stream)).read_bytes()[-1800:].decode('utf-8',errors='replace'),flush=True)
+sys.exit(code)

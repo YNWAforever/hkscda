@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\donations\idempotency.database.test.ts:
+(pass) R01 donation/payment forward schema on a guarded new clone > current repository projection can read all five nullable intent columns [9.43ms]
+(pass) R01 donation/payment forward schema on a guarded new clone > legacy rows keep NULL intent fields and immutable money/provider facts [8.31ms]
+(pass) R01 donation/payment forward schema on a guarded new clone > NULL, malformed, uppercase and unkeyed fingerprints cannot create an intent [16.32ms]
+(pass) R01 donation/payment forward schema on a guarded new clone > service role concurrent duplicate retries commit one intent and one payment [24.37ms]
+(pass) R01 donation/payment forward schema on a guarded new clone > failed payment insert rolls back its donation and allows a clean retry [9.76ms]
+(pass) R01 donation/payment forward schema on a guarded new clone > JWT finance actors cannot directly rewrite server-controlled intent fields [113.90ms]
+(pass) R01 donation/payment forward schema on a guarded new clone > public roles cannot insert intent columns and checkout remains disabled/version one [27.53ms]
+
+ 7 pass
+ 0 fail
+ 85 expect() calls
+Ran 7 tests across 1 file. [926.00ms]
