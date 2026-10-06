@@ -217,12 +217,16 @@ describe.skipIf(!url)("R01 donation/payment forward schema on a guarded new clon
         ),
         "42501",
       );
-      await sqlState(
-        actorWrite(
-          `update public.payment set checkout_attempted_at=now(),idempotency_key='${crypto.randomUUID()}'::uuid where id='${p.id}'::uuid returning id`,
-        ),
-        "42501",
-      );
+      for (const assignment of [
+        "checkout_attempted_at=now()",
+        `idempotency_key='${crypto.randomUUID()}'::uuid`,
+      ])
+        await sqlState(
+          actorWrite(
+            `update public.payment set ${assignment} where id='${p.id}'::uuid returning id`,
+          ),
+          "42501",
+        );
       await sqlState(
         actorWrite(
           `update public.donation set idempotency_key='${crypto.randomUUID()}'::uuid,idempotency_fingerprint='${fingerprint}' where id='${d.id}'::uuid returning id`,
@@ -256,6 +260,18 @@ describe.skipIf(!url)("R01 donation/payment forward schema on a guarded new clon
 
   test("public roles cannot insert intent columns and checkout remains disabled/version one", async () => {
     for (const role of ["anon", "authenticated"]) {
+      const privileges = await db`select c.relname,a.attname,
+        has_column_privilege(${role},c.oid,a.attnum,'INSERT') can_insert,
+        has_column_privilege(${role},c.oid,a.attnum,'UPDATE') can_update
+        from pg_class c join pg_namespace n on n.oid=c.relnamespace join pg_attribute a on a.attrelid=c.oid
+        where n.nspname='public' and a.attnum>0 and not a.attisdropped and
+        (c.relname='donation' and a.attname in ('idempotency_key','idempotency_fingerprint') or
+         c.relname='payment' and a.attname in ('idempotency_key','checkout_url','checkout_attempted_at'))`;
+      expect(privileges).toHaveLength(5);
+      for (const privilege of privileges) {
+        expect(privilege.can_insert).toBe(false);
+        expect(privilege.can_update).toBe(false);
+      }
       await sqlState(
         db.begin(async (tx) => {
           await tx.unsafe(`set local role ${role}`);
@@ -265,15 +281,29 @@ describe.skipIf(!url)("R01 donation/payment forward schema on a guarded new clon
         "42501",
       );
       const before = await db`select id,checkout_url from public.payment order by id`;
-      try {
-        const changed = await db.begin(async (tx) => {
+      await sqlState(
+        db.begin(async (tx) => {
           await tx.unsafe(`set local role ${role}`);
           return tx`update public.payment set checkout_url='https://sandbox.example.invalid/unauthorized' returning id`;
-        });
-        // A granted UPDATE with no visible RLS rows legitimately returns zero.
-        expect(changed).toHaveLength(0);
-      } catch (error) {
-        expect((error as { errno?: string }).errno).toBe("42501");
+        }),
+        "42501",
+      );
+      for (const field of ["idempotency_key", "checkout_url", "checkout_attempted_at"]) {
+        const value =
+          field === "idempotency_key"
+            ? `'${crypto.randomUUID()}'::uuid`
+            : field === "checkout_url"
+              ? "'https://sandbox.example.invalid/direct'"
+              : "now()";
+        await sqlState(
+          db.begin(async (tx) => {
+            await tx.unsafe(`set local role ${role}`);
+            return tx.unsafe(
+              `insert into public.payment(donation_id,provider,amount_cents,status,${field}) values('${crypto.randomUUID()}'::uuid,'stripe',10000,'pending',${value})`,
+            );
+          }),
+          "42501",
+        );
       }
       expect(await db`select id,checkout_url from public.payment order by id`).toEqual(before);
     }
