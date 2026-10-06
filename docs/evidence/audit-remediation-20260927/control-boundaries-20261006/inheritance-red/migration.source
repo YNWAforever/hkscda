@@ -141,16 +141,6 @@ begin
       execute pg_catalog.format('grant %s (%s) on public.%I to %s%s', write_acl.privilege_type, old_columns,
         target.table_name, recipient, case when write_acl.is_grantable then ' with grant option' else '' end);
     end loop;
-    -- Validate public-role authority after every grant, including service grants:
-    -- an inherited service role must not bypass the five-column boundary.
-    if target.table_name = 'donation' then
-      grant select (idempotency_key, idempotency_fingerprint),
-        insert (idempotency_key, idempotency_fingerprint) on public.donation to service_role;
-    else
-      grant select (idempotency_key, checkout_url, checkout_attempted_at),
-        insert (idempotency_key), update (checkout_url, checkout_attempted_at)
-        on public.payment to service_role;
-    end if;
     if exists (
       select 1 from pg_catalog.pg_attribute a
       cross join (values ('anon'), ('authenticated')) r(role_name)
@@ -164,3 +154,10 @@ begin
   end loop;
 end;
 $repair$;
+
+-- Existing old-column authority is preserved; only service_role receives new writes.
+grant select (idempotency_key, idempotency_fingerprint),
+  insert (idempotency_key, idempotency_fingerprint) on public.donation to service_role;
+grant select (idempotency_key, checkout_url, checkout_attempted_at),
+  insert (idempotency_key), update (checkout_url, checkout_attempted_at)
+  on public.payment to service_role;

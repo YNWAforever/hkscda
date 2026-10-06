@@ -1,0 +1,15 @@
+{
+  "atUtc": "2026-10-06T14:11:43.071409+00:00",
+  "mode": "green",
+  "container": "r01_acl_1fc2807577a142af9050f76ecebd6c0c",
+  "image": "sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232",
+  "migrationSha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+  "environment": "new network-none PostgreSQL cluster, tmpfs only, no ports/credentials/production data; existing Supabase clusters untouched",
+  "serverVersionNum": "170011",
+  "applyNativeExit": 3,
+  "prestateRestored": true,
+  "result": "GREEN: inherited late-grant authority rejected atomically",
+  "exit": 0,
+  "cleanupNativeExit": 0,
+  "cleanup": "only exact owned --rm tmpfs container stopped; no shared DB/role mutation"
+}
