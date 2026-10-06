@@ -1,14 +1,23 @@
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { SQL } from "bun";
 import { randomUUID } from "node:crypto";
-import { assertCloneUrl } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+import { assertSafeFixtureTables } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+import { fixtureScope } from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-8-profile";
+import { volunteerFixtureUrl } from "./atomicForwardFixtureGuard";
 
-const raw =
-  process.env.R01_VOLUNTEER_ALLOW_LOCAL_FIXTURES === "1"
-    ? process.env.R01_VOLUNTEER_TEST_DATABASE_URL
-    : undefined;
-if (raw) assertCloneUrl(raw);
+const raw = volunteerFixtureUrl(process.env);
 const db = raw ? new SQL(raw, { max: 4 }) : null;
+beforeAll(async () => {
+  if (!db || raw !== "postgresql://postgres:postgres@127.0.0.1:55322/postgres") return;
+  // Fresh native CI runs first. Scan the real catalog before reading rows/DML;
+  // refuse populated fixtures without resetting or removing any existing rows.
+  await assertSafeFixtureTables(db, fixtureScope);
+  for (const table of fixtureScope) {
+    const qualified = table.includes(".") ? table : "public." + table;
+    const [row] = await db.unsafe(`select exists(select 1 from ${qualified}) populated`);
+    if (row.populated) throw new Error("Task8 native CI requires empty fixture scope");
+  }
+});
 const rollback = new Error("Task8 synthetic fixture rollback");
 type Fixture = { actor: string; activity: string; supporter: string; token: string };
 
