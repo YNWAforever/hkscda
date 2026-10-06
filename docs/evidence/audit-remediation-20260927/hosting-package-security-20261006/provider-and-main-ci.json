@@ -1,0 +1,499 @@
+{
+  "capturedAtUtc": "2026-10-06",
+  "deployment": {
+    "id": "dpl_E2RzwdoVZB3jByJRiKDPBunFeRYs",
+    "readyState": "ERROR",
+    "gitSha": "f1d8cf848d76ede90113d58f494b43af35a5beca",
+    "errorCode": "BLOCKED_PACKAGE",
+    "errorMessage": "Vulnerable TanStack Start package detected (@tanstack/react-start@1.167.50). Please update to a patched version. To deploy at your own risk, set DANGEROUSLY_DEPLOY_VULNERABLE_TANSTACK_START_XSS=1 and redeploy."
+  },
+  "productionAliasAtCheck": {
+    "id": "dpl_A8ceu6UWvoKj36FHDDGfGQkf26L8",
+    "sha": "4bbd4a4dffbd053328e92c03281a23d1d4ebe682",
+    "readyState": "READY"
+  },
+  "projectNodeVersion": "24.x",
+  "localNodeVersion": "24.18.0",
+  "mainCi": {
+    "id": 37480568915,
+    "sha": "f1d8cf848d76ede90113d58f494b43af35a5beca",
+    "jobs": [
+      {
+        "id": 112327284843,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37480568915,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Typecheck",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Test",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Lint",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Route tree is current",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 112328518622,
+        "name": "performance-verify",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37480568915,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Build against the fixture",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Install performance verifier browser",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Verify public performance",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Upload performance artefacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Report unavailable artefacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 112328518628,
+        "name": "rls-matrix",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37480568915,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Start local Supabase stack",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run RLS behavioral tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run database-backed transaction tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run volunteer bulk database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run content publication eligibility database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Run media repair database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Run public listing database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Run supporter portal preference database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Run CRM tag bulk database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Run volunteer reviewer bulk database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Run adoption assignment bulk database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Run animal review bulk database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Run manual finance atomic database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Run CMS quality queue database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Run CMS review bulk database scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          },
+          {
+            "name": "Stop local Supabase stack",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 20
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 39
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 40
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 41
+          }
+        ]
+      },
+      {
+        "id": 112328518679,
+        "name": "a11y-verify",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37480568915,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Build against the fixture",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Install a11y verifier browser",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Verify public a11y",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Upload a11y artefacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Report unavailable artefacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 112328518835,
+        "name": "brand-verify",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37480568915,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run bun install --frozen-lockfile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Build against the fixture",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Install brand verifier browser",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Verify public brand",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Upload brand artefacts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Report unavailable artefacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9
+          },
+          {
+            "name": "Post Run oven-sh/setup-bun@v2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  }
+}
