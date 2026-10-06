@@ -1,0 +1,524 @@
+{
+  "sources": {
+    "183": {
+      "merge_sha": "f1d8cf848d76ede90113d58f494b43af35a5beca",
+      "main_ci": 37480568915,
+      "main_gates_green": true,
+      "alias_id": null,
+      "exact_alias_ready": false,
+      "deployment_failure": "BLOCKED_PACKAGE",
+      "recovered_by_pr": 200,
+      "recovery_deployment_sha": "95ab6e7cb67d377960e3787d08ec670788a86c14"
+    },
+    "184": {
+      "merge_sha": "da8e8850944cb4198e0b4bb2730d5c01a1e27887",
+      "main_ci": 37488399449,
+      "main_gates_green": true,
+      "alias_id": "dpl_8dJwWDYoT6bArE5g3n9WSYz1Q2ZP",
+      "exact_alias_ready": true
+    },
+    "185": {
+      "merge_sha": "0b5e49997951bb5c3dcf6be861fbd1f4b2de2d0a",
+      "main_ci": 37490548409,
+      "main_gates_green": true,
+      "alias_id": "dpl_Cbt9DodEFjiou254a74pHyEKkBAi",
+      "exact_alias_ready": true
+    },
+    "186": {
+      "merge_sha": "82a47ef4f1d8695879f3b6c63ad4c42ae2a22f26",
+      "main_ci": 37492571276,
+      "main_gates_green": true,
+      "alias_id": "dpl_CKAiS2hiZBKKWiBNhxtDXurbpnZ2",
+      "exact_alias_ready": true
+    },
+    "187": {
+      "merge_sha": "c571a719077f242a062ec1b8d5b2de136614734b",
+      "main_ci": 37496751000,
+      "main_gates_green": true,
+      "alias_id": "dpl_5JJpYndFkbqqmSH8SXqNcTozJBEV",
+      "exact_alias_ready": true
+    },
+    "188": {
+      "merge_sha": "23089e6faa103e6857288560fa62f9349a45751a",
+      "main_ci": 37498550047,
+      "main_gates_green": true,
+      "alias_id": "dpl_9u78w9nkE3ubZm6bWwFygbXvoBGW",
+      "exact_alias_ready": true
+    },
+    "189": {
+      "merge_sha": "84ad4a9a2db2f146d6f6687866231414a9a23ca4",
+      "main_ci": 37500228059,
+      "main_gates_green": true,
+      "alias_id": "dpl_8Vook42twCqc11TWUMtFbuCFRfyN",
+      "exact_alias_ready": true
+    },
+    "190": {
+      "merge_sha": "5b2c226f8ba0a3a3d8fca76e77b812d4644cc578",
+      "main_ci": 37501995829,
+      "main_gates_green": true,
+      "alias_id": "dpl_9GtXzoMUM9SGozMq52fVgGzGEFdX",
+      "exact_alias_ready": true
+    },
+    "191": {
+      "merge_sha": "4a6e40b4c774acdd8d220d9d0f0599868da86668",
+      "main_ci": 37503886320,
+      "main_gates_green": true,
+      "alias_id": "dpl_9FJZZdvXE7hqCAMpvRQeVvp2Ww9X",
+      "exact_alias_ready": true
+    },
+    "192": {
+      "merge_sha": "6c1527646deb60c24489b827b815c8e1a1c98bdc",
+      "main_ci": 37506322945,
+      "main_gates_green": true,
+      "alias_id": "dpl_A3QJgt53aJfn6seRizkqLFxKdEDR",
+      "exact_alias_ready": true,
+      "status": "accepted; all5/requiredstepsSUCCESS/exactREADY before193"
+    },
+    "193": {
+      "merge_sha": "c2afedbe18e0fc41ecf3ad5dd7f23bcda9cd500a",
+      "main_ci": 37507888054,
+      "main_gates_green": true,
+      "alias_id": "dpl_2n8ew99CbU62CLNoboQZ8EtGfnVt",
+      "exact_alias_ready": true,
+      "status": "accepted main37507888054 all5/steps and exactREADYc2af",
+      "ci_checkout": "b214d72c5cf41df33b749cc2a4ddd5bf19ca2a7d",
+      "ci_tree": "c707ec104c59d969390434ca7d44de7ee96a8f34"
+    },
+    "194": {
+      "merge_sha": "09a5cde376a8a9fc012e3f551b7a1bd1b5b166ac",
+      "main_ci": 37538469537,
+      "main_gates_green": true,
+      "alias_id": "dpl_JAcNQbKdnJhBSZMievUx2xo2UE8A",
+      "exact_alias_ready": true,
+      "published_head": "0855a1bd8239258642eb360b7da120ef5cd514a2",
+      "source_ci": 37536812504,
+      "source_ci_green": true,
+      "status": "ACCEPTED source/main all5/requiredsteps and exactREADY09a5; historical execution incident remains UNKNOWN",
+      "ci_checkout": "767e9fbbb3743087129031ab0c09f040dd09a595",
+      "ci_tree": "03180cf43881660ff04b19e6db19a0c0e9ffd439",
+      "current_evidence": "r01-forward/task-11-cold-green-qualification-lf.json",
+      "native_finance_actual": {
+        "pass": 67,
+        "skip": 0,
+        "fail": 0,
+        "assertions": 238
+      },
+      "main_ci_acceptance": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\main194-37538469537\\controller-acceptance.json"
+    },
+    "195": {
+      "merge_sha": "1b501fa8103cd22183358f058d7f85f69c78e7a0",
+      "main_ci": 37542947233,
+      "main_gates_green": true,
+      "exact_alias_ready": true,
+      "published_head": "3ec969b1ed8f3c9f92f07b72dc2f5874b0a6d025",
+      "source_ci": 37541504672,
+      "source_ci_green": true,
+      "status": "ACCEPTED source/main all5/requiredsteps and exactREADY1b501fa8; historical preservationUNKNOWN remains",
+      "ci_checkout": "b47ed1abdcf8e8a8cb11868ef366dd5932952353",
+      "ci_tree": "de79454ba83e47e8b076aad86f0c6cbaca864ee4",
+      "current_evidence": "r01-forward/task-12-current-qualification-20261007-lf.json",
+      "current_profile_evidence": "r01-forward/task-12-current-source-freeze-20261007.json",
+      "reviewed_source": "72fedaa965bb8bd822bf34a05575d8d385042a8e",
+      "native_finance_actual": {
+        "pass": 67,
+        "skip": 0,
+        "assertions": 238
+      },
+      "native_group_actual": {
+        "pass": 34,
+        "skip": 0,
+        "assertions": 132
+      },
+      "source_ci_acceptance_sha256": "555d6db902f97e7004565cf96bda3a1a4f9a03fa1e948fdd8facc6e7ccd4b97b",
+      "productionApplied": false,
+      "alias_id": "dpl_HkWKtjEfYdfJ9F7r9p3n4C6PoTXn",
+      "main_ci_acceptance": ".superpowers\\sdd\\sequential-merge-20261006\\main195-37542947233\\controller-acceptance.json",
+      "main_ci_native_actual": {
+        "finance": {
+          "pass": 67,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 238,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        },
+        "group": {
+          "pass": 34,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 132,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        }
+      }
+    },
+    "196": {
+      "merge_sha": "1ff22d6516a05e3cc82a6d041e5d12a117ca83af",
+      "main_ci": 37545626481,
+      "main_gates_green": true,
+      "exact_alias_ready": true,
+      "published_head": "3892fe0dabd318d551ecb44ab4cc5aacb6ddaddb",
+      "source_ci": 37544330129,
+      "source_ci_green": true,
+      "status": "ACCEPTED source/main all5 requiredsteps, exactREADY1ff22d65; old historical preservationUNKNOWN retained",
+      "ci_checkout": "69a6c433eed7fc49604194c3c6283f128531d633",
+      "ci_tree": "275b62c8b77eca0035d82285d0dd87d78372b901",
+      "current_evidence": "current-integration-196-20261007.json",
+      "current_profile_evidence": "current-integration-196-release-qualification-20261007.json",
+      "reviewed_source": "e5a28c47b839fa12b770d1e639b0a74368021675; current15shippingfilesbyte-equalat8916e4c6",
+      "native_actual": {
+        "finance": {
+          "pass": 67,
+          "skip": 0,
+          "assertions": 238
+        },
+        "group": {
+          "pass": 34,
+          "skip": 0,
+          "assertions": 132
+        },
+        "document": {
+          "pass": 1,
+          "skip": 0,
+          "assertions": 36
+        }
+      },
+      "source_ci_acceptance_sha256": "55fcc659172c1abcb33ff79c143db9384a70db26118735cb31ccbf4570a6c605",
+      "productionApplied": false,
+      "alias_id": "dpl_6eqTvjA9hXHYvj8gpirksNiejbUy",
+      "main_ci_acceptance": ".superpowers/sdd/sequential-merge-20261006/main196-37545626481/controller-acceptance.json",
+      "main_ci_acceptance_sha256": "15abae6081206822feb0ebc2274b645d64230c11021c5a53942fa24050ce038e",
+      "main_ci_native_actual": {
+        "finance": {
+          "pass": 67,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 238,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        },
+        "group": {
+          "pass": 34,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 132,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        },
+        "document": {
+          "pass": 1,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 36,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        }
+      }
+    }
+  },
+  "verification_kind": "captured sequential live native/main CI job-and-required-step acceptance, exact alias before successor; dates qualify historical observations",
+  "hosting_repair": {
+    "pr": 200,
+    "merge_sha": "95ab6e7cb67d377960e3787d08ec670788a86c14",
+    "main_ci": 37485952883,
+    "alias_id": "dpl_2zsf1iu38b4v8H95Xmx57y8tgF6n",
+    "exact_alias_ready": true
+  },
+  "task8": {
+    "source_only_approved": true,
+    "domain_head": "4a947e533539d6debf90c5c30024502a74386030",
+    "task_review": "SCOPED_FIX1_APPROVED",
+    "fix_round": 1,
+    "production_approved": false,
+    "production_applied": false,
+    "fix_source": "960e275f754fb0d7904ddc27afeeafbf52358088",
+    "sql_sha256": "af8c834d95d38502d428dca95903e10d22cc57ed8df922f0a53cdb78d857ae9b",
+    "final_four_gates": {
+      "source": "67143d23aff7b140120bc2f03cc548e27013ed90",
+      "harness_exit": 0,
+      "typecheck_exit": 0,
+      "tests_exit": 0,
+      "lint_exit": 0,
+      "build_exit": 0,
+      "tests": "4604pass654skip0fail12539assert",
+      "environment": "OS-only, Bun --no-env-file, unavailable59999 placeholders, no DB/provider/fixture opt-ins",
+      "typecheck_seconds": 83.78,
+      "tests_seconds": 124.88,
+      "lint_seconds": 62.88,
+      "build_seconds": 136.13,
+      "raw": "task-8-fix-1-receipts/gates-1791311134417003700",
+      "frozen_inputs_preserved": 18,
+      "shared_modern_template_hashes_stable": true,
+      "completed_at_utc": "2026-10-06T18:32:53Z"
+    },
+    "cold170011_ci": "not-run",
+    "shared_optin_drift": "retained failed comparison, not repaired",
+    "code_complete": true,
+    "isolated_schema_qualified": "PG170006 owned hosted/modern only; native170011 cold CI not-run",
+    "current_evidence_packaging": "complete; docs-only9paths; currentZIP26members/raw1624992bytes/hash9f6ed643b6a85acdce191bffd1cbb32d8d961ea05fa53ebd45775de526358cb0",
+    "controller_readonly_gate_bindings_and_archive_verified": true,
+    "publication": "pending focused PR after approved dependency198; no SQL production permission",
+    "native_ci_task": "source test-only CI gate active on WT5/base4a; not coldCI acceptance"
+  },
+  "new_payment_delivery_media_enabled": false,
+  "unmerged_failures": {
+    "194": {
+      "head": "095b9a0da4dd960d459adac302d68d495b0c129e",
+      "ci": 37508095322,
+      "rls_job": 112422892123,
+      "failure": "Start local Supabase stack /55000 complete finance prerequisite catalog",
+      "other_four_jobs": "SUCCESS",
+      "downstream_DB_steps": "NOT_RUN",
+      "repair": "source-only exact current Task1 ACL profile in progress",
+      "candidate": {
+        "sql_sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+        "lf_bytes": 1402952,
+        "generator_primary_exit": 0,
+        "generator_outer_exit": 1,
+        "generator_outer_failure": "Expected output excluded only with forward slash; exact one SQL output changed",
+        "controller_bindings_verified": 9,
+        "business_tail_bytes": 53931,
+        "business_tail_equal": true,
+        "reproducibility": "VERIFIED_NATIVE0/all1953current+3906archives",
+        "three_final_profiles": "NOT_RUN",
+        "current_four_gates": "NOT_RUN",
+        "task_review": "NOT_RUN",
+        "publication": "NOT_RUN",
+        "production_applied": false,
+        "final_hosted": "82pass277assert18refusals/twoapplies/504rightsGOequal/20denies/164beforeafterzero",
+        "final_modern": "82pass277assert18refusals/twoapplies/504rightsGOequal/20denies/163beforeafterzero",
+        "final_native": "FAILED:first ignored extractor matched wrong wrapper;19fullrefusals passed but rightsAfter/afterCounts unrun; correctedfullretry PENDING",
+        "current_native_metadata": {
+          "exit": 0,
+          "receipt": "task-11-fix3-cold-green-final-1693bc327a7a45efb750123bd6548fc0/receipt.json",
+          "wrapper": "task-11-stage-native_green_repaired-1791320779536681400/receipt.json",
+          "sql": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+          "full_refusals": 19,
+          "extracted_positives": 7,
+          "extracted_negatives": 10,
+          "before_after_zero_counts": 10,
+          "all20_flags": true,
+          "normal_cleanup": 4,
+          "84_current_original_archive_bindings_verified": true,
+          "controller_qualification": "native194-final-controller-verification-20261007.json",
+          "native_bun82": "NOT_RUN",
+          "required_fresh_ci_finance67": "NOT_RUN",
+          "recorded_argv_mutation": "qualified through distinct prearchived invocations and full before/after files; original unchanged"
+        },
+        "current_source_gate_failure": {
+          "wrapper": "task-11-stage-source_gates-1791321126205968400/receipt.json",
+          "units_pid": 52584,
+          "exit": 1,
+          "pass": 3948,
+          "skip": 543,
+          "fail": 6,
+          "assertions": 11708,
+          "type_exit": 0,
+          "lint": "NOT_RUN",
+          "build": "NOT_RUN",
+          "cause": "ignored harness omitted SUPABASE_LOCAL_URL and LOCAL_* fallback overrides; four preexisting RLS suites reached local55321",
+          "local55321_preservation": "UNKNOWN no before snapshot; no repair/reset/new cleanup",
+          "protected_f5_c653_and_frozen_equal": true,
+          "retry": "corrected exact key inventory and safe focused skip proof pending",
+          "production_applied": false
+        },
+        "current_gates_review_publish": "Source0855 independently source-approved/localall4 gates0; fresh sourceCI37536812504 and main37538469537 all5/steps+nativefinance67/0skip; merged09a5 exactREADY; historical55321unknown",
+        "corrected_source_gates": {
+          "source_head": "0855a1bd8239258642eb360b7da120ef5cd514a2",
+          "sql_sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+          "typecheck": {
+            "pid": 3996,
+            "exit": 0
+          },
+          "test": {
+            "pid": 28916,
+            "exit": 0,
+            "pass": 3908,
+            "skip": 599,
+            "fail": 0,
+            "assertions": 11622
+          },
+          "lint": {
+            "pid": 11924,
+            "exit": 0
+          },
+          "build": {
+            "pid": 12712,
+            "exit": 0
+          },
+          "endpoint": "explicit generic + LOCAL unavailable59999; no provider/DB optins",
+          "old55321Preservation": "UNKNOWN",
+          "nativeBunBehavior": "NOT_RUN; actual cold CI finance67/zero skips mandatory",
+          "completeEvidence": {
+            "files": 25111,
+            "payloads": 2476,
+            "zipBytes": 32636251,
+            "zipSha256": "27be2ed995f9d09f8b5f0375c2440e96f0de45bd54be01605207b95f868f0b8a",
+            "lfManifestSha256": "746067a188921889f66f209c5d02629d7cd66e7e4ef52e433da034a85f0f56fa",
+            "lfQualifierSha256": "d2d125ee8ca1f66fdf9b88d833600799bb28746111513aa9cce99f98259a00d5"
+          },
+          "controllerHeadBindingProof": "publication194-head-controller-verification-20261007.json",
+          "trackedClean": true,
+          "preservedUntracked": 4,
+          "review": "SOURCE SPEC COMPLIANT / QUALITY APPROVED; historical execution deviation and preservation UNKNOWN remain",
+          "productionApplied": false
+        },
+        "published_head": "0855a1bd8239258642eb360b7da120ef5cd514a2",
+        "cold_ci_run": 37536812504,
+        "cold_ci_status": "ACCEPTED all5 individual jobs/requiredsteps; actualnativefinance67/0skip/238assert; source0855 exacttree0318; merge/main stillpending",
+        "prior_ci_aggregate_qualification": {
+          "run": 37508095322,
+          "workflowConclusion": "success",
+          "rlsMatrixJob": 112422892123,
+          "jobConclusion": "failure",
+          "failedStep": "Start local Supabase stack",
+          "aggregateSuccessIsNotGateAcceptance": true
+        },
+        "cold_ci_acceptance_path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\ci194-37536812504\\controller-acceptance.json",
+        "cold_ci_finance": {
+          "pass": 67,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 238,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        }
+      }
+    }
+  },
+  "local_environment_hold": {
+    "status": "R297 fresh f5+c653 independent stages allowed; oldpreservation remains failed/unknown",
+    "docker_info_exit": 0,
+    "engine_version": "29.8.1",
+    "free_c_bytes": 5878820864,
+    "original_failures_preserved": true,
+    "require_shared_hash_equality_before_new_fixture": true,
+    "production_authority_changed": false,
+    "template_hash_matches": true,
+    "modern_expected": "bf0d926ef1c9952ca19e07980e94e9d273958c917621bc5e78490cd7c65f94be",
+    "modern_actual": "f5b51515bcf790adf7928168478ef94eabbf7331a84420fe744ab7f04e75028b",
+    "actual_template_database": "audit_pr135_20260929",
+    "actual_template_user": "postgres",
+    "managed_row_delta": "3 _realtime hashes only, unchanged counts, all other facets equal",
+    "current_two_full_captures_equal": true,
+    "docker_version_last_verified": "29.8.1",
+    "last_disk_observation": {
+      "free_bytes": 5878820864,
+      "at_utc": "2026-10-06T21:18:30.717667+00:00",
+      "source": "root actual live read after third NTFS compression and native metadata finish",
+      "minimum_stage_bytes": 2147483648,
+      "external_fluctuation": "unattributed"
+    },
+    "closed_proof_ntfs_compression": {
+      "exit": 0,
+      "files": 10318,
+      "bytes_and_hashes_equal": true,
+      "paths_preserved": true,
+      "deleted_moved_pruned": false,
+      "physical_before": 150088336,
+      "physical_after": 58699807,
+      "receipt": "closed-native-ntfs-compression-1791317417719706100/receipt.json"
+    },
+    "bun_dispatch_diagnosis": "Measured same native file argv require_escalated0 versus use_default1; underlying cause unproven. Unchanged native argv used with approved escalation; older startup failures retained.",
+    "second_closed_proof_compression": {
+      "exit": 0,
+      "files_verified": 6838,
+      "selected_text_files": 6793,
+      "all_paths_and_bytes_sha_equal": true,
+      "knownZIPs_skipped_compression": 10,
+      "long_transports_retained": 32,
+      "logical_bytes": 569721309,
+      "measured_file_bytes_before": 569721309,
+      "measured_file_bytes_after": 183882790,
+      "receipt": "closed-final-ntfs-compression-1791319874713645700/receipt.json",
+      "original_3_failures_retained": true,
+      "deletion_move_prune": false
+    },
+    "human_space_question": "pending optional capacity assistance; actual current>=2GiB permits guarded source work without awaiting an answer",
+    "third_closed_proof_compression": {
+      "exit": 0,
+      "files_verified": 14209,
+      "selected_text_files": 14155,
+      "all_paths_and_bytes_sha_equal": true,
+      "logical_bytes": 6210721790,
+      "physical_before": 6210721790,
+      "physical_after": 1657265864,
+      "receipt": "closed-task13-ntfs-compression-1791320568365535700/receipt.json",
+      "deletion_move_prune": false
+    }
+  },
+  "task8_native_ci": {
+    "base": "4a947e533539d6debf90c5c30024502a74386030",
+    "head": "baeb54718622fe77c6eb010561b14eb926e8f7c0",
+    "source_pure": {
+      "exit": 0,
+      "pass": 7,
+      "fail": 0,
+      "skip": 0,
+      "assertions": 56
+    },
+    "typecheck_exit": 0,
+    "focused_lint_exit": 0,
+    "review": "source spec and quality APPROVED",
+    "native19": "NOT_RUN",
+    "cold_ci": "NOT_RUN",
+    "full_suite": "NOT_RUN",
+    "build": "NOT_RUN",
+    "review_package_sha256": "66ace2fec1fbb83404a32f33c0e3a759e42a7ef270c21cc2c8b2909b11db49f2",
+    "production_applied": false,
+    "controller_shared_helpers_business_body_raw_hashes": "verified",
+    "tracker_docs_head": "9fb195b4606f050fcc00a0c4aa92c100d5a1ba1d",
+    "non_r01_rows_unchanged": true
+  },
+  "r11_original_review": {
+    "base": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+    "head": "a3125547139dee5c022c1701b063e431790dcec3",
+    "spec": "APPROVED",
+    "quality": "APPROVED",
+    "controller_proof": "r11-original-controller-verification-20261007.v2.json",
+    "current_integration": "pending",
+    "cold_ci": "NOT_RUN",
+    "status": "partial",
+    "minor_deferred": [
+      "ordered donor extraction",
+      "Pillow/Poppler warnings before positive acceptance"
+    ],
+    "production_mutation": false
+  },
+  "last_remote_observation": {
+    "at_utc": "2026-10-06T21:18:30.717667+00:00",
+    "main": "c2afedbe18e0fc41ecf3ad5dd7f23bcda9cd500a",
+    "production_alias": "dpl_2n8ew99CbU62CLNoboQZ8EtGfnVt",
+    "state": "READY",
+    "open_draft_prs": [
+      180,
+      194,
+      195,
+      196,
+      197,
+      198,
+      199
+    ],
+    "excluded_pr": 180
+  },
+  "sql_source_updates": {
+    "194": {
+      "file": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "prior_sha256": "47009c00d4412ba540e46bef74505e83992d5b830e8a43f88353a499392c7cde",
+      "sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+      "spec_review": "APPROVED",
+      "quality_review": "APPROVED",
+      "review_scope": "source implementation only; historical execution boundary deviation remains, local55321 preservation UNKNOWN",
+      "review_report_sha256": "9ca95f8b35f9e2ca61c7422062ae50c7f3176a739fe533d8461fff7f367c8ea1",
+      "current_profile_evidence": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-green-qualification-lf.json",
+      "reviewed_source": "0855a1bd8239258642eb360b7da120ef5cd514a2",
+      "source_ci": 37536812504,
+      "production_approved": false,
+      "production_applied": false
+    }
+  },
+  "observed_at_utc": "2026-10-06T23:29:47.270944+00:00",
+  "source_snapshot": "7b429402a06825e2af34f9916d6e4c676e630cb3",
+  "all_new_production_approved": false,
+  "all_new_production_applied": false
+}
