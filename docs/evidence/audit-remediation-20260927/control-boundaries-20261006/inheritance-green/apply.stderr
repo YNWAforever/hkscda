@@ -1,0 +1,3 @@
+ERROR:  55000: R01 explicit or inherited public-role intent write authority; review required
+CONTEXT:  PL/pgSQL function inline_code_block line 157 at RAISE
+LOCATION:  exec_stmt_raise, pl_exec.c:3897

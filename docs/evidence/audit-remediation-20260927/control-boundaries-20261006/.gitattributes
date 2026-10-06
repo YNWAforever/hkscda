@@ -1,0 +1,4 @@
+* -text
+*.stdout -diff
+*.stderr -diff
+inheritance-*/receipt.json -diff
