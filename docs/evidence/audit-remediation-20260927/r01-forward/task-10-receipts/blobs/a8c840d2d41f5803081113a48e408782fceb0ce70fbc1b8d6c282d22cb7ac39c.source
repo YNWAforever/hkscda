@@ -1,0 +1,71 @@
+{
+  "bindings": {
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-capture.ts": "cf3faf5d5d63f124537eb0ddbb920e18a4d3209e6100065b036f8de1c094453f",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-global-capture.ts": "59ca04d6364e090d89802b47a5609dca74fddaed7d809f63e4dc2e31b34cacf0",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-auth-component-red.ts": "dbf099023f410de01ff14c3d7cb94d9722afec0ce6312f556204884f0a47512c",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt.ts": "c0de05a5e3d7dec5ad8b8d514164eb75b74d2300e7e0423055b64422579117f9",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json": "a9bda23fce401aadeb66af40916da33ac4bf884c48e2f489757d432eb872ca60",
+    "src/lib/admin/accessFence.database.test.ts": "ea14f8923064c8b3fd661a8696524fc8f87bbe16af421c6ee98540904075f7fe",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+  },
+  "commands": [
+    {
+      "args": [
+        "bun",
+        "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-10-capture.ts",
+        "hosted"
+      ],
+      "exit": 0,
+      "log": "0.log",
+      "logSha256": "535bb55e922a294eb502686744e4dd8c7a4caf27f294ba1e0f470a4006cd9dbd"
+    },
+    {
+      "args": [
+        "bun",
+        "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-10-capture.ts",
+        "modern"
+      ],
+      "exit": 0,
+      "log": "1.log",
+      "logSha256": "38ec5ffeca9add46a545ed1503b8f995ae3a989f4ca2f04b44f59286affc38b3"
+    },
+    {
+      "args": [
+        "bun",
+        "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-10-global-capture.ts",
+        "hosted"
+      ],
+      "exit": 0,
+      "log": "2.log",
+      "logSha256": "1503c49d517e274feac8018b92b41f8237787ba0be974a4a45fc97be7fc3c290"
+    },
+    {
+      "args": [
+        "bun",
+        "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-10-global-capture.ts",
+        "modern"
+      ],
+      "exit": 0,
+      "log": "3.log",
+      "logSha256": "69bc87ba42a7cd5a802ebda362982be6fe5ec6df3687ceccc9cd19bb59be578e"
+    },
+    {
+      "args": [
+        "bun",
+        "docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-10-auth-component-red.ts"
+      ],
+      "exit": 0,
+      "log": "4.log",
+      "logSha256": "89a7421e0daf59ddda46a4280b6d14e3e8b09f107cc607842097136d63d7d76b"
+    }
+  ],
+  "receiptPaths": [
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-capture-hosted-1790949944785/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-capture-modern-1790950018752/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-hosted-1790950050995/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-modern-1790950112876/receipt.json",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-auth-component-red-1790950159842/receipt.json"
+  ],
+  "frozenInputsPreserved": true
+}

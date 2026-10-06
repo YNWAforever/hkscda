@@ -1,0 +1,28 @@
+{
+  "fixBase": "fff2aa600a2d0053e007632bd24ce88a5b517541",
+  "testedSourceCommit": "8821c8f8facc8146ac61c8b305ab79f41768fec8",
+  "immutablePriorEntries": 1240,
+  "actualTranslations": 1615,
+  "uniqueRawBlobs": 252,
+  "uniqueRawBytes": 28900304,
+  "allRawCanonicalGitStagedArchiveBodiesMatch": true,
+  "databaseInputs": 66,
+  "gateInputs": 73,
+  "allCurrentInputArchivesMatch": true,
+  "allFourGateLogHashesMatch": true,
+  "trackerChangedRow": 25,
+  "runbookHistoricalPrefixPreserved": true,
+  "minimumSQLDeltaBytes": 35,
+  "scannerSHA256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+  "workingFrozenManifest": {
+    "rawSha256": "fb846d8b3237abde495a86e5f4cdd3762d6f494eb1d6c9a82058075ebd353a0e",
+    "canonicalSha256": "fb846d8b3237abde495a86e5f4cdd3762d6f494eb1d6c9a82058075ebd353a0e",
+    "gitBlob": "8b08a66a4200c1500e96e8f06f27a844f4cf7f7e",
+    "bytes": 16079,
+    "rowOnlyHashReplacement": true,
+    "stagedBodyEqual": true
+  },
+  "source8821ManifestIsOlder": "a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9",
+  "fullSuiteModernTransitionQualified": true,
+  "noTestsOrDatabaseRerun": true
+}

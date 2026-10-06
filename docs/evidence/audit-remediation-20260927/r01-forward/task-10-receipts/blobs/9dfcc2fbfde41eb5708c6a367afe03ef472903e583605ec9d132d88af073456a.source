@@ -1,0 +1,30 @@
+{
+  "originalSHA": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+  "appendOnlyReversible": true,
+  "bindings": {
+    "append.source": {
+      "sha256": "7271f438533f8c2191d7ad2883998d28ffc3578952b6f38eedc9bc0c84b9d693",
+      "bytes": 607
+    },
+    "original.source": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "bytes": 43142
+    },
+    "run.source": {
+      "sha256": "b80386c00b2407e50765d121c080702f8c1c82ad0fcb4fc2d76eb74c93d4ef20",
+      "bytes": 1191
+    },
+    "run.ts": {
+      "sha256": "b80386c00b2407e50765d121c080702f8c1c82ad0fcb4fc2d76eb74c93d4ef20",
+      "bytes": 1191
+    },
+    "scanner-diagnostic.source": {
+      "sha256": "9bf02d06aa330310e97c1e8c220d35f200d27f5b1b40f74618f70fd9315f2323",
+      "bytes": 43749
+    },
+    "scanner-diagnostic.ts": {
+      "sha256": "9bf02d06aa330310e97c1e8c220d35f200d27f5b1b40f74618f70fd9315f2323",
+      "bytes": 43749
+    }
+  }
+}

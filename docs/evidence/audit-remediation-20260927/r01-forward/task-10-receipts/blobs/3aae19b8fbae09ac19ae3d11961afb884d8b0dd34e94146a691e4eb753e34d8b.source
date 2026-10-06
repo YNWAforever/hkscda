@@ -1,0 +1,1550 @@
+{
+  "base": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+  "baseTree": "5e49607ca8fd0ed3332f1ed256dc5e3ee0a9f013",
+  "branch": "codex/audit-r01-internship-upload-20261002",
+  "executionParent": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+  "testedCandidateTree": "317d8fa3b8aff355738f0686eb429a89a2a71cbf",
+  "finalCommitMeaning": "Commit containing this binding adds only current tracker/versioned evidence packaging after final gates; actual executable bytes below equal both final receipts. Historical Task3 bindings and receipts unchanged.",
+  "actualTestedComposition": {
+    "src/lib/internships/uploadIntent.database.test.ts": {
+      "sha256": "57e2382878b770216611d9aab9122be26d9c3d69e6faa35e87aed82812644687",
+      "canonicalSha256": "57e2382878b770216611d9aab9122be26d9c3d69e6faa35e87aed82812644687",
+      "gitBlob": "db7a49b137910f70e992509d4c20e87476287e35"
+    },
+    "src/lib/internships/uploadIntent.testSupport.ts": {
+      "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+      "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+      "gitBlob": "a0ca9cc1bc6ca0c47bff2b71a64839223ae3c471"
+    },
+    "src/lib/internships/attachments.server.ts": {
+      "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+      "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+      "gitBlob": "f8459e23cc9ea1addbbbcaabec179771ea9d82f9"
+    },
+    "src/lib/internships/uploadCleanup.server.ts": {
+      "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+      "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+      "gitBlob": "8918e9fac868b296375eaaa0df193526c8517eed"
+    },
+    "src/lib/volunteers/policy/booking.repository.server.ts": {
+      "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+      "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+      "gitBlob": "6cbfb16adc6b85072e5309963fbe250969cae589"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "gitBlob": "fb9346e61b6ccf257c0165f42545f43f00364ea9"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    "src/lib/supabase.server.ts": {
+      "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    "src/lib/http/boundedFormData.server.ts": {
+      "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+      "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+      "gitBlob": "d598d43da6b9bafa37224a9cbca64f815549a596"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "c462ff2205edf6f37c27a2a6a319fda1333f1a8bb44c4130190afe6c366da70d",
+      "canonicalSha256": "c462ff2205edf6f37c27a2a6a319fda1333f1a8bb44c4130190afe6c366da70d",
+      "gitBlob": "5b68a4ac1393f3415f90d3e53892dba4b603bbe9"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-gates.py": {
+      "sha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d",
+      "canonicalSha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d",
+      "gitBlob": "808764bb8ab5f8188c8a38168605ea4a7aebb6de"
+    },
+    "package.json": {
+      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "gitBlob": "043a1e7d45f1cfbe92ff0306304817ecd253a891"
+    },
+    "bun.lock": {
+      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "gitBlob": "0d6238fb8646bc4263cad4021f7e83a1d0905cd2"
+    },
+    "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+      "sha256": "33dcc20efbc42d6af06024116cac6ddfdcc8bbabf9f7692ec0db3a6896cd93c9",
+      "canonicalSha256": "33dcc20efbc42d6af06024116cac6ddfdcc8bbabf9f7692ec0db3a6896cd93c9",
+      "gitBlob": "5f78572afdb805cbab2e5836dd7e7df2275d0f66"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+      "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+      "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+      "gitBlob": "f77162c837331ac0f1db4e2f5382fc6855a67f2c"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+      "canonicalSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+      "gitBlob": "95f0db558aec4ba5b21d8e45e72f6c19799bc2f2"
+    }
+  },
+  "gateWrapperArchive": {
+    "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-4-gates.py",
+    "sha256": "510998a76d7ce2d05dfd927cef3312d85c5ae216e4c8b494eb7bf464a551bb0f",
+    "canonicalSha256": "510998a76d7ce2d05dfd927cef3312d85c5ae216e4c8b494eb7bf464a551bb0f",
+    "gitBlob": "a30eefbceaa0752dc96c2ada2c5a24198ab7db9d",
+    "mapping": "Executed ignored wrapper above remains untouched; archive strips one final empty line only; normalized rstrip-newlines plus LF bytes equal.",
+    "mappingVerified": true
+  },
+  "watchedMissingTargetRed": {
+    "sha256": "6f1610cdf0393377f3c883a4169391e9349f76e6201fbee66235f88eada7e187",
+    "receipt": {
+      "mode": "red",
+      "startedAt": "2026-10-01T17:51:36.729Z",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "zeroApplicationTables": 158,
+      "schemaParity": true,
+      "testedExecutableBlobs": {
+        "src/lib/internships/uploadIntent.database.test.ts": "9dc4d5eadf7fff34760f4d985cc1c846277d3b439701c45029b4ebef096388c8",
+        "supabase/rls-tests/helpers/runR01InternshipForward.ts": "fa1718ccc22b44a0fe25930efb78677e373e34a4644e3af72cd3256fc0dadc29",
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+      },
+      "productionActions": "schema/catalog only; no data read or actor calls",
+      "testExit": 1,
+      "testSummary": [
+        "\n 0 pass",
+        " 1 fail"
+      ],
+      "result": "watched RED: missing internship intent relation",
+      "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "templatePreserved": true,
+      "modernBeforeHash": "a409c86a5285e159081758f73f60f5f6bc8d5cd979ca7476da81397a397c6c5b",
+      "modernPreserved": true,
+      "testedExecutableBlobsPreserved": true,
+      "cleanup": "only newly owned clone normally dropped",
+      "completedAt": "2026-10-01T17:51:44.203Z"
+    }
+  },
+  "firstActorAdapterFidelityFailure": {
+    "sha256": "75736fa9ae55bf82a06c5299adac5ef0cc35ce661b79de9a9fb8a0b97f5b9699",
+    "receipt": {
+      "mode": "green",
+      "startedAt": "2026-10-01T18:08:08.677Z",
+      "sourceCommit": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+      "testedExecutableBlobs": {
+        "src/lib/internships/uploadIntent.database.test.ts": {
+          "sha256": "20f0dfedda9064326d49935bc30777ccff367f58422555369afa0fd71285a068",
+          "canonicalSha256": "20f0dfedda9064326d49935bc30777ccff367f58422555369afa0fd71285a068"
+        },
+        "src/lib/internships/uploadIntent.testSupport.ts": {
+          "sha256": "2d3f5b32ee18731e3c844dc3557f8ca80ac26ad76a8f49b8b146b9850a8c6284",
+          "canonicalSha256": "2d3f5b32ee18731e3c844dc3557f8ca80ac26ad76a8f49b8b146b9850a8c6284"
+        },
+        "src/lib/internships/attachments.server.ts": {
+          "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+          "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+        },
+        "src/lib/internships/uploadCleanup.server.ts": {
+          "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+          "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+        },
+        "src/lib/volunteers/policy/booking.repository.server.ts": {
+          "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+          "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+        },
+        "src/lib/donations/supabase.server.ts": {
+          "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+          "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+        },
+        "src/lib/http/boundedFormData.server.ts": {
+          "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+          "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+        },
+        "src/lib/operations/releaseSchema.ts": {
+          "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+        },
+        "src/lib/operations/releaseManifest.ts": {
+          "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+        },
+        "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+          "sha256": "19e2d79f5765e3b896fc53b0f0fc6a601dedddca562dec5dd204f8aeda175d7c",
+          "canonicalSha256": "19e2d79f5765e3b896fc53b0f0fc6a601dedddca562dec5dd204f8aeda175d7c"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+          "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+          "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+        },
+        "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+          "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+          "canonicalSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723"
+        }
+      },
+      "productionActions": "catalog/schema reads only; no production data or actor RPC",
+      "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+      "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "clone": "r01_clone_bf1dcd8e66374a2699eb12f3ba69b057",
+      "schemaParity": true,
+      "zeroApplicationTables": 158,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "public.internship_command",
+          "hash": "84662adb879ce5365c625d7d4dfb629c"
+        },
+        {
+          "name": "public.internship_history_guard",
+          "hash": "308d9a20a14412d81ee2f226a96784c2"
+        },
+        {
+          "name": "public.internship_validate_intake",
+          "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        },
+        {
+          "name": "storage.enforce_bucket_lifecycle_service_role",
+          "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+        },
+        {
+          "name": "storage.enforce_bucket_name_length",
+          "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+        },
+        {
+          "name": "storage.protect_bucket_control_columns",
+          "hash": "81db66d9936722b1164bca480ccbbf68"
+        },
+        {
+          "name": "storage.protect_delete",
+          "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+        },
+        {
+          "name": "storage.update_updated_at_column",
+          "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 44
+      },
+      "dependencies": [
+        {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "issues": 41
+        },
+        {
+          "file": "20261001154743_r01_animal_preference_record_fields.sql",
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "issues": 41
+        },
+        {
+          "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "issues": 33
+        }
+      ],
+      "task1Applied": false,
+      "manifestBeforeTask4": {
+        "requirements": 146,
+        "issues": 33
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "client column grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled RLS",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected policy",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong default",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled trigger",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong trigger args",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "definer drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "config drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "public execute",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected overload",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "insert rewrite rule",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unlogged relation",
+          "sqlState": "55000",
+          "preserved": true
+        }
+      ],
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 30
+      },
+      "migration": {
+        "file": "20261001175310_r01_internship_upload_forward.sql",
+        "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernAllCatalogPreserved": false,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "relationProfileHash": "c0a653c05b1078371a4cfa85db41b23081ce465f17a74d6e9f91c4ee8b3ec32c"
+      },
+      "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+      "testExit": 1,
+      "testSummary": [
+        "\n 6 pass",
+        " 5 fail",
+        " 56 expect() calls"
+      ],
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "a409c86a5285e159081758f73f60f5f6bc8d5cd979ca7476da81397a397c6c5b",
+        "modernPreserved": true
+      },
+      "cleanup": "only exact owned clone normally dropped; no force/session termination",
+      "completedAt": "2026-10-01T18:09:15.124Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "intermediateNotFinalAcceptance": {
+    "sha256": "9591fa8bbd39c0616ba4a56e81d766b8db098c47e80c92ffe3a6d0c5d32506d1",
+    "receipt": {
+      "mode": "green",
+      "startedAt": "2026-10-01T18:11:15.757Z",
+      "sourceCommit": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+      "testedExecutableBlobs": {
+        "src/lib/internships/uploadIntent.database.test.ts": {
+          "sha256": "603a0a21a46fb0b6fd1e4246b9ab1780312ddc4dcebf3a8647676892124b0764",
+          "canonicalSha256": "603a0a21a46fb0b6fd1e4246b9ab1780312ddc4dcebf3a8647676892124b0764"
+        },
+        "src/lib/internships/uploadIntent.testSupport.ts": {
+          "sha256": "252f1c411956b7181c3b9ee4c5a3604af954af20234884d3579c39d35b5c6d57",
+          "canonicalSha256": "252f1c411956b7181c3b9ee4c5a3604af954af20234884d3579c39d35b5c6d57"
+        },
+        "src/lib/internships/attachments.server.ts": {
+          "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+          "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+        },
+        "src/lib/internships/uploadCleanup.server.ts": {
+          "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+          "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+        },
+        "src/lib/volunteers/policy/booking.repository.server.ts": {
+          "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+          "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+        },
+        "src/lib/donations/supabase.server.ts": {
+          "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+          "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+        },
+        "src/lib/http/boundedFormData.server.ts": {
+          "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+          "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+        },
+        "src/lib/operations/releaseSchema.ts": {
+          "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+        },
+        "src/lib/operations/releaseManifest.ts": {
+          "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+        },
+        "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+          "sha256": "19e2d79f5765e3b896fc53b0f0fc6a601dedddca562dec5dd204f8aeda175d7c",
+          "canonicalSha256": "19e2d79f5765e3b896fc53b0f0fc6a601dedddca562dec5dd204f8aeda175d7c"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+          "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+          "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+        },
+        "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+          "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+          "canonicalSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723"
+        }
+      },
+      "productionActions": "catalog/schema reads only; no production data or actor RPC",
+      "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+      "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "clone": "r01_clone_ace7613fe7c4473f91c1c9eecaf4d63e",
+      "schemaParity": true,
+      "zeroApplicationTables": 158,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "public.internship_command",
+          "hash": "84662adb879ce5365c625d7d4dfb629c"
+        },
+        {
+          "name": "public.internship_history_guard",
+          "hash": "308d9a20a14412d81ee2f226a96784c2"
+        },
+        {
+          "name": "public.internship_validate_intake",
+          "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        },
+        {
+          "name": "storage.enforce_bucket_lifecycle_service_role",
+          "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+        },
+        {
+          "name": "storage.enforce_bucket_name_length",
+          "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+        },
+        {
+          "name": "storage.protect_bucket_control_columns",
+          "hash": "81db66d9936722b1164bca480ccbbf68"
+        },
+        {
+          "name": "storage.protect_delete",
+          "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+        },
+        {
+          "name": "storage.update_updated_at_column",
+          "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 44
+      },
+      "dependencies": [
+        {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "issues": 41
+        },
+        {
+          "file": "20261001154743_r01_animal_preference_record_fields.sql",
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "issues": 41
+        },
+        {
+          "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "issues": 33
+        }
+      ],
+      "task1Applied": false,
+      "manifestBeforeTask4": {
+        "requirements": 146,
+        "issues": 33
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "client column grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled RLS",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected policy",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong default",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled trigger",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong trigger args",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "definer drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "config drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "public execute",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected overload",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "insert rewrite rule",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unlogged relation",
+          "sqlState": "55000",
+          "preserved": true
+        }
+      ],
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 30
+      },
+      "migration": {
+        "file": "20261001175310_r01_internship_upload_forward.sql",
+        "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernAllCatalogPreserved": false,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "relationProfileHash": "c0a653c05b1078371a4cfa85db41b23081ce465f17a74d6e9f91c4ee8b3ec32c"
+      },
+      "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 12 pass",
+        " 0 fail",
+        " 85 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "a409c86a5285e159081758f73f60f5f6bc8d5cd979ca7476da81397a397c6c5b",
+        "modernPreserved": true
+      },
+      "cleanup": "only exact owned clone normally dropped; no force/session termination",
+      "completedAt": "2026-10-01T18:13:30.297Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "finalHosted": {
+    "sha256": "71032c117bf2e8b42fa2acd088e714f4c8821e7b1e530cd81ebd57be23952c49",
+    "receipt": {
+      "mode": "green",
+      "startedAt": "2026-10-01T18:17:52.521Z",
+      "sourceCommit": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+      "testedExecutableBlobs": {
+        "src/lib/internships/uploadIntent.database.test.ts": {
+          "sha256": "57e2382878b770216611d9aab9122be26d9c3d69e6faa35e87aed82812644687",
+          "canonicalSha256": "57e2382878b770216611d9aab9122be26d9c3d69e6faa35e87aed82812644687"
+        },
+        "src/lib/internships/uploadIntent.testSupport.ts": {
+          "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+          "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2"
+        },
+        "src/lib/internships/attachments.server.ts": {
+          "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+          "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+        },
+        "src/lib/internships/uploadCleanup.server.ts": {
+          "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+          "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+        },
+        "src/lib/volunteers/policy/booking.repository.server.ts": {
+          "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+          "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+        },
+        "src/lib/donations/supabase.server.ts": {
+          "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+          "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+        },
+        "src/lib/admin/session.server.ts": {
+          "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+          "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+        },
+        "src/lib/supabase.server.ts": {
+          "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+          "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+        },
+        "src/lib/http/boundedFormData.server.ts": {
+          "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+          "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+        },
+        "src/lib/operations/releaseSchema.ts": {
+          "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+        },
+        "src/lib/operations/releaseManifest.ts": {
+          "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+        },
+        "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+          "sha256": "c462ff2205edf6f37c27a2a6a319fda1333f1a8bb44c4130190afe6c366da70d",
+          "canonicalSha256": "c462ff2205edf6f37c27a2a6a319fda1333f1a8bb44c4130190afe6c366da70d"
+        },
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-gates.py": {
+          "sha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d",
+          "canonicalSha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d"
+        },
+        "package.json": {
+          "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+          "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+        },
+        "bun.lock": {
+          "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+          "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+        },
+        "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+          "sha256": "33dcc20efbc42d6af06024116cac6ddfdcc8bbabf9f7692ec0db3a6896cd93c9",
+          "canonicalSha256": "33dcc20efbc42d6af06024116cac6ddfdcc8bbabf9f7692ec0db3a6896cd93c9"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+          "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+          "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+        },
+        "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+          "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+          "canonicalSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723"
+        }
+      },
+      "productionActions": "catalog/schema reads only; no production data or actor RPC",
+      "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+      "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "clone": "r01_clone_1eda6045bc134e1e80719642a915b223",
+      "schemaParity": true,
+      "zeroApplicationTables": 158,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "public.internship_command",
+          "hash": "84662adb879ce5365c625d7d4dfb629c"
+        },
+        {
+          "name": "public.internship_history_guard",
+          "hash": "308d9a20a14412d81ee2f226a96784c2"
+        },
+        {
+          "name": "public.internship_validate_intake",
+          "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        },
+        {
+          "name": "storage.enforce_bucket_lifecycle_service_role",
+          "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+        },
+        {
+          "name": "storage.enforce_bucket_name_length",
+          "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+        },
+        {
+          "name": "storage.protect_bucket_control_columns",
+          "hash": "81db66d9936722b1164bca480ccbbf68"
+        },
+        {
+          "name": "storage.protect_delete",
+          "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+        },
+        {
+          "name": "storage.update_updated_at_column",
+          "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 44
+      },
+      "dependencies": [
+        {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "issues": 41
+        },
+        {
+          "file": "20261001154743_r01_animal_preference_record_fields.sql",
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "issues": 41
+        },
+        {
+          "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "issues": 33
+        }
+      ],
+      "task1Applied": false,
+      "manifestBeforeTask4": {
+        "requirements": 146,
+        "issues": 33
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "client column grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled RLS",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected policy",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong default",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled trigger",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong trigger args",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "definer drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "config drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "public execute",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected overload",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "insert rewrite rule",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unlogged relation",
+          "sqlState": "55000",
+          "preserved": true
+        }
+      ],
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 30
+      },
+      "migration": {
+        "file": "20261001175310_r01_internship_upload_forward.sql",
+        "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernAllCatalogPreserved": false,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "relationProfileHash": "c0a653c05b1078371a4cfa85db41b23081ce465f17a74d6e9f91c4ee8b3ec32c"
+      },
+      "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 13 pass",
+        " 0 fail",
+        " 98 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "a409c86a5285e159081758f73f60f5f6bc8d5cd979ca7476da81397a397c6c5b",
+        "modernPreserved": true
+      },
+      "cleanup": "only exact owned clone normally dropped; no force/session termination",
+      "completedAt": "2026-10-01T18:18:48.157Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "finalModern": {
+    "sha256": "ef34af842505533a76bb9b3bb1ada081e4a9a291f527ff967690f4fbeba2ee6e",
+    "receipt": {
+      "mode": "green-modern",
+      "startedAt": "2026-10-01T18:19:30.768Z",
+      "sourceCommit": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+      "testedExecutableBlobs": {
+        "src/lib/internships/uploadIntent.database.test.ts": {
+          "sha256": "57e2382878b770216611d9aab9122be26d9c3d69e6faa35e87aed82812644687",
+          "canonicalSha256": "57e2382878b770216611d9aab9122be26d9c3d69e6faa35e87aed82812644687"
+        },
+        "src/lib/internships/uploadIntent.testSupport.ts": {
+          "sha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2",
+          "canonicalSha256": "526eda084959bd672516b2f114094e252f5b48796ff6ea4a5478fac5b16a61f2"
+        },
+        "src/lib/internships/attachments.server.ts": {
+          "sha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9",
+          "canonicalSha256": "b2b8a46d140939f151f53af6905d84633897b6c2755c4ee92298cd1c5a3dd4c9"
+        },
+        "src/lib/internships/uploadCleanup.server.ts": {
+          "sha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a",
+          "canonicalSha256": "12498fdc3835d730041757d7d842b69d18297fc52e15a4bf4cb2058514c3463a"
+        },
+        "src/lib/volunteers/policy/booking.repository.server.ts": {
+          "sha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba",
+          "canonicalSha256": "74be3ef4bf6cc9cdecef617c221ae93dfca27209abe25d37dd7a2c458776d1ba"
+        },
+        "src/lib/donations/supabase.server.ts": {
+          "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+          "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+        },
+        "src/lib/admin/session.server.ts": {
+          "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+          "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+        },
+        "src/lib/supabase.server.ts": {
+          "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+          "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+        },
+        "src/lib/http/boundedFormData.server.ts": {
+          "sha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a",
+          "canonicalSha256": "bad0a9aeca7c67910555f9c5b16ef4d0361dd4ca59f111785fa0d60d4ff2f42a"
+        },
+        "src/lib/operations/releaseSchema.ts": {
+          "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+        },
+        "src/lib/operations/releaseManifest.ts": {
+          "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+        },
+        "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+          "sha256": "c462ff2205edf6f37c27a2a6a319fda1333f1a8bb44c4130190afe6c366da70d",
+          "canonicalSha256": "c462ff2205edf6f37c27a2a6a319fda1333f1a8bb44c4130190afe6c366da70d"
+        },
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-4-gates.py": {
+          "sha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d",
+          "canonicalSha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d"
+        },
+        "package.json": {
+          "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+          "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+        },
+        "bun.lock": {
+          "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+          "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+        },
+        "supabase/rls-tests/helpers/runR01InternshipForward.ts": {
+          "sha256": "33dcc20efbc42d6af06024116cac6ddfdcc8bbabf9f7692ec0db3a6896cd93c9",
+          "canonicalSha256": "33dcc20efbc42d6af06024116cac6ddfdcc8bbabf9f7692ec0db3a6896cd93c9"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-4-reviewed-paths.json": {
+          "sha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78",
+          "canonicalSha256": "b16171462d47c81366317325cb26703c8dd9eefe3d87e350a789bb8913fe1d78"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+        },
+        "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+          "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+          "canonicalSha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723"
+        }
+      },
+      "productionActions": "catalog/schema reads only; no production data or actor RPC",
+      "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+      "upstreamCiHold": "controller released after PR186 attempt2 and PR187 allfiveSUCCESS",
+      "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "clone": "r01_clone_5af9d5334c464e13abcf9b00a774add5",
+      "schemaParity": true,
+      "zeroApplicationTables": 162,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "private.lock_admin_user_mutation",
+          "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+        },
+        {
+          "name": "private.require_active_admin_user",
+          "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+        },
+        {
+          "name": "public.internship_command",
+          "hash": "84662adb879ce5365c625d7d4dfb629c"
+        },
+        {
+          "name": "public.internship_history_guard",
+          "hash": "308d9a20a14412d81ee2f226a96784c2"
+        },
+        {
+          "name": "public.internship_validate_intake",
+          "hash": "8e49c4c42c3b9250cc959a2343fdc0fe"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.mark_internship_attachment_uploaded",
+          "hash": "4592d14b324b3fd7db847d663cae4eaa"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        },
+        {
+          "name": "storage.enforce_bucket_lifecycle_service_role",
+          "hash": "4249ae51a41c6ba1f0c09bcd02bf7ea1"
+        },
+        {
+          "name": "storage.enforce_bucket_name_length",
+          "hash": "ff77ee8a60ac082d70ada8697fb9ff59"
+        },
+        {
+          "name": "storage.protect_bucket_control_columns",
+          "hash": "81db66d9936722b1164bca480ccbbf68"
+        },
+        {
+          "name": "storage.protect_delete",
+          "hash": "c6fc3a7f1959fade0ffcf8cb99d468e5"
+        },
+        {
+          "name": "storage.update_updated_at_column",
+          "hash": "0708eb96b2ab9a5f3e0aef0371a7c5d3"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "dependencies": [
+        {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "issues": 1
+        },
+        {
+          "file": "20261001154743_r01_animal_preference_record_fields.sql",
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "issues": 1
+        },
+        {
+          "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "issues": 1
+        }
+      ],
+      "task1Applied": false,
+      "manifestBeforeTask4": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "client column grant",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled RLS",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected policy",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong default",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "disabled trigger",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong trigger args",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "definer drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "config drift",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "public execute",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unexpected overload",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "insert rewrite rule",
+          "sqlState": "55000",
+          "preserved": true
+        },
+        {
+          "case": "unlogged relation",
+          "sqlState": "55000",
+          "preserved": true
+        }
+      ],
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "migration": {
+        "file": "20261001175310_r01_internship_upload_forward.sql",
+        "sha256": "7b9a682b4d789717ffafa63dc297974696cfc26f93e37233d80e2747b96f0723",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernAllCatalogPreserved": true,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "relationProfileHash": "c0a653c05b1078371a4cfa85db41b23081ce465f17a74d6e9f91c4ee8b3ec32c"
+      },
+      "testCommand": "bun test src/lib/internships/uploadIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 13 pass",
+        " 0 fail",
+        " 98 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "a409c86a5285e159081758f73f60f5f6bc8d5cd979ca7476da81397a397c6c5b",
+        "modernPreserved": true
+      },
+      "cleanup": "only exact owned clone normally dropped; no force/session termination",
+      "completedAt": "2026-10-01T18:19:49.999Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "mandatoryFinalGates": {
+    "sha256": "7804133a02901b139e48d2262bfd2237cb950508f8afc7996b205a375dc58024",
+    "receipt": {
+      "phase": "final",
+      "source": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+      "startedAt": "2026-10-01T18:21:08.026823+00:00",
+      "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+      "gates": [
+        {
+          "gate": "typecheck",
+          "command": "bun run typecheck",
+          "exit": 0,
+          "elapsedSeconds": 61.48,
+          "log": "task-4-final-typecheck.log"
+        },
+        {
+          "gate": "tests",
+          "command": "bun test --isolate --timeout 30000",
+          "exit": 0,
+          "elapsedSeconds": 133.07,
+          "log": "task-4-final-tests.log",
+          "summary": [
+            "\n 3228 pass",
+            " 247 skip",
+            " 0 fail",
+            " 10477 expect() calls"
+          ]
+        },
+        {
+          "gate": "lint",
+          "command": "bun run lint",
+          "exit": 0,
+          "elapsedSeconds": 46.94,
+          "log": "task-4-final-lint.log"
+        },
+        {
+          "gate": "build",
+          "command": "bun run build",
+          "exit": 0,
+          "elapsedSeconds": 103.69,
+          "log": "task-4-final-build.log"
+        }
+      ],
+      "completedAt": "2026-10-01T18:26:53.220253+00:00"
+    }
+  },
+  "postAuthorizedGateSourceAggregate": {
+    "sha256": "e35ce0cce06bb09ddefaffbeab8fc3d24cbbd678841fa3c89f53f5c853ce66a3",
+    "receipt": {
+      "observedAt": "2026-10-01T18:27:27.965Z",
+      "templateHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "modernHash": "45ac06be79d909352aec597525003b361245989eb13072e8b24eda6af8a08835",
+      "actions": "aggregate read-only helper; no restoration/reset/actor calls",
+      "scope": "post authorized synthetic full-gate fixtures, distinct from per-clone preservation"
+    }
+  },
+  "retainedScratchArtifactHashes": {
+    "generate-task-4.py": {
+      "sha256": "c63fe84c0c1d8afaf136ec6ae57e30741c0918a57ec4ffcf91da9ec9f18042db",
+      "bytes": 2764
+    },
+    "inspect-task-4.ts": {
+      "sha256": "935641788f533e3fadd771196df012600b7dde5533ff2e299c5611b48e97f9e1",
+      "bytes": 2280
+    },
+    "run-task-4-gates.py": {
+      "sha256": "eb606caae07bc7493647faebdda1fc0646a4f55750ce40c293daf237db7c8d4d",
+      "bytes": 2294
+    },
+    "task-4-brief.md": {
+      "sha256": "bac67d4cae9a53f81147cb10e80f84bb8be17dad9cc307d29d6da45d1ca944d9",
+      "bytes": 14131
+    },
+    "task-4-controller-preflight-v1.json": {
+      "sha256": "2dc2800448b307f0d9265ce05da95988deb848061718737e49a76b79d1ceabc7",
+      "bytes": 361
+    },
+    "task-4-final-build.log": {
+      "sha256": "d14c3f3d81b8cb492eb3e52227bd11337ab81df5918b08d13ffeb202468af450",
+      "bytes": 120068
+    },
+    "task-4-final-gates-runner.log": {
+      "sha256": "d30dcd89e6cbb9214c07fdbe89ecd9eea6b7060fc0656832aacbca6497cec3cb",
+      "bytes": 574
+    },
+    "task-4-final-gates.json": {
+      "sha256": "7804133a02901b139e48d2262bfd2237cb950508f8afc7996b205a375dc58024",
+      "bytes": 1143
+    },
+    "task-4-final-lint.log": {
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696
+    },
+    "task-4-final-tests.log": {
+      "sha256": "4065874bf2718f17a74774bf6330fdf0ee459da18023212607415582d0fd4104",
+      "bytes": 411992
+    },
+    "task-4-final-typecheck.log": {
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    "task-4-green-12-test-intermediate.json": {
+      "sha256": "9591fa8bbd39c0616ba4a56e81d766b8db098c47e80c92ffe3a6d0c5d32506d1",
+      "bytes": 9634
+    },
+    "task-4-green-12-test-intermediate.log": {
+      "sha256": "663f302894231933cb667d049178980cbc2af7742cbf51f65467ddbf11728d49",
+      "bytes": 1989
+    },
+    "task-4-green-before-fixture-fixes.json": {
+      "sha256": "75736fa9ae55bf82a06c5299adac5ef0cc35ce661b79de9a9fb8a0b97f5b9699",
+      "bytes": 9529
+    },
+    "task-4-green-before-fixture-fixes.log": {
+      "sha256": "8a7944d1f494318fef0942ba792473b7db80016a37868f2f9b97e9ce32040d28",
+      "bytes": 7140
+    },
+    "task-4-green-db.json": {
+      "sha256": "71032c117bf2e8b42fa2acd088e714f4c8821e7b1e530cd81ebd57be23952c49",
+      "bytes": 11001
+    },
+    "task-4-green-db.log": {
+      "sha256": "81e60ec6216a287bb2591460e6a27e0bebbb4e48d66eaffcfacc9f03393845e6",
+      "bytes": 2139
+    },
+    "task-4-green-modern-db.json": {
+      "sha256": "ef34af842505533a76bb9b3bb1ada081e4a9a291f527ff967690f4fbeba2ee6e",
+      "bytes": 11348
+    },
+    "task-4-green-modern-db.log": {
+      "sha256": "03a30bef03fa75915021bbe7d234ccc92ec6e015d83fb492ecce45b4237c8290",
+      "bytes": 2134
+    },
+    "task-4-green-modern-runner.log": {
+      "sha256": "46c98f21cfca8dd19fdb12900514c34271873601c16610ef94d593b549806118",
+      "bytes": 9423
+    },
+    "task-4-green-runner.log": {
+      "sha256": "9ea2634d2244fd02727f1bcf03690dccac4939c7ba8c732bfc52fb06ff6b05d6",
+      "bytes": 9154
+    },
+    "task-4-hosted-metadata.json": {
+      "sha256": "eeb3d2bbb55b7826a55fcccb0814ce2b202531046ecc45080da31970462d3655",
+      "bytes": 333
+    },
+    "task-4-hosted-review-functions.json": {
+      "sha256": "6c5845813c209a1fd817f130c22c4c7d4df0410ab1a9c38f4891b5474141cf20",
+      "bytes": 1030
+    },
+    "task-4-inspect-hosted-qualification-error.log": {
+      "sha256": "0c61d193fe96117255c9c79bec57dec2ab3c48fa5d1e2abd92799833a09a3e80",
+      "bytes": 451
+    },
+    "task-4-inspect-hosted.log": {
+      "sha256": "f1f6b21eae669a5e17187392a40dddc249a350edfe7e18bc56da0ec16fbede1d",
+      "bytes": 19296
+    },
+    "task-4-inspect-modern.log": {
+      "sha256": "124ff1af93c1d682b1bc913d08c0a3dc9ca6b2b5980deb8804c2131bec81d634",
+      "bytes": 21292
+    },
+    "task-4-modern-metadata.json": {
+      "sha256": "525babfaa91055f203088c1adaa365b08c829fe30c97a292465b86c1b6e64db2",
+      "bytes": 13281
+    },
+    "task-4-modern-review-functions.json": {
+      "sha256": "34db3309f68b471696f2bd2974f51caefa6af09228ee208d9f058018ff2ad309",
+      "bytes": 1353
+    },
+    "task-4-post-gate-source-state.json": {
+      "sha256": "e35ce0cce06bb09ddefaffbeab8fc3d24cbbd678841fa3c89f53f5c853ce66a3",
+      "bytes": 391
+    },
+    "task-4-post-gate-source-state.ts": {
+      "sha256": "4be90864567b66bde2a59289440828fb7d8f06292e56aa2da09703cccb234ae7",
+      "bytes": 646
+    },
+    "task-4-pre-final-lint.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "task-4-pre-green-typecheck-fixed.log": {
+      "sha256": "5a3973f79ed9becd5f23c4feff467513814de7ea381d75a4d2e339aa8b8edca9",
+      "bytes": 16
+    },
+    "task-4-pre-green-typecheck.log": {
+      "sha256": "ce8f30cf35d2c4879fa88423474599144ddf8fdfdf9be9c410f543809d555caf",
+      "bytes": 1625
+    },
+    "task-4-red-db.json": {
+      "sha256": "6f1610cdf0393377f3c883a4169391e9349f76e6201fbee66235f88eada7e187",
+      "bytes": 1215
+    },
+    "task-4-red-db.log": {
+      "sha256": "6139865fbfd8eed9081e96560dfcceafd466e8c9433097e5ab706c26f7f8bca8",
+      "bytes": 625
+    },
+    "task-4-red-runner.log": {
+      "sha256": "dac66cb10f85868587f3ec78f6fdb25857cc4b1eebd9ef06c24db6ac374e4623",
+      "bytes": 1113
+    },
+    "task-4-tested-candidate.json": {
+      "sha256": "f987c677feeb8d22f56f0f7d5dd1663c8fa7bce3eaff48a55ed0d7a665dcafc0",
+      "bytes": 224
+    }
+  },
+  "currentPackaging": {
+    "docs/evidence/audit-remediation-20260927/tracker.csv": {
+      "sha256": "30231321fa7e1b2c1c9ee8cd26e0461783fdd7c8ae310fc1402ff294008109a4",
+      "canonicalSha256": "30231321fa7e1b2c1c9ee8cd26e0461783fdd7c8ae310fc1402ff294008109a4",
+      "gitBlob": "ed575cf2672aaf785695d81506fd1864b7d8c86a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-4-internship-upload.md": {
+      "sha256": "56d6aee97b83b0e13a3e16bcfc0c19ef4c9273099b060eb22e3406d77afe8432",
+      "canonicalSha256": "56d6aee97b83b0e13a3e16bcfc0c19ef4c9273099b060eb22e3406d77afe8432",
+      "gitBlob": "4237e3b540d37c19b8711c1bb4553fb7c57ffd43"
+    }
+  },
+  "controllerAcceptedUpstream": {
+    "guard": "PR185/3e869 CI36896838858 allfiveSUCCESS",
+    "trigger": "PR186/459438 CI36896928567 attempt2 allfiveSUCCESS; cancelled attempt1 retained",
+    "sponsorship": "PR187/4f CI36900978204 allfiveSUCCESS; original8 I1 Fix1 re-review Approved/no open"
+  },
+  "notRun": [
+    "Task4 controller independent review/exact-head CI",
+    "production DDL/DML/actor RPC",
+    "Task1 SQL and source ACL changes",
+    "real Auth/JWT/PostgREST/Storage",
+    "provider/email/payment/full checkout/recovery/hosted UAT",
+    "production release/enablement"
+  ],
+  "authority": "schema-only production reads; individually owned synthetic clone SQL/actors and inert real-service DI; normal owned-clone cleanup; no production data dump/restore/reset/session termination/roles or engine change"
+}

@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\evidenceEligibility.test.ts:
+(pass) Task10 actual evidence gate selector inert regressions > reject false postTestsRowsPreserved [128.09ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing postTestsRowsPreserved [214.65ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false helpersPreserved [123.92ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing helpersPreserved [253.30ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject false completeAuthDefaultNativeLedgerSequencePreserved [148.77ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject missing completeAuthDefaultNativeLedgerSequencePreserved [192.17ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject nonempty failed flags [190.74ms]
+(pass) Task10 actual evidence gate selector inert regressions > reject wrong mode [236.99ms]
+(pass) Task10 actual post-cleanup preservation propagation > capture rejects preservation false after cleanup and retains receipt [3.39ms]
+(pass) Task10 actual post-cleanup preservation propagation > global-capture rejects preservation false after cleanup and retains receipt [0.72ms]
+(pass) Task10 actual post-cleanup preservation propagation > red rejects preservation false after cleanup and retains receipt [0.62ms]
+(pass) Task10 actual post-cleanup preservation propagation > truncate-red rejects preservation false after cleanup and retains receipt [0.66ms]
+(pass) Task10 actual post-cleanup preservation propagation > auth-component-red rejects preservation false after cleanup and retains receipt [0.61ms]
+
+ 13 pass
+ 0 fail
+ 18 expect() calls
+Ran 13 tests across 1 file. [1.60s]

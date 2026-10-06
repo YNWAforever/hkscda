@@ -1,0 +1,120 @@
+import { afterAll, describe, expect, test } from "bun:test";
+import { SQL } from "bun";
+import { randomUUID } from "node:crypto";
+import { assertCloneUrl } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+const url = process.env.R01_ADMIN_ATOMIC_TEST_DATABASE_URL;
+const enabled = !!url && process.env.R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES === "1";
+if (enabled) assertCloneUrl(url!);
+const db = enabled ? new SQL(url!, { max: 5 }) : null;
+const rollback = new Error("Task10 fixture rollback");
+type Fixture = {
+  actor: string;
+  targetAuth: string;
+  target: string;
+  inviteAuth: string;
+  newAuth: string;
+  pending: string;
+};
+async function seed(tx: SQL): Promise<Fixture> {
+  const actor = randomUUID(),
+    targetAuth = randomUUID(),
+    inviteAuth = randomUUID(),
+    newAuth = randomUUID();
+  for (const id of [actor, targetAuth, inviteAuth, newAuth])
+    await tx`insert into auth.users(id,email,email_confirmed_at) values(${id}::uuid,${id + "@example.invalid"},now())`;
+  const ids: string[] = [];
+  for (const [id, role, status] of [
+    [actor, "admin", "active"],
+    [targetAuth, "staff", "active"],
+    [inviteAuth, "staff", "pending"],
+  ]) {
+    const [r] =
+      await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${id}::uuid,${id + "@example.invalid"},${role},${status}) returning id`;
+    ids.push(r.id);
+  }
+  return { actor, targetAuth, inviteAuth, newAuth, target: ids[1], pending: ids[2] };
+}
+async function fixture(run: (tx: SQL, f: Fixture) => Promise<void>) {
+  if (!db) throw Error("Own clone required");
+  try {
+    await db.begin(async (sql) => {
+      const tx = sql as SQL;
+      await tx`set local role postgres`;
+      const f = await seed(tx);
+      await run(tx, f);
+      throw rollback;
+    });
+  } catch (e) {
+    if (e !== rollback) throw e;
+  }
+}
+type Command = "update" | "invite" | "resend" | "activate";
+const commands: Command[] = ["update", "invite", "resend", "activate"];
+async function call(tx: SQL, command: Command, f: Fixture) {
+  const actor = f.actor;
+  if (command === "update") {
+    const [r] =
+      await tx`select to_jsonb(public.update_admin_user_with_audit(${actor}::uuid,${f.target}::uuid,'treasurer')) value`;
+    return r.value;
+  }
+  if (command === "invite") {
+    const [r] =
+      await tx`select to_jsonb(public.invite_admin_user_with_audit(${actor}::uuid,${f.newAuth}::uuid,${f.newAuth + "@example.invalid"},'staff',now())) value`;
+    return r.value;
+  }
+  if (command === "resend") {
+    const [r] =
+      await tx`select to_jsonb(public.resend_admin_invite_with_audit(${actor}::uuid,${f.pending}::uuid,now())) value`;
+    return r.value;
+  }
+  const [r] =
+    await tx`select to_jsonb(public.activate_admin_invite_with_audit(${f.inviteAuth}::uuid)) value`;
+  return r.value;
+}
+async function expectError(tx: SQL, run: () => Promise<unknown>, message: string, code = "P0001") {
+  const sp = "task10_" + randomUUID().replaceAll("-", "");
+  await tx.unsafe("savepoint " + sp);
+  let caught: unknown;
+  try {
+    await run();
+  } catch (e) {
+    caught = e;
+  } finally {
+    await tx.unsafe("rollback to savepoint " + sp);
+    await tx.unsafe("release savepoint " + sp);
+  }
+  expect(caught).toMatchObject({ errno: code, message });
+}
+describe.skipIf(!db)("Task10 actual admin database contracts", () => {
+  for (const command of commands)
+    test(`${command} valid service command produces one audit`, () =>
+      fixture(async (tx, f) => {
+        await tx`set local role service_role`;
+        const r = await call(tx, command, f);
+        expect(r.id).toBeString();
+        const [a] =
+          await tx`select count(*)::integer count from public.audit_log where actor_user_id in(${f.actor}::uuid,${f.inviteAuth}::uuid)`;
+        expect(a.count).toBe(1);
+      }));
+  for (const command of commands)
+    for (const state of ["banned", "unconfirmed"] as const)
+      test(`${command} refuses ${state} authenticated actor or legitimate invitee`, () =>
+        fixture(async (tx, f) => {
+          const id = command === "activate" ? f.inviteAuth : f.actor;
+          if (state === "banned")
+            await tx`update auth.users set banned_until=now()+interval '1 hour' where id=${id}::uuid`;
+          else await tx`update auth.users set email_confirmed_at=null where id=${id}::uuid`;
+          await tx`set local role service_role`;
+          await expectError(
+            tx,
+            () => call(tx, command, f),
+            command === "activate" ? "admin_user_not_found" : "admin_actor_denied",
+          );
+          const [a] =
+            await tx`select count(*)::integer count from public.audit_log where actor_user_id in(${f.actor}::uuid,${f.inviteAuth}::uuid)`;
+          expect(a.count).toBe(0);
+        }));
+});
+afterAll(async () => {
+  await db?.close();
+});

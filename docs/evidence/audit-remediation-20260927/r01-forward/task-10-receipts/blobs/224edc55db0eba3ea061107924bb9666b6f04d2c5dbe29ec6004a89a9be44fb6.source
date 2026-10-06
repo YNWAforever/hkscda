@@ -1,0 +1,191 @@
+import { completeReceipt } from "./task-10-receipt";
+/** Ruling37 own complete Auth LF diagnostic; no guard admission here. */
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import {
+  captureModernLocalSchema,
+  createProductionClone,
+  assertSafeFixtureTables,
+  snapshot,
+  hash,
+  localSourceState,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import {
+  fixtureScope,
+  dependencies,
+  functionsQuery,
+  authQuery,
+  nativeQuery,
+  indexDetailsQuery,
+} from "./task-10-profile";
+if (process.env.R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES !== "1")
+  throw Error("Explicit Task10 own diagnostic opt-in");
+const root = process.cwd(),
+  out = resolve(
+    root,
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-auth-component-red-" + Date.now(),
+  );
+await mkdir(out, { recursive: true });
+const fixturePath =
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+  vendorPath =
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+  migration =
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-auth-component-red-1790940088423/s0.source";
+const paths = [
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json",
+  migration,
+  fixturePath,
+  vendorPath,
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-auth-component-red.ts",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+  "supabase/rls-tests/helpers/productionSchemaClone.ts",
+  ...dependencies.map(([f]) => "supabase/migrations/" + f),
+];
+const bindings: Record<string, unknown> = {};
+for (const [i, p] of paths.entries()) {
+  const b = await readFile(p);
+  bindings[p] = {
+    rawSha256: hash(b.toString()),
+    canonicalSha256: hash(b.toString().replaceAll("\r\n", "\n")),
+    archive: "s" + i + ".source",
+  };
+  await copyFile(p, resolve(out, "s" + i + ".source"));
+}
+const raw = await readFile(fixturePath, "utf8");
+if (hash(raw) !== "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77")
+  throw Error("Exact independently bound Task9 vendor provenance differs");
+const fixture = JSON.parse(raw),
+  vendor = JSON.parse(await readFile(vendorPath, "utf8"));
+const supplied = vendor.functions.find(
+  (f: { schema: string; name: string }) => f.schema === "auth" && f.name === "uid",
+);
+if (supplied.definition !== fixture.finalHelper.definition)
+  throw Error("Independent vendor rendered definition differs");
+const modern = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(modern),
+  cap = await captureModernLocalSchema(),
+  c = await createProductionClone(cap),
+  db = c.sql;
+const receipt: Record<string, unknown> = {
+  out,
+  at: new Date().toISOString(),
+  bindings,
+  clone: c.name,
+  schemaParity: true,
+  zeroApplicationTables: c.tableCount,
+  qualification:
+    "PG17.6 owned application component from independently captured exact17.11/Auth LF definition; not actual fullCI bootstrap",
+};
+const rollback = new Error("Own LF diagnostic rollback");
+const extra = async () => ({
+  auth: await db.unsafe(authQuery),
+  native: await db.unsafe(nativeQuery),
+  indexes: await db.unsafe(indexDetailsQuery),
+  defaults:
+    await db`select to_jsonb(d) from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
+  allNative:
+    await db`select to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_trigger t where t.tgisinternal order by t.oid`,
+});
+try {
+  await assertSafeFixtureTables(db, fixtureScope);
+  receipt.fullScannerPassed = true;
+  for (const [f, h] of dependencies) {
+    const s = await readFile("supabase/migrations/" + f, "utf8");
+    if (hash(s) !== h) throw Error("Accepted dependency differs");
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(s);
+    });
+  }
+  const candidate = await readFile(migration, "utf8"),
+    beforeCatalog = hash(await snapshot(db)),
+    beforeFunctions = await db.unsafe(functionsQuery),
+    beforeExtra = hash(await extra());
+  const before = beforeFunctions.find(
+    (f: Record<string, unknown>) => f.schema === "auth" && f.name === "uid",
+  );
+  receipt.beforeHelper = before;
+  let accepted = false;
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(candidate);
+      accepted = true;
+      throw rollback;
+    });
+  } catch (e) {
+    if (e !== rollback) throw e;
+  }
+  receipt.baselineAccepted = accepted;
+  let result = "success";
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role supabase_auth_admin`;
+      await tx.unsafe(fixture.finalHelper.definition);
+      await tx`set local role postgres`;
+      const afterFunctions = await tx.unsafe(functionsQuery),
+        after = afterFunctions.find(
+          (f: Record<string, unknown>) => f.schema === "auth" && f.name === "uid",
+        );
+      receipt.afterHelper = after;
+      const { body: _b, definition: _d, ...nonBodyBefore } = before,
+        { body: _ab, definition: _ad, ...nonBodyAfter } = after;
+      receipt.allOtherHelperFacetsPreserved = hash(nonBodyBefore) === hash(nonBodyAfter);
+      receipt.otherHelpersPreserved =
+        hash(
+          beforeFunctions.filter(
+            (f: Record<string, unknown>) => !(f.schema === "auth" && f.name === "uid"),
+          ),
+        ) ===
+        hash(
+          afterFunctions.filter(
+            (f: Record<string, unknown>) => !(f.schema === "auth" && f.name === "uid"),
+          ),
+        );
+      receipt.authDefaultNativeIndexPreserved =
+        beforeExtra ===
+        hash({
+          auth: await tx.unsafe(authQuery),
+          native: await tx.unsafe(nativeQuery),
+          indexes: await tx.unsafe(indexDetailsQuery),
+          defaults:
+            await tx`select to_jsonb(d) from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
+          allNative:
+            await tx`select to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_trigger t where t.tgisinternal order by t.oid`,
+        });
+      receipt.publicPrivateCatalogPreserved =
+        beforeCatalog === hash(await snapshot(tx as import("bun").SQL));
+      await tx.unsafe(candidate);
+      throw rollback;
+    });
+  } catch (e) {
+    if (e !== rollback) result = (e as { errno?: string }).errno ?? String(e);
+  }
+  receipt.actualCandidateResult = result;
+  receipt.completeRollback =
+    beforeCatalog === hash(await snapshot(db)) &&
+    hash(beforeFunctions) === hash(await db.unsafe(functionsQuery)) &&
+    beforeExtra === hash(await extra());
+  if (
+    !accepted ||
+    result !== "55000" ||
+    receipt.completeRollback !== true ||
+    receipt.allOtherHelperFacetsPreserved !== true ||
+    receipt.otherHelpersPreserved !== true ||
+    receipt.authDefaultNativeIndexPreserved !== true
+  )
+    throw Error("Expected own complete helper refusal/protection absent");
+} catch (e) {
+  receipt.error = String(e);
+  process.exitCode = 1;
+} finally {
+  await c.close();
+  receipt.normalDrop = true;
+  receipt.templatePreserved = c.templatePreserved;
+  receipt.modernPreserved = modernBefore === (await localSourceState(modern));
+  if (completeReceipt(receipt, "auth-component", "component")) process.exitCode = 1;
+  await writeFile(resolve(out, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+  console.log(JSON.stringify(receipt));
+}

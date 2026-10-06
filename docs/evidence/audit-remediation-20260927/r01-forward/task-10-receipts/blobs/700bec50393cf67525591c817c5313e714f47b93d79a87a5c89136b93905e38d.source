@@ -1,0 +1,69 @@
+{
+  "base": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+  "branch": "codex/audit-r01-adoption-upload-20261001",
+  "testedTree": "final functional bytes unchanged from both final DB rehearsals through final four gates and commit",
+  "executableBlobs": {
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "src/lib/publicAdoption/uploadIntent.database.test.ts": {
+      "sha256": "a71713af45440ab232ea55a73fd9cfce1cd9e5a619d7816a1fa38dd9f9e7a49d",
+      "canonicalSha256": "a71713af45440ab232ea55a73fd9cfce1cd9e5a619d7816a1fa38dd9f9e7a49d",
+      "gitBlob": "eb847ebd0ec0856deeb7ada5a3096fcc9fcbc9fc"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionForward.ts": {
+      "sha256": "6976c1b532e35cb5af5bf2581e968610d1c56efd612df7a679bb52bedf0979c3",
+      "canonicalSha256": "6976c1b532e35cb5af5bf2581e968610d1c56efd612df7a679bb52bedf0979c3",
+      "gitBlob": "98eec27fa6dc2945f946dcf1c14cc475431d0426"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093",
+      "canonicalSha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093",
+      "gitBlob": "57ba631848407e9fe8f83095ce5fea7f78a108e2"
+    }
+  },
+  "gateLogs": [
+    {
+      "file": "task-2-final-typecheck.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15,
+      "retention": "complete output retained in ignored task scratch; sanitized command/exit/timing/count receipt committed"
+    },
+    {
+      "file": "task-2-final-tests.log",
+      "sha256": "a65729e4470d09f32b787e6c1434c354d94dc1ee614c89d9c3025e1d222c87f5",
+      "bytes": 400951,
+      "retention": "complete output retained in ignored task scratch; sanitized command/exit/timing/count receipt committed"
+    },
+    {
+      "file": "task-2-final-lint.log",
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696,
+      "retention": "complete output retained in ignored task scratch; sanitized command/exit/timing/count receipt committed"
+    },
+    {
+      "file": "task-2-final-build.log",
+      "sha256": "f4b80a4c29479652a59d139e0653669ae35d995b1ec49715aff21cdd89fc0f2f",
+      "bytes": 120067,
+      "retention": "complete output retained in ignored task scratch; sanitized command/exit/timing/count receipt committed"
+    }
+  ],
+  "gateStartedAt": "2026-10-01T14:22:07.122835+00:00",
+  "gateCompletedAt": "2026-10-01T14:26:20.044439+00:00",
+  "commitBinding": "verify each listed gitBlob with git rev-parse HEAD:path; parent helper remains identical to base; documentation-only packaging followed gates",
+  "selfReview": [
+    "Exact three adoption objects only; missing table CRUD and reviewed existing eight-privilege profile compared exactly",
+    "New postgres SECDEF empty search_path and service-only EXECUTE; reviewed legacy body retained without replacement",
+    "Parent/case locking, expiry after lock, storage retry, rollback and client denial exercised",
+    "No edits to shared guard or partial Task1 SQL; no production/provider actions"
+  ],
+  "notRun": [
+    "production apply or actor RPC",
+    "real Storage/email/payment/provider",
+    "direct HTTP/JWT UAT",
+    "preview/deploy/push/merge",
+    "controller independent review and exact new-head CI"
+  ]
+}

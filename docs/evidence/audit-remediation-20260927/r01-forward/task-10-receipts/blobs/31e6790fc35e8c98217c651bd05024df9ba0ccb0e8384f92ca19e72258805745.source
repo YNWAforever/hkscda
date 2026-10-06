@@ -1,0 +1,156 @@
+{
+  "phase": "artifact-only postcommit HEAD verifier, before DONE receipt",
+  "actualFailedHead": "226f9e2c8bf91659c39f996b72923c6275365cdf",
+  "firstMissingHeadArtifact": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/r/c01/test.log",
+  "outerProcessExit": 1,
+  "gitSubprocessExit": 128,
+  "qualification": "Actual tool transcript reports fatal missing tracked path and CalledProcessError; full raw wrapper log was not captured. This is packaging/binding failure, not domain RED or a gate. *.log ignored by existing repo rules; ordinary staging omitted them. Disk originals and exact sources preserved. Explicit forceadd only ownlogs; no ignore/config/SQL/API/runner/test/runtimeinput amendment, no behavioral replay needed. First verifier source immutable ignored copy retained.",
+  "failedVerifierSource": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-head-verifier-attempt-1.source",
+  "logs": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790909229166750000/build.log",
+      "rawSha256": "7961a701653543a89bab66cd2d65e44ecb4ef832e66623b2760f40f2870843bf",
+      "canonicalSha256": "7961a701653543a89bab66cd2d65e44ecb4ef832e66623b2760f40f2870843bf"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790909229166750000/lint.log",
+      "rawSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "canonicalSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790909229166750000/tests.log",
+      "rawSha256": "08f13c3029104cbea60684781a193d8890ee185347b6bd1cfaf3103796687af3",
+      "canonicalSha256": "08f13c3029104cbea60684781a193d8890ee185347b6bd1cfaf3103796687af3"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/gates-1790909229166750000/typecheck.log",
+      "rawSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "canonicalSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790908931642/test.log",
+      "rawSha256": "23fdfe667bc4e84a8e81827e25b1bc6bbd6842fbb98611dbaadd3b93d5a0b251",
+      "canonicalSha256": "23fdfe667bc4e84a8e81827e25b1bc6bbd6842fbb98611dbaadd3b93d5a0b251"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/modern-1790909105883/test.log",
+      "rawSha256": "d413a1e23a69301691569007f6d24981e1bd699f3d54b5fcf610f4cb881f3902",
+      "canonicalSha256": "d413a1e23a69301691569007f6d24981e1bd699f3d54b5fcf610f4cb881f3902"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-red-receipts/hosted-1790908026545/test.log",
+      "rawSha256": "9a3da586cc8f77345b1f032f082586510be36ccfdfd0df3aeb62b6ca15fb7661",
+      "canonicalSha256": "9a3da586cc8f77345b1f032f082586510be36ccfdfd0df3aeb62b6ca15fb7661"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-red-receipts/hosted-1790908162796/test.log",
+      "rawSha256": "b645bc0821b1f2038254a53a28baaf7998596b3da811dc6753f2d1f06f0b87dc",
+      "canonicalSha256": "b645bc0821b1f2038254a53a28baaf7998596b3da811dc6753f2d1f06f0b87dc"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c01/build.log",
+      "rawSha256": "afe035fd711aaf742a64226f505b3996b09d25f9e2178499dd6a8e1b4b36b333",
+      "canonicalSha256": "afe035fd711aaf742a64226f505b3996b09d25f9e2178499dd6a8e1b4b36b333"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c01/lint.log",
+      "rawSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "canonicalSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c01/tests.log",
+      "rawSha256": "6edc2d13f454d48c69159589497cbba6cb345b6d389a6f20926d46b07e9f8024",
+      "canonicalSha256": "6edc2d13f454d48c69159589497cbba6cb345b6d389a6f20926d46b07e9f8024"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c01/typecheck.log",
+      "rawSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "canonicalSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c02/build.log",
+      "rawSha256": "3129dac217e0aeaab34e842551e4b7e04885b12f22b030ed51e2a70e8c4298ce",
+      "canonicalSha256": "3129dac217e0aeaab34e842551e4b7e04885b12f22b030ed51e2a70e8c4298ce"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c02/lint.log",
+      "rawSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "canonicalSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c02/tests.log",
+      "rawSha256": "b164902cfe8907a959581dc6bc1f5c9986c4c79e4a2c0ad35352d7531efc5590",
+      "canonicalSha256": "b164902cfe8907a959581dc6bc1f5c9986c4c79e4a2c0ad35352d7531efc5590"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c02/typecheck.log",
+      "rawSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "canonicalSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c05/test.log",
+      "rawSha256": "ab7aa8a8338c061be4379be87fa959606241b180f7ca7d9b3c082bc70c1eaa7f",
+      "canonicalSha256": "ab7aa8a8338c061be4379be87fa959606241b180f7ca7d9b3c082bc70c1eaa7f"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c06/test.log",
+      "rawSha256": "844dcd8171bce387e6337591b061292a9fcbac84e62f80dfe652812d279fe022",
+      "canonicalSha256": "844dcd8171bce387e6337591b061292a9fcbac84e62f80dfe652812d279fe022"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c07/test.log",
+      "rawSha256": "709f94b51de10a0f41c1ca1158efaad0dc40835068d7842741c67e95723d2775",
+      "canonicalSha256": "709f94b51de10a0f41c1ca1158efaad0dc40835068d7842741c67e95723d2775"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c10/test.log",
+      "rawSha256": "089cdc6afbf8a1324630a1222a8b9b9ecdb2f63f485d6776b3c6999d183b78d8",
+      "canonicalSha256": "089cdc6afbf8a1324630a1222a8b9b9ecdb2f63f485d6776b3c6999d183b78d8"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c11/test.log",
+      "rawSha256": "0f6b7de5bb20a8c76f117fde6874679a0ab737cec2eb65e7787b3d2f7bdde723",
+      "canonicalSha256": "0f6b7de5bb20a8c76f117fde6874679a0ab737cec2eb65e7787b3d2f7bdde723"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c12/test.log",
+      "rawSha256": "0b766837788cc79241f1fdbec4289992247619aa8a78534edf4847f2b0dc1d77",
+      "canonicalSha256": "0b766837788cc79241f1fdbec4289992247619aa8a78534edf4847f2b0dc1d77"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/p/c01/transcript-excerpt.log",
+      "rawSha256": "9c328a166a5daaf1ef1254e563f7dfe3229e3c33a47ae3eb5ba435780d711f4f",
+      "canonicalSha256": "9c328a166a5daaf1ef1254e563f7dfe3229e3c33a47ae3eb5ba435780d711f4f"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/p/task-7-estate-http-red.log",
+      "rawSha256": "6f188496d5d3b371f1ca24aef424bdb6c25fb704c5f7dc51a47a4f8770c5a4db",
+      "canonicalSha256": "71c631ea57c22a5c85d69fcb5c8612257c882351f6cd7155d1abc618b426f8f2"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/p/task-7-http-green.log",
+      "rawSha256": "ce69d6a30b944e87002f74f22386747dd968bbaf3ff9f0ec4b9fd635e6b22114",
+      "canonicalSha256": "8f1e7d87ee5146782592593d5a5e49731160e2b2f39d8940bf42add989b2d31a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/p/task-7-http-red.log",
+      "rawSha256": "35548e5bd5c36d32620818bec2097e95ba8ae33973843f1d4bb9e3d0c142424d",
+      "canonicalSha256": "59d42151d4e71eae86478421207ab02cf6111d8da5a5463a44a2a86d8225e7fc"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/r/c01/test.log",
+      "rawSha256": "5c696d1129cafb071dddd2df1af7344f2a456a17f5f56a3f2341ac599baa934a",
+      "canonicalSha256": "5c696d1129cafb071dddd2df1af7344f2a456a17f5f56a3f2341ac599baa934a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/r/c02/test.log",
+      "rawSha256": "fd03b231cdc2b13bbe8baa88dd9189ff183d4165ee9e7e02a4fd83bf10080bef",
+      "canonicalSha256": "fd03b231cdc2b13bbe8baa88dd9189ff183d4165ee9e7e02a4fd83bf10080bef"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/r/c03/test.log",
+      "rawSha256": "ee4837356b6ca68e7930166e92e53764f569d9e549a5e7544b6239152baea97b",
+      "canonicalSha256": "ee4837356b6ca68e7930166e92e53764f569d9e549a5e7544b6239152baea97b"
+    }
+  ]
+}

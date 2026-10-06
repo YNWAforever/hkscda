@@ -1,0 +1,12 @@
+BEGIN
+ pg_get_userbyid 
+-----------------
+ postgres
+(1 row)
+
+ count 
+-------
+     0
+(1 row)
+
+COMMIT

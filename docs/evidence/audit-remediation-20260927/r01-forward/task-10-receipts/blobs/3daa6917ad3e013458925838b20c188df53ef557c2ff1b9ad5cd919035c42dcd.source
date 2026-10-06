@@ -1,0 +1,29 @@
+{
+  "authority": "Direct human approval: user said 批准問題 to exact Task10 source question, relayed by controller; patch3044f72a/SQLb2c90 source-only, isolated verification; no production/main/deployment",
+  "patchSHA": "3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1",
+  "commands": [
+    {
+      "args": [
+        "git",
+        "apply",
+        "--check",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-10-fix1-source-approval-proposal-v3\\unapplied.patch"
+      ],
+      "exit": 0,
+      "stdoutSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "apply",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-10-fix1-source-approval-proposal-v3\\unapplied.patch"
+      ],
+      "exit": 0,
+      "stdoutSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-10-generate.ts": "36fdb143240d7d16a35dbe2c26b3587b09dbf18d51949657fdc300842e57e353"
+}

@@ -1,0 +1,88 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\accessFence.database.test.ts:
+37 |     error = e;
+38 |   } finally {
+39 |     await tx`rollback to savepoint direct_probe`;
+40 |     await tx`release savepoint direct_probe`;
+41 |   }
+42 |   expect(error).toMatchObject({ errno: code, ...(message ? { message } : {}) });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at refuses (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:42:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:53:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual direct admin access fence > authenticated admin JWT cannot directly insert admin identities [28.26ms]
+37 |     error = e;
+38 |   } finally {
+39 |     await tx`rollback to savepoint direct_probe`;
+40 |     await tx`release savepoint direct_probe`;
+41 |   }
+42 |   expect(error).toMatchObject({ errno: code, ...(message ? { message } : {}) });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at refuses (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:42:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:53:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual direct admin access fence > authenticated admin JWT cannot directly update admin identities [13.30ms]
+37 |     error = e;
+38 |   } finally {
+39 |     await tx`rollback to savepoint direct_probe`;
+40 |     await tx`release savepoint direct_probe`;
+41 |   }
+42 |   expect(error).toMatchObject({ errno: code, ...(message ? { message } : {}) });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at refuses (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:42:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:53:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual direct admin access fence > authenticated admin JWT cannot directly delete admin identities [15.85ms]
+37 |     error = e;
+38 |   } finally {
+39 |     await tx`rollback to savepoint direct_probe`;
+40 |     await tx`release savepoint direct_probe`;
+41 |   }
+42 |   expect(error).toMatchObject({ errno: code, ...(message ? { message } : {}) });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at refuses (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:42:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:71:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual direct admin access fence > service direct bulk update cannot remove final active admins [8.16ms]
+37 |     error = e;
+38 |   } finally {
+39 |     await tx`rollback to savepoint direct_probe`;
+40 |     await tx`release savepoint direct_probe`;
+41 |   }
+42 |   expect(error).toMatchObject({ errno: code, ...(message ? { message } : {}) });
+                     ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at refuses (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:42:17)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:71:15)
+      at async <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\admin\accessFence.database.test.ts:24:13)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task10 actual direct admin access fence > service direct bulk delete cannot remove final active admins [11.97ms]
+
+ 0 pass
+ 5 fail
+ 5 expect() calls
+Ran 5 tests across 1 file. [241.00ms]

@@ -1,0 +1,332 @@
+import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+const evidence = "docs/evidence/audit-remediation-20260927/r01-forward/";
+const probe = `import ast,json,pathlib,sys,importlib.util
+p=pathlib.Path(sys.argv[1])
+t=ast.parse(p.read_text())
+if any(isinstance(n,ast.FunctionDef) and n.name=="eligible" for n in t.body):
+ ns={"__file__":str(p.resolve()),"__name__":"inert_probe"};exec(compile(t,str(p),"exec"),ns);pred=lambda r:ns["eligible"](r,"hosted")
+else:
+ n=next(n for n in ast.walk(t) if isinstance(n,ast.If) and "testExit" in ast.unparse(n.test)); c=compile(ast.Expression(n.test),str(p),"eval");pred=lambda r:eval(c,{"r":r})
+r=json.loads(sys.stdin.read());print(json.dumps(pred(r)))`;
+// Synthetic inert validation data only; never an executed receipt or SQL-generation profile.
+function inertFixture(type: ReceiptType, mode: string): Record<string, unknown> {
+  const contract = contracts[type];
+  const r: Record<string, unknown> = {
+    receiptType: type,
+    mode,
+    failedFinalFlags: [],
+    syntheticInertValidationFixture: true,
+  };
+  for (const flag of contract.flags) r[flag] = true;
+  if ("testExit" in contract) r.testExit = contract.testExit;
+  if (type === "composition") r.requiredFinalFlags = contracts.composition.flags;
+  if (type === "auth-component") r.actualCandidateResult = "55000";
+  return r;
+}
+const baseline = inertFixture("composition", "hosted");
+async function accepted(r: Record<string, unknown>) {
+  const p = Bun.spawn(
+    [
+      "python",
+      "-c",
+      probe,
+      process.env.R01_TASK10_INERT_GATES_SOURCE ?? evidence + "task-10-gates.py",
+    ],
+    {
+      stdin: new Blob([JSON.stringify(r)]),
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
+  const [out, err, exit] = await Promise.all([
+    new Response(p.stdout).text(),
+    new Response(p.stderr).text(),
+    p.exited,
+  ]);
+  if (exit) throw Error(err);
+  return JSON.parse(out) as boolean;
+}
+describe("Task10 actual evidence gate selector inert regressions", () => {
+  test("accept a complete synthetic inert baseline", async () =>
+    expect(await accepted(baseline)).toBe(true));
+  for (const key of [
+    "postTestsRowsPreserved",
+    "helpersPreserved",
+    "completeAuthDefaultNativeLedgerSequencePreserved",
+  ])
+    for (const mutation of ["false", "missing"])
+      test(`reject ${mutation} ${key}`, async () => {
+        const r = { ...baseline };
+        if (mutation === "false") r[key] = false;
+        else delete r[key];
+        expect(await accepted(r)).toBe(false);
+      });
+  test("reject nonempty failed flags", async () => {
+    expect(await accepted({ ...baseline, failedFinalFlags: ["postTestsRowsPreserved"] })).toBe(
+      false,
+    );
+  });
+  test("reject wrong mode", async () => {
+    expect(await accepted({ ...baseline, mode: "modern" })).toBe(false);
+  });
+});
+const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor as new (
+  ...args: string[]
+) => (...values: unknown[]) => Promise<void>;
+describe("Task10 actual post-cleanup preservation propagation", () => {
+  for (const [leaf, type, mode] of [
+    ["capture", "capture", "hosted"],
+    ["global-capture", "global", "hosted"],
+    ["red", "red", "missing"],
+    ["truncate-red", "truncate", "hosted-restrict"],
+    ["auth-component-red", "auth-component", "component"],
+  ] as const)
+    for (const failure of ["falseFlag", "closeError", "readError"] as const)
+      test(`${leaf} retains receipt and propagates ${failure} after cleanup`, async () => {
+        const source = readFileSync(
+          (process.env.R01_TASK10_INERT_LEGACY_DIR ?? evidence) + "task-10-" + leaf + ".ts",
+          "utf8",
+        );
+        const start = source.lastIndexOf("finally {") + "finally {".length;
+        const body = source.slice(start, source.lastIndexOf("}"));
+        const contract = contracts[type];
+        const receipt: Record<string, unknown> = { receiptType: type, mode, failedFinalFlags: [] };
+        for (const f of contract.flags) receipt[f] = true;
+        if ("testExit" in contract) receipt.testExit = contract.testExit;
+        if (type === "auth-component") receipt.actualCandidateResult = "55000";
+        if (type === "truncate") receipt.actualTruncateResult = "0A000";
+        let written = false,
+          unhandled: unknown;
+        const processStub = { exitCode: 0 };
+        try {
+          await new AsyncFunction(
+            "c",
+            "receipt",
+            "process",
+            "localSourceState",
+            "modernBefore",
+            "modern",
+            "writeFile",
+            "resolve",
+            "out",
+            "console",
+            "before",
+            "beforeExtra",
+            "hash",
+            "snapshot",
+            "extra",
+            "db",
+            "completeReceipt",
+            "mode",
+            body,
+          )(
+            {
+              close: async () => {
+                if (failure === "closeError") throw Error("owned cleanup failed");
+              },
+              templatePreserved: failure !== "falseFlag",
+            },
+            receipt,
+            processStub,
+            async () => {
+              if (failure === "readError") throw Error("preservation observation failed");
+              return "unchanged";
+            },
+            "unchanged",
+            "modern",
+            async () => {
+              written = true;
+            },
+            (...args: string[]) => args.join("/"),
+            "out",
+            { log: () => {} },
+            "same",
+            "same",
+            () => "same",
+            async () => ({}),
+            async () => ({}),
+            {},
+            completeReceipt,
+            mode,
+          );
+        } catch (e) {
+          unhandled = e;
+        }
+        expect(unhandled).toBeUndefined();
+        expect(written).toBe(true);
+        expect(processStub.exitCode).toBe(1);
+      });
+});
+
+import contracts from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json";
+import {
+  assertReceipt,
+  receiptFailures,
+  completeReceipt,
+  type ReceiptType,
+} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt";
+describe("Task10 actual fixed consumer contracts", () => {
+  for (const [kind, contract] of Object.entries(contracts))
+    for (const mode of contract.modes) {
+      const type = kind as ReceiptType;
+      const flags = [
+        ...contract.flags,
+        ...(type === "composition" && mode === "component"
+          ? contracts.composition.componentFlags
+          : []),
+      ];
+      const good: Record<string, unknown> = { receiptType: type, mode, failedFinalFlags: [] };
+      for (const flag of flags) good[flag] = true;
+      if ("testExit" in contract) good.testExit = contract.testExit;
+      if (type === "composition") good.requiredFinalFlags = contracts.composition.flags;
+      if (type === "auth-component") good.actualCandidateResult = "55000";
+      if (type === "truncate")
+        good.actualTruncateResult = mode === "hosted-restrict" ? "0A000" : "42501";
+      if (type === "gates")
+        good.gates = ["build", "lint", "tests", "typecheck"].map((gate) => ({ gate, exit: 0 }));
+      test(`${type}/${mode} accepts only complete fixed flags`, () => {
+        expect(receiptFailures(good, type, mode)).toEqual([]);
+        expect(() => assertReceipt(good, type, mode)).not.toThrow();
+      });
+      for (const flag of flags)
+        for (const value of [false, undefined])
+          test(`${type}/${mode} rejects ${String(value)} ${flag}`, () => {
+            const r = { ...good, [flag]: value };
+            expect(() => assertReceipt(r, type, mode)).toThrow();
+            expect(completeReceipt(r, type, mode)).toBe(1);
+          });
+      for (const bad of [
+        { failedFinalFlags: ["prior"] },
+        { failedFinalFlags: undefined },
+        { error: "failed" },
+        { mode: "invalid" },
+        { receiptType: "invalid" },
+      ])
+        test(`${type}/${mode} rejects inconsistent ${JSON.stringify(bad)}`, () =>
+          expect(() => assertReceipt({ ...good, ...bad }, type, mode)).toThrow());
+      if ("testExit" in contract)
+        for (const value of [undefined, false, 2])
+          test(`${type}/${mode} rejects testExit ${String(value)}`, () =>
+            expect(() => assertReceipt({ ...good, testExit: value }, type, mode)).toThrow());
+    }
+});
+
+import { mkdir, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+async function inertGeneratorInputs(out: string) {
+  const paths: Record<string, string> = {};
+  for (const [type, mode] of [
+    ["capture", "hosted"],
+    ["capture", "modern"],
+    ["global", "hosted"],
+    ["global", "modern"],
+    ["auth-component", "component"],
+  ] as const) {
+    const path = out + "/synthetic-" + type + "-" + mode + ".json";
+    // Empty metadata is used only by the --validate-profiles-only entry, which cannot emit SQL.
+    await writeFile(
+      path,
+      JSON.stringify({ ...inertFixture(type, mode), catalog: {}, before: {}, after: {} }),
+    );
+    paths[type + "/" + mode] = path;
+  }
+  return {
+    captures: [paths["capture/hosted"], paths["capture/modern"]],
+    globals: [paths["global/hosted"], paths["global/modern"]],
+    component: paths["auth-component/component"],
+  };
+}
+
+test("actual generator refuses missing capture and failed diagnostic inputs before generation", async () => {
+  const out = resolve(
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-inert-generator-" + Date.now(),
+  );
+  await mkdir(out, { recursive: true });
+  const input = await inertGeneratorInputs(out);
+  const validManifest = out + "/synthetic-valid-inputs.json";
+  await writeFile(validManifest, JSON.stringify(input));
+  const valid = Bun.spawn(["bun", evidence + "task-10-generate.ts", "--validate-profiles-only"], {
+    env: { ...process.env, R01_TASK10_PROFILE_INPUTS: validManifest },
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const [validOut, validErr, validExit] = await Promise.all([
+    new Response(valid.stdout).text(),
+    new Response(valid.stderr).text(),
+    valid.exited,
+  ]);
+  await writeFile(out + "/synthetic-valid.log", validOut + validErr);
+  expect(validExit).toBe(0);
+  expect(validOut).toContain("strict profile predicates PASS");
+
+  for (const [type, key, field] of [
+    ["capture", "captures", "modernPreserved"],
+    ["auth-component", "component", "allOtherHelperFacetsPreserved"],
+  ] as const) {
+    for (const value of [false, undefined]) {
+      const original = key === "captures" ? input.captures[0] : input.component;
+      const receipt = JSON.parse(readFileSync(original, "utf8"));
+      receipt[field] = value;
+      const receiptPath = out + "/" + type + "-" + String(value) + ".json";
+      await writeFile(receiptPath, JSON.stringify(receipt));
+      const altered = {
+        ...input,
+        ...(key === "captures"
+          ? { captures: [receiptPath, input.captures[1]] }
+          : { component: receiptPath }),
+      };
+      const manifest = out + "/" + type + "-" + String(value) + "-inputs.json";
+      await writeFile(manifest, JSON.stringify(altered));
+      const child = Bun.spawn(
+        ["bun", evidence + "task-10-generate.ts", "--validate-profiles-only"],
+        {
+          env: { ...process.env, R01_TASK10_PROFILE_INPUTS: manifest },
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+      );
+      const [stdout, stderr, exit] = await Promise.all([
+        new Response(child.stdout).text(),
+        new Response(child.stderr).text(),
+        child.exited,
+      ]);
+      await writeFile(manifest + ".log", stdout + stderr);
+      expect(exit).toBe(1);
+      expect(stderr).toContain("Task10 ineligible");
+    }
+  }
+}, 30000);
+
+for (const key of ["captures", "globals"] as const)
+  for (const count of [0, 1, 3])
+    test(`actual generator refuses ${key} cardinality ${count}`, async () => {
+      const out = resolve(
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-inert-cardinality-" +
+          key +
+          "-" +
+          count +
+          "-" +
+          Date.now(),
+      );
+      await mkdir(out);
+      const input = await inertGeneratorInputs(out);
+      input[key] = Array.from({ length: count }, (_, i) => input[key][Math.min(i, 1)]);
+      const manifest = out + "/inputs.json";
+      await writeFile(manifest, JSON.stringify(input));
+      const child = Bun.spawn(
+        ["bun", evidence + "task-10-generate.ts", "--validate-profiles-only"],
+        {
+          env: { ...process.env, R01_TASK10_PROFILE_INPUTS: manifest },
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+      );
+      const [stdout, stderr, exit] = await Promise.all([
+        new Response(child.stdout).text(),
+        new Response(child.stderr).text(),
+        child.exited,
+      ]);
+      await writeFile(out + "/output.log", stdout + stderr);
+      expect(exit).toBe(1);
+    }, 30000);

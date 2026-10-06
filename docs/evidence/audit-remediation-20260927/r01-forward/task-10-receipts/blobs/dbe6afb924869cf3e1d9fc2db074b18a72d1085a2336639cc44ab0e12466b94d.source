@@ -1,0 +1,227 @@
+{
+  "mode": "green-modern",
+  "startedAt": "2026-10-01T14:09:16.824Z",
+  "productionActions": "schema/catalog reads only; zero production rows/mutations/RPC invocations",
+  "environment": "new guarded empty clone at52322; managed synthetic Auth/Storage retained; no Storage calls",
+  "testedExecutableBlobs": {
+    "src/lib/publicAdoption/uploadIntent.database.test.ts": {
+      "sha256": "a71713af45440ab232ea55a73fd9cfce1cd9e5a619d7816a1fa38dd9f9e7a49d",
+      "canonicalSha256": "a71713af45440ab232ea55a73fd9cfce1cd9e5a619d7816a1fa38dd9f9e7a49d"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionForward.ts": {
+      "sha256": "f378711459356cc7707a027d925a78f4069db2e19e7ee68a567ce3062f8b614c",
+      "canonicalSha256": "f378711459356cc7707a027d925a78f4069db2e19e7ee68a567ce3062f8b614c"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093",
+      "canonicalSha256": "526c01f47016f5ced7d1b0dd06ee322b138e0aaf9f2471a21eeb30c80c10d093"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef",
+      "canonicalSha256": "81312d1498a7879f245a94b8ac6acce22078884cce608cd57da614b7e71effef"
+    }
+  },
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "counts": {
+    "roles": 5,
+    "types": 334,
+    "views": 3,
+    "columns": 2218,
+    "indexes": 409,
+    "schemas": 2,
+    "defaults": 6,
+    "policies": 82,
+    "triggers": 154,
+    "functions": 387,
+    "relations": 574,
+    "sequences": "object",
+    "extensions": 2,
+    "constraints": 824,
+    "memberships": "object",
+    "databaseOwner": "string",
+    "extensionMembers": 136
+  },
+  "clone": "r01_clone_1084838eb35b4a818a81011a728391ec",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "reviewedTriggerPaths": [
+    {
+      "name": "private.bump_adoption_case_bulk_row_version",
+      "hash": "4360bcbf3bdaa28be558e276bf60ea6c",
+      "catalog": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "bump_adoption_case_bulk_row_version",
+        "owner": "postgres",
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "trigger",
+        "schema": "private",
+        "bodyMd5": "4360bcbf3bdaa28be558e276bf60ea6c",
+        "definer": false,
+        "parallel": "u",
+        "volatility": "v"
+      }
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7",
+      "catalog": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "enforce_current_animal_preference",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+        "definer": true,
+        "parallel": "u",
+        "volatility": "v"
+      }
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82",
+      "catalog": {
+        "acl": [
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "log_animal_mutation",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "264525288c36bf724df4dc72dcafba82",
+        "definer": true,
+        "parallel": "u",
+        "volatility": "v"
+      }
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714",
+      "catalog": {
+        "acl": [
+          {
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "anon",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "authenticated",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          },
+          {
+            "grantee": "service_role",
+            "grantor": "postgres",
+            "grantable": false,
+            "privilege": "EXECUTE"
+          }
+        ],
+        "args": "",
+        "name": "set_updated_at",
+        "owner": "postgres",
+        "config": null,
+        "result": "trigger",
+        "schema": "public",
+        "bodyMd5": "4d6804d5850641a33867814c9e76a714",
+        "definer": false,
+        "parallel": "u",
+        "volatility": "v"
+      }
+    }
+  ],
+  "reviewedFkChildren": [
+    {
+      "child": "public.adoption_application_animal_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_detail",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_photo",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_application_visit_preference",
+      "confdeltype": "c"
+    },
+    {
+      "child": "public.adoption_case",
+      "confdeltype": "n"
+    },
+    {
+      "child": "public.adoption_intake_item",
+      "confdeltype": "c"
+    }
+  ],
+  "manifestBefore": {
+    "requirements": 146,
+    "issues": 1
+  },
+  "originalSources": {
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d88e815f545e74aef0c0a126180f445265b72282c88737e1640319b0b2e90577",
+    "modernPreserved": true
+  },
+  "cleanup": "exact owned clone dropped normally; no FORCE/session termination",
+  "completedAt": "2026-10-01T14:13:12.281Z",
+  "testedExecutableBlobsPreserved": true
+}

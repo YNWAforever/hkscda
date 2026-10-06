@@ -1,0 +1,144 @@
+{
+  "commands": [
+    {
+      "label": "identity",
+      "args": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "r01-task10-fix1-role-20261002-126d7280-v2"
+      ],
+      "exit": 0,
+      "stdoutSHA": "235920eb235c97a86e892fec9382be5e63d7165ee64af0ff5b50ec3ed8192879",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "pre-drop",
+      "args": [
+        "docker",
+        "exec",
+        "-i",
+        "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+        "psql",
+        "-X",
+        "-qAt",
+        "-h",
+        "/tmp",
+        "-U",
+        "supabase_admin",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-d",
+        "r01_task10_fix1"
+      ],
+      "exit": 0,
+      "stdoutSHA": "ff5f4594be8fec875eaed7d70932e414f2c05f5e084ebb73c33a2c8e74454073",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "normal-drop",
+      "args": [
+        "docker",
+        "exec",
+        "-i",
+        "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+        "psql",
+        "-X",
+        "-qAt",
+        "-h",
+        "/tmp",
+        "-U",
+        "supabase_admin",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdoutSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "absent",
+      "args": [
+        "docker",
+        "exec",
+        "-i",
+        "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+        "psql",
+        "-X",
+        "-qAt",
+        "-h",
+        "/tmp",
+        "-U",
+        "supabase_admin",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-d",
+        "postgres"
+      ],
+      "exit": 0,
+      "stdoutSHA": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "identity-before-stop",
+      "args": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "r01-task10-fix1-role-20261002-126d7280-v2"
+      ],
+      "exit": 0,
+      "stdoutSHA": "83e1a5f819eb6085cb0649c16f403ad0fa31518534f7e533a3f1b871645553ff",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "stop-owned",
+      "args": [
+        "docker",
+        "stop",
+        "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686"
+      ],
+      "exit": 0,
+      "stdoutSHA": "2c4f48c733742036bde1fbce751b222ffbba81d3c3b97a05552e242f561fac31",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "remove-owned",
+      "args": [
+        "docker",
+        "rm",
+        "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686"
+      ],
+      "exit": 0,
+      "stdoutSHA": "2c4f48c733742036bde1fbce751b222ffbba81d3c3b97a05552e242f561fac31",
+      "stderrSHA": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "production": false,
+  "force": false,
+  "exactOwnedIdentityVerified": true,
+  "containerID": "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+  "modernBefore": "6519af15b3b03598085dfdbd7a7fcbf33c2e09a0d73c6aa01162a52643ebbb55",
+  "templateBefore": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "databaseBeforeDrop": {
+    "name": "r01_task10_fix1",
+    "owner": "postgres",
+    "icu": "en-US",
+    "version": "153.121",
+    "encoding": "UTF8"
+  },
+  "all189RowsZero": true,
+  "ownConnectionsClosed": true,
+  "normalDatabaseDrop": true,
+  "ownedContainerRemoved": true,
+  "noVolumesToRemove": true,
+  "modernAfter": "6519af15b3b03598085dfdbd7a7fcbf33c2e09a0d73c6aa01162a52643ebbb55",
+  "templateAfter": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "modernPreserved": true,
+  "templatePreserved": true,
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-10-fix1-cleanup-1790953238717073600"
+}

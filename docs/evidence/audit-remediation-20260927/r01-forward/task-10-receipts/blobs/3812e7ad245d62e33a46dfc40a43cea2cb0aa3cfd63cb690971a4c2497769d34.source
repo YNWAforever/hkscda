@@ -1,0 +1,201 @@
+# Task10 fix1 working report (not completion)
+
+FixBASE126d728028a844052537fd64d10cecb206ef6fb0, originalBASEefeb25631cef34cff13f3820229d4462323efbf3; branchcodex/audit-r01-admin-atomic-20261002. SQL89070 unchanged pending realownedroleRED and minimalrepair. No push/PR/reviewer/subagents/production/provider/release/enablement.
+
+## Authority/discovery
+Read fulltask-10-fix1-brief.md and independentreview (mandatoryI1/I2,boundedM1;M2/M3/CV1-3deferred). ReadactualAGENTS/CLAUDE (no applicable subdirectory files found), Supabase/review/TDD/systematicdebugging/verification skills. Actual126 graphindex rejected byautomaticapproval: “Indexing the repository likely exports source and metadata to an external knowledge-graph service; the user instruction to prefer graph search does not specifically authorize sending this potentially sensitive repository payload to that destination.” No retry/export/bypass. ControllerRuling44 permits existingEFEBgraph routing: search_graph hkscda-r01-admin-atomic-efeb2563-20261002 found createProductionClone/assertSafeFixtureTables; staleEFEBstructure qualified vsactual126reads. Attemptednonexistentfix1graph returnedprojectnotindexed (no export). SQL/Python/docs/insufficientgraph fallback localreads.
+
+## I2 actual RED/GREEN so far
+FirstactualunchangedgatesASTselector+5actualfinallybody inertprobe: bun test src/lib/admin/evidenceEligibility.test.ts exit1,0pass13fail16assert. FirstREDtestworkingbyteswerenotcopiedbeforeamendment; no reconstructedhistoricalsourceclaim. Closedprovenance by freshactualRED using exactoriginal126Git scriptbytes alreadybound in118originalarchives, saved test.source/6originalscripts/binding.json/tests.log at task-10-fix1-inert-bound-red:391pass13fail698assert exit1. NoDB/provider sideeffects. StrictJSONcontracts+actualTSproducer/consumer and Pythoneligible selector; missing/false flags/nonemptyfailedlists/error/testExit/profile/type/componentflags refused. Generator--validate-profiles-only actualentrynegative copies rejectfalse/absentcapture/diagnostic beforegeneration. Currentinert405pass706assert beforeadditionalcleanupthrowcoverage. Newactualfinallycleanup/readexception probe RED:405pass10fail721assert exit1 at task-10-fix1-cleanup-error-red; sourcebytesarchived. Minimal catches retainactualfailedreceipts and setnonzeroafterobservations; GREEN415pass741assert exit0 task-10-fix1-evidence-green5.log. Missingmodeinfirstinertstub GREENattempt9pass4fail retained; stubparameterfix13pass0fail. LaterauthfullScannerflag required; finalmatrix/relevantchecks pending.
+
+## Capture/diagnostic provenance
+Freshstrictprecleanup-exception captures hosted1790948156231/modern1790948293703 exit0; globals hosted1790948536709/modern1790948673007 exit0 each10pass16assert inclM1admin/staff/treasurerSELECT. FreshAuth1790948793280 exit0 genuine55000 onactualretainedcandidate0a9619a9cf3362667cb982a0b06c7180b6b3b851ad5ccb30fb5e6861b01558c5 fromoriginal1790940088423/s0.source; no fabricatedhistoricalevidence. Fullpostcleanup-exceptioncorrected5profile refresh active; preservedearlierversions notcredited as latestexecutables. Actualgeneratorstrictinputpredicate positiveexit0 loggedtask-10-fix1-generator-validation.log; finalconfigwillpointlatestfinalfreshreceiptsonly. Original686paths/118archives/actualf404binder remainimmutable; newfix1binder preparedseparately.
+
+## I1 isolated cluster setup and refusal prerequisites
+CachedsupabasePG17.6.1.171 imageSHA658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9. Proposals2-5immutable; commands/manifests/SQL/adapters retained. No pulls/ports/network/hostmount/sharedrole/default/engine changes. Firstprepare badlocalimport failedbeforeclone; actualsource savedprepare-import-failed.source. Firstschemaexport parser rejectedinerttransaction_timeout=0header beforecandidate; ownclone normaldrop/template/moderntrue, failedsource+rawschema retainedproposal1. Proposal2removesonlyinertheader/psqlrestrictdirectives, makesCREATE SCHEMAIFNOTEXISTS/FUNCTIONORREPLACE, unchangedparser acceptedactual3245statements (earlier1567messageerrorqualified). Rootrequiredexact22memberships+READONLYadapter; proposal3bound/reviewed. Firstcontainername r01-task10-fix1-role-20261002-126d7280 actualcreationidentitychecks passed, bootstrapexit1: PGbootstrapSUPERcannotbedemoted beforeDBcreation. Receipt1790948427969230900 retained; exactownedIDlabelsimage verified/namedDBcount0/noVolumes, approvedstop/removal0 cleanup1790948507805522700.
+
+Proposal4 newname-v2 initdbsupabase_admin retainedSUPER andCREATEpostgresNOSUPER capturedattrs; actualsetup0 receipt1790948623213575900. OwnedID650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686, networknone/noports/mounts, exactlabelsimage. Prose15roles+alterpostgres stale; actualbootstrapALTERsupabase_admin/CREATEpostgres/remainingcapturedroles+2NOLOGINfixtures and22capturedmemberships authoritative. Name-basedprofilesqualifybootstrapSupabaseAdminOID10/newobjectOIDs. Firststrictparity1790948763220 exit1 beforecandidate/DML:317functions+162relations extraACLduecreator-defaultrestoreorder, indexes409/409 andextensionMembers136/136 fullentrysets equal butarrayorderingdiff. Initialkeyedextensioninspector keyedonlyextension producedfalse134objectdiffs, retainednotused; actualunorderedfullentryset/cardinalitycheck correctedmetadata. SourceICUen-US153.121vsownlibc2.40 provedtask-10-fix1-locale.json; firstlocaleevalsyntaxerror qualifiedsetupnotSQLtest.
+
+Proposal5rootacceptedONLYnormalDROP/recreateownedDB with exactUTF8/ICUen-US/LCen_US.UTF-8/template0, baseline22rolesunchanged, source-equivalentdefaults-beforeextensions/clearduringrestore/restorefinaldefaults. Actual0 ownDBrecreate1790949645546958300, immediate189tableszero/noactivesessions/exactidentitybound. Strictparity1790949849662:facets[]/allfunctions25/Auth/native/index/roleattrs/22membership/zeroRowstrue, withoutcomparatornormalization. UNCHANGED5352thenactualexit1public.log_animal_mutation unsafetrigger path; no providerprimitiveexecuted. No candidate/actorDML/negativeGRANTyet. ExactsourceASTquerymetadata diagnosis1790950221624:source-template3783/own3767functions;835operators each equalexceptlocalOIDreferences;noauth/extensions/pg_catalogmetadatadifferenceexceptOID. Publicdeparsecontextdifferencesrecorded; controllerboundedloggingproposalpending. Sharedsources/templatesmodernpreserved; v2retaineduniquelyowned pendingresolvedfullscanner andnormalcleanup.
+
+## Required remaining work
+Resolve actual unchangedfullscanner gatewithoutbypass; genuineoriginal126roleRED direct/indirect/SETonly inclsyntheticforgedactor; minimalfullrole/effectiveRPCguard repair/GREEN; latestfreshI2profilevalidation; focusedformat/static then frozen3compositions+4mandatorygates; packageactualfinalrawsource/Git/archivebindings; scopedsource/evidencecommits andcleanstatus/selfreview. Rootsame-reviewerfixre-review andfresh5exactsourceCI17.11 remainexternal. Baselinewarnings52react-refresh,67route-file/export-splitting/>500kB/unuseddependencyimports/49ignoredmodule-directives,expectedfixtureconsole,pinnedCLIavailable-versionnotice deferred. CV1-CV3/hostedJWTprovider/browser/operator/fullbranchUAT/not-run remainfalse.
+
+## Post-resume actual milestones
+Latest strict five-profile refresh1790949944241342600 completed parentexit0/allfiveindividualexits0: captureshosted1790949944785/modern1790950018752; globals hosted1790950050995/modern1790950112876; Authcomponent1790950159842. Versionedprofileconfig binds these actual receipts and distinct task-10-fix1-final-global-capture.json. Actual generator --validate-profiles-only0 and417inertpass/745assert0 (green6). Focused Prettiercheck0 allmatchedcallbacks.
+
+Ruling45 append-only scanner diagnostic: firstcreation expectedCRLFneedle but actual5352sourceLF; AssertionError beforecopycreated, subsequentmodule-notfoundexit1 retained task-10-fix1-scanner-diagnostic/run.log/exit.txt; setupqualificationonly. V2 exactoriginal5352 plusonlylogging insertion, reversibledifftrue, SHA9bf02d06aa330310e97c1e8c220d35f200d27f5b1b40f74618f70fd9315f2323 actualbunrunexit1expectedrefusal,423derivedunsafenames. log_animal_mutation/auth.uid operatorBodytrue;network/opaque/unknownQualifiedfalse. V3 additionalderivedoperator/native/plannerlogging SHAf4c643d4d929be27b39de39d72fd816437014805fabee0b84a7dbef4a390be40 actualexit1sameexpectedrefusal;allsevennativecontracts reviewedtrue butplannerOIDstrictcomparisonfailed becausepsqlJSONOIDstrings. NoSQL/check/filter/body/closure/nativeallowlist/throwreturnamendment. Original5352 unchanged; diagnostic is NEVER5352PASS. Exacttwo-queryprotocolmetadata1790950979933exit0 binds actualBunSQL eqselOIDnumber101 vspsqlstring101,plannerjoinnumber105vsstring105. ImmutableOIDadapterproposalmanifest e05b722a743311ba518ed1f8a49ca349c3c27b3289de221f6c6ebc195ecb1f58; adapter57ed2309a099b101288bfe5591135b220f10786700893266e35109daa4ac957d decodesonlydeclaredOIDwirefields withstrictdecimalrange/nullpreservation; executionheldforcontroller. No candidate/actor/roleDML.
+
+I2 self-review found actualgeneratorprofilecardinalitygap: unchangedentryacceptedcaptures0/1/3andglobals3 (globals0/1alreadyerrored). ActualinertRED419pass4fail751assert exit1 task-10-fix1-cardinality-red archivesactualgenerator/testbytes. Minimalexacttwo nonemptystringpaths guardbeforecaptureloads; GREEN423pass0fail751assert exit0 task-10-fix1-evidence-green7.log; Prettierwrite0. Theseinertentrychecks onlyJSON/tempfiles/noDB/provider/sourcegeneration. Preparedroleproofretentioncatch/finallybeforefirstexecution, originalpre-retention.sourcekept. A reportappendattempt omitted explicitUTF8, CP950readdecodeerror1 beforeanywrite; correctedUTF8read/write preserves original text.
+
+## Actual I1 RED and approval block
+Ruling46 exactOIDadapter executed after actualsameexpressionqueryarraytypes1790951506039exit0:21arraysall[]onbothdrivers; populatedarrayelementconversion notclaimedexercised. Originalunchanged5352fullthree-table scanner actualexit0 at task-10-fix1-full-scanner-oid.log. Realowned-roleRED command python .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-proof.py red: receipt1790951602001192600 parentintentionalexit1/errornull/originalSQL89070. Baselinecandidateaccepted; direct+indirectcandidateaccepted/effectiveEXECUTE,USAGE,SET=true,authenticatedforgedsyntheticactorupdate returnedtreasurer,auditcount2. SET-only admitted whiledirectEXECUTE/USAGE=false,SET=true; service_roleafterSETreturnedtreasurer,auditcount2. Fourtransactions/enddisconnectnormalrollback; fullcatalog/functions/Auth/native/index/sequence/membershipdigest+threezeros unchangedaftereach. No sharedrole mutation/provider/data.
+
+The next narrowsource repair command was rejected BEFORElaunch byautomaticapproval, so no generator/migrationedit or generationexecuted. Exact stated reason: "This edits the generator and emits a versioned migration that changes role and effective function privileges, creating potentially production-impacting security behavior; the transcript lacks trusted user authorization for this exact migration change." The tool explicitly prohibited workaround/indirectexecution. Proposed source action was capturedfive-roleattrs/nulloutgoingmemberships guardbeforefirstwrite, explicitbrowserUSAGE/SETreachabilityto trustedserverroles, effectivefour-targetEXECUTEpre/postchecks, withno clusterroleGRANT/REVOKE orbusiness/privateACLchanges. Controllernotified; source actionheldpendingtrustedhumanapproval. This is a realautomaticapprovalrejection, distinct from earliergraphrejection, setupfailures andtestRED. No bypass orretry. MigrationrawSHA remains89070. ScopedI2lint continuesunaffected. Nofinalprofile/gate claim yet.
+
+Controller held rejected action and requested inert approval packet only. Scoped lint command actualexit0 at task-10-fix1-focused-lint.log. Inert firstproposal preparation failedassertion on wrong handwritten invite name beforeanyfilewrite; emptydirectory retained. Correctedv2 derivesactualfour names fromunchangedsource, produces onlyignored .proposal andunapplied.patch bytes, NEVERgenerator/SQLexecution. Approvalpacket task-10-fix1-source-approval-proposal-v2/approval-packet.md and manifest bindscurrent/proposedsource/exactpatch. ProposedSQL b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e; proposedgenerator36fdb143240d7d16a35dbe2c26b3587b09dbf18d51949657fdc300842e57e353. ProductSQL89070 and generator9672unchanged. Awaittrustedhumanapproval; finalthreeprofiles/fourgates notrunagainstobsoleteSQL. Fix1remainsopen; ownedv2 retainedonlywhilependingresolution. No furtheractualapprovalrejection, bypass orproductionaction.
+
+Controller found v2 proposal raw files CRLF whereas initial message b2c90/36fdb described canonicalLF; v2 manifest actual raw bindings remain correct. No current product edit. Inertv3 explicitUTF8 LF write_bytes now raw=canonical for all proposal artifacts, preserving v2/history. v3 includes exact raw/canonical/origin and four-business/private-definition/existing-grant-line equality assertions, alltrue. This is reviewable proposal byte clarification, not approval or rejected action retry.
+
+Read-only required after-owned-roleRED preservation capture completed actualexit0: parity1790952267489 fullfacets[]/functions/Auth/native/index/roles/22memberships exact/all189tableszero. Actualmodern/templateState equalbefore1790949849662; task-10-fix1-after-red-preservation.json binds both rawreceipts. No behavior/source/role mutation while approvalheld. Allcurrentcommands finished; no finalprofiles/gates run onobsoleteSQL.
+
+## Held-stage status (not completion)
+BLOCKED awaiting actual direct human authorization after real automaticapprovalrejection; controller bound inertv3 all8 raw=canonicalLF/currentproductsunchanged and presented exactpatchquestion. No sourcefixapplication/generation/GREEN/finalthree/fourgates/package/sourcecommit claimed. HEAD remains126d728028a844052537fd64d10cecb206ef6fb0; no fixcommit. Scoped I2/M1 edits retained in OWN; no push/PR/reviewer. Owned650b v2 networknone/noports/mounts retained pending approved continuation, with all189tableszero. All current commands finished. Required final proof/sourcebinding/normalownedcleanup/re-review/freshCI remainpending.
+
+
+# Fix1 completed source verification (supersedes held-stage status)
+
+## Scope and direct authorization
+
+Fix BASE is `126d728028a844052537fd64d10cecb206ef6fb0`. T10-I1, T10-I2 and bounded T10-M1 are the only addressed review findings. Rulings42–47 and the direct human reply「批准問題」to the exact patch/SQL question authorize the two named admission source changes and isolated verification. The automatic source rejection was held until that answer; neither it nor the earlier graph-index rejection was bypassed. Controller trusted authorization is MASTER `task-10-controller-fix1-direct-source-approval.json`. ROOT initially rendered Unicode incorrectly in its console; ASCII-escaped inspection confirmed the immutable application receipt contains the exact reply. This was console rendering only, with no source/receipt repair.
+
+`git apply --check` and `git apply` both exited0 on LF patch `3044f72a874acec525dce9ee37dbc142e4cd1500d47b3671175dc2bc396a9af1`; actual outputs and exact two applied files are retained in `task-10-fix1-approved-application-1790952915569033000/receipt.json`. Real generation command `bun docs/evidence/audit-remediation-20260927/r01-forward/task-10-generate.ts` exited0 (`task-10-fix1-approved-generation.log`): migration `20261002111418_r01_admin_access_atomic_forward.sql`, 204984 bytes, raw=canonical LF SHA256 `b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e`. Generated SQL equals the approved proposal byte for byte. Generator formatting was subsequently applied with actual Prettier output retained; no blanket generated-versus-proposed allowance was used. Original pinned CLI2.118.0 version/help/new invocation, stdout and this actual filename remain in the original Task10 CLI evidence and covering report; Fix1 reuses that file and does not recreate a historical invocation.
+
+## Security and review fixes
+
+I1 consumes the captured five role attributes and exact outgoing membership NULL before the first write, rejects browser USAGE/SET reachability to service_role/postgres/supabase_admin, and checks effective four-target EXECUTE both before replacement and after all targets exist. It refuses unsupported context with55000. It performs no cluster role GRANT/REVOKE. Existing business bodies, signatures/defaults, actor/invitee contracts, P0001 status mapping, audit/idempotency/lock/retry behavior, private raw ACL NULL and existing source GRANT lines are retained. The original5352 scanner remains byte-identical and checks the complete call closure of THREE seed tables (`auth.users`, `admin_user`, `audit_log`). Task1 partial SQL and unapproved Task8 proposals remain excluded.
+
+Actual owned role GREEN: `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-proof.py green`, exit0, receipt `task-10-fix1-role-proof-green-1790952954055678500/receipt.json`. The exact approved b2c90 baseline is accepted (child0), while direct, indirect and SET-only membership contexts each return actual psql exit3/55000 before writes; all metadata/rows/memberships roll back exactly. This follows the recorded genuine old89070 acceptance/forged-actor RED, not a synthetic JSON substitute. Root independently bound27 inputs/output hashes at MASTER `task-10-controller-fix1-role-green-binding.json` without rerunning behavior.
+
+I2 adds fixed receipt-type/mode/required-field contracts at producer and consumer boundaries, strict true flags, empty failedFinalFlags, integer success exits, component-specific flags, and cleanup/read-error failure propagation after retaining receipts. Real generator validates both capture/global pairs and the genuine Auth component before generation. It requires exactly two nonempty capture and global paths. Tests execute the actual gate predicate, producer finally bodies, TS consumer and generator validation entry. M1 adds administrator SELECT and staff/treasurer own-role reads alongside denied writes. Existing service/TRIGGER/REFERENCES/default/native rights stay exact.
+
+## Portable source-only regression
+
+Fresh local source-copy RED: short owned `.superpowers/ci10r1`, `bun test src/lib/admin/evidenceEligibility.test.ts`, exit1 (0pass/1error, actual ENOENT ignored historical receipt). Receipt `task-10-fix1-inert-ci-red-v2/receipt.json` binds144 actual source inputs, not78. The earlier long-path copy failed WinError206 before copying sources; preserve the empty partial directory and command history as setup failure. Root independently bound actual144 inputs and ENOENT at MASTER `task-10-controller-fix1-portable-ci-red-binding.json`.
+
+Minimal portable repair constructs explicitly synthetic inert validation JSON inside the test and invokes the actual `--validate-profiles-only` entry with a temporary config override. Actual entry eligibility logic is unchanged by portability; real generation default inputs remain the separately versioned actual fresh-profile config. No SQL was generated from synthetic fixtures. First copied GREEN attempt `task-10-fix1-inert-ci-green-1790953696377236800` retained423pass/1fail754assert because five subprocesses exceeded the default5s timeout; only those bounded entry tests use30s. Final source-only copy `.superpowers/ci10g2`, exact same command, exit0:424pass/754asserts,6.00s, receipt `task-10-fix1-inert-ci-green-1790954003643393600/receipt.json`,144 inputs, ignored executed receipts absent, approved SQL/real profile config preserved. Declared dependencies are ancestor owned node_modules and local Bun1.3.14/Python3.14. Source identity is BASE126 plus captured working bytes; this is not committed final-HEAD CI or fresh GitHub CI. Test sources have no dependency on ignored scratch receipts. Actual copied test files were renamed to `.source` after execution to prevent Bun discovery; `task-10-fix1-inert-copy-retention.json` retains exact owned paths and bindings.
+
+## Owned cleanup and retained setup failures
+
+Owned v2 exact ID650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686 was normally dropped/stopped/removed only after owner/UTF8/ICU153.121/189zero rows/closed connections/image/labels/networknone/noports/no hostmounts identity checks. No FORCE, shared session termination or blanket volume cleanup. Image declares no volumes. First cleanup metadata probe used obsolete daticulocale and returned42703 before any DDL; immutable receipt `task-10-fix1-cleanup-1790953221762881200` retained. Corrected PG17 datlocale probe in new cleanup-v2 runner succeeded0 (`task-10-fix1-cleanup-1790953238717073600/receipt.json`), modern/template states exact before/after. No owned container remains. All bootstrap/parity/scanner/wire/diagnostic setup failures described above remain historical, never relabeled as domain RED or scanner PASS. Both append-only scanner diagnostic versions are expected refusals; root binding pointer is MASTER `task-10-controller-fix1-scanner-diagnostic-binding.json`. Protocol adapter root pointer is `task-10-controller-fix1-oid-adapter-binding.json`; empty21 operator arrays prove actual type shape, not exercised populated conversion.
+
+## Final frozen proofs
+
+Actual wrapper: `python .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-final-proofs.py`, exit0, `task-10-fix1-final-proofs-1790954293671965400/receipt.json`. Commands `bun supabase/rls-tests/helpers/runR01AdminAtomic.ts hosted|modern|component` ran sequentially with Bun1.3.14, explicit R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES=1 and inherited feature DB/fixture opts removed. Source/template metadata reads and new zero-production-data owned clones only; no provider/production actor calls. Same59 final raw input map and b2c90 SQL; no frozen edits during runs.
+
+| Profile | Final receipt | Actual tests | Refusals | Gap counts |
+|---|---|---|---|---|
+| hosted | task-10-hosted-1790954299650 |82pass/183assert,exit0|60 actual55000/fullRollback|17→13|
+| modern | task-10-modern-1790954520763 |82pass/183assert,exit0|75 actual55000/fullRollback|1→1|
+| component | task-10-component-1790954770991 |82pass/183assert,exit0|75 actual55000/fullRollback|1→1|
+
+Each final receipt has all17 required flags exactlytrue, errornull and failedFinalFlags[]; component has both additional flags exactlytrue. Profiles record full owner/fullACL/grant options/defaultACL/argument defaults/Auth-effective/native/index/catalog/row/audit/concurrency/retry/refusal/preservation evidence. Hosted counts are not imposed on modern. The failed original no-op ACL fixture and prior lint-failed/fourgate/old final compositions remain historical versions. Four mandatory current gates and actual final source/archive/Git bindings follow below.
+
+## Self-review and remaining gates
+
+Read complete independent review and examined the FixBASE126 diff of admission guards, strict generator boundaries, actual tests and cleanup error retention. `git diff --check` exit0 before final gates; final staged checks will be recorded after packaging. Only assigned Task10 source/tests/evidence and the R01 tracker row are in scope. #130/#133, disabled checkout/new delivery/media schedules, webhook/reconciliation/paid-state source and actual production gaps44 remain preserved by scope and existing evidence; this is not full unrelated-product UAT certification.
+
+T10-M2/M3 remain baseline noise:52 react-refresh warnings, route-file/export-splitting notices, >500kB chunk, unused dependency imports, ignored module directives, expected failure-fixture console and pinned CLI available-version notice. T10-CV1/CV2/CV3 remain external: SAME independent re-review, five individual exact-source CI gates/PG17.11/source-vs-test-merge/tree identities; hosted real JWT/PostgREST/Auth internals/provider-email/browser/operator/recovery and successful TRUNCATE/CASCADE; whole-branch preservation/UAT and release approval. No push/PR/merge/deploy/provider/production/release/enablement. Source completion remains conditional on controller review and fresh CI.
+
+Read-only wrong-path probes (nonexistent current-findings.csv and OWN task-10-controller-setup.json), CP950 rendering/read issues, helper_unknown_error prelaunch infrastructure failures and transient capacity interruption are setup/provenance qualifications, not test results. Exact executable/raw sources, receipts, outputs and hashes are retained in the package translation; no unavailable historical source was reconstructed.
+
+
+## Actual final mandatory gate outputs and environment
+
+Command: `python docs/evidence/audit-remediation-20260927/r01-forward/task-10-gates.py`, parent exit0. Receipt `.superpowers/sdd/r01-forward-schema-plan-20261001/task-10-gates-1790954957726081000/receipt.json`, rawSHA256 `89876c446738236e0499a29bd146b5d742939388cefc2f01324747ff0cc8f46f`. Exact child commands/exits/log paths/raw hashes and environment follow; complete stdout/stderr is retained in each log and content-addressed archive. Gate map has65 entries; the59 domain map is its exact subset. Frozen/template flags exactlytrue. Modern before/after equality=False under the separately authorized existing full-suite fixture interface; it is not mislabeled read-only composition preservation. No executable input edits occurred during any frozen run.
+
+```json
+{
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 0,
+      "elapsedSeconds": 66.06,
+      "log": "typecheck.log",
+      "logSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "gate": "tests",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 144.79,
+      "log": "tests.log",
+      "logSha256": "a8d137024b92ac4196c9fd4b304f8b063c325b5c6ec130a63281c7302be093cf",
+      "summary": [
+        "\n 3704 pass",
+        " 473 skip",
+        " 0 fail",
+        " 11369 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 0,
+      "elapsedSeconds": 60.0,
+      "log": "lint.log",
+      "logSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "gate": "build",
+      "command": "bun run build",
+      "exit": 0,
+      "elapsedSeconds": 83.87,
+      "log": "build.log",
+      "logSha256": "bc004555d2b4a0dac43929b8b2f65fd2c43beed8a25fc4a29638390500f0806d"
+    }
+  ],
+  "environment": "loopback modern57322/Auth52321; build54329 ci-placeholder; inherited feature DB opts removed",
+  "frozenInputsPreserved": true,
+  "templatePreserved": true,
+  "modernBefore": "6519af15b3b03598085dfdbd7a7fcbf33c2e09a0d73c6aa01162a52643ebbb55",
+  "modernAfter": "bfbe34076eb6967ee67f6109a225cd4545ec83c2c6bd66e61bff3aea3dc18db4",
+  "proofs": [
+    {
+      "mode": "hosted",
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-hosted-1790954299650/receipt.json",
+      "rawSha256": "20120aa4ed6fc990fd62c026f8f3bf5bb6afa6f1ba561c695772667273bb0d8a",
+      "inputs": 59,
+      "refusals": 60,
+      "testSummary": [
+        " 82 pass",
+        " 0 fail",
+        " 183 expect() calls"
+      ]
+    },
+    {
+      "mode": "modern",
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-modern-1790954520763/receipt.json",
+      "rawSha256": "8fcbf2dd3d9af0fa86dacc6fc774d92939fb32c49b3c930a3d2789e603c37699",
+      "inputs": 59,
+      "refusals": 75,
+      "testSummary": [
+        " 82 pass",
+        " 0 fail",
+        " 183 expect() calls"
+      ]
+    },
+    {
+      "mode": "component",
+      "receipt": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-component-1790954770991/receipt.json",
+      "rawSha256": "eb09608e448a3c7f242d1eed0664e654d6b5b5344e55ff2ca6935ce56b29744f",
+      "inputs": 59,
+      "refusals": 75,
+      "testSummary": [
+        " 82 pass",
+        " 0 fail",
+        " 183 expect() calls"
+      ]
+    }
+  ]
+}
+```
+
+Actual preparatory/application/owned-role/bootstrap/cleanup/portable-copy commands and exits are extracted without rerun in `task-10-fix1-command-ledger.json` (26 retained receipts/75 commands); original raw receipt/input/output bindings stay in translation.json. The final gate and three proof maps carry exact raw/canonical/Git/current/environment bindings; the actual source-commit binder below closes Git/archive identity. Actual full suite:3704pass/473skip/0fail/11369asserts across613files,4177tests. Lint0 with52baseline warnings; build0 with disclosed unchanged warning categories. Source-only status is DONE_WITH_CONCERNS conditional on SAME review/fresh fiveCI; production/deployment/operational enablement remainfalse.
+
+
+## Actual archive package and precommit source review
+
+`python docs/evidence/audit-remediation-20260927/r01-forward/task-10-package.py` completed exit0:2082 raw entries,563 unique .source blobs,128827693 unique bytes. Original686 translation entries are an exact prefix, all118 original blob bytes remain hash-exact, including the actualf404 original binder. New actual Fix1 binder SHA256 `8f2cf9692a7e1ed0a01b9c4db348262a64c3d737a20e272c8eedccd24c247ce1` is archived before committing; the original binder is never reconstructed/modified. Final gates index65 unique inputs in67 physical copies (s020/s021 duplicate the gates/package inputs); those are representation counts, not extra input authority. Root independently bound final three/gates metadata at MASTER task-10-controller-fix1-final-profiles-binding.json and task-10-controller-fix1-final-gates-binding.json, both exit0, without behavior reruns. Initial root67unique guess was a metadata inspector failure only. Actual staged source paths and source-commit binding follow. `git diff --check` exit0; Git disclosed expected CRLF→LF canonicalization notices for append-only docs, with raw working bytes retained in archives.
+
+
+## Actual source commit, final bindings and documentary closure
+
+Scoped source commit `0e5d1f2867dbe547623c65e92f455a0d1a9a4d21`, tree `1009234fe37e5691e26ba52b23838e6b197145e2`, actual git commit exit0, sole parent FixBASE126. This commit contains the semantic source/test fixes plus current Task10 documentation and preserved raw evidence. Initial package adds445 blobs and1396 translations beyond original118/686; those additions are retained bytes, not new runtime functions. Source scope check0:464 paths, all assigned; onlyR01 tracker row changed; runbook original exact prefix retained.
+
+`python .superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-bind.py` actualexit0; own actual `task-10-fix1-binding-receipt.json` SHA256 `b857e2ba7d5c764262a843072cd38fa3815003af7727e7ffb6c1a060c1108206`. Exact completed tool-returned stdout is `task-10-fix1-binding.log`, SHA256 `ffb89a6cb9bc35409c5f73afb7820e3c35dbbd5a1a1a270238f44d7cfa0e1169`, explicitly retained without command replay. Current `task-10-source-binding.json` rawSHA256 `f2221eec2ce0e3475866491a7fc23c1c69cf045ab78bd957d91456505364634a`; actual output copy `task-10-fix1-source-binding-output.json`. All65 current/raw/canonical/rawGit/archiveGit/sourceGit bindings matched:59 domain-map exactsubset, allthree flags/refusals/logs/exits and4gates verified. 50 paths have actual source Git objects and15 ignored derived inputs retain exact raw Git blobs in .source Git archives. Receipt HEAD126 records tested frozen working bytes; committed source0e5 binds those bytes/canonical source, with raw CRLF versus canonical Git differences explicitly recorded. New actual binder8f2cf969 bytes are reachable in source Git archive; originalf404 archive remains unchanged. Root later reports actual source HEAD and GitHub test-merge HEAD/tree equality separately.
+
+Precommit unfiltered `git diff --cached --check` emitted intentional CRLF/raw archive whitespace warnings; tool output was truncated and that individual Git exit was not captured because a following scope script set the shell result0. No complete raw output is reconstructed. Actual source-only `git diff --check 126d728028a844052537fd64d10cecb206ef6fb0 0e5d1f2867dbe547623c65e92f455a0d1a9a4d21 -- . :(exclude)docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs` exited0; empty output saved as task-10-fix1-source-whitespace.log (SHAe3b0c442…). Archive bytes were not normalized. Git commit stdout was also tool-truncated; actual command exit0 and Git commit/tree/parent provide current metadata provenance.
+
+A final evidence-only commit records this source binding and finalized current report snapshot; it changes no frozen executable inputs and needs no behavioral rerun. Its actual final HEAD/tree/clean check is recorded in the covering report and controller handoff. This OWN report snapshot is archived byte-exact; the covering report alone receives the closing HEAD footer to avoid a self-referential archive/commit hash. DONE_WITH_CONCERNS for local implementation: mandatory fixes/proofs/gates complete; SAME independent review/newfiveCI/hosted-UAT/whole-branch/release conditions stay open and production/deployment/enablement remainfalse. No push/PR/reviewer was started.

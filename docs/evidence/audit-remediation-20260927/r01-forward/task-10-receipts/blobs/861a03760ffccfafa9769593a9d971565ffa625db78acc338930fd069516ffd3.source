@@ -1,0 +1,103 @@
+[
+    {
+        "Id": "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+        "RepoTags": [
+            "public.ecr.aws/supabase/postgres:17.6.1.171"
+        ],
+        "RepoDigests": [
+            "public.ecr.aws/supabase/postgres@sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-12T02:48:54.439491232Z",
+        "Config": {
+            "ExposedPorts": {
+                "5432/tcp": {}
+            },
+            "Env": [
+                "PATH=/nix/var/nix/profiles/default/bin:/usr/lib/postgresql/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "PGDATA=/var/lib/postgresql/data",
+                "POSTGRES_HOST=/var/run/postgresql",
+                "POSTGRES_USER=supabase_admin",
+                "POSTGRES_DB=postgres",
+                "POSTGRES_INITDB_ARGS=--allow-group-access --locale-provider=icu --encoding=UTF-8 --icu-locale=en_US.UTF-8",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "GRN_PLUGINS_DIR=/usr/lib/groonga/plugins",
+                "LOCALE_ARCHIVE=/nix/var/nix/profiles/default/lib/locale/locale-archive"
+            ],
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Cmd": [
+                "postgres",
+                "-D",
+                "/etc/postgresql"
+            ],
+            "WorkingDir": "/",
+            "StopSignal": "SIGINT",
+            "ArgsEscaped": true,
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "pg_isready -U postgres -h localhost"
+                ],
+                "Interval": 2000000000,
+                "Timeout": 2000000000,
+                "Retries": 10
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 369887192,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:31ad4a471c6852bfec14d757cc75a566c82a9769f12c3918cf6bf52cc0eeb3d0",
+                "sha256:2867c50d5210910da67d9c0829d55281783f4baa5cac94d170f2d588573badbf",
+                "sha256:9cfdd0ff30dea40825e31daa30d0c3ec8b81fb6b4e31109e78e070d606803035",
+                "sha256:6077ddf3fc0edd2d07508cab1c475722a45530d46aad91f2ea12247ba8c0333f",
+                "sha256:bc5d4e02f513e500e11fbb57b94cad260990866fbcd82a13798235551a4e82b9",
+                "sha256:6353b7369a776a4e5935a5d6762376afdd1c0d270c050f969ba94bcf1441f355",
+                "sha256:43ebb8b7bf97e12bd52a6bc356294eefdaad5200626d4e005958cee7e6663aac",
+                "sha256:5fd9af08a36947a34f03ad337309c5a9f9b1548feb61e58eef0f7d6a54de4a77",
+                "sha256:97f5ac362d5c9f01c9f0b41aa99c38d756187d05e58a309a1032e93b2d95ab95",
+                "sha256:e8766a338e37313d2bf60e37d6edfcd2e07ad03e94a8b4935e9a4c8222f325d2",
+                "sha256:b801daf366f56fd64971f23953cea3ea6454d0581a85f606e377a03c86049f0e",
+                "sha256:5f58f5ae81d24e847ebdf288425b896dbfbe63279df9d5adf3d9b215e9f41d3a",
+                "sha256:686a47c7bc2ec533409930c0af602bf6656b97547a6088ec38459412ea4063f4",
+                "sha256:4bc21f80e421690c727bb479304ff30428a4e4c4c923b4937077d3cc88eb1bb9",
+                "sha256:81b1f2f12356caa6764ea255baa6993a6d904c0db65a4f56b09cd7e6bfb3511e",
+                "sha256:b199fd881415a4f560306fc55d506aecd7142be667d962bc220a0cfa3678e477",
+                "sha256:b147a7f31daebf5f8ebe33bdd130093a3c37cb209a6da776713f2c8c4d30c8f8",
+                "sha256:3ef6c9fb23bbde0fda78bcc27860e0b682e4bcde22a99d6a009a48dbc81e9623",
+                "sha256:c81a6df7184c49848af916e14bc82fac404008b1c2119715fdfa4c3ada9f1971",
+                "sha256:68b90a5e427008c6c502f58e2a236db425431d878cb07c1f2b51458067592301",
+                "sha256:fb91c1ca0be5840c9654763cae94d386c14904607237330f33532c175017894d",
+                "sha256:02edb35b40b7ee5cdfd4487671c5ac1e8f3a9ef708c5bb0729851dfa11807832",
+                "sha256:18a7bc4afaf4daefbfce932a36c71ccbf13a7509a095ee09c9562efaa0fcfce4",
+                "sha256:4d3c237eb9e760cb61686a665aef1aa2693e18037afa7e67e5f21f6eecc3d8f9",
+                "sha256:79288484872abc3a7818c8ef3079719f0ab98c53caa66820f1363be5124a89f8",
+                "sha256:8843b115af7a0c9990c593887c65ea66353781b123622b3556d48e2a2e0df8db",
+                "sha256:6324eacfcc52f56ba4ca74330f3326224c23f426ab8e9e113e8b581622853f89",
+                "sha256:ca6a4aab86046bafb0181c5ddfdcba66cfdb350bfc9767f54872dac724cf05cd",
+                "sha256:c25758f4485850ee04ab8b89b3e49dae3637a5bf9511dbff0d1a8d8bd019bc80"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-26T18:39:02.498276734Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+            "size": 1609
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "public.ecr.aws/supabase/postgres"
+                }
+            ]
+        }
+    }
+]

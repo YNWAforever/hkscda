@@ -1,0 +1,32 @@
+{
+  "qualification": "v5 catalog-only capture executed original preformat knowledge-preflight source with a2 task-7-profile imported. Added document_assets to exact native/helper queries, no dependent or Task7 SQL applied. Current formatted diagnostic source not retrospectively claimed executed. Tool stdout is original transcript, not an invented raw wrapper log.",
+  "actualPreflightSourcePath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-preflight.ts",
+  "immutableExecutedSourceCopy": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-preflight.original.source",
+  "rawSha256": "dcd387b7807011db54265649846ef488d41c3069b79e1e574c41dd367e4d8b5f",
+  "canonicalSha256": "dcd387b7807011db54265649846ef488d41c3069b79e1e574c41dd367e4d8b5f",
+  "actualImportedProfileSource": {
+    "actualPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-green-receipts/hosted-1790906221102/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+    "packagedPath": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-receipts/g/c07/s003.source",
+    "immutableOriginalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-final-package-originals/task-7-green-receipts/hosted-1790906221102/docs__evidence__audit-remediation-20260927__r01-forward__task-7-profile.ts.source",
+    "rawSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893",
+    "canonicalSha256": "e0cf66933435390dbc48c4412cc838c3f5079cebffd59940fc879d8a81799893"
+  },
+  "results": [
+    {
+      "mode": "hosted",
+      "versionedMirror": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-preflight-receipts/hosted.json",
+      "originalRuntimePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v5/hosted.json",
+      "rawSha256": "dcf5a24c97b4a319757b884524aa4608c50015ed15c847040c4d46d6d837f898",
+      "catalogTemplateModernPreservation": true,
+      "cleanup": "normal owned DROP"
+    },
+    {
+      "mode": "modern",
+      "versionedMirror": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-knowledge-preflight-receipts/modern.json",
+      "originalRuntimePath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v5/modern.json",
+      "rawSha256": "6e015de802ea134d4513b216bc07f469171d3d17b6c887c9db42d1648a32640d",
+      "catalogTemplateModernPreservation": true,
+      "cleanup": "normal owned DROP"
+    }
+  ]
+}

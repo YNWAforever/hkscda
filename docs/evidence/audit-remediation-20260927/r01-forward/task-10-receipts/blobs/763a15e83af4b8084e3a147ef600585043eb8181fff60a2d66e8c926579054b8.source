@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\admin\accessFence.database.test.ts:
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly insert admin identities [64.38ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly update admin identities [18.40ms]
+(pass) Task10 actual direct admin access fence > authenticated admin JWT cannot directly delete admin identities [12.26ms]
+(pass) Task10 actual direct admin access fence > service direct bulk update cannot remove final active admins [13.47ms]
+(pass) Task10 actual direct admin access fence > service direct bulk delete cannot remove final active admins [20.53ms]
+
+ 5 pass
+ 0 fail
+ 5 expect() calls
+Ran 5 tests across 1 file. [252.00ms]

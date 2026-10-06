@@ -1,0 +1,12 @@
+{
+  "before": "task-10-fix1-parity-1790949849662/receipt.json",
+  "after": "task-10-fix1-parity-1790952267489/receipt.json",
+  "sharedPreservation": {
+    "modernState": true,
+    "templateState": true
+  },
+  "all189TablesZero": true,
+  "ownedFullParity": true,
+  "beforeRawSha256": "7d7fe00b70ab87d73530a45197326b58e3c6202c9be02c3fea42508dad53ae8a",
+  "afterRawSha256": "352dcbe27fbfc907f67db035bc2e23cf66a7b7eb4e96d30bbc57c83cac1e18d6"
+}

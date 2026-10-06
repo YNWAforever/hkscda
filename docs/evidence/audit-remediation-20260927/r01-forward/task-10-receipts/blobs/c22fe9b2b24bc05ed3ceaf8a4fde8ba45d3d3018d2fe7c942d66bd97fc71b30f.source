@@ -1,0 +1,11 @@
+import pathlib,json,subprocess,time,hashlib,os
+root=pathlib.Path.cwd();s=root/".superpowers/sdd/r01-forward-schema-plan-20261001";out=s/("task-10-fix1-final-proofs-"+str(time.time_ns()));out.mkdir();(out/"runner.source").write_bytes(pathlib.Path(__file__).read_bytes());r={"sourceHead":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),"SQLSHA":hashlib.sha256((root/"supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql").read_bytes()).hexdigest(),"commands":[],"environment":"Bun1.3.14 ownloopback schema-only clones; explicit R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES=1; inherited feature DB/fixture vars removed; no actor/provider production calls"};env=os.environ.copy()
+for k in list(env):
+ if k.endswith("TEST_DATABASE_URL") or k.endswith("ALLOW_LOCAL_FIXTURES"):env.pop(k)
+env["R01_ADMIN_ATOMIC_ALLOW_LOCAL_FIXTURES"]="1"
+for mode in ("hosted","modern","component"):
+ args=["bun","supabase/rls-tests/helpers/runR01AdminAtomic.ts",mode];log=out/(mode+".log");started=time.monotonic()
+ with log.open("xb") as handle:exit=subprocess.run(args,env=env,stdout=handle,stderr=subprocess.STDOUT).returncode
+ r["commands"].append({"mode":mode,"args":args,"exit":exit,"elapsedSeconds":round(time.monotonic()-started,2),"log":log.name,"logSHA":hashlib.sha256(log.read_bytes()).hexdigest()});(out/"receipt.json").write_bytes((json.dumps(r,indent=2)+"\n").encode());print(json.dumps(r["commands"][-1]),flush=True)
+ if exit:print(log.read_text(encoding="utf-8",errors="replace")[-3500:],flush=True);raise SystemExit(exit)
+print(str(out),flush=True)

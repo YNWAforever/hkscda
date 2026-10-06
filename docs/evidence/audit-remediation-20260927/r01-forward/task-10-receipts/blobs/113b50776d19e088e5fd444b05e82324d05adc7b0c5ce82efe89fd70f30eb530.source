@@ -1,0 +1,184 @@
+import { describe, expect, test } from "bun:test";
+import { readFileSync, existsSync } from "node:fs";
+const evidence = "docs/evidence/audit-remediation-20260927/r01-forward/";
+const probe = `import ast,json,pathlib,sys,importlib.util
+p=pathlib.Path(sys.argv[1])
+t=ast.parse(p.read_text())
+if any(isinstance(n,ast.FunctionDef) and n.name=="eligible" for n in t.body):
+ ns={"__file__":str(p.resolve()),"__name__":"inert_probe"};exec(compile(t,str(p),"exec"),ns);pred=lambda r:ns["eligible"](r,"hosted")
+else:
+ n=next(n for n in ast.walk(t) if isinstance(n,ast.If) and "testExit" in ast.unparse(n.test)); c=compile(ast.Expression(n.test),str(p),"eval");pred=lambda r:eval(c,{"r":r})
+r=json.loads(sys.stdin.read());print(json.dumps(pred(r)))`;
+const basePath =
+  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-hosted-1790943062972/receipt.json";
+const baseline = {
+  ...JSON.parse(readFileSync(basePath, "utf8")),
+  receiptType: "composition",
+} as Record<string, unknown>;
+async function accepted(r: Record<string, unknown>) {
+  const p = Bun.spawn(["python", "-c", probe, process.env.R01_TASK10_INERT_GATES_SOURCE ?? evidence+"task-10-gates.py"], {
+    stdin: new Blob([JSON.stringify(r)]),
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const [out, err, exit] = await Promise.all([
+    new Response(p.stdout).text(),
+    new Response(p.stderr).text(),
+    p.exited,
+  ]);
+  if (exit) throw Error(err);
+  return JSON.parse(out) as boolean;
+}
+describe("Task10 actual evidence gate selector inert regressions", () => {
+  for (const key of [
+    "postTestsRowsPreserved",
+    "helpersPreserved",
+    "completeAuthDefaultNativeLedgerSequencePreserved",
+  ])
+    for (const mutation of ["false", "missing"])
+      test(`reject ${mutation} ${key}`, async () => {
+        const r = { ...baseline };
+        if (mutation === "false") r[key] = false;
+        else delete r[key];
+        expect(await accepted(r)).toBe(false);
+      });
+  test("reject nonempty failed flags", async () => {
+    expect(await accepted({ ...baseline, failedFinalFlags: ["postTestsRowsPreserved"] })).toBe(
+      false,
+    );
+  });
+  test("reject wrong mode", async () => {
+    expect(await accepted({ ...baseline, mode: "modern" })).toBe(false);
+  });
+});
+const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor as new (
+  ...args: string[]
+) => (...values: unknown[]) => Promise<void>;
+describe("Task10 actual post-cleanup preservation propagation", () => {
+  for (const leaf of ["capture", "global-capture", "red", "truncate-red", "auth-component-red"])
+    test(`${leaf} rejects preservation false after cleanup and retains receipt`, async () => {
+      const source = readFileSync((process.env.R01_TASK10_INERT_LEGACY_DIR ?? evidence) + "task-10-" + leaf + ".ts", "utf8");
+      const start = source.lastIndexOf("finally {") + "finally {".length;
+      const body = source.slice(start, source.lastIndexOf("}"));
+      const receipt: Record<string, unknown> = {
+        mode: leaf === "red" ? "missing" : leaf === "truncate-red" ? "hosted-restrict" : "hosted",
+        schemaParity: true,
+        catalogPreserved: true,
+        completeMetadataPreserved: true,
+        fullScannerPassed: true,
+        testExit: 0,
+        expectedRed: true,
+        baselineAccepted: true,
+        completeRollback: true,
+        allOtherHelperFacetsPreserved: true,
+        otherHelpersPreserved: true,
+        authDefaultNativeIndexPreserved: true,
+        publicPrivateCatalogPreserved: true,
+        actualCandidateResult: "55000",
+      };
+      let written = false;
+      const processStub = { exitCode: 0 };
+      const finalizer = existsSync(evidence + "task-10-receipt.ts")
+        ? (
+            await import("../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt")
+          ).completeReceipt
+        : () => 0;
+      await new AsyncFunction(
+        "c",
+        "receipt",
+        "process",
+        "localSourceState",
+        "modernBefore",
+        "modern",
+        "writeFile",
+        "resolve",
+        "out",
+        "console",
+        "before",
+        "beforeExtra",
+        "hash",
+        "snapshot",
+        "extra",
+        "db",
+        "completeReceipt",
+        "mode",
+        body,
+      )(
+        { close: async () => {}, templatePreserved: false },
+        receipt,
+        processStub,
+        async () => "unchanged",
+        "unchanged",
+        "modern",
+        async () => {
+          written = true;
+        },
+        (...args: string[]) => args.join("/"),
+        "out",
+        { log: () => {} },
+        "same",
+        "same",
+        () => "same",
+        async () => ({}),
+        async () => ({}),
+        {},
+        finalizer,
+        receipt.mode,
+      );
+      expect(written).toBe(true);
+      expect(processStub.exitCode).toBe(1);
+    });
+});
+
+import contracts from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json";
+import {
+  assertReceipt,
+  receiptFailures,
+  completeReceipt,
+  type ReceiptType,
+} from "../../../docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt";
+describe("Task10 actual fixed consumer contracts", () => {
+  for (const [kind, contract] of Object.entries(contracts))
+    for (const mode of contract.modes) {
+      const type = kind as ReceiptType;
+      const flags = [
+        ...contract.flags,
+        ...(type === "composition" && mode === "component"
+          ? contracts.composition.componentFlags
+          : []),
+      ];
+      const good: Record<string, unknown> = { receiptType: type, mode, failedFinalFlags: [] };
+      for (const flag of flags) good[flag] = true;
+      if ("testExit" in contract) good.testExit = contract.testExit;
+      if (type === "composition") good.requiredFinalFlags = contracts.composition.flags;
+      if (type === "auth-component") good.actualCandidateResult = "55000";
+      if (type === "truncate")
+        good.actualTruncateResult = mode === "hosted-restrict" ? "0A000" : "42501";
+      if (type === "gates")
+        good.gates = ["build", "lint", "tests", "typecheck"].map((gate) => ({ gate, exit: 0 }));
+      test(`${type}/${mode} accepts only complete fixed flags`, () => {
+        expect(receiptFailures(good, type, mode)).toEqual([]);
+        expect(() => assertReceipt(good, type, mode)).not.toThrow();
+      });
+      for (const flag of flags)
+        for (const value of [false, undefined])
+          test(`${type}/${mode} rejects ${String(value)} ${flag}`, () => {
+            const r = { ...good, [flag]: value };
+            expect(() => assertReceipt(r, type, mode)).toThrow();
+            expect(completeReceipt(r, type, mode)).toBe(1);
+          });
+      for (const bad of [
+        { failedFinalFlags: ["prior"] },
+        { failedFinalFlags: undefined },
+        { error: "failed" },
+        { mode: "invalid" },
+        { receiptType: "invalid" },
+      ])
+        test(`${type}/${mode} rejects inconsistent ${JSON.stringify(bad)}`, () =>
+          expect(() => assertReceipt({ ...good, ...bad }, type, mode)).toThrow());
+      if ("testExit" in contract)
+        for (const value of [undefined, false, 2])
+          test(`${type}/${mode} rejects testExit ${String(value)}`, () =>
+            expect(() => assertReceipt({ ...good, testExit: value }, type, mode)).toThrow());
+    }
+});

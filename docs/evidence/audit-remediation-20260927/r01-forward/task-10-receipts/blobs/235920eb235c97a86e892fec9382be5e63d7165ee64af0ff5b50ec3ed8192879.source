@@ -1,0 +1,258 @@
+[
+    {
+        "Id": "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+        "Created": "2026-10-02T13:43:44.166062268Z",
+        "Path": "/bin/bash",
+        "Args": [
+            "-c",
+            "/usr/lib/postgresql/bin/initdb -D /tmp/task10pg --auth=trust --username=supabase_admin \u0026\u0026 exec /usr/lib/postgresql/bin/postgres -D /tmp/task10pg -c listen_addresses= -c unix_socket_directories=/tmp"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 3328,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-02T13:43:44.560177779Z",
+            "FinishedAt": "0001-01-01T00:00:00Z",
+            "Health": {
+                "Status": "unhealthy",
+                "FailingStreak": 2190,
+                "Log": [
+                    {
+                        "Start": "2026-10-02T15:00:29.734970635Z",
+                        "End": "2026-10-02T15:00:29.780199803Z",
+                        "ExitCode": 2,
+                        "Output": "localhost:5432 - no response\n"
+                    },
+                    {
+                        "Start": "2026-10-02T15:00:31.777925919Z",
+                        "End": "2026-10-02T15:00:31.819332882Z",
+                        "ExitCode": 2,
+                        "Output": "localhost:5432 - no response\n"
+                    },
+                    {
+                        "Start": "2026-10-02T15:00:33.819644709Z",
+                        "End": "2026-10-02T15:00:33.850262699Z",
+                        "ExitCode": 2,
+                        "Output": "localhost:5432 - no response\n"
+                    },
+                    {
+                        "Start": "2026-10-02T15:00:35.85137943Z",
+                        "End": "2026-10-02T15:00:35.881052246Z",
+                        "ExitCode": 2,
+                        "Output": "localhost:5432 - no response\n"
+                    },
+                    {
+                        "Start": "2026-10-02T15:00:37.88273249Z",
+                        "End": "2026-10-02T15:00:37.912642566Z",
+                        "ExitCode": 2,
+                        "Output": "localhost:5432 - no response\n"
+                    }
+                ]
+            }
+        },
+        "Image": "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+        "ResolvConfPath": "/var/lib/docker/containers/650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686/hostname",
+        "HostsPath": "/var/lib/docker/containers/650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686/hosts",
+        "LogPath": "/var/lib/docker/containers/650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686/650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686-json.log",
+        "Name": "/r01-task10-fix1-role-20261002-126d7280-v2",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "none",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "650b1476320d",
+            "Domainname": "",
+            "User": "postgres",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "5432/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/nix/var/nix/profiles/default/bin:/usr/lib/postgresql/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "PGDATA=/var/lib/postgresql/data",
+                "POSTGRES_HOST=/var/run/postgresql",
+                "POSTGRES_USER=supabase_admin",
+                "POSTGRES_DB=postgres",
+                "POSTGRES_INITDB_ARGS=--allow-group-access --locale-provider=icu --encoding=UTF-8 --icu-locale=en_US.UTF-8",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "GRN_PLUGINS_DIR=/usr/lib/groonga/plugins",
+                "LOCALE_ARCHIVE=/nix/var/nix/profiles/default/lib/locale/locale-archive"
+            ],
+            "Cmd": [
+                "-c",
+                "/usr/lib/postgresql/bin/initdb -D /tmp/task10pg --auth=trust --username=supabase_admin \u0026\u0026 exec /usr/lib/postgresql/bin/postgres -D /tmp/task10pg -c listen_addresses= -c unix_socket_directories=/tmp"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "pg_isready -U postgres -h localhost"
+                ],
+                "Interval": 2000000000,
+                "Timeout": 2000000000,
+                "Retries": 10
+            },
+            "Image": "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+            "Volumes": null,
+            "WorkingDir": "/",
+            "Entrypoint": [
+                "/bin/bash"
+            ],
+            "Labels": {
+                "r01.base": "126d728028a844052537fd64d10cecb206ef6fb0",
+                "r01.owner": "task10-fix1"
+            },
+            "StopSignal": "SIGINT"
+        },
+        "NetworkSettings": {
+            "SandboxID": "898974c94d65714720b4599c1dafa3c92b1af39df8ec716b2bb4393de5b673be",
+            "SandboxKey": "/var/run/docker/netns/898974c94d65",
+            "Ports": {},
+            "Networks": {
+                "none": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "119d1ea18b9c98dbef301e31b288ef489c7a69ee18f0d929116aa8b070613227",
+                    "EndpointID": "9f7841e3fba903dac002ba06506400a3d8588e17f1af9e50c0ed5a7be7205cae",
+                    "Gateway": "",
+                    "IPAddress": "",
+                    "MacAddress": "",
+                    "IPPrefixLen": 0,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:8fd52f740917ecfce63117428e84e04cbb9c8fed6771431c55e259ebb991e51b",
+            "size": 5775,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

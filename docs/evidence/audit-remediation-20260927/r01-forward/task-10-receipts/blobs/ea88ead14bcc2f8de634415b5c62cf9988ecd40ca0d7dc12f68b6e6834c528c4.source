@@ -1,0 +1,35 @@
+{
+  "phase": "pre-acl",
+  "source": "4bbd4a4dffbd053328e92c03281a23d1d4ebe682",
+  "startedAt": "2026-10-01T10:48:31.872155+00:00",
+  "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 0,
+      "elapsedSeconds": 38.75,
+      "log": "task-1-pre-acl-typecheck.log"
+    },
+    {
+      "gate": "tests",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 86.52,
+      "log": "task-1-pre-acl-tests.log",
+      "summary": [
+        "\n 3200 pass",
+        " 197 skip",
+        " 0 fail",
+        " 10161 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 1,
+      "elapsedSeconds": 40.77,
+      "log": "task-1-pre-acl-lint.log"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+import ts from "typescript";import {SQL} from "bun";import {readFile,writeFile,mkdir} from "node:fs/promises";import {hash} from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+const source=await readFile("supabase/rls-tests/helpers/productionSchemaClone.ts","utf8");const ast=ts.createSourceFile("scanner.ts",source,ts.ScriptTarget.Latest,true);const queries:string[]=[];
+const scanner=ast.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text==="assertSafeFixtureTables");if(!scanner)throw Error("function absent");
+const visit=(n:ts.Node)=>{if(ts.isCallExpression(n)&&ts.isPropertyAccessExpression(n.expression)&&n.expression.name.text==="unsafe"&&ts.isStringLiteral(n.arguments[0]))queries.push(n.arguments[0].text);ts.forEachChild(n,visit)};visit(scanner);
+const db=new SQL("postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929");const container="r01-task10-fix1-role-20261002-126d7280-v2";
+const own=async(q:string)=>{const p=Bun.spawn(["docker","exec","-i",container,"psql","-X","-qAt","-h","/tmp","-U","supabase_admin","-d","r01_task10_fix1","-v","ON_ERROR_STOP=1"],{stdin:new Blob(["begin read only;set local search_path=pg_catalog;select json_agg(row_to_json(t)) from ("+q+")t;commit;"]),stdout:"pipe",stderr:"pipe"});const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out) as Record<string,unknown>[]};
+const out=import.meta.dir+"/task-10-fix1-native-inspect-"+Date.now();await mkdir(out);const result:unknown[]=[];
+for(const q of queries.slice(0,2)){
+ const shared=await db.unsafe(q) as Record<string,unknown>[],actual=await own(q);const key=(r:Record<string,unknown>)=>r.schema+"."+r.name+":"+JSON.stringify(r.argumentTypes??[r.leftType,r.rightType]);const map=new Map(shared.map(r=>[key(r),r]));
+ const diffs=[];for(const r of actual){const a=map.get(key(r));if(!a){diffs.push({name:key(r),absentInTemplate:true});continue}const fields=Object.keys(r).filter(k=>k!=="oid"&&!k.endsWith("Oid")&&hash(r[k])!==hash(a[k])).map(k=>({field:k,actual:["body","source"].includes(k)?hash(r[k]):r[k],template:["body","source"].includes(k)?hash(a[k]):a[k]}));if(fields.length)diffs.push({name:key(r),fields});}
+ result.push({querySha256:hash(q),templateCount:shared.length,ownCount:actual.length,diffs});
+}
+await db.close();await writeFile(out+"/receipt.json",JSON.stringify({scannerSHA:hash(source),result},null,2)+"\n");console.log(JSON.stringify({out,summaries:result.map(x=>{const v=x as {templateCount:number;ownCount:number;diffs:unknown[]};return {template:v.templateCount,own:v.ownCount,differences:v.diffs.length}})}));

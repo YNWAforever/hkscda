@@ -1,0 +1,120 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { nativeQuery, triggerFunctionsQuery, indexQuery } from "./task-7-profile";
+import {
+  captureProductionSchema,
+  captureModernLocalSchema,
+  createProductionClone,
+  snapshot,
+  hash,
+  localSourceState,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+const tables = [
+  "admin_user",
+  "audit_log",
+  "content_item",
+  "story_update",
+  "social_copy_variant",
+  "recipient_notification_draft",
+  "recipient_notification_draft_duplicate_archive",
+  "adoption_fees",
+  "dog_friendly_estates",
+  "board_member",
+  "knowledge_posts",
+  "adoption_instruction_pages",
+  "adoption_instruction_revisions",
+  "adoption_instruction_publish_requests",
+];
+const names = [
+  "cms_promotion_command",
+  "mutate_admin_content_with_audit",
+  "mutate_dog_friendly_estate_with_audit",
+  "bump_dog_friendly_estate_version",
+];
+const modernUrl = "postgresql://postgres:postgres@127.0.0.1:57322/postgres";
+const modernBefore = await localSourceState(modernUrl);
+const out = ".superpowers/sdd/r01-forward-schema-plan-20261001/task-7-preflight-v4";
+await mkdir(out, { recursive: true });
+for (const mode of ["hosted", "modern"]) {
+  const capture =
+    mode === "hosted" ? await captureProductionSchema() : await captureModernLocalSchema();
+  const clone = await createProductionClone(capture),
+    db = clone.sql;
+  const receipt: Record<string, unknown> = {
+    mode,
+    at: new Date().toISOString(),
+    catalogHash: hash(capture.catalog),
+    schemaParity: true,
+    zeroApplicationTables: clone.tableCount,
+    clone: clone.name,
+    task1Applied: false,
+    dependentSqlApplied: false,
+  };
+  try {
+    receipt.facets = Object.fromEntries(
+      Object.entries(capture.catalog).map(([k, v]) => [
+        k,
+        Array.isArray(v)
+          ? v.filter(
+              (x: Record<string, unknown>) =>
+                tables.includes(String(x.table ?? x.name)) ||
+                k === "defaults" ||
+                k === "schemas" ||
+                (k === "functions" && names.includes(String(x.name))),
+            )
+          : v,
+      ]),
+    );
+    receipt.functions =
+      await db`select n.nspname schema,p.proname name,pg_get_function_identity_arguments(p.oid) args,pg_get_function_arguments(p.oid) allargs,p.pronargdefaults defaults,pg_get_expr(p.proargdefaults,0) default_expression,pg_get_function_result(p.oid) result,pg_get_userbyid(p.proowner) owner,p.proacl::text acl,p.proconfig config,p.prosecdef definer,p.procost cost,p.proisstrict strict,p.proparallel parallel,p.provolatile volatility,md5(p.prosrc) body,md5(pg_get_functiondef(p.oid)) definition from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.proname=any(${"{" + names.join(",") + "}"}::text[]) order by n.nspname,p.proname`;
+    receipt.auth =
+      await db`select c.relacl::text acl,has_table_privilege('service_role',c.oid,'SELECT') table_sel,has_table_privilege('service_role',c.oid,'UPDATE') table_upd,has_any_column_privilege('service_role',c.oid,'SELECT') sel,has_any_column_privilege('service_role',c.oid,'UPDATE') upd,(select jsonb_agg(jsonb_build_object('name',a.attname,'acl',a.attacl::text,'type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped) columns from pg_class c where c.oid='auth.users'::regclass`;
+    receipt.native =
+      await db`select c.conname,c.conrelid::regclass::text own,c.confrelid::regclass::text referenced,pg_get_constraintdef(c.oid,true) definition,to_jsonb(t)-'oid'-'tgname' trigger,(select jsonb_agg(jsonb_build_object('deptype',d.deptype,'class',d.classid::regclass::text,'refclass',d.refclassid::regclass::text,'reference',case when d.refclassid='pg_class'::regclass then d.refobjid::regclass::text else d.refobjid::text end) order by d.deptype,d.refclassid,d.refobjid) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_constraint c join pg_trigger t on t.tgconstraint=c.oid join pg_class r on r.oid=c.conrelid where r.relname=any(${"{" + tables.join(",") + "}"}::text[]) and c.contype='f' order by c.conname,t.tgtype,t.tgrelid::regclass::text`;
+    receipt.nativeNormalized = (await db.unsafe(nativeQuery))[0].value;
+    receipt.deliveryIndex = (await db.unsafe(indexQuery))[0]?.value ?? null;
+    receipt.triggerFunctions = await db.unsafe(triggerFunctionsQuery);
+    const profiles = [];
+    for (const name of tables) {
+      const facets = Object.fromEntries(
+        ["relations", "columns", "constraints", "indexes", "triggers", "policies"].map((k) => [
+          k,
+          ((capture.catalog[k] ?? []) as Record<string, unknown>[]).filter(
+            (x) =>
+              x.schema === "public" &&
+              (x.table ?? x.name) === name &&
+              !(
+                k === "indexes" &&
+                x.definition === "CREATE UNIQUE INDEX recipient_notification_draft_delivery_target_idx ON public.recipient_notification_draft USING btree (story_update_id, channel, recipient_contact)"
+              ),
+          ),
+        ]),
+      );
+      const [shape] =
+        await db`select jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_rewrite r where r.ev_class=c.oid)) value from pg_class c where c.oid=${"public." + name}::regclass`;
+      const profile = { ...facets, shape: shape.value };
+      const [digest] =
+        await db`select jsonb_typeof(${profile}::jsonb) kind,md5(${profile}::jsonb::text) md5`;
+      if (digest.kind !== "object") throw new Error("Task7 profile transport must be an object");
+      profiles.push({ name, md5: digest.md5, profile });
+    }
+    receipt.domainProfiles = profiles;
+    receipt.preserved = hash(await snapshot(db)) === hash(capture.catalog);
+  } finally {
+    await clone.close();
+    receipt.templatePreserved = clone.templatePreserved;
+    receipt.modernPreserved = (await localSourceState(modernUrl)) === modernBefore;
+    receipt.cleanup = "normal owned clone DROP";
+    await writeFile(out + "/" + mode + ".json", JSON.stringify(receipt, null, 2) + "\n", {
+      flag: "wx",
+    });
+    console.log(
+      JSON.stringify({
+        mode,
+        functions: receipt.functions,
+        preserved: receipt.preserved,
+        templatePreserved: receipt.templatePreserved,
+        modernPreserved: receipt.modernPreserved,
+      }),
+    );
+  }
+}

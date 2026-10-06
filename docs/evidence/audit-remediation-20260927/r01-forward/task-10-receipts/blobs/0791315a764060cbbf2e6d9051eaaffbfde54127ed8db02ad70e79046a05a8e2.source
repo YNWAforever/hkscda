@@ -1,0 +1,19 @@
+import pathlib,json,subprocess,datetime,hashlib,time
+root=pathlib.Path.cwd();p=root/".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-proposal4";o=p.parent/("task-10-fix1-cluster-create-"+str(time.time_ns()));o.mkdir();c=json.loads((p/"commands.json").read_text());r={"at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"commands":[],"containerName":"r01-task10-fix1-role-20261002-126d7280-v2"}
+def run(args,input=None,allowed=(0,)):
+ x=subprocess.run(args,input=input,capture_output=True);i=len(r["commands"]);(o/f"{i}.stdout").write_bytes(x.stdout);(o/f"{i}.stderr").write_bytes(x.stderr);r["commands"].append({"args":args,"exit":x.returncode,"stdinSha256":hashlib.sha256(input).hexdigest() if input else None});(o/"receipt.json").write_text(json.dumps(r,indent=2)+"\n");
+ if x.returncode not in allowed:raise RuntimeError(x.stderr.decode(errors="replace"))
+ return x
+try:
+ exists=run(["docker","container","inspect",r["containerName"]],allowed=(1,));assert exists.returncode==1
+ image=json.loads(run(c["imageInspect"]).stdout)[0];assert image["Id"]==c["create"][-3];assert not image["Config"].get("Volumes");r["image"]=image
+ r["containerID"]=run(c["create"]).stdout.decode().strip();run(c["start"])
+ actual=json.loads(run(c["containerInspect"]).stdout)[0];assert actual["Id"]==r["containerID"] and actual["Image"]==image["Id"];assert actual["HostConfig"]["NetworkMode"]=="none" and not actual["HostConfig"].get("PortBindings") and not actual["HostConfig"].get("Binds") and not actual.get("Mounts");assert actual["Config"]["Labels"]=={"r01.owner":"task10-fix1","r01.base":"126d728028a844052537fd64d10cecb206ef6fb0"};r["inspectedContainer"]=actual
+ for i in range(30):
+  ready=run(["docker","exec",r["containerName"],"/usr/lib/postgresql/bin/pg_isready","-h","/tmp","-U","supabase_admin"],allowed=(0,1,2));
+  if ready.returncode==0:break
+  time.sleep(1)
+ assert ready.returncode==0
+ run(c["bootstrap"],(p/"bootstrap.source").read_bytes());run(c["membershipRestore"],(p/"memberships.source").read_bytes());run(c["restore"],(p/"extensions-defaults.source").read_bytes());run(c["restore"],(p/"schema-reviewed.source").read_bytes());r["restoreCompleted"]=True
+except Exception as e:r["error"]=str(e);print(str(e));raise
+finally:(o/"receipt.json").write_text(json.dumps(r,indent=2)+"\n");print(o)

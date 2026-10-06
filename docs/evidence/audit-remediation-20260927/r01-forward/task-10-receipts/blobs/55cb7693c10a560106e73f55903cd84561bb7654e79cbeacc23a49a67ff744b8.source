@@ -1,0 +1,5 @@
+import {catalogQuery} from "./supabase/rls-tests/helpers/productionSchemaClone";
+import {functionsQuery,authQuery,nativeQuery,indexDetailsQuery} from "./docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile";
+import {writeFileSync} from "node:fs";
+const query="begin read only;select md5(catalog::text) from ("+catalogQuery+") t;select md5(coalesce(jsonb_agg(to_jsonb(f)),'[]'::jsonb)::text) from ("+functionsQuery+")f;"+[authQuery,nativeQuery,indexDetailsQuery].map(q=>"select md5(value::text) from ("+q+")t;").join("")+"select md5(coalesce(jsonb_agg(to_jsonb(q) order by schemaname,sequencename),'[]'::jsonb)::text) from pg_sequences q where schemaname in('auth','public','private');select md5(jsonb_agg(to_jsonb(m) order by roleid,member,grantor)::text) from pg_auth_members m;select count(*) from auth.users;select count(*) from public.admin_user;select count(*) from public.audit_log;commit;";
+writeFileSync(".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-metadata.sql.source",query);

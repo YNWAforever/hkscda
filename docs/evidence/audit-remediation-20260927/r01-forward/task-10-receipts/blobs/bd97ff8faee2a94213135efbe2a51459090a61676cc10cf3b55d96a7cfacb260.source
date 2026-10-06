@@ -1,0 +1,71 @@
+{
+  "bindings": {
+    "task-10-fix1-proposal5/manifest.json": {
+      "sha256": "80376667f34e3f9f42459caa76bb084cd4a55a2763ee5c749cc60a83cb25e7ee",
+      "bytes": 1864
+    },
+    "task-10-fix1-cluster-create-1790948623213575900/receipt.json": {
+      "sha256": "b3858ede15777a04538ac05f11feb96c36ec2ea26016c911fbf7ec82b57a592c",
+      "bytes": 16346
+    },
+    "task-10-fix1-parity-1790948763220/receipt.json": {
+      "sha256": "d153e7eefbc78c02ab952528e095f23e46f5962c8c39d5471aa686c30a11cfbf",
+      "bytes": 6122055
+    },
+    "task-10-fix1-locale.json": {
+      "sha256": "230970b14741a75694546bc50f02e194acc3ccd5cdbbc482f67bcbc445487adf",
+      "bytes": 951
+    },
+    "task-10-fix1-restore-diff.json": {
+      "sha256": "fc3054d60e6e5c5ee788f5cd7aa344c508bab06bf04973db6528fa575c27655b",
+      "bytes": 2002911
+    }
+  },
+  "ownedContainerID": "650b1476320db04edcb0306402b48d373699e1ca8e028a7619c3d6396924d686",
+  "imageID": "sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+  "labels": {
+    "r01.base": "126d728028a844052537fd64d10cecb206ef6fb0",
+    "r01.owner": "task10-fix1"
+  },
+  "networkMode": "none",
+  "mounts": [],
+  "portBindings": {},
+  "allRowsZero": true,
+  "countedTables": 189,
+  "noCandidateOrDMLExecuted": true,
+  "sourceLocale": [
+    {
+      "datname": "audit_pr135_20260929",
+      "encoding": "UTF8",
+      "datlocprovider": "i",
+      "datcollate": "en_US.UTF-8",
+      "datctype": "en_US.UTF-8",
+      "datlocale": "en-US",
+      "datcollversion": "153.121"
+    },
+    {
+      "datname": "postgres",
+      "encoding": "UTF8",
+      "datlocprovider": "i",
+      "datcollate": "en_US.UTF-8",
+      "datctype": "en_US.UTF-8",
+      "datlocale": "en-US",
+      "datcollversion": "153.121"
+    }
+  ],
+  "collectionDiagnosticsOnly": {
+    "indexes": {
+      "expectedCount": 409,
+      "actualCount": 409,
+      "everyFullEntryAndCardinalityEqual": true,
+      "arrayOrderEqual": false
+    },
+    "extensionMembers": {
+      "expectedCount": 136,
+      "actualCount": 136,
+      "everyFullEntryAndCardinalityEqual": true,
+      "arrayOrderEqual": false
+    }
+  },
+  "comparatorPolicy": "No runtime guard/source literal sorting or relaxed parity. ICU namedDB recreation will restore metadata SQL-order. If order still differs, stop and propose exactcollectioncomparison scope separately. Initial extension keyedinspector false134differences remainsretained but notused."
+}

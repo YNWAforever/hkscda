@@ -1,0 +1,42 @@
+{
+  "shared": [
+    {
+      "datname": "audit_pr135_20260929",
+      "encoding": "UTF8",
+      "datlocprovider": "i",
+      "datcollate": "en_US.UTF-8",
+      "datctype": "en_US.UTF-8",
+      "datlocale": "en-US",
+      "datcollversion": "153.121"
+    },
+    {
+      "datname": "postgres",
+      "encoding": "UTF8",
+      "datlocprovider": "i",
+      "datcollate": "en_US.UTF-8",
+      "datctype": "en_US.UTF-8",
+      "datlocale": "en-US",
+      "datcollversion": "153.121"
+    }
+  ],
+  "own": [
+    {
+      "datname": "postgres",
+      "encoding": "UTF8",
+      "datlocprovider": "c",
+      "datcollate": "en_US.UTF-8",
+      "datctype": "en_US.UTF-8",
+      "datlocale": null,
+      "datcollversion": "2.40"
+    },
+    {
+      "datname": "r01_task10_fix1",
+      "encoding": "UTF8",
+      "datlocprovider": "c",
+      "datcollate": "en_US.UTF-8",
+      "datctype": "en_US.UTF-8",
+      "datlocale": null,
+      "datcollversion": "2.40"
+    }
+  ]
+}

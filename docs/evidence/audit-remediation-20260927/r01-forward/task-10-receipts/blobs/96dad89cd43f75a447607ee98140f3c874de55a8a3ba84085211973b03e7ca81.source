@@ -1,0 +1,13 @@
+import {SQL} from "bun";
+import {assertSafeFixtureTables} from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+const container="r01-task10-fix1-role-20261002-126d7280";
+const unsafe=async(query:string)=>{
+ if(query==="set local search_path=pg_catalog")return [];
+ if(!/^select\s/i.test(query))throw Error("Scanner adapter read-only SELECT allowlist");
+ const input="begin;set local search_path=pg_catalog;select coalesce(json_agg(row_to_json(q)),'[]'::json) from ("+query+") q;commit;";
+ const p=Bun.spawn(["docker","exec","-i",container,"psql","-X","-qAt","-h","/tmp","-U","supabase_admin","-d","r01_task10_fix1","-v","ON_ERROR_STOP=1"],{stdin:new Blob([input]),stdout:"pipe",stderr:"pipe"});
+ const [out,err,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);if(exit)throw Error(err);return JSON.parse(out);
+};
+const adapter={unsafe,begin:async(run:(tx:unknown)=>Promise<unknown>)=>run({unsafe})};
+await assertSafeFixtureTables(adapter as unknown as SQL,["auth.users","public.admin_user","public.audit_log"]);
+console.log("UNCHANGED5352 FULL THREE-TABLE SCANNER PASS");

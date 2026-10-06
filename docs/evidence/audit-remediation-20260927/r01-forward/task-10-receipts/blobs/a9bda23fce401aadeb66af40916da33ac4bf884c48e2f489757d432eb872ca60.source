@@ -1,0 +1,124 @@
+{
+  "capture": {
+    "modes": [
+      "hosted",
+      "modern"
+    ],
+    "flags": [
+      "schemaParity",
+      "fullScannerPassed",
+      "catalogPreserved",
+      "normalDrop",
+      "templatePreserved",
+      "modernPreserved"
+    ]
+  },
+  "global": {
+    "modes": [
+      "hosted",
+      "modern"
+    ],
+    "flags": [
+      "schemaParity",
+      "fullScannerPassed",
+      "postPrefixFullScannerPassed",
+      "catalogPreserved",
+      "normalDrop",
+      "templatePreserved",
+      "modernPreserved"
+    ],
+    "testExit": 0
+  },
+  "red": {
+    "modes": [
+      "missing",
+      "legacy",
+      "direct",
+      "truncate"
+    ],
+    "flags": [
+      "schemaParity",
+      "fullScannerPassed",
+      "catalogPreserved",
+      "completeMetadataPreserved",
+      "expectedRed",
+      "normalDrop",
+      "templatePreserved",
+      "modernPreserved"
+    ],
+    "testExit": 1
+  },
+  "truncate": {
+    "modes": [
+      "hosted-restrict",
+      "modern-restrict"
+    ],
+    "flags": [
+      "fullScannerPassed",
+      "catalogPreserved",
+      "completeMetadataPreserved",
+      "expectedRed",
+      "normalDrop",
+      "templatePreserved",
+      "modernPreserved"
+    ]
+  },
+  "auth-component": {
+    "modes": [
+      "component"
+    ],
+    "flags": [
+      "schemaParity",
+      "fullScannerPassed",
+      "baselineAccepted",
+      "completeRollback",
+      "allOtherHelperFacetsPreserved",
+      "otherHelpersPreserved",
+      "authDefaultNativeIndexPreserved",
+      "publicPrivateCatalogPreserved",
+      "normalDrop",
+      "templatePreserved",
+      "modernPreserved"
+    ]
+  },
+  "composition": {
+    "modes": [
+      "hosted",
+      "modern",
+      "component"
+    ],
+    "flags": [
+      "schemaParity",
+      "fullScannerPassed",
+      "baselineAcceptedBeforeNegatives",
+      "baselineRollbackPreserved",
+      "secondApplyIdempotent",
+      "unaffectedCatalogPreserved",
+      "scopedGlobalGuardExact",
+      "rowsPreserved",
+      "completeAuthDefaultNativeLedgerSequencePreserved",
+      "helpersPreserved",
+      "postTestsCatalogPreserved",
+      "postTestsRowsPreserved",
+      "postTestsCompleteMetadataPreserved",
+      "normalDrop",
+      "templatePreserved",
+      "modernPreserved",
+      "frozenInputsPreserved"
+    ],
+    "testExit": 0,
+    "componentFlags": [
+      "componentOtherMetadataPreserved",
+      "componentFullScannerPassed"
+    ]
+  },
+  "gates": {
+    "modes": [
+      "local"
+    ],
+    "flags": [
+      "frozenInputsPreserved",
+      "templatePreserved"
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "command": [
+      "bun",
+      "x",
+      "supabase@2.118.0",
+      "--version"
+    ],
+    "exit": 0,
+    "stdout": "0.stdout.log",
+    "stderr": "0.stderr.log",
+    "at": "2026-10-02T11:08:39.186752+00:00"
+  },
+  {
+    "command": [
+      "bun",
+      "x",
+      "supabase@2.118.0",
+      "migration",
+      "new",
+      "--help"
+    ],
+    "exit": 0,
+    "stdout": "1.stdout.log",
+    "stderr": "1.stderr.log",
+    "at": "2026-10-02T11:08:39.780653+00:00"
+  },
+  {
+    "command": [
+      "bun",
+      "x",
+      "supabase@2.118.0",
+      "migration",
+      "new",
+      "r01_admin_access_atomic_forward"
+    ],
+    "exit": 0,
+    "stdout": "new.stdout.log",
+    "stderr": "new.stderr.log",
+    "at": "2026-10-02T11:14:19.262189+00:00"
+  }
+]

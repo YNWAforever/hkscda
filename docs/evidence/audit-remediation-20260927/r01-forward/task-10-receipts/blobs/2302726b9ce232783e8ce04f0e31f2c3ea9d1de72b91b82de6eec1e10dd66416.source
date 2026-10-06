@@ -1,0 +1,60 @@
+-- Admin identities remain readable according to RLS, but are changed only by
+-- server-side service-role operations. Browser JWTs cannot bypass access rules.
+drop policy if exists "admins can manage admin users" on public.admin_user;
+create policy "admins can view admin users"
+  on public.admin_user for select
+  to authenticated
+  using (private.has_admin_role(array['admin']));
+revoke insert, update, delete on public.admin_user from anon, authenticated;
+
+-- A statement lock serializes all role/status updates and deletes, including
+-- service-role writes outside the application RPC. The row trigger checks the
+-- final statement state, so bulk writes cannot remove every active admin.
+create or replace function private.lock_admin_user_mutation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));
+  return null;
+end;
+$$;
+
+create trigger lock_admin_user_mutation
+  before update or delete on public.admin_user
+  for each statement execute function private.lock_admin_user_mutation();
+
+create or replace function private.require_active_admin_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  removed_active_admin boolean;
+begin
+  if tg_op = 'DELETE' then
+    removed_active_admin := old.role = 'admin' and old.status = 'active';
+  else
+    removed_active_admin := old.role = 'admin' and old.status = 'active'
+      and (new.role <> 'admin' or new.status <> 'active');
+  end if;
+
+  if removed_active_admin and not exists (
+    select 1 from public.admin_user
+    where role = 'admin' and status = 'active'
+  ) then
+    raise exception 'last_active_admin' using errcode = 'P0001';
+  end if;
+  return null;
+end;
+$$;
+
+create trigger require_active_admin_user
+  after update or delete on public.admin_user
+  for each row execute function private.require_active_admin_user();
+
+-- PostgREST invokes each RPC in one database transaction. The actor, current
+-- target state, mutation, and audit record are checked and written together.

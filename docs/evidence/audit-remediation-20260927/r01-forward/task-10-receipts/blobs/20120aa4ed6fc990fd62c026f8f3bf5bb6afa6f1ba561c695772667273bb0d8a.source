@@ -1,0 +1,1442 @@
+{
+  "mode": "hosted",
+  "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-10-hosted-1790954299650",
+  "at": "2026-10-02T15:18:20.997Z",
+  "sourceCommit": "126d728028a844052537fd64d10cecb206ef6fb0",
+  "sourceBase": "126d728028a844052537fd64d10cecb206ef6fb0",
+  "workingBytesMarker": "Frozen working bytes at receipt HEAD; final Git blob binding required",
+  "frozenInputs": {
+    "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql": {
+      "rawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "canonicalSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "gitBlob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+    },
+    "src/lib/admin/evidenceEligibility.test.ts": {
+      "rawSha256": "568188c688916a362e0b1b7f1dca4bdcf44053a23d1793d7304990ce4b0ae8ae",
+      "canonicalSha256": "568188c688916a362e0b1b7f1dca4bdcf44053a23d1793d7304990ce4b0ae8ae",
+      "gitBlob": "5526f822e1942b9c3d831d2664130a00c34337ab"
+    },
+    "src/lib/admin/atomicForward.database.test.ts": {
+      "rawSha256": "f7af0551d383d42f53ed3a79d4b0c47ae1bb92a10b19f97a35d139e6add9f14f",
+      "canonicalSha256": "f7af0551d383d42f53ed3a79d4b0c47ae1bb92a10b19f97a35d139e6add9f14f",
+      "gitBlob": "efdd44797361f89f76a2f9d2ee86094500993b19"
+    },
+    "src/lib/admin/accessFence.database.test.ts": {
+      "rawSha256": "ea14f8923064c8b3fd661a8696524fc8f87bbe16af421c6ee98540904075f7fe",
+      "canonicalSha256": "ea14f8923064c8b3fd661a8696524fc8f87bbe16af421c6ee98540904075f7fe",
+      "gitBlob": "1e66b87730af590525e47adae453e3e248b8bd80"
+    },
+    "src/lib/admin/accessManagement.repository.server.ts": {
+      "rawSha256": "c287298c62a5b5871725e3b79231a3cc3223f758334768d520429377aa33c980",
+      "canonicalSha256": "c287298c62a5b5871725e3b79231a3cc3223f758334768d520429377aa33c980",
+      "gitBlob": "080c4baf75b28a49516d07afcf334eb7a8715426"
+    },
+    "src/lib/admin/session.server.ts": {
+      "rawSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "gitBlob": "40f1df7e5e5dc6cbe715a2f901ce28ccf18a8f80"
+    },
+    "src/lib/admin/accessManagement.http.server.ts": {
+      "rawSha256": "87385d5bcacca3bc54712a9c196e38d3bba9017c3eac87d2c3f8287092b708ef",
+      "canonicalSha256": "87385d5bcacca3bc54712a9c196e38d3bba9017c3eac87d2c3f8287092b708ef",
+      "gitBlob": "c19e4a1fca64af54051d7caa5b1d525043c47cc9"
+    },
+    "supabase/rls-tests/helpers/runR01AdminAtomic.ts": {
+      "rawSha256": "9b4e52d4c259fe68dc93d5bab9a3b90511654cca0bc20dcf32d6312ebf5f52e2",
+      "canonicalSha256": "9b4e52d4c259fe68dc93d5bab9a3b90511654cca0bc20dcf32d6312ebf5f52e2",
+      "gitBlob": "326176757a7bb71d0d3ac86e5b6c6bfcf9549701"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts": {
+      "rawSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+      "canonicalSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+      "gitBlob": "c5ca3a484d6b170e3c30bcdb984e345720d16107"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt.ts": {
+      "rawSha256": "c0de05a5e3d7dec5ad8b8d514164eb75b74d2300e7e0423055b64422579117f9",
+      "canonicalSha256": "c0de05a5e3d7dec5ad8b8d514164eb75b74d2300e7e0423055b64422579117f9",
+      "gitBlob": "53c87d8ddf7091e79fcaa6ff585b093258e2e30e"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json": {
+      "rawSha256": "a9bda23fce401aadeb66af40916da33ac4bf884c48e2f489757d432eb872ca60",
+      "canonicalSha256": "a9bda23fce401aadeb66af40916da33ac4bf884c48e2f489757d432eb872ca60",
+      "gitBlob": "9afd71ef6c750ac078a241a5fd4b57a61748940a"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile-inputs.json": {
+      "rawSha256": "c501fe9cbbc0d162b6be97d1a8bcd97506bf6adf21e5fcad89b9096d5ace6a7c",
+      "canonicalSha256": "604c4e5e9bb92779531085db1f82c8c173f937f48fa41d4f4832c247993abf61",
+      "gitBlob": "27645f336c41e9893c9c0f3285c91af6dc7e23b7"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-capture.ts": {
+      "rawSha256": "cf3faf5d5d63f124537eb0ddbb920e18a4d3209e6100065b036f8de1c094453f",
+      "canonicalSha256": "cf3faf5d5d63f124537eb0ddbb920e18a4d3209e6100065b036f8de1c094453f",
+      "gitBlob": "31ed4c1c91d2eb61d470382f8d0a2378b060d558"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-generate.ts": {
+      "rawSha256": "146583c237e8ac8757f998c58ac2fb03ac8dec8aef87ef973497f4657efb2230",
+      "canonicalSha256": "146583c237e8ac8757f998c58ac2fb03ac8dec8aef87ef973497f4657efb2230",
+      "gitBlob": "485dfa10b126cd467065fa053ef4779a7bcf14f8"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-global-capture.ts": {
+      "rawSha256": "59ca04d6364e090d89802b47a5609dca74fddaed7d809f63e4dc2e31b34cacf0",
+      "canonicalSha256": "59ca04d6364e090d89802b47a5609dca74fddaed7d809f63e4dc2e31b34cacf0",
+      "gitBlob": "e91998e97188d5ca8a7ab09b458a55ed91f73011"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-auth-component-red.ts": {
+      "rawSha256": "dbf099023f410de01ff14c3d7cb94d9722afec0ce6312f556204884f0a47512c",
+      "canonicalSha256": "dbf099023f410de01ff14c3d7cb94d9722afec0ce6312f556204884f0a47512c",
+      "gitBlob": "97138b04ea1d3416b7659337c9634d12a5ff9ea3"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-red.ts": {
+      "rawSha256": "0ebb00f96195c985c3b6b03f5105cb734ee286cd0f841535538f57433dc05fa5",
+      "canonicalSha256": "0ebb00f96195c985c3b6b03f5105cb734ee286cd0f841535538f57433dc05fa5",
+      "gitBlob": "43abd1f20b5c2e8c4bcf7bdf556c7e5e76353036"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-truncate-red.ts": {
+      "rawSha256": "b6d611acbe2ca26ddfc766df375f1d540fc9110c7ecf5c85376f663bfed64b8c",
+      "canonicalSha256": "b6d611acbe2ca26ddfc766df375f1d540fc9110c7ecf5c85376f663bfed64b8c",
+      "gitBlob": "834a6f5faa8fa7334bc4a3f084a20d6d6a757995"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-generated-profiles.json": {
+      "rawSha256": "742195d7cce33105936f107346ddc9b2dd5dcbbbfef810662ab398d4c8d3c0e9",
+      "canonicalSha256": "742195d7cce33105936f107346ddc9b2dd5dcbbbfef810662ab398d4c8d3c0e9",
+      "gitBlob": "b6d93e0ad26d4565563fe8493c00e3415989bd0e"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-gates.py": {
+      "rawSha256": "026aa81e36ecb2cf7694bd4c4ffdb8e0f0be0cbf7add029dc01feff80d3b6299",
+      "canonicalSha256": "026aa81e36ecb2cf7694bd4c4ffdb8e0f0be0cbf7add029dc01feff80d3b6299",
+      "gitBlob": "bc1a62d838384896ee9aa17c00ffab02085b943d"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-package.py": {
+      "rawSha256": "24b7c40b1ecbbaba1b73404d7c518916125f34b1225bb9ed04bebb9a4a590344",
+      "canonicalSha256": "24b7c40b1ecbbaba1b73404d7c518916125f34b1225bb9ed04bebb9a4a590344",
+      "gitBlob": "48a353b797cb0543331aa78b233c35ff0c14a692"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-auth-component-red-1790950159842/receipt.json": {
+      "rawSha256": "cac8e4e8ec09d570e134416d81560b2b36be79c36b2b0f0261821a9b63eda38e",
+      "canonicalSha256": "cac8e4e8ec09d570e134416d81560b2b36be79c36b2b0f0261821a9b63eda38e",
+      "gitBlob": "1ebe4ebc7acc2917934e50ad0d581885e104d436"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-proof.py": {
+      "rawSha256": "e42278829c2d4cbb9ef820befc81146099a1c70ef909282f6c019bd1f927a3c7",
+      "canonicalSha256": "0288f578688d9ea7445a7a24f453fb4534aeca5a2aff6a7b2ea39dde8e422f0b",
+      "gitBlob": "01b9f0d69cb677bdb33a4309c25e4fd84ab700a7"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-metadata.sql.source": {
+      "rawSha256": "e1894880a463feeda385e1b320edf60d7a3e2d2a8bf52115d602fd1bd2f8e0d3",
+      "canonicalSha256": "e1894880a463feeda385e1b320edf60d7a3e2d2a8bf52115d602fd1bd2f8e0d3",
+      "gitBlob": "fd41e2512be027da0aa4bdf8e546ee22ceb74281"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-scanner-oid.ts": {
+      "rawSha256": "57ed2309a099b101288bfe5591135b220f10786700893266e35109daa4ac957d",
+      "canonicalSha256": "57ed2309a099b101288bfe5591135b220f10786700893266e35109daa4ac957d",
+      "gitBlob": "06bea1034670a617fd17e55de3df29b01f3d8ae5"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-proof-green-1790952954055678500/receipt.json": {
+      "rawSha256": "e3dfa763db03927e95868aafa21e98468b7c9c3ee9554acb0f555422a6703c12",
+      "canonicalSha256": "5faccef056239bb9e2a7fcf1870bd81b10f6449fde0e0d7df47e61731a966449",
+      "gitBlob": "56f986acba4b9d3964fe6e19ba7eac7b2b1f6942"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-owned-cleanup.json": {
+      "rawSha256": "e6442f8fa8600a317933add3520a216d3ed12e0a49af39958ea5b1a60877dbc1",
+      "canonicalSha256": "e6442f8fa8600a317933add3520a216d3ed12e0a49af39958ea5b1a60877dbc1",
+      "gitBlob": "e92f93eb3d11baebb4c7a7f67cacdf1775975aca"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-cleanup-v2.py": {
+      "rawSha256": "b2602662cba8728c03ffa096ca01214c839d72b89e14d6f78f6f4e72031eb663",
+      "canonicalSha256": "b2602662cba8728c03ffa096ca01214c839d72b89e14d6f78f6f4e72031eb663",
+      "gitBlob": "cb282e9ba0745c871287fc1bcb0e53b7d338cddd"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-inert-ci-green-1790954003643393600/receipt.json": {
+      "rawSha256": "71e1c5d6c79acfbcaf56939c48bd91f876f5c8fb9f1997090077e9f3bcd42786",
+      "canonicalSha256": "71e1c5d6c79acfbcaf56939c48bd91f876f5c8fb9f1997090077e9f3bcd42786",
+      "gitBlob": "b93a8780bee31a2105fc401fdb15de2ea9f8014f"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json": {
+      "rawSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+      "canonicalSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+      "gitBlob": "eb304997dccfe309c455e992db9f765ddb1a1871"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json": {
+      "rawSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+      "canonicalSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+      "gitBlob": "ae67a6339bb9f12eafca3bebed13bc0c8a674c20"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-capture-hosted-1790949944785/receipt.json": {
+      "rawSha256": "384e59f467968a339c2d5d1cca0727f5912ed72600159d3b3da139b21cec3111",
+      "canonicalSha256": "384e59f467968a339c2d5d1cca0727f5912ed72600159d3b3da139b21cec3111",
+      "gitBlob": "44f7caf83dfee799dc8384161eb757cfbb1e596d"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-capture-modern-1790950018752/receipt.json": {
+      "rawSha256": "2331f0e00a25470b47719d1e0741cfce5cd2731c05959d052e3358734ee7b536",
+      "canonicalSha256": "2331f0e00a25470b47719d1e0741cfce5cd2731c05959d052e3358734ee7b536",
+      "gitBlob": "bce1b98729a6e811f3c553fbe344e50a7493b13c"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-hosted-1790950050995/receipt.json": {
+      "rawSha256": "cb54b9ed408b22af6613399cdc97047481b4fe2dcc57767609bd71450eabbbda",
+      "canonicalSha256": "cb54b9ed408b22af6613399cdc97047481b4fe2dcc57767609bd71450eabbbda",
+      "gitBlob": "c774c4d7df1c41d307cd9befa0654d5a26fe279a"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-modern-1790950112876/receipt.json": {
+      "rawSha256": "3395a3445baea2a072060cc020f966eac1fe237c130c0e2d92740ba7a9778325",
+      "canonicalSha256": "3395a3445baea2a072060cc020f966eac1fe237c130c0e2d92740ba7a9778325",
+      "gitBlob": "39252f70878abe77a6ef1c304b8c534ca8362179"
+    },
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-final-global-capture.json": {
+      "rawSha256": "bfea99ab2aa2d3eb047a301a3e5bd624957e043b06c6713435bcfec859dc1899",
+      "canonicalSha256": "16f520dc1f503b241d414ab258a2877224ab55a4dee1ea2fc5a09a610b6c1bbb",
+      "gitBlob": "8196653ac4c7e1e6ee1ab4af22d44d5c87bb8593"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": {
+      "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "gitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": {
+      "rawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "canonicalSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "gitBlob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+    },
+    "supabase/migrations/20260925110000_admin_user_access_atomicity.sql": {
+      "rawSha256": "b70ad0338c0d55a4b2538e3ecf30ed163674da6d0170383726f6046c1a03094d",
+      "canonicalSha256": "b70ad0338c0d55a4b2538e3ecf30ed163674da6d0170383726f6046c1a03094d",
+      "gitBlob": "dfac6cf2eb4cbe67ca38578d303f24681bae8520"
+    },
+    "supabase/migrations/20260925133500_atomic_admin_invite_activation.sql": {
+      "rawSha256": "36bafa9a964bebb4afdfa84499c71ee31f6fcbe9198bbd180c0742c9dcd860dc",
+      "canonicalSha256": "36bafa9a964bebb4afdfa84499c71ee31f6fcbe9198bbd180c0742c9dcd860dc",
+      "gitBlob": "2748cbcfd21bb6ca1cfc734ac8db0205a6d98133"
+    },
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+      "rawSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+      "gitBlob": "11e165120730fa396c61c2643f6826256a4de67a"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "gitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "gitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    "src/lib/admin/accessManagement.server.ts": {
+      "rawSha256": "6b7fe2de47d07a2ac8cbd4f9f3f7dbce35e45129114cb283809fad35bd7f6d45",
+      "canonicalSha256": "6b7fe2de47d07a2ac8cbd4f9f3f7dbce35e45129114cb283809fad35bd7f6d45",
+      "gitBlob": "101d8e8cfe8b5c3922136012e991b7d76be9f605"
+    },
+    "src/lib/donations/config.server.ts": {
+      "rawSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "canonicalSha256": "84ab9e36a6087284a2bdbf352a5abffe6eac809c365664a069e9330931ca1549",
+      "gitBlob": "dba445193c06557584dba4c91ecab4925ef3d709"
+    },
+    "src/lib/admin/access.ts": {
+      "rawSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "canonicalSha256": "ecaba3731826f63f00e5bd125ca025c467a381741e9fb3580a0787570e74977a",
+      "gitBlob": "be2fffc8f941f1790e42b20b07d9ec9d9ebcb517"
+    },
+    "src/lib/supabase.server.ts": {
+      "rawSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "gitBlob": "f9f479dde587306c220fc92019bfed3fabe4e08a"
+    },
+    "src/lib/http/adminJson.server.ts": {
+      "rawSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "canonicalSha256": "de0a0ac6951c7beb748c8328eb87b49e750982876603dc0fae973cab9a395798",
+      "gitBlob": "5c4a745643c1f5966feef67eb46f59442dac1342"
+    },
+    "src/lib/http/publicJson.server.ts": {
+      "rawSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "gitBlob": "02f75bdefbb4db5fb6438138c7bdda44053e2032"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts": {
+      "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+      "gitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+    },
+    "src/lib/donations/cod-crypto.server.ts": {
+      "rawSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "canonicalSha256": "3f4ea2be79da7480654921458f662901a6f8d8fd4a047fd61259837cee0a512d",
+      "gitBlob": "7f19cc5e9ac86c2e8e37bf9a0387b403597ebabb"
+    },
+    "src/lib/http/boundedBody.server.ts": {
+      "rawSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "canonicalSha256": "06c53901289e766a1d9cb7371170a8ca5f313b656066cd8888029c775cc44172",
+      "gitBlob": "1ec448631dbbab00228e4ba8b056d8b15a61f05b"
+    }
+  },
+  "archivedInputs": {
+    "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql": "s000.source",
+    "src/lib/admin/evidenceEligibility.test.ts": "s001.source",
+    "src/lib/admin/atomicForward.database.test.ts": "s002.source",
+    "src/lib/admin/accessFence.database.test.ts": "s003.source",
+    "src/lib/admin/accessManagement.repository.server.ts": "s004.source",
+    "src/lib/admin/session.server.ts": "s005.source",
+    "src/lib/admin/accessManagement.http.server.ts": "s006.source",
+    "supabase/rls-tests/helpers/runR01AdminAtomic.ts": "s007.source",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "s008.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts": "s009.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt.ts": "s010.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipt-contracts.json": "s011.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile-inputs.json": "s012.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-capture.ts": "s013.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-generate.ts": "s014.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-global-capture.ts": "s015.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-auth-component-red.ts": "s016.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-red.ts": "s017.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-truncate-red.ts": "s018.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-generated-profiles.json": "s019.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-gates.py": "s020.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-10-package.py": "s021.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-auth-component-red-1790950159842/receipt.json": "s022.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-proof.py": "s023.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-metadata.sql.source": "s024.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-scanner-oid.ts": "s025.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-role-proof-green-1790952954055678500/receipt.json": "s026.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-owned-cleanup.json": "s027.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-cleanup-v2.py": "s028.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-inert-ci-green-1790954003643393600/receipt.json": "s029.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json": "s030.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json": "s031.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-capture-hosted-1790949944785/receipt.json": "s032.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-capture-modern-1790950018752/receipt.json": "s033.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-hosted-1790950050995/receipt.json": "s034.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-global-capture-modern-1790950112876/receipt.json": "s035.source",
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-10-fix1-final-global-capture.json": "s036.source",
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": "s037.source",
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": "s038.source",
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": "s039.source",
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": "s040.source",
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": "s041.source",
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": "s042.source",
+    "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql": "s043.source",
+    "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql": "s044.source",
+    "supabase/migrations/20260925110000_admin_user_access_atomicity.sql": "s045.source",
+    "supabase/migrations/20260925133500_atomic_admin_invite_activation.sql": "s046.source",
+    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": "s047.source",
+    "src/lib/operations/releaseSchema.ts": "s048.source",
+    "src/lib/operations/releaseManifest.ts": "s049.source",
+    "src/lib/admin/accessManagement.server.ts": "s050.source",
+    "src/lib/donations/config.server.ts": "s051.source",
+    "src/lib/admin/access.ts": "s052.source",
+    "src/lib/supabase.server.ts": "s053.source",
+    "src/lib/http/adminJson.server.ts": "s054.source",
+    "src/lib/http/publicJson.server.ts": "s055.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts": "s056.source",
+    "src/lib/donations/cod-crypto.server.ts": "s057.source",
+    "src/lib/http/boundedBody.server.ts": "s058.source"
+  },
+  "fixtureScope": [
+    "auth.users",
+    "admin_user",
+    "audit_log"
+  ],
+  "task1Applied": false,
+  "task8Applied": false,
+  "productionApplied": false,
+  "providerActions": false,
+  "dependencyGate": "Task9 acceptedefeb CI36995859256 attempt1 fiveindividualSUCCESS; testcheckout4e9096/tree4a219c equals source tree, commit identities differ",
+  "environment": "Windows/Bun1.3.14/PostgreSQL17.6; uniquelyowned52322clone only, modern57322/template52322 readonly, no provider/AuthAPI/email",
+  "clone": "r01_clone_c6728d5b6d7c4495af3cf754fb5a0d0c",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "captureCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "managedPrerequisites": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "fullScannerPassed": true,
+  "initialGapCount": 44,
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gapCount": 41
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gapCount": 41
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gapCount": 33
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "gapCount": 30
+    },
+    {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "gapCount": 25
+    },
+    {
+      "file": "20261001213914_r01_crm_atomic_forward.sql",
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "gapCount": 22
+    },
+    {
+      "file": "20261002011249_r01_cms_atomic_forward.sql",
+      "sha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "gapCount": 20
+    },
+    {
+      "file": "20261002045253_r01_adoption_atomic_forward.sql",
+      "sha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "gapCount": 17
+    }
+  ],
+  "beforeGapCount": 17,
+  "beforeRowsHash": "df0b2b6b464f90e7d7bb0dbdada90afac455cc4beb68b9abcf36750cb1528678",
+  "beforeCompleteMetadataHash": "d9d1d81ca8229f55242ddf1955831d4fe22bdbd0fdba85740f68e63628a01724",
+  "beforeHelperHash": "d7b90f50615a53c0e925e2edba32c58836cd4af3783ee1be5d044fbe105b7f66",
+  "baselineAcceptedBeforeNegatives": true,
+  "baselineRollbackPreserved": true,
+  "nativeFixtureSelections": {
+    "admin_user_last_invited_by_fkey": {
+      "oid": 1124309,
+      "tgname": "RI_ConstraintTrigger_c_1124309",
+      "tgenabled": "O",
+      "table": "public.admin_user",
+      "conname": "admin_user_last_invited_by_fkey",
+      "origin": "public.admin_user",
+      "referenced": "auth.users"
+    },
+    "about_page_content_updated_by_fkey": {
+      "oid": 1124302,
+      "tgname": "RI_ConstraintTrigger_a_1124302",
+      "tgenabled": "O",
+      "table": "public.admin_user",
+      "conname": "about_page_content_updated_by_fkey",
+      "origin": "public.about_page_content",
+      "referenced": "public.admin_user"
+    }
+  },
+  "refusals": [
+    {
+      "name": "table owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "RLS",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "column ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "column default",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "extra index",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "existing trigger disabled",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator public recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator public grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator global recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "creator private recipient",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "Auth effective SELECT column",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "Auth effective UPDATE column",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid() owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid() grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid() ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "auth.uid() config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.has_admin_role(text[]) owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.has_admin_role(text[]) grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.has_admin_role(text[]) ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "private.has_admin_role(text[]) config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation() owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation() grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation() ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.log_animal_mutation() config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at() owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at() grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at() ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "public.set_updated_at() config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "uid unknown body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "uid default overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "outgoing native admin_user_last_invited_by_fkey",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "incoming native about_page_content_updated_by_fkey",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target update_admin_user_with_audit overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target invite_admin_user_with_audit overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target resend_admin_invite_with_audit overload",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit owner",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit ACL",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit grant option",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit config",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit body",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit defaults",
+      "errno": "55000",
+      "fullRollback": true
+    },
+    {
+      "name": "target activate_admin_invite_with_audit overload",
+      "errno": "55000",
+      "fullRollback": true
+    }
+  ],
+  "applies": 2,
+  "secondApplyIdempotent": true,
+  "afterGapCount": 13,
+  "unaffectedCatalogPreserved": true,
+  "rowsPreserved": true,
+  "completeAuthDefaultNativeLedgerSequencePreserved": true,
+  "helpersPreserved": true,
+  "scopedGlobalGuardExact": true,
+  "finalFunctions": [
+    {
+      "schema": "auth",
+      "name": "uid",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "uuid",
+      "owner": "supabase_auth_admin",
+      "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "dashboard_user",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "supabase_auth_admin",
+          "grantor": "supabase_auth_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": null,
+      "definer": false,
+      "language": "sql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "s",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "772430c79a4272a214d3e200a170c0c3",
+      "definition": "5dd851706ecb5893606782fd9e2cbf83"
+    },
+    {
+      "schema": "private",
+      "name": "has_admin_role",
+      "args": "allowed_roles text[]",
+      "allargs": "allowed_roles text[]",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "boolean",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "sql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "7f630847a1abf789d61070be4bcd8ed1",
+      "definition": "5369d861219863bb6601e7fa7d4be528"
+    },
+    {
+      "schema": "private",
+      "name": "lock_admin_user_mutation",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": null,
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "35dc11b3cc5150246af05a0d954ce940",
+      "definition": "6fb4cca8ae606d99ac4858d0468ed513"
+    },
+    {
+      "schema": "private",
+      "name": "require_active_admin_user",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": null,
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "15e6194369fbe27203069acd28f0377d",
+      "definition": "98a21ca5b11cbf94c3d0302744af1a87"
+    },
+    {
+      "schema": "public",
+      "name": "activate_admin_invite_with_audit",
+      "args": "p_auth_user_id uuid",
+      "allargs": "p_auth_user_id uuid",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "public.admin_user",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "bf2fb2bd1930449cf31d5b08c7fd1dbb",
+      "definition": "e903ff18bf2a8fb4aba96dae4b640021"
+    },
+    {
+      "schema": "public",
+      "name": "invite_admin_user_with_audit",
+      "args": "p_actor_user_id uuid, p_auth_user_id uuid, p_email text, p_role text, p_sent_at timestamp with time zone",
+      "allargs": "p_actor_user_id uuid, p_auth_user_id uuid, p_email text, p_role text, p_sent_at timestamp with time zone",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "public.admin_user",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "f88eff2b1bdba38aa30beece697acbd5",
+      "definition": "7cbaf83315a7ca98cfbab28c3157a5d4"
+    },
+    {
+      "schema": "public",
+      "name": "log_animal_mutation",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "schema": "public",
+      "name": "resend_admin_invite_with_audit",
+      "args": "p_actor_user_id uuid, p_target_id uuid, p_sent_at timestamp with time zone",
+      "allargs": "p_actor_user_id uuid, p_target_id uuid, p_sent_at timestamp with time zone",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "public.admin_user",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "e05b82dd3594c16a83d48454e79c716c",
+      "definition": "b427c2036b8e61e4218d1565db4ba778"
+    },
+    {
+      "schema": "public",
+      "name": "set_updated_at",
+      "args": "",
+      "allargs": "",
+      "defaults": 0,
+      "default_expression": null,
+      "result": "trigger",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": null,
+      "definer": false,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "9b1889f56258bf9d6554213c05019c76",
+      "definition": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "schema": "public",
+      "name": "update_admin_user_with_audit",
+      "args": "p_actor_user_id uuid, p_target_id uuid, p_role text, p_status text",
+      "allargs": "p_actor_user_id uuid, p_target_id uuid, p_role text DEFAULT NULL::text, p_status text DEFAULT NULL::text",
+      "defaults": 2,
+      "default_expression": "NULL::text, NULL::text",
+      "result": "public.admin_user",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "full_acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "language": "plpgsql",
+      "kind": "f",
+      "cost": 100,
+      "rows": 0,
+      "strict": false,
+      "leakproof": false,
+      "parallel": "u",
+      "volatility": "v",
+      "support": "-",
+      "variadic": "-",
+      "modes": null,
+      "body": "312cdc73dbea4ee651dc575b6c4bb7b5",
+      "definition": "c796e7a761190e3bc644fe2219fca381"
+    }
+  ],
+  "finalTriggers": [
+    {
+      "value": [
+        {
+          "args": "",
+          "attr": "",
+          "name": "audit_admin_user",
+          "qual": null,
+          "type": 29,
+          "index": "-",
+          "nargs": 0,
+          "other": "-",
+          "table": "public.admin_user",
+          "parent": "0",
+          "enabled": "O",
+          "deferred": false,
+          "function": "public.log_animal_mutation()",
+          "internal": false,
+          "newtable": null,
+          "oldtable": null,
+          "constraint": null,
+          "deferrable": false,
+          "dependencies": [
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "n",
+              "refclass": "pg_proc",
+              "refsubid": 0,
+              "reference": "function public.log_animal_mutation()"
+            },
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "a",
+              "refclass": "pg_class",
+              "refsubid": 0,
+              "reference": "table public.admin_user"
+            }
+          ]
+        },
+        {
+          "args": "",
+          "attr": "",
+          "name": "lock_admin_user_mutation",
+          "qual": null,
+          "type": 26,
+          "index": "-",
+          "nargs": 0,
+          "other": "-",
+          "table": "public.admin_user",
+          "parent": "0",
+          "enabled": "O",
+          "deferred": false,
+          "function": "private.lock_admin_user_mutation()",
+          "internal": false,
+          "newtable": null,
+          "oldtable": null,
+          "constraint": null,
+          "deferrable": false,
+          "dependencies": [
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "n",
+              "refclass": "pg_proc",
+              "refsubid": 0,
+              "reference": "function private.lock_admin_user_mutation()"
+            },
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "a",
+              "refclass": "pg_class",
+              "refsubid": 0,
+              "reference": "table public.admin_user"
+            }
+          ]
+        },
+        {
+          "args": "",
+          "attr": "",
+          "name": "require_active_admin_user",
+          "qual": null,
+          "type": 25,
+          "index": "-",
+          "nargs": 0,
+          "other": "-",
+          "table": "public.admin_user",
+          "parent": "0",
+          "enabled": "O",
+          "deferred": false,
+          "function": "private.require_active_admin_user()",
+          "internal": false,
+          "newtable": null,
+          "oldtable": null,
+          "constraint": null,
+          "deferrable": false,
+          "dependencies": [
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "n",
+              "refclass": "pg_proc",
+              "refsubid": 0,
+              "reference": "function private.require_active_admin_user()"
+            },
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "a",
+              "refclass": "pg_class",
+              "refsubid": 0,
+              "reference": "table public.admin_user"
+            }
+          ]
+        },
+        {
+          "args": "",
+          "attr": "",
+          "name": "set_updated_at",
+          "qual": null,
+          "type": 19,
+          "index": "-",
+          "nargs": 0,
+          "other": "-",
+          "table": "public.admin_user",
+          "parent": "0",
+          "enabled": "O",
+          "deferred": false,
+          "function": "public.set_updated_at()",
+          "internal": false,
+          "newtable": null,
+          "oldtable": null,
+          "constraint": null,
+          "deferrable": false,
+          "dependencies": [
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "n",
+              "refclass": "pg_proc",
+              "refsubid": 0,
+              "reference": "function public.set_updated_at()"
+            },
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "a",
+              "refclass": "pg_class",
+              "refsubid": 0,
+              "reference": "table public.admin_user"
+            }
+          ]
+        },
+        {
+          "args": "",
+          "attr": "",
+          "name": "set_updated_at",
+          "qual": null,
+          "type": 19,
+          "index": "-",
+          "nargs": 0,
+          "other": "-",
+          "table": "public.audit_log",
+          "parent": "0",
+          "enabled": "O",
+          "deferred": false,
+          "function": "public.set_updated_at()",
+          "internal": false,
+          "newtable": null,
+          "oldtable": null,
+          "constraint": null,
+          "deferrable": false,
+          "dependencies": [
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "n",
+              "refclass": "pg_proc",
+              "refsubid": 0,
+              "reference": "function public.set_updated_at()"
+            },
+            {
+              "class": "pg_trigger",
+              "subid": 0,
+              "deptype": "a",
+              "refclass": "pg_class",
+              "refsubid": 0,
+              "reference": "table public.audit_log"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "testCommand": [
+    "bun",
+    "test",
+    "--timeout",
+    "15000",
+    "src/lib/admin/atomicForward.database.test.ts",
+    "src/lib/admin/accessFence.database.test.ts"
+  ],
+  "testExit": 0,
+  "testSummary": [
+    " 82 pass",
+    " 0 fail",
+    " 183 expect() calls"
+  ],
+  "postTestsCatalogPreserved": true,
+  "postTestsRowsPreserved": true,
+  "postTestsCompleteMetadataPreserved": true,
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "requiredFinalFlags": [
+    "schemaParity",
+    "fullScannerPassed",
+    "baselineAcceptedBeforeNegatives",
+    "baselineRollbackPreserved",
+    "secondApplyIdempotent",
+    "unaffectedCatalogPreserved",
+    "scopedGlobalGuardExact",
+    "rowsPreserved",
+    "completeAuthDefaultNativeLedgerSequencePreserved",
+    "helpersPreserved",
+    "postTestsCatalogPreserved",
+    "postTestsRowsPreserved",
+    "postTestsCompleteMetadataPreserved",
+    "normalDrop",
+    "templatePreserved",
+    "modernPreserved",
+    "frozenInputsPreserved"
+  ],
+  "failedFinalFlags": [],
+  "receiptType": "composition"
+}

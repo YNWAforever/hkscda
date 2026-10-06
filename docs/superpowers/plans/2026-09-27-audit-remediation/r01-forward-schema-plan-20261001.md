@@ -126,6 +126,8 @@ Files: focused new migration; adjacent domain database tests or supabase/rls-tes
 Follow Common task steps. Expected: before fix missing-target regression fails; after exact forward migration meaningful role/transaction/idempotency tests exit0 and no unintended metadata/data drift. Task10 does not close the other 40 baseline requirements. Source code-complete/schema-ready in isolation is distinct from applied/deployed/operationally-enabled.
 
 
+Task10 bounded supplemental prerequisite (controller rulings36–41, 2026-10-02): the public146 manifest does not inventory the known `private.lock_admin_user_mutation()` and `private.require_active_admin_user()` helpers or their admin_user statement/row triggers. Hosted source lacked these, the browser I/U/D fence and scoped TRUNCATE fence; genuine owned direct-role/last-admin/permission RED required their exact known modern source. Task10 restores only those missing known helpers/triggers and SELECT policy, revokes admin_user I/U/D/TRUNCATE from anon/authenticated, and preserves intentional helper rawACL NULL, service/default/native/TRIGGER/REFERENCES rights. Unknown profiles remain55000; complete guards precede mutations. Public readiness accounting remains four Task10 RPCs. This supplement is outside146 and does not certify production, deployment or enablement.
+
 ### Task 11: Finance callback and receipt commands
 
 Scope (public schema, exact current manifest/call contracts): `fail_pending_provider_payment`, `refund_provider_payment_atomically`, `void_receipt_with_audit`, `void_donation_receipts_with_audit`, `issue_receipt_with_audit`.

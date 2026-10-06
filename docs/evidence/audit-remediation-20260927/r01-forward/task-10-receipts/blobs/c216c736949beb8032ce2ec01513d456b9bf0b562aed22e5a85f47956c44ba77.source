@@ -1,0 +1,20 @@
+{
+  "status": "DONE_WITH_CONCERNS_LOCAL_SOURCE_CONDITIONAL_REVIEW_CI",
+  "sourceCommit": "0e5d1f2867dbe547623c65e92f455a0d1a9a4d21",
+  "finalEvidenceCommit": "13fe5cf921476b297c8db7b680f9041a48e0e196",
+  "finalTree": "eedfd1586dbf457126854de1adab2ed20cca4937",
+  "clean": true,
+  "all65InputsSourceGitArchivesUnchanged": true,
+  "allArchiveGitRawCurrentMatched": true,
+  "translationVersions": 2087,
+  "uniqueArchives": 567,
+  "ownReportSha256": "3812e7ad245d62e33a46dfc40a43cea2cb0aa3cfd63cb690971a4c2497769d34",
+  "ownReportArchive": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-receipts/blobs/3812e7ad245d62e33a46dfc40a43cea2cb0aa3cfd63cb690971a4c2497769d34.source",
+  "bindingReceipt": "task-10-fix1-binding-receipt.json",
+  "initialClosingCheckQualification": "task-10-fix1-final-cache-qualification.json: own Python generated cache retained as .source; no behavioral rerun",
+  "productionApplied": false,
+  "deployed": false,
+  "enabled": false,
+  "at": "2026-10-02T15:50:25.675316+00:00",
+  "qualification": "Closing metadata receipt is own current derived artifact after documentary HEAD, not a behavioral rerun or self-referential committed report."
+}

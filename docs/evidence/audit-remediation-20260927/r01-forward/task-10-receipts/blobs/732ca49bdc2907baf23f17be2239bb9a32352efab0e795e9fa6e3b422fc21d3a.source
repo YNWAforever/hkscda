@@ -1,0 +1,54 @@
+{
+  "ownedID": "07020a1b0de01b2e94a3eac8f8cd2bab445826a696219b148a78fdc2ffe8f18b",
+  "databaseNeverCreated": true,
+  "noVolumes": true,
+  "steps": [
+    {
+      "args": [
+        "docker",
+        "inspect",
+        "r01-task10-fix1-role-20261002-126d7280"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "docker",
+        "exec",
+        "r01-task10-fix1-role-20261002-126d7280",
+        "psql",
+        "-X",
+        "-qAt",
+        "-h",
+        "/tmp",
+        "-U",
+        "supabase_admin",
+        "-d",
+        "postgres",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "select count(*) from pg_database where datname='r01_task10_fix1'"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "docker",
+        "stop",
+        "--time",
+        "10",
+        "r01-task10-fix1-role-20261002-126d7280"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "docker",
+        "rm",
+        "r01-task10-fix1-role-20261002-126d7280"
+      ],
+      "exit": 0
+    }
+  ]
+}
