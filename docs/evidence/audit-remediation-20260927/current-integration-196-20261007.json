@@ -1,0 +1,173 @@
+{
+  "pr": 196,
+  "testedHead": "8916e4c652aca925ba58315bb558d799b9222726",
+  "preparedPrior": "96a21a0029ada150f4be5ffd8304fb1322ebc6d5",
+  "shippingSourceCount": 15,
+  "shippingSourceCanonicallyByteEqualToPriorReviewed": true,
+  "finance": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+  "group": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+  "SQLOrder": "restoration9ed664a6 BEFORE strengthening4e158fad; no restoration replay after fence",
+  "commands": [
+    {
+      "label": "binding-tests",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-receipt.test.ts"
+      ],
+      "pid": 32604,
+      "exit": 0,
+      "seconds": 0.19765290000941604
+    },
+    {
+      "label": "evidence-typecheck",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Bundler",
+        "--resolveJsonModule",
+        "--esModuleInterop",
+        "--types",
+        "bun-types",
+        "--skipLibCheck",
+        "--strict",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+      ],
+      "pid": 21176,
+      "exit": 0,
+      "seconds": 4.116549200000009
+    },
+    {
+      "label": "evidence-lint",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "node_modules/eslint/bin/eslint.js",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-profile.ts",
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-binding.test.ts"
+      ],
+      "pid": 60088,
+      "exit": 0,
+      "seconds": 21.066932399990037
+    },
+    {
+      "label": "typecheck",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "typecheck"
+      ],
+      "pid": 34168,
+      "exit": 0,
+      "seconds": 48.95571739997831
+    },
+    {
+      "label": "tests",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "--isolate",
+        "--timeout",
+        "30000"
+      ],
+      "pid": 23664,
+      "exit": 0,
+      "seconds": 92.94209480000427
+    },
+    {
+      "label": "lint",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "lint"
+      ],
+      "pid": 50500,
+      "exit": 0,
+      "seconds": 57.24224269998376
+    },
+    {
+      "label": "build",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "build"
+      ],
+      "pid": 22156,
+      "exit": 0,
+      "seconds": 112.44340809999267
+    }
+  ],
+  "fullSuiteSummary": [
+    "(skip) common\u2192shelter\u2192template resolution, registry references and stale source publication",
+    "",
+    " 4287 pass",
+    " 634 skip",
+    " 0 fail",
+    " 12207 expect() calls",
+    "Ran 4921 tests across 631 files. [92.38s]"
+  ],
+  "fullLint": {
+    "warnings": 52,
+    "errors": 0
+  },
+  "completeSharedHashes": {
+    "template": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "modern": "f5b51515bcf790adf7928168478ef94eabbf7331a84420fe744ab7f04e75028b"
+  },
+  "completeSharedBeforeAfterEqualAndRecomputed": true,
+  "allFrozenInputsPreserved": true,
+  "environmentKeys": [
+    "APPDATA",
+    "COMSPEC",
+    "DATABASE_URL",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "SUPABASE_LOCAL_ANON_KEY",
+    "SUPABASE_LOCAL_SERVICE_ROLE_KEY",
+    "SUPABASE_LOCAL_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "VITE_SUPABASE_ANON_KEY",
+    "VITE_SUPABASE_URL",
+    "WINDIR"
+  ],
+  "dotenvDisabled": true,
+  "sourceFixtureOptinsAbsent": true,
+  "freeBytesBefore": 3597557760,
+  "freeBytesAfter": 2964287488,
+  "archiveManifest": "docs/evidence/audit-remediation-20260927/current-integration-196-20261007-manifest.json",
+  "mandatoryNativeCI": "PENDING current finance67/Group34/document1+36assert0skip before merge",
+  "historicalLocal55321Preservation": "UNKNOWN/no before snapshot; not contacted",
+  "historicalTypedRawRestoration": "original failed pg_statistic/inventory proof preserved; NOT inferred from passing source gates",
+  "providerJWTUAT": "NOT_RUN",
+  "productionApplied": false,
+  "paymentDeliveryMediaEnabled": false,
+  "actualControllerCommand": {
+    "argv": [
+      ".superpowers\\sdd\\sequential-merge-20261006\\package196-current-20261007.py"
+    ],
+    "pid": 50752,
+    "exitOnCompletion": 0
+  }
+}
