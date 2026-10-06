@@ -1,0 +1,3 @@
+*.stdout -text
+*.stderr -text
+*.receipt.json -text

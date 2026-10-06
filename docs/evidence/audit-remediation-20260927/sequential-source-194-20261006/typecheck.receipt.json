@@ -1,0 +1,29 @@
+{
+  "atUtc": "2026-10-06T17:40:19.144783+00:00",
+  "endUtc": "2026-10-06T17:41:19.312587+00:00",
+  "gate": "typecheck",
+  "argv": [
+    "C:/Program Files/nodejs/node.exe",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\node_modules\\typescript\\bin\\tsc",
+    "--noEmit"
+  ],
+  "pid": 46972,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+  "sha": "aec27c3cb2c9a8d2449a4fb3b341702a637500b1",
+  "tree": "0cebf7bcc977c86490fa5890d77a89e03c922303",
+  "exit": 0,
+  "elapsedSeconds": 60.16781399998581,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\aec27c3cb2c9a8d2449a4fb3b341702a637500b1\\typecheck.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\aec27c3cb2c9a8d2449a4fb3b341702a637500b1\\typecheck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
