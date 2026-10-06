@@ -1,0 +1,373 @@
+{
+  "mode": "additive-current-tool-final-blob-binding-v1",
+  "inspectorPid": 37212,
+  "tools": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-adapter.ts",
+      "bytes": 44424,
+      "sha256": "733c09f51f2aa01236f13b6d5513b39ac5c1f6994118695b795a277f3bfc4975",
+      "rawGitBlob": "9d1ccd93f1ced5f0daa0a61df58f8e5328879a11",
+      "archiveEntry": "raw/733c09f51f2aa01236f13b6d5513b39ac5c1f6994118695b795a277f3bfc4975-44424.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 45148,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/733c09f51f2aa01236f13b6d5513b39ac5c1f6994118695b795a277f3bfc4975-44424.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-format-verify-v2.ts",
+      "bytes": 1796,
+      "sha256": "5e53657c739ac961aac732323a97dcd9985a5b04f68d23c60ce204f574cd01b9",
+      "rawGitBlob": "f996d720818a2e4484f6e73e643327575cc6f693",
+      "archiveEntry": "raw/5e53657c739ac961aac732323a97dcd9985a5b04f68d23c60ce204f574cd01b9-1796.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 55720,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/5e53657c739ac961aac732323a97dcd9985a5b04f68d23c60ce204f574cd01b9-1796.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-format-verify.ts",
+      "bytes": 633,
+      "sha256": "9225428ed438aa2b9ce7374c77f22b58e45e0ffa519ba837be0b3cf832081df9",
+      "rawGitBlob": "17252156c5a08cf61bc5caf8992639f1760fb512",
+      "archiveEntry": "raw/9225428ed438aa2b9ce7374c77f22b58e45e0ffa519ba837be0b3cf832081df9-633.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 46108,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/9225428ed438aa2b9ce7374c77f22b58e45e0ffa519ba837be0b3cf832081df9-633.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-gates.py",
+      "bytes": 4576,
+      "sha256": "7465dd7185d5e29da684e5bf862ddb9ee7766bfe1e6b3419a674e9f1866b5753",
+      "rawGitBlob": "d3352af9002a0ae6f14b591d2a43925a5bc3943e",
+      "archiveEntry": "raw/7465dd7185d5e29da684e5bf862ddb9ee7766bfe1e6b3419a674e9f1866b5753-4576.bin",
+      "preInvocationFrozenReceipts": [],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 55656,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/7465dd7185d5e29da684e5bf862ddb9ee7766bfe1e6b3419a674e9f1866b5753-4576.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-original-task-11-cold-hosted-transport-adapter.ts",
+      "bytes": 45295,
+      "sha256": "39698a16669dbc3619d4ceb722d8ab88b3d5f3cd93eb390a1d066dd8fa800099",
+      "rawGitBlob": "4976a21459430c230cfd16e382a088baee2924ae",
+      "archiveEntry": "raw/39698a16669dbc3619d4ceb722d8ab88b3d5f3cd93eb390a1d066dd8fa800099-45295.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 60440,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/39698a16669dbc3619d4ceb722d8ab88b3d5f3cd93eb390a1d066dd8fa800099-45295.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-original-task-11-cold-stage-states.ts",
+      "bytes": 948,
+      "sha256": "b5e059b8b4f00c40dabfc1bf5ff6753ce98b8b861f50f92f466125d5fd8c2094",
+      "rawGitBlob": "12f7e1c548fd31e03ef5bffb7b25966818362912",
+      "archiveEntry": "raw/b5e059b8b4f00c40dabfc1bf5ff6753ce98b8b861f50f92f466125d5fd8c2094-948.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 36480,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/b5e059b8b4f00c40dabfc1bf5ff6753ce98b8b861f50f92f466125d5fd8c2094-948.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-original-task-11-recovery-state-adapter.ts",
+      "bytes": 43220,
+      "sha256": "e88ffb0886af2fb14484ade769c3d1ce6dc48a5752639f5c12b2cec740fa85bf",
+      "rawGitBlob": "9ed085c5c4c3a0be2dfb5ec1a66655c3a8787273",
+      "archiveEntry": "raw/e88ffb0886af2fb14484ade769c3d1ce6dc48a5752639f5c12b2cec740fa85bf-43220.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 35536,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/e88ffb0886af2fb14484ade769c3d1ce6dc48a5752639f5c12b2cec740fa85bf-43220.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-package.py",
+      "bytes": 3351,
+      "sha256": "16de011293cd306f85123d62e2e64661c0d1352b73b7b6f043b06286b788cd18",
+      "rawGitBlob": "ff395050ac6d1be2b7e4ad9eb1a817b07c12b91c",
+      "archiveEntry": "raw/16de011293cd306f85123d62e2e64661c0d1352b73b7b6f043b06286b788cd18-3351.bin",
+      "preInvocationFrozenReceipts": [],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 56656,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/16de011293cd306f85123d62e2e64661c0d1352b73b7b6f043b06286b788cd18-3351.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-profile-before-format.ts",
+      "bytes": 6171,
+      "sha256": "88415f30ebb253fd9238565e38162d236905ce11d06bc2e95c91cb16ff2416b8",
+      "rawGitBlob": "a4c8464627ecd81bd3dd362d781cfc8556a68527",
+      "archiveEntry": "raw/88415f30ebb253fd9238565e38162d236905ce11d06bc2e95c91cb16ff2416b8-6171.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 19560,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/88415f30ebb253fd9238565e38162d236905ce11d06bc2e95c91cb16ff2416b8-6171.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-qualify.py",
+      "bytes": 8721,
+      "sha256": "8c934a64394f6513d4887f35eb154695b26ceacba6869165872a072d97a06e8e",
+      "rawGitBlob": "8c4c89141eb85980af5c8c38789d9a8a70efe125",
+      "archiveEntry": "raw/8c934a64394f6513d4887f35eb154695b26ceacba6869165872a072d97a06e8e-8721.bin",
+      "preInvocationFrozenReceipts": [],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 39468,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/8c934a64394f6513d4887f35eb154695b26ceacba6869165872a072d97a06e8e-8721.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-rehearse-v2.ts",
+      "bytes": 16747,
+      "sha256": "c37d8f7be439f684ebb939eb07b21e3a13f8c98a40a6dfb8a34080ea1364ca1e",
+      "rawGitBlob": "a6f0657cf534991db4c181817a00df67f569e620",
+      "archiveEntry": "raw/c37d8f7be439f684ebb939eb07b21e3a13f8c98a40a6dfb8a34080ea1364ca1e-16747.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 8784,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/c37d8f7be439f684ebb939eb07b21e3a13f8c98a40a6dfb8a34080ea1364ca1e-16747.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-rehearse.ts",
+      "bytes": 16356,
+      "sha256": "fd2869876bfc29730e201f1dd4eda497c5ff5b6a4abfa77675f695a2e6cd0f67",
+      "rawGitBlob": "db5ccb2e9e655a8d4edf141a8cccfcc6fa215a0a",
+      "archiveEntry": "raw/fd2869876bfc29730e201f1dd4eda497c5ff5b6a4abfa77675f695a2e6cd0f67-16356.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 28920,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/fd2869876bfc29730e201f1dd4eda497c5ff5b6a4abfa77675f695a2e6cd0f67-16356.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage.py",
+      "bytes": 3825,
+      "sha256": "2567e73bda0eef97dab15f8b210d1fca713d3fd203b972cef381e7b3a6e39441",
+      "rawGitBlob": "a8ca38a5b9f20f62d1f29ad7aa4d1536291d44d4",
+      "archiveEntry": "raw/2567e73bda0eef97dab15f8b210d1fca713d3fd203b972cef381e7b3a6e39441-3825.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 54252,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/2567e73bda0eef97dab15f8b210d1fca713d3fd203b972cef381e7b3a6e39441-3825.bin"
+      }
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-states.ts",
+      "bytes": 875,
+      "sha256": "123e6ff1f5bcfc572d412be00e43322bdc4242060bc27d2724039a559205f73f",
+      "rawGitBlob": "04824050233e74b6cf5df00023d5f23486e9e99c",
+      "archiveEntry": "raw/123e6ff1f5bcfc572d412be00e43322bdc4242060bc27d2724039a559205f73f-875.bin",
+      "preInvocationFrozenReceipts": [
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_green-1791323964825955500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323818827890100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-binding_red-1791323924737560000/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_bridge_final-1791324682404331600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-format_verify-1791324303895557500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern-1791323998920476500/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324103961601800/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-modern_repeat-1791324331039684600/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates-1791324179951312100/frozen.json",
+        ".superpowers/sdd/r01-forward-schema-plan-20261001/task-12-current-stage-source_gates_final-1791324433147542100/frozen.json"
+      ],
+      "actualCommand": {
+        "argv": [
+          "git",
+          "hash-object",
+          "--no-filters",
+          "--stdin"
+        ],
+        "pid": 50296,
+        "exit": 0,
+        "exactStdinArchiveEntry": "raw/123e6ff1f5bcfc572d412be00e43322bdc4242060bc27d2724039a559205f73f-875.bin"
+      }
+    }
+  ],
+  "oldArchiveAndQualifierUnchanged": true,
+  "ignoredToolsNotClaimedCommittedGitPaths": true,
+  "qualifications": [
+    "First Git extended-path inspection failed128 No such file; actual retained/archive bytes were equal; native stdin hashing above consumes those exact bytes",
+    "First pre-invocation lookup assertion used slash keys against Windows backslash receipt keys and failed; final lookup preserves original receipt bytes, maps only locator separators, never normalizes compared payload/hash",
+    "Packaging/qualification tools created after source-gates are metadata-only, not executable source gate inputs"
+  ],
+  "metadataEncoding": "UTF8 LF"
+}
