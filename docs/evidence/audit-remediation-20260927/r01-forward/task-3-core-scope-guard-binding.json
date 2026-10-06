@@ -1,0 +1,382 @@
+{
+  "base": "66766c17f8c69d54fedd9d063b68949761e6047d",
+  "scope": "separate test-only own-proconfig guard; no migrations",
+  "executableBlobs": {
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "da5c9f4160127425967e65c529c2f5b0704a098dbd2cc3018bd694328cece190",
+      "gitBlob": "0c590bd5546f9d9f1a4d8e259792a5606b79f404"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.test.ts": {
+      "sha256": "235204931ea94e8777922fc3c96b5580342321d753be36493fbfde4c784c4948",
+      "gitBlob": "f945b3c52f4ce2776a3139bbe1b679fa1ec82747"
+    },
+    "supabase/rls-tests/helpers/runR01CoreScopeGuard.ts": {
+      "sha256": "02e9be947518c089d7991906d01b19cc44d36259268bba5128aa15004838612f",
+      "gitBlob": "981538c15a258ad5bafa4c0b9ee83e27254b4a74"
+    }
+  },
+  "pureRed": {
+    "command": "bun test supabase/rls-tests/helpers/productionSchemaClone.test.ts --timeout 30000",
+    "exit": 1,
+    "pass": 30,
+    "fail": 2,
+    "assertions": 325
+  },
+  "pureGreen": {
+    "command": "same",
+    "exit": 0,
+    "pass": 32,
+    "fail": 0,
+    "assertions": 330
+  },
+  "finalActualRuns": {
+    "hosted": {
+      "mode": "hosted",
+      "startedAt": "2026-10-01T16:04:21.571Z",
+      "testedExecutableBlobs": {
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": "da5c9f4160127425967e65c529c2f5b0704a098dbd2cc3018bd694328cece190",
+        "supabase/rls-tests/helpers/productionSchemaClone.test.ts": "235204931ea94e8777922fc3c96b5580342321d753be36493fbfde4c784c4948",
+        "supabase/rls-tests/helpers/runR01CoreScopeGuard.ts": "02e9be947518c089d7991906d01b19cc44d36259268bba5128aa15004838612f"
+      },
+      "productionActions": "schema/catalog reads only; zero production rows/actor RPC",
+      "migrationsApplied": false,
+      "clone": "r01_clone_55f13bd5b9c948fd84045cbc12a6b001",
+      "zeroApplicationTables": 158,
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "manualPathMetadata": [
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "profile jsonb",
+          "name": "is_valid_animal_public_profile",
+          "owner": "postgres",
+          "config": [
+            "search_path=pg_catalog, pg_temp"
+          ],
+          "result": "boolean",
+          "schema": "private",
+          "bodyMd5": "8dcbee84f0c4a120e7420fdf37c51af0",
+          "definer": false,
+          "parallel": "u",
+          "volatility": "i"
+        },
+        {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "p_age text",
+          "name": "normalize_public_animal_age",
+          "owner": "postgres",
+          "config": [
+            "search_path=pg_catalog, pg_temp"
+          ],
+          "result": "text",
+          "schema": "private",
+          "bodyMd5": "1f85086f172d61fff31de8d854f32a55",
+          "definer": false,
+          "parallel": "u",
+          "volatility": "i"
+        },
+        {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "log_animal_mutation",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "264525288c36bf724df4dc72dcafba82",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        {
+          "acl": [
+            {
+              "grantee": "anon",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "set_animal_catalog_membership_defaults",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "16d251076045243facecbe0088b5422c",
+          "definer": false,
+          "parallel": "u",
+          "volatility": "v"
+        }
+      ],
+      "managedAuthUidHash": "5dd851706ecb5893606782fd9e2cbf83",
+      "guardPassed": true,
+      "actualGeneratedAge": "adult",
+      "rowsCatalogLedgerPreserved": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+        "modernPreserved": true
+      },
+      "testedExecutableBlobsPreserved": true,
+      "cleanup": "exact owned clone dropped normally; no force/session termination",
+      "completedAt": "2026-10-01T16:05:06.448Z"
+    },
+    "modern": {
+      "mode": "modern",
+      "startedAt": "2026-10-01T16:05:07.260Z",
+      "testedExecutableBlobs": {
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": "da5c9f4160127425967e65c529c2f5b0704a098dbd2cc3018bd694328cece190",
+        "supabase/rls-tests/helpers/productionSchemaClone.test.ts": "235204931ea94e8777922fc3c96b5580342321d753be36493fbfde4c784c4948",
+        "supabase/rls-tests/helpers/runR01CoreScopeGuard.ts": "02e9be947518c089d7991906d01b19cc44d36259268bba5128aa15004838612f"
+      },
+      "productionActions": "schema/catalog reads only; zero production rows/actor RPC",
+      "migrationsApplied": false,
+      "clone": "r01_clone_3248e0c0b079414ab4d8e37e0709d6dc",
+      "zeroApplicationTables": 162,
+      "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "manualPathMetadata": [
+        {
+          "acl": [
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "profile jsonb",
+          "name": "is_valid_animal_public_profile",
+          "owner": "postgres",
+          "config": [
+            "search_path=pg_catalog, pg_temp"
+          ],
+          "result": "boolean",
+          "schema": "private",
+          "bodyMd5": "8dcbee84f0c4a120e7420fdf37c51af0",
+          "definer": false,
+          "parallel": "u",
+          "volatility": "i"
+        },
+        {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "p_age text",
+          "name": "normalize_public_animal_age",
+          "owner": "postgres",
+          "config": [
+            "search_path=pg_catalog, pg_temp"
+          ],
+          "result": "text",
+          "schema": "private",
+          "bodyMd5": "1f85086f172d61fff31de8d854f32a55",
+          "definer": false,
+          "parallel": "u",
+          "volatility": "i"
+        },
+        {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "log_animal_mutation",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "264525288c36bf724df4dc72dcafba82",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        {
+          "acl": [
+            {
+              "grantee": "anon",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "authenticated",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "set_animal_catalog_membership_defaults",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "fa013ae528d796d1cdee6f769d16abeb",
+          "definer": false,
+          "parallel": "u",
+          "volatility": "v"
+        }
+      ],
+      "managedAuthUidHash": "5dd851706ecb5893606782fd9e2cbf83",
+      "guardPassed": true,
+      "actualGeneratedAge": "adult",
+      "rowsCatalogLedgerPreserved": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "d74b0af514ded18ba9f22df2ce0669907d4b95a3e7510e338a47068253aeef60",
+        "modernPreserved": true
+      },
+      "testedExecutableBlobsPreserved": true,
+      "cleanup": "exact owned clone dropped normally; no force/session termination",
+      "completedAt": "2026-10-01T16:05:17.869Z"
+    }
+  },
+  "retainedIgnoredLogs": [
+    {
+      "file": "task-3-guard-red.log",
+      "sha256": "7920b094beff5da7ad7174b9495dd7f6df43198d3792afad78dfe7d9ce5e2f1f",
+      "bytes": 6795
+    },
+    {
+      "file": "task-3-guard-green.log",
+      "sha256": "26e97861f89aa532d15c39c63b428305dccc5316246f77ae35b4a63f5d712382",
+      "bytes": 4314
+    },
+    {
+      "file": "task-3-guard-hosted-auth-metadata-refusal.json",
+      "sha256": "7bd9f7edb256fc9d9f8ed40c5960d81f9f299093637813755d66c624c244db61",
+      "bytes": 1219
+    },
+    {
+      "file": "task-3-guard-modern-membership-refusal.json",
+      "sha256": "7f93f26f9ee7539a9598da352bd103e0624d02673e6a387c93d2086a37de3ffd",
+      "bytes": 1219
+    },
+    {
+      "file": "task-3-guard-hosted-before-modern-path-review.json",
+      "sha256": "82f127aded0e6c69d1f0c48df5d4c5312d1ba0a237440ef3f3b03ed75117c622",
+      "bytes": 4603
+    }
+  ],
+  "fullCompositionGates": "pending final composition; not claimed by this slice"
+}

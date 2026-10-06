@@ -799,3 +799,200 @@ describe("R01 test-only clone boundaries", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("R01 function's own pinned operator scope", () => {
+  test("dynamic EXECUTE cannot hide behind parentheses, comments or newlines in any scope", async () => {
+    for (const statement of [
+      "EXECUTE('SELECT 1');",
+      "EXECUTE/*comment*/'SELECT 1';",
+      "EXECUTE\n('SELECT 1');",
+      "EXECUTE--comment\n'SELECT 1';",
+    ]) {
+      for (const config of [undefined, ["search_path=pg_catalog, pg_temp"]]) {
+        const body = `BEGIN ${statement} END;`;
+        await expect(
+          assertSafeFixtureTables(
+            metadataOnlyProbe(
+              [
+                {
+                  schema: "public",
+                  name: "entry",
+                  body,
+                  source: body,
+                  language: "plpgsql",
+                  system: false,
+                  config,
+                },
+              ],
+              "public.entry",
+            ),
+            ["synthetic"],
+          ),
+        ).rejects.toThrow();
+      }
+    }
+  });
+  const source = `
+declare
+  value text := lower(btrim(p_age));
+  matched text[];
+  amount numeric;
+begin
+  if length(value)>50 then return 'unknown'; end if;
+  matched := regexp_match(value,
+    '^(約[[:space:]]*|大約[[:space:]]*|about[[:space:]]+)?([0-9]+([.][0-9]+)?)[[:space:]]*(個月|个月|月|months?|mos?)([[:space:]]+old)?$');
+  if matched is not null then
+    amount := matched[2]::numeric;
+    if amount>600 then return 'unknown'; end if;
+    if amount<12 then return 'bb'; end if;
+    if amount<96 then return 'adult'; end if;
+    return 'senior';
+  end if;
+  matched := regexp_match(value,
+    '^(約[[:space:]]*|大約[[:space:]]*|about[[:space:]]+)?([0-9]+([.][0-9]+)?)[[:space:]]*(歲|岁|years?|yrs?)([[:space:]]+old)?$');
+  if matched is not null then amount := matched[2]::numeric;
+  elsif value ~ '^[0-9]+([.][0-9]+)?$' then amount := value::numeric;
+  else return 'unknown'; end if;
+  if amount>50 then return 'unknown'; end if;
+  if amount<1 then return 'bb'; end if;
+  if amount<8 then return 'adult'; end if;
+  return 'senior';
+end `;
+  const pinned = (): FunctionProbe => ({
+    schema: "private",
+    name: "normalize_public_animal_age",
+    body: source,
+    source,
+    language: "plpgsql",
+    system: false,
+    owner: "postgres",
+    config: ["search_path=pg_catalog, pg_temp"],
+  });
+  const operators: OperatorProbe[] = [
+    {
+      oid: 641,
+      schema: "pg_catalog",
+      name: "~",
+      system: true,
+      implementation: "pg_catalog.textregexeq",
+    },
+    {
+      oid: 100001,
+      schema: "public",
+      name: "~",
+      system: false,
+      implementation: "public.texticregexeq",
+    },
+  ];
+  const check = (functions: FunctionProbe[], ops = operators) =>
+    assertSafeFixtureTables(
+      metadataOnlyProbe(
+        functions,
+        "private.normalize_public_animal_age",
+        "private.normalize_public_animal_age(age)",
+        ops,
+      ),
+      ["synthetic"],
+    );
+  test("exact normalization body with its own core scope permits unrelated public regex overloads", async () => {
+    // Full source identity is retained; the guard does not whitelist this function.
+    const { createHash } = await import("node:crypto");
+    expect(createHash("md5").update(source).digest("hex")).toBe("902aa35cba73b0cc25834c9f5ab1a78c");
+    await expect(check([pinned()])).resolves.toBeUndefined();
+  });
+  test("absent, public, reordered or expanded own config stays refused", async () => {
+    for (const config of [
+      undefined,
+      ["search_path=public, pg_catalog"],
+      ["search_path=pg_temp, pg_catalog"],
+      ["search_path=pg_catalog, pg_temp", "work_mem=4MB"],
+    ])
+      await expect(check([{ ...pinned(), config }])).rejects.toThrow();
+  });
+  test("explicit public operators and missing or high-OID core candidates stay refused", async () => {
+    await expect(
+      check([
+        {
+          ...pinned(),
+          body: "PERFORM 'a' OPERATOR(public.~) 'a';",
+          source: "PERFORM 'a' OPERATOR(public.~) 'a';",
+        },
+      ]),
+    ).rejects.toThrow();
+    await expect(
+      check(
+        [pinned()],
+        operators.filter((o) => !o.system),
+      ),
+    ).rejects.toThrow();
+    await expect(
+      check(
+        [pinned()],
+        [
+          ...operators,
+          {
+            oid: 100002,
+            schema: "pg_catalog",
+            name: "~",
+            system: false,
+            implementation: "pg_catalog.impostor",
+          },
+        ],
+      ),
+    ).rejects.toThrow();
+  });
+  test("scope-changing statements inspect prosrc, including RESET ALL", async () => {
+    for (const statement of [
+      "SET search_path=public;",
+      "SET LOCAL search_path=public;",
+      'SET SESSION "search_path"=public;',
+      "RESET search_path;",
+      'RESET "search_path";',
+      "RESET ALL;",
+      "SET/* comment */search_path=public;",
+      "RESET/* comment */ALL;",
+      "UPDATE synthetic SET value=1;",
+      "PERFORM set_config('search_path','public',false);",
+      "EXECUTE 'select 1';",
+    ])
+      await expect(
+        check([{ ...pinned(), body: source + statement, source: source + statement }]),
+      ).rejects.toThrow();
+    await expect(
+      check([{ ...pinned(), body: "SET search_path TO 'pg_catalog', 'pg_temp';\n" + source }]),
+    ).resolves.toBeUndefined();
+  });
+  test("pinned caller never gives an unpinned transitive callee its scope", async () => {
+    const forward = {
+      ...pinned(),
+      body: "PERFORM bridge.forward();",
+      source: "PERFORM bridge.forward();",
+    };
+    await expect(
+      check([
+        forward,
+        {
+          schema: "bridge",
+          name: "forward",
+          body: "PERFORM 'a' ~ 'a';",
+          source: "PERFORM 'a' ~ 'a';",
+          language: "plpgsql",
+          system: false,
+        },
+      ]),
+    ).rejects.toThrow();
+  });
+  test("qualified unknown, network and unreviewed native calls remain refused", async () => {
+    for (const body of [
+      "PERFORM bridge.missing();",
+      "PERFORM net.http_post('synthetic');",
+      "PERFORM bridge.opaque();",
+    ])
+      await expect(
+        check([
+          { ...pinned(), body, source: body },
+          { schema: "bridge", name: "opaque", body: "", language: "internal", system: false },
+        ]),
+      ).rejects.toThrow();
+  });
+});
