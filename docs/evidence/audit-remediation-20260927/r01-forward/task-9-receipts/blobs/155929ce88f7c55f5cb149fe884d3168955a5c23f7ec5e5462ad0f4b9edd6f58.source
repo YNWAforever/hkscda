@@ -1,0 +1,20 @@
+{
+  "checkedAtUtc": "2026-10-02T06:24:34.299414+00:00",
+  "mode": "readonly exact version qualification; no source/gate/DB reruns",
+  "archivedPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\docs\\evidence\\audit-remediation-20260927\\r01-forward\\task-9-receipts\\blobs\\8849e33f8400d49d5c56d5f350ae95d33797c322be8fd414452b1e7fcd48e1fd.source",
+  "currentPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-brief.md",
+  "archived": {
+    "bytes": 19882,
+    "rawSha256": "8849e33f8400d49d5c56d5f350ae95d33797c322be8fd414452b1e7fcd48e1fd",
+    "canonicalSha256": "c9795ce0908a2491b6b5c00d8b1b58cf3d2d1a48b3fa12ead9641023ea0dc7de"
+  },
+  "current": {
+    "bytes": 20180,
+    "rawSha256": "938df16d6e4bf8deaa4c1b86fa379c12ca8f956331e66207d4a6ca3fa1a081dd",
+    "canonicalSha256": "0c79155150eebe6fe2f7832750a28b3f9dd5036fcd6a82a67cce0bc336e0227b"
+  },
+  "unifiedTextDiff": "--- immutable archived brief 8849e33f\n+++ current ignored brief\n@@ -90,3 +90,6 @@\n ## Controller Ruling30\r\n \r\n Genuine missing-target and exactlegacy mutation actorRED are recorded. Read task-9-actor-ruling30.md for only the minimum inline Auth->admin share-lock fence/public SQLwrapper->plpgsql compatibility, exactprivate/default preservation and required real2transaction tests. Searchactorless service contract unchanged; no newversion/identity/grant/helper/sourceguard orprod authority.\r\n+\n+## Controller Ruling31\n+Actual incomingFK enabled-state drift was accepted by current origin-only native projection. Read task-9-native-ruling31.md for exact tightening scope, actual negative evidence, fresh final binding/gates/review requirements and unchanged permissions/production boundaries.\r\n",
+  "rawIdentical": false,
+  "textIdenticalIgnoringBomAndCRLF": false,
+  "historicalArchiveRewritten": false
+}

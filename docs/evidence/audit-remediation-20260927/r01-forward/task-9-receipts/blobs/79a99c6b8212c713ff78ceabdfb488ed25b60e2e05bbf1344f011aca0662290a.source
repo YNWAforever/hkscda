@@ -1,0 +1,323 @@
+# Task9 Fix3 full implementation report
+
+Written 2026-10-02T08:25:00.263302+00:00 after packaging. Final HEAD `9df26366cc719d0f92530a784da6871d0db81398`; branch `codex/audit-r01-adoption-atomic-20261002`; `git status --short` exit0 and empty. Source commit `8821c8f8facc8146ac61c8b305ab79f41768fec8`; FIX_BASE `fff2aa600a2d0053e007632bd24ce88a5b517541`; original clean BASE `d0403a1869ea6dead498e62aebe9723e95c3ec19`. Final evidence commit is a descendant of source8821, with the disclosed manifest row and evidence only.
+
+This report is written after the packaging commit. It is separate current evidence and does not replace or relabel any immutable historical translation/runtime proof. Original task-9-report.md retains its entire previous body as an exact byte prefix and receives this covering append. Fix1/Fix2 reports and all previous failure receipts are retained.
+
+## Execution and actual environment
+
+Commands in the table use ENV=1 notation for the explicit opt-in. Windows PowerShell supplies `R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES=1` to the owned runner/diagnostic; no provider credentials are loaded or printed. The child testCommand/clone environment is recorded verbatim in each receipt below. Gate orchestration runs `python docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py`; it clears inherited feature DB and fixture opt-ins, uses loopback57322/52321 and build54329 placeholder configuration. No mutation of dedicated/template data is used to produce a RED. Existing historical component DDL is replayed only in a fresh zero-data owned clone and fully rolled back for diagnosis.
+
+Initial sandbox bootstrap failed before execution (deny-read ACL helper failure). The controller authorized narrowly justified require_escalated reads/tests/source operations in this assigned worktree. No automatic action rejection occurred or was bypassed. Read-only setup failures while inspecting metadata (initial wrong graph argument / cp950 decoding) are qualified as setup issues, not SQL refusal evidence; corrected UTF8/source reads succeeded.
+
+## Complete Fix3 evidence
+
+# Task9 Fix3: exact supporter source-component profile
+
+FIX_BASE `fff2aa600a2d0053e007632bd24ce88a5b517541`; tested source `8821c8f8facc8146ac61c8b305ab79f41768fec8`. Same assigned worktree/branch. Ruling32 only; I1/I2 remain fixed, M1Minor deferred.
+
+## Actual failed CI and unchanged-source RED
+
+Original PR192/exactfff CI36978660763 attempt1: workflow aggregateSUCCESS concealed rls-matrix110748791450 FAILURE during bunx supabase start on17.11.0.002. SQLSTATE55000: R01 adoption table metadata differs: supporter; all behavioral steps skipped. Other4individualjobsSUCCESS. All5original rawlogs/finalreceipt retained and byte/hash-verified; RLS270840bytes/rawSHA3b277167427e182851849f8f2263a1fbd52ea600e7e318b61f347b9c68ca2986. No CI retry requested or run. Initial metadata snapshot was in_progress; final receipt is authoritative for completed job outcomes.
+
+`R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES=1 bun docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-3-diagnose.ts diagnose` parent0 with actual unchangede6a SQL55000/supporter. task-9-fix-3-red-1790927158262 binds65rawinputs, exact maintenance28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a plus assignmentwhole941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09/fragmentc810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c. Fresh modern zero-data clone/full unchanged5352 scanner; known baseline accepted/forcedrollback, source reconstruction inside one rollback, fullcatalog/Auth/default/native/helper/role/index/ledger/sequence/row preservation and normalDROP/template/modern/frozen alltrue. This expected-defect diagnostic parent0 does not mean the SQL was accepted.
+
+Actual supporter complete profile8ac590a6fec96f6c2cbaa48e7be16c97→6283c96ed21f1197474461a8028892e1. Onlyrelations+columns ACL differ frommodern: authenticated table INSERT/UPDATE absent, explicit nongrantable INSERT/UPDATE on11nonassignmentcolumns; crm_assignee_user_id excluded. Hosted differs onlyrelations. Other9 complete profiles exactlymatchmodern; all nonACL supporter fields and complete extraAuth/default/native328/index/helper/roles/memberships/ledger/sequences unchanged ([]). Complete old/component facet values and source fragments are bound independently, not copied from Task6 allowance. Rootverified65rawinputs/receipt1f11d71f/diffac483828 beforeRuling32. 17.6 reconstruction is distinct from exact17.11 startup.
+
+## Minimum repair and final validation
+
+SQL adds only complete supporter6283 as third exact MD5 alternative, retaining3148 and8ac. Exact binary comparison proved olde6a SQL plus35bytes in that single guard equals newe690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992/352912bytes. All other SQL/private/body/default/grant/Auth/native/actor/error/signature bytes remain exact. Generator binds the full captured alternative and asserts other9/extrafacets. Owned runner reproduces exact bound source fragments only in its disposable component clone, then preserves that actual ACL as baseline. No grant/default/RLS normalization or metadata repair in Task9 SQL.
+
+Gate admission now requires hosted+modern+component and identical raw input maps; every existing I1 final flag remains exacttrue. Inert receipts include all3profiles; I2parent mkdir/unique/finally cleanup preserved. New component negatives grant excluded assignment UPDATE and allowed name UPDATE WITH GRANT OPTION; both are actual55000/fullrollback. Existing70/78refusals remain. Formatting completed before freezing.
+
+| Command | Actual exit/result | Receipt/log |
+|---|---|---|
+| `R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES=1 bun supabase/rls-tests/helpers/runR01AdoptionAtomic.ts hosted` | 0;61pass0fail195assert;70 actual55000refusals | task-9-hosted-1790928080801/receipt.json |
+| `R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES=1 bun supabase/rls-tests/helpers/runR01AdoptionAtomic.ts modern` | 0;61pass0fail195assert;78 actual55000refusals | task-9-modern-1790928423473/receipt.json |
+| `R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES=1 bun supabase/rls-tests/helpers/runR01AdoptionAtomic.ts component` | 0;61pass0fail195assert;80 actual55000refusals | task-9-component-1790927901903/receipt.json |
+| `bun run typecheck` | 0;34.13s | task-9-gates-1790928679243249400/typecheck.log |
+| `bun test --isolate --timeout 30000` | 0;94.08s;3280 pass,391 skip,0 fail,10609 expect() calls | task-9-gates-1790928679243249400/tests.log |
+| `bun run lint` | 0;29.7s | task-9-gates-1790928679243249400/lint.log |
+| `bun run build` | 0;77.84s | task-9-gates-1790928679243249400/build.log |
+
+`python docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py` actual0. Three profiles share66frozen DBinputs; gates73unique rawinputs. Positivebaseline/twoapplies/idempotence/fullunaffectedcatalog/rows/helper/Auth/default/native/ledger/sequence/posttests preservation/normalDROP/fourfinalflags allpassed. Hosted20→17; modern/component1→1; production44 unchanged, Task1/8 excluded, accepted2–7 only. Same12table fullfixture scope and unchanged5352scanner.
+
+Gate frozen/template true; template `c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6`→`c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6`. Dedicatedmodern `411ce67780d1a36f794ab3b01d1c08f82b7ac22f3a57ec82dee5df72b9ced65b`→`e960d7170333dc1159787adc427308cf0a33b7161a7a4e9f854ddaba0878ab71` is the authorized full-suite fixture transition; each ownclone separately modernPreservedtrue. No equality was imposed across full-suite gates.
+
+Windows PowerShell/Bun1.3.14/Git2.55.0.windows.2/Python3.14.6/PostgreSQL17.6. Onlyowned52322clones; templateaudit_pr135_20260929/modern57322 readonly during ownrehearsals. Gates clear inherited feature DB/fixtureopt-ins; checkoutpolicy57322/Auth52321; build54329placeholderconfig. Fullsuite391skips include39real ownedDBcases executed in all3profiles. Existing lint52warnings/intentionalHTTPdiagnostics/M1 remain. Actual17.11/fiveindividualCI and scopedreview remain external, not inferred from localgreen.
+
+## Binding, immutable history and boundaries
+
+[Complete Fix3 binding](task-9-fix-3-source-binding.json) and [append-only raw archive translations](task-9-receipts/translation.json) preserve all prior1240translations/210rawblobs, failedCI, priorRED/setupfailures and olde6sources. Originalreport receives a coveringFix3append after packaging; previous report bodies stay exact. Source marker8821 binds actual66/73rawmaps; own manifest row73 e6→e690 hash was updated beforegatefreezing outside DBinputs and is committed with evidence. Its HEAD8821 blob is older than tested working manifest, explicitly qualified; ignoredcapture Git values remain derived content addresses.
+
+OriginalCLI2.118.0 migration filename creation remains implementer-reported, exact original invocation/output independently unavailable after bounded lookups; no recreation or inference of nonperformance. Original brief versions and298byte Ruling31 append qualification stay preserved; separate exact Ruling32 is newly bound. No original translations/runtime proofs relabeled current.
+
+Self-review confirms onlyonecomplete known-profile digest added; sourceSQL tail/body/grants/default/native bytes unchanged, no wildcardallowance. Meaningful newACL/grantoption unknownprofiles refuse55000; existingpositive/refusal/preservation checks and I1/I2 behavior pass. Source construction grants/revokes are only unchanged historicalfragment replay in newownedclone, not a runtime policy change or normalization. Source-only SQL/evidence, no productionDDL/DML/mainmerge/push/PRupdate/release/provider/publicpreview/Task1ACL/Task8scanner action; no subagents, no dependenttask start, no CI retry, no actual automatic action rejection/workaround. BroadUAT/JWT/PostgREST/Authinternal/provider/fullrecovery not-run. OriginalCI failure and engine/provenance/M1/externalreview/fiveCI concerns remain explicit.
+
+
+## Packaging, commands and actual committed manifest
+
+`python .superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-evidence-writer.py`: exit0; evidence/source binding generated from final66/73 maps and gates0; append-only tracker/runbook updates.
+
+`python docs/evidence/audit-remediation-20260927/r01-forward/task-9-package.py`: exit0; final actual counts are in the packaging JSON below. Initial package was1611translations/249unique raw/28,884,764bytes; final append additionally retains failed checker source/receipt. Existing1240translation entries are an exact immutable prefix against FIX_BASEfff. All final raw/canonical/size/Gitcontent addresses and staged archive bodies verified by source-only packaging check; all66DB/73gate current raw+canonical+Git and archived-source bindings match; four raw gate log hashes match.
+
+`python .superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-3-packaging-check.py`: attempt1 exit1 (verifier incorrectly used len on integer applies2; retained original source/qualification), corrected attempt2 exit0; no test/DB rerun. Only tracker row25 fields10/11 append; old fields/other rows preserved. Runbook prior bytes exact prefix. Manifest onlyrow73 SHA e6→e690, all other bytes unchanged. SQL only35byte complete known-profile guard extension, scanner5352 exact. Final source/docs staged diffcheck0 excludes immutable raw .source payloads; older allraw whitespace failures remain honest historical evidence.
+
+Final commit `9df26366cc719d0f92530a784da6871d0db81398` contains manifest `docs/evidence/audit-remediation-20260927/migration-manifest.csv` raw/canonicalSHA `fb846d8b3237abde495a86e5f4cdd3762d6f494eb1d6c9a82058075ebd353a0e`, Git blob `8b08a66a4200c1500e96e8f06f27a844f4cf7f7e`, 16079bytes; exact equality with frozen gate map and current working bytes verified. Source8821 manifest is old SHA a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9. Therefore the final73 frozen map is not claimed to be the entirety of HEAD8821; it explicitly binds the tested working manifest later committed here. Ignored raw capture Git addresses are derived content hashes; archives are committed bodies.
+
+## Actual final receipts and runtime bindings
+
+```json
+{
+  "database": {
+    "hosted": {
+      "receipt": {
+        "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-hosted-1790928080801/receipt.json",
+        "rawSha256": "3c2acf23c423e3cdee6671162c995b0fcf26a31b88e5df6896b69d357de0c6da",
+        "canonicalSha256": "3c2acf23c423e3cdee6671162c995b0fcf26a31b88e5df6896b69d357de0c6da",
+        "bytes": 41592,
+        "gitBlob": "b8ed90bb79c8b2043c7d696e4c33bb7570d36983"
+      },
+      "sourceCommit": "8821c8f8facc8146ac61c8b305ab79f41768fec8",
+      "sourceBase": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+      "environment": "only owned52322 clone; modern57322/template52322 readonly; no web/provider/email calls",
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/adoptions/atomicForward.database.test.ts",
+        "src/lib/adoptions/atomicForward.http.test.ts",
+        "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "applies": 2,
+      "preservation": {
+        "task1Applied": false,
+        "task8Applied": false,
+        "baselineAcceptedBeforeNegatives": true,
+        "baselineRollbackPreserved": true,
+        "secondApplyIdempotent": true,
+        "unaffectedCatalogPreserved": true,
+        "rowsPreserved": true,
+        "completeAuthDefaultNativeLedgerSequencePreserved": true,
+        "helpersPreserved": true,
+        "postTestsCatalogPreserved": true,
+        "postTestsRowsPreserved": true,
+        "postTestsCompleteMetadataPreserved": true,
+        "normalDrop": true,
+        "templatePreserved": true,
+        "modernPreserved": true,
+        "frozenInputsPreserved": true
+      },
+      "gapCounts": [
+        20,
+        17
+      ],
+      "metadataRefusals": 70
+    },
+    "modern": {
+      "receipt": {
+        "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-modern-1790928423473/receipt.json",
+        "rawSha256": "21671d8947ddb54950b1b838ea5bc42ca2e0736fd604b1cb87466e2cdef34962",
+        "canonicalSha256": "21671d8947ddb54950b1b838ea5bc42ca2e0736fd604b1cb87466e2cdef34962",
+        "bytes": 42558,
+        "gitBlob": "5eef087e9a66e124f4cf39ef3ef8962fddf90543"
+      },
+      "sourceCommit": "8821c8f8facc8146ac61c8b305ab79f41768fec8",
+      "sourceBase": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+      "environment": "only owned52322 clone; modern57322/template52322 readonly; no web/provider/email calls",
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/adoptions/atomicForward.database.test.ts",
+        "src/lib/adoptions/atomicForward.http.test.ts",
+        "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "applies": 2,
+      "preservation": {
+        "task1Applied": false,
+        "task8Applied": false,
+        "baselineAcceptedBeforeNegatives": true,
+        "baselineRollbackPreserved": true,
+        "secondApplyIdempotent": true,
+        "unaffectedCatalogPreserved": true,
+        "rowsPreserved": true,
+        "completeAuthDefaultNativeLedgerSequencePreserved": true,
+        "helpersPreserved": true,
+        "postTestsCatalogPreserved": true,
+        "postTestsRowsPreserved": true,
+        "postTestsCompleteMetadataPreserved": true,
+        "normalDrop": true,
+        "templatePreserved": true,
+        "modernPreserved": true,
+        "frozenInputsPreserved": true
+      },
+      "gapCounts": [
+        1,
+        1
+      ],
+      "metadataRefusals": 78
+    },
+    "component": {
+      "receipt": {
+        "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-component-1790927901903/receipt.json",
+        "rawSha256": "344e777f9a22a0d71b0bb1214281c352f99498751d930cc60beef1969fef7cd1",
+        "canonicalSha256": "344e777f9a22a0d71b0bb1214281c352f99498751d930cc60beef1969fef7cd1",
+        "bytes": 43323,
+        "gitBlob": "b14d21467c211fbdc79d965fbe89cb08aef16d4a"
+      },
+      "sourceCommit": "8821c8f8facc8146ac61c8b305ab79f41768fec8",
+      "sourceBase": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+      "environment": "only owned52322 clone; modern57322/template52322 readonly; no web/provider/email calls",
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/adoptions/atomicForward.database.test.ts",
+        "src/lib/adoptions/atomicForward.http.test.ts",
+        "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 61 pass",
+        " 0 fail",
+        " 195 expect() calls"
+      ],
+      "applies": 2,
+      "preservation": {
+        "task1Applied": false,
+        "task8Applied": false,
+        "componentExtraPreserved": true,
+        "baselineAcceptedBeforeNegatives": true,
+        "baselineRollbackPreserved": true,
+        "secondApplyIdempotent": true,
+        "unaffectedCatalogPreserved": true,
+        "rowsPreserved": true,
+        "completeAuthDefaultNativeLedgerSequencePreserved": true,
+        "helpersPreserved": true,
+        "postTestsCatalogPreserved": true,
+        "postTestsRowsPreserved": true,
+        "postTestsCompleteMetadataPreserved": true,
+        "normalDrop": true,
+        "templatePreserved": true,
+        "modernPreserved": true,
+        "frozenInputsPreserved": true
+      },
+      "gapCounts": [
+        1,
+        1
+      ],
+      "metadataRefusals": 80
+    }
+  },
+  "gateReceipt": {
+    "originalPath": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-gates-1790928679243249400/receipt.json",
+    "rawSha256": "668b31266fb9f1fe6c55fc2ee66f9a46476428e74b5a96b1ce20a47eaba6c769",
+    "canonicalSha256": "b954da605267964dba662e3f3b04f712662620cb400fab2a9f14a8ed98969a51",
+    "bytes": 29524,
+    "gitBlob": "259b3be188e7b07cbc2ac803be7e9f1b6a893317"
+  },
+  "gateResults": [
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 0,
+      "elapsedSeconds": 34.13,
+      "log": "typecheck.log",
+      "logSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "gate": "tests",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 94.08,
+      "log": "tests.log",
+      "logSha256": "4a31330fc0f66db675ccf8b878eb20a556a7310ff3a27464edcc21b806d4688e",
+      "summary": [
+        "\n 3280 pass",
+        " 391 skip",
+        " 0 fail",
+        " 10609 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 0,
+      "elapsedSeconds": 29.7,
+      "log": "lint.log",
+      "logSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    },
+    {
+      "gate": "build",
+      "command": "bun run build",
+      "exit": 0,
+      "elapsedSeconds": 77.84,
+      "log": "build.log",
+      "logSha256": "6f5378623df3c8c61ee83adee8deaf47d62508a9186d93eefef94ad7fcd40f7b"
+    }
+  ],
+  "gateEnvironment": "loopback modern57322/Auth52321; build54329 ci-placeholder; inherited feature DB opts removed",
+  "gateFrozenInputsPreserved": true,
+  "gateTemplatePreserved": true,
+  "gateModernBefore": "411ce67780d1a36f794ab3b01d1c08f82b7ac22f3a57ec82dee5df72b9ced65b",
+  "gateModernAfter": "e960d7170333dc1159787adc427308cf0a33b7161a7a4e9f854ddaba0878ab71",
+  "inputCounts": [
+    66,
+    73
+  ],
+  "packaging": {
+    "fixBase": "fff2aa600a2d0053e007632bd24ce88a5b517541",
+    "testedSourceCommit": "8821c8f8facc8146ac61c8b305ab79f41768fec8",
+    "immutablePriorEntries": 1240,
+    "actualTranslations": 1615,
+    "uniqueRawBlobs": 252,
+    "uniqueRawBytes": 28900304,
+    "allRawCanonicalGitStagedArchiveBodiesMatch": true,
+    "databaseInputs": 66,
+    "gateInputs": 73,
+    "allCurrentInputArchivesMatch": true,
+    "allFourGateLogHashesMatch": true,
+    "trackerChangedRow": 25,
+    "runbookHistoricalPrefixPreserved": true,
+    "minimumSQLDeltaBytes": 35,
+    "scannerSHA256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+    "workingFrozenManifest": {
+      "rawSha256": "fb846d8b3237abde495a86e5f4cdd3762d6f494eb1d6c9a82058075ebd353a0e",
+      "canonicalSha256": "fb846d8b3237abde495a86e5f4cdd3762d6f494eb1d6c9a82058075ebd353a0e",
+      "gitBlob": "8b08a66a4200c1500e96e8f06f27a844f4cf7f7e",
+      "bytes": 16079,
+      "rowOnlyHashReplacement": true,
+      "stagedBodyEqual": true
+    },
+    "source8821ManifestIsOlder": "a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9",
+    "fullSuiteModernTransitionQualified": true,
+    "noTestsOrDatabaseRerun": true
+  }
+}
+```
+
+## Concerns and scope closure
+
+Own unchanged SQL RED is actual55000/supporter, while its expected-defect diagnostic process exits0. Final three own rehearsals and four mandatory gates pass on final frozen executable/SQL bytes. No broader optional suite/predecessor/provider/CI rerun was performed. All391 skips and52existing lintwarnings retained;39DB cases are independently exercised in each ownprofile. M1Minor HTTP diagnostic logging remains deferred to final whole-branch triage.
+
+The original exact-head17.11.0.002 RLSstartup failure remains immutable and aggregateSUCCESS is explicitly not all-five success. Local17.6 complete source-component reconstruction and exact ACL preservation do not establish exact17.11 startup success. SAME scoped independent review and fresh final-head five individual CI jobs are required and remain controller-owned; no dependent task starts before that acceptance.
+
+Original CLI2.118.0 creation remains implementer-reported, exact original migration-new invocation/output independently unavailable from bounded retained artifact/root-record lookup. This does not establish nonperformance; no creation replay or manufactured historical provenance. Original brief8849 version and separate current938/Ruling31 qualification remain immutable; separately bound Ruling32 is the present authority.
+
+No grants/defaults/RLS/Auth/native metadata/helper/scanner/body policy changed; no general allowance, ACL normalization, SQLSECDEF conversion, new helper or provider authorization. No production/provider/main/push/publicpreview/Task1/Task8 operation, release, new parent data repair or mainmerge; no subagents. Root owns review/PR/exact-head CI publication.

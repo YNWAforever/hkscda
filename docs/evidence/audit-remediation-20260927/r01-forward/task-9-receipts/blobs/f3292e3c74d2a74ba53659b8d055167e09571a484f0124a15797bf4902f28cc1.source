@@ -1,0 +1,78 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:
+(pass) actual finalization fails for modern preservation and retains receipt [3.12ms]
+(pass) actual finalization fails for frozen preservation and retains receipt [0.67ms]
+(pass) actual finalization fails for template preservation and retains receipt [0.51ms]
+(pass) actual finalization fails for missing-template preservation and retains receipt [0.43ms]
+(pass) actual finalization accepts all final flags exactly true [0.59ms]
+(pass) actual gate selector rejects false normalDrop [90.60ms]
+(pass) actual gate selector rejects missing normalDrop [145.67ms]
+(pass) actual gate selector rejects false templatePreserved [87.76ms]
+(pass) actual gate selector rejects missing templatePreserved [90.63ms]
+(pass) actual gate selector rejects false modernPreserved [148.11ms]
+(pass) actual gate selector rejects missing modernPreserved [202.13ms]
+(pass) actual gate selector rejects false frozenInputsPreserved [201.09ms]
+(pass) actual gate selector rejects missing frozenInputsPreserved [192.92ms]
+(pass) actual gate selector accepts exact true clone flags [288.79ms]
+
+src\lib\adoptions\atomicForward.database.test.ts:
+(pass) R01 adoption atomic real owned database > coordinator status creates and returns its row with one transactional audit [44.77ms]
+(pass) R01 adoption atomic real owned database > manual default initial task creates linked identity/case and audit without a task [32.47ms]
+(pass) R01 adoption atomic real owned database > identity search returns literal matching/paged candidates and numeric total [34.85ms]
+(pass) R01 adoption atomic real owned database > coordinator refuses banned actor before any rows or audit [26.95ms]
+(pass) R01 adoption atomic real owned database > coordinator refuses unconfirmed actor before any rows or audit [17.33ms]
+(pass) R01 adoption atomic real owned database > manual refuses banned actor before any rows or audit [16.33ms]
+(pass) R01 adoption atomic real owned database > manual refuses unconfirmed actor before any rows or audit [25.35ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual missing actor with42501 and no audit [14.59ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual disabled actor with42501 and no audit [14.05ms]
+(pass) R01 adoption role and transaction contracts > coordinator refuses actual treasurer actor with42501 and no audit [15.79ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual missing actor with42501 and no audit [12.57ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual disabled actor with42501 and no audit [18.75ms]
+(pass) R01 adoption role and transaction contracts > manual refuses actual treasurer actor with42501 and no audit [19.04ms]
+(pass) R01 adoption role and transaction contracts > anon cannot execute any restored service-only RPC [16.97ms]
+(pass) R01 adoption role and transaction contracts > authenticated cannot execute any restored service-only RPC [17.38ms]
+(pass) R01 adoption role and transaction contracts > staff cannot mutate statuses but may create and update audited followup tasks [32.91ms]
+(pass) R01 adoption role and transaction contracts > system status identity/deletion remain protected and normal status update/delete return audited rows [34.77ms]
+(pass) R01 adoption role and transaction contracts > missing targets and unsupported operations keep P0002/22023 without audit [29.52ms]
+(pass) R01 adoption role and transaction contracts > coordinator audit failure rolls back all identity/business writes [28.08ms]
+(pass) R01 adoption role and transaction contracts > manual audit failure rolls back all identity/business writes [57.06ms]
+(pass) R01 adoption role and transaction contracts > manual intake preserves initial task linking and actor IDs [68.41ms]
+(pass) R01 adoption role and transaction contracts > manual existing supporter retries reuse identity/role and create separate cases without inventing request idempotency [52.91ms]
+(pass) R01 adoption role and transaction contracts > manual malformed/unavailable identities preserve original refusal and no partial writes [45.26ms]
+(pass) R01 adoption role and transaction contracts > duplicate coordinator status and malformed payload are atomic refusals [40.33ms]
+(pass) R01 adoption role and transaction contracts > empty pinned public commands and preserved private helper ignore temporary table shadows [44.75ms]
+(pass) R01 adoption role and transaction contracts > existing bulk case/supporter version triggers remain unchanged during valid synthetic updates [42.98ms]
+(pass) R01 adoption transaction actor locks > concurrent existing-supporter intakes wait on the existing unique identity and retain one profile/role, two cases/audits [177.74ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual disabled update then rechecks and refuses without writes [98.68ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual treasurer update then rechecks and refuses without writes [89.47ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual banned update then rechecks and refuses without writes [66.55ms]
+(pass) R01 adoption transaction actor locks > coordinator waits for actual unconfirmed update then rechecks and refuses without writes [84.04ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual disabled update then rechecks and refuses without writes [76.44ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual treasurer update then rechecks and refuses without writes [64.80ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual banned update then rechecks and refuses without writes [73.40ms]
+(pass) R01 adoption transaction actor locks > manual waits for actual unconfirmed update then rechecks and refuses without writes [66.42ms]
+(pass) R01 adoption transaction actor locks > coordinator holds actual actor admin_user row against concurrent suspension/ban until transaction ends [56.90ms]
+(pass) R01 adoption transaction actor locks > coordinator holds actual actor auth.users row against concurrent suspension/ban until transaction ends [59.79ms]
+(pass) R01 adoption transaction actor locks > manual holds actual actor admin_user row against concurrent suspension/ban until transaction ends [61.74ms]
+(pass) R01 adoption transaction actor locks > manual holds actual actor auth.users row against concurrent suspension/ban until transaction ends [62.48ms]
+
+src\lib\adoptions\atomicForward.http.test.ts:
+(pass) manual actor SQLSTATE42501 returns safe403 through actual coordinator handler [8.64ms]
+(pass) coordinator permission mapping preserves Response [0.81ms]
+(pass) coordinator permission mapping preserves Zod [0.17ms]
+(pass) coordinator permission mapping preserves missing [0.12ms]
+(pass) coordinator permission mapping preserves domain conflict [0.24ms]
+{
+  code: "XX000",
+  message: "internal diagnostic",
+}
+(pass) coordinator permission mapping preserves unknown [1.56ms]
+42501
+(pass) coordinator permission mapping preserves nonobject [0.27ms]
+(pass) manual handler preserves201 IDs and task-null response [0.38ms]
+
+ 61 pass
+ 0 fail
+ 195 expect() calls
+Ran 61 tests across 3 files. [3.41s]

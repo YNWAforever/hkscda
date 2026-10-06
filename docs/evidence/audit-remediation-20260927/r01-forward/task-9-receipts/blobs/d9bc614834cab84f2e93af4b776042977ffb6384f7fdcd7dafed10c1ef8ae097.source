@@ -1,0 +1,6 @@
+{
+  "priorTranslations": 1615,
+  "priorUniqueBlobs": 252,
+  "allPriorRawBytesPreserved": true,
+  "qualification": "First read-only verifier used git show rev:path and hit Windows filename-too-long. Corrected to ls-tree object IDs plus cat-file blob; no source or decision changed."
+}

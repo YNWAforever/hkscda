@@ -1,0 +1,24 @@
+import {mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {captureProductionSchema,createProductionClone,assertSafeFixtureTables,localSourceState,snapshot,hash} from '../../../supabase/rls-tests/helpers/productionSchemaClone';
+const root=resolve(import.meta.dir,'../../..');
+const mode=process.argv[2];if(!['missing','legacy'].includes(mode)||process.env.R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES!=='1')throw Error('Own Task9 RED opt-in');
+const scope=['auth.users','admin_user','coordinator_status','supporter','supporter_role','adopter_profile','adoption_case','adoption_followup','animal_match','animal','animals','audit_log'];
+const paths=['.superpowers/sdd/r01-forward-schema-plan-20261001/task-9-red.ts','src/lib/adoptions/atomicForward.database.test.ts','supabase/rls-tests/helpers/productionSchemaClone.ts',...['20260925104926_atomic_adoption_coordinator_audit.sql','20260926110000_manual_case_identity_search.sql','20260926133000_expose_manual_adoption_case_rpc.sql'].map(f=>'supabase/migrations/'+f)];
+const out=resolve(root,'.superpowers/sdd/r01-forward-schema-plan-20261001/task-9-red-'+mode+'-'+Date.now());await mkdir(out,{recursive:true});
+const sources:Record<string,unknown>={};for(const [i,p]of paths.entries()){const b=await readFile(resolve(root,p));sources[p]={sha256:hash(b.toString()),canonicalSha256:hash(b.toString().replaceAll('\r\n','\n')),archive:'s'+i+'.source'};await copyFile(resolve(root,p),resolve(out,'s'+i+'.source'));}
+const modern='postgresql://postgres:postgres@127.0.0.1:57322/postgres',modernBefore=await localSourceState(modern);
+const cap=await captureProductionSchema(),clone=await createProductionClone(cap),db=clone.sql;
+const receipt:Record<string,unknown>={mode,sources,out,clone:clone.name,at:new Date().toISOString(),schemaParity:true,zeroApplicationTables:clone.tableCount,scope,productionActions:'schema and catalog only; owned clone synthetic rows only',task1Applied:false,task8Applied:false};
+const rows=async()=>{const values=[];for(const t of await db`select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('r','p') union all select 'auth.users' order by 1`){const [r]=await db.unsafe(`select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' order by to_jsonb(t)::text),'')) hash from ${t.name} t`);values.push([t.name,r]);}return hash(values);};
+try{
+ await assertSafeFixtureTables(db,scope);receipt.scanner='unchanged5352 fullscope PASS';
+ if(mode==='legacy')for(const p of paths.slice(3))await db.begin(async tx=>{await tx`set local role postgres`;await tx.unsafe(await readFile(resolve(root,p),'utf8'));});
+ const before=hash(await snapshot(db)),beforeRows=await rows();
+ const env={...process.env,R01_ADOPTION_ATOMIC_TEST_DATABASE_URL:clone.url,R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES:'1'};
+ const args=['bun','test','src/lib/adoptions/atomicForward.database.test.ts'];
+ const p=Bun.spawn(args,{cwd:root,env,stdout:'pipe',stderr:'pipe'});const [stdout,stderr,exit]=await Promise.all([new Response(p.stdout).text(),new Response(p.stderr).text(),p.exited]);
+ await writeFile(resolve(out,'tests.log'),stdout+stderr);receipt.command=args;receipt.childExit=exit;receipt.summary=(stdout+stderr).split('\n').filter(s=>/ pass| fail|expect\(|error:/.test(s));receipt.catalogPreserved=before===hash(await snapshot(db));receipt.rowsPreserved=beforeRows===await rows();console.log(stdout+stderr);
+ if(exit===0)throw Error('Expected genuine RED child failure');
+}catch(e){receipt.error=String(e);process.exitCode=1;}
+finally{await clone.close();receipt.normalDrop=true;receipt.templatePreserved=clone.templatePreserved;receipt.modernPreserved=modernBefore===await localSourceState(modern);await writeFile(resolve(out,'receipt.json'),JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt));}

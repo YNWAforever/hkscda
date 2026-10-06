@@ -1,0 +1,30 @@
+from pathlib import Path
+import csv,hashlib,io,json,subprocess
+root=Path.cwd();base='fff2aa600a2d0053e007632bd24ce88a5b517541';scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';out=root/'docs/evidence/audit-remediation-20260927/r01-forward';tp=out/'task-9-receipts/translation.json'
+def git(ref,p):return subprocess.check_output(['git','show',ref+':'+str(p).replace('\\','/')])
+def sha(b):return hashlib.sha256(b).hexdigest()
+entries=json.loads(tp.read_text())['entries'];prior=json.loads(git(base,tp.relative_to(root)))['entries'];assert len(prior)==1240 and entries[:1240]==prior
+unique={}
+for e in entries:
+ p=root/e['archivePath'];b=p.read_bytes();assert sha(b)==e['rawSha256'] and sha(b.replace(b'\r\n',b'\n'))==e['canonicalSha256'] and len(b)==e['bytes']
+ assert subprocess.check_output(['git','hash-object','--no-filters',str(p)],text=True).strip()==e['gitBlob'];assert git('',p.relative_to(root))==b;unique[e['rawSha256']]=len(b)
+binding=json.loads((out/'task-9-fix-3-source-binding.json').read_text());assert len(binding['databaseFrozenInputs'])==66 and len(binding['gateFrozenInputs'])==73
+for group in ['databaseFrozenInputs','gateFrozenInputs']:
+ for n,e in binding[group].items():
+  b=(root/n).read_bytes();assert sha(b)==e.get('rawSha256',e.get('sha256'));assert sha(b.replace(b'\r\n',b'\n'))==e['canonicalSha256'];assert subprocess.check_output(['git','hash-object','--no-filters',n],text=True).strip()==e['gitBlob']
+for mode,br in binding['databaseReceipts'].items():
+ p=root/br['originalPath'];r=json.loads(p.read_text());assert all(r[k] is True for k in ['normalDrop','templatePreserved','modernPreserved','frozenInputsPreserved']);assert len(r['applies'])==2 and r['secondApplyIdempotent'] is True
+ for n,e in r['frozenInputs'].items():assert sha((p.parent/r['archivedInputs'][n]).read_bytes())==e['rawSha256']
+gp=root/binding['gateReceipt']['originalPath'];g=json.loads(gp.read_text());assert all(x['exit']==0 and sha((gp.parent/x['log']).read_bytes())==x['logSha256'] for x in g['gates']);assert g['frozenInputsPreserved'] is True and g['templatePreserved'] is True
+for n,e in g['testedFinalSourceBlobs'].items():assert sha((gp.parent/g['archivedInputs'][n]).read_bytes())==e['sha256']
+manifest=Path('docs/evidence/audit-remediation-20260927/migration-manifest.csv');mb=(root/manifest).read_bytes();old=git(base,manifest);oldsql=b'e6a4b06d802d7c82e4638ce8dfd8ad5e3a21ca87583be8471e0a0559a6656cb8';newsql=b'e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992';assert old.count(oldsql)==1 and old.replace(oldsql,newsql)==mb;assert git('',manifest)==mb
+tracker=Path('docs/evidence/audit-remediation-20260927/tracker.csv');oldlines=git(base,tracker).splitlines(keepends=True);newlines=(root/tracker).read_bytes().splitlines(keepends=True);assert len(oldlines)==len(newlines);changes=[]
+for i,(a,b) in enumerate(zip(oldlines,newlines)):
+ if a==b:continue
+ x=next(csv.reader([a.decode('utf-8')]));y=next(csv.reader([b.decode('utf-8')]));assert x[0]==y[0]=='R01';assert all(x[j]==y[j] for j in range(len(x)) if j not in (10,11));assert y[10].startswith(x[10]) and y[11].startswith(x[11]);changes.append(i+1)
+assert changes==[25]
+runbook=Path('docs/evidence/audit-remediation-20260927/current-migration-runbook-20261001.md');assert (root/runbook).read_bytes().startswith(git(base,runbook))
+scanner=Path('supabase/rls-tests/helpers/productionSchemaClone.ts');assert sha((root/scanner).read_bytes())=='5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519' and git(base,scanner)==git('',scanner)
+sql=Path('supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql');a=git(base,sql);b=(root/sql).read_bytes();needle=b"not in('3148b717a290aa5be32b446245ddc1ce','8ac590a6fec96f6c2cbaa48e7be16c97')";replacement=needle[:-1]+b",'6283c96ed21f1197474461a8028892e1')";assert a.count(needle)==1 and a.replace(needle,replacement)==b
+result={'fixBase':base,'testedSourceCommit':binding['testedSourceCommit'],'immutablePriorEntries':1240,'actualTranslations':len(entries),'uniqueRawBlobs':len(unique),'uniqueRawBytes':sum(unique.values()),'allRawCanonicalGitStagedArchiveBodiesMatch':True,'databaseInputs':66,'gateInputs':73,'allCurrentInputArchivesMatch':True,'allFourGateLogHashesMatch':True,'trackerChangedRow':25,'runbookHistoricalPrefixPreserved':True,'minimumSQLDeltaBytes':len(b)-len(a),'scannerSHA256':sha((root/scanner).read_bytes()),'workingFrozenManifest':{'rawSha256':sha(mb),'canonicalSha256':sha(mb.replace(b'\r\n',b'\n')),'gitBlob':subprocess.check_output(['git','hash-object','--no-filters',str(manifest)],text=True).strip(),'bytes':len(mb),'rowOnlyHashReplacement':True,'stagedBodyEqual':True},'source8821ManifestIsOlder':'a7270ab6fbb27ec9212d588cc3b3980427b57d6e7fd91d3575c38047b4e89dc9','fullSuiteModernTransitionQualified':g['modernBefore']!=g['modernAfter'],'noTestsOrDatabaseRerun':True}
+(out/'task-9-fix-3-packaging-check.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps(result))

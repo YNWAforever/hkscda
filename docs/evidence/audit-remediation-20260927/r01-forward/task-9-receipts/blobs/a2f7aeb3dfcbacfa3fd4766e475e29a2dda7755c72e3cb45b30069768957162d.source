@@ -1,0 +1,428 @@
+{
+  "checkedAtUtc": "2026-10-02T08:56:46.480061+00:00",
+  "run": 36985370386,
+  "attempt": 1,
+  "head": "9df26366cc719d0f92530a784da6871d0db81398",
+  "event": "pull_request",
+  "status": "completed",
+  "aggregateConclusion": "success",
+  "actualJobs": [
+    {
+      "job": 110769069702,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "log": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-verify.raw.log",
+      "rawBytes": 875837,
+      "rawSha256": "2cb4496a8586be6e50f07bc7270ab9aa9e3187c58fe4094946a95b71dee57100",
+      "downloadExit": 0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Lint",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Route tree is current",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "job": 110769871554,
+      "name": "rls-matrix",
+      "status": "completed",
+      "conclusion": "failure",
+      "log": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-rls.raw.log",
+      "rawBytes": 277975,
+      "rawSha256": "13e0493c98771f39f3e4c269441b4910e25016774128aecb0277518cd3dffb0b",
+      "downloadExit": "previously retained raw",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Start local Supabase stack",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Run RLS behavioral tests",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run database-backed transaction tests",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run volunteer bulk database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run content publication eligibility database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run media repair database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run public listing database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run supporter portal preference database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run CRM tag bulk database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run volunteer reviewer bulk database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run adoption assignment bulk database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run animal review bulk database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run manual finance atomic database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run CMS quality queue database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run CMS review bulk database scenarios",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Stop local Supabase stack",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "job": 110769871630,
+      "name": "performance-verify",
+      "status": "completed",
+      "conclusion": "success",
+      "log": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-performance-verify.raw.log",
+      "rawBytes": 226859,
+      "rawSha256": "8836fcb0cea88cb0969b02a9cc08545a7459779278d47ce5705b8d6fe20fe21e",
+      "downloadExit": 0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build against the fixture",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install performance verifier browser",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify public performance",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload performance artefacts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Report unavailable artefacts",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "job": 110769871659,
+      "name": "a11y-verify",
+      "status": "completed",
+      "conclusion": "success",
+      "log": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-a11y-verify.raw.log",
+      "rawBytes": 224625,
+      "rawSha256": "5e301b3322049b7635596f0fd8266fa0575848aa20b9aa9e8a768ce19a78c53c",
+      "downloadExit": 0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build against the fixture",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install a11y verifier browser",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify public a11y",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload a11y artefacts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Report unavailable artefacts",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "job": 110769871678,
+      "name": "brand-verify",
+      "status": "completed",
+      "conclusion": "success",
+      "log": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-9-controller-ci-36985370386-brand-verify.raw.log",
+      "rawBytes": 224816,
+      "rawSha256": "38f255138e47e6cfa26077dc35ddd03d301afd90aaf90f1410735d8c0b74f460",
+      "downloadExit": 0,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build against the fixture",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install brand verifier browser",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify public brand",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload brand artefacts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Report unavailable artefacts",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run oven-sh/setup-bun@v2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "allFiveIndividualSuccess": false,
+  "rootNoTestsOrDbRerun": true
+}

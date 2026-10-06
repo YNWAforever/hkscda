@@ -1,0 +1,86 @@
+"""NOT AUTHORIZED UNTIL a separate controller StageB ruling is read and supplied."""
+import datetime, hashlib, json, pathlib, subprocess, sys, time
+plan=pathlib.Path(__file__).resolve().parent
+if len(sys.argv)!=2 or not pathlib.Path(sys.argv[1]).is_file():
+ raise SystemExit('Supply the actual separate StageB controller ruling file before execution')
+ruling=pathlib.Path(sys.argv[1]); rulebytes=ruling.read_bytes()
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+out=plan/('task-9-fix-4-stageb-'+stamp); out.mkdir()
+(out/'executed-stageb.py.source').write_bytes(pathlib.Path(__file__).read_bytes())
+pg='hkscda-task9-fix4-pg-'+stamp.lower(); auth='hkscda-task9-fix4-auth-'+stamp.lower()
+pgimage='public.ecr.aws/supabase/postgres@sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53'
+authimage='public.ecr.aws/supabase/gotrue@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b'
+schema=plan/'task-9-fix-4-official-source/schema.sql'
+query=plan/'task-9-fix-4-capture-20261002T090135Z/catalog-query.sql.source'
+receipt={'at':stamp,'sourceCommit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'qualification':'Exact PG17.11/Auth2.197 images; Auth-component metadata reconstruction only, excludes repository/Storage/Realtime/webhook setup. Not full original CI final catalog or bootstrap acceptance.','ruling':{'path':str(ruling),'sha256':hashlib.sha256(rulebytes).hexdigest()},'commands':[],'captures':[]}
+for label,p in [('ruling.source',ruling),('schema.sql.source',schema),('query.sql.source',query)]: (out/label).write_bytes(p.read_bytes())
+def save():
+ (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf8',newline='\n')
+def run(args,stdin=None,required=True):
+ r=subprocess.run(args,input=stdin,capture_output=True)
+ d={'command':args,'exit':r.returncode,'stdout':r.stdout.decode('utf8'),'stderr':r.stderr.decode('utf8')}; receipt['commands'].append(d); save()
+ if required and r.returncode: raise RuntimeError(d)
+ return d
+def capture(label):
+ r=run(['docker','exec','-i',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres'],query.read_bytes())
+ value=json.loads(r['stdout']); (out/(label+'-catalog.json')).write_text(json.dumps(value,indent=2)+'\n',encoding='utf8',newline='\n')
+ receipt['captures'].append({'label':label,'runtime':value['runtime'],'uid':[f for f in value['functions'] if f['schema']=='auth' and f['name']=='uid']}); save()
+ counts={}
+ for table in ['auth.users','cron.job','net.http_request_queue','net._http_response']:
+  base=['docker','exec',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres','-c']
+  found=run(base+["BEGIN READ ONLY; select to_regclass('"+table+"'); ROLLBACK;"])['stdout'].strip()
+  if not found: counts[table]='absent'; continue
+  count=run(base+['BEGIN READ ONLY; select count(*) from '+table+'; ROLLBACK;'])['stdout'].strip()
+  assert count=='0', 'Unexpected owned instance rows in '+table
+  counts[table]=0
+ receipt['captures'][-1]['ownedEmptyTables']=counts; save()
+created=[]
+try:
+ for image in [pgimage,authimage]:
+  metadata=json.loads(run(['docker','image','inspect',image])['stdout'])[0]
+  assert image in metadata['RepoDigests'] and metadata['Architecture']=='amd64' and metadata['Os']=='linux'
+  if image==pgimage: assert metadata['Config']['Entrypoint']==['docker-entrypoint.sh'] and metadata['Config']['Cmd']==['postgres','-D','/etc/postgresql']
+  else: assert not metadata['Config'].get('Entrypoint') and metadata['Config']['Cmd']==['auth']
+ run(['docker','create','--name',pg,'--network','none','--cpus','1','--memory','1g','--no-healthcheck','-e','POSTGRES_PASSWORD=postgres','-e','JWT_SECRET=task9-metadata-only-dummy-jwt-secret-000000','-e','JWT_EXP=3600',pgimage]); created.append(pg)
+ state=json.loads(run(['docker','inspect',pg])['stdout'])[0]
+ pgid=state['Id']
+ assert state['State']['Status']=='created' and not state['HostConfig']['Binds'] and not state['HostConfig']['PortBindings'] and state['HostConfig']['NetworkMode']=='none' and not state['Mounts']
+ run(['docker','cp',str(schema),pg+':/etc/postgresql.schema.sql'])
+ run(['docker','start',pg])
+ deadline=time.monotonic()+120
+ while True:
+  log=run(['docker','logs',pg]); state=json.loads(run(['docker','inspect',pg])['stdout'])[0]
+  if not state['State']['Running']: raise RuntimeError('Owned PG startup exited; preserved log, no repair attempted')
+  if 'PostgreSQL init process complete; ready for start up.' in log['stdout']:
+   ready=run(['docker','exec',pg,'pg_isready','-U','postgres'],required=False)
+   if ready['exit']==0: break
+  if time.monotonic()>deadline: raise RuntimeError('Owned PG startup timeout; no repair attempted')
+  time.sleep(2)
+ capture('before-auth')
+ args=['docker','create','--name',auth,'--network','container:'+pg,'--cpus','1','--memory','512m','--no-healthcheck']
+ for value in ['API_EXTERNAL_URL=http://127.0.0.1:9999','GOTRUE_LOG_LEVEL=error','GOTRUE_DB_DRIVER=postgres','GOTRUE_DB_DATABASE_URL=postgresql://supabase_auth_admin:postgres@127.0.0.1:5432/postgres','GOTRUE_SITE_URL=http://127.0.0.1:3000','GOTRUE_JWT_SECRET=task9-metadata-only-dummy-jwt-secret-000000']: args.extend(['-e',value])
+ args.extend([authimage,'gotrue','migrate']); run(args); created.append(auth)
+ state=json.loads(run(['docker','inspect',auth])['stdout'])[0]
+ assert not state['Mounts'] and not state['HostConfig']['Binds'] and not state['HostConfig']['PortBindings'] and state['HostConfig']['NetworkMode']=='container:'+pgid
+ run(['docker','start','-a',auth])
+ state=json.loads(run(['docker','inspect',auth])['stdout'])[0]
+ assert state['State']['Status']=='exited' and state['State']['ExitCode']==0
+ capture('after-auth')
+ run(['docker','exec',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres','-c','BEGIN READ ONLY; select count(*) from auth.users; ROLLBACK;'])
+ receipt['result']='Metadata capture completed; no helper admission or application test run'
+except Exception as e:
+ receipt['error']=str(e); save(); raise
+finally:
+ receipt['cleanup']=[]
+ for name in reversed(created):
+  state=json.loads(run(['docker','inspect',name])['stdout'])[0]
+  assert state['Name']=='/'+name and not state['Mounts'] and not state['HostConfig']['Binds'] and not state['HostConfig']['PortBindings']
+  run(['docker','logs',name],required=False)
+  if state['State']['Running']: run(['docker','stop','--signal','SIGINT','--timeout','-1',name])
+  state=json.loads(run(['docker','inspect',name])['stdout'])[0]
+  assert not state['State']['Running']
+  run(['docker','rm','-v',name])
+  check=run(['docker','ps','-a','--filter','name=^/'+name+'$','--format','{{.ID}}']); assert not check['stdout'].strip()
+  receipt['cleanup'].append({'name':name,'normalRemoved':True})
+ receipt['files']={p.name:{'bytes':len(p.read_bytes()),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in out.iterdir() if p.is_file() and p.name!='receipt.json'}; save()
+ print(json.dumps({'out':str(out),'result':receipt.get('result'),'error':receipt.get('error'),'captures':receipt['captures'],'cleanup':receipt['cleanup']}))

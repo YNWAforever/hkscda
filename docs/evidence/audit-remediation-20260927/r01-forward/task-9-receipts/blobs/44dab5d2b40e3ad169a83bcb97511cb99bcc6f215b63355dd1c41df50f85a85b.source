@@ -1,0 +1,1164 @@
+{
+  "mode": "modern",
+  "at": "2026-10-02T04:36:53.534Z",
+  "bindings": {
+    ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-preflight.ts": {
+      "rawSha256": "4bd54bab9fc04163a3f7d313886a3b09004cf46a06c8428358430a5c1dc6db45",
+      "canonicalSha256": "96577fa26dce13b716c8517ce4452521f53cdffcf51091ba5607e718501eee1c",
+      "copy": "s0.source"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "copy": "s1.source"
+    }
+  },
+  "sourceBase": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+  "clone": "r01_clone_416b2f6079904455b4edc27a49f6efcb",
+  "zeroTables": 162,
+  "catalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "managedPrerequisites": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "scope": [
+    "auth.users",
+    "admin_user",
+    "coordinator_status",
+    "supporter",
+    "supporter_role",
+    "adopter_profile",
+    "adoption_case",
+    "adoption_followup",
+    "animal_match",
+    "animal",
+    "audit_log"
+  ],
+  "productionActions": "schema/catalog only; no rows, actor calls, mutations",
+  "task1Applied": false,
+  "task8Applied": false,
+  "helper": [
+    {
+      "args": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+      "arguments": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb DEFAULT NULL::jsonb",
+      "result": "jsonb",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definer": true,
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 1,
+      "default_expression": "NULL::jsonb",
+      "source_md5": "18def457bdf482aea149d9ff56dff3c6",
+      "definition_md5": "495416f481fbad0367dc078c5c53783f"
+    }
+  ],
+  "defaults": [
+    {
+      "kind": "S",
+      "owner": "postgres",
+      "schema": "public",
+      "entries": [
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "USAGE"
+        }
+      ]
+    },
+    {
+      "kind": "f",
+      "owner": "postgres",
+      "schema": "public",
+      "entries": [
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ]
+    },
+    {
+      "kind": "r",
+      "owner": "postgres",
+      "schema": "public",
+      "entries": [
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "REFERENCES"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "TRIGGER"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "TRUNCATE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "UPDATE"
+        }
+      ]
+    },
+    {
+      "kind": "S",
+      "owner": "supabase_admin",
+      "schema": "public",
+      "entries": [
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "USAGE"
+        }
+      ]
+    },
+    {
+      "kind": "f",
+      "owner": "supabase_admin",
+      "schema": "public",
+      "entries": [
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ]
+    },
+    {
+      "kind": "r",
+      "owner": "supabase_admin",
+      "schema": "public",
+      "entries": [
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "REFERENCES"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRIGGER"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRUNCATE"
+        },
+        {
+          "grantee": "anon",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "REFERENCES"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRIGGER"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRUNCATE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "REFERENCES"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRIGGER"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRUNCATE"
+        },
+        {
+          "grantee": "postgres",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "MAINTAIN"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "supabase_admin",
+          "grantable": false,
+          "privilege": "UPDATE"
+        }
+      ]
+    }
+  ],
+  "auth": [
+    {
+      "acl": "{supabase_auth_admin=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin,postgres=ar*wdDxtm/supabase_auth_admin}",
+      "columns": [
+        {
+          "acl": null,
+          "name": "instance_id",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "id",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "aud",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "role",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "encrypted_password",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email_confirmed_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "invited_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "confirmation_token",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "confirmation_sent_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "recovery_token",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "recovery_sent_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email_change_token_new",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email_change",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email_change_sent_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "last_sign_in_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "raw_app_meta_data",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "raw_user_meta_data",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "is_super_admin",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "created_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "updated_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "phone",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "phone_confirmed_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "phone_change",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "phone_change_token",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "phone_change_sent_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "confirmed_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email_change_token_current",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "email_change_confirm_status",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "banned_until",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "reauthentication_token",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "reauthentication_sent_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "is_sso_user",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "deleted_at",
+          "selectService": false,
+          "updateService": false
+        },
+        {
+          "acl": null,
+          "name": "is_anonymous",
+          "selectService": false,
+          "updateService": false
+        }
+      ]
+    }
+  ],
+  "writeTriggers": [
+    {
+      "table_name": "public.admin_user",
+      "tgname": "audit_admin_user",
+      "definition": "CREATE TRIGGER audit_admin_user AFTER INSERT OR DELETE OR UPDATE ON public.admin_user FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.admin_user",
+      "tgname": "lock_admin_user_mutation",
+      "definition": "CREATE TRIGGER lock_admin_user_mutation BEFORE DELETE OR UPDATE ON public.admin_user FOR EACH STATEMENT EXECUTE FUNCTION private.lock_admin_user_mutation()",
+      "helper": "private.lock_admin_user_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": null,
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "35dc11b3cc5150246af05a0d954ce940",
+      "definition_md5": "6fb4cca8ae606d99ac4858d0468ed513"
+    },
+    {
+      "table_name": "public.admin_user",
+      "tgname": "require_active_admin_user",
+      "definition": "CREATE TRIGGER require_active_admin_user AFTER DELETE OR UPDATE ON public.admin_user FOR EACH ROW EXECUTE FUNCTION private.require_active_admin_user()",
+      "helper": "private.require_active_admin_user",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": null,
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "15e6194369fbe27203069acd28f0377d",
+      "definition_md5": "98a21ca5b11cbf94c3d0302744af1a87"
+    },
+    {
+      "table_name": "public.admin_user",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.admin_user FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.adopter_profile",
+      "tgname": "audit_adopter_profile",
+      "definition": "CREATE TRIGGER audit_adopter_profile AFTER INSERT OR DELETE OR UPDATE ON public.adopter_profile FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.adopter_profile",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.adopter_profile FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.adoption_case",
+      "tgname": "adoption_case_bulk_row_version_before_update",
+      "definition": "CREATE TRIGGER adoption_case_bulk_row_version_before_update BEFORE UPDATE ON public.adoption_case FOR EACH ROW EXECUTE FUNCTION private.bump_adoption_case_bulk_row_version()",
+      "helper": "private.bump_adoption_case_bulk_row_version",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "defaults": 0,
+      "body_md5": "c0f16192cca3240aeb7be7870bcf503d",
+      "definition_md5": "4360bcbf3bdaa28be558e276bf60ea6c"
+    },
+    {
+      "table_name": "public.adoption_case",
+      "tgname": "audit_adoption_case",
+      "definition": "CREATE TRIGGER audit_adoption_case AFTER INSERT OR DELETE OR UPDATE ON public.adoption_case FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.adoption_case",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.adoption_case FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.adoption_followup",
+      "tgname": "audit_adoption_followup",
+      "definition": "CREATE TRIGGER audit_adoption_followup AFTER INSERT OR DELETE OR UPDATE ON public.adoption_followup FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.adoption_followup",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.adoption_followup FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.animal_match",
+      "tgname": "audit_animal_match",
+      "definition": "CREATE TRIGGER audit_animal_match AFTER INSERT OR DELETE OR UPDATE ON public.animal_match FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.animal_match",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.animal_match FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.audit_log",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.audit_log FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.coordinator_status",
+      "tgname": "audit_coordinator_status",
+      "definition": "CREATE TRIGGER audit_coordinator_status AFTER INSERT OR DELETE OR UPDATE ON public.coordinator_status FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.coordinator_status",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.coordinator_status FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.supporter",
+      "tgname": "audit_supporter",
+      "definition": "CREATE TRIGGER audit_supporter AFTER INSERT OR DELETE OR UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.log_animal_mutation()",
+      "helper": "public.log_animal_mutation",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "defaults": 0,
+      "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+      "definition_md5": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "table_name": "public.supporter",
+      "tgname": "bump_supporter_edit_version",
+      "definition": "CREATE TRIGGER bump_supporter_edit_version BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION private.bump_supporter_edit_version()",
+      "helper": "private.bump_supporter_edit_version",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=\"\""
+      ],
+      "defaults": 0,
+      "body_md5": "ce77bf772b703ab19ea00a56121ff227",
+      "definition_md5": "08619e0337db72d3d685130718c47538"
+    },
+    {
+      "table_name": "public.supporter",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.supporter FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    },
+    {
+      "table_name": "public.supporter_role",
+      "tgname": "bump_supporter_edit_version_from_role",
+      "definition": "CREATE TRIGGER bump_supporter_edit_version_from_role AFTER INSERT OR DELETE OR UPDATE ON public.supporter_role FOR EACH ROW EXECUTE FUNCTION private.bump_supporter_edit_version_from_role()",
+      "helper": "private.bump_supporter_edit_version_from_role",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": null,
+      "config": [
+        "search_path=\"\""
+      ],
+      "defaults": 0,
+      "body_md5": "fb159fa8743f67d5493d7144d4fa5c02",
+      "definition_md5": "3b3d61191955f415e4ed1a22389d71fb"
+    },
+    {
+      "table_name": "public.supporter_role",
+      "tgname": "set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.supporter_role FOR EACH ROW EXECUTE FUNCTION public.set_updated_at()",
+      "helper": "public.set_updated_at",
+      "arguments": "",
+      "owner": "postgres",
+      "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": null,
+      "defaults": 0,
+      "body_md5": "9b1889f56258bf9d6554213c05019c76",
+      "definition_md5": "4d6804d5850641a33867814c9e76a714"
+    }
+  ],
+  "fullScopeScanner": "PASS",
+  "targets": {
+    "coordinator": "public.mutate_adoption_coordinator_with_audit(uuid,text,text,uuid,jsonb)",
+    "search": "public.search_manual_case_identity(text,integer,integer)",
+    "manual": "public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)"
+  },
+  "catalogPreserved": true,
+  "normalDrop": true,
+  "templatePreserved": true,
+  "modernPreserved": true
+}

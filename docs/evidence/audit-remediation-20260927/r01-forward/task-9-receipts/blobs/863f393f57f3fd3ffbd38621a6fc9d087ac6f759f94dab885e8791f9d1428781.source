@@ -1,0 +1,4 @@
+$ tsc --noEmit
+supabase/rls-tests/helpers/runR01AdoptionAtomic.ts(322,47): error TS7006: Parameter 'f' implicitly has an 'any' type.
+supabase/rls-tests/helpers/runR01AdoptionAtomic.ts(337,37): error TS7006: Parameter 'f' implicitly has an 'any' type.
+supabase/rls-tests/helpers/runR01AdoptionAtomic.ts(338,38): error TS7006: Parameter 'f' implicitly has an 'any' type.

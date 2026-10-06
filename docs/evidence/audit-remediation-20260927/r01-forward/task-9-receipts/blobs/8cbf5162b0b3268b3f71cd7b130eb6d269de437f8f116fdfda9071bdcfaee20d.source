@@ -1,0 +1,60 @@
+import { afterAll, describe, expect, test } from "bun:test";
+import { SQL } from "bun";
+import { randomUUID } from "node:crypto";
+import { assertCloneUrl } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+const url=process.env.R01_ADOPTION_ATOMIC_TEST_DATABASE_URL;
+const enabled=process.env.R01_ADOPTION_ATOMIC_ALLOW_LOCAL_FIXTURES==='1'&&!!url;
+if(enabled)assertCloneUrl(url!);
+const db=enabled?new SQL(url!,{max:4}):null;
+
+const rollback=new Error('Task9 synthetic transaction rollback');
+async function fixture(run:(tx:SQL,actor:string,status:string)=>Promise<void>){
+ if(!db)throw Error('owned Task9 clone required');
+ try{await db.begin(async sql=>{const tx=sql as SQL;await tx`set local role postgres`;const actor=randomUUID(),status=randomUUID();
+ await tx`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor+'@example.invalid'},now())`;
+ await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor+'@example.invalid'},'admin','active')`;
+ await tx`insert into public.coordinator_status(id,category,key,label_zh,label_en) values(${status}::uuid,'adoption_case',${'synthetic_'+status.replaceAll('-','')},'Synthetic','Synthetic')`;
+ await run(tx,actor,status);throw rollback;});}catch(e){if(e!==rollback)throw e;}
+}
+const statusValues=()=>({category:'followup',key:'synthetic_'+randomUUID().replaceAll('-',''),label_zh:'Synthetic',label_en:'Synthetic',sort_order:0,color:'slate',is_active:true,is_closing:false,is_final:false});
+async function coordinator(tx:SQL,actor:string,entity:string,operation:string,id:string|null,payload:unknown){
+ const [r]=await tx`select public.mutate_adoption_coordinator_with_audit(${actor}::uuid,${entity},${operation},${id}::uuid,${payload}::jsonb) value`;return r.value;
+}
+async function manual(tx:SQL,actor:string,status:string,identity:unknown={kind:'new_supporter',supporter:{name:'Synthetic intake',phone:'00000000'},adopterProfile:{nameEnglish:'Synthetic adopter'}}){
+ const [r]=await tx`select public.create_manual_adoption_case(${actor}::uuid,${identity}::jsonb,${{initialStatusId:status,animalType:'cat',applicantName:'Synthetic intake',applicantPhone:'00000000'}}::jsonb) value`;return r.value;
+}
+async function expectCode(tx:SQL,operation:(sql:SQL)=>Promise<unknown>,code:string){
+ const sp='adopt_'+randomUUID().replaceAll('-','');await tx.unsafe('savepoint '+sp);let error:unknown;try{await operation(tx);}catch(e){error=e;}finally{await tx.unsafe('rollback to savepoint '+sp);await tx.unsafe('release savepoint '+sp);}
+ expect(error).toMatchObject({errno:code});
+}
+async function count(tx:SQL,table:string){const [r]=await tx.unsafe('select count(*)::integer count from public.'+table);return r.count as number;}
+
+describe.skipIf(!db)('R01 adoption atomic real owned database',()=>{
+ afterAll(async()=>{await db?.close();});
+ test('coordinator status creates and returns its row with one transactional audit',()=>fixture(async(tx,actor)=>{
+ await tx`set local role service_role`;const r=await coordinator(tx,actor,'coordinator_status','create',null,statusValues());
+ expect(r.category).toBe('followup');expect(r.id).toBeString();const [a]=await tx`select action,entity_id from public.audit_log where actor_user_id=${actor}::uuid`;
+ expect(a.action).toBe('coordinator_status.create');expect(a.entity_id).toBe(r.id);
+ }));
+ test('manual default initial task creates linked identity/case and audit without a task',()=>fixture(async(tx,actor,status)=>{
+ await tx`set local role service_role`;const r=await manual(tx,actor,status);
+ expect(r.caseId).toBeString();expect(r.supporterId).toBeString();expect(r.adopterProfileId).toBeString();expect(r.taskId).toBeNull();
+ const [c]=await tx`select source,supporter_id,adopter_profile_id,bulk_row_version from public.adoption_case where id=${r.caseId}::uuid`;
+ expect(c.source).toBe('manual_intake');expect(c.supporter_id).toBe(r.supporterId);expect(c.adopter_profile_id).toBe(r.adopterProfileId);expect(String(c.bulk_row_version)).toBe('1');
+ expect(await count(tx,'audit_log')).toBe(1);expect(await count(tx,'adoption_followup')).toBe(0);
+ }));
+ test('identity search returns literal matching/paged candidates and numeric total',()=>fixture(async(tx)=>{
+ await tx`insert into public.supporter(name,email) values('ZZ Synthetic Needle','synthetic-needle@example.invalid'),('AA Synthetic Needle',null),('Unrelated',null)`;
+ await tx`set local role service_role`;const [r]=await tx`select public.search_manual_case_identity('synthetic needle',1,1) value`;
+ expect(r.value.total).toBe(2);expect(r.value.candidates).toHaveLength(1);expect(r.value.candidates[0].displayName).toBe('AA Synthetic Needle');
+ const [next]=await tx`select public.search_manual_case_identity('synthetic needle',2,1) value`;expect(next.value.candidates[0].displayName).toBe('ZZ Synthetic Needle');
+ }));
+ for(const target of ['coordinator','manual'] as const)for(const state of ['banned','unconfirmed'] as const)
+ test(`${target} refuses ${state} actor before any rows or audit`,()=>fixture(async(tx,actor,status)=>{
+ if(state==='banned')await tx`update auth.users set banned_until=now()+interval '1 hour' where id=${actor}::uuid`;
+ else await tx`update auth.users set email_confirmed_at=null where id=${actor}::uuid`;
+ await tx`set local role service_role`;
+ await expectCode(tx,s=>target==='manual'?manual(s,actor,status):coordinator(s,actor,'coordinator_status','create',null,statusValues()),'42501');
+ expect(await count(tx,'audit_log')).toBe(0);expect(await count(tx,'supporter')).toBe(0);expect(await count(tx,'coordinator_status')).toBe(1);
+ }));
+});

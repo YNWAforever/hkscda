@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "4fc2691af77b7af17489f952b0dc4011713f6f9d",
+  "command": [
+    "bun",
+    "test",
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts"
+  ],
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.f2-32fpbn5q",
+  "exit": 0,
+  "chosenScratchParentInitiallyAbsent": true,
+  "chosenScratchParentAfterExists": true,
+  "ownedInertDirectoryCountAfterCleanup": 0,
+  "receiptPathCharacters": 257,
+  "bindings": {
+    "supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts": {
+      "rawSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "canonicalSha256": "271cb4551d40385e6f74521126697acda564d103750b9c07e010c38aec354caf",
+      "gitBlob": "c32b6ee87279e39b916dcec1791c9cfaae8d22c1",
+      "archive": "s000.source"
+    },
+    "supabase/rls-tests/helpers/runR01AdoptionAtomic.ts": {
+      "rawSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "canonicalSha256": "f58d3b1aade5b405fbecc53d4c61c2c47176aa0bfab744da260e0296e50136d1",
+      "gitBlob": "436fe47f2efc3c89285405b967524519465a21a8",
+      "archive": "s001.source"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py": {
+      "rawSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "canonicalSha256": "d7fd265e2e725fb6cbda665603ce1aa01273ff68b79f9fc43c84cf73bac2b016",
+      "gitBlob": "739837d88fb50822d0092f1aa81431b72dd1e8d7",
+      "archive": "s002.source"
+    }
+  },
+  "environment": "new short owned clean-layout inside assigned root; inert finally IO and actual selector prefix only; no DB/provider actions",
+  "cleanup": "remove only this newly created unique synthetic layout after retaining exact sources/log"
+}

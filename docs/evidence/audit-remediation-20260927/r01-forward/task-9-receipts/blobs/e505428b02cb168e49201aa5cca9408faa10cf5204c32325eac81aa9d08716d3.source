@@ -1,0 +1,37 @@
+# Finding Verdicts
+
+- **I1 - Fail final preservation checks and disqualify invalid receipts: ADDRESSED.** `supabase/rls-tests/helpers/runR01AdoptionAtomic.ts:549-563` now tests every required final flag with `!== true`, appends a clear error while retaining an existing error, sets exitCode1, and then writes the complete receipt. `docs/evidence/audit-remediation-20260927/r01-forward/task-9-gates.py:10` requires exact True for normalDrop, templatePreserved, modernPreserved and frozenInputsPreserved; false and missing flags cannot advance. The fix does not impose modern-before/after equality on the separate full-suite gates.
+- **Covering regression:** `supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts:13-87` executes the actual runner finalization with inert IO and verifies receipt retention, nonzero exits and named errors. Its selector tests at :88-125 execute the actual Python prefix before gate/source/DB actions. New test and selector bytes are included in the runner's frozen input list, and the regression is included in its child command.
+
+# New Breakage in the Fix Diff
+
+## Important - I2: Create the temporary directory's parent or use an existing temporary root
+
+`supabase/rls-tests/helpers/adoptionFinalPreservation.test.ts:89-91` calls `mkdtemp` underneath `<checkout>/.superpowers/sdd/r01-forward-schema-plan-20261001/` without first creating that parent. `mkdtemp` creates only the final temporary directory; a missing ancestor causes ENOENT. All nine selector tests therefore fail before exercising their assertions when the test is run from a clean checkout without this task's local plan scratch. The current successful runs used the long-lived implementation worktree, where the parent already exists.
+
+This is introduced by the fix and can break ordinary test/CI execution. The new `mkdir(..., {recursive:true})` at :99 occurs only after mkdtemp succeeds, so it does not resolve the prerequisite.
+
+Minimum fix: use `mkdtemp` under `os.tmpdir()`, or explicitly create the scratch parent before mkdtemp. Keep fixture receipts nested within the newly created unique directory and retain its finally cleanup. Validate the focused regression with the chosen parent initially absent; no DB/provider work is needed to cover this failure.
+
+Focused config check for this concrete risk: `.gitignore:26` and :46 ignore `.superpowers/`; `package.json:11` invokes `bun test`; `.github/workflows/ci.yml:38` invokes `bun test --isolate`. A bounded config/string search found no `.superpowers`/mkdir setup in those workflow/package files. Configuration and literal searches are outside the code graph's discovery scope; no product-code exploration was performed. The finding is based on the new test's unconditional filesystem prerequisite and does not claim that exact-head CI has already run or failed.
+
+- **New Critical breakage:** None found.
+- **New Minor breakage:** None found.
+
+# Checks and Evidence
+
+- Scoped review range: FIX_BASE493b488b8b156e3e24c9330fbfc0b009371c0b1d to HEAD4fc2691af77b7af17489f952b0dc4011713f6f9d; executable source3221bfa3a32cf60f1e301c40be243321e32c3755. Read the scoped reviewer template, same Task9 brief, full Fix1 report and the covering append in the original report.
+- Read the prepared fix diff in bounded source/evidence passes. Confirmed that executable changes are confined to the runner, selector and regression; evidence/runbook/tracker additions retain source-only qualifications. No SQL/private/helper/grant/Auth/scanner/product-runtime change is present in this fix diff.
+- Inspected actual retained inert logs from the diff: genuine original-source RED is4pass/10fail/25assertions in `docs/evidence/audit-remediation-20260927/r01-forward/task-9-receipts/blobs/39c46911f7bc66242315d4f5509c1e4474f146948fde4b6548f5cdcbcfde53a7.source`; GREEN is14pass/0fail/29assertions in `.../2021af81fd526d0650d81d7f781916c9afe2a35d65dd0448bfe5d14e1ec8a4c0.source`. The initial wrapper setup failure remains separately qualified. The finalization/selector assertions correspond to the actual amended branches.
+- Covering report/evidence names both fresh clone commands (61pass/0fail/195assertions each,70/78 actual55000 refusals) and all four mandatory gates: typecheck0; full tests3280pass/391skip/0fail/10609assertions; lint0; build0. The controller independently confirmed62DB/69gate input maps, raw logs, current bindings, actual refusal/preservation entries, and all1013translations/191unique archives with the original788-entry prefix retained. These checks and runs were not duplicated.
+- No suite, DB, provider or reproduction run was performed during re-review. Static inspection establishes I2 without changing the checkout. One bounded unchanged-config check addressed only its missing-parent risk; no repository crawl or unchanged-code rereview was performed. The only write is this ignored review report.
+
+# Out-of-Scope Observations
+
+- Original M1 Minor expected HTTP error logging and baseline52 lint warnings remain deferred to the final whole-branch review; they do not reopen I1 or extend this scoped loop.
+- Original pinnedCLI migration creation remains implementer-reported; the exact original command/output is independently unavailable after the controller's bounded lookup. This is the retained evidence qualification, not a new allegation or a request to recreate history.
+- Exact4fc2691a five individual CI results, including actual PostgreSQL17.11 behavior, remain not-run pending publication. This source review grants no production/release/Task1ACL/Task8scanner authority.
+
+# Verdict
+
+**Fix round: Findings remain open - new Important I2.** Original I1 is ADDRESSED; the newly added regression must work without pre-existing ignored plan directories before this fix round can be accepted. No new Critical or Minor breakage found.

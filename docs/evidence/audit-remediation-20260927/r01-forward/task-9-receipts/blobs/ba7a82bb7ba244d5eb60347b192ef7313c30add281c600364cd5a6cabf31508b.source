@@ -1,0 +1,57 @@
+# Task9 Fix4 diagnosis (before source admission)
+
+Status: diagnosis complete for exact PG/Auth component; source correction and owned-clone fixture await controller ruling. No new profile admitted. Executable HEAD remains 9df26366cc719d0f92530a784da6871d0db81398, SQL e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992, 352912 bytes; shared scanner5352 unchanged.
+
+## Demonstrated cause and coverage gap
+
+Original exact-head CI36985370386 attempt1 RLS110769871554 failed before behavioral tests with SQLSTATE55000/R01 adoption helper contract differs: auth.uid. Workflow aggregate SUCCESS does not override RLS FAILURE; other four jobs individually SUCCESS. All five original raw log hashes and sizes verified, exact copies retained. No failed-run retry.
+
+The existing guard accepts only the CRLF template auth.uid body MD5 772430c79a4272a214d3e200a170c0c3 and rendered-definition MD5 5dd851706ecb5893606782fd9e2cbf83. Actual dedicated modern17.6 uses LF body cdef18c69c4f4cbbced2eaf81e628b49 / definition ea3b41bf29e2ad573067939329aa088e. Both complete local catalog captures are READ ONLY. All pg_proc semantic fields, owner, fullACL/grant options/defaults/config/lang match; only oid, namespaceoid and prosrc differ. Raw comparison establishes CRLF versus LF only; no normalization was applied to metadata or source acceptance.
+
+The local coverage gap is source-proven: captureModernLocalSchema exports public/private only; createProductionClone creates each domain clone from audit_pr135_20260929 and preserves its managed Auth/Storage prerequisites. Therefore prior hosted/modern/source-component rehearsals all inherited the same CRLF template Auth function. Their GREENs were real within that composition, but did not cover actual managed LF Auth source.
+
+## Exact vendor evidence
+
+Ruling33 permits stopped-image inspection only. The original CI PG image digest0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53 was pulled, inspected using one never-started network-none/read-only container, and removed normally. All50 copied init/config/entrypoint files have SHA/size bindings. The image initial auth.uid uses the old single-setting body; vendor Auth migration later replaces it.
+
+Official CLI v2.118.0 start.go binds the initAuthJob environment and gotrue migrate command. Official GoTrue v2.197.0 migration20220224000811 source blob4be423739aa3bf07bc3769aea5cc7751959ad53e produces the exact observed LF body. Source text alone was not treated as full runtime metadata.
+
+Ruling34 permits a fresh PG17.11/Auth2.197 component only, pinned to original CI image digests045016 and1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b. No app migrations, provider services, Auth API, webhook/_supabase/Storage/Realtime jobs, existing database or role changes. Fresh vendor initialization and unmodified CLI schema.sql only; synthetic password/JWT. No published ports, host binds, persistent volumes, or external network.
+
+Attempt1 failed only the wrapper identity assertion because Docker rewrites network container:name to container:ID. Actual inspect proved exactownedPG ID; Auth job never started. Full PG17.11 beforeAuth metadata and zero-user/absent-queue proof retained; both owned containers removed normally. Original script retained. Attempt2 compared exact verified ID, completed vendor Auth migration exit0 and READ ONLY before/after metadata capture. Authusers0, cron.job/net.http_request_queue/net._http_response absent both before/after. PG stopped with SIGINT/timeout-1 (no kill fallback), both exact owned containers removed normally.
+
+Actual final17.11 Auth uid matches the dedicated modern17.6 full captured row exactly, including full pg_proc row. This is an observed exact-image Auth-component profile; original fullCI finalcatalog was not retained and is not inferred from this component. Fresh final-head five individual CI remains mandatory after source repair.
+
+## Proposed correction and covering work
+
+Add only the complete observed LF profile as a second exact alternative alongside CRLF, preserving every security/default/owner/ACL facet. The prepared isolated proposal adds440bytes to helper guard line91; executable SQL remains unchanged. No whitespace normalization, runtime auth function replacement, grants/role/default mutation, private helper amendment or shared scanner change.
+
+Before applying that source correction, reproduce actual unchanged-source55000 in a new owned clone with only the captured LF definition as an explicitly ruled fixture, verify baseline acceptance and full rollback/catalog/row/native/Auth/default/owner/ACL preservation. New helper owner, explicit ordinaryACL, grantoption, config, unknown body and defaulted overload refusals; preserve existing intentional private defaults and full native unknown-profile checks. Final hosted/modern/source-component compositions, actual twoapplies, strict final flags and mandated typecheck/tests/lint/build all still not run for Fix4. Old receipts are not final newbytes proof.
+
+## Current boundaries and limitations
+
+No push/main/production/release/Task1/Task8 change, no subagents, no actor RPC/provider/network SQL evaluation. Scope remains three adoption targets, conditional20to17; production44 untouched. I1 strict flags/I2 clean checkout prerequisites/I3 supporter6283 exactprofile remain unchanged. M1 logging and originalCLI provenance concerns remain as prior reported. This diagnosis is not source completion or release readiness.
+
+Exact proposed profile:
+
+```json
+{
+  "schema": "auth",
+  "name": "uid",
+  "args": "",
+  "allargs": "",
+  "defaults": 0,
+  "default_expression": null,
+  "result": "uuid",
+  "owner": "supabase_auth_admin",
+  "acl": "{=X/supabase_auth_admin,supabase_auth_admin=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+  "config": null,
+  "definer": false,
+  "cost": 100,
+  "strict": false,
+  "parallel": "u",
+  "volatility": "s",
+  "body": "cdef18c69c4f4cbbced2eaf81e628b49",
+  "definition": "ea3b41bf29e2ad573067939329aa088e"
+}
+```

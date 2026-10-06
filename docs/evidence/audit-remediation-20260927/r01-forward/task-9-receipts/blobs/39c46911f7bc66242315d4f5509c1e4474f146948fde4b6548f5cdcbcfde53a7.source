@@ -1,0 +1,152 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:
+75 |   ["template", "templatePreserved"],
+76 |   ["missing-template", "templatePreserved"],
+77 | ] as const)
+78 |   test(`actual finalization fails for ${state} preservation and retains receipt`, async () => {
+79 |     const result = await finalization(state);
+80 |     expect(result.exit).toBe(1);
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:80:25)
+(fail) actual finalization fails for modern preservation and retains receipt [5.09ms]
+75 |   ["template", "templatePreserved"],
+76 |   ["missing-template", "templatePreserved"],
+77 | ] as const)
+78 |   test(`actual finalization fails for ${state} preservation and retains receipt`, async () => {
+79 |     const result = await finalization(state);
+80 |     expect(result.exit).toBe(1);
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:80:25)
+(fail) actual finalization fails for frozen preservation and retains receipt [1.08ms]
+75 |   ["template", "templatePreserved"],
+76 |   ["missing-template", "templatePreserved"],
+77 | ] as const)
+78 |   test(`actual finalization fails for ${state} preservation and retains receipt`, async () => {
+79 |     const result = await finalization(state);
+80 |     expect(result.exit).toBe(1);
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:80:25)
+(fail) actual finalization fails for template preservation and retains receipt [0.88ms]
+75 |   ["template", "templatePreserved"],
+76 |   ["missing-template", "templatePreserved"],
+77 | ] as const)
+78 |   test(`actual finalization fails for ${state} preservation and retains receipt`, async () => {
+79 |     const result = await finalization(state);
+80 |     expect(result.exit).toBe(1);
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:80:25)
+(fail) actual finalization fails for missing-template preservation and retains receipt [0.74ms]
+(pass) actual finalization accepts all final flags exactly true [0.98ms]
+116 |   }
+117 | }
+118 | for (const flag of finalFlags)
+119 |   for (const state of ["false", "missing"] as const)
+120 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+121 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:75)
+(fail) actual gate selector rejects false normalDrop [110.80ms]
+116 |   }
+117 | }
+118 | for (const flag of finalFlags)
+119 |   for (const state of ["false", "missing"] as const)
+120 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+121 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:75)
+(fail) actual gate selector rejects missing normalDrop [137.03ms]
+116 |   }
+117 | }
+118 | for (const flag of finalFlags)
+119 |   for (const state of ["false", "missing"] as const)
+120 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+121 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:75)
+(fail) actual gate selector rejects false templatePreserved [99.28ms]
+116 |   }
+117 | }
+118 | for (const flag of finalFlags)
+119 |   for (const state of ["false", "missing"] as const)
+120 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+121 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:75)
+(fail) actual gate selector rejects missing templatePreserved [74.54ms]
+116 |   }
+117 | }
+118 | for (const flag of finalFlags)
+119 |   for (const state of ["false", "missing"] as const)
+120 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+121 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:75)
+(fail) actual gate selector rejects false modernPreserved [81.57ms]
+116 |   }
+117 | }
+118 | for (const flag of finalFlags)
+119 |   for (const state of ["false", "missing"] as const)
+120 |     test(`actual gate selector rejects ${state} ${flag}`, async () => {
+121 |       expect(await selected(flag, state === "false" ? false : undefined)).toBe(1);
+                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\adoptionFinalPreservation.test.ts:121:75)
+(fail) actual gate selector rejects missing modernPreserved [127.52ms]
+(pass) actual gate selector rejects false frozenInputsPreserved [166.76ms]
+(pass) actual gate selector rejects missing frozenInputsPreserved [149.88ms]
+(pass) actual gate selector accepts exact true clone flags [92.02ms]
+
+ 4 pass
+ 10 fail
+ 25 expect() calls
+Ran 14 tests across 1 file. [1135.00ms]

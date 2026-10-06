@@ -1,0 +1,19 @@
+{
+  "status": "readonly-metadata-preparation-not-domain-acceptance",
+  "observed_at": "2026-10-02 04:24:16.808716+00",
+  "project": "iihqjzilgawhfdhdevam",
+  "function": "private.create_manual_adoption_case",
+  "identity_arguments": "p_actor_user_id uuid, p_identity jsonb, p_case jsonb, p_initial_task jsonb",
+  "return_type": "jsonb",
+  "owner": "postgres",
+  "acl": "{postgres=X/postgres,service_role=X/postgres}",
+  "security_definer": true,
+  "config": ["search_path=public, pg_temp"],
+  "default_count": 1,
+  "default_expression": "NULL::jsonb",
+  "source_md5": "18def457bdf482aea149d9ff56dff3c6",
+  "definition_md5": "495416f481fbad0367dc078c5c53783f",
+  "calls_task8_targets": false,
+  "qualification": "Exact direct Task8 target-name regex in prosrc is false; this does not establish transitive fixture safety. Preserve the full unchanged scanner and own fresh complete scope. No rows, actor RPC, DDL/DML or provider actions.",
+  "query": "select now() as observed_at, pg_get_function_identity_arguments(p.oid) as identity_arguments, pg_get_function_result(p.oid) as return_type, pg_get_userbyid(p.proowner) as owner, p.proacl::text as acl, p.prosecdef as security_definer, p.proconfig as config, p.pronargdefaults as default_count, pg_get_expr(p.proargdefaults,0) as default_expression, md5(p.prosrc) as source_md5, md5(pg_get_functiondef(p.oid)) as definition_md5, p.prosrc ~* '(create_volunteer_registration_idempotent|clone_volunteer_activity_with_audit)' as calls_task8_targets from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='private' and p.proname='create_manual_adoption_case';"
+}

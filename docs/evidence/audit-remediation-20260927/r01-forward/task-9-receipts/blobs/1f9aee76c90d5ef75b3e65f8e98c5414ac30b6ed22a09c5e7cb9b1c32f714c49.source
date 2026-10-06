@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-02T09:27:06.181262+00:00",
+  "exitCode": 0,
+  "oldBytes": 352912,
+  "oldSHA256": "e690d843472a2c2208e4dd484c0c208a2ae4e0bcedf2cac328cffbca59740992",
+  "proposedBytes": 353352,
+  "proposedSHA256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+  "prefixBytes": 309320,
+  "suffixBytes": 43592,
+  "onlyInsertedBytes": 440,
+  "removedBytes": 0,
+  "literalKeys": 17,
+  "literalExactlyCapturedHelperProjection": true,
+  "notApplied": true,
+  "actual17_11AuthProof": "task-9-controller-fix4-auth-component-binding.json",
+  "rootNoDbTests": true
+}
