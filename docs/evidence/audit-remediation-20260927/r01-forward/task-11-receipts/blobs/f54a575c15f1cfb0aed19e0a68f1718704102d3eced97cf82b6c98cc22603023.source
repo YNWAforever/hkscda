@@ -1,0 +1,89 @@
+BEGIN;
+-- Track private attachment uploads so a revision conflict cannot leave an
+-- unreferenced Storage object indefinitely.
+create table public.internship_attachment_upload_intent (
+  storage_path text primary key,
+  application_id uuid not null references public.internship_application(id),
+  actor uuid not null references auth.users(id),
+  created_at timestamptz not null default pg_catalog.clock_timestamp(),
+  expires_at timestamptz not null,
+  attached_at timestamptz,
+  cleanup_claimed_at timestamptz,
+  cleaned_at timestamptz,
+  constraint internship_attachment_upload_intent_path
+    check (storage_path like actor::text || '/' || application_id::text || '/%'),
+  constraint internship_attachment_upload_intent_expiry
+    check (expires_at > created_at)
+);
+create index internship_attachment_upload_intent_cleanup_idx
+  on public.internship_attachment_upload_intent (expires_at)
+  where attached_at is null and cleaned_at is null;
+alter table public.internship_attachment_upload_intent enable row level security;
+revoke all on public.internship_attachment_upload_intent from public, anon, authenticated;
+grant select, insert, update, delete on public.internship_attachment_upload_intent to service_role;
+-- The row lock serializes an attachment insert with a cleanup claim.
+create function public.mark_internship_attachment_uploaded()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+declare
+  v_claimed_at timestamptz;
+begin
+  select intent.cleanup_claimed_at into v_claimed_at
+  from public.internship_attachment_upload_intent as intent
+  where intent.storage_path = new.object_path
+  for update;
+
+  if found then
+    if v_claimed_at is not null then
+      raise exception 'internship attachment upload is being cleaned up'
+        using errcode = '55000';
+    end if;
+    update public.internship_attachment_upload_intent
+    set attached_at = pg_catalog.clock_timestamp()
+    where storage_path = new.object_path;
+  end if;
+  return new;
+end;
+$$;
+revoke all on function public.mark_internship_attachment_uploaded()
+  from public, anon, authenticated;
+grant execute on function public.mark_internship_attachment_uploaded()
+  to service_role;
+create trigger internship_attachment_uploaded
+after insert on public.internship_attachment
+for each row execute function public.mark_internship_attachment_uploaded();
+create function public.claim_expired_internship_attachment_uploads(
+  p_cutoff timestamptz,
+  p_limit integer default 50
+)
+returns table (storage_path text, claimed_at timestamptz)
+language sql
+set search_path = ''
+as $$
+  with candidates as (
+    select intent.storage_path
+    from public.internship_attachment_upload_intent as intent
+    where intent.attached_at is null
+      and intent.cleaned_at is null
+      and intent.expires_at < p_cutoff
+      and (
+        intent.cleanup_claimed_at is null
+        or intent.cleanup_claimed_at < pg_catalog.clock_timestamp() - interval '1 hour'
+      )
+    order by intent.expires_at
+    limit least(greatest(coalesce(p_limit, 50), 1), 50)
+    for update skip locked
+  )
+  update public.internship_attachment_upload_intent as intent
+  set cleanup_claimed_at = pg_catalog.clock_timestamp()
+  from candidates
+  where intent.storage_path = candidates.storage_path
+  returning intent.storage_path, intent.cleanup_claimed_at;
+$$;
+revoke all on function public.claim_expired_internship_attachment_uploads(timestamptz, integer)
+  from public, anon, authenticated;
+grant execute on function public.claim_expired_internship_attachment_uploads(timestamptz, integer)
+  to service_role;
+COMMIT;

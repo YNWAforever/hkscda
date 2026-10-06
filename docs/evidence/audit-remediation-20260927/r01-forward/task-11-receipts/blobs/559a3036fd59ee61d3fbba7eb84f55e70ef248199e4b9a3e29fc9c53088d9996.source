@@ -1,0 +1,10 @@
+--- actual-R57-rehearse
++++ actual-R58-rehearse
+@@ -54,6 +54,7 @@
+   ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-generator-1790980976505/receipt.json",
+   ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py",
+   ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling57.source",
++  ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-diagnosis-1790974606735/ruling58.source",
+   "supabase/rls-tests/helpers/productionSchemaClone.ts",
+   migration,
+   "src/lib/donations/financeCallbackForward.database.test.ts",

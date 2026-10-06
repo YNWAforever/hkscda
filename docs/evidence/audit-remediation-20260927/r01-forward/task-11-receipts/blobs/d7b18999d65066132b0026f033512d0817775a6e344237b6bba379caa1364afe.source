@@ -1,0 +1,1240 @@
+{
+  "qualification": "Offline exact full target tuple check from actual v5 baseline; not finance execution or actor/behavior proof.",
+  "results": [
+    {
+      "name": "fail_pending_provider_payment",
+      "actual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "args": "p_payment_id uuid, p_donation_id uuid",
+          "body": "9205a027706d421c2187bcd94e126c60",
+          "cost": 100,
+          "kind": "f",
+          "name": "fail_pending_provider_payment",
+          "rows": 0,
+          "modes": null,
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\""
+          ],
+          "result": "jsonb",
+          "schema": "public",
+          "strict": false,
+          "allargs": "p_payment_id uuid, p_donation_id uuid",
+          "definer": false,
+          "support": "-",
+          "defaults": 0,
+          "full_acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "language": "plpgsql",
+          "parallel": "u",
+          "variadic": "-",
+          "leakproof": false,
+          "definition": "06f2f9af819d0165d2ddb3ca51773502",
+          "volatility": "v",
+          "default_expression": null
+        }
+      ],
+      "admitted": [
+        [
+          {
+            "schema": "public",
+            "name": "fail_pending_provider_payment",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "9205a027706d421c2187bcd94e126c60",
+            "definition": "06f2f9af819d0165d2ddb3ca51773502"
+          }
+        ]
+      ],
+      "actualCardinality": 1,
+      "matchesExactAllowedTuple": true
+    },
+    {
+      "name": "refund_provider_payment_atomically",
+      "actual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "args": "p_payment_id uuid, p_donation_id uuid",
+          "body": "3fa99e019f6b4e4f44fc9dd1936ae3c9",
+          "cost": 100,
+          "kind": "f",
+          "name": "refund_provider_payment_atomically",
+          "rows": 0,
+          "modes": null,
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\""
+          ],
+          "result": "jsonb",
+          "schema": "public",
+          "strict": false,
+          "allargs": "p_payment_id uuid, p_donation_id uuid",
+          "definer": false,
+          "support": "-",
+          "defaults": 0,
+          "full_acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "language": "plpgsql",
+          "parallel": "u",
+          "variadic": "-",
+          "leakproof": false,
+          "definition": "8bf99eb5cec11a980cfcd27c2b16bc15",
+          "volatility": "v",
+          "default_expression": null
+        }
+      ],
+      "admitted": [
+        [
+          {
+            "schema": "public",
+            "name": "fail_pending_provider_payment",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "9205a027706d421c2187bcd94e126c60",
+            "definition": "06f2f9af819d0165d2ddb3ca51773502"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "refund_provider_payment_atomically",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "3fa99e019f6b4e4f44fc9dd1936ae3c9",
+            "definition": "8bf99eb5cec11a980cfcd27c2b16bc15"
+          }
+        ]
+      ],
+      "actualCardinality": 1,
+      "matchesExactAllowedTuple": true
+    },
+    {
+      "name": "void_receipt_with_audit",
+      "actual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+          "body": "8c39b27f2952c1adef58319f8079463f",
+          "cost": 100,
+          "kind": "f",
+          "name": "void_receipt_with_audit",
+          "rows": 1000,
+          "modes": [
+            "i",
+            "i",
+            "i",
+            "t",
+            "t"
+          ],
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\""
+          ],
+          "result": "TABLE(receipt_id uuid, pdf_url text)",
+          "schema": "public",
+          "strict": false,
+          "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+          "definer": true,
+          "support": "-",
+          "defaults": 1,
+          "full_acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "language": "plpgsql",
+          "parallel": "u",
+          "variadic": "-",
+          "leakproof": false,
+          "definition": "593f2b992752070c8f7a799c1b3c0f23",
+          "volatility": "v",
+          "default_expression": "NULL::uuid"
+        }
+      ],
+      "admitted": [
+        [
+          {
+            "schema": "public",
+            "name": "fail_pending_provider_payment",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "9205a027706d421c2187bcd94e126c60",
+            "definition": "06f2f9af819d0165d2ddb3ca51773502"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "refund_provider_payment_atomically",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "3fa99e019f6b4e4f44fc9dd1936ae3c9",
+            "definition": "8bf99eb5cec11a980cfcd27c2b16bc15"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "void_receipt_with_audit",
+            "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+            "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+            "defaults": 1,
+            "default_expression": "NULL::uuid",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "8c39b27f2952c1adef58319f8079463f",
+            "definition": "593f2b992752070c8f7a799c1b3c0f23"
+          }
+        ],
+        [
+          {
+            "schema": "public",
+            "name": "void_receipt_with_audit",
+            "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+            "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+            "defaults": 1,
+            "default_expression": "NULL::uuid",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "c120cd972f5c6bcb9ad822b1e61b1168",
+            "definition": "6e159b4b6d2b50514401d99e3dd54b7b"
+          }
+        ]
+      ],
+      "actualCardinality": 1,
+      "matchesExactAllowedTuple": true
+    },
+    {
+      "name": "void_donation_receipts_with_audit",
+      "actual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "args": "p_donation_id uuid, p_reason text",
+          "body": "1230adf731882717d9effee345cb547c",
+          "cost": 100,
+          "kind": "f",
+          "name": "void_donation_receipts_with_audit",
+          "rows": 1000,
+          "modes": [
+            "i",
+            "i",
+            "t",
+            "t"
+          ],
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\""
+          ],
+          "result": "TABLE(receipt_id uuid, pdf_url text)",
+          "schema": "public",
+          "strict": false,
+          "allargs": "p_donation_id uuid, p_reason text DEFAULT 'refund'::text",
+          "definer": true,
+          "support": "-",
+          "defaults": 1,
+          "full_acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "language": "plpgsql",
+          "parallel": "u",
+          "variadic": "-",
+          "leakproof": false,
+          "definition": "57ac6952d627e347f33a95ce79e6750c",
+          "volatility": "v",
+          "default_expression": "'refund'::text"
+        }
+      ],
+      "admitted": [
+        [
+          {
+            "schema": "public",
+            "name": "fail_pending_provider_payment",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "9205a027706d421c2187bcd94e126c60",
+            "definition": "06f2f9af819d0165d2ddb3ca51773502"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "refund_provider_payment_atomically",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "3fa99e019f6b4e4f44fc9dd1936ae3c9",
+            "definition": "8bf99eb5cec11a980cfcd27c2b16bc15"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "void_receipt_with_audit",
+            "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+            "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+            "defaults": 1,
+            "default_expression": "NULL::uuid",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "8c39b27f2952c1adef58319f8079463f",
+            "definition": "593f2b992752070c8f7a799c1b3c0f23"
+          }
+        ],
+        [
+          {
+            "schema": "public",
+            "name": "void_receipt_with_audit",
+            "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+            "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+            "defaults": 1,
+            "default_expression": "NULL::uuid",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "c120cd972f5c6bcb9ad822b1e61b1168",
+            "definition": "6e159b4b6d2b50514401d99e3dd54b7b"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "void_donation_receipts_with_audit",
+            "args": "p_donation_id uuid, p_reason text",
+            "allargs": "p_donation_id uuid, p_reason text DEFAULT 'refund'::text",
+            "defaults": 1,
+            "default_expression": "'refund'::text",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "1230adf731882717d9effee345cb547c",
+            "definition": "57ac6952d627e347f33a95ce79e6750c"
+          }
+        ]
+      ],
+      "actualCardinality": 1,
+      "matchesExactAllowedTuple": true
+    },
+    {
+      "name": "issue_receipt_with_audit",
+      "actual": [
+        {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "args": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone, p_actor uuid",
+          "body": "b66dbc0c7a8ad59290caaa5be3e80bb0",
+          "cost": 100,
+          "kind": "f",
+          "name": "issue_receipt_with_audit",
+          "rows": 1000,
+          "modes": [
+            "i",
+            "i",
+            "i",
+            "i",
+            "i",
+            "i",
+            "t",
+            "t",
+            "t",
+            "t",
+            "t",
+            "t"
+          ],
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\""
+          ],
+          "result": "TABLE(receipt_no text, receipt_id uuid, pdf_url text, tax_year integer, issued_at timestamp with time zone, already_existed boolean)",
+          "schema": "public",
+          "strict": false,
+          "allargs": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone, p_actor uuid",
+          "definer": true,
+          "support": "-",
+          "defaults": 0,
+          "full_acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "language": "plpgsql",
+          "parallel": "u",
+          "variadic": "-",
+          "leakproof": false,
+          "definition": "5f1094583fb7a32b53bc470441d8c67e",
+          "volatility": "v",
+          "default_expression": null
+        }
+      ],
+      "admitted": [
+        [
+          {
+            "schema": "public",
+            "name": "fail_pending_provider_payment",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "9205a027706d421c2187bcd94e126c60",
+            "definition": "06f2f9af819d0165d2ddb3ca51773502"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "refund_provider_payment_atomically",
+            "args": "p_payment_id uuid, p_donation_id uuid",
+            "allargs": "p_payment_id uuid, p_donation_id uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "jsonb",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": false,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 0,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": null,
+            "body": "3fa99e019f6b4e4f44fc9dd1936ae3c9",
+            "definition": "8bf99eb5cec11a980cfcd27c2b16bc15"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "void_receipt_with_audit",
+            "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+            "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+            "defaults": 1,
+            "default_expression": "NULL::uuid",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "8c39b27f2952c1adef58319f8079463f",
+            "definition": "593f2b992752070c8f7a799c1b3c0f23"
+          }
+        ],
+        [
+          {
+            "schema": "public",
+            "name": "void_receipt_with_audit",
+            "args": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+            "allargs": "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid DEFAULT NULL::uuid",
+            "defaults": 1,
+            "default_expression": "NULL::uuid",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "c120cd972f5c6bcb9ad822b1e61b1168",
+            "definition": "6e159b4b6d2b50514401d99e3dd54b7b"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "void_donation_receipts_with_audit",
+            "args": "p_donation_id uuid, p_reason text",
+            "allargs": "p_donation_id uuid, p_reason text DEFAULT 'refund'::text",
+            "defaults": 1,
+            "default_expression": "'refund'::text",
+            "result": "TABLE(receipt_id uuid, pdf_url text)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "t",
+              "t"
+            ],
+            "body": "1230adf731882717d9effee345cb547c",
+            "definition": "57ac6952d627e347f33a95ce79e6750c"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "schema": "public",
+            "name": "issue_receipt_with_audit",
+            "args": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone, p_actor uuid",
+            "allargs": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone, p_actor uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "TABLE(receipt_no text, receipt_id uuid, pdf_url text, tax_year integer, issued_at timestamp with time zone, already_existed boolean)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "i",
+              "i",
+              "i",
+              "t",
+              "t",
+              "t",
+              "t",
+              "t",
+              "t"
+            ],
+            "body": "b66dbc0c7a8ad59290caaa5be3e80bb0",
+            "definition": "5f1094583fb7a32b53bc470441d8c67e"
+          }
+        ],
+        [
+          {
+            "schema": "public",
+            "name": "issue_receipt_with_audit",
+            "args": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone, p_actor uuid",
+            "allargs": "p_donation_id uuid, p_supporter_id uuid, p_amount_cents integer, p_tax_year integer, p_issued_at timestamp with time zone, p_actor uuid",
+            "defaults": 0,
+            "default_expression": null,
+            "result": "TABLE(receipt_no text, receipt_id uuid, pdf_url text, tax_year integer, issued_at timestamp with time zone, already_existed boolean)",
+            "owner": "postgres",
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "full_acl": [
+              {
+                "grantee": "postgres",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              },
+              {
+                "grantee": "service_role",
+                "grantor": "postgres",
+                "grantable": false,
+                "privilege": "EXECUTE"
+              }
+            ],
+            "config": [
+              "search_path=\"\""
+            ],
+            "definer": true,
+            "language": "plpgsql",
+            "kind": "f",
+            "cost": 100,
+            "rows": 1000,
+            "strict": false,
+            "leakproof": false,
+            "parallel": "u",
+            "volatility": "v",
+            "support": "-",
+            "variadic": "-",
+            "modes": [
+              "i",
+              "i",
+              "i",
+              "i",
+              "i",
+              "i",
+              "t",
+              "t",
+              "t",
+              "t",
+              "t",
+              "t"
+            ],
+            "body": "24f6b476f60f05ba71059aea3ef93311",
+            "definition": "8481089b62570b4386281c161bb4a20e"
+          }
+        ]
+      ],
+      "actualCardinality": 1,
+      "matchesExactAllowedTuple": true
+    }
+  ],
+  "allFiveExist": true,
+  "allFiveMatchKnownTuples": true,
+  "bindings": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-target-tuple-check.py",
+      "rawSha256": "0b5e71947461c497f2526042a49fe85eea3eca5e9dda6323a581b4e0faf06f26",
+      "bytes": 1972,
+      "archive": "i0.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/d45-baseline.json",
+      "rawSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "bytes": 3341952,
+      "archive": "i1.source"
+    },
+    {
+      "path": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "rawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "bytes": 968852,
+      "archive": "i2.source"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+      "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+      "bytes": 6391,
+      "archive": "i3.source"
+    }
+  ]
+}

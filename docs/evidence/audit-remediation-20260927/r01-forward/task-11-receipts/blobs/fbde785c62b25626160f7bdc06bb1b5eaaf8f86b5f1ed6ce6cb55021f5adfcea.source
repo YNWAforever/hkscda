@@ -1,0 +1,76 @@
+# R01 forward schema repair — 2026-10-01
+
+Continuation of approved T01/R01 implementation, not a new product design. Binding spec: the original implementation plan and the user's work rules in this conversation; existing source call contracts and current releaseManifest define required signatures. Do not rewrite historical reports.
+
+## Global Constraints
+
+- Work from clean isolated main 4bbd4a4dffbd053328e92c03281a23d1d4ebe682. Primary155 unrelated paths are preserved. Production alias is same-SHA READY; mainCI36833019358 allfive SUCCESS.
+- Fresh production readonly catalog 2026-10-01T09:15:56Z:154publictables/304publicfunctions/ledger112. Offline checker146requirements/44issues, exit1. This is a failure reproduction, not a ready claim.
+- Only isolated DBs, synthetic rows, provider sandbox and email test sink. No production DML/DDL/actor-RPC, whole legacy replay, reset, fake ledger, paid branch, real payment/email/refund/content publication or schedule activation.
+- Preserve #130 atomic audit, signed upload intent, fingerprint/idempotency, body limit, suspension recheck and media commit-before-public. Preserve #133 narrowly scoped CMS-revision fallback and existing public-data tables.
+- Strict TypeScript/server-only boundaries; RLS and explicit table/column grants; SECURITY DEFINER only where existing service RPC architecture requires it, postgres owner and empty pinned search_path, exact service-only EXECUTE/revocation. Role/permission rechecked inside audited transaction.
+- Generate every new migration filename through pinned Supabase CLI migration new; forward changes only, retain original migrations. Existing-object type/body/constraint/grant differences need explicit review; never hide them with blind IF EXISTS skipping.
+- Before a migration, create real failure tests, observe RED; then minimum fix/GREEN. SQL role/owner/defaultACL/metadata/rows/audit/retry/partial-failure checks and full local typecheck/tests/lint/build are required. Fresh exact-head CI mandatory for review. Not-run stays not-run.
+- New checkout stays disabled, existing signed webhooks/reconciliation remain compatible, committed payment success never reverts because receipt/email fails.
+- Each domain is its own reviewable PR. Controller prepares per-task branch/PR after review; tasks may share the test-only catalog clone harness. No new production migration or new release authority inferred from original46 merger.
+
+## Shared test interface
+
+Task1 provides test-only tooling for a guarded, zero-production-data production-schema clone. Capture only schema via existing authenticated CLI/read-only MCP; do not decrypt or restore a production data backup. Existing loopback template audit_pr135_20260929 at127.0.0.1:52322 is synthetic and read-only. Create a uniquely named disposable local clone through existing supabase_db_hkscda-audit-integration-fresh container; never reset/terminate sessions on an existing stack. Restore public/private production schema only into that new clone, retaining synthetic managed Auth/Storage prerequisites. Verify normalized catalog matches actual production projection, owners/default ACL/grants/RLS and required prerequisites. No network/provider-bearing SQL primitive may execute during rehearsal. Do not change cluster roles, existing DBs, Docker engines or cron schedules. Inability to create an exact compatible clone must be reported as a concrete blocker, not replaced with a fabricated match.
+
+Reuse source-side loopback full-suite environment: clear inherited *TEST_DATABASE_URL/*ALLOW_LOCAL_FIXTURES; set CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:57322/postgres and SUPABASE_LOCAL_URL=http://127.0.0.1:52321. Build uses only loopback54329/ci-placeholder keys. Other feature DB tests opt in only against the guarded new clone. Never print keys or data.
+
+## Common task steps
+
+1. Read exact requirement and legacy source definitions/callers using indexed graph hkscda-r01-forward-20261001, then SQL/direct-read fallback where graph excludes migrations. Read current AGENTS/CLAUDE and relevant instructions.
+2. Record fresh read-only preflight, exact signatures/returns/owners/body hashes/full ACL/grant options/RLS/indexes/constraints and synthetic row invariants. Existing good objects are preserved.
+3. Write and run real failing DB regressions against missing production-state objects. Reject direct unauthorized roles, audit-failure partial commits, stale role/version, identity mismatch and malformed/replayed inputs as applicable. Tests assert meaningful behavior, not only source strings.
+4. Generate one focused forward migration, apply only to the new synthetic clone, run GREEN plus second apply/idempotency, expected preservation/default-ACL/temp-shadowing checks; require no unintended data/backfill or function replacement.
+5. Run full local gates and applicable isolated DB/RLS gates. Record command/exit/source/environment; skipped/external gates explicit. Update this task's evidence and current R01 tracker without rewriting historical evidence.
+6. Commit explicit paths, self-review, report to controller. Do not push/merge/apply production. No subagents. Controller supplies independent task review and prepares one PR for this domain.
+
+## Review Focus
+
+Unchecked catalog facets, private/helper prerequisites, exact argument names and types/return contracts, inherited grants, existing modern version triggers, service suspension fencing, transactional audit rollback, duplicate/concurrent retries, function replacement scope, existing data/immutable money/event preservation, and schema-only restore of production owners/default ACLs. Public146-requirement GREEN alone is insufficient for behavioral compatibility or hosted/provider UAT.
+
+### Task 11: Finance callback and receipt commands
+
+Controller SQL routing: 20260925143941_guarded_provider_denial.sql, 20260925144915_guarded_provider_refund.sql, 20260926082239_atomic_receipt_void_audit.sql and 20260926083940_atomic_manual_receipt_issue_audit.sql. Existing signed provider completion/reconciliation and recovery queue contracts stay compatible; payment success survives receipt/email failure. No real refund/payment/provider request/email, checkout stays false/version1, no new sending schedule.
+
+Scope (public schema, exact current manifest/call contracts): `fail_pending_provider_payment`, `refund_provider_payment_atomically`, `void_receipt_with_audit`, `void_donation_receipts_with_audit`, `issue_receipt_with_audit`.
+
+Files: focused new migration; adjacent domain database tests or supabase/rls-tests; task evidence under docs/evidence/audit-remediation-20260927/r01-forward/; current tracker. Preserve unrelated source and migrations.
+
+Follow Common task steps. Expected: before fix missing-target regression fails; after exact forward migration meaningful role/transaction/idempotency tests exit0 and no unintended metadata/data drift. Task11 closes only its 5 exact public targets; conditional isolated hosted gaps after accepted preceding tasks are13 and afterward8, with Task1five control columns and Task8two targets excluded. Production remains44 until separately approved application. Source code-complete/schema-ready in isolation is distinct from applied/deployed/operationally-enabled.
+
+
+
+
+## Actual dispatch identity and predecessor acceptance
+
+Task11 recorded BASE d45b849d300f76700efcf5450a9b426e32cc372f/treeaeb6c4e396969a5296483ddf2525c90894bd440a. Worktree C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001; branch codex/audit-r01-finance-callback-20261003. Original baseline4bb main remains unchanged and unrelated primary/WT1 Task8 work preserved. Root will create the branch before actual dispatch. OWN controller-plan folder remains .superpowers/sdd/r01-forward-schema-plan-20261001 in this worktree; MASTER is the sibling r01-forward-repair-20261001 equivalent folder. Keep Task10 reports/archives immutable.
+
+Accepted predecessor Task10 draft193/headD45: original task review then SAME Fix1 scoped126..D45 SpecAPPROVED/QualityAPPROVED, I1/I2/M1 addressed/no new actionable findings. SQL20261002111418 SHA b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e; actual3profiles each82pass183assert/60-75-75 refusals/twoapplies/all17(+component2)true. Root65 current/sourceGit+rawarchive bindings and2091translations/571actualGitarchives0, original686/118 immutable.
+
+Fresh CI37033087893/attempt1 allfive individualSUCCESS with every required verification/RLSstartup/behavior step actually executed. All5 actualcheckout5228617a90ceb5462ff498d8013e91810fdb1585 has parentsEFEB+D45, treeaeb6 identical to reviewedD45. Source/run-associated SHA and actual checkout differ; report both. Actual successful isolated bootstrap image17.11.0.002, distinct from local17.6 component. CIverify3651pass532skip11232assert versus local3704pass473skip11369;52baselinewarnings, warning ledger remains.
+
+This supersedes historical pending Task10/Task9 and conditional counts in task-11-brief.md. Only this accepted actualBASE is authorized for dependent source work. Source/isolated acceptance does not grant production/mainmerge/newrelease/paidbranch/publicpreview/provider actions. Last production readonly44gaps/112ledger remains, newcheckout/delivery/media schedules disabled. Task11 closes only its5 own publictargets; conditionalhosted13-to8, modern/component separately observed. Task1partialSQL/controlACL proposal and Task8 scanner proposal remain excluded/unapproved.
+
+## Engineering constraints from confirmed preceding findings
+
+- Use full unchanged scanner5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519 over the actual complete fixture call paths before DML. No narrowed scope/guard bypass or Task8 proposal. Test-helper native/aggregate issue in another domain does not authorize new allowlists here.
+- Relevant effective Auth column SELECT/UPDATE, owner, fullACL/grant options, exact default count/expression, creator global/schema defaultACL, complete native originating AND referenced constraints/indexes, fullRLS/trigger/helper contracts must be captured and preserved. Intentional rawACLNULL/PUBLIC helper contracts differ by domain; no blanketnormalization or body-only allowance.
+- Captured role/membership context must be consumed where needed; service-only actor-ID-trusting RPCs must reject unexpected effective browser access via INHERIT/SET paths. Preserve actual known roles/grants. Task10 whollyowned role-fixture authority is TASK10 ONLY; no sharedrole mutation or newrole cluster by analogy. Report concrete needed role fixture/scope first.
+- Service_role lacks direct Auth users SELECT/UPDATE in production. Existing invokerRPC cannot add Auth locking by privilege grants or SECDEF conversion to evade this boundary. Inspect actual legacy source architecture, signed-callback versus financeactor trust, meaningful actor role/ban/suspension and transaction locks. Report real missingfence RED to controller before knownbody replacement/newhelper. Preserve source default/signature/audit/paid/reconciliation behavior.
+- Public146 GREEN alone excludes supplemental private/native/policy/effective privilege requirements. Direct API/privatefile/export and provider/hosted UAT stay not-run unless actually executed with authorized isolated/sandbox identities. Never treat synthetic signatures as real provider sandbox certification.
+- Exact LF SQL generation on Windows; preserve paired complete known body/definition/default/owner/fullACL tuples, no arbitrary normalization. Newly authored pinned search_path '=' spelling matches existing safety gate. Generate actual filename with pinnedCLI2.118.0 migration new and archive actual invocation/stdout before any source migration creation; no reconstructed historical provenance.
+- Capture own source-component prerequisite profiles before freezing and initial CI. Genuine unchanged-candidate55000/native/Auth/metadata mismatch needs full bound rawcomparison and owned rollback RED before controller admits any new known alternative. Do not copy Task9 auth.uid MD5 or Task6/10 profiles by analogy; unknowns remain55000 beforewrites.
+- Fixed receipt-type/mode required-field lists and all required booleans EXACTTRUE at EVERY producer/consumer boundary. Nonempty failedFinalFlags/error, wrong mode/cardinality, missing/false flags or cleanup observation exceptions cannot be promoted to success. Keep original failed receipts, rerun only needed covering verification after actual fix; no active frozen input edits.
+- Versioned unit/inert tests cannot depend on ignored .superpowers receipts. Use explicit portable synthetic validation fixtures separate from actual executed profile/source proof; never generate accepted SQL from fabricated profiles. Actual fresh-source CI is mandatory after independent review. Use actual raw/canonical/Git blob evidence bindings and archive executed binder BEFORE running it; no missing-source reconstruction.
+- Fullsuite authorized modern syntheticfixture transition is separate from clone/template readonly equality; record commands/environment precisely, not blanketpreservation. All source/control cleanup targets uniquelyowned, normalDROP only after no activeconnections; no forcedtermination/sharedstack/reset/engine/volume cleanup.
+
+## Discovery and skill scope
+
+Apply Supabase and TDD/debugging/verification skills as needed; read current AGENTS/CLAUDE/applicable subguides. Explicit task instructions override conflicting external skill approval routines. Existing indexed graph hkscda-r01-admin-atomic-efeb2563-20261002 may route unchanged code with its EFEB identity. ActualD45 checkout is authoritative. Fresh126 index was auto-review rejected for unspecified source/metadata export destination; direct Task10 source approval does not authorize that export. Do not retry equivalent indexing/export or alternate payload routes. Use named local fallback for SQL/Python/docs/config and genuinely insufficient graph newpaths; no newly indexed Task11 graph is claimed.
+
+Read original prepared task-11-brief.md for historical lessons if needed, final-review-carry-forward.md/deferred-warning-ledger-20261002.md and current task-specific legacy source. No subagents; controller supplies independent review. Only Task11 implementation now:5callback/receipt targets, actual RED->minimumfix->GREEN, own fullrole/transaction/retry/paidstate/immutablemoney/audit concurrency and signature/default/grant checks; finalfrozen hosted/modern/sourcecomponent compositions + four local gates, exact report/commit/translation, then controllerreview/draftPR/fresh5CI. Publicfive target closure never includes blind refund initiation or new operationalenablement.

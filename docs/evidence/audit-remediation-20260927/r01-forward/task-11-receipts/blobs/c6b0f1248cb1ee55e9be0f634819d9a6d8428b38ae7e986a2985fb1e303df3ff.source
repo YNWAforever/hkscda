@@ -1,0 +1,13 @@
+import json,pathlib
+scratch=pathlib.Path('.superpowers/sdd/r01-forward-schema-plan-20261001');out=scratch/'task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85';full=json.loads((out/'complete-handoff-v2/all-prerequisite-differences.json').read_text(encoding='utf-8'));h=json.loads((out/'complete-handoff-v2/handoff.json').read_text(encoding='utf-8'));result={'catalogAligned':[],'helpersAligned':[],'targetSummary':{},'qualification':'Offline saved metadata only; no scanner repair/new environment/finance transaction.'}
+def key(row):return tuple(str(row.get(k,''))for k in ['schema','table','name','args','column'])
+def align(expected,actual):
+ a={key(r):r for r in expected};b={key(r):r for r in actual};return{'expectedCount':len(expected),'actualCount':len(actual),'onlyExpected':[a[k]for k in sorted(a.keys()-b.keys())],'onlyActual':[b[k]for k in sorted(b.keys()-a.keys())],'changed':[{'key':k,'fields':{f:{'expected':a[k].get(f),'actual':b[k].get(f)}for f in sorted(set(a[k])|set(b[k]))if a[k].get(f)!=b[k].get(f)}}for k in sorted(a.keys()&b.keys())if a[k]!=b[k]]}
+actual=full['catalog']['actualCompleteProjection']
+for i,expected in enumerate(full['catalog']['admittedCompleteProjections']):
+ diff={k:align(expected[k],actual[k])for k in ['columns','constraints','indexes','relations']if expected[k]!=actual[k]};diff['globalChanges']={k:{'expected':expected[k],'actual':actual[k]}for k in ['schemas','defaults','roles','memberships','extensions','extensionMembers','databaseOwner','sequences','types','triggers','policies']if expected[k]!=actual[k]};result['catalogAligned'].append({'profileIndex':i,'differences':diff})
+helper=next(g for g in full['additionalGuards']if 'helper tuples'in g['label'])
+for i,expected in enumerate(helper['admitted']):result['helpersAligned'].append({'profileIndex':i,**align(expected,helper['actual'])})
+for name in ['fail_pending_provider_payment','refund_provider_payment_atomically','void_receipt_with_audit','void_donation_receipts_with_audit','issue_receipt_with_audit']:
+ rows=[f for f in json.loads((out/'d45-baseline.json').read_text(encoding='utf-8'))['functions']if f['schema']=='public'and f['name']==name];result['targetSummary'][name]=rows
+(out/'complete-handoff-v2/aligned-metadata-differences.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps({'catalog2':result['catalogAligned'][1],'helperSummaries':[{'profileIndex':p['profileIndex'],'expectedCount':p['expectedCount'],'actualCount':p['actualCount'],'onlyExpected':[(r['schema'],r['name'],r['args'])for r in p['onlyExpected']],'onlyActual':[(r['schema'],r['name'],r['args'])for r in p['onlyActual']],'changed':p['changed']}for p in result['helpersAligned']]},ensure_ascii=True))

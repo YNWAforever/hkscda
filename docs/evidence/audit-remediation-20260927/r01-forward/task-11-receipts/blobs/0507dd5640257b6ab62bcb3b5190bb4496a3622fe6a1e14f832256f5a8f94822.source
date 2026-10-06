@@ -1,0 +1,101 @@
+-- Factual attendance is append-only; legacy facts remain in the registration until
+-- the first command captures their before snapshot. No identity/credential backfill.
+create table if not exists public.volunteer_attendance_event (
+ id uuid primary key default gen_random_uuid(),
+ registration_id uuid not null references public.volunteer_registration(id) on delete restrict,
+ actor_user_id uuid not null,
+ command text not null check (command in ('record','correct')),
+ reason text,
+ before_fact jsonb not null,
+ after_fact jsonb not null,
+ recorded_at timestamptz not null default clock_timestamp(),
+ check (command <> 'correct' or length(btrim(reason)) > 0 and reason is not null)
+);
+alter table public.volunteer_attendance_event enable row level security;
+revoke all on public.volunteer_attendance_event from anon, authenticated;
+grant select, insert on public.volunteer_attendance_event to service_role;
+
+create or replace function public.reject_volunteer_attendance_event_mutation()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin raise exception 'Attendance facts are append-only' using errcode='42501'; end $$;
+drop trigger if exists volunteer_attendance_event_immutable on public.volunteer_attendance_event;
+create trigger volunteer_attendance_event_immutable before update or delete on public.volunteer_attendance_event
+for each row execute function public.reject_volunteer_attendance_event_mutation();
+
+create or replace function public.set_volunteer_attendance_with_audit(
+ p_registration_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamptz,
+ p_attendance_status text, p_command text default 'record', p_reason text default null,
+ p_volunteer_hours numeric default null, p_update_volunteer_hours boolean default false,
+ p_internal_notes text default null, p_update_internal_notes boolean default false
+) returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+ v_activity_id uuid; v_activity public.volunteer_activity%rowtype;
+ v_registration public.volunteer_registration%rowtype; v_before jsonb; v_after jsonb; v_event_id uuid;
+ v_now timestamptz;
+begin
+ if not exists(select 1 from public.admin_user where auth_user_id=p_actor_user_id and status='active' and role in ('staff','admin')) then
+  raise exception 'volunteer_forbidden' using errcode='42501';
+ end if;
+ if p_expected_updated_at is null or p_attendance_status is null or p_attendance_status not in ('not_marked','attended','completed','no_show')
+ or p_command is null or p_command not in ('record','correct') or (p_command='correct' and (p_reason is null or length(btrim(p_reason))=0 or length(p_reason)>2000))
+ or (p_volunteer_hours is not null and (p_volunteer_hours<0 or p_volunteer_hours>24)) then
+  raise exception 'invalid_volunteer_attendance' using errcode='22023';
+ end if;
+ perform pg_advisory_xact_lock(hashtextextended('volunteer-domain',0));
+ select activity_id into v_activity_id from public.volunteer_registration where id=p_registration_id;
+ if not found then return jsonb_build_object('kind','not_found'); end if;
+ perform pg_advisory_xact_lock(hashtextextended(v_activity_id::text,0));
+ select * into v_activity from public.volunteer_activity where id=v_activity_id for update;
+ select * into v_registration from public.volunteer_registration where id=p_registration_id for update;
+ if not found or v_registration.activity_id<>v_activity_id or v_registration.updated_at<>p_expected_updated_at then
+  return jsonb_build_object('kind','conflict');
+ end if;
+ -- Evaluate time only after waiting for all locks.
+ v_now := clock_timestamp();
+ if p_attendance_status <> 'not_marked' and (v_activity.starts_at>v_now or (p_attendance_status in ('completed','no_show') and coalesce(v_activity.ends_at,v_activity.starts_at)>v_now)) then
+  return jsonb_build_object('kind','future_attendance');
+ end if;
+ if p_attendance_status in ('attended','completed') and (v_registration.status<>'approved' or v_activity.status='cancelled') then
+  return jsonb_build_object('kind','invalid_attendance_status');
+ end if;
+ if p_command='record' and (v_registration.status<>'approved' or v_activity.status='cancelled') then
+  return jsonb_build_object('kind','invalid_attendance_status');
+ end if;
+ if p_command='record' and not (v_registration.attendance_status='not_marked' and p_attendance_status<>'not_marked' or v_registration.attendance_status='attended' and p_attendance_status='completed') then
+  return jsonb_build_object('kind','attendance_correction_required');
+ end if;
+ v_before := jsonb_build_object('attendanceStatus',v_registration.attendance_status,'volunteerHours',v_registration.volunteer_hours,'registrationStatus',v_registration.status,'updatedAt',v_registration.updated_at);
+ update public.volunteer_registration set attendance_status=p_attendance_status,
+ volunteer_hours=case when p_attendance_status not in ('attended','completed') then null when p_update_volunteer_hours then p_volunteer_hours else volunteer_hours end,
+ internal_notes=case when p_update_internal_notes then p_internal_notes else internal_notes end,
+ updated_at=greatest(v_now,v_registration.updated_at+interval '1 microsecond')
+ where id=p_registration_id returning * into v_registration;
+ v_after := jsonb_build_object('attendanceStatus',v_registration.attendance_status,'volunteerHours',v_registration.volunteer_hours,'registrationStatus',v_registration.status,'updatedAt',v_registration.updated_at);
+ insert into public.volunteer_attendance_event(registration_id,actor_user_id,command,reason,before_fact,after_fact)
+ values(p_registration_id,p_actor_user_id,p_command,p_reason,v_before,v_after) returning id into v_event_id;
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
+ values(p_actor_user_id,case when p_command='correct' then 'volunteer_registration.attendance_correct' else 'volunteer_registration.attendance_update' end,
+ 'volunteer_registration',p_registration_id::text,jsonb_build_object('eventId',v_event_id,'reason',p_reason,'before',v_before,'after',v_after));
+ return jsonb_build_object('kind','updated','registration',to_jsonb(v_registration),'eventId',v_event_id);
+end $$;
+revoke all on function public.set_volunteer_attendance_with_audit(uuid,uuid,timestamptz,text,text,text,numeric,boolean,text,boolean) from public,anon,authenticated;
+grant execute on function public.set_volunteer_attendance_with_audit(uuid,uuid,timestamptz,text,text,text,numeric,boolean,text,boolean) to service_role;
+
+-- Timestamp versions must advance after lock waits, even within one transaction.
+create or replace function public.set_volunteer_monotonic_updated_at()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin new.updated_at := greatest(clock_timestamp(),old.updated_at+interval '1 microsecond'); return new; end $$;
+drop trigger if exists set_updated_at on public.volunteer_activity;
+create trigger set_updated_at before update on public.volunteer_activity for each row execute function public.set_volunteer_monotonic_updated_at();
+drop trigger if exists set_updated_at on public.volunteer_registration;
+create trigger set_updated_at before update on public.volunteer_registration for each row execute function public.set_volunteer_monotonic_updated_at();
+revoke update, delete, truncate on public.volunteer_attendance_event from service_role;
+
+create or replace function public.protect_legacy_volunteer_attendance()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+ if old.attendance_status <> 'not_marked' then raise exception 'Historical attendance cannot be deleted' using errcode='42501'; end if;
+ return old;
+end $$;
+drop trigger if exists protect_legacy_attendance on public.volunteer_registration;
+create trigger protect_legacy_attendance before delete on public.volunteer_registration for each row execute function public.protect_legacy_volunteer_attendance();

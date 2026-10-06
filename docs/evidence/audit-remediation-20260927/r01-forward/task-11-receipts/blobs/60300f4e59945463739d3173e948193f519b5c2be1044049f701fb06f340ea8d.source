@@ -1,0 +1,126 @@
+BEGIN;
+-- Immutable, versioned monthly volunteer assessment policy and idempotent assessment runs.
+create table public.volunteer_assessment_policy_draft (
+ id boolean primary key default true check(id), body jsonb not null, revision bigint not null default 1,
+ updated_by uuid not null references auth.users(id), updated_at timestamptz not null default clock_timestamp()
+);
+create table public.volunteer_assessment_policy_version (
+ id uuid primary key default gen_random_uuid(), body jsonb not null, content_hash text not null,
+ effective_from date not null, reason text not null check(length(btrim(reason))>0),
+ published_by uuid not null references auth.users(id), created_at timestamptz not null default clock_timestamp()
+);
+create table public.volunteer_monthly_assessment (
+ id uuid primary key default gen_random_uuid(), period_start date not null, scope_key text not null,
+ policy_version_id uuid not null references public.volunteer_assessment_policy_version(id),
+ status text not null default 'completed' check(status in ('completed')),
+ completed_at timestamptz not null default clock_timestamp(), completed_by uuid not null references auth.users(id),
+ unique(period_start,scope_key)
+);
+create table public.volunteer_monthly_assessment_result (
+ assessment_id uuid not null references public.volunteer_monthly_assessment(id),
+ profile_id uuid not null references public.volunteer_profile(id), attendance_count integer,
+ coverage text not null check(coverage in ('complete','unknown')), prior_tier text not null,
+ recommended_tier text not null, notification_type text,
+ primary key(assessment_id,profile_id)
+);
+create trigger volunteer_assessment_policy_immutable before update or delete on public.volunteer_assessment_policy_version for each row execute function public.volunteer_immutable_fact();
+create trigger volunteer_assessment_run_immutable before update or delete on public.volunteer_monthly_assessment for each row execute function public.volunteer_immutable_fact();
+create trigger volunteer_assessment_result_immutable before update or delete on public.volunteer_monthly_assessment_result for each row execute function public.volunteer_immutable_fact();
+do $$ declare t text; begin foreach t in array array['volunteer_assessment_policy_draft','volunteer_assessment_policy_version','volunteer_monthly_assessment','volunteer_monthly_assessment_result'] loop
+ execute format('alter table public.%I enable row level security',t); execute format('revoke all on public.%I from anon,authenticated',t); execute format('grant select,insert,update,delete on public.%I to service_role',t); end loop; end $$;
+revoke update,delete,truncate on public.volunteer_assessment_policy_version,public.volunteer_monthly_assessment,public.volunteer_monthly_assessment_result from service_role;
+create function public.volunteer_assessment_policy_ready(p jsonb) returns boolean language sql immutable set search_path=public,pg_temp as $$
+ select jsonb_typeof(p)='object' and not jsonb_path_exists(p,'$.** ? (@.state == "unresolved" || @.state == "inherit")')
+ and p->>'senior_auto_demotion'='false' and p->>'timezone'='Asia/Hong_Kong'
+ and p->>'attendance_unit' in ('once_per_day','each_verified_nonoverlapping_session')
+ and p->>'shelter_scope' in ('combined','separate') and p->>'promotion_trigger' in ('verified_attendance','monthly_assessment')
+ and p#>>'{assessment_time}' ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+$$;
+create function public.volunteer_verified_attendance_count(
+ p_profile_id uuid,p_policy jsonb,p_scope_key text,p_before_date date
+) returns integer language sql stable set search_path=public,pg_temp as $$
+ select case when p_policy->>'attendance_unit'='once_per_day'
+  then count(distinct (a.starts_at at time zone (p_policy->>'timezone'))::date)
+  else count(distinct r.id) filter(where not exists(
+   select 1 from public.volunteer_registration r2
+   join public.volunteer_activity a2 on a2.id=r2.activity_id
+   where r2.profile_id=r.profile_id and r2.id<>r.id and r2.status='approved'
+   and r2.attendance_status in ('attended','completed')
+   and exists(select 1 from public.volunteer_attendance_event e2 where e2.registration_id=r2.id)
+   and a2.starts_at<coalesce(a.ends_at,a.starts_at) and coalesce(a2.ends_at,a2.starts_at)>a.starts_at
+  )) end::integer
+ from public.volunteer_registration r
+ join public.volunteer_activity a on a.id=r.activity_id
+ join public.volunteer_profile p on p.id=r.profile_id
+ where r.profile_id=p_profile_id and r.status='approved'
+ and r.attendance_status in ('attended','completed')
+ and p.history_coverage_start is not null
+ and (a.starts_at at time zone (p_policy->>'timezone'))::date>=p.history_coverage_start
+ and (a.starts_at at time zone (p_policy->>'timezone'))::date<p_before_date
+ and coalesce(a.ends_at,a.starts_at)<=clock_timestamp()
+ and (p_policy->>'shelter_scope'='combined' or a.shelter_key=p_scope_key)
+ and exists(select 1 from public.volunteer_attendance_event e where e.registration_id=r.id)
+$$;
+revoke all on function public.volunteer_verified_attendance_count(uuid,jsonb,text,date) from public,anon,authenticated;
+grant execute on function public.volunteer_verified_attendance_count(uuid,jsonb,text,date) to service_role;
+create function public.volunteer_assessment_command(p_actor uuid,p_command jsonb) returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare k text:=p_command->>'kind'; d public.volunteer_assessment_policy_draft%rowtype; v public.volunteer_assessment_policy_version%rowtype; aid uuid; ps date; sk text; body jsonb; cnt int;
+begin
+ perform public.volunteer_policy_admin(p_actor);
+ if k='list' then return jsonb_build_object('kind','listed','draft',(select to_jsonb(x) from public.volunteer_assessment_policy_draft x where id),'versions',coalesce((select jsonb_agg(to_jsonb(x) order by effective_from desc,created_at desc) from public.volunteer_assessment_policy_version x),'[]'::jsonb),'assessments',coalesce((select jsonb_agg(to_jsonb(x) order by period_start desc,scope_key) from public.volunteer_monthly_assessment x),'[]'::jsonb)); end if;
+ if k='save' then
+  body:=p_command->'body'; if jsonb_typeof(body)<>'object' then raise exception 'invalid_assessment_policy' using errcode='22023'; end if;
+  select * into d from public.volunteer_assessment_policy_draft where id for update;
+  if found and d.revision<>(p_command->>'expected_revision')::bigint then return jsonb_build_object('kind','conflict'); end if;
+  insert into public.volunteer_assessment_policy_draft(id,body,revision,updated_by) values(true,body,1,p_actor)
+  on conflict(id) do update set body=excluded.body,revision=volunteer_assessment_policy_draft.revision+1,updated_by=p_actor,updated_at=clock_timestamp() returning * into d;
+  return jsonb_build_object('kind','saved','draft',to_jsonb(d));
+ end if;
+ if k in ('preview','publish') then
+  select * into d from public.volunteer_assessment_policy_draft where id;
+  if not found then return jsonb_build_object('kind','not_found'); end if;
+ end if;
+ if k='preview' then return jsonb_build_object('kind','preview','ready',public.volunteer_assessment_policy_ready(d.body),'body',d.body,'revision',d.revision); end if;
+ if k='publish' then
+  if d.revision<>(p_command->>'expected_revision')::bigint then return jsonb_build_object('kind','conflict'); end if;
+  if not public.volunteer_assessment_policy_ready(d.body) then return jsonb_build_object('kind','invalid','reason','unresolved_policy'); end if;
+  insert into public.volunteer_assessment_policy_version(body,content_hash,effective_from,reason,published_by) values(d.body,encode(extensions.digest(d.body::text,'sha256'),'hex'),(p_command->>'effective_from')::date,p_command->>'reason',p_actor) returning * into v;
+  return jsonb_build_object('kind','published','version',to_jsonb(v));
+ end if;
+ if k='run' then
+  ps:=(p_command->>'period_start')::date; sk:=coalesce(nullif(p_command->>'scope_key',''),'combined');
+  if ps<>date_trunc('month',ps)::date or ps>=date_trunc('month',clock_timestamp() at time zone 'Asia/Hong_Kong')::date then raise exception 'invalid_assessment_period' using errcode='22023'; end if;
+  select * into v from public.volunteer_assessment_policy_version where effective_from<=ps order by effective_from desc,created_at desc limit 1;
+  if not found then return jsonb_build_object('kind','not_found'); end if;
+  if (v.body->>'shelter_scope'='combined' and sk<>'combined') or (v.body->>'shelter_scope'='separate' and sk not in ('cat','dog')) then
+   raise exception 'assessment_scope_mismatch' using errcode='22023';
+  end if;
+  insert into public.volunteer_monthly_assessment(period_start,scope_key,policy_version_id,completed_by) values(ps,sk,v.id,p_actor) on conflict(period_start,scope_key) do nothing returning id into aid;
+  if aid is null then select id into aid from public.volunteer_monthly_assessment where period_start=ps and scope_key=sk; end if;
+  -- A completed period stays bound to the version selected on its first run.
+  select pv.* into v from public.volunteer_monthly_assessment ma join public.volunteer_assessment_policy_version pv on pv.id=ma.policy_version_id where ma.id=aid;
+  insert into public.volunteer_monthly_assessment_result(assessment_id,profile_id,attendance_count,coverage,prior_tier,recommended_tier,notification_type)
+  select aid,p.id,case when p.history_coverage_start is null or p.history_coverage_start>ps then null else
+    greatest(0,public.volunteer_verified_attendance_count(p.id,v.body,sk,(ps+interval '1 month')::date)-public.volunteer_verified_attendance_count(p.id,v.body,sk,ps)) end,
+    case when p.history_coverage_start is null or p.history_coverage_start>ps then 'unknown' else 'complete' end,p.tier,
+    case when p.history_coverage_start is null or p.history_coverage_start>ps then p.tier when p.tier='newcomer' and public.volunteer_verified_attendance_count(p.id,v.body,sk,(ps+interval '1 month')::date)>=(v.body->>'regular_attendance_threshold')::int then 'regular' else p.tier end,
+    case when p.history_coverage_start is null or p.history_coverage_start>ps then null
+    when p.tier='regular' and count(distinct r.id) filter(where a.id is not null)=0 and
+      (select count(*) from public.volunteer_monthly_assessment ma join public.volunteer_monthly_assessment_result mr on mr.assessment_id=ma.id where mr.profile_id=p.id and ma.scope_key=sk and ma.period_start>=ps-((greatest((v.body->>'regular_zero_months')::int,1)-1)||' months')::interval and ma.period_start<ps and mr.coverage='complete' and mr.attendance_count=0)=greatest((v.body->>'regular_zero_months')::int,1)-1 then 'regular_reminder'
+    when p.tier='senior' and count(distinct r.id) filter(where a.id is not null)=0 and
+      (select count(*) from public.volunteer_monthly_assessment ma join public.volunteer_monthly_assessment_result mr on mr.assessment_id=ma.id where mr.profile_id=p.id and ma.scope_key=sk and ma.period_start>=ps-((greatest((v.body->>'senior_zero_months')::int,1)-1)||' months')::interval and ma.period_start<ps and mr.coverage='complete' and mr.attendance_count=0)=greatest((v.body->>'senior_zero_months')::int,1)-1 then 'senior_reminder' end
+  from public.volunteer_profile p left join public.volunteer_registration r on r.profile_id=p.id and r.status='approved' and r.attendance_status in ('attended','completed') and exists(select 1 from public.volunteer_attendance_event e where e.registration_id=r.id) left join public.volunteer_activity a on a.id=r.activity_id and (a.starts_at at time zone 'Asia/Hong_Kong')::date>=ps and (a.starts_at at time zone 'Asia/Hong_Kong')::date<(ps+interval '1 month')::date and (sk='combined' or a.shelter_key=sk)
+  where p.status='active' group by p.id,v.body on conflict(assessment_id,profile_id) do nothing;
+  if coalesce((v.body#>>'{notifications,enabled}')::boolean,false) then
+   insert into public.volunteer_operation_outbox(dedup_key,kind,payload)
+   select 'monthly-assessment:'||r.profile_id||':'||ps||':'||r.notification_type,'volunteer_monthly_assessment_notification',jsonb_build_object('assessment_id',aid,'profile_id',r.profile_id,'period_start',ps,'type',r.notification_type,'channels',v.body#>'{notifications,channels}','dry_run',coalesce((v.body#>>'{notifications,dry_run}')::boolean,true),'max_attempts',(v.body#>>'{notifications,max_attempts}')::integer)
+   from public.volunteer_monthly_assessment_result r where r.assessment_id=aid and r.notification_type is not null on conflict(dedup_key) do nothing;
+  end if;
+  select count(*) into cnt from public.volunteer_monthly_assessment_result where assessment_id=aid;
+  return jsonb_build_object('kind','completed','assessment_id',aid,'policy_version_id',v.id,'profiles',cnt,'notifications','queued');
+ end if;
+ raise exception 'invalid_assessment_command' using errcode='22023';
+end $$;
+revoke all on function public.volunteer_assessment_command(uuid,jsonb) from public,anon,authenticated;
+grant execute on function public.volunteer_assessment_command(uuid,jsonb) to service_role;
+COMMIT;

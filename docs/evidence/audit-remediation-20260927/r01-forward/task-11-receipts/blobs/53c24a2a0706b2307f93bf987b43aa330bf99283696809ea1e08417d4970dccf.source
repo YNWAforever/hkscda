@@ -1,0 +1,362 @@
+[
+  {
+    "expression": "NULL::character varying",
+    "operatorOids": []
+  },
+  {
+    "expression": "''::character varying",
+    "operatorOids": []
+  },
+  {
+    "expression": "''::character varying",
+    "operatorOids": []
+  },
+  {
+    "expression": "LEAST(email_confirmed_at, phone_confirmed_at)",
+    "operatorOids": []
+  },
+  {
+    "expression": "''::character varying",
+    "operatorOids": []
+  },
+  {
+    "expression": "0",
+    "operatorOids": []
+  },
+  {
+    "expression": "''::character varying",
+    "operatorOids": []
+  },
+  {
+    "expression": "false",
+    "operatorOids": []
+  },
+  {
+    "expression": "false",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'issued'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'zh-HK'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "'{}'::text[]",
+    "operatorOids": []
+  },
+  {
+    "expression": "'donation_form'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "1",
+    "operatorOids": []
+  },
+  {
+    "expression": "1",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'pending'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "0",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'pending'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "0",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'HKD'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "'one_time'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "'pending'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "false",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "false",
+    "operatorOids": []
+  },
+  {
+    "expression": "false",
+    "operatorOids": []
+  },
+  {
+    "expression": "0",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'{}'::jsonb",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'opt_in'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "gen_random_uuid()",
+    "operatorOids": []
+  },
+  {
+    "expression": "'active'::text",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "now()",
+    "operatorOids": []
+  },
+  {
+    "expression": "((email_change_confirm_status >= 0) AND (email_change_confirm_status <= 2))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(status = ANY (ARRAY['issued'::text, 'void'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(total_amount_cents > 0)",
+    "operatorOids": []
+  },
+  {
+    "expression": "(edit_version > 0)",
+    "operatorOids": []
+  },
+  {
+    "expression": "(language = ANY (ARRAY['zh-HK'::text, 'en'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(next_value > 0)",
+    "operatorOids": []
+  },
+  {
+    "expression": "(amount_cents > 0)",
+    "operatorOids": []
+  },
+  {
+    "expression": "((refunded_cents >= 0) AND (refunded_cents <= amount_cents))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(provider = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text, 'cod'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(status = ANY (ARRAY['pending'::text, 'succeeded'::text, 'failed'::text, 'refunded'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(attempts >= 0)",
+    "operatorOids": []
+  },
+  {
+    "expression": "(status = ANY (ARRAY['pending'::text, 'processing'::text, 'complete'::text, 'retryable'::text, 'attention_required'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "((status = 'processing'::text) = ((lease_owner IS NOT NULL) AND (lease_until IS NOT NULL)))",
+    "operatorOids": []
+  },
+  {
+    "expression": "((acquisition_context IS NULL) OR (acquisition_context = ANY (ARRAY['general'::text, 'story'::text, 'animal'::text, 'sponsor'::text, 'transparency'::text, 'community'::text])))",
+    "operatorOids": []
+  },
+  {
+    "expression": "((acquisition_placement IS NULL) OR (acquisition_placement = ANY (ARRAY['mobile-bottom'::text, 'desktop-left'::text])))",
+    "operatorOids": []
+  },
+  {
+    "expression": "((acquisition_source IS NULL) OR (acquisition_source = 'contextual-cta'::text))",
+    "operatorOids": []
+  },
+  {
+    "expression": "((acquisition_trigger IS NULL) OR (acquisition_trigger = ANY (ARRAY['scroll'::text, 'timer'::text])))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(amount_cents > 0)",
+    "operatorOids": []
+  },
+  {
+    "expression": "((refunded_cents >= 0) AND (refunded_cents <= amount_cents))",
+    "operatorOids": []
+  },
+  {
+    "expression": "((contact_language IS NULL) OR (contact_language = ANY (ARRAY['zh-HK'::text, 'en'::text])))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(((contact_name IS NULL) OR ((char_length(contact_name) >= 1) AND (char_length(contact_name) <= 120))) AND ((contact_email IS NULL) OR (char_length((contact_email)::text) <= 254)) AND ((contact_phone IS NULL) OR (char_length(contact_phone) <= 40)))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(currency = 'HKD'::text)",
+    "operatorOids": []
+  },
+  {
+    "expression": "((custom_purpose IS NULL) OR (char_length(custom_purpose) <= 200))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(((idempotency_key IS NULL) AND (idempotency_fingerprint IS NULL)) OR ((idempotency_key IS NOT NULL) AND (idempotency_fingerprint IS NOT NULL) AND (idempotency_fingerprint ~ '^[0-9a-f]{64}$'::text)))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(method = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text, 'alipayhk'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(purpose = ANY (ARRAY['general'::text, 'medical'::text, 'sponsor'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(status = ANY (ARRAY['pending'::text, 'succeeded'::text, 'failed'::text, 'refunded'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(type = ANY (ARRAY['one_time'::text, 'recurring'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(channel = ANY (ARRAY['email'::text, 'whatsapp'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(requested_status = 'opt_in'::text)",
+    "operatorOids": []
+  },
+  {
+    "expression": "(source = ANY (ARRAY['donation_form'::text, 'volunteer_registration_form'::text, 'sponsorship_pledge_form'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(submission_type = ANY (ARRAY['donation'::text, 'volunteer_registration'::text, 'sponsorship_pledge'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(role = ANY (ARRAY['staff'::text, 'treasurer'::text, 'admin'::text]))",
+    "operatorOids": []
+  },
+  {
+    "expression": "(status = ANY (ARRAY['pending'::text, 'active'::text, 'disabled'::text]))",
+    "operatorOids": []
+  }
+]

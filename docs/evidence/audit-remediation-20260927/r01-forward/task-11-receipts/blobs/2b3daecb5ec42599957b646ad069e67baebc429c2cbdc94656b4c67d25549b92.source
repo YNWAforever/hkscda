@@ -1,0 +1,52 @@
+"""R57 integration function text inserted into separately archived owned driver."""
+def integration(finance,before,counts):
+ names=['fail_pending_provider_payment','refund_provider_payment_atomically','void_receipt_with_audit','void_donation_receipts_with_audit','issue_receipt_with_audit']
+ def outside(value):
+  copied=json.loads(json.dumps(value));copied['catalog']['functions']=[f for f in copied['catalog']['functions']if not(f['schema']=='public'and f['name']in names)];copied['functions']=[f for f in copied['functions']if not(f['schema']=='public'and f['name']in names)];return copied
+ def transport(label,sql,required=True):
+  raw=sql.encode()if isinstance(sql,str)else sql;path=out/(label+'.transaction.source');path.write_bytes(raw);receipt.setdefault('transactionTransports',[]).append({'label':label,'archive':path.name,'rawSha256':sha(raw),'rawGitBlob':blob(raw),'bytes':len(raw),'preArchived':True});save();return psql(raw,required)
+ transport('first-apply',b'\set VERBOSITY verbose\nBEGIN;\n'+finance+b'\nCOMMIT;\n');receipt['firstApply']=True;first=capture('after-first');receipt['outsideTargetsPreserved']=outside(before)==outside(first);assert receipt['outsideTargetsPreserved']
+ receipt['supplementalPreserved']=all(before[k]==first[k]for k in ['auth','native','indexes','shapes'])and outside(before)['functions']==outside(first)['functions'];assert receipt['supplementalPreserved']
+ transport('second-apply',b'\set VERBOSITY verbose\nBEGIN;\n'+finance+b'\nCOMMIT;\n');receipt['secondApply']=True;second=capture('after-second');receipt['secondApplyPreserved']=first==second;assert first==second;save()
+ # Exactly the existing fourteen full-candidate metadata refusal fixtures.
+ rehearsal=bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts','exact-existing-refusal-source').decode()
+ block=re.search(r'const mutations = \[([\s\S]*?)\n  \];',rehearsal).group(1)
+ mutations=[(label,json.loads('"'+text+'"'))for label,text in re.findall(r'\[\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,?\s*\]',block)]
+ assert len(mutations)==14
+ values=[]
+ for k,q in queries.items():
+  if k=='fixtureScope':continue
+  if k=='catalog':expr='(select catalog from ('+q+') captured)'
+  elif k in ['auth','native','indexes','shapes']:expr='(select value from ('+q+') captured)'
+  else:expr="(select coalesce(jsonb_agg(to_jsonb(q)),'[]'::jsonb)from ("+q+')q)'
+  values.extend(["'"+k+"'",expr])
+ fullSelect='select jsonb_build_object('+','.join(values)+');\n'
+ receipt['refusals']=[]
+ for label,change in mutations:
+  raw='\\set VERBOSITY verbose\nBEGIN;\nset local role supabase_admin;\n'+change+';\nset local role postgres;\nset local search_path=pg_catalog;\n'+fullSelect+'SAVEPOINT task11_refusal;\n\\set ON_ERROR_STOP off\n'+finance.decode()+'\n\\echo TASK11_SQLSTATE :SQLSTATE\n\\set ON_ERROR_STOP on\nROLLBACK TO SAVEPOINT task11_refusal;\nset local search_path=pg_catalog;\n'+fullSelect+'ROLLBACK;\n'
+  result=transport('refusal-'+label,raw)
+  output=result.stdout.decode().splitlines();snapshots=[json.loads(line)for line in output if line.startswith('{')];codes=[line.split()[-1]for line in output if line.startswith('TASK11_SQLSTATE ')]
+  assert len(snapshots)==2 and codes==['55000'] and snapshots[0]==snapshots[1]and b'ERROR:  55000:'in result.stderr and len(re.findall(rb'ERROR:',result.stderr))==1,(label,codes,result.stderr[-500:])
+  receipt['refusals'].append({'label':label,'code':'55000','preserved':True,'qualification':'Unchanged full candidate after actual owned transactional metadata mutation; savepoint rollback plus complete within-transaction metadata equality.'});save()
+ receipt['refusalsPassed']=len(receipt['refusals'])==14
+ # Mixed checks are guard-only, complete observed vectors, never fake full-schema replay.
+ inputs=json.loads(bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json','profile-input-pointers'))
+ historic=json.loads(bind(root/inputs['captures'][2],'historical-component-receipt'))
+ native=json.loads(bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json','exact-native-pair'))
+ historicC=project(historic['catalog']);historicH=[f for f in historic['functions']if not(f['schema']=='public'and f['name']in names)]
+ # Extract the emitted selector/catalogue and helper guard byte-for-byte from candidate.
+ selector=re.search(rb" v_native:=\([\s\S]*?complete prerequisite catalog differs' using errcode='55000';end if;\n",finance).group().decode()
+ helperGuard=re.search(rb" if \(v_native and v_actual<>[\s\S]*?complete helper tuples differ' using errcode='55000';end if;\n",finance).group().decode()
+ def literal(value):return "'"+json.dumps(value,separators=(',',':'),ensure_ascii=False).replace("'","''")+"'::jsonb"
+ receipt['mixedRefusals']=[]
+ for label,c,h in [('native-catalogue-historical-helper',native['catalog'],historicH),('historical-catalogue-native-helper',historicC,native['helpers'])]:
+  script="\\set VERBOSITY verbose\nBEGIN;\nDO $mixed$ DECLARE v_before jsonb:="+literal(c)+";v_actual jsonb:="+literal(h)+";v_native boolean;BEGIN\n"+selector+helperGuard+"END;$mixed$;\nROLLBACK;\n"
+  result=transport('mixed-'+label,script,False);assert result.returncode==3 and b'ERROR:  55000: R01 finance complete helper tuples differ'in result.stderr,(label,result.stderr[-500:])
+  receipt['mixedRefusals'].append({'label':label,'code':'55000','exit':3,'preserved':True,'qualification':'Actual PostgreSQL guard-only block, exact byte-extracted generated selector/helper guards and complete observed vectors; not a full candidate schema replay.'});save()
+ receipt['mixedRefusalsPassed']=len(receipt['mixedRefusals'])==2
+ final=capture('after-refusals');assert final==second;receipt['catalogAfterRefusalsPreserved']=True
+ afterCounts=[]
+ for table in queries['fixtureScope']:
+  table=table if'.'in table else'public.'+table;count=psql('BEGIN READ ONLY;select count(*)from '+table+';ROLLBACK;').stdout.decode().strip();assert count=='0',(table,count);afterCounts.append({'table':table,'count':0})
+ receipt['domainRowsAfter']=afterCounts;receipt['zeroRowsAfter']=afterCounts==counts
+ receipt['result']='Actual owned PG17.11 native metadata integration: two applies, fourteen full-candidate metadata refusals and two complete-pair guard-only mixed refusals. Native-local Bun finance behavior NOT RUN; pinned2.118 native assembly, actualCI CLI version unknown.';save()

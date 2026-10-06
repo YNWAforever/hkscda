@@ -1,0 +1,105 @@
+{
+  "status": "PROPOSAL_ONLY_PENDING_CONTROLLER_RULING",
+  "sourceUnchanged": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "actualRED": {
+    "exit": 3,
+    "error": "55000 R01 finance complete prerequisite catalog differs",
+    "receipt": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6/receipt.json",
+      "bytes": 1028325,
+      "rawSha256": "73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798",
+      "canonicalSha256": "73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798",
+      "rawGitBlob": "ae61eeeeb4a8556ec4ac5b872d11e633f3bfc533"
+    },
+    "before": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6/d45-baseline.json",
+      "bytes": 3341952,
+      "rawSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "canonicalSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "rawGitBlob": "4547883e7d7f861b07e7c647e8c391b98b765559"
+    },
+    "after": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6/after-rollback.json",
+      "bytes": 3341952,
+      "rawSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "canonicalSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "rawGitBlob": "4547883e7d7f861b07e7c647e8c391b98b765559"
+    },
+    "stderr": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6/command-0603.stderr.log",
+      "bytes": 171,
+      "rawSha256": "599224c390c5484bdac74983ec012ec05c2b5cddee3bb8cc855256bdf73293da",
+      "canonicalSha256": "599224c390c5484bdac74983ec012ec05c2b5cddee3bb8cc855256bdf73293da",
+      "rawGitBlob": "e71edff8eaa8740d500d680f836f03d9d34116e4"
+    }
+  },
+  "transportQualification": {
+    "originalCombinedArchiveExists": false,
+    "derivedAfterExecution": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-v6-profile-proposal/finance-transaction.postexecution-derived.source",
+      "bytes": 968893,
+      "rawSha256": "d412418344179e3769c047000ca471e502142196e95a3abd89378de272258178",
+      "canonicalSha256": "d412418344179e3769c047000ca471e502142196e95a3abd89378de272258178",
+      "rawGitBlob": "793203452503a4ce6d417a170f0d1c688184dbca"
+    },
+    "exactArchivedExecutedDriver": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6/i000.source",
+      "bytes": 17200,
+      "rawSha256": "40e12c4d6e88cbd6ebc710684b3633be2109b2ebd3b233175ecc2947fbd3e7dd",
+      "canonicalSha256": "40e12c4d6e88cbd6ebc710684b3633be2109b2ebd3b233175ecc2947fbd3e7dd",
+      "rawGitBlob": "ab9507ac247a070306f683c15210dc9dcf4fa5e7"
+    },
+    "preboundFinance": {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-c4f39419e50b416b8077becd931767c6/i040.source",
+      "bytes": 968852,
+      "rawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "canonicalSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "rawGitBlob": "b6d7cf8c1eb36331247a0000635a2a5851c9c4c9"
+    },
+    "qualification": "Deterministic post-execution derivation from archived executed driver and prebound SQL, not an original pre-execution transport archive. ON_ERROR_STOP terminated at 55000; connection closure aborted transaction, literal trailing ROLLBACK not executed. Future GREEN must archive combined transport before execution."
+  },
+  "proposedProfile": {
+    "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-v6-profile-proposal/proposed-complete-native-prerequisites.json",
+    "bytes": 167255,
+    "rawSha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+    "canonicalSha256": "cb85c761d7bcc012db2c7fc1847358ab08e582e1fdcd8b8054259cbaeecbeaa6",
+    "rawGitBlob": "16cb38084ed62561915e889b13b2ab09569b0ca2"
+  },
+  "exactChangedScope": [
+    "Task11-only supplemental full-native RED receipt/profile validator and portable tests",
+    "task-11-profile-inputs.json one separately named native prerequisite pointer retaining exact historical capture triple",
+    "task-11-generate.ts additional complete catalog/helper alternatives only; supplemental input/archive/source binding",
+    "regenerated finance migration from same five target definitions and same guards",
+    "owned final proof drivers: exact transport archive before launch; final packaging/report provenance"
+  ],
+  "preserve": [
+    "Exact historical three assertCapture receipts, modes and cardinalities",
+    "All five old/new target alternatives exclusively existing historical triple",
+    "Existing Auth/native/index/shape alternatives unchanged",
+    "Unknown complete catalog/helper tuples rejected with 55000",
+    "All catalogue facets, ordering, complete helper tuples, body/definition/ownership/effective grants/defaults/native metadata",
+    "5352 scanner, full ten table closure, two manual actor fences and three system callback bodies",
+    "Historical archives immutable; existing Task1 partial source identified separately from held five-column repair; held Task8 proposal unapplied"
+  ],
+  "strictSupplementalValidatorProposal": [
+    "Pin exact actual v6 raw receipt/capture hashes and verify all consumed raw source/archive bindings rather than infer a profile",
+    "Exact mode owned-full1711-d45-diagnostic, D45 baseline, source18 and actual PG17.11 runtime; pinned2.118 assembly qualification retained and no exact CI CLI identity",
+    "Error null; fullD45BaselineObserved/ownedRED/completeMetadataAfterRollbackPreserved/allTenRowsPreserved/protectedSourcesPreserved/all57CurrentInputsPreserved literal true",
+    "Exactly three managed jobs with exit0; exact182 D45 Git migrations and separately bound native transport; four normal cleanup records true; fullScannerPassed true/full10/fourreads",
+    "No production/deploy/operational/held repair flags; exact before/after and ten zero rows; finance actual exit3 and exact55000 raw stderr",
+    "Original v6 receipt has no requiredFinalFlags/failedFinalFlags: preserve it unchanged, bind a new supplemental qualification receipt with fixed literal flags and error:null/failed:[]; do not retroactively invent original fields",
+    "No new target/Auth/native/index/shape tuple; complete actual native helper array includes known component UID plus exact legacy supporter bump from D45 m0144"
+  ],
+  "portableRegressionProposal": [
+    "Real bound v6 profile accepted; one-field mutations of source/hash/mode/flags/errors/cleanup/scanner/managed/migration/raw archive rejected",
+    "Complete catalogue/helper body/definition/ACL/order mutation remains ineligible, no normalization or generic waiver",
+    "Existing exact triple remains mandatory; supplemental data cannot inject target/Auth/native/index/shape alternatives",
+    "Generator emits exact additional full native catalog/helper tuple and unchanged five definition bytes; unknown tuple guards remain fail-closed"
+  ],
+  "verificationProposedPendingAuthority": [
+    "Fresh uniquely owned native D45 environment, unchanged scanner before DML, archive exact transaction transport pre-execution",
+    "Two applies and immutable complete catalog/helper/Auth/ACL/native/index/shape preservation outside five targets, actual finance behavior and all14 refusals, zero rows/normal cleanup/protected source preservation",
+    "Fresh final hosted/modern/component compositions and four local gates against amended frozen bytes; SAME scoped reviewer; controller later fresh five CI and non-skipped actual full17.11 finance step"
+  ],
+  "exactCountCorrection": "16 column ACL changes = five committed Task1 service columns plus eleven supporter columns; earlier 17/12 prose was incorrect. Additional supporter table ACL and donation fingerprint constraint differ. Helpers actual11/expected11, no missing/extra."
+}

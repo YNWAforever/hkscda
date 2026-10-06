@@ -1,0 +1,67 @@
+import { afterAll, describe, expect, test } from "bun:test";
+import { SQL } from "bun";
+import { randomUUID } from "node:crypto";
+import { assertCloneUrl } from "../../../supabase/rls-tests/helpers/productionSchemaClone";
+
+const url = process.env.R01_FINANCE_CALLBACK_TEST_DATABASE_URL;
+const enabled = !!url && process.env.R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES === "1";
+if (enabled) assertCloneUrl(url!);
+const db = enabled ? new SQL(url!, { max: 1 }) : null;
+const rollback = new Error("Task11 fixture rollback");
+
+describe.skipIf(!db)("Task11 finance callback production gaps", () => {
+  const calls = [
+    ["fail_pending_provider_payment", "select public.fail_pending_provider_payment(null::uuid,null::uuid)"],
+    ["refund_provider_payment_atomically", "select public.refund_provider_payment_atomically(null::uuid,null::uuid)"],
+    ["void_receipt_with_audit", "select * from public.void_receipt_with_audit(null::uuid,null::uuid)"],
+    ["void_donation_receipts_with_audit", "select * from public.void_donation_receipts_with_audit(null::uuid)"],
+    ["issue_receipt_with_audit", "select * from public.issue_receipt_with_audit(null::uuid,null::uuid,10000,2026,now(),null::uuid)"],
+  ] as const;
+  for (const [name, statement] of calls)
+    test(`${name} resolves current API signature before input rejection`, async () => {
+      try {
+        await db!.begin(async (tx) => {
+          await tx`set local role service_role`;
+          let error: unknown;
+          await tx.unsafe("savepoint task11_missing");
+          try { await tx.unsafe(statement); } catch (e) { error = e; }
+          await tx.unsafe("rollback to savepoint task11_missing");
+          expect((error as { errno?: string } | undefined)?.errno).not.toBe("42883");
+          expect(error).toBeDefined();
+          throw rollback;
+        });
+      } catch (e) { if (e !== rollback) throw e; }
+    });
+});
+
+describe.skipIf(!db)("Task11 manual receipt Auth fence", () => {
+  for (const banned of [true, false])
+    test(`${banned ? "banned" : "unconfirmed"} finance actor cannot void a receipt`, async () => {
+      try {
+        await db!.begin(async (tx) => {
+          await tx`set local role postgres`;
+          const actor = randomUUID(), supporter = randomUUID(), donation = randomUUID(), receipt = randomUUID();
+          await tx`insert into auth.users(id,email,email_confirmed_at,banned_until) values(${actor}::uuid,${actor + "@example.invalid"},${banned ? new Date() : null},${banned ? new Date(Date.now() + 86400000) : null})`;
+          await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'treasurer','active')`;
+          await tx`insert into public.supporter(id,name,email) values(${supporter}::uuid,'Task11 synthetic supporter',${supporter + "@example.invalid"})`;
+          await tx`insert into public.donation(id,supporter_id,amount_cents,purpose,method) values(${donation}::uuid,${supporter}::uuid,10000,'general','fps')`;
+          await tx`insert into public.receipt(id,supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,issued_at,status) values(${receipt}::uuid,${supporter}::uuid,${"T11-" + receipt},array[${donation}::uuid],10000,2026,now(),'issued')`;
+          await tx`set local role service_role`;
+          await tx.unsafe("savepoint task11_fence");
+          let error: unknown;
+          let result: unknown;
+          let observation: unknown;
+          try {
+            result = await tx`select * from public.void_receipt_with_audit(${receipt}::uuid,${actor}::uuid,${supporter}::uuid)`;
+            await tx`set local role postgres`;
+            observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action='receipt.void' and a.entity_id=${receipt}) audits from public.receipt r where r.id=${receipt}::uuid`;
+            console.log(JSON.stringify({ actorState: banned ? "banned" : "unconfirmed", result, observation }));
+          } catch (e) { error = e; }
+          await tx.unsafe("rollback to savepoint task11_fence");
+          expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+          throw rollback;
+        });
+      } catch (e) { if (e !== rollback) throw e; }
+    });
+});
+afterAll(async () => { await db?.close(); });

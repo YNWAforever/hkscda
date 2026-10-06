@@ -1,0 +1,9 @@
+{
+  "statements": [
+    "-- Correct only the exact obsolete service slogan; unrelated 24-hour copy is out of scope.\nupdate public.content_item\nset\n  body = replace(\n    body,\n    '日夜堅守前線動物救援',\n    '本會以預約方式進行拯救與援助服務，並非 24 小時當值。'\n  ),\n  updated_at = now()\nwhere body like '%日夜堅守前線動物救援%'",
+    "-- Read-only audit: this must return no remaining rows after the correction.\nselect id, slug, title\nfrom public.content_item\nwhere body::text like '%日夜堅守前線動物救援%'"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

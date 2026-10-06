@@ -1,0 +1,6 @@
+import { SQL } from 'bun';import {writeFile,copyFile,mkdir}from'node:fs/promises';import{resolve}from'node:path';import{createHash}from'node:crypto';
+const out=resolve('.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-oid-type-probe-'+Date.now());await mkdir(out);await copyFile(import.meta.path,resolve(out,'executed.source'));
+const query='select 101::oid as oid,array[101::oid,105::oid] as oid_array,p.oid as proc_oid from pg_catalog.pg_proc p where p.oid=101';
+await writeFile(resolve(out,'query.sql.source'),'begin read only;'+query+';rollback;\n');
+const sql=new SQL('postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929');
+try {const rows=await sql.begin(async tx=>{await tx.unsafe('set transaction read only');return await tx.unsafe(query)});const receipt={qualification:'Read-only Bun SQL metadata representation probe; no helper or fixture execution.',out,query,rows,types:rows.map(r=>({oid:typeof r.oid,oid_array:typeof r.oid_array,oid_array_elements:r.oid_array.map((v:unknown)=>typeof v),proc_oid:typeof r.proc_oid})),querySha256:createHash('sha256').update(query).digest('hex'),error:null};await writeFile(resolve(out,'receipt.json'),JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt))}finally{await sql.close();}

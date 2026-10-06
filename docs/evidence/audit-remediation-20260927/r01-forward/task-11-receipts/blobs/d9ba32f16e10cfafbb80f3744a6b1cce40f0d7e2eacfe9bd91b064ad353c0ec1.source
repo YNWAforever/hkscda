@@ -1,0 +1,19 @@
+{
+  "statements": [
+    "-- Track signed proof uploads so abandoned private objects can be removed.\n-- A claim and the proof-insert trigger coordinate through the intent row lock.\ncreate table public.sponsorship_proof_upload_intent (\n  pledge_id uuid primary key,\n  storage_path text not null unique,\n  created_at timestamptz not null default now(),\n  expires_at timestamptz not null,\n  submitted_at timestamptz,\n  cleanup_claimed_at timestamptz,\n  constraint sponsorship_proof_upload_intent_path\n    check (storage_path like pledge_id::text || '/proof/%'),\n  constraint sponsorship_proof_upload_intent_expiry\n    check (expires_at > created_at)\n)",
+    "create index sponsorship_proof_upload_intent_cleanup_idx\n  on public.sponsorship_proof_upload_intent (expires_at)\n  where submitted_at is null",
+    "alter table public.sponsorship_proof_upload_intent enable row level security",
+    "revoke all on public.sponsorship_proof_upload_intent from public, anon, authenticated",
+    "grant select, insert, update, delete on public.sponsorship_proof_upload_intent to service_role",
+    "create function public.mark_sponsorship_proof_upload_submitted()\nreturns trigger\nlanguage plpgsql\nset search_path = ''\nas $$\ndeclare\n  v_claimed_at timestamptz;\nbegin\n  select intent.cleanup_claimed_at into v_claimed_at\n  from public.sponsorship_proof_upload_intent as intent\n  where intent.pledge_id = new.pledge_id\n    and intent.storage_path = new.storage_path\n  for update;\n\n  if found then\n    if v_claimed_at is not null then\n      raise exception 'sponsorship proof upload is being cleaned up'\n        using errcode = '55000';\n    end if;\n    update public.sponsorship_proof_upload_intent\n    set submitted_at = pg_catalog.clock_timestamp()\n    where pledge_id = new.pledge_id;\n  end if;\n  return new;\nend;\n$$",
+    "revoke all on function public.mark_sponsorship_proof_upload_submitted()\n  from public, anon, authenticated",
+    "grant execute on function public.mark_sponsorship_proof_upload_submitted()\n  to service_role",
+    "create trigger sponsorship_proof_upload_submitted\nafter insert on public.sponsorship_payment_proof\nfor each row execute function public.mark_sponsorship_proof_upload_submitted()",
+    "create function public.claim_expired_sponsorship_proof_uploads(\n  p_cutoff timestamptz,\n  p_limit integer default 50\n)\nreturns table (pledge_id uuid, storage_path text, claimed_at timestamptz)\nlanguage sql\nset search_path = ''\nas $$\n  with candidates as (\n    select intent.pledge_id\n    from public.sponsorship_proof_upload_intent as intent\n    where intent.submitted_at is null\n      and intent.expires_at < p_cutoff\n      and (\n        intent.cleanup_claimed_at is null\n        or intent.cleanup_claimed_at < pg_catalog.clock_timestamp() - interval '1 hour'\n      )\n    order by intent.expires_at\n    limit least(greatest(p_limit, 1), 50)\n    for update skip locked\n  )\n  update public.sponsorship_proof_upload_intent as intent\n  set cleanup_claimed_at = pg_catalog.clock_timestamp()\n  from candidates\n  where intent.pledge_id = candidates.pledge_id\n  returning intent.pledge_id, intent.storage_path, intent.cleanup_claimed_at;\n$$",
+    "revoke all on function public.claim_expired_sponsorship_proof_uploads(timestamptz, integer)\n  from public, anon, authenticated",
+    "grant execute on function public.claim_expired_sponsorship_proof_uploads(timestamptz, integer)\n  to service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

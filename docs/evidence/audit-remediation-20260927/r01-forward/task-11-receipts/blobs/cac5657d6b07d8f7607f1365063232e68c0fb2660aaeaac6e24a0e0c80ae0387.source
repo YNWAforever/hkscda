@@ -1,0 +1,11 @@
+855 |   for (const t of triggers)
+856 |     if (
+857 |       qualified.includes(t.table_name) &&
+858 |       (network(t.function_name + "(") || !known.has(t.function_name) || unsafe.has(t.function_name))
+859 |     )
+860 |       throw new Error(
+                      ^
+error: Unsafe fixture trigger path: public.set_updated_at; no provider/network primitive executed
+      at assertSafeFixtureTables (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\productionSchemaClone.ts:860:17)
+
+Bun v1.3.14 (Windows x64)

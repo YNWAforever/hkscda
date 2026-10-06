@@ -1,0 +1,80 @@
+BEGIN;
+-- Page a unified identity list so staff cannot miss a supporter beyond the
+-- first independently paged adopter/supporter result windows.
+create or replace function public.search_manual_case_identity(
+  p_query text,
+  p_page integer default 1,
+  p_page_size integer default 10
+)
+returns jsonb
+language sql
+stable
+set search_path = public, pg_temp
+as $function$
+  with needle as (
+    select lower(btrim(coalesce(p_query, ''))) as value
+  ),
+  candidates as materialized (
+    select
+      case when ap.id is null then 'supporter' else 'adopter' end as kind,
+      s.id as supporter_id,
+      ap.id as adopter_profile_id,
+      coalesce(
+        nullif(btrim(ap.name_english), ''),
+        nullif(btrim(ap.name_chinese), ''),
+        nullif(btrim(s.name), ''),
+        coalesce(ap.id, s.id)::text
+      ) as display_name,
+      s.email::text as email,
+      s.phone as phone,
+      coalesce(ap.is_blacklisted, false) as is_blacklisted
+    from public.supporter s
+    left join public.adopter_profile ap on ap.supporter_id = s.id
+    cross join needle n
+    where s.deleted_at is null
+      and (
+        n.value = ''
+        or strpos(lower(coalesce(ap.name_english, '')), n.value) > 0
+        or strpos(lower(coalesce(ap.name_chinese, '')), n.value) > 0
+        or strpos(lower(coalesce(ap.address, '')), n.value) > 0
+        or strpos(lower(coalesce(s.name, '')), n.value) > 0
+        or strpos(lower(coalesce(s.email::text, '')), n.value) > 0
+        or strpos(lower(coalesce(s.phone, '')), n.value) > 0
+      )
+  ),
+  page_rows as (
+    select *
+    from candidates
+    order by lower(display_name), supporter_id
+    limit least(greatest(coalesce(p_page_size, 10), 1), 25)
+    offset (greatest(coalesce(p_page, 1), 1)::bigint - 1)
+      * least(greatest(coalesce(p_page_size, 10), 1), 25)
+  )
+  select jsonb_build_object(
+    'total', (select count(*) from candidates),
+    'candidates', coalesce(
+      (
+        select jsonb_agg(
+          jsonb_build_object(
+            'kind', kind,
+            'supporterId', supporter_id,
+            'adopterProfileId', adopter_profile_id,
+            'displayName', display_name,
+            'email', email,
+            'phone', phone,
+            'isBlacklisted', is_blacklisted,
+            'latestCaseAt', null
+          )
+          order by lower(display_name), supporter_id
+        )
+        from page_rows
+      ),
+      '[]'::jsonb
+    )
+  );
+$function$;
+revoke all on function public.search_manual_case_identity(text, integer, integer)
+  from public, anon, authenticated;
+grant execute on function public.search_manual_case_identity(text, integer, integer)
+  to service_role;
+COMMIT;

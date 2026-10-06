@@ -1,0 +1,3 @@
+ERROR:  55000: R01 finance target tuple differs:issue_receipt_with_audit
+CONTEXT:  PL/pgSQL function inline_code_block line 47 at RAISE
+LOCATION:  exec_stmt_raise, pl_exec.c:3897

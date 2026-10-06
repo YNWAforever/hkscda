@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- Authenticated browser clients have no animals UPDATE grant. Keep archive\n-- changes and their audit record in one service-role transaction.\ncreate or replace function public.set_animal_archived_with_audit(\n  p_actor_user_id uuid,\n  p_animal_id uuid,\n  p_archived boolean\n)\nreturns jsonb\nlanguage plpgsql\nsecurity invoker\nset search_path = ''\nas $$\ndeclare\n  v_previous timestamptz;\n  v_next timestamptz;\n  v_now timestamptz;\nbegin\n  if p_actor_user_id is null or p_animal_id is null or p_archived is null then\n    raise exception 'invalid archive arguments' using errcode = '22023';\n  end if;\n\n  select a.retired_at into v_previous\n  from public.animals a\n  where a.id = p_animal_id\n  for update;\n  if not found then\n    return jsonb_build_object('kind', 'not_found');\n  end if;\n\n  -- A retry must preserve the original retirement date and avoid a second audit.\n  if (v_previous is not null) = p_archived then\n    return jsonb_build_object(\n      'kind', 'unchanged', 'id', p_animal_id, 'retired_at', v_previous\n    );\n  end if;\n\n  v_now := clock_timestamp();\n  v_next := case when p_archived then v_now else null end;\n  update public.animals\n  set retired_at = v_next, updated_at = v_now\n  where id = p_animal_id;\n\n  insert into public.audit_log (\n    actor_user_id, action, entity, entity_id, \"timestamp\", detail\n  )\n  values (\n    p_actor_user_id, 'animals.update', 'animals', p_animal_id::text, v_now,\n    jsonb_build_object(\n      'changed',\n      jsonb_build_object(\n        'retired_at', jsonb_build_object('from', v_previous, 'to', v_next)\n      )\n    )\n  );\n\n  return jsonb_build_object(\n    'kind', case when p_archived then 'archived' else 'restored' end,\n    'id', p_animal_id,\n    'retired_at', v_next\n  );\nend;\n$$",
+    "revoke all on function public.set_animal_archived_with_audit(uuid, uuid, boolean) from public, anon, authenticated",
+    "grant execute on function public.set_animal_archived_with_audit(uuid, uuid, boolean) to service_role"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

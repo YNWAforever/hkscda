@@ -1,0 +1,4 @@
+import pathlib,json,sys
+workflow=pathlib.Path('.github/workflows/ci.yml').read_text();package=pathlib.Path('package.json').read_text()
+checks={'requiredWorkflowSelectsFinanceTest':'financeCallbackForward.database.test.ts' in workflow,'requiredWorkflowOptsFinanceFixtures':'R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES' in workflow,'requiredWorkflowSetsFinanceDatabase':'R01_FINANCE_CALLBACK_TEST_DATABASE_URL' in workflow,'testDbSelectsFinanceTest':'financeCallbackForward.database.test.ts' in package}
+print(json.dumps({'checks':checks,'observed':'verify full suite skips file without opt-in; rls-matrix test:rls selects supabase/rls-tests; test:db neither selects file nor opts finance environment; current finance guard only accepts owned52322/r01_clone URLs, not isolatedCI55322/postgres','allRequiredFinanceCIWiringPresent':all(checks.values())}));sys.exit(0 if all(checks.values()) else 1)

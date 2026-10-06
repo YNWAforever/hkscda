@@ -1,0 +1,7 @@
+{
+  "args": [
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json",
+    "supabase/migrations/20261002170945_r01_finance_callback_forward.sql"
+  ],
+  "at": "2026-10-02T17:58:52.395Z"
+}

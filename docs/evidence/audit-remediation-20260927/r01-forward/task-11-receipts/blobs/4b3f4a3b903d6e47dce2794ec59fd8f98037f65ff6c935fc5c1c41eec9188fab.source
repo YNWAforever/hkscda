@@ -1,0 +1,13 @@
+BEGIN;
+-- Allow approved, published PDF terms in the existing versioned document slot model.
+-- This does not publish any terms or enable submissions by itself.
+alter table public.document_assets
+  drop constraint if exists document_assets_kind_check;
+alter table public.document_assets
+  add constraint document_assets_kind_check
+  check (kind in ('annual_report', 'wedding_form', 'adoption_guide', 'sponsorship_terms'));
+-- A publication without content identity cannot be consented to safely.
+alter table public.document_assets
+  add constraint document_assets_sponsorship_terms_checksum_check
+  check (kind <> 'sponsorship_terms' or checksum_sha256 is not null);
+COMMIT;

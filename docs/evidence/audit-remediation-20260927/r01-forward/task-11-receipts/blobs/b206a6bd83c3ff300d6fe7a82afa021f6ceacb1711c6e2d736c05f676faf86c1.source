@@ -1,0 +1,1327 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipt.test.ts:
+(pass) portable fully qualified capture validates without ignored receipts [1.87ms]
+(pass) capture rejects schemaParity=false [0.26ms]
+(pass) capture rejects schemaParity=undefined [0.15ms]
+(pass) capture rejects schemaParity=1 [2.62ms]
+(pass) capture rejects schemaParity=true [0.18ms]
+(pass) capture rejects fullScannerPassed=false [0.07ms]
+(pass) capture rejects fullScannerPassed=undefined [0.06ms]
+(pass) capture rejects fullScannerPassed=1 [0.08ms]
+(pass) capture rejects fullScannerPassed=true [0.06ms]
+(pass) capture rejects dependenciesBound=false [0.06ms]
+(pass) capture rejects dependenciesBound=undefined [3.09ms]
+(pass) capture rejects dependenciesBound=1 [0.11ms]
+(pass) capture rejects dependenciesBound=true [0.07ms]
+(pass) capture rejects catalogPreserved=false [0.06ms]
+(pass) capture rejects catalogPreserved=undefined [0.05ms]
+(pass) capture rejects catalogPreserved=1 [0.05ms]
+(pass) capture rejects catalogPreserved=true [0.06ms]
+(pass) capture rejects normalDrop=false [2.07ms]
+(pass) capture rejects normalDrop=undefined [2.39ms]
+(pass) capture rejects normalDrop=1 [0.44ms]
+(pass) capture rejects normalDrop=true [0.39ms]
+(pass) capture rejects templatePreserved=false [0.15ms]
+(pass) capture rejects templatePreserved=undefined [0.15ms]
+(pass) capture rejects templatePreserved=1 [0.09ms]
+(pass) capture rejects templatePreserved=true [0.05ms]
+(pass) capture rejects modernPreserved=false [0.18ms]
+(pass) capture rejects modernPreserved=undefined [0.07ms]
+(pass) capture rejects modernPreserved=1 [0.07ms]
+(pass) capture rejects modernPreserved=true [0.16ms]
+(pass) capture rejects frozenInputsPreserved=false [0.10ms]
+(pass) capture rejects frozenInputsPreserved=undefined [0.05ms]
+(pass) capture rejects frozenInputsPreserved=1 [0.08ms]
+(pass) capture rejects frozenInputsPreserved=true [0.10ms]
+(pass) capture refuses mode/type/error contract {"mode":"modern"} [0.18ms]
+(pass) capture refuses mode/type/error contract {"mode":"component"} [0.05ms]
+(pass) capture refuses mode/type/error contract {"receiptType":"composition"} [0.04ms]
+(pass) capture refuses mode/type/error contract {"error":"cleanup failed"} [0.05ms]
+(pass) capture refuses mode/type/error contract {"failedFinalFlags":["normalDrop"]} [0.04ms]
+(pass) capture refuses mode/type/error contract {"requiredFinalFlags":[]} [0.04ms]
+(pass) oldTargets requires exactly five [0.27ms]
+(pass) oldTargets requires exactly five [0.12ms]
+(pass) oldTargets requires exactly five [0.10ms]
+(pass) oldTargets requires exactly five [0.04ms]
+(pass) nextTargets requires exactly five [0.18ms]
+(pass) nextTargets requires exactly five [0.11ms]
+(pass) nextTargets requires exactly five [0.23ms]
+(pass) nextTargets requires exactly five [0.09ms]
+13 | for (const patch of [{ mode: "modern" }, { mode: "component" }, { receiptType: "composition" }, { error: "cleanup failed" }, { failedFinalFlags: ["normalDrop"] }, { requiredFinalFlags: [] }])
+14 |   test(`capture refuses mode/type/error contract ${JSON.stringify(patch)}`, () => expect(() => assertCapture({ ...portableCapture(), ...patch }, "hosted")).toThrow());
+15 | for (const key of ["oldTargets", "nextTargets"] as const)
+16 |   for (const count of [0, 1, 4, 6])
+17 |     test(`${key} requires exactly five`, () => { const r = portableCapture(); r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+18 | test("five unrelated named functions cannot qualify as Task11 targets", () => { const r = portableCapture(); r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+                                                                                                                                                                                                                                            ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "unreviewed0",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "unreviewed1",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "unreviewed2",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "unreviewed3",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "unreviewed4",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3", "synthetic4", "synthetic5",
+    "synthetic6", "synthetic7", "synthetic8", "synthetic9"
+  ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipt.test.ts:18:232)
+(fail) five unrelated named functions cannot qualify as Task11 targets [0.96ms]
+15 | for (const key of ["oldTargets", "nextTargets"] as const)
+16 |   for (const count of [0, 1, 4, 6])
+17 |     test(`${key} requires exactly five`, () => { const r = portableCapture(); r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+18 | test("five unrelated named functions cannot qualify as Task11 targets", () => { const r = portableCapture(); r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+19 | for (const key of ["serviceSelect", "serviceUpdate", "serviceColumnSelect", "serviceColumnUpdate"] as const)
+20 |   test(`unexpected effective Auth ${key} cannot qualify`, () => { const r = portableCapture(); r.auth[key] = true; expect(() => assertCapture(r, "hosted")).toThrow(); });
+                                                                                                                                                                 ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: true,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3", "synthetic4", "synthetic5",
+    "synthetic6", "synthetic7", "synthetic8", "synthetic9"
+  ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipt.test.ts:20:157)
+(fail) unexpected effective Auth serviceSelect cannot qualify [0.75ms]
+15 | for (const key of ["oldTargets", "nextTargets"] as const)
+16 |   for (const count of [0, 1, 4, 6])
+17 |     test(`${key} requires exactly five`, () => { const r = portableCapture(); r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+18 | test("five unrelated named functions cannot qualify as Task11 targets", () => { const r = portableCapture(); r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+19 | for (const key of ["serviceSelect", "serviceUpdate", "serviceColumnSelect", "serviceColumnUpdate"] as const)
+20 |   test(`unexpected effective Auth ${key} cannot qualify`, () => { const r = portableCapture(); r.auth[key] = true; expect(() => assertCapture(r, "hosted")).toThrow(); });
+                                                                                                                                                                 ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: true,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3", "synthetic4", "synthetic5",
+    "synthetic6", "synthetic7", "synthetic8", "synthetic9"
+  ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipt.test.ts:20:157)
+(fail) unexpected effective Auth serviceUpdate cannot qualify [0.54ms]
+15 | for (const key of ["oldTargets", "nextTargets"] as const)
+16 |   for (const count of [0, 1, 4, 6])
+17 |     test(`${key} requires exactly five`, () => { const r = portableCapture(); r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+18 | test("five unrelated named functions cannot qualify as Task11 targets", () => { const r = portableCapture(); r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+19 | for (const key of ["serviceSelect", "serviceUpdate", "serviceColumnSelect", "serviceColumnUpdate"] as const)
+20 |   test(`unexpected effective Auth ${key} cannot qualify`, () => { const r = portableCapture(); r.auth[key] = true; expect(() => assertCapture(r, "hosted")).toThrow(); });
+                                                                                                                                                                 ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: true,
+    serviceColumnUpdate: false,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3", "synthetic4", "synthetic5",
+    "synthetic6", "synthetic7", "synthetic8", "synthetic9"
+  ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipt.test.ts:20:157)
+(fail) unexpected effective Auth serviceColumnSelect cannot qualify [0.50ms]
+15 | for (const key of ["oldTargets", "nextTargets"] as const)
+16 |   for (const count of [0, 1, 4, 6])
+17 |     test(`${key} requires exactly five`, () => { const r = portableCapture(); r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+18 | test("five unrelated named functions cannot qualify as Task11 targets", () => { const r = portableCapture(); r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i })); expect(() => assertCapture(r, "hosted")).toThrow(); });
+19 | for (const key of ["serviceSelect", "serviceUpdate", "serviceColumnSelect", "serviceColumnUpdate"] as const)
+20 |   test(`unexpected effective Auth ${key} cannot qualify`, () => { const r = portableCapture(); r.auth[key] = true; expect(() => assertCapture(r, "hosted")).toThrow(); });
+                                                                                                                                                                 ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  receiptType: "capture",
+  mode: "hosted",
+  error: null,
+  failedFinalFlags: [],
+  requiredFinalFlags: [ "schemaParity", "fullScannerPassed", "dependenciesBound", "catalogPreserved",
+    "normalDrop", "templatePreserved", "modernPreserved", "frozenInputsPreserved"
+  ],
+  schemaParity: true,
+  fullScannerPassed: true,
+  dependenciesBound: true,
+  catalogPreserved: true,
+  normalDrop: true,
+  templatePreserved: true,
+  modernPreserved: true,
+  frozenInputsPreserved: true,
+  oldTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  nextTargets: [
+    {
+      schema: "public",
+      name: "fail_pending_provider_payment",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "refund_provider_payment_atomically",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "void_donation_receipts_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }, {
+      schema: "public",
+      name: "issue_receipt_with_audit",
+      owner: "postgres",
+      body: "00000000000000000000000000000000",
+      definition: "11111111111111111111111111111111",
+      full_acl: [
+        {
+          grantor: "postgres",
+          grantee: "postgres",
+          privilege: "EXECUTE",
+          grantable: false,
+        }, {
+          grantor: "postgres",
+          grantee: "service_role",
+          privilege: "EXECUTE",
+          grantable: false,
+        }
+      ],
+    }
+  ],
+  functions: [
+    {
+      schema: "auth",
+      name: "uid",
+    }
+  ],
+  catalog: {
+    roles: [],
+    memberships: null,
+  },
+  auth: {
+    serviceSelect: false,
+    serviceUpdate: false,
+    serviceColumnSelect: false,
+    serviceColumnUpdate: true,
+    postgresSelect: true,
+    postgresUpdate: true,
+  },
+  native: [],
+  indexes: [],
+  bindings: {},
+  dependencies: [
+    [ "synthetic0", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic1", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic2", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic3", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic4", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic5", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic6", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic7", "0000000000000000000000000000000000000000000000000000000000000000" ], [ "synthetic8", "0000000000000000000000000000000000000000000000000000000000000000" ]
+  ],
+  fixtureScope: [ "synthetic0", "synthetic1", "synthetic2", "synthetic3", "synthetic4", "synthetic5",
+    "synthetic6", "synthetic7", "synthetic8", "synthetic9"
+  ],
+}
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipt.test.ts:20:157)
+(fail) unexpected effective Auth serviceColumnUpdate cannot qualify [0.74ms]
+
+5 tests failed:
+(fail) five unrelated named functions cannot qualify as Task11 targets [0.96ms]
+(fail) unexpected effective Auth serviceSelect cannot qualify [0.75ms]
+(fail) unexpected effective Auth serviceUpdate cannot qualify [0.54ms]
+(fail) unexpected effective Auth serviceColumnSelect cannot qualify [0.50ms]
+(fail) unexpected effective Auth serviceColumnUpdate cannot qualify [0.74ms]
+
+ 47 pass
+ 5 fail
+ 52 expect() calls
+Ran 52 tests across 1 file. [125.00ms]

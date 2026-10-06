@@ -1,0 +1,31 @@
+{
+  "receiptType": "gate-diagnostic",
+  "mode": "local",
+  "at": "2026-10-02T18:26:22.3566518+00:00",
+  "originalGate": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-gates-1790964133361186800",
+  "originalReceiptSha256": "8cdef54050f481fb081b11170ac26433d66affe700c7aca63eec0383af04aadb",
+  "qualification": "Original build started; old tool session87220 unavailable, no original owned process found on resumed inspection; build exit and final source/template/modern observations not observed. No exit invented.",
+  "originalObservedGates": [
+    {
+      "gate": "typecheck",
+      "exit": 0,
+      "logSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "gate": "tests",
+      "exit": 1,
+      "logSha256": "4720adfce31aa5f63b5459902f485b844131f5620bdf37a85e26b06ac2fdf148"
+    },
+    {
+      "gate": "lint",
+      "exit": 0,
+      "logSha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a"
+    }
+  ],
+  "buildLogSha256": "fc88b13077f2f6ab2183ddee342e4bde425ef04e5690c521f1b91a620279a053",
+  "buildLogBytes": 92325,
+  "currentInputs": 40,
+  "currentFrozenInputsPreserved": true,
+  "mismatches": [],
+  "originalGateRewritten": false
+}

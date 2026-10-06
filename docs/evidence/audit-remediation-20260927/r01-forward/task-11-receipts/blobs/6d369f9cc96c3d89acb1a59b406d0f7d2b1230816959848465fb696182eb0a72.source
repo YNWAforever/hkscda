@@ -1,0 +1,7 @@
+{
+  "observedError": "KeyError: 'rowsAfter' at line35; actual receipt key rowCountsAfter; no report/tracker write reached",
+  "exit": 1,
+  "productInputsChanged": false,
+  "toolChunk": "4cb164",
+  "command": "python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-metadata.py"
+}

@@ -1,0 +1,130 @@
+BEGIN;
+create or replace function private.append_sponsorship_allocations(
+  p_proof_id uuid,
+  p_actor_admin_id uuid,
+  p_allocations jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_entry jsonb;
+  v_month date;
+  v_amount integer;
+  v_period_id uuid;
+  v_applied jsonb := '[]'::jsonb;
+  v_total integer := 0;
+begin
+  select * into v_proof
+  from public.sponsorship_payment_proof
+  where id = p_proof_id
+  for update;
+  if not found then
+    raise exception 'Payment proof % not found', p_proof_id;
+  end if;
+
+  if exists(select 1 from public.sponsorship_payment_source s join public.payment p on p.id=s.payment_id where s.proof_id=p_proof_id and p.status='refunded') then raise exception 'Refunded money cannot be allocated'; end if;
+
+  if v_proof.review_status <> 'approved' then
+    raise exception
+      'Payment proof % is not approved; only a verified payment may be allocated to a month',
+      p_proof_id;
+  end if;
+
+  if p_allocations is null or jsonb_array_length(p_allocations) = 0 then
+    -- Nothing planned. The payment stands as received but unattributed, which
+    -- the ledger shows as an outstanding month rather than hiding.
+    return jsonb_build_object('status', 'skipped', 'proofId', p_proof_id, 'allocatedCents', 0);
+  end if;
+
+  select * into v_pledge
+  from public.sponsorship_pledge
+  where id = v_proof.pledge_id
+  for update;
+  if not found then
+    raise exception 'Sponsorship pledge % not found', v_proof.pledge_id;
+  end if;
+
+  for v_entry in select * from jsonb_array_elements(p_allocations)
+  loop
+    v_month := (v_entry ->> 'periodMonth')::date;
+    v_amount := (v_entry ->> 'amountCents')::integer;
+
+    if v_month is null or v_amount is null then
+      raise exception 'Each allocation needs periodMonth and amountCents, received %', v_entry;
+    end if;
+    if v_month <> date_trunc('month', v_month)::date then
+      raise exception 'periodMonth % must be the first day of a month', v_month;
+    end if;
+    if v_amount <= 0 then
+      raise exception 'Allocation amount must be positive, received %', v_amount;
+    end if;
+
+    -- Open the month if it is new. `committed_cents` comes from the pledge, not
+    -- from the caller, so a month can never be opened committed to an amount
+    -- the supporter never pledged.
+    insert into public.sponsorship_period (pledge_id, period_month, committed_cents)
+    values (v_proof.pledge_id, v_month, v_pledge.amount_cents)
+    on conflict (pledge_id, period_month) do nothing;
+
+    select id into v_period_id
+    from public.sponsorship_period
+    where pledge_id = v_proof.pledge_id and period_month = v_month;
+
+    if v_amount > (select p.committed_cents-coalesce(sum(a.amount_cents),0) from public.sponsorship_period p left join public.sponsorship_payment_allocation a on a.period_id=p.id where p.id=v_period_id group by p.id) then
+      raise exception 'Allocation exceeds outstanding month; split prepayments across months';
+    end if;
+    insert into public.sponsorship_payment_allocation (
+      period_id, proof_id, amount_cents, created_by
+    ) values (
+      v_period_id, p_proof_id, v_amount, p_actor_admin_id
+    );
+
+    v_total := v_total + v_amount;
+    v_applied := v_applied || jsonb_build_object(
+      'periodMonth', v_month,
+      'amountCents', v_amount
+    );
+  end loop;
+
+  return jsonb_build_object(
+    'status', 'allocated',
+    'proofId', p_proof_id,
+    'allocatedCents', v_total,
+    'allocations', v_applied
+  );
+end;
+$fn$;
+revoke all on function private.append_sponsorship_allocations(uuid,uuid,jsonb) from public,anon,authenticated,service_role;
+create table public.sponsorship_allocation_command(actor_user_id uuid not null,idempotency_key uuid not null,command jsonb not null,result jsonb not null,primary key(actor_user_id,idempotency_key));
+alter table public.sponsorship_allocation_command enable row level security;
+revoke all on public.sponsorship_allocation_command from public,anon,authenticated,service_role;
+create function public.allocate_exact_sponsorship_payment(p_actor uuid,p_proof uuid,p_expected_net bigint,p_key uuid,p_month date,p_amount integer,p_reason text)
+returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_actor uuid;v_proof public.sponsorship_payment_proof%rowtype;v_net bigint;v_command jsonb;v_prior public.sponsorship_allocation_command%rowtype;v_result jsonb;
+begin
+ select id into v_actor from public.admin_user where auth_user_id=p_actor and status='active' and role in ('treasurer','admin');
+ if v_actor is null then raise exception 'Finance role required' using errcode='42501';end if;
+ if p_key is null or p_expected_net is null or p_expected_net<0 or length(trim(coalesce(p_reason,'')))<5 then raise exception 'Expected balance, retry key and reason required';end if;
+ perform 1 from public.sponsorship_pledge where id=(select pledge_id from public.sponsorship_payment_proof where id=p_proof) for update;
+ perform pg_advisory_xact_lock(hashtextextended(p_actor::text||p_key::text,714));
+ v_command:=jsonb_build_object('proof',p_proof,'expectedNet',p_expected_net,'month',p_month,'amount',p_amount,'reason',p_reason);
+ select * into v_prior from public.sponsorship_allocation_command where actor_user_id=p_actor and idempotency_key=p_key;
+ if found then if v_prior.command<>v_command then raise exception 'Retry key reused for changed allocation';end if;return v_prior.result||jsonb_build_object('replayed',true);end if;
+ select * into v_proof from public.sponsorship_payment_proof where id=p_proof for update;
+ if not found then raise exception 'Payment proof not found';end if;
+ select coalesce(sum(amount_cents),0) into v_net from public.sponsorship_payment_allocation where proof_id=p_proof;
+ if v_net<>p_expected_net then raise exception 'Allocation balance changed; reload the ledger';end if;
+ if p_amount is null or p_amount<=0 or p_amount>v_proof.amount_cents-v_net then raise exception 'Allocation exceeds the remaining received money';end if;
+ v_result:=private.append_sponsorship_allocations(p_proof,v_actor,jsonb_build_array(jsonb_build_object('periodMonth',p_month,'amountCents',p_amount)));
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor,'sponsorship_pledge.payment_reallocated','sponsorship_pledge',v_proof.pledge_id::text,jsonb_build_object('proofId',p_proof,'beforeNet',v_net,'allocation',v_result,'reason',p_reason));
+ insert into public.sponsorship_allocation_command values(p_actor,p_key,v_command,v_result);
+ return v_result;
+end; $$;
+revoke all on function public.allocate_exact_sponsorship_payment(uuid,uuid,bigint,uuid,date,integer,text) from public,anon,authenticated;
+grant execute on function public.allocate_exact_sponsorship_payment(uuid,uuid,bigint,uuid,date,integer,text) to service_role;
+COMMIT;

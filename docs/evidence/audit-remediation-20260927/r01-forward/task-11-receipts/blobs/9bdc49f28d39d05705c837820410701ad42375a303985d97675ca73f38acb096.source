@@ -1,0 +1,49 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "head": "74e5bb6ce7765dcc96d34eddea75db4c4803c911",
+  "tree": "38948b2cddf2223535e78225d99f34a94ea9235e",
+  "sourceCommit": "43e71b18d304322b4ad4dac86cbf63d328cbdf4c",
+  "sourceTree": "abd2fc30d96d626e205519922e68bad1ba5f1053",
+  "clean": true,
+  "allCurrentBindingsPreserved": true,
+  "currentBindings": 57,
+  "allRawArchiveGitObjectsVerified": true,
+  "archiveCounts": {
+    "rawEntries": 1240,
+    "uniqueBlobs": 264,
+    "bytes": 195250762
+  },
+  "metadataOnlyChangedPaths": [
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix1-source-binding.json",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/04898b8ae8a8ec0b1cc75219cc2be59f07786d270abeea4ac4ab3d911d2d424c.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/4b15dcd65d8030e6c7141e7cca39f729417f2be2a877a5b74c498fa180eb7892.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/9305dff2f5cce6a131f4fb8516d1b8dab0e20076ac7fab9cc941284e9553f7bf.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/959f1e958e81aaac9e843a01bb4154017bd177932ff468ca27187393c32d3b69.source",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/translation.json"
+  ],
+  "addresses": {
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix1-source-binding.json": {
+      "gitBlob": "cc4b289cbf1f02e7bfceba13ff8d86f921402500",
+      "rawSha256": "505e1abdbabf6c78a36901a408ae0536db99fdad6d7ba9b935a14a1ba5174f6c",
+      "canonicalSha256": "505e1abdbabf6c78a36901a408ae0536db99fdad6d7ba9b935a14a1ba5174f6c",
+      "bytes": 1357108
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md": {
+      "gitBlob": "10d18656f159d26cc7953bda135d422f52342e5e",
+      "rawSha256": "5699e14a9e8643a0629bce011ada38b9e3fb24f025308dc4a41cfdba2415e669",
+      "canonicalSha256": "5699e14a9e8643a0629bce011ada38b9e3fb24f025308dc4a41cfdba2415e669",
+      "bytes": 43279
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/translation.json": {
+      "gitBlob": "a878f08d120a7127ff4f34c5c1af4cec6991ad36",
+      "rawSha256": "7548747bfef72907e34676d9241b9ae93b0a20eb7169c38c6e68079347aa8f75",
+      "canonicalSha256": "7548747bfef72907e34676d9241b9ae93b0a20eb7169c38c6e68079347aa8f75",
+      "bytes": 707245
+    }
+  },
+  "driverSha256": "9305dff2f5cce6a131f4fb8516d1b8dab0e20076ac7fab9cc941284e9553f7bf",
+  "sidecarQualification": "Owned ignored self-reference result written after closing HEAD; Git archive addresses above are actual committed objects. No claim this self-reference sidecar is already in that HEAD.",
+  "at": "2026-10-02T20:25:49.668931+00:00",
+  "external": "SAME incremental review and fresh five CI/full17.11 including non-skipped finance pending; R52 aggregate qualification retained; no push/PR/prod."
+}

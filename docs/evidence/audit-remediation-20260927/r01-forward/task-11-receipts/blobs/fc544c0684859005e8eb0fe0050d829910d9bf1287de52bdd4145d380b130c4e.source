@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli-go/pkg/parser/token.go?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "db008434246be335b9f7abaf0cb66a99a2b40378",
+  "rawSha256": "244aea79f3b7065b4151f642c9111cf58b3cb23b792201dbcff80d83491e6f04",
+  "bytes": 3382
+}

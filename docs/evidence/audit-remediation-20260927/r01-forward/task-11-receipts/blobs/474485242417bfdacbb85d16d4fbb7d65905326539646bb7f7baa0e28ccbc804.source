@@ -1,0 +1,38 @@
+--- actual-incomplete-R58-driver
++++ bounded-proof-name-R59-driver
+@@ -3,7 +3,7 @@
+ root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';route=scratch/'task-11-fix3-diagnosis-1790974606735';vendor=route/'vendor';token=uuid.uuid4().hex;out=scratch/('task-11-fix3-native-integration-'+token);out.mkdir();pg='hkscda-task11-fix3-pg-'+token
+ base='d45b849d300f76700efcf5450a9b426e32cc372f';head='18c3c6ea06a25292b6e172e99cd381ed7d4409dc';created=[];queries=json.loads((route/'queries.json').read_text(encoding='utf-8'));secret='task11-r55-owned-synthetic-jwt-secret-0000000000'
+ images={'pg':('public.ecr.aws/supabase/postgres:17.11.0.002','0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53'),'realtime':('public.ecr.aws/supabase/realtime:v2.140.3','f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999'),'storage':('public.ecr.aws/supabase/storage-api:v1.79.28','1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96'),'auth':('public.ecr.aws/supabase/gotrue:v2.197.0','1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b')}
+-receipt={'receiptType':'native-metadata-integration-v1','mode':'owned-full1711-d45-metadata','authority':'Ruling58','sourceAdmission':'Ruling57','sourceHead':head,'baselineSource':base,'out':str(out),'pg':pg,'CLIQualification':'Intended pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Full managed+D45 PG17.11 baseline credit requires all three observed managed jobs, complete migration application and actual catalog capture.','commands':[],'images':{},'inputBindings':[],'migrationInventory':[],'managedJobs':[],'managedJobAttempts':[],'error':None,'cleanup':[],'productionApplied':False,'deployed':False,'operationallyEnabled':False,'heldTask1FiveColumnRepairApplied':False,'heldTask8ScannerProposalApplied':False}
++receipt={'receiptType':'native-metadata-integration-v1','mode':'owned-full1711-d45-metadata','authority':'Ruling59','sourceAdmission':'Ruling57','sourceHead':head,'baselineSource':base,'out':str(out),'pg':pg,'CLIQualification':'Intended pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Full managed+D45 PG17.11 baseline credit requires all three observed managed jobs, complete migration application and actual catalog capture.','commands':[],'images':{},'inputBindings':[],'migrationInventory':[],'managedJobs':[],'managedJobAttempts':[],'error':None,'cleanup':[],'productionApplied':False,'deployed':False,'operationallyEnabled':False,'heldTask1FiveColumnRepairApplied':False,'heldTask8ScannerProposalApplied':False}
+ flags=['fullD45BaselineObserved','fullScannerPassed','firstApply','secondApply','secondApplyPreserved','outsideTargetsPreserved','supplementalPreserved','refusalsPassed','fixtureConnectionIdentity','mixedRefusalsPassed','zeroRowsAfter','normalCleanup','protectedSourcesPreserved','frozenInputsPreserved']
+ frozen={}
+ for p in sorted(set([str(path.relative_to(root)).replace('\\','/')for path in (root/'docs/evidence/audit-remediation-20260927/r01-forward').glob('task-11-*.ts')]+['supabase/migrations/20261002170945_r01_finance_callback_forward.sql','docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-prerequisites.json','docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json','.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-native-integration.py'])):
+@@ -96,12 +96,12 @@
+  def literal(value):return "'"+json.dumps(value,separators=(',',':'),ensure_ascii=False).replace("'","''")+"'::jsonb"
+  receipt['mixedGuardExtraction']={'candidateSha256':sha(finance),'selectorByteRange':list(selectorMatch.span()),'helperByteRange':list(helperMatch.span()),'selectorSha256':sha(selectorMatch.group()),'helperSha256':sha(helperMatch.group())};(out/'mixed-catalogue-guard.source').write_bytes(selectorMatch.group());(out/'mixed-helper-guard.source').write_bytes(helperMatch.group());save()
+  receipt['mixedRefusals']=[]
+- for label,c,h in [('native-catalogue-historical-helper',native['catalog'],historicH),('historical-catalogue-native-helper',historicC,native['helpers'])]:
+-  mixedBefore=capture('before-mixed-'+label);assert mixedBefore==second
++ for index,(label,c,h) in enumerate([('native-catalogue-historical-helper',native['catalog'],historicH),('historical-catalogue-native-helper',historicC,native['helpers'])]):
++  mixedBefore=capture('mix'+str(index)+'-before');assert mixedBefore==second
+   script="\\set VERBOSITY verbose\nBEGIN;\nDO $mixed$ DECLARE v_before jsonb:="+literal(c)+";v_actual jsonb:="+literal(h)+";v_native boolean;BEGIN\n"+selector+helperGuard+"END;$mixed$;\nROLLBACK;\n"
+-  result=transport('mixed-'+label,script,False);assert result.returncode==3 and b'ERROR:  55000: R01 finance complete helper tuples differ'in result.stderr,(label,result.stderr[-500:])
+-  mixedAfter=capture('after-mixed-'+label);assert mixedBefore==mixedAfter
+-  receipt['mixedRefusals'].append({'label':label,'code':'55000','exit':3,'preserved':True,'qualification':'Actual PostgreSQL guard-only block, exact byte-extracted generated selector/helper guards and complete observed vectors; not a full candidate schema replay.'});save()
++  result=transport('mix'+str(index),script,False);assert result.returncode==3 and b'ERROR:  55000: R01 finance complete helper tuples differ'in result.stderr,(label,result.stderr[-500:])
++  mixedAfter=capture('mix'+str(index)+'-after');assert mixedBefore==mixedAfter
++  receipt['mixedRefusals'].append({'label':label,'proofKey':'mix'+str(index),'code':'55000','exit':3,'preserved':True,'qualification':'Actual PostgreSQL guard-only block, exact byte-extracted generated selector/helper guards and complete observed vectors; not a full candidate schema replay.'});save()
+  receipt['mixedRefusalsPassed']=len(receipt['mixedRefusals'])==2
+  final=capture('after-refusals');assert final==second;receipt['catalogAfterRefusalsPreserved']=True
+  afterCounts=[]
+@@ -113,7 +113,7 @@
+ try:
+  assert run(['git','rev-parse','HEAD']).stdout.decode().strip()==head
+  receipt['preIntegrationWorkingTree']=run(['git','status','--porcelain']).stdout.decode()
+- bind(pathlib.Path(__file__),'executed-driver');bind(scratch/'task-11-fix3-native-transport.ts','executed-native-transport');bind(scratch/'task-11-fix3-queries.ts','query-reader');bind(scratch/'task-11-fix3-oid-codec.ts','finite-oid-codec');bind(route/'ruling55.source','authority55');bind(route/'ruling56.source','authority56');bind(route/'ruling57.source','authority57');bind(route/'ruling58.source','authority58');bind(root/'supabase/rls-tests/helpers/productionSchemaClone.ts','unchanged-full-scanner');bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts','profile-query-source');bind(route/'queries.json','actual-queries')
++ bind(pathlib.Path(__file__),'executed-driver');bind(scratch/'task-11-fix3-native-transport.ts','executed-native-transport');bind(scratch/'task-11-fix3-queries.ts','query-reader');bind(scratch/'task-11-fix3-oid-codec.ts','finite-oid-codec');bind(route/'ruling55.source','authority55');bind(route/'ruling56.source','authority56');bind(route/'ruling57.source','authority57');bind(route/'ruling58.source','authority58');bind(route/'ruling59.source','authority59');bind(root/'supabase/rls-tests/helpers/productionSchemaClone.ts','unchanged-full-scanner');bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts','profile-query-source');bind(route/'queries.json','actual-queries')
+  for p in frozen:
+   bind(root/p,'frozen-current');frozen[p]=receipt['inputBindings'][-1]
+  for file in sorted(vendor.glob('*.source')):bind(file,'vendor-'+file.name)

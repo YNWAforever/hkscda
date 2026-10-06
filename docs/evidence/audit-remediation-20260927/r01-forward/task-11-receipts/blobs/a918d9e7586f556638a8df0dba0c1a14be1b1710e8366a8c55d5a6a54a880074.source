@@ -1,0 +1,11 @@
+{
+  "statements": [
+    "drop policy if exists \"admin full access\" on public.animals",
+    "drop policy if exists \"staff can manage animals\" on public.animals",
+    "grant select, insert, update, delete on public.animals to authenticated",
+    "create policy \"staff can manage animals\"\n  on public.animals for all\n  to authenticated\n  using (private.has_admin_role(array['staff', 'admin']))\n  with check (private.has_admin_role(array['staff', 'admin']))"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

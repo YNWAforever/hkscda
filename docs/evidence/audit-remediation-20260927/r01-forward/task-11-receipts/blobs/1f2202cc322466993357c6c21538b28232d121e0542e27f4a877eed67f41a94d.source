@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli-go/pkg/parser/state.go?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "0a4bce66624c18b8773fb2f4155a9cfd4b30d6db",
+  "rawSha256": "742c7363a7ca77988072886d54dcb3015a2295e14fd6510a5a2d347cc8a6b1fd",
+  "bytes": 6672
+}

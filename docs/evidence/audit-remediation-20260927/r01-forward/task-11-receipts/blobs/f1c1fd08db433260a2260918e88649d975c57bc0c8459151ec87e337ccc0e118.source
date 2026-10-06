@@ -1,0 +1,30 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\serviceSloganCopy.test.ts:
+77 | 
+78 |     const contents = await readTrackedTextFiles(auditFilePaths);
+79 |     const obsoleteFiles = auditFilePaths.filter((_, index) =>
+80 |       contents[index].includes(obsoleteServiceSlogan),
+81 |     );
+82 |     expect(obsoleteFiles).toEqual([]);
+                               ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\docs\evidence\audit-remediation-20260927\r01-forward\task-11-receipts\blobs\12ea6f6fc2c5b1c756f5254112961b959a37fad72ba017792a941bb016c6ca6b.source",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\serviceSloganCopy.test.ts:82:27)
+(fail) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [1369.66ms]
+(pass) service slogan correction > publishes volunteer group and knowledge routes while retaining the audit report [0.48ms]
+(pass) bounded slogan reads preserve UTF8, binary-NUL filtering, order and read errors [12.57ms]
+(pass) slogan scan awaits every ordered result with at most eight active reads [35.39ms]
+
+ 3 pass
+ 1 fail
+ 17 expect() calls
+Ran 4 tests across 1 file. [1.58s]

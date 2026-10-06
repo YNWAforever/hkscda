@@ -1,0 +1,1 @@
+begin read only;select 101::oid as oid,array[101::oid,105::oid] as oid_array,p.oid as proc_oid from pg_catalog.pg_proc p where p.oid=101;rollback;

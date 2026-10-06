@@ -1,0 +1,2 @@
+bun test v1.3.14 (0d9b296a)
+{"lateAuditFailure":{"processingOrder":["00000000-0000-0000-0000-000000000001","00000000-0000-0000-0000-000000000002"],"firstAuditPathReached":true,"failedReceipt":"00000000-0000-0000-0000-000000000002"}}

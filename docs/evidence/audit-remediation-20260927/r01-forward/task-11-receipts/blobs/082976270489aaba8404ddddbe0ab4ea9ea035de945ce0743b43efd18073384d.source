@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-connection.service.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "abba632ff3c51f492084250bd358f0ce7c239f14",
+  "rawSha256": "66cc2341863846c232347b745bfb89ce3350c125219a9f07a5979d12c4ceb95f",
+  "bytes": 8557
+}

@@ -1,0 +1,23 @@
+"""Final R57-R59 guarded clone behavior, same fixture opt-in and source freeze."""
+import hashlib,json,os,pathlib,subprocess,time,sys
+sys.stdout.reconfigure(encoding='utf-8')
+s=pathlib.Path('.superpowers/sdd/r01-forward-schema-plan-20261001')
+e=pathlib.Path('docs/evidence/audit-remediation-20260927/r01-forward')
+env=os.environ.copy()
+for k in list(env):
+ if k.endswith('TEST_DATABASE_URL') or k.endswith('ALLOW_LOCAL_FIXTURES'): env.pop(k)
+env['R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES']='1'
+results=[]
+for mode in ['hosted','modern','component']:
+ out=s/('task-11-'+mode+'-fix3-final-'+str(time.time_ns()//1000000))
+ cmd=['bun',str(e/'task-11-rehearse.ts'),mode,str(out)]
+ started=time.monotonic()
+ p=subprocess.run(cmd,env=env,capture_output=True)
+ (out/'invocation.stdout.log').write_bytes(p.stdout)
+ (out/'invocation.stderr.log').write_bytes(p.stderr)
+ r={'mode':mode,'command':cmd,'exit':p.returncode,'elapsedSeconds':time.monotonic()-started,'environment':{'R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES':'1','inheritedTestDatabaseAndFixtureOptionsRemoved':True},'stdoutSha256':hashlib.sha256(p.stdout).hexdigest(),'stderrSha256':hashlib.sha256(p.stderr).hexdigest()}
+ (out/'invocation.json').write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8',newline='\n')
+ print(json.dumps({'out':str(out),**r}),flush=True)
+ print(p.stdout.decode('utf-8',errors='replace')[-1600:],flush=True)
+ print(p.stderr.decode('utf-8',errors='replace')[-1600:],flush=True)
+ if p.returncode: sys.exit(p.returncode)

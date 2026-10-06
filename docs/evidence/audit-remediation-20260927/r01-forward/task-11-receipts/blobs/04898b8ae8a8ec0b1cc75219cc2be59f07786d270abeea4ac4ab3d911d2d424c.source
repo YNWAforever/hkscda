@@ -1,0 +1,73 @@
+"""Bind actual Fix1 source, executed proofs, and immutable raw Git archives."""
+import datetime,hashlib,json,pathlib,subprocess,sys
+root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';evidence=root/'docs/evidence/audit-remediation-20260927/r01-forward'
+source=sys.argv[1]
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def git(*args):return subprocess.check_output(['git',*args])
+def binding(path):
+ raw=(root/path).read_bytes();return {'path':path,'rawSha256':sha(raw),'canonicalSha256':sha(raw.replace(b'\r\n',b'\n')),'bytes':len(raw),'rawGitBlob':blob(raw)}
+source_objects={}
+for entry in git('ls-tree','-r','-z',source).split(b'\0'):
+ if entry:
+  meta,path=entry.split(b'\t',1);source_objects[path.decode()]=meta.split()[2].decode()
+stage_objects={}
+for entry in git('ls-files','--stage','-z').split(b'\0'):
+ if entry:
+  meta,path=entry.split(b'\t',1);assert meta.split()[2]==b'0';stage_objects[path.decode()]=meta.split()[1].decode()
+translation_path='docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/translation.json'
+entries=json.loads((root/translation_path).read_text())['entries'];archives={}
+for entry in entries:
+ path=entry['archivePath']
+ if path not in archives:
+  b=binding(path);assert b['rawGitBlob']==stage_objects[path]
+  b.update(archiveGitBlob=stage_objects[path],archivePresentAtSourceCommit=path in source_objects)
+  if path in source_objects:assert source_objects[path]==b['rawGitBlob']
+  archives[path]=b
+ b=archives[path];assert b['rawSha256']==entry['rawSha256'] and b['canonicalSha256']==entry['canonicalSha256'] and b['bytes']==entry['bytes'] and b['rawGitBlob']==entry['gitBlob']
+def actual_archive(path,expected=None):
+ raw=(root/path).read_bytes();digest=sha(raw)
+ if expected is not None:assert expected==digest
+ matches=[e for e in entries if e['originalPath']==path and e['rawSha256']==digest];assert len(matches)==1,(path,digest)
+ return matches[0]
+def current(path,frozen):
+ b=binding(path);assert b['rawSha256']==frozen['rawSha256'] and b['canonicalSha256']==frozen['canonicalSha256'] and b['bytes']==frozen['rawBytes'] and b['rawGitBlob']==frozen['rawGitBlob'],path
+ b['sourceTrackedAtCommit']=path in source_objects;b['sourceGitBlob']=source_objects.get(path)
+ if path in source_objects:
+  stored=git('cat-file','blob',source_objects[path]);assert sha(stored.replace(b'\r\n',b'\n'))==b['canonicalSha256'],path
+ else:
+  assert path.startswith('.superpowers/'),path
+  b['qualification']='Ignored actual consumed artifact; exact raw archive Git object is its Git provenance, not a tracked source path.'
+ archive='docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/blobs/'+b['rawSha256']+'.source';assert archive in archives,path
+ b.update(archivePath=archive,archiveGitBlob=archives[archive]['archiveGitBlob'],sourceRawGitEqual=b['sourceGitBlob']==b['rawGitBlob'] if path in source_objects else None)
+ return b
+inputs=json.loads((scratch/'task-11-fix1-final-proof-inputs.json').read_text());proofs=[];maps={};captured=[];all_consumed={}
+for kind,mode,path in [('composition',m,p)for m,p in inputs['finalProfiles'].items()]+[('gates','local',inputs['gate'])]+[('capture',m,p)for m,p in zip(['hosted','modern','component'],inputs['captures'])]+[('generator','three-profile',inputs['generator'])]:
+ r=json.loads((root/path).read_text());assert r['error'] is None and r['failedFinalFlags']==[] and all(r[f] is True for f in r['requiredFinalFlags']),path
+ if kind!='generator':assert r['eligible'] is True
+ if kind=='composition':
+  assert r['testExit']==0 and len(r['frozenInputs'])==25;maps[mode]=r['frozenInputs']
+ if kind=='gates':
+  assert len(r['gates'])==4 and all(g['exit']==0 for g in r['gates']);gate=r
+ consumed_map=r['bindings']if kind=='capture'else r['frozenInputs']
+ if kind=='capture':assert len(consumed_map)==({'hosted':21,'modern':21,'component':23}[mode])
+ if kind=='generator':assert len(r['frozenInputs'])==29 and r['inputs']==inputs['captures'] and r['bytes']==968852 and r['sha256']=='33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4'
+ consumed=[]
+ for p,b in consumed_map.items():
+  c=current(p,b);archived=(root/path).parent/b['archive'];assert sha(archived.read_bytes())==b['rawSha256'];a=actual_archive(str(archived.relative_to(root)).replace('\\','/'),b['rawSha256']);c['executedArchiveBinding']=a;consumed.append(c)
+  if p in all_consumed:assert all_consumed[p]['rawSha256']==c['rawSha256']
+  all_consumed[p]=c
+ proof={'kind':kind,'mode':mode,'receipt':path,'receiptBinding':actual_archive(path),'requiredFinalFlags':r['requiredFinalFlags'],'allRequiredFlagsExactlyTrue':True,'error':None,'failedFinalFlags':[],'consumedBindings':consumed,'frozenInputCount':len(consumed),'testExit':r.get('testExit'),'testSummary':r.get('testSummary'),'rowCountsAfter':r.get('rowCountsAfter'),'expectedRowTables':r.get('expectedRowTables'),'gates':r.get('gates'),'modernBefore':r.get('modernBefore'),'modernAfter':r.get('modernAfter'),'templateBefore':r.get('templateBefore'),'templateAfter':r.get('templateAfter')}
+ for log in ['tests.stdout.log','tests.stderr.log']:
+  lp=(root/path).parent/log
+  if lp.exists():proof.setdefault('rawLogs',[]).append(actual_archive(str(lp.relative_to(root)).replace('\\','/')))
+ if kind=='composition':assert len(proof['rawLogs'])==2
+ if kind=='gates':
+  proof['rawLogs']=[actual_archive(str(((root/path).parent/g['log']).relative_to(root)).replace('\\','/'),g['logSha256'])for g in r['gates']]
+ proofs.append(proof)
+assert maps['hosted']==maps['modern']==maps['component']
+sql=binding('supabase/migrations/20261002170945_r01_finance_callback_forward.sql');assert sql['bytes']==968852 and sql['rawSha256']=='33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4'
+authority=[actual_archive(str(p.relative_to(root)).replace('\\','/'))for p in sorted((scratch/'task-11-authority-and-controller-metadata').glob('*'))if p.is_file()]
+manifest={'status':'FIX1_SOURCE_VERIFIED_CONDITIONAL_SAME_REVIEW_AND_FRESH_CI','sourceCommit':source,'sourceTree':git('rev-parse',source+'^{tree}').decode().strip(),'sourceBase':inputs['sourceBase'],'fixBase':inputs['fixBase'],'proofs':proofs,'currentBindings':list(all_consumed.values()),'sameFinalDomainInputMap':True,'finalDomainFrozenInputMap':maps['hosted'],'localGateFrozenInputCount':len(gate['frozenInputs']),'allFinalRawCanonicalGitArchiveCurrentBindingsVerified':True,'allRawArchiveObjectsVerified':True,'sqlBinding':sql,'authorityBindings':authority,'scopedReviewBinding':actual_archive('.superpowers/sdd/r01-forward-schema-plan-20261001/task-11-review.md'),'archiveCounts':{'rawEntries':len(entries),'uniqueBlobs':len(archives),'bytes':sum(b['bytes']for b in archives.values())},'rawArchiveManifest':entries,'uniqueArchiveGitBindings':list(archives.values()),'translationBinding':binding(translation_path),'workingBytesQualification':'Captures21/21/23 and generator29 consumed unchanged actual source. Final compositions25 and corrected local gates consumed frozen working bytes at56defe4; sourceCommit binds their canonical tracked bytes. Every executed raw archive is separately bound. Historical original43/710/177 and firstFix1 compositions/gate remain historical, not current proofs.','archiveCommitQualification':'Actual staged raw Git objects; archivePresentAtSourceCommit distinguishes already committed source archives from metadata-only closing additions. Closing HEAD verifies all objects.','componentQualification':'Owned PG17.6 historical Task9 LF/Auth reconstruction, newly bound/installed/observed; not fresh full17.11 bootstrap/vendor fetch.','modernFullSuiteQualification':{'authority':'Ruling52','before':gate['modernBefore'],'after':gate['modernAfter'],'templateBefore':gate['templateBefore'],'templateAfter':gate['templateAfter'],'scope':'Aggregate catalog/managed/rows/sequences snapshot changed during configured existing checkout-policy fixture suite. No saved before-components; no catalog/Auth/ACL/native/exclusive-data-only preservation claim. No reset/repair/deleteaudits. Separate isolated clone proofs preserve their own modern interval.'},'warningQualification':'51 react-refresh/only-export-components +1 react-hooks/exhaustive-deps HelpWidget.tsx:35; expected callback fixture/build noise separate.','realFinance1711CI':'NOT_RUN_REQUIRED_CONTROLLER: dedicated rls-matrix finance step must execute non-skipped after existing Supabase startup with exact URL/opt-in and CI=true/GITHUB_ACTIONS=true. Five individual fresh CI required.','sameReviewerIncremental':'PENDING56defe4..newHEAD','productionApplied':False,'deployed':False,'operationallyEnabled':False,'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'bindingCommand':'python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix1-bind.py '+source,'bindingScriptSha256':sha(pathlib.Path(__file__).read_bytes())}
+(evidence/'task-11-fix1-source-binding.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'source':source,'tree':manifest['sourceTree'],'proofs':len(proofs),'currentBindings':len(all_consumed),'archiveCounts':manifest['archiveCounts'],'allBindings':True}))

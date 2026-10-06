@@ -1,0 +1,551 @@
+{
+  "mode": "independent-read-only-v6-RED-metadata-binding",
+  "atUtc": "2026-10-02T22:15:17.756816+00:00",
+  "head": "18c3c6ea06a25292b6e172e99cd381ed7d4409dc",
+  "tree": "d76af23ba1db9c908058429e61e5ec629f58f7e1",
+  "baseline": "d45b849d300f76700efcf5450a9b426e32cc372f",
+  "sourceClean": true,
+  "counts": {
+    "allReceiptFiles": 1912,
+    "rawCommandLogs": 1284,
+    "executedInputs": 41,
+    "handoffInputs": 12,
+    "D45GitMigrations": 182,
+    "nativeExecutedTransport": 182,
+    "currentRawCanonicalInputs": 57,
+    "currentTrackedGitInputs": 52,
+    "currentIgnoredProofInputs": 5,
+    "scannerRawTypedQueries": 4
+  },
+  "sourceBridges": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "c8ac3ccf359284985213bbfbb1aef20282965cf8"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "a02daf181c80e177e0db239ceb6b1cc25e276d3d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gap.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "ad58efc4c70682af3cafe57540049e7a634a4e6d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "c5ca3a484d6b170e3c30bcdb984e345720d16107"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    {
+      "path": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "b6d7cf8c1eb36331247a0000635a2a5851c9c4c9"
+    },
+    {
+      "path": "src/lib/donations/financeCallbackForward.database.test.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "67d694a685e801a61ff34619ca0be5a2f3d6566d"
+    },
+    {
+      "path": "src/lib/donations/financeCallbackFixtureGuard.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "54a47d0eb5dba3ebd2b5ba7cc0979aaa50a48b9d"
+    },
+    {
+      "path": "src/lib/donations/reconcile.server.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "a5678add242d39e40a2e6e3fe82bd7b09d4ef073"
+    },
+    {
+      "path": "src/lib/donations/reconcile.server.test.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "02f9308c4dcc503ec03cf2c880fc7d291f09b7f2"
+    },
+    {
+      "path": "src/lib/operations/releaseSchema.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+    },
+    {
+      "path": "src/lib/operations/releaseManifest.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+      "bridge": "ignoredProofRawBoundNoCommittedGitClaim",
+      "actualGitBlob": null
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+      "bridge": "ignoredProofRawBoundNoCommittedGitClaim",
+      "actualGitBlob": null
+    },
+    {
+      "path": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    {
+      "path": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    {
+      "path": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    {
+      "path": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    {
+      "path": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    {
+      "path": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    {
+      "path": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    {
+      "path": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+    },
+    {
+      "path": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "356e1f18356110352c11483ea9fa5087b4a829f1"
+    },
+    {
+      "path": "bun.lock",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "0d6238fb8646bc4263cad4021f7e83a1d0905cd2"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-capture-producer.test.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "59fe51caf7c5fa35d9111027e8945ca8a68354f2"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-capture-producer.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "092699fb9cc3946c62250cf244afa3fb3eadfb30"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-capture.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "64c3e62d1762d5f38ac9fde5805bce6fc9e09eec"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cli.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "6842a0ef649b719e4a7d48c0a634124ffeb2ad51"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-capture.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "4fd966f454bbe07eff0ca8769b9161b9ad5285d7"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-red.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "5e80dd56598b496ca9b9e485b8dd1cb50f171692"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix1-gates.py",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "024fc9082269521e492026de9f106d602b8a2975"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gates.py",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "30beb9e7dcf35fd65ad4a179e34f8c1b3d1c0bae"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-generate.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "840135a0f5179440635987350c93d2034bb519db"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-package.py",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "2f41ad85510f4cdfa53e2cd4ac1e1acd57ca7ec0"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile-inputs.json",
+      "bridge": "canonicalLFEqualsGit",
+      "actualGitBlob": "68b51f282e41616f14624ad3ad68475559a2632d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.test.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "0b204ef2865dfa626eae31bece7b35c43ceccb27"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipts/.gitattributes",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "4bcb04e164f7644c782cc455ba36ac8ac9943390"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-recovery-gates.py",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "d0d48d03ff88eb79046455c0a65117335d366352"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-red.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "4ee705430784030285f904a25501bb253d15f03d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-source-binding.json",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "62662684a55aaabce4ea16a75ddf3604287a870f"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-targets.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "3b4c2d69b5b0fbdd27ec8cc96d2035702394141b"
+    },
+    {
+      "path": "eslint.config.js",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "2d972c0016abb8812712a3e20bc7dc4c01d0ecd2"
+    },
+    {
+      "path": "package.json",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "043a1e7d45f1cfbe92ff0306304817ecd253a891"
+    },
+    {
+      "path": "src/lib/content/serviceSloganCopy.test.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "7a5866dc7e338d282ec026141659fb643d4e2e83"
+    },
+    {
+      "path": "src/lib/donations/financeCallbackFixtureGuard.test.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "d78b6bc32e24b3a1ff97a5428a181b71ca91abcc"
+    },
+    {
+      "path": "tsconfig.json",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "5080bdcc058940fb0a41ed02cc5298a65b9f99e6"
+    },
+    {
+      "path": "vite.config.ts",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "3b977120096bf07a73d33b24833575880b2afbb3"
+    },
+    {
+      "path": "supabase/migrations/20260925143941_guarded_provider_denial.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "286e1740b67e6ad8128c248e1972b0b690bccde3"
+    },
+    {
+      "path": "supabase/migrations/20260925144915_guarded_provider_refund.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "0c7e179e01394b567405e980dfe42e64f331745e"
+    },
+    {
+      "path": "supabase/migrations/20260926082239_atomic_receipt_void_audit.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "2d56e580caf92621d7aa6111970743d134d9d21f"
+    },
+    {
+      "path": "supabase/migrations/20260926083940_atomic_manual_receipt_issue_audit.sql",
+      "bridge": "rawEqualsGit",
+      "actualGitBlob": "dc7d1166ffa93811acd9001b75bdcc95c46c4b72"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-fix1-hosted-1790970332372/receipt.json",
+      "bridge": "ignoredProofRawBoundNoCommittedGitClaim",
+      "actualGitBlob": null
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-fix1-modern-1790970376563/receipt.json",
+      "bridge": "ignoredProofRawBoundNoCommittedGitClaim",
+      "actualGitBlob": null
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-capture-fix1-component-1790970390785/receipt.json",
+      "bridge": "ignoredProofRawBoundNoCommittedGitClaim",
+      "actualGitBlob": null
+    }
+  ],
+  "containerInspects": [
+    {
+      "commandIndex": 11,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 14,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 17,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 20,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 23,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 28,
+      "name": "/hkscda-task11-fix3-realtime-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 30,
+      "name": "/hkscda-task11-fix3-realtime-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 32,
+      "name": "/hkscda-task11-fix3-storage-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 34,
+      "name": "/hkscda-task11-fix3-storage-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 36,
+      "name": "/hkscda-task11-fix3-auth-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 38,
+      "name": "/hkscda-task11-fix3-auth-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 620,
+      "name": "/hkscda-task11-fix3-auth-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 622,
+      "name": "/hkscda-task11-fix3-auth-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 625,
+      "name": "/hkscda-task11-fix3-storage-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 627,
+      "name": "/hkscda-task11-fix3-storage-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 630,
+      "name": "/hkscda-task11-fix3-realtime-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 632,
+      "name": "/hkscda-task11-fix3-realtime-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "container:752eb1bc7b4e31140a854c8be3429ad050d47d696d99792c9662d922fbf85922",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 635,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    },
+    {
+      "commandIndex": 638,
+      "name": "/hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "networkMode": "none",
+      "portBindings": {},
+      "binds": null,
+      "mountTypes": []
+    }
+  ],
+  "observedManagedJobs": [
+    {
+      "kind": "realtime",
+      "exit": 0,
+      "imageDigest": "f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999"
+    },
+    {
+      "kind": "storage",
+      "exit": 0,
+      "imageDigest": "1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96"
+    },
+    {
+      "kind": "auth",
+      "exit": 0,
+      "imageDigest": "1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
+    }
+  ],
+  "nonzeroCommands": [
+    {
+      "index": 16,
+      "exit": 2,
+      "qualification": "expected startup readiness probe"
+    },
+    {
+      "index": 19,
+      "exit": 2,
+      "qualification": "expected startup readiness probe"
+    },
+    {
+      "index": 22,
+      "exit": 1,
+      "qualification": "expected startup readiness probe"
+    },
+    {
+      "index": 603,
+      "exit": 3,
+      "qualification": "actual unchanged finance prerequisite55000 RED"
+    }
+  ],
+  "receiptSha256": "73096312212377aa25832dd015aba8e4c247241b3d34d76719a90d9282d0a798",
+  "captureSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+  "handoffSha256": "9655a34a9b57c0eb96dc07e98e497ba33d05b921871a2efac00e618676ef21b1",
+  "protectedExact": true,
+  "scannerActuallyPassed": true,
+  "financeTransactionExecuted": true,
+  "scannerTypedDeltaRecords": [
+    {
+      "queryIndex": 0,
+      "rawRows": 3828,
+      "typedRows": 3828,
+      "onlyFiniteOIDFieldsChanged": true,
+      "fields": [
+        "oid"
+      ]
+    },
+    {
+      "queryIndex": 1,
+      "rawRows": 835,
+      "typedRows": 835,
+      "onlyFiniteOIDFieldsChanged": true,
+      "fields": [
+        "oid",
+        "implementationOid",
+        "restrictionOid",
+        "joinOid"
+      ]
+    },
+    {
+      "queryIndex": 2,
+      "rawRows": 162,
+      "typedRows": 162,
+      "onlyFiniteOIDFieldsChanged": true,
+      "fields": []
+    },
+    {
+      "queryIndex": 3,
+      "rawRows": 90,
+      "typedRows": 90,
+      "onlyFiniteOIDFieldsChanged": true,
+      "fields": [
+        "operatorOids"
+      ]
+    }
+  ],
+  "completeMetadataBeforeAfterByteExact": true,
+  "fixtureDMLExecuted": false,
+  "newProfileAdmitted": false,
+  "qualification": "Actual pinned native2.118 owned assembly/unchanged scanner pass/unchanged18 finance55000 RED/complete rollback byte preservation only; CI CLI identity unknown. No fixture behavior or new source profile admission. Exact transaction transport archive qualification pending; 57 current input map reused from bound v5-v2 unchanged18.",
+  "errors": [],
+  "exitCode": 0
+}

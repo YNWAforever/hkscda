@@ -1,0 +1,88 @@
+"""R55 only: fresh owned full managed+D45 bootstrap and unchanged-finance RED."""
+import base64,datetime,hashlib,hmac,json,pathlib,re,subprocess,sys,time,uuid
+root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';route=scratch/'task-11-fix3-diagnosis-1790974606735';vendor=route/'vendor';token=uuid.uuid4().hex;out=scratch/('task-11-fix3-baseline-'+token);out.mkdir();pg='hkscda-task11-fix3-pg-'+token
+base='d45b849d300f76700efcf5450a9b426e32cc372f';head='18c3c6ea06a25292b6e172e99cd381ed7d4409dc';created=[];queries=json.loads((route/'queries.json').read_text(encoding='utf-8'));secret='task11-r55-owned-synthetic-jwt-secret-0000000000'
+images={'pg':('public.ecr.aws/supabase/postgres:17.11.0.002','0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53'),'realtime':('public.ecr.aws/supabase/realtime:v2.140.3','f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999'),'storage':('public.ecr.aws/supabase/storage-api:v1.79.28','1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96'),'auth':('public.ecr.aws/supabase/gotrue:v2.197.0','1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b')}
+receipt={'mode':'owned-full1711-d45-diagnostic','authority':'Ruling55','sourceHead':head,'baselineSource':base,'out':str(out),'pg':pg,'CLIQualification':'Pinned official2.118 source assembly; actualCIbunx version not emitted, no exactCLI identity claim. Fresh actual PG17.11 full managed+D45 catalog, not Task9 reconstruction.','commands':[],'images':{},'inputBindings':[],'migrationInventory':[],'managedJobs':[],'error':None,'cleanup':[],'productionApplied':False,'deployed':False,'operationallyEnabled':False,'heldTask1FiveColumnRepairApplied':False,'heldTask8ScannerProposalApplied':False}
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+def save():(out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8',newline='\n')
+def run(args,stdin=None,required=True,timeout=120):
+ i=len(receipt['commands']);r=subprocess.run(args,input=stdin,capture_output=True,timeout=timeout);stem='command-'+str(i).zfill(4);(out/(stem+'.stdout.log')).write_bytes(r.stdout);(out/(stem+'.stderr.log')).write_bytes(r.stderr);d={'command':args,'exit':r.returncode,'stdout':stem+'.stdout.log','stderr':stem+'.stderr.log','stdoutSha256':sha(r.stdout),'stderrSha256':sha(r.stderr)};receipt['commands'].append(d);save()
+ if required and r.returncode:raise RuntimeError('Owned command failed '+str(args)+' stderr='+r.stderr.decode('utf-8',errors='replace')[-2500:])
+ return r
+def bind(path,label):
+ raw=path.read_bytes();archive='i'+str(len(receipt['inputBindings'])).zfill(3)+'.source';(out/archive).write_bytes(raw);b={'label':label,'path':str(path.relative_to(root)).replace('\\','/'),'rawSha256':sha(raw),'canonicalSha256':sha(raw.replace(b'\r\n',b'\n')),'rawGitBlob':blob(raw),'bytes':len(raw),'archive':archive};receipt['inputBindings'].append(b);save();return raw
+def inspect(name):return json.loads(run(['docker','inspect',name]).stdout)[0]
+def safe(state,name):
+ assert state['Name']=='/'+name and not state['Mounts'] and not state['HostConfig']['Binds'] and not state['HostConfig']['PortBindings'],name
+ if name==pg:assert state['HostConfig']['NetworkMode']=='none'
+ else:assert state['HostConfig']['NetworkMode']=='container:'+receipt['pgId']
+def psql(sql,required=True):return run(['docker','exec','-i',pg,'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres'],sql.encode()if isinstance(sql,str)else sql,required)
+def capture(label):
+ value={}
+ for key,q in queries.items():
+  if key=='fixtureScope':continue
+  sql='begin read only;set local search_path=pg_catalog;select coalesce(jsonb_agg(to_jsonb(q)),\'[]\'::jsonb) from ('+q+')q;rollback;\n';(out/(label+'-'+key+'.sql.source')).write_text(sql,encoding='utf-8',newline='\n');rows=json.loads(psql(sql).stdout);value[key]=rows[0]['catalog']if key=='catalog'else rows[0]['value']if key in ['auth','native','indexes','shapes']else rows
+ (out/(label+'.json')).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8',newline='\n');return value
+def jwt(role):
+ enc=lambda b:base64.urlsafe_b64encode(b).rstrip(b'=');a=enc(b'{"alg":"HS256","typ":"JWT"}')+b'.'+enc(json.dumps({'iss':'supabase-demo','role':role,'iat':1600000000,'exp':2000000000}).encode());return(a+b'.'+enc(hmac.new(secret.encode(),a,hashlib.sha256).digest())).decode()
+def job(kind,env,command,memory='512m'):
+ name='hkscda-task11-fix3-'+kind+'-'+token;image='public.ecr.aws/supabase/'+('storage-api'if kind=='storage'else'gotrue'if kind=='auth'else kind)+'@sha256:'+images[kind][1];args=['docker','create','--name',name,'--network','container:'+pg,'--cpus','1','--memory',memory,'--no-healthcheck']
+ for setting in env:args+=['-e',setting]
+ args+=[image,*command];run(args);created.append(name);safe(inspect(name),name);run(['docker','start','-a',name],timeout=180);state=inspect(name);safe(state,name);assert state['State']['Status']=='exited'and state['State']['ExitCode']==0;receipt['managedJobs'].append({'kind':kind,'name':name,'command':command,'environment':env,'exit':0,'imageDigest':images[kind][1]});save()
+def project(c):
+ tables=['admin_user','supporter','donation','payment','receipt','receipt_sequence','audit_log','supporter_consent_intent','donation_delivery_job'];glob=['schemas','defaults','roles','memberships','extensions','extensionMembers','databaseOwner','sequences'];scope=['relations','columns','constraints','indexes','triggers','policies'];p={k:c[k]for k in glob};p.update({k:[f for f in c[k]if f['schema']=='public'and f.get('table',f.get('name'))in tables]for k in scope});p['types']=[f for f in c['types']if f['schema']=='public'and(f['name']in tables or f['name']in ['_'+t for t in tables]or(f['kind']!='c'and not f['name'].startswith('_')))];return p
+def differences(a,b,path=''):
+ if type(a)!=type(b):return[{'path':path,'expected':a,'actual':b}]
+ if isinstance(a,dict):return sum((differences(a.get(k),b.get(k),path+'/'+k)for k in sorted(set(a)|set(b))),[])
+ if isinstance(a,list):
+  if len(a)!=len(b):return[{'path':path,'expected':a,'actual':b,'expectedCount':len(a),'actualCount':len(b)}]
+  return sum((differences(x,y,path+'/'+str(i))for i,(x,y)in enumerate(zip(a,b))),[])
+ return[]if a==b else[{'path':path,'expected':a,'actual':b}]
+try:
+ assert run(['git','rev-parse','HEAD']).stdout.decode().strip()==head and not run(['git','status','--porcelain']).stdout
+ bind(pathlib.Path(__file__),'executed-driver');bind(scratch/'task-11-fix3-queries.ts','query-reader');bind(route/'ruling55.source','authority');bind(root/'supabase/rls-tests/helpers/productionSchemaClone.ts','unchanged-full-scanner');bind(root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts','profile-query-source');bind(route/'queries.json','actual-queries')
+ for file in sorted(vendor.glob('*.source')):bind(file,'vendor-'+file.name)
+ config=run(['git','show',base+':supabase/config.toml']).stdout;(out/'d45-config.toml.source').write_bytes(config);assert not re.search(rb'^\s*auto_expose_new_tables\s*=',config,re.M);assert not run(['git','ls-tree','-r','--name-only',base,'--','supabase/roles.sql','supabase/.temp']).stdout
+ init=b''.join((vendor/('v2.118.0-internal_db_start_templates_'+name+'.source')).read_bytes()for name in ['schema.sql','webhook.sql','_supabase.sql']);(out/'init.sql.source').write_bytes(init)
+ start=(vendor/'v2.118.0-internal_db_start_start.go.source').read_text(encoding='utf-8');api=re.search(r'const RevokeDefaultDataApiPrivilegesSql = `([\s\S]*?)`',start).group(1).encode();(out/'api.sql.source').write_bytes(api)
+ for kind,(tag,digest)in images.items():
+  ref=tag.rsplit(':',1)[0]+'@sha256:'+digest;m=json.loads(run(['docker','image','inspect',ref]).stdout)[0];assert ref in m['RepoDigests'] and m['Architecture']=='amd64' and m['Os']=='linux';receipt['images'][kind]={'observedCITag':tag,'exactLocalDigestReference':ref,'digest':digest,'id':m['Id'],'metadata':m};save()
+ receipt['protectedBefore']=json.loads(run(['bun',str(scratch/'task-11-fix3-queries.ts'),'states','unused',str(out)]).stdout);save()
+ run(['docker','create','--name',pg,'--network','none','--cpus','1','--memory','1g','--no-healthcheck','-e','POSTGRES_PASSWORD=postgres','-e','JWT_SECRET='+secret,'-e','JWT_EXP=3600','public.ecr.aws/supabase/postgres@sha256:'+images['pg'][1]]);created.append(pg);state=inspect(pg);safe(state,pg);receipt['pgId']=state['Id'];save();run(['docker','cp',str(out/'init.sql.source'),pg+':/etc/postgresql.schema.sql']);run(['docker','start',pg]);deadline=time.monotonic()+120
+ while True:
+  state=inspect(pg);assert state['State']['Running'];logs=run(['docker','logs',pg]);ready=run(['docker','exec',pg,'pg_isready','-U','postgres'],required=False)
+  if b'PostgreSQL init process complete; ready for start up.'in logs.stdout and ready.returncode==0:break
+  if time.monotonic()>deadline:raise RuntimeError('Owned PG bootstrap timeout')
+  time.sleep(2)
+ receipt['runtime']=psql("begin read only;select jsonb_build_object('version',version(),'user',current_user,'database',current_database(),'owner',(select pg_get_userbyid(datdba)from pg_database where datname=current_database()));rollback;").stdout.decode().strip();save()
+ key='EAx3IQ/wRG1v47ZD4NE4/9RzBI8Jmil3x0yhcW4V2NHBP6c2iPIzwjofi2Ep4HIG'
+ job('realtime',['PORT=4000','DB_HOST=127.0.0.1','DB_PORT=5432','DB_USER=postgres','DB_PASSWORD=postgres','DB_NAME=postgres','DB_AFTER_CONNECT_QUERY=SET search_path TO _realtime','DB_ENC_KEY=supabaserealtime','API_JWT_JWKS=','API_JWT_SECRET='+secret,'METRICS_JWT_SECRET='+secret,'APP_NAME=realtime','SECRET_KEY_BASE='+key,'ERL_AFLAGS=-proto_dist inet_tcp','DNS_NODES=\'\'','RLIMIT_NOFILE=','SEED_SELF_HOST=true','RUN_JANITOR=true','MAX_HEADER_LENGTH=4096'],['/app/bin/realtime','eval','{:ok, _} = Application.ensure_all_started(:realtime)\n{:ok, _} = Realtime.Tenants.health_check("realtime-dev")'],'1g')
+ job('storage',['DB_INSTALL_ROLES=false','DB_MIGRATIONS_FREEZE_AT=','ANON_KEY='+jwt('anon'),'SERVICE_KEY='+jwt('service_role'),'PGRST_JWT_SECRET='+secret,'DATABASE_URL=postgresql://supabase_storage_admin:postgres@127.0.0.1:5432/postgres','FILE_SIZE_LIMIT=52428800','STORAGE_BACKEND=file','STORAGE_FILE_BACKEND_PATH=/mnt','TENANT_ID=stub','REGION=stub','GLOBAL_S3_BUCKET=stub'],['node','dist/scripts/migrate-call.js'])
+ job('auth',['API_EXTERNAL_URL=http://127.0.0.1:9999','GOTRUE_LOG_LEVEL=error','GOTRUE_DB_DRIVER=postgres','GOTRUE_DB_DATABASE_URL=postgresql://supabase_auth_admin:postgres@127.0.0.1:5432/postgres','GOTRUE_SITE_URL=http://127.0.0.1:3000','GOTRUE_JWT_SECRET='+secret],['gotrue','migrate'])
+ psql(b'BEGIN;'+api+b'COMMIT;');receipt['officialApplyApiPrivileges']='Actual unmodified pinned2.118 unset-flag native bootstrap. No normalization to captured/admitted ACL.';save()
+ tree=run(['git','ls-tree','-r','-z',base,'--','supabase/migrations']).stdout
+ for entry in tree.split(b'\0'):
+  if not entry:continue
+  meta,path=entry.split(b'\t',1);path=path.decode()
+  if not re.search(r'/\d{14}_[^/]+\.sql$',path):continue
+  if receipt['migrationInventory']:assert path>receipt['migrationInventory'][-1]['path']
+  oid=meta.split()[2].decode();raw=run(['git','cat-file','blob',oid]).stdout;assert b'\r\n'not in raw and blob(raw)==oid;stem='m'+str(len(receipt['migrationInventory'])).zfill(4);(out/(stem+'.source')).write_bytes(raw);receipt['migrationInventory'].append({'path':path,'gitBlob':oid,'rawSha256':sha(raw),'bytes':len(raw),'archive':stem+'.source','exit':None});save();psql(b'BEGIN;\n'+raw+b'\nCOMMIT;\n');receipt['migrationInventory'][-1]['exit']=0;save()
+ receipt['committedPartialTask1SourceApplied']=any('payment_idempotency_forward'in m['path']for m in receipt['migrationInventory']);receipt['baselineMigrationCount']=len(receipt['migrationInventory']);before=capture('d45-baseline');receipt['fullD45BaselineObserved']=True;save()
+ counts=[]
+ for table in queries['fixtureScope']:
+  table=table if'.'in table else'public.'+table;count=psql('BEGIN READ ONLY;select count(*)from '+table+';ROLLBACK;').stdout.decode().strip();assert count=='0',(table,count);counts.append({'table':table,'count':0})
+ receipt['domainRowsBefore']=counts;scan=run(['bun',str(scratch/'task-11-fix3-queries.ts'),'scan',pg,str(out)]);receipt['scanner']=json.loads(scan.stdout);save()
+ finance=bind(root/'supabase/migrations/20261002170945_r01_finance_callback_forward.sql','unchanged-finance');assert sha(finance)=='33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4'and len(finance)==968852
+ red=psql(b'BEGIN;\n'+finance+b'\nROLLBACK;\n',required=False);receipt['financeExit']=red.returncode;receipt['ownedRED']=red.returncode!=0 and b'R01 finance complete prerequisite catalog differs'in red.stderr;after=capture('after-rollback');receipt['completeMetadataAfterRollbackPreserved']=before==after;assert before==after and receipt['ownedRED']
+ literals=re.search(rb"if v_before not in\(([\s\S]*?)\) then raise exception 'R01 finance complete prerequisite catalog differs'",finance).group(1);admitted=[json.loads(m.replace(b"''",b"'").decode())for m in re.findall(rb"'((?:[^']|'')*)'::jsonb",literals)];actual=project(before['catalog']);delta={'actualCompleteProjection':actual,'admittedCompleteProjections':admitted,'differences':[{'profileIndex':i,'differences':differences(expected,actual)}for i,expected in enumerate(admitted)]};(out/'complete-prerequisite-differences.json').write_text(json.dumps(delta,indent=2)+'\n',encoding='utf-8',newline='\n');receipt['completeDifferenceCounts']=[len(p['differences'])for p in delta['differences']];receipt['result']='Actual full managed+D45 PG17.11 baseline and unchanged finance prerequisite RED observed; no guard admission.';save()
+except Exception as e:receipt['error']=str(e);save();raise
+finally:
+ for name in reversed(created):
+  state=inspect(name);safe(state,name);run(['docker','logs',name],required=False)
+  if state['State']['Running']:run(['docker','stop','--signal','SIGINT','--timeout','-1',name])
+  state=inspect(name);assert not state['State']['Running'];run(['docker','rm','-v',name]);assert not run(['docker','ps','-a','--filter','name=^/'+name+'$','--format','{{.ID}}']).stdout.strip();receipt['cleanup'].append({'name':name,'normalRemoved':True});save()
+ if 'protectedBefore'in receipt:
+  receipt['protectedAfter']=json.loads(run(['bun',str(scratch/'task-11-fix3-queries.ts'),'states','unused',str(out)]).stdout);receipt['protectedSourcesPreserved']=receipt['protectedBefore']==receipt['protectedAfter']
+ manifest=json.loads((root/'docs/evidence/audit-remediation-20260927/r01-forward/task-11-fix1-source-binding.json').read_text(encoding='utf-8'));receipt['all57CurrentInputsPreserved']=all(sha((root/b['path']).read_bytes())==b['rawSha256']for b in manifest['currentBindings']);receipt['files']={p.name:{'rawSha256':sha(p.read_bytes()),'bytes':p.stat().st_size,'rawGitBlob':blob(p.read_bytes())}for p in out.iterdir()if p.is_file()and p.name!='receipt.json'};save();print(json.dumps({'out':str(out),'pg':pg,'result':receipt.get('result'),'error':receipt['error'],'baselineMigrations':receipt.get('baselineMigrationCount'),'managedJobs':len(receipt['managedJobs']),'ownedRED':receipt.get('ownedRED'),'differenceCounts':receipt.get('completeDifferenceCounts'),'protectedSourcesPreserved':receipt.get('protectedSourcesPreserved'),'all57CurrentInputsPreserved':receipt['all57CurrentInputsPreserved'],'cleanup':receipt['cleanup']}))

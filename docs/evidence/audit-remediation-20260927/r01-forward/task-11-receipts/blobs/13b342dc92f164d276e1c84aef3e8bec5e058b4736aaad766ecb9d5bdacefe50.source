@@ -1,0 +1,8 @@
+{
+  "type": "metadataBinderFailure",
+  "exit": 1,
+  "error": "git rev-parse source:.superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json returned128: path exists on disk but not in source commit",
+  "command": "python .superpowers/sdd/r01-forward-schema-plan-20261001/task-11-bind.py",
+  "observedToolChunk": "1a6d74",
+  "qualification": "Initial metadata binder incorrectly required tracked source for an intentionally ignored historical consumed artifact. Raw/canonical source hashes and content-addressed archive objects remain unchanged. Minimal binding fix qualifies ignored historical inputs only via their exact raw archive Git identity; no product/test/gate input change."
+}

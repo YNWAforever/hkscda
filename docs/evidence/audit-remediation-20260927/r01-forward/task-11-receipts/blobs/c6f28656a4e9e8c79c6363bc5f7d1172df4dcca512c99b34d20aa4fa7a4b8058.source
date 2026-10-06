@@ -1,0 +1,10 @@
+{
+  "statements": [
+    "-- A verified individual booking remains one person. Status-only admission checks\n-- must not be bypassed by inflating the shape of an already approved row.\ncreate function public.volunteer_policy_booking_shape_guard()\nreturns trigger language plpgsql set search_path=public,pg_temp as $$\nbegin\n if (new.participant_count,new.registration_type) is distinct from (old.participant_count,old.registration_type)\n and exists(select 1 from public.volunteer_activity where id in (old.activity_id,new.activity_id) and policy_version_id is not null) then\n  raise exception 'immutable_policy_booking_shape' using errcode='22023';\n end if;\n return new;\nend; $$",
+    "create trigger volunteer_policy_booking_shape before update on public.volunteer_registration\nfor each row execute function public.volunteer_policy_booking_shape_guard()",
+    "revoke all on function public.volunteer_policy_booking_shape_guard() from public,anon,authenticated"
+  ],
+  "transactionMode": "transactional",
+  "ownTransaction": false,
+  "incompatible": false
+}

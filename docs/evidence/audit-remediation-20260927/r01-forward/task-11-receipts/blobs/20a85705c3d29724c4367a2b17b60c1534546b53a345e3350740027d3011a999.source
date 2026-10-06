@@ -1,0 +1,105 @@
+Spec Compliance: APPROVED for the scoped Fix1 source corrections at 74e5bb6ce7765dcc96d34eddea75db4c4803c911. One minor documentary command correction remains; actual fresh PG17.11 finance execution and five individual CI jobs remain mandatory controller acceptance gates.
+
+Task quality: APPROVED, with the minor documentation finding below and the previously deferred warning baseline. No open Critical or Important finding in this incremental source review.
+
+# Task11 Fix1 scoped review
+
+## Scope and evidence boundary
+
+Same Task11 review seat; incremental BASE 56defe4f5eaa111ffda57848f394c395c914ffd4 to HEAD 74e5bb6ce7765dcc96d34eddea75db4c4803c911, tree 38948b2cddf2223535e78225d99f34a94ea9235e. Source commit 43e71b18d304322b4ad4dac86cbf63d328cbdf4c; the closing commit changes metadata only. This report uses the prepared incremental diff, full covering report, original review disposition, Rulings53–54 and inherited constraints. Changed executable hunks were read in bounded chunks; manifest/receipt arrays were inspected through bounded projections rather than dumping raw catalogs. A truncated documentation output was recovered. No changed-source outside-diff reread, graph crawl/index/export, Git re-derivation, new reviewer, test/suite/bootstrap/DB execution, or source/index/branch mutation occurred. The only write is this ignored report.
+
+All repository-relative file:line references below resolve under OWN:
+C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-r01-adoption-upload-20261001
+
+The controller's prepared task-11-controller-fix1-final-head-binding.json independently binds the current 57 inputs, 1240 translated entries, 264 committed exact raw archive objects and eight proof receipts. This review consumes that completed byte/Git binding rather than claiming to have rerun it. The selected original raw receipts and log sections were separately read for actual results and qualifications.
+
+## Prior finding dispositions and spec checks
+
+### T11-I1 — CLOSED: deterministic later audit failure with first path reached
+
+Checked src/lib/donations/financeCallbackForward.database.test.ts:443–513, especially :451–454, :458–479, :485–490 and :512. The first receipt is explicitly 00000000-0000-0000-0000-000000000001; the failing second is ...002. The ordered query asserts the same id order used by the RPC. An AFTER INSERT audit probe verifies that the first receipt is void and its real audit row exists, then advances a temporary nontransactional sequence. Observing value 1/is_called true after the second-only 23514 savepoint failure proves that earlier path executed. The test subsequently checks complete receipt equality, zero receipt.void audit rows and unchanged money. The outer fixture transaction removes the temporary probe, sequence, function and constraint. No native index or product grant is relaxed.
+
+Actual final stdout archive task-11-receipts/blobs/c94864ac0a2d7ab6e550347aebdba9faed5ec2d82a98714867d6d232a62f29b1.source:2 records ordered 001/002, firstAuditPathReached=true and failedReceipt=002. Each final profile stderr records this test passing at :51 and 82 pass/0 fail/277 assertions at :89–91:
+
+- hosted: blobs/481c2fab5aae9bced42d80b91eb8f97138ace8a8cc636967b86fdd0c80a1b0bf.source;
+- modern: blobs/314cae7de2bba4a618770381161168b311d88b1287187d99732922c71ac7a5d2.source;
+- component: blobs/c9268a2908b047535475275d1398c8e50a797f2287539e29f65a1d24b61206fd.source.
+
+Qualified controlled RED receipt 5183c9...source has child exit1 and all nine preservation flags true; corrected focused GREEN receipt 891ae101...source has child exit0 and the same nine true flags. These are actual database receipts, not synthetic validator output. The earlier random-order 82/275 result is explicitly superseded, and the initial row-count binder failure plus the first probe's 42883 remain historical.
+
+### T11-I2 — CLOSED: one current capture lifecycle
+
+Checked docs/evidence/audit-remediation-20260927/r01-forward/task-11-capture.ts:1–5 and task-11-component-capture.ts:1–4: both are thin, explicit-mode wrappers for task-11-capture-producer.ts.
+
+The shared producer at :22–47 owns source state, clone creation, scanner/dependency order, optional component setup, metadata stage, normal drop and preservation/error finalization. Required flags come from the existing fixed mode lists (:11–14); component truth is literal-true checked (:32–35), and exceptions from close/template/source/frozen checks propagate into ineligibility (:37–44). Actual metadata and five-target rollback rendering occur once at :74–78. The component hook remains explicit (:66–73), including bound historical Task9 definition and only-body/definition comparison. It retains the PG17.6 reconstruction qualification.
+
+The portable tests at task-11-capture-producer.test.ts:13–35 exercise the actual lifecycle with three mode orders and failure/cleanup paths; their recorded 13 pass/60 assertions are supporting unit evidence. The three real fresh capture receipts independently show 8/8/10 literal true flags, null error, empty failed flags and eligibility, with 21/21/23 consumed bindings. The generator receipt shows its three literal flags true and 29 frozen inputs. No portable fixture is substituted for a captured SQL profile.
+
+### T11-M2 — CLOSED: exercise the actual product claim scanner
+
+Checked src/lib/content/serviceSloganCopy.test.ts:111–121, :142 and :234–264. The real tracked-tree audit and physical-file regression use the same scanObsoleteFiles function. Actual obsolete text remains detected in ordinary source, arbitrary text-unset source, mixed/unknown exact-proof attributes and an outside-Task11 proof path; only the exact lower-case 64-SHA Task11 .source path with all text/diff/merge attributes unset is omitted. The self-containing constant assertion is removed. Max-eight awaited reads, ordering, UTF8/NUL/error handling and the 30000ms task timeout remain unchanged. The recorded focused run is 7 pass/38 assertions and the final full run includes the current file.
+
+### T11-M1 — QUALIFIED/DEFERRED: exact warning baseline
+
+The handoff now identifies 51 react-refresh/only-export-components warnings and one react-hooks/exhaustive-deps warning at src/components/site/help/HelpWidget.tsx:35, rather than calling all 52 refresh warnings. See task-11-evidence.md:133. Current lint raw SHA e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a is identical to the previously inspected log; the hooks diagnostic is at raw :74 and total at :115. These unchanged warnings remain deferred, not represented as fixed. Expected callback fixture errors and Vite/Radix build output are separately qualified.
+
+### Ruling54 — SOURCE WIRING SATISFIED; real execution pending
+
+.github/workflows/ci.yml:271–278 starts the existing Supabase stack, then adds the required dedicated finance test step with exact test-file selector, explicit fixture opt-in1 and literal postgresql://postgres:postgres@127.0.0.1:55322/postgres. There is no continue-on-error or package/test:db selector broadening.
+
+src/lib/donations/financeCallbackFixtureGuard.ts:8–16 requires opt-in1, exact CI=true/GITHUB_ACTIONS=true and the literal URL for the CI branch; fallback uses the unchanged strict local assertCloneUrl. The companion tests at :5–30 cover accepted clone/CI and rejected flags/URL variants (actual 3 pass/26 assertions). financeCallbackForward.database.test.ts:8–15 validates the URL before creating the connection and awaits the unchanged assertSafeFixtureTables with the existing ten-table fixtureScope in beforeAll, before fixture DML. The raw capture/composition receipts retain those ten call-path tables. The shared scanner5352 itself has no delta.
+
+These are source and local evidence checks. A green job whose finance tests skip does not satisfy Ruling54. Root must inspect fresh actual PG17.11 startup and non-skipped dedicated finance execution plus all five individual CI job results on the final metadata-adjusted candidate. The historical PG17.6 component is not that gate.
+
+## Strengths
+
+- The late failure test now contains an observation that survives rollback and proves the first real audit path, eliminating the original false-positive ordering risk.
+- Shared capture code centralizes cleanup and failure propagation while retaining explicit profile modes and fixed final flags.
+- The claim audit regression checks real file contents through the production audit function with narrow binary-proof qualification.
+- Actual failures remain archived: the first Fix1 typecheck2, probe42883, guard expectation correction and earlier historical proofs are not relabelled as final successes.
+- SQL is unchanged: 968852 LF bytes, SHA256 33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4. The five contracts, only two manual actor fences, three unchanged signed/system bodies, Auth→admin lock ordering, exact helper/native/defaultACL/full-role tuples and unknown-tuple refusals retain the prior review disposition. No new held Task1/8 approval or product/provider readiness is inferred.
+
+## Findings
+
+### Critical
+
+None in this incremental scope.
+
+### Important
+
+None open. T11-I1 and T11-I2 are closed by the changed source and actual qualified evidence described above.
+
+### Minor — T11-F1-M1: component capture command example omits its required mode
+
+File: docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md:172.
+
+The documented command is `bun docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-capture.ts OWNOUT`, but the wrapper checks argv[2] equals `component` at task-11-component-capture.ts:3 and reads the output from argv[3] at :4. Copying the stated command fails with `Exact component capture mode required` before capture. Correct the example to:
+
+`bun docs/evidence/audit-remediation-20260927/r01-forward/task-11-component-capture.ts component OWNOUT`
+
+This is a documentary handoff defect, not a defect in the actual source/proof execution. Correct prose through the same implementer, retain executed/raw historical receipts, and bind the resulting metadata-only closing SHA. No DB/application gate rerun is justified for that prose-only change.
+
+### Minor baseline — T11-M1
+
+The exact 51 refresh plus one HelpWidget hooks warning baseline remains deferred as described above. No new lint regression found in this scope.
+
+## Named risks and checks completed
+
+| Risk | Bounded check and outcome |
+|---|---|
+| False late-failure proof | Deterministic IDs/order, real AFTER audit observation, surviving sequence, actual final stdout and three test summaries: resolved. |
+| Divergent producer cleanup | Both wrappers and the one lifecycle, fixed flags, stage/failure unit evidence and three real capture receipts: resolved. |
+| Audit weakened by broad proof exclusion | Shared actual scanner/physical fixtures and unchanged exact R51 classifier boundary: resolved. |
+| CI finance silently skipped or unsafe URL accepted | Required dedicated step, exact environment/URL branch, local fallback and beforeAll scanner order: source satisfied; fresh actual CI remains required. |
+| SQL/security scope expansion | No SQL/helper/native/role/defaultACL/grant/scanner delta in incremental package; controller's unchanged SQL binding retained. |
+| Misstated final source validation | Eight raw proof receipts examined for literal flags/error/eligibility; final three compositions each82/277, four actual local gate exits0, failures preserved. |
+| Overclaiming shared-modern preservation | R52 aggregate before/after differs; no exclusive fixture, catalog/Auth/ACL/native preservation claim accepted. Separate owned-clone proofs retained. |
+| Broken documentary invocation | Exact example vs four-line wrapper: minor T11-F1-M1 above. |
+
+No new outside-diff code discovery was necessary. Prior unchanged Auth/admin locking and reconcile partial-failure checks were not repeated. This review does not extend those checks into a broad release audit.
+
+## Verification and remaining gates
+
+The inspected final local receipt records typecheck0, full tests0 (3878 pass, 540 skip, 11650 assertions), lint0 (52 existing warnings), and fresh build0. All four declared local flags are true; error null; failed flags empty; 50 frozen inputs. It qualifies template and source preservation, not shared-modern aggregate preservation. All three final composition receipts have all16 literal flags true, null error, empty failed flags, zero remaining rows and separate normal-drop/template/modern preservation observations. Raw executed/committed binding remains supplied by the controller's completed independent binder.
+
+No new proof run was performed by this reviewer. The documentary correction/metadata binding, fresh fullPG17.11 dedicated non-skipped finance execution, five individual exact-candidate CI results, and any broad merge/release gate belong to the controller. Production remains unapplied, undeployed and not operationally enabled. Hosted JWT/PostgREST/provider/payment/refund/delivery/UAT readiness and held Task1/Task8 source proposals are not approved by this report.

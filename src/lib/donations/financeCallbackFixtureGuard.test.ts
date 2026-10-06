@@ -1,0 +1,30 @@
+import { expect, test } from "bun:test";
+import { assertFinanceFixtureUrl } from "./financeCallbackFixtureGuard";
+const ciUrl = "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+const ci = { CI: "true", GITHUB_ACTIONS: "true", R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: "1" };
+test("finance fixture guard admits only exact opted GitHub CI and existing owned clone", () => {
+  expect(assertFinanceFixtureUrl(ciUrl, ci)).toBe(ciUrl);
+  const clone = "postgresql://supabase_admin:postgres@127.0.0.1:52322/r01_clone_" + "a".repeat(32);
+  expect(assertFinanceFixtureUrl(clone, { R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: "1" })).toBe(
+    "r01_clone_" + "a".repeat(32),
+  );
+});
+test("finance CI guard refuses missing or nonliteral flags and non-CI use", () => {
+  for (const key of Object.keys(ci))
+    for (const value of [undefined, "false", "TRUE", "0", ""])
+      expect(() => assertFinanceFixtureUrl(ciUrl, { ...ci, [key]: value })).toThrow();
+  expect(() => assertFinanceFixtureUrl(ciUrl, {})).toThrow();
+});
+test("finance CI guard refuses wrong host port database user protocol and suffix", () => {
+  for (const url of [
+    ciUrl.replace("127.0.0.1", "localhost"),
+    ciUrl.replace("127.0.0.1", "example.test"),
+    ciUrl.replace("55322", "57322"),
+    ciUrl.replace("/postgres", "/other"),
+    ciUrl.replace("postgres:postgres", "supabase_admin:postgres"),
+    ciUrl.replace("postgresql:", "postgres:"),
+    ciUrl + "?sslmode=disable",
+    ciUrl + "#fragment",
+  ])
+    expect(() => assertFinanceFixtureUrl(url, ci)).toThrow();
+});

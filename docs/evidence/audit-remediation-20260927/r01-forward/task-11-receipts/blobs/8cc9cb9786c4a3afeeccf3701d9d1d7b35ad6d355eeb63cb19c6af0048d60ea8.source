@@ -1,0 +1,12 @@
+-- Credential evidence is factual history. Revocation is a one-way state change;
+-- renewed/corrected evidence is a new credential record and never rewrites the old one.
+create function public.volunteer_credential_history_guard() returns trigger language plpgsql set search_path=public,pg_temp as $$
+begin
+ if tg_op='UPDATE' and (new.id,new.profile_id,new.credential_key,new.valid_from,new.valid_until,new.verified_by,new.evidence) is not distinct from (old.id,old.profile_id,old.credential_key,old.valid_from,old.valid_until,old.verified_by,old.evidence) and (new.revoked_at is not distinct from old.revoked_at or (old.revoked_at is null and new.revoked_at is not null)) then return new; end if;
+ raise exception 'immutable_credential_evidence' using errcode='42501';
+end $$;
+create trigger volunteer_credential_immutable before update or delete on public.volunteer_credential for each row execute function public.volunteer_credential_history_guard();
+revoke all on function public.volunteer_credential_history_guard() from public,anon,authenticated;
+revoke truncate on public.volunteer_credential,public.volunteer_profile_event from service_role;
+-- Service clients read these records, but audited security-definer commands own writes.
+revoke insert,update,delete on public.volunteer_profile,public.volunteer_credential,public.volunteer_policy_draft,public.volunteer_policy_version,public.volunteer_policy_preview,public.volunteer_policy_schedule,public.volunteer_terms_version,public.volunteer_terms_acceptance,public.volunteer_profile_event from service_role;

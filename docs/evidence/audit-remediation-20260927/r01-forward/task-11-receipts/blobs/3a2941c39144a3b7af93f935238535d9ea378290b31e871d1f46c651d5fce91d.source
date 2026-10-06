@@ -1,0 +1,321 @@
+BEGIN;
+-- Admin identities remain readable according to RLS, but are changed only by
+-- server-side service-role operations. Browser JWTs cannot bypass access rules.
+drop policy if exists "admins can manage admin users" on public.admin_user;
+create policy "admins can view admin users"
+  on public.admin_user for select
+  to authenticated
+  using (private.has_admin_role(array['admin']));
+revoke insert, update, delete on public.admin_user from anon, authenticated;
+-- A statement lock serializes all role/status updates and deletes, including
+-- service-role writes outside the application RPC. The row trigger checks the
+-- final statement state, so bulk writes cannot remove every active admin.
+create or replace function private.lock_admin_user_mutation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));
+  return null;
+end;
+$$;
+create trigger lock_admin_user_mutation
+  before update or delete on public.admin_user
+  for each statement execute function private.lock_admin_user_mutation();
+create or replace function private.require_active_admin_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  removed_active_admin boolean;
+begin
+  if tg_op = 'DELETE' then
+    removed_active_admin := old.role = 'admin' and old.status = 'active';
+  else
+    removed_active_admin := old.role = 'admin' and old.status = 'active'
+      and (new.role <> 'admin' or new.status <> 'active');
+  end if;
+
+  if removed_active_admin and not exists (
+    select 1 from public.admin_user
+    where role = 'admin' and status = 'active'
+  ) then
+    raise exception 'last_active_admin' using errcode = 'P0001';
+  end if;
+  return null;
+end;
+$$;
+create trigger require_active_admin_user
+  after update or delete on public.admin_user
+  for each row execute function private.require_active_admin_user();
+-- PostgREST invokes each RPC in one database transaction. The actor, current
+-- target state, mutation, and audit record are checked and written together.
+create or replace function public.update_admin_user_with_audit(
+  p_actor_user_id uuid,
+  p_target_id uuid,
+  p_role text default null,
+  p_status text default null
+)
+returns public.admin_user
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  current_user_row public.admin_user%rowtype;
+  updated_user_row public.admin_user%rowtype;
+  next_role text;
+  next_status text;
+  audit_action text;
+begin
+  perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));
+
+  if not exists (
+    select 1 from public.admin_user
+    where auth_user_id = p_actor_user_id and role = 'admin' and status = 'active'
+  ) then
+    raise exception 'admin_actor_denied' using errcode = 'P0001';
+  end if;
+
+  select * into current_user_row
+  from public.admin_user
+  where id = p_target_id
+  for update;
+  if not found then
+    raise exception 'admin_user_not_found' using errcode = 'P0001';
+  end if;
+
+  if p_role is null and p_status is null then
+    raise exception 'empty_admin_user_update' using errcode = 'P0001';
+  end if;
+  if p_role is not null and p_role not in ('staff', 'treasurer', 'admin') then
+    raise exception 'invalid_role' using errcode = 'P0001';
+  end if;
+  if p_status is not null and p_status not in ('pending', 'active', 'disabled') then
+    raise exception 'invalid_status' using errcode = 'P0001';
+  end if;
+
+  next_role := coalesce(p_role, current_user_row.role);
+  next_status := coalesce(p_status, current_user_row.status);
+
+  if current_user_row.auth_user_id = p_actor_user_id and p_role is not null
+     and p_role <> 'admin' then
+    raise exception 'self_demote' using errcode = 'P0001';
+  end if;
+  if current_user_row.auth_user_id = p_actor_user_id and p_status = 'disabled' then
+    raise exception 'self_disable' using errcode = 'P0001';
+  end if;
+  if p_status = 'pending' and current_user_row.status <> 'pending' then
+    raise exception 'invalid_status_transition' using errcode = 'P0001';
+  end if;
+  if current_user_row.status = 'pending' and p_status = 'active' then
+    raise exception 'invalid_status_transition' using errcode = 'P0001';
+  end if;
+
+  if current_user_row.role = 'admin' and current_user_row.status = 'active'
+     and (next_role <> 'admin' or next_status <> 'active')
+     and not exists (
+       select 1 from public.admin_user
+       where id <> p_target_id and role = 'admin' and status = 'active'
+     ) then
+    raise exception 'last_active_admin' using errcode = 'P0001';
+  end if;
+
+  audit_action := case
+    when p_role is not null and p_role <> current_user_row.role
+      then 'admin_user.role_update'
+    when p_status = 'disabled' and current_user_row.status <> 'disabled'
+      then 'admin_user.disable'
+    when p_status = 'active' and current_user_row.status = 'disabled'
+      then 'admin_user.reactivate'
+    else 'admin_user.update'
+  end;
+
+  update public.admin_user
+  set role = next_role, status = next_status
+  where id = p_target_id
+  returning * into updated_user_row;
+
+  insert into public.audit_log (
+    actor_user_id, action, entity, entity_id, timestamp, detail
+  ) values (
+    p_actor_user_id,
+    audit_action,
+    'admin_user',
+    p_target_id::text,
+    now(),
+    jsonb_build_object(
+      'targetEmail', current_user_row.email,
+      'oldRole', current_user_row.role,
+      'newRole', updated_user_row.role,
+      'oldStatus', current_user_row.status,
+      'newStatus', updated_user_row.status
+    )
+  );
+
+  return updated_user_row;
+end;
+$$;
+revoke all on function public.update_admin_user_with_audit(uuid, uuid, text, text)
+  from public, anon, authenticated;
+grant execute on function public.update_admin_user_with_audit(uuid, uuid, text, text)
+  to service_role;
+-- Invitations keep the external Auth delivery step in the application, then
+-- commit the admin_user row and audit_log entry in one database transaction.
+create or replace function public.invite_admin_user_with_audit(
+  p_actor_user_id uuid,
+  p_auth_user_id uuid,
+  p_email text,
+  p_role text,
+  p_sent_at timestamptz
+)
+returns public.admin_user
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  current_user_row public.admin_user%rowtype;
+  invited_user_row public.admin_user%rowtype;
+begin
+  perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));
+
+  if not exists (
+    select 1 from public.admin_user
+    where auth_user_id = p_actor_user_id and role = 'admin' and status = 'active'
+  ) then
+    raise exception 'admin_actor_denied' using errcode = 'P0001';
+  end if;
+  if p_email is null or btrim(p_email) = '' then
+    raise exception 'invalid_email' using errcode = 'P0001';
+  end if;
+  if p_role is null or p_role not in ('staff', 'treasurer', 'admin') then
+    raise exception 'invalid_role' using errcode = 'P0001';
+  end if;
+  if p_auth_user_id is null or p_sent_at is null then
+    raise exception 'invalid_invite_input' using errcode = 'P0001';
+  end if;
+
+  select * into current_user_row
+  from public.admin_user
+  where email = p_email::citext
+  for update;
+
+  if found and current_user_row.status <> 'disabled' then
+    raise exception 'duplicate_admin_user' using errcode = 'P0001';
+  end if;
+
+  if found then
+    update public.admin_user
+    set auth_user_id = p_auth_user_id,
+        role = p_role,
+        status = 'pending',
+        invited_at = p_sent_at,
+        invite_sent_at = p_sent_at,
+        invite_accepted_at = null,
+        last_invited_by = p_actor_user_id
+    where id = current_user_row.id
+    returning * into invited_user_row;
+  else
+    insert into public.admin_user (
+      auth_user_id, email, role, status, invited_at, invite_sent_at,
+      invite_accepted_at, last_invited_by
+    ) values (
+      p_auth_user_id, p_email, p_role, 'pending', p_sent_at, p_sent_at,
+      null, p_actor_user_id
+    )
+    returning * into invited_user_row;
+  end if;
+
+  insert into public.audit_log (
+    actor_user_id, action, entity, entity_id, timestamp, detail
+  ) values (
+    p_actor_user_id,
+    'admin_user.invite',
+    'admin_user',
+    invited_user_row.id::text,
+    p_sent_at,
+    jsonb_build_object(
+      'targetEmail', invited_user_row.email,
+      'role', invited_user_row.role,
+      'status', invited_user_row.status
+    )
+  );
+
+  return invited_user_row;
+end;
+$$;
+revoke all on function public.invite_admin_user_with_audit(uuid, uuid, text, text, timestamptz)
+  from public, anon, authenticated;
+grant execute on function public.invite_admin_user_with_audit(uuid, uuid, text, text, timestamptz)
+  to service_role;
+create or replace function public.resend_admin_invite_with_audit(
+  p_actor_user_id uuid,
+  p_target_id uuid,
+  p_sent_at timestamptz
+)
+returns public.admin_user
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  current_user_row public.admin_user%rowtype;
+  resent_user_row public.admin_user%rowtype;
+begin
+  perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));
+
+  if not exists (
+    select 1 from public.admin_user
+    where auth_user_id = p_actor_user_id and role = 'admin' and status = 'active'
+  ) then
+    raise exception 'admin_actor_denied' using errcode = 'P0001';
+  end if;
+  if p_sent_at is null then
+    raise exception 'invalid_invite_input' using errcode = 'P0001';
+  end if;
+
+  select * into current_user_row
+  from public.admin_user
+  where id = p_target_id
+  for update;
+  if not found then
+    raise exception 'admin_user_not_found' using errcode = 'P0001';
+  end if;
+  if current_user_row.status <> 'pending' then
+    raise exception 'invite_not_pending' using errcode = 'P0001';
+  end if;
+
+  update public.admin_user
+  set invite_sent_at = p_sent_at,
+      last_invited_by = p_actor_user_id
+  where id = p_target_id
+  returning * into resent_user_row;
+
+  insert into public.audit_log (
+    actor_user_id, action, entity, entity_id, timestamp, detail
+  ) values (
+    p_actor_user_id,
+    'admin_user.invite_resend',
+    'admin_user',
+    resent_user_row.id::text,
+    p_sent_at,
+    jsonb_build_object(
+      'targetEmail', resent_user_row.email,
+      'role', resent_user_row.role,
+      'status', resent_user_row.status
+    )
+  );
+
+  return resent_user_row;
+end;
+$$;
+revoke all on function public.resend_admin_invite_with_audit(uuid, uuid, timestamptz)
+  from public, anon, authenticated;
+grant execute on function public.resend_admin_invite_with_audit(uuid, uuid, timestamptz)
+  to service_role;
+COMMIT;

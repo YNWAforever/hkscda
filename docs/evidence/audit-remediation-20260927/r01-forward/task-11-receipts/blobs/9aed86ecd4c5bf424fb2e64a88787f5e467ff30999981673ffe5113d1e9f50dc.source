@@ -1,0 +1,66 @@
+BEGIN;
+-- Authenticated browser clients have no animals UPDATE grant. Keep archive
+-- changes and their audit record in one service-role transaction.
+create or replace function public.set_animal_archived_with_audit(
+  p_actor_user_id uuid,
+  p_animal_id uuid,
+  p_archived boolean
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_previous timestamptz;
+  v_next timestamptz;
+  v_now timestamptz;
+begin
+  if p_actor_user_id is null or p_animal_id is null or p_archived is null then
+    raise exception 'invalid archive arguments' using errcode = '22023';
+  end if;
+
+  select a.retired_at into v_previous
+  from public.animals a
+  where a.id = p_animal_id
+  for update;
+  if not found then
+    return jsonb_build_object('kind', 'not_found');
+  end if;
+
+  -- A retry must preserve the original retirement date and avoid a second audit.
+  if (v_previous is not null) = p_archived then
+    return jsonb_build_object(
+      'kind', 'unchanged', 'id', p_animal_id, 'retired_at', v_previous
+    );
+  end if;
+
+  v_now := clock_timestamp();
+  v_next := case when p_archived then v_now else null end;
+  update public.animals
+  set retired_at = v_next, updated_at = v_now
+  where id = p_animal_id;
+
+  insert into public.audit_log (
+    actor_user_id, action, entity, entity_id, "timestamp", detail
+  )
+  values (
+    p_actor_user_id, 'animals.update', 'animals', p_animal_id::text, v_now,
+    jsonb_build_object(
+      'changed',
+      jsonb_build_object(
+        'retired_at', jsonb_build_object('from', v_previous, 'to', v_next)
+      )
+    )
+  );
+
+  return jsonb_build_object(
+    'kind', case when p_archived then 'archived' else 'restored' end,
+    'id', p_animal_id,
+    'retired_at', v_next
+  );
+end;
+$$;
+revoke all on function public.set_animal_archived_with_audit(uuid, uuid, boolean) from public, anon, authenticated;
+grant execute on function public.set_animal_archived_with_audit(uuid, uuid, boolean) to service_role;
+COMMIT;

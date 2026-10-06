@@ -1,0 +1,9 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+(pass) Task11 finance behavior and transaction contracts > system void late audit failure rolls back both receipts and earlier audit [329.26ms]
+
+ 1 pass
+ 66 filtered out
+ 0 fail
+ 6 expect() calls
+Ran 1 test across 1 file. [442.00ms]

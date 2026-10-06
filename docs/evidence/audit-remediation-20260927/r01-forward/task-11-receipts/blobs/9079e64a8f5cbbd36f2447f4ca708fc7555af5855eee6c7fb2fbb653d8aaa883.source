@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-bootstrap/internal-db-connection.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "2e0bdd4a7763d541d4de45a8d8236316b74054c2",
+  "rawSha256": "cd7cdee734eee02b45b64ad3ad3318ae795e917203f0fe0efe390888aeb73fea",
+  "bytes": 1892
+}

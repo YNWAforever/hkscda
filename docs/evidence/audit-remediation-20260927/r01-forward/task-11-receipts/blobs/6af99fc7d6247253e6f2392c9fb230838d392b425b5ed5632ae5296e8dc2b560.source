@@ -1,0 +1,132 @@
+BEGIN;
+-- A supporter profile, its roles, and the actor-attributed audit entry must commit together.
+create or replace function public.mutate_crm_supporter_with_audit(
+  p_operation text,
+  p_supporter_id uuid,
+  p_input jsonb,
+  p_roles jsonb,
+  p_actor_user_id uuid,
+  p_at timestamptz,
+  p_detail jsonb
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_supporter public.supporter;
+begin
+  if p_operation = 'create' then
+    if p_input is null or p_roles is null or jsonb_typeof(p_roles) <> 'array' then
+      raise exception 'invalid_supporter_payload';
+    end if;
+    insert into public.supporter(name,email,phone,language,tags,source,deleted_at)
+    values (
+      p_input->>'name', (p_input->>'email')::public.citext, p_input->>'phone',
+      p_input->>'language',
+      array(select jsonb_array_elements_text(p_input->'tags')),
+      p_input->>'source', null
+    )
+    on conflict (email) do update set
+      name = excluded.name,
+      phone = excluded.phone,
+      language = excluded.language,
+      tags = excluded.tags,
+      source = excluded.source,
+      deleted_at = null
+    returning * into v_supporter;
+  elsif p_operation = 'update' then
+    if p_supporter_id is null or p_input is null then
+      raise exception 'invalid_supporter_payload';
+    end if;
+    update public.supporter set
+      name = case when p_input ? 'name' then p_input->>'name' else name end,
+      phone = case when p_input ? 'phone' then p_input->>'phone' else phone end,
+      language = case when p_input ? 'language' then p_input->>'language' else language end,
+      tags = case when p_input ? 'tags' then array(select jsonb_array_elements_text(p_input->'tags')) else tags end,
+      deleted_at = case when p_input ? 'deleted_at' then (p_input->>'deleted_at')::timestamptz else deleted_at end
+    where id = p_supporter_id
+    returning * into v_supporter;
+    if not found then
+      raise exception 'supporter_not_found';
+    end if;
+  else
+    raise exception 'invalid_supporter_operation';
+  end if;
+
+  if p_roles is not null then
+    if jsonb_typeof(p_roles) <> 'array' then
+      raise exception 'invalid_supporter_roles';
+    end if;
+    delete from public.supporter_role where supporter_id = v_supporter.id;
+    insert into public.supporter_role(supporter_id, role)
+    select v_supporter.id, role from jsonb_array_elements_text(p_roles) as role;
+  end if;
+
+  insert into public.audit_log(actor_user_id, action, entity, entity_id, "timestamp", detail)
+  values (
+    p_actor_user_id,
+    case when p_operation = 'create' then 'supporter.create_or_update' else 'supporter.update' end,
+    'supporter', v_supporter.id::text, p_at, coalesce(p_detail, '{}'::jsonb)
+  );
+  return jsonb_build_object('id', v_supporter.id, 'email', v_supporter.email);
+end;
+$$;
+create or replace function public.replace_supporter_roles_atomic(
+  p_supporter_id uuid,
+  p_roles jsonb
+)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if p_roles is null or jsonb_typeof(p_roles) <> 'array' then
+    raise exception 'invalid_supporter_roles';
+  end if;
+  perform 1 from public.supporter where id = p_supporter_id for update;
+  if not found then
+    raise exception 'supporter_not_found';
+  end if;
+  delete from public.supporter_role where supporter_id = p_supporter_id;
+  insert into public.supporter_role(supporter_id, role)
+  select p_supporter_id, role from jsonb_array_elements_text(p_roles) as role;
+end;
+$$;
+create or replace function public.append_crm_consents_with_audit(
+  p_rows jsonb,
+  p_actor_user_id uuid,
+  p_supporter_id uuid,
+  p_at timestamptz,
+  p_detail jsonb
+)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if p_rows is null or jsonb_typeof(p_rows) <> 'array' then
+    raise exception 'invalid_consent_rows';
+  end if;
+  perform 1 from public.supporter where id = p_supporter_id for update;
+  if not found then
+    raise exception 'supporter_not_found';
+  end if;
+  insert into public.consent(supporter_id, channel, status, source, "timestamp")
+  select p_supporter_id, row->>'channel', row->>'status', row->>'source', (row->>'timestamp')::timestamptz
+  from jsonb_array_elements(p_rows) as row
+  on conflict (supporter_id, channel, status, source, "timestamp") do nothing;
+  insert into public.audit_log(actor_user_id, action, entity, entity_id, "timestamp", detail)
+  values (p_actor_user_id, 'consent.append', 'supporter', p_supporter_id::text, p_at, coalesce(p_detail, '{}'::jsonb));
+end;
+$$;
+revoke all on function public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) from public, anon, authenticated;
+revoke all on function public.replace_supporter_roles_atomic(uuid,jsonb) from public, anon, authenticated;
+revoke all on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) from public, anon, authenticated;
+grant execute on function public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) to service_role;
+grant execute on function public.replace_supporter_roles_atomic(uuid,jsonb) to service_role;
+grant execute on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) to service_role;
+COMMIT;

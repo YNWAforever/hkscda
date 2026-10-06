@@ -1,0 +1,210 @@
+const networkPrimitive =
+  /\b(?:(?:net|cron|supabase_functions)"?\s*\.|http(?:_[a-z_0-9]+)?"?\s*\(|dblink(?:_[a-z_0-9]+)?"?\s*\(|pg_(?:read_(?:binary_)?file|ls_[a-z_]+|notify|terminate_backend|cancel_backend|reload_conf|rotate_logfile|promote|log_backend_memory_contexts)"?\s*\(|set_config"?\s*\(|lo_(?:import|export)"?\s*\()/i;
+const escapePattern = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const calls = (body: string, qualified: string) => {
+  const [schema, name] = qualified.split(".");
+  return new RegExp(
+    `(?:"?${escapePattern(schema)}"?\\s*\\.\\s*)?"?${escapePattern(name)}"?\\s*\\(`,
+    "i",
+  ).test(body);
+};
+
+
+export function diagnose(rows:any[],savedOperators:any[]){
+  const nativeContracts = [
+    ["=", "citext_eq", "eqsel", 101, "eqjoinsel", 105],
+    ["<>", "citext_ne", "neqsel", 102, "neqjoinsel", 106],
+    ["<", "citext_lt", "scalarltsel", 103, "scalarltjoinsel", 107],
+    ["<=", "citext_le", "scalarlesel", 336, "scalarlejoinsel", 386],
+    [">", "citext_gt", "scalargtsel", 104, "scalargtjoinsel", 108],
+    [">=", "citext_ge", "scalargesel", 337, "scalargejoinsel", 398],
+    ["%", "similarity_op", "matchingsel", 5040, "matchingjoinsel", 5041],
+  ] as const;
+  const reviewedNative = (r: (typeof rows)[number]) => {
+    const contract = nativeContracts.find((c) => c[1] === r.name);
+    const trgm = r.name === "similarity_op";
+    const type = trgm ? "pg_catalog.text" : "public.citext";
+    return (
+      !!contract &&
+      r.schema === "public" &&
+      r.language === "c" &&
+      r.source === r.name &&
+      r.library === (trgm ? "$libdir/pg_trgm" : "$libdir/citext") &&
+      r.extension === (trgm ? "pg_trgm" : "citext") &&
+      r.extensionVersion === "1.6" &&
+      ["postgres", "supabase_admin"].includes(r.owner) &&
+      r.arguments === 2 &&
+      r.argumentTypes?.length === 2 &&
+      r.argumentTypes.every((t) => t === type) &&
+      r.result === "boolean"
+    );
+  };
+  const operators = savedOperators;
+  const reviewedPlanner = (
+    name: string | null,
+    oid: number | null,
+    expectedName: string,
+    expectedOid: number,
+    join: boolean,
+  ) => {
+    if (name === null && oid === null) return true;
+    const args = join
+      ? [
+          "pg_catalog.internal",
+          "pg_catalog.oid",
+          "pg_catalog.internal",
+          "pg_catalog.int2",
+          "pg_catalog.internal",
+        ]
+      : ["pg_catalog.internal", "pg_catalog.oid", "pg_catalog.internal", "pg_catalog.int4"];
+    return (
+      name === "pg_catalog." + expectedName &&
+      oid === expectedOid &&
+      rows.some(
+        (r) =>
+          r.oid === oid &&
+          r.system &&
+          r.schema === "pg_catalog" &&
+          r.name === expectedName &&
+          r.language === "internal" &&
+          r.source === expectedName &&
+          r.library === null &&
+          r.extension === null &&
+          ["postgres", "supabase_admin"].includes(r.owner) &&
+          r.arguments === args.length &&
+          JSON.stringify(r.argumentTypes) === JSON.stringify(args) &&
+          r.result === "double precision",
+      )
+    );
+  };
+  const reviewedOperator = (o: (typeof operators)[number]) => {
+    if (o.system) return true;
+    const c = nativeContracts.find((c) => c[0] === o.name);
+    if (!c || o.schema !== "public" || !["postgres", "supabase_admin"].includes(o.owner))
+      return false;
+    const type = c[1] === "similarity_op" ? "pg_catalog.text" : "public.citext";
+    return (
+      o.leftType === type &&
+      o.rightType === type &&
+      o.implementation === "public." + c[1] &&
+      rows.some((r) => r.oid === o.implementationOid && r.name === c[1] && reviewedNative(r)) &&
+      reviewedPlanner(o.restriction, o.restrictionOid, c[2], c[3], false) &&
+      reviewedPlanner(o.join, o.joinOid, c[4], c[5], true)
+    );
+  };
+  const customSymbols = new Set(operators.filter((o) => !reviewedOperator(o)).map((o) => o.name));
+  const unsafeOperator = (body: string, resolved?: number[], ownCoreScope = false) => {
+    // Stored defaults/checks are deparsed under pg_catalog-only search_path.
+    // User operators are qualified, and actual non-pinned dependency OIDs are
+    // checked. This proves core resolution without trusting a same-symbol user
+    // implementation or trying to infer types from PLpgSQL source text.
+    if (resolved?.some((oid) => !operators.some((o) => o.oid === oid && reviewedOperator(o))))
+      return true;
+    let explicitUnsafe = false;
+    const unqualified = body.replace(
+      /\bOPERATOR\s*\(\s*"?([a-z_][a-z_0-9]*)"?\s*\.\s*([+\-*/<>=~!@#%^&|`?:]+)\s*\)/gi,
+      (_match, schema: string, name: string) => {
+        const candidates = operators.filter((o) => o.schema === schema && o.name === name);
+        if (!candidates.length || candidates.some((o) => !reviewedOperator(o)))
+          explicitUnsafe = true;
+        return " ";
+      },
+    );
+    // Preserve raw/unreviewed symbol candidates before delimiter splitting:
+    // */ is a legal operator spelling outside comments, and overlapping comment
+    // boundaries cannot safely discard a candidate without a full SQL parser.
+    const tokens = [...unqualified.matchAll(/[+\-*/<>=~!@#%^&|`?:]+/g)]
+      .flatMap((m) => [
+        m[0],
+        ...m[0].split(/--|\/\*|\*\//),
+        ...[...customSymbols].filter((symbol) => m[0].includes(symbol)),
+      ])
+      .flatMap((run) => {
+        if (/[~!@#%^&|`?]/.test(run)) return [run];
+        let end = run.length;
+        while (end > 1 && /[+-]/.test(run[end - 1])) end--;
+        return [run.slice(0, end), ...run.slice(end)];
+      });
+    return (
+      explicitUnsafe ||
+      /\bOPERATOR\s*\(/i.test(unqualified) ||
+      tokens.some(
+        (token) =>
+          customSymbols.has(token) &&
+          !(resolved && operators.some((o) => o.name === token && o.system)) &&
+          !(
+            ownCoreScope &&
+            operators.some((o) => o.schema === "pg_catalog" && o.name === token) &&
+            operators
+              .filter((o) => o.schema === "pg_catalog" && o.name === token)
+              .every((o) => o.system && o.oid < 16384 && reviewedOperator(o))
+          ),
+      )
+    );
+  };
+  const network = (body: string) => networkPrimitive.test(body) || /\bexecute\b/i.test(body);
+  // This is each function's OWN stored scope. pg_temp is never searched for
+  // functions/operators. Do not propagate a caller's scope to its callees.
+  // Any SET/RESET token conservatively disables the exception; inspecting
+  // prosrc avoids mistaking pg_get_functiondef's SET declaration for SQL inside.
+  const ownCoreScope = (r: (typeof rows)[number]) =>
+    JSON.stringify(r.config) === JSON.stringify(["search_path=pg_catalog, pg_temp"]) &&
+    typeof r.source === "string" &&
+    !/\b(?:set|reset)\b/i.test(r.source) &&
+    !network(r.source);
+  // Sole reviewed external C prerequisite: pgcrypto's pure UUID generator.
+  // Require its actual extension/version/owner/library/symbol and zero-arg signature.
+  const reviewedUuid = (r: (typeof rows)[number]) =>
+    r.schema === "extensions" &&
+    r.name === "gen_random_uuid" &&
+    r.language === "c" &&
+    r.source === "pg_random_uuid" &&
+    r.library === "$libdir/pgcrypto" &&
+    r.extension === "pgcrypto" &&
+    r.extensionVersion === "1.3" &&
+    ["postgres", "supabase_admin"].includes(r.owner) &&
+    r.arguments === 0 &&
+    r.result === "uuid";
+  const unsafe = new Set(
+    rows
+      .filter(
+        (r) =>
+          network(r.body) ||
+          (!r.system && unsafeOperator(r.body, undefined, ownCoreScope(r))) ||
+          network(`${r.schema}.${r.name}(`) ||
+          (!r.system &&
+            !reviewedUuid(r) &&
+            !reviewedNative(r) &&
+            !["sql", "plpgsql"].includes(r.language)),
+      )
+      .map((r) => `${r.schema}.${r.name}`),
+  );
+  const directUnsafe = new Set(unsafe);
+  const known = new Set(rows.map((r) => `${r.schema}.${r.name}`));
+  const unknownQualifiedCall = (body: string) =>
+    [...body.matchAll(/"?([a-z_][a-z_0-9]*)"?\s*\.\s*"?([a-z_][a-z_0-9]*)"?\s*\(/gi)].some(
+      (m) =>
+        !/\b(?:INTO|TABLE|ON|REFERENCES|TYPE|TRIGGER|VIEW|POLICY|SCHEMA)\s+$/i.test(
+          body.slice(0, m.index),
+        ) && !known.has(m[1] + "." + m[2]),
+    );
+  for (const r of rows)
+    if (!r.system && unknownQualifiedCall(r.body)) unsafe.add(`${r.schema}.${r.name}`);
+  const afterUnknown = new Set(unsafe);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const r of rows)
+      if (
+        !r.system &&
+        !reviewedUuid(r) &&
+        !reviewedNative(r) &&
+        !unsafe.has(`${r.schema}.${r.name}`) &&
+        [...unsafe].some((name) => calls(r.body, name))
+      ) {
+        unsafe.add(`${r.schema}.${r.name}`);
+        changed = true;
+      }
+  }
+const r=rows.find(r=>r.schema==='public'&&r.name==='set_updated_at');if(!r)throw Error('Missing exact captured function');return{function:r,equalityCandidates:operators.filter(o=>o.name==='='&&!reviewedOperator(o)),coreEqualityCandidates:operators.filter(o=>o.schema==='pg_catalog'&&o.name==='='),ownCoreScope:ownCoreScope(r),networkBody:network(r.body),unsafeOperatorDirect:unsafeOperator(r.body,undefined,ownCoreScope(r)),directUnsafe:directUnsafe.has('public.set_updated_at'),afterUnknownUnsafe:afterUnknown.has('public.set_updated_at'),afterPropagationUnsafe:unsafe.has('public.set_updated_at'),unsafeCalledNames:[...unsafe].filter(n=>calls(r.body,n)),hypotheticalOwnPinnedCore:unsafeOperator(r.body,undefined,ownCoreScope({...r,config:['search_path=pg_catalog, pg_temp']})),unreviewedSymbolNames:[...customSymbols].sort()};
+}

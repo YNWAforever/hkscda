@@ -1,0 +1,18 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\content\serviceSloganCopy.test.ts:
+240 |     { path: exact, attributes: binary },
+241 |   ];
+242 |   try {
+243 |     const files = fixtures.map((_, i) => join(directory, String(i)));
+244 |     await Promise.all(files.map((file) => writeFile(file, obsoleteServiceSlogan)));
+245 |     const obsolete = await scanObsoleteFiles(files, new Map(), async (file) => {
+                                 ^
+ReferenceError: scanObsoleteFiles is not defined
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\content\serviceSloganCopy.test.ts:245:28)
+(fail) actual slogan scan rejects obsolete ordinary and unqualified proof text [8.38ms]
+
+ 0 pass
+ 6 filtered out
+ 1 fail
+Ran 1 test across 1 file. [104.00ms]

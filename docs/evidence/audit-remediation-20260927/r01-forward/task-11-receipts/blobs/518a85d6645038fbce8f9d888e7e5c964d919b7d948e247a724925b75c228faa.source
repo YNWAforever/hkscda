@@ -1,0 +1,150 @@
+1048576
+Running migrations
+21:19:04.676 [info] == Running 20210706140551 Realtime.Repo.Migrations.CreateTenants.change/0 forward
+21:19:04.679 [info] create table tenants
+21:19:04.683 [info] create index tenants_external_id_index
+21:19:04.685 [info] == Migrated 20210706140551 in 0.0s
+21:19:04.719 [info] == Running 20220329161857 Realtime.Repo.Migrations.AddExtensionsTable.change/0 forward
+21:19:04.719 [info] create table extensions
+21:19:04.721 [info] create index extensions_tenant_external_id_type_index
+21:19:04.722 [info] == Migrated 20220329161857 in 0.0s
+21:19:04.726 [info] == Running 20220410212326 Realtime.Repo.Migrations.AddTenantMaxEps.up/0
+21:19:04.726 [info] alter table tenants
+21:19:04.727 [info] == Migrated 20220410212326 in 0.0s
+21:19:04.730 [info] == Running 20220506102948 Realtime.Repo.Migrations.RenamePollIntervalToPollIntervalMs.up/0
+21:19:04.739 [info] == Migrated 20220506102948 in 0.0s
+21:19:04.742 [info] == Running 20220527210857 Realtime.Repo.Migrations.AddExternalIdUniqIndex.change/0 forward
+21:19:04.743 [info] execute "alter table tenants add constraint uniq_external_id unique (external_id)"
+21:19:04.744 [info] == Migrated 20220527210857 in 0.0s
+21:19:04.746 [info] == Running 20220815211129 Realtime.Repo.Migrations.NewMaxEventsPerSecondDefault.change/0 forward
+21:19:04.746 [info] alter table tenants
+21:19:04.748 [info] == Migrated 20220815211129 in 0.0s
+21:19:04.750 [info] == Running 20220815215024 Realtime.Repo.Migrations.SetCurrentMaxEventsPerSecond.change/0 forward
+21:19:04.750 [info] execute "update tenants set max_events_per_second = 1000"
+21:19:04.751 [info] == Migrated 20220815215024 in 0.0s
+21:19:04.752 [info] == Running 20220818141501 Realtime.Repo.Migrations.ChangeLimitsDefaults.change/0 forward
+21:19:04.753 [info] alter table tenants
+21:19:04.753 [info] == Migrated 20220818141501 in 0.0s
+21:19:04.755 [info] == Running 20221018173709 Realtime.Repo.Migrations.AddCdcDefault.up/0
+21:19:04.755 [info] alter table tenants
+21:19:04.756 [info] == Migrated 20221018173709 in 0.0s
+21:19:04.758 [info] == Running 20221102172703 Realtime.Repo.Migrations.RenamePgType.up/0
+21:19:04.758 [info] execute "update extensions set type = 'postgres_cdc_rls'"
+21:19:04.759 [info] == Migrated 20221102172703 in 0.0s
+21:19:04.761 [info] == Running 20221223010058 Realtime.Repo.Migrations.DropTenantsUniqExternalIdIndex.change/0 forward
+21:19:04.761 [info] execute "ALTER TABLE IF EXISTS tenants DROP CONSTRAINT IF EXISTS uniq_external_id"
+21:19:04.762 [info] == Migrated 20221223010058 in 0.0s
+21:19:04.765 [info] == Running 20230110180046 Realtime.Repo.Migrations.AddLimitsFieldsToTenants.change/0 forward
+21:19:04.765 [info] alter table tenants
+21:19:04.766 [info] == Migrated 20230110180046 in 0.0s
+21:19:04.768 [info] == Running 20230810220907 Realtime.Repo.Migrations.AlterTenantsTableColumnsToText.change/0 forward
+21:19:04.769 [info] alter table tenants
+21:19:04.770 [info] == Migrated 20230810220907 in 0.0s
+21:19:04.772 [info] == Running 20230810220924 Realtime.Repo.Migrations.AlterExtensionsTableColumnsToText.change/0 forward
+21:19:04.772 [info] alter table extensions
+21:19:04.774 [info] == Migrated 20230810220924 in 0.0s
+21:19:04.775 [info] == Running 20231024094642 :"Elixir.Realtime.Repo.Migrations.Add-tenant-suspend-flag".change/0 forward
+21:19:04.775 [info] alter table tenants
+21:19:04.776 [info] == Migrated 20231024094642 in 0.0s
+21:19:04.778 [info] == Running 20240306114423 Realtime.Repo.Migrations.AdddTenantJwtJwksColumn.change/0 forward
+21:19:04.778 [info] alter table tenants
+21:19:04.779 [info] == Migrated 20240306114423 in 0.0s
+21:19:04.782 [info] == Running 20240418082835 Realtime.Repo.Migrations.AddAuthorizationFlag.change/0 forward
+21:19:04.782 [info] alter table tenants
+21:19:04.782 [info] == Migrated 20240418082835 in 0.0s
+21:19:04.785 [info] == Running 20240625211759 Realtime.Repo.Migrations.RemoveEnableAuthorizationFlag.change/0 forward
+21:19:04.785 [info] alter table tenants
+21:19:04.786 [info] == Migrated 20240625211759 in 0.0s
+21:19:04.789 [info] == Running 20240704172020 :"Elixir.Realtime.Repo.Migrations.Add-notify-private-alpha".change/0 forward
+21:19:04.789 [info] alter table tenants
+21:19:04.789 [info] == Migrated 20240704172020 in 0.0s
+21:19:04.791 [info] == Running 20240902173232 Realtime.Repo.Migrations.AddExtensionExternalIdIndex.change/0 forward
+21:19:04.791 [info] create index if not exists extensions_tenant_external_id_index
+21:19:04.792 [info] == Migrated 20240902173232 in 0.0s
+21:19:04.794 [info] == Running 20241106103258 Realtime.Repo.Migrations.AddPrivateOnlyFlagColumnToTenant.change/0 forward
+21:19:04.794 [info] alter table tenants
+21:19:04.795 [info] == Migrated 20241106103258 in 0.0s
+21:19:04.797 [info] == Running 20250424203323 Realtime.Repo.Migrations.AddMigrationsRanToTenant.change/0 forward
+21:19:04.797 [info] alter table tenants
+21:19:04.798 [info] == Migrated 20250424203323 in 0.0s
+21:19:04.800 [info] == Running 20250613072131 Realtime.Repo.Migrations.AddTenantBroadcastAdapter.change/0 forward
+21:19:04.800 [info] alter table tenants
+21:19:04.801 [info] == Migrated 20250613072131 in 0.0s
+21:19:04.803 [info] == Running 20250711044927 Realtime.Repo.Migrations.ChangeDefaultBroadcastAdapterToGenRpc.change/0 forward
+21:19:04.803 [info] alter table tenants
+21:19:04.804 [info] == Migrated 20250711044927 in 0.0s
+21:19:04.806 [info] == Running 20250811121559 Realtime.Repo.Migrations.AddMaxPresenceEventsPerSecond.change/0 forward
+21:19:04.806 [info] alter table tenants
+21:19:04.807 [info] == Migrated 20250811121559 in 0.0s
+21:19:04.808 [info] == Running 20250926223044 Realtime.Repo.Migrations.SetDefaultPresenceValue.change/0 forward
+21:19:04.808 [info] alter table tenants
+21:19:04.810 [info] == Migrated 20250926223044 in 0.0s
+21:19:04.812 [info] == Running 20251204170944 Realtime.Repo.Migrations.NullableJwtSecrets.change/0 forward
+21:19:04.812 [info] alter table tenants
+21:19:04.813 [info] create check constraint jwt_secret_or_jwt_jwks_required on table tenants
+21:19:04.813 [info] == Migrated 20251204170944 in 0.0s
+21:19:04.815 [info] == Running 20251218000543 Realtime.Repo.Migrations.EnsureJwtSecretIsText.change/0 forward
+21:19:04.816 [info] alter table tenants
+21:19:04.817 [info] == Migrated 20251218000543 in 0.0s
+21:19:04.819 [info] == Running 20260209232800 Realtime.Repo.Migrations.AddMaxClientPresenceEventsPerSecond.change/0 forward
+21:19:04.819 [info] alter table tenants
+21:19:04.820 [info] == Migrated 20260209232800 in 0.0s
+21:19:04.822 [info] == Running 20260304000000 Realtime.Repo.Migrations.AddPresenceEnabledToTenants.change/0 forward
+21:19:04.822 [info] alter table tenants
+21:19:04.823 [info] == Migrated 20260304000000 in 0.0s
+21:19:04.825 [info] == Running 20260422000000 Realtime.Repo.Migrations.CreateFeatureFlags.change/0 forward
+21:19:04.825 [info] create table feature_flags
+21:19:04.827 [info] create index feature_flags_name_index
+21:19:04.828 [info] alter table tenants
+21:19:04.832 [info] == Migrated 20260422000000 in 0.0s
+21:19:04.835 [info] == Running 20260709151810 Realtime.Repo.Migrations.AddFeatureFlagRolloutPercentage.change/0 forward
+21:19:04.835 [info] alter table feature_flags
+21:19:04.837 [info] create check constraint rollout_percentage_must_be_between_0_and_100 on table feature_flags
+21:19:04.837 [info] == Migrated 20260709151810 in 0.0s
+21:19:04.840 [info] == Running 20260805000000 Realtime.Repo.Migrations.AddGcmMigratedAtToTenants.change/0 forward
+21:19:04.840 [info] alter table tenants
+21:19:04.841 [info] == Migrated 20260805000000 in 0.0s
+Seeding selfhosted Realtime
+21:19:05.336 [warning] Failed to load OTP-trusted CAs: :error::function_clause, falling back to hardcoded authorities
+21:19:05.374 [info] Loading 121 CA(s) from :hardcoded store
+21:19:05.531 [info] [driver: :tcp, port: 5369, socket: [~c"#Port<0.5>"], msg: ~c"server_setup_successfully"]
+21:19:05.536 [info] [domain: [:gen_rpc, :dispatcher], "$kind": :gen_rpc_dispatcher_start]
+21:19:05.657 [notice]     :alarm_handler: {:set, {:system_memory_high_watermark, []}}
+21:19:05.733 [notice] [scope: RegionNodes, event: :tables_created]
+21:19:05.737 [notice] [scope: RegionNodes, handler: :registry, event: :discovering_cluster]
+21:19:05.739 [notice] [scope: RegionNodes, handler: :pg, event: :discovering_cluster]
+21:19:05.739 [notice] [scope: RegionNodes, event: :scope_added]
+21:19:05.739 [notice] [scope: Realtime.Tenants.Connect, event: :tables_created]
+21:19:05.739 [notice] [scope: Realtime.Tenants.Connect, handler: :registry, event: :discovering_cluster]
+21:19:05.739 [notice] [scope: Realtime.Tenants.Connect, handler: :pg, event: :discovering_cluster]
+21:19:05.739 [notice] [scope: Realtime.Tenants.Connect, event: :scope_added]
+21:19:06.193 [warning] MFA {Realtime.PromEx.Plugins.TenantGlobal, :execute_global_connection_metrics, []} encountered an error but has not been detached: %ArgumentError{message: "errors were found at the given arguments:\n\n  * 1st argument: the table identifier does not refer to an existing ETS table\n"}
+21:19:06.201 [warning] MFA {Realtime.PromEx.Plugins.Tenant, :execute_tenant_metrics, []} encountered an error but has not been detached: %ArgumentError{message: "errors were found at the given arguments:\n\n  * 1st argument: the table identifier does not refer to an existing ETS table\n"}
+21:19:06.230 [info] [libcluster:postgres] Connected to Postgres database
+21:19:06.230 [info] Muster[nonode@nohost|realtime_channels_local] Starting
+21:19:06.240 [info] Forum[nonode@nohost|users] Starting
+21:19:06.274 [info] Starting Reconnector
+21:19:06.352 [info] Running RealtimeWeb.Endpoint with cowboy 2.18.0 at :::4000 (http)
+21:19:06.352 [info] Access RealtimeWeb.Endpoint at http://realtime.supabase.co:443
+21:19:06.526 [notice] [scope: :realtime_postgres_cdc_0, event: :tables_created]
+21:19:06.526 [notice] [scope: :realtime_postgres_cdc_0, handler: :registry, event: :discovering_cluster]
+21:19:06.526 [notice] [scope: :realtime_postgres_cdc_0, handler: :pg, event: :discovering_cluster]
+21:19:06.526 [notice] [scope: :realtime_postgres_cdc_0, event: :scope_added]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_1, event: :tables_created]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_1, handler: :registry, event: :discovering_cluster]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_1, handler: :pg, event: :discovering_cluster]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_1, event: :scope_added]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_2, event: :tables_created]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_2, handler: :registry, event: :discovering_cluster]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_2, handler: :pg, event: :discovering_cluster]
+21:19:06.527 [notice] [scope: :realtime_postgres_cdc_2, event: :scope_added]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_3, event: :tables_created]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_3, handler: :registry, event: :discovering_cluster]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_3, handler: :pg, event: :discovering_cluster]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_3, event: :scope_added]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_4, event: :tables_created]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_4, handler: :registry, event: :discovering_cluster]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_4, handler: :pg, event: :discovering_cluster]
+21:19:06.528 [notice] [scope: :realtime_postgres_cdc_4, event: :scope_added]
+21:19:06.529 [info] Janitor started
+21:19:06.529 [info] Starting MetricsCleaner

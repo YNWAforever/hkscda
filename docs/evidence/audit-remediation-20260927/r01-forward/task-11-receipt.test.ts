@@ -1,0 +1,229 @@
+import { expect, test } from "bun:test";
+import { assertCapture, captureFlags } from "./task-11-receipt";
+import * as receiptContract from "./task-11-receipt";
+// Portable synthetic validation only; this fixture never feeds executed SQL.
+const targetNames = [
+  "fail_pending_provider_payment",
+  "refund_provider_payment_atomically",
+  "void_receipt_with_audit",
+  "void_donation_receipts_with_audit",
+  "issue_receipt_with_audit",
+];
+function portableCapture() {
+  const targets = targetNames.map((name) => ({
+    schema: "public",
+    name,
+    owner: "postgres",
+    body: "0".repeat(32),
+    definition: "1".repeat(32),
+    full_acl: ["postgres", "service_role"].map((grantee) => ({
+      grantor: "postgres",
+      grantee,
+      privilege: "EXECUTE",
+      grantable: false,
+    })),
+  }));
+  return {
+    receiptType: "capture",
+    mode: "hosted",
+    error: null,
+    failedFinalFlags: [],
+    requiredFinalFlags: [...captureFlags],
+    ...Object.fromEntries(captureFlags.map((k) => [k, true])),
+    oldTargets: targets,
+    nextTargets: structuredClone(targets),
+    functions: [{ schema: "auth", name: "uid" }],
+    catalog: { roles: [], memberships: null },
+    auth: {
+      serviceSelect: false,
+      serviceUpdate: false,
+      serviceColumnSelect: false,
+      serviceColumnUpdate: false,
+      postgresSelect: true,
+      postgresUpdate: true,
+    },
+    native: [],
+    indexes: [],
+    shapes: Array.from({ length: 10 }, (_, i) => ({ name: "synthetic" + i })),
+    bindings: {},
+    dependencies: Array.from({ length: 9 }, (_, i) => ["synthetic" + i, "0".repeat(64)]),
+    fixtureScope: Array.from({ length: 10 }, (_, i) => "synthetic" + i),
+  };
+}
+test("portable fully qualified capture validates without ignored receipts", () =>
+  expect(() => assertCapture(portableCapture(), "hosted")).not.toThrow());
+for (const flag of captureFlags)
+  for (const value of [false, undefined, 1, "true"])
+    test(`capture rejects ${flag}=${String(value)}`, () => {
+      const r = { ...portableCapture(), [flag]: value };
+      expect(() => assertCapture(r, "hosted")).toThrow();
+    });
+for (const patch of [
+  { mode: "modern" },
+  { mode: "component" },
+  { receiptType: "composition" },
+  { error: "cleanup failed" },
+  { failedFinalFlags: ["normalDrop"] },
+  { requiredFinalFlags: [] },
+])
+  test(`capture refuses mode/type/error contract ${JSON.stringify(patch)}`, () =>
+    expect(() => assertCapture({ ...portableCapture(), ...patch }, "hosted")).toThrow());
+for (const key of ["oldTargets", "nextTargets"] as const)
+  for (const count of [0, 1, 4, 6])
+    test(`${key} requires exactly five`, () => {
+      const r = portableCapture();
+      r[key] = Array.from({ length: count }, (_, i) => ({ ...r[key][0], name: "target" + i }));
+      expect(() => assertCapture(r, "hosted")).toThrow();
+    });
+test("five unrelated named functions cannot qualify as Task11 targets", () => {
+  const r = portableCapture();
+  r.nextTargets = r.nextTargets.map((t, i) => ({ ...t, name: "unreviewed" + i }));
+  expect(() => assertCapture(r, "hosted")).toThrow();
+});
+for (const key of [
+  "serviceSelect",
+  "serviceUpdate",
+  "serviceColumnSelect",
+  "serviceColumnUpdate",
+] as const)
+  test(`unexpected effective Auth ${key} cannot qualify`, () => {
+    const r = portableCapture();
+    r.auth[key] = true;
+    expect(() => assertCapture(r, "hosted")).toThrow();
+  });
+
+const compositionFlags = [
+  "schemaParity",
+  "fullScannerPassed",
+  "dependenciesBound",
+  "firstApply",
+  "secondApply",
+  "secondApplyPreserved",
+  "outsideTargetsPreserved",
+  "supplementalPreserved",
+  "refusalsPassed",
+  "testPassed",
+  "zeroRowsAfter",
+  "catalogAfterBehaviorPreserved",
+  "normalDrop",
+  "templatePreserved",
+  "modernPreserved",
+  "frozenInputsPreserved",
+];
+function portableComposition() {
+  const tables = Array.from({ length: 163 }, (_, i) => "synthetic" + i).concat("auth.users");
+  return {
+    receiptType: "composition",
+    mode: "hosted",
+    error: null,
+    failedFinalFlags: [],
+    requiredFinalFlags: compositionFlags,
+    ...Object.fromEntries(compositionFlags.map((k) => [k, true])),
+    testExit: 0,
+    dependencies: Array.from({ length: 9 }, (_, i) => ["synthetic" + i, "0".repeat(64)]),
+    fixtureScope: Array.from({ length: 10 }, (_, i) => "synthetic" + i),
+    rowCountsAfter: tables.map((table) => ({ table, count: "0" })),
+    expectedRowTables: tables,
+    zeroApplicationTables: 158,
+    refusals: Array.from({ length: 14 }, (_, i) => ({
+      label: "synthetic" + i,
+      code: "55000",
+      preserved: true,
+    })),
+    beforeGapCount: 13,
+    afterGapCount: 8,
+    beforeGaps: Array(13).fill("synthetic"),
+    afterGaps: Array(8).fill("synthetic"),
+  };
+}
+test("portable fully qualified composition requires an explicit consumer", () =>
+  expect(() => receiptContract.assertComposition(portableComposition(), "hosted")).not.toThrow());
+for (const flag of compositionFlags)
+  for (const value of [false, undefined, 1, "true"])
+    test(`composition rejects ${flag}=${String(value)}`, () =>
+      expect(() =>
+        receiptContract.assertComposition({ ...portableComposition(), [flag]: value }, "hosted"),
+      ).toThrow());
+for (const patch of [
+  { mode: "modern" },
+  { mode: "component" },
+  { receiptType: "capture" },
+  { error: "cleanup observation failed" },
+  { failedFinalFlags: ["modernPreserved"] },
+  { requiredFinalFlags: [] },
+  { testExit: 1 },
+  { rowCountsAfter: [] },
+  { refusals: [] },
+])
+  test(`composition rejects fixed contract ${JSON.stringify(patch)}`, () =>
+    expect(() =>
+      receiptContract.assertComposition({ ...portableComposition(), ...patch }, "hosted"),
+    ).toThrow());
+
+test("portable component capture requires both additional exact flags", () => {
+  const r = {
+    ...portableCapture(),
+    mode: "component",
+    requiredFinalFlags: [...receiptContract.componentCaptureFlags],
+    componentSourceBound: true,
+    componentOnlyAuthChanged: true,
+  };
+  expect(() => assertCapture(r, "component")).not.toThrow();
+  for (const key of ["componentSourceBound", "componentOnlyAuthChanged"])
+    for (const value of [false, undefined, 1, "true"])
+      expect(() => assertCapture({ ...r, [key]: value }, "component")).toThrow();
+});
+for (const mode of ["modern", "component"] as const)
+  test(`portable ${mode} composition uses its actual cardinality`, () => {
+    const tables = Array.from({ length: 162 }, (_, i) => "synthetic" + i).concat("auth.users");
+    const r = {
+      ...portableComposition(),
+      mode,
+      zeroApplicationTables: 162,
+      expectedRowTables: tables,
+      rowCountsAfter: tables.map((table) => ({ table, count: "0" })),
+      beforeGapCount: 1,
+      afterGapCount: 1,
+      beforeGaps: ["synthetic"],
+      afterGaps: ["synthetic"],
+    };
+    expect(() => receiptContract.assertComposition(r, mode)).not.toThrow();
+    expect(() =>
+      receiptContract.assertComposition({ ...r, rowCountsAfter: r.rowCountsAfter.slice(1) }, mode),
+    ).toThrow();
+  });
+function portableGates() {
+  return {
+    receiptType: "gates",
+    mode: "local",
+    error: null,
+    failedFinalFlags: [],
+    requiredFinalFlags: [...receiptContract.gateFlags],
+    ...Object.fromEntries(receiptContract.gateFlags.map((k) => [k, true])),
+    gates: ["build", "lint", "tests", "typecheck"].map((gate) => ({ gate, exit: 0 })),
+    databaseReceipts: { hosted: "synthetic", modern: "synthetic", component: "synthetic" },
+  };
+}
+test("portable four local gates validate without ignored receipts", () =>
+  expect(() => receiptContract.assertGates(portableGates())).not.toThrow());
+for (const flag of receiptContract.gateFlags)
+  for (const value of [false, undefined, 1, "true"])
+    test(`local gates reject ${flag}=${String(value)}`, () =>
+      expect(() => receiptContract.assertGates({ ...portableGates(), [flag]: value })).toThrow());
+for (const patch of [
+  { mode: "hosted" },
+  { error: "cleanup observation failed" },
+  { failedFinalFlags: ["templatePreserved"] },
+  { requiredFinalFlags: [] },
+  { gates: [] },
+  { databaseReceipts: { hosted: "synthetic", modern: "synthetic" } },
+])
+  test(`local gates reject fixed contract ${JSON.stringify(patch)}`, () =>
+    expect(() => receiptContract.assertGates({ ...portableGates(), ...patch })).toThrow());
+test("nonzero or duplicated local gate cannot qualify", () => {
+  const r = portableGates();
+  r.gates[0].exit = 1;
+  expect(() => receiptContract.assertGates(r)).toThrow();
+  r.gates[0] = { gate: "tests", exit: 0 };
+  expect(() => receiptContract.assertGates(r)).toThrow();
+});

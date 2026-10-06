@@ -1,0 +1,378 @@
+{
+  "qualification": "Offline comparison of actual full managed+D45 native2.118/PG17.11 catalog; scanner failed before unchanged finance transaction. Not an observed owned finance55000 or admitted candidate.",
+  "baselineMigrations": 182,
+  "managedJobs": 3,
+  "domainRowsBefore": [
+    {
+      "table": "auth.users",
+      "count": 0
+    },
+    {
+      "table": "public.admin_user",
+      "count": 0
+    },
+    {
+      "table": "public.supporter",
+      "count": 0
+    },
+    {
+      "table": "public.donation",
+      "count": 0
+    },
+    {
+      "table": "public.payment",
+      "count": 0
+    },
+    {
+      "table": "public.receipt",
+      "count": 0
+    },
+    {
+      "table": "public.receipt_sequence",
+      "count": 0
+    },
+    {
+      "table": "public.audit_log",
+      "count": 0
+    },
+    {
+      "table": "public.supporter_consent_intent",
+      "count": 0
+    },
+    {
+      "table": "public.donation_delivery_job",
+      "count": 0
+    }
+  ],
+  "protectedSourcesPreserved": true,
+  "all57CurrentInputsPreserved": true,
+  "scannerError": "Owned command failed ['bun', 'C:\\\\Users\\\\laich\\\\Documents\\\\HKCSDA\\\\HKCSDA\\\\hkscda\\\\.worktrees\\\\audit-r01-adoption-upload-20261001\\\\.superpowers\\\\sdd\\\\r01-forward-schema-plan-20261001\\\\task-11-fix3-queries.ts', 'scan', 'hkscda-task11-fix3-pg-1cea764774294eb6bc9c9c41edffbe85', 'C:\\\\Users\\\\laich\\\\Documents\\\\HKCSDA\\\\HKCSDA\\\\hkscda\\\\.worktrees\\\\audit-r01-adoption-upload-20261001\\\\.superpowers\\\\sdd\\\\r01-forward-schema-plan-20261001\\\\task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85'] stderr=855 |   for (const t of triggers)\n856 |     if (\n857 |       qualified.includes(t.table_name) &&\n858 |       (network(t.function_name + \"(\") || !known.has(t.function_name) || unsafe.has(t.function_name))\n859 |     )\n860 |       throw new Error(\n                      ^\nerror: Unsafe fixture trigger path: public.set_updated_at; no provider/network primitive executed\n      at assertSafeFixtureTables (C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\supabase\\rls-tests\\helpers\\productionSchemaClone.ts:860:17)\n\nBun v1.3.14 (Windows x64)\n",
+  "setUpdatedAtActualScannerRows": [
+    {
+      "oid": "18196",
+      "body": "CREATE OR REPLACE FUNCTION public.set_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n  new.updated_at = now();\n  return new;\nend;\n$function$\n",
+      "name": "set_updated_at",
+      "owner": "postgres",
+      "config": null,
+      "result": "trigger",
+      "schema": "public",
+      "source": "\nbegin\n  new.updated_at = now();\n  return new;\nend;\n",
+      "system": false,
+      "library": null,
+      "language": "plpgsql",
+      "arguments": 0,
+      "extension": null,
+      "argumentTypes": [],
+      "extensionVersion": null
+    }
+  ],
+  "setUpdatedAtActualTriggerRows": [
+    {
+      "table_name": "public.admin_user",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.supporter",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.supporter_role",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.consent",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.recurring_mandate",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.donation",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.payment",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.receipt_sequence",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.receipt",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.message_template",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.message",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.webhook_event",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.audit_log",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.coordinator_status",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.living_area",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.arrival_source",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.animal_position",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_fee",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adopter_profile",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_case",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.animal_match",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.successful_adoption",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_followup",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.animal_profile_internal",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_application_detail",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_intake_item",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.sponsorship_pledge",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.content_item",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.content_link",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.rescue_story_profile",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.story_update",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.content_media",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.social_copy_variant",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.recipient_notification_draft",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.document_assets",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.site_document_slots",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.annual_reports",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.site_config",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_fees",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.dog_friendly_estates",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.group_enquiries",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.knowledge_posts",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_guide_releases",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.board_member",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.faq_entry",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.adoption_rules",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.care_topics",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.payment_public_config",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.sponsorship_period",
+      "function_name": "public.set_updated_at"
+    },
+    {
+      "table_name": "public.sponsorship_assignment",
+      "function_name": "public.set_updated_at"
+    }
+  ],
+  "completeDifferenceCounts": [
+    11,
+    18
+  ],
+  "differencePaths": [
+    [
+      "/columns",
+      "/constraints",
+      "/defaults/2/entries",
+      "/indexes",
+      "/relations/0/acl",
+      "/relations/1/acl",
+      "/relations/2/acl",
+      "/relations/4/acl",
+      "/relations/5/acl",
+      "/relations/6/acl",
+      "/relations/7/acl"
+    ],
+    [
+      "/columns/44/acl",
+      "/columns/45/acl",
+      "/columns/70/acl",
+      "/columns/71/acl",
+      "/columns/72/acl",
+      "/columns/90/acl",
+      "/columns/91/acl",
+      "/columns/92/acl",
+      "/columns/93/acl",
+      "/columns/94/acl",
+      "/columns/95/acl",
+      "/columns/96/acl",
+      "/columns/97/acl",
+      "/columns/98/acl",
+      "/columns/99/acl",
+      "/columns/100/acl",
+      "/constraints/17/definition",
+      "/relations/7/acl"
+    ]
+  ],
+  "inputs": [
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-offline-differences.py",
+      "rawSha256": "dc8c7f9127e6b8b7e68d16a332c68bf0da3848527a7bcba6b9afc4d61da92afa",
+      "bytes": 3921,
+      "archive": "i000.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/receipt.json",
+      "rawSha256": "dd8ea5245cff5499865fab8886c518944676a28aa2431056bad92b8ece9e4329",
+      "bytes": 1003069,
+      "archive": "i001.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/d45-baseline.json",
+      "rawSha256": "9fcfed1ba69e1752c58110cc549ca90d0af74d66dddc014ee38cbd0aedcae603",
+      "bytes": 3341952,
+      "archive": "i002.source"
+    },
+    {
+      "path": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "rawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+      "bytes": 968852,
+      "archive": "i003.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-reads.json",
+      "rawSha256": "b981b304b305b3b663e8199497d728c339ec6e3f2c3f09041239a3198cb35ce7",
+      "bytes": 1473,
+      "archive": "i004.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-0.stdout.log",
+      "rawSha256": "551bb667a913d96ca7dfafe0c1f5cafd1a58285c8d93d74a81226f3df51a07bd",
+      "bytes": 3641934,
+      "archive": "i005.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-0.sql.source",
+      "rawSha256": "ce536aa561b9d225c865ca8f3dd5a09fc445e3e080765c1e61315e975a979f97",
+      "bytes": 993,
+      "archive": "i006.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-1.stdout.log",
+      "rawSha256": "7c765006dab1e3d0a91e4e4d533323967a6ff5671ab74dd5dd2751b99546f99d",
+      "bytes": 282701,
+      "archive": "i007.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-1.sql.source",
+      "rawSha256": "3ac4fce27e461c2b4be96c481466973d2819c58d874c64436aef302131a250f5",
+      "bytes": 1015,
+      "archive": "i008.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-2.stdout.log",
+      "rawSha256": "a36445ba3dd2324bc25c3cb82891049b07c6240b3ca45191b7c66cbf3c3c213a",
+      "bytes": 15610,
+      "archive": "i009.source"
+    },
+    {
+      "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-11-fix3-baseline-1cea764774294eb6bc9c9c41edffbe85/scanner-2.sql.source",
+      "rawSha256": "b636076bd67adf7116f349ee05b4babfee0a3223664cc57c5e22ed253b452fb4",
+      "bytes": 405,
+      "archive": "i010.source"
+    }
+  ]
+}

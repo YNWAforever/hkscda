@@ -1,0 +1,64 @@
+-- A signed denial may arrive after a successful payment, or race with a paid
+-- webhook. Lock both rows before deciding; never downgrade a settled gift.
+create or replace function public.fail_pending_provider_payment(
+  p_payment_id uuid,
+  p_donation_id uuid
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_payment public.payment%rowtype;
+  v_donation public.donation%rowtype;
+  v_now timestamptz;
+begin
+  if p_payment_id is null or p_donation_id is null then
+    raise exception 'missing payment or donation id' using errcode = '22023';
+  end if;
+
+  select * into v_payment
+  from public.payment
+  where id = p_payment_id
+  for update;
+  if not found or v_payment.donation_id <> p_donation_id then
+    return jsonb_build_object('kind', 'not_found');
+  end if;
+
+  select * into v_donation
+  from public.donation
+  where id = p_donation_id
+  for update;
+  if not found then
+    return jsonb_build_object('kind', 'not_found');
+  end if;
+
+  if v_payment.status not in ('pending', 'failed')
+     or v_donation.status not in ('pending', 'failed') then
+    return jsonb_build_object(
+      'kind', 'state_conflict',
+      'payment_status', v_payment.status,
+      'donation_status', v_donation.status
+    );
+  end if;
+
+  if v_payment.status = 'failed' and v_donation.status = 'failed' then
+    return jsonb_build_object('kind', 'already_failed');
+  end if;
+
+  v_now := clock_timestamp();
+  update public.payment
+  set status = 'failed', updated_at = v_now
+  where id = p_payment_id and status = 'pending';
+
+  update public.donation
+  set status = 'failed', updated_at = v_now
+  where id = p_donation_id and status = 'pending';
+
+  return jsonb_build_object('kind', 'failed');
+end;
+$$;
+
+revoke all on function public.fail_pending_provider_payment(uuid, uuid) from public, anon, authenticated;
+grant execute on function public.fail_pending_provider_payment(uuid, uuid) to service_role;

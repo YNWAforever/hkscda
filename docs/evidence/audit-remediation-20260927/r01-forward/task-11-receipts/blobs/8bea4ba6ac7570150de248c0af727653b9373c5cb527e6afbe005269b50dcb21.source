@@ -1,0 +1,5 @@
+bun test v1.3.14 (0d9b296a)
+{"command":"void","actorState":"banned","result":[{"receipt_id":"bb2ca589-4ba7-4fd5-a251-a4b2bc195930","pdf_url":null}],"observation":[{"status":"void","audits":"1"}]}
+{"command":"void","actorState":"unconfirmed","result":[{"receipt_id":"eec401d2-9937-475d-b5ed-eba10d862752","pdf_url":null}],"observation":[{"status":"void","audits":"1"}]}
+{"command":"issue","actorState":"banned","result":[{"receipt_no":"HKSCDA-2026-000001","receipt_id":"baddbae9-8d5a-4e6b-abbb-386acebd8581","pdf_url":null,"tax_year":2026,"issued_at":"2026-10-02T17:01:06.021Z","already_existed":false}],"observation":[{"status":"issued","audits":"1"}]}
+{"command":"issue","actorState":"unconfirmed","result":[{"receipt_no":"HKSCDA-2026-000001","receipt_id":"2db3fd57-ddb0-45f6-b8dd-d077925d965f","pdf_url":null,"tax_year":2026,"issued_at":"2026-10-02T17:01:06.040Z","already_existed":false}],"observation":[{"status":"issued","audits":"1"}]}

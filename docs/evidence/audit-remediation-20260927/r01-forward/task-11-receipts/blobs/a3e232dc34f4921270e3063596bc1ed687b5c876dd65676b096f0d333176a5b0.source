@@ -1,0 +1,38 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+49 |           await tx`set local role service_role`;
+50 |           await tx.unsafe("savepoint task11_fence");
+51 |           let error: unknown;
+52 |           try { await tx`select * from public.void_receipt_with_audit(${receipt}::uuid,${actor}::uuid,${supporter}::uuid)`; } catch (e) { error = e; }
+53 |           await tx.unsafe("rollback to savepoint task11_fence");
+54 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:54:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > banned finance actor cannot void a receipt [55.54ms]
+49 |           await tx`set local role service_role`;
+50 |           await tx.unsafe("savepoint task11_fence");
+51 |           let error: unknown;
+52 |           try { await tx`select * from public.void_receipt_with_audit(${receipt}::uuid,${actor}::uuid,${supporter}::uuid)`; } catch (e) { error = e; }
+53 |           await tx.unsafe("rollback to savepoint task11_fence");
+54 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:54:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > unconfirmed finance actor cannot void a receipt [13.67ms]
+
+ 0 pass
+ 5 filtered out
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [264.00ms]

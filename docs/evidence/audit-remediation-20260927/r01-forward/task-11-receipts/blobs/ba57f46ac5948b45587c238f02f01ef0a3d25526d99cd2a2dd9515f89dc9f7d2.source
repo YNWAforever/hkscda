@@ -1,0 +1,1166 @@
+{
+  "checkedAtUtc": "2026-10-02T18:02:54.617049+00:00",
+  "profiles": [
+    {
+      "mode": "hosted",
+      "receipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-hosted-1790963945547\\receipt.json",
+      "receiptMetadata": {
+        "rawBytes": 6796079,
+        "rawSha256": "593ebf155f07bad4a8f1e17ca860ad15eb2f2807f8f5aec7a77fbac32b80e14f",
+        "canonicalSha256": "593ebf155f07bad4a8f1e17ca860ad15eb2f2807f8f5aec7a77fbac32b80e14f",
+        "rawGitBlob": "7218fd0c802e259a2db604c095e0321393f84fab"
+      },
+      "fixedFlags": {
+        "schemaParity": true,
+        "fullScannerPassed": true,
+        "dependenciesBound": true,
+        "firstApply": true,
+        "secondApply": true,
+        "secondApplyPreserved": true,
+        "outsideTargetsPreserved": true,
+        "supplementalPreserved": true,
+        "refusalsPassed": true,
+        "testPassed": true,
+        "zeroRowsAfter": true,
+        "catalogAfterBehaviorPreserved": true,
+        "normalDrop": true,
+        "templatePreserved": true,
+        "modernPreserved": true,
+        "frozenInputsPreserved": true
+      },
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/donations/financeCallbackForward.database.test.ts",
+        "src/lib/donations/reconcile.server.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 82 pass",
+        " 0 fail",
+        " 275 expect() calls"
+      ],
+      "tableCount": 164,
+      "archives": [
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts",
+          "archive": "s0.source",
+          "rawBytes": 13843,
+          "rawSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+          "canonicalSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+          "rawGitBlob": "37293bdfc562708e877161a8c2ce6b53bcc63a0b"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+          "archive": "s1.source",
+          "rawBytes": 6504,
+          "rawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+          "canonicalSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+          "rawGitBlob": "a02daf181c80e177e0db239ceb6b1cc25e276d3d"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gap.ts",
+          "archive": "s2.source",
+          "rawBytes": 1955,
+          "rawSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+          "canonicalSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+          "rawGitBlob": "ad58efc4c70682af3cafe57540049e7a634a4e6d"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+          "archive": "s3.source",
+          "rawBytes": 6391,
+          "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+          "canonicalSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+          "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+          "archive": "s4.source",
+          "rawBytes": 5943,
+          "rawSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+          "canonicalSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+          "rawGitBlob": "c5ca3a484d6b170e3c30bcdb984e345720d16107"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts",
+          "archive": "s5.source",
+          "rawBytes": 5746,
+          "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+          "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+          "rawGitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+        },
+        {
+          "source": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+          "archive": "s6.source",
+          "rawBytes": 43142,
+          "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+        },
+        {
+          "source": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+          "archive": "s7.source",
+          "rawBytes": 968852,
+          "rawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+          "canonicalSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+          "rawGitBlob": "b6d7cf8c1eb36331247a0000635a2a5851c9c4c9"
+        },
+        {
+          "source": "src/lib/donations/financeCallbackForward.database.test.ts",
+          "archive": "s8.source",
+          "rawBytes": 32442,
+          "rawSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+          "canonicalSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+          "rawGitBlob": "4c83f832df38ea4148a2da3439c9fb676f8bd44c"
+        },
+        {
+          "source": "src/lib/donations/reconcile.server.ts",
+          "archive": "s9.source",
+          "rawBytes": 35364,
+          "rawSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+          "canonicalSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+          "rawGitBlob": "a5678add242d39e40a2e6e3fe82bd7b09d4ef073"
+        },
+        {
+          "source": "src/lib/donations/reconcile.server.test.ts",
+          "archive": "s10.source",
+          "rawBytes": 24440,
+          "rawSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+          "canonicalSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+          "rawGitBlob": "02f9308c4dcc503ec03cf2c880fc7d291f09b7f2"
+        },
+        {
+          "source": "src/lib/operations/releaseSchema.ts",
+          "archive": "s11.source",
+          "rawBytes": 5118,
+          "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "rawGitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+        },
+        {
+          "source": "src/lib/operations/releaseManifest.ts",
+          "archive": "s12.source",
+          "rawBytes": 44055,
+          "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "rawGitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+        },
+        {
+          "source": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+          "archive": "s13.source",
+          "rawBytes": 5622,
+          "rawSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+          "canonicalSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+          "rawGitBlob": "eb304997dccfe309c455e992db9f765ddb1a1871"
+        },
+        {
+          "source": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+          "archive": "s14.source",
+          "rawBytes": 642250,
+          "rawSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+          "canonicalSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+          "rawGitBlob": "ae67a6339bb9f12eafca3bebed13bc0c8a674c20"
+        },
+        {
+          "source": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+          "archive": "s15.source",
+          "rawBytes": 15241,
+          "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "rawGitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+        },
+        {
+          "source": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+          "archive": "s16.source",
+          "rawBytes": 5204,
+          "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "rawGitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+        },
+        {
+          "source": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+          "archive": "s17.source",
+          "rawBytes": 37542,
+          "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "rawGitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+        },
+        {
+          "source": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+          "archive": "s18.source",
+          "rawBytes": 18234,
+          "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "rawGitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+        },
+        {
+          "source": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+          "archive": "s19.source",
+          "rawBytes": 34033,
+          "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+          "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+          "rawGitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+        },
+        {
+          "source": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+          "archive": "s20.source",
+          "rawBytes": 44473,
+          "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+          "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+          "rawGitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+        },
+        {
+          "source": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+          "archive": "s21.source",
+          "rawBytes": 214203,
+          "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+          "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+          "rawGitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+        },
+        {
+          "source": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+          "archive": "s22.source",
+          "rawBytes": 353352,
+          "rawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+          "canonicalSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+          "rawGitBlob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+        },
+        {
+          "source": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+          "archive": "s23.source",
+          "rawBytes": 204984,
+          "rawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+          "canonicalSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+          "rawGitBlob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+        }
+      ],
+      "logs": [
+        {
+          "file": "tests.stderr.log",
+          "rawBytes": 11266,
+          "rawSha256": "03579b17d9ff2054697593a77b966938b08d8e58aa56cec7ae4393464e73d434",
+          "canonicalSha256": "03579b17d9ff2054697593a77b966938b08d8e58aa56cec7ae4393464e73d434",
+          "rawGitBlob": "55c885fda44f43a77368591bd82d91da9c4a8e8a"
+        },
+        {
+          "file": "tests.stdout.log",
+          "rawBytes": 28,
+          "rawSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+          "canonicalSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+          "rawGitBlob": "44f14d0b849aeb9e98dfb75656f3bc5931aeeed0"
+        }
+      ],
+      "refusals": [
+        {
+          "label": "receiptRLS",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptDefault",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptColumnGrant",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "creatorDefaultACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptIndex",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "nativeReceiptFK",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptPersistence",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "issueHelperCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "allocatorCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetGrantOption",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "browserTargetExecute",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetSearchPath",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetStrict",
+          "code": "55000",
+          "preserved": true
+        }
+      ],
+      "sourceBase": "d45b849d300f76700efcf5450a9b426e32cc372f",
+      "gapMetadata": {
+        "beforeGaps": [
+          {
+            "kind": "missing-function",
+            "name": "create_volunteer_registration_idempotent",
+            "feature": "volunteer",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "clone_volunteer_activity_with_audit",
+            "feature": "volunteer",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "fail_pending_provider_payment",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "refund_provider_payment_atomically",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "update_group_enquiry_with_audit",
+            "feature": "group-enquiries",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "void_receipt_with_audit",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "void_donation_receipts_with_audit",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "issue_receipt_with_audit",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "donation.idempotency_key",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "donation.idempotency_fingerprint",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "payment.idempotency_key",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "payment.checkout_url",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "payment.checkout_attempted_at",
+            "feature": "finance",
+            "required": true
+          }
+        ],
+        "beforeGapCount": 13,
+        "afterGaps": [
+          {
+            "kind": "missing-function",
+            "name": "create_volunteer_registration_idempotent",
+            "feature": "volunteer",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "clone_volunteer_activity_with_audit",
+            "feature": "volunteer",
+            "required": true
+          },
+          {
+            "kind": "missing-function",
+            "name": "update_group_enquiry_with_audit",
+            "feature": "group-enquiries",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "donation.idempotency_key",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "donation.idempotency_fingerprint",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "payment.idempotency_key",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "payment.checkout_url",
+            "feature": "finance",
+            "required": true
+          },
+          {
+            "kind": "missing-column",
+            "name": "payment.checkout_attempted_at",
+            "feature": "finance",
+            "required": true
+          }
+        ],
+        "afterGapCount": 8
+      },
+      "allFourteenActual55000AndPreserved": true
+    },
+    {
+      "mode": "modern",
+      "receipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-modern-1790963945443\\receipt.json",
+      "receiptMetadata": {
+        "rawBytes": 6734157,
+        "rawSha256": "a7335364daef26e89b4706c424ef780423672e88cc41618ec3ee78cb9b1c32e3",
+        "canonicalSha256": "a7335364daef26e89b4706c424ef780423672e88cc41618ec3ee78cb9b1c32e3",
+        "rawGitBlob": "882d15e3e5042e118705aecc987de915256df5a5"
+      },
+      "fixedFlags": {
+        "schemaParity": true,
+        "fullScannerPassed": true,
+        "dependenciesBound": true,
+        "firstApply": true,
+        "secondApply": true,
+        "secondApplyPreserved": true,
+        "outsideTargetsPreserved": true,
+        "supplementalPreserved": true,
+        "refusalsPassed": true,
+        "testPassed": true,
+        "zeroRowsAfter": true,
+        "catalogAfterBehaviorPreserved": true,
+        "normalDrop": true,
+        "templatePreserved": true,
+        "modernPreserved": true,
+        "frozenInputsPreserved": true
+      },
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/donations/financeCallbackForward.database.test.ts",
+        "src/lib/donations/reconcile.server.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 82 pass",
+        " 0 fail",
+        " 275 expect() calls"
+      ],
+      "tableCount": 163,
+      "archives": [
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts",
+          "archive": "s0.source",
+          "rawBytes": 13843,
+          "rawSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+          "canonicalSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+          "rawGitBlob": "37293bdfc562708e877161a8c2ce6b53bcc63a0b"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+          "archive": "s1.source",
+          "rawBytes": 6504,
+          "rawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+          "canonicalSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+          "rawGitBlob": "a02daf181c80e177e0db239ceb6b1cc25e276d3d"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gap.ts",
+          "archive": "s2.source",
+          "rawBytes": 1955,
+          "rawSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+          "canonicalSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+          "rawGitBlob": "ad58efc4c70682af3cafe57540049e7a634a4e6d"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+          "archive": "s3.source",
+          "rawBytes": 6391,
+          "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+          "canonicalSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+          "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+          "archive": "s4.source",
+          "rawBytes": 5943,
+          "rawSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+          "canonicalSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+          "rawGitBlob": "c5ca3a484d6b170e3c30bcdb984e345720d16107"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts",
+          "archive": "s5.source",
+          "rawBytes": 5746,
+          "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+          "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+          "rawGitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+        },
+        {
+          "source": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+          "archive": "s6.source",
+          "rawBytes": 43142,
+          "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+        },
+        {
+          "source": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+          "archive": "s7.source",
+          "rawBytes": 968852,
+          "rawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+          "canonicalSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+          "rawGitBlob": "b6d7cf8c1eb36331247a0000635a2a5851c9c4c9"
+        },
+        {
+          "source": "src/lib/donations/financeCallbackForward.database.test.ts",
+          "archive": "s8.source",
+          "rawBytes": 32442,
+          "rawSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+          "canonicalSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+          "rawGitBlob": "4c83f832df38ea4148a2da3439c9fb676f8bd44c"
+        },
+        {
+          "source": "src/lib/donations/reconcile.server.ts",
+          "archive": "s9.source",
+          "rawBytes": 35364,
+          "rawSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+          "canonicalSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+          "rawGitBlob": "a5678add242d39e40a2e6e3fe82bd7b09d4ef073"
+        },
+        {
+          "source": "src/lib/donations/reconcile.server.test.ts",
+          "archive": "s10.source",
+          "rawBytes": 24440,
+          "rawSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+          "canonicalSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+          "rawGitBlob": "02f9308c4dcc503ec03cf2c880fc7d291f09b7f2"
+        },
+        {
+          "source": "src/lib/operations/releaseSchema.ts",
+          "archive": "s11.source",
+          "rawBytes": 5118,
+          "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "rawGitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+        },
+        {
+          "source": "src/lib/operations/releaseManifest.ts",
+          "archive": "s12.source",
+          "rawBytes": 44055,
+          "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "rawGitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+        },
+        {
+          "source": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+          "archive": "s13.source",
+          "rawBytes": 5622,
+          "rawSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+          "canonicalSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+          "rawGitBlob": "eb304997dccfe309c455e992db9f765ddb1a1871"
+        },
+        {
+          "source": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+          "archive": "s14.source",
+          "rawBytes": 642250,
+          "rawSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+          "canonicalSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+          "rawGitBlob": "ae67a6339bb9f12eafca3bebed13bc0c8a674c20"
+        },
+        {
+          "source": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+          "archive": "s15.source",
+          "rawBytes": 15241,
+          "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "rawGitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+        },
+        {
+          "source": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+          "archive": "s16.source",
+          "rawBytes": 5204,
+          "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "rawGitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+        },
+        {
+          "source": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+          "archive": "s17.source",
+          "rawBytes": 37542,
+          "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "rawGitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+        },
+        {
+          "source": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+          "archive": "s18.source",
+          "rawBytes": 18234,
+          "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "rawGitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+        },
+        {
+          "source": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+          "archive": "s19.source",
+          "rawBytes": 34033,
+          "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+          "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+          "rawGitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+        },
+        {
+          "source": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+          "archive": "s20.source",
+          "rawBytes": 44473,
+          "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+          "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+          "rawGitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+        },
+        {
+          "source": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+          "archive": "s21.source",
+          "rawBytes": 214203,
+          "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+          "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+          "rawGitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+        },
+        {
+          "source": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+          "archive": "s22.source",
+          "rawBytes": 353352,
+          "rawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+          "canonicalSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+          "rawGitBlob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+        },
+        {
+          "source": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+          "archive": "s23.source",
+          "rawBytes": 204984,
+          "rawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+          "canonicalSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+          "rawGitBlob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+        }
+      ],
+      "logs": [
+        {
+          "file": "tests.stderr.log",
+          "rawBytes": 11277,
+          "rawSha256": "874772cda76c712fa5f6094797c8609bf69f914a16307c09f773e1d071da2928",
+          "canonicalSha256": "874772cda76c712fa5f6094797c8609bf69f914a16307c09f773e1d071da2928",
+          "rawGitBlob": "8222265f8640fec8c1b1a0fa704281f9192d2e15"
+        },
+        {
+          "file": "tests.stdout.log",
+          "rawBytes": 28,
+          "rawSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+          "canonicalSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+          "rawGitBlob": "44f14d0b849aeb9e98dfb75656f3bc5931aeeed0"
+        }
+      ],
+      "refusals": [
+        {
+          "label": "receiptRLS",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptDefault",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptColumnGrant",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "creatorDefaultACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptIndex",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "nativeReceiptFK",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptPersistence",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "issueHelperCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "allocatorCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetGrantOption",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "browserTargetExecute",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetSearchPath",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetStrict",
+          "code": "55000",
+          "preserved": true
+        }
+      ],
+      "sourceBase": "d45b849d300f76700efcf5450a9b426e32cc372f",
+      "gapMetadata": {
+        "beforeGaps": [
+          {
+            "kind": "missing-function",
+            "name": "list_sponsorship_followup_assignees",
+            "feature": "sponsorship-followup",
+            "required": true
+          }
+        ],
+        "beforeGapCount": 1,
+        "afterGaps": [
+          {
+            "kind": "missing-function",
+            "name": "list_sponsorship_followup_assignees",
+            "feature": "sponsorship-followup",
+            "required": true
+          }
+        ],
+        "afterGapCount": 1
+      },
+      "allFourteenActual55000AndPreserved": true
+    },
+    {
+      "mode": "component",
+      "receipt": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-11-component-1790963945312\\receipt.json",
+      "receiptMetadata": {
+        "rawBytes": 6734366,
+        "rawSha256": "89278f1ee88326f81693fdc8529c648374129cbc0d947c92f0b0b859536a99f9",
+        "canonicalSha256": "89278f1ee88326f81693fdc8529c648374129cbc0d947c92f0b0b859536a99f9",
+        "rawGitBlob": "a783ee8217d926f1fb694844f78233c9ef7eaf63"
+      },
+      "fixedFlags": {
+        "schemaParity": true,
+        "fullScannerPassed": true,
+        "dependenciesBound": true,
+        "firstApply": true,
+        "secondApply": true,
+        "secondApplyPreserved": true,
+        "outsideTargetsPreserved": true,
+        "supplementalPreserved": true,
+        "refusalsPassed": true,
+        "testPassed": true,
+        "zeroRowsAfter": true,
+        "catalogAfterBehaviorPreserved": true,
+        "normalDrop": true,
+        "templatePreserved": true,
+        "modernPreserved": true,
+        "frozenInputsPreserved": true
+      },
+      "testCommand": [
+        "bun",
+        "test",
+        "--timeout",
+        "15000",
+        "src/lib/donations/financeCallbackForward.database.test.ts",
+        "src/lib/donations/reconcile.server.test.ts"
+      ],
+      "testExit": 0,
+      "testSummary": [
+        " 82 pass",
+        " 0 fail",
+        " 275 expect() calls"
+      ],
+      "tableCount": 163,
+      "archives": [
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-rehearse.ts",
+          "archive": "s0.source",
+          "rawBytes": 13843,
+          "rawSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+          "canonicalSha256": "78a65fd76beb63de199f08762529eeddc895496a167f19cdd83252b515bcee2c",
+          "rawGitBlob": "37293bdfc562708e877161a8c2ce6b53bcc63a0b"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-receipt.ts",
+          "archive": "s1.source",
+          "rawBytes": 6504,
+          "rawSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+          "canonicalSha256": "191aca13d6eca9295904e0aa83e7954f39e1533f0d93cb97a9ab47799e341df6",
+          "rawGitBlob": "a02daf181c80e177e0db239ceb6b1cc25e276d3d"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-gap.ts",
+          "archive": "s2.source",
+          "rawBytes": 1955,
+          "rawSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+          "canonicalSha256": "b049bd42a3de698815fb1701efebcdf3bde5a9b44c3988d3b8b2ab966f7be547",
+          "rawGitBlob": "ad58efc4c70682af3cafe57540049e7a634a4e6d"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-profile.ts",
+          "archive": "s3.source",
+          "rawBytes": 6391,
+          "rawSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+          "canonicalSha256": "3b0faf563249e3e7be8a032d1d5337e2c17a5acb4f579ac92963b7e172ea667d",
+          "rawGitBlob": "65d31ae54c151163f483c34f28fd2eae44fdcf67"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-profile.ts",
+          "archive": "s4.source",
+          "rawBytes": 5943,
+          "rawSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+          "canonicalSha256": "a74f53d46d68ae31320bea22327167e246c32090f699cb19826bf7970bd370a5",
+          "rawGitBlob": "c5ca3a484d6b170e3c30bcdb984e345720d16107"
+        },
+        {
+          "source": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-profile.ts",
+          "archive": "s5.source",
+          "rawBytes": 5746,
+          "rawSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+          "canonicalSha256": "4d6ab137e8b8a74871d3888d800e69951080d9e80983b634696d27ef14dee2ef",
+          "rawGitBlob": "0f2b67a7412f66d26bb88f6064829c6243f14f54"
+        },
+        {
+          "source": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+          "archive": "s6.source",
+          "rawBytes": 43142,
+          "rawSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "rawGitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+        },
+        {
+          "source": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+          "archive": "s7.source",
+          "rawBytes": 968852,
+          "rawSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+          "canonicalSha256": "33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4",
+          "rawGitBlob": "b6d7cf8c1eb36331247a0000635a2a5851c9c4c9"
+        },
+        {
+          "source": "src/lib/donations/financeCallbackForward.database.test.ts",
+          "archive": "s8.source",
+          "rawBytes": 32442,
+          "rawSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+          "canonicalSha256": "0315187851a40b92dee8b901b779312d5712731953930b1328fd092cf0c4d782",
+          "rawGitBlob": "4c83f832df38ea4148a2da3439c9fb676f8bd44c"
+        },
+        {
+          "source": "src/lib/donations/reconcile.server.ts",
+          "archive": "s9.source",
+          "rawBytes": 35364,
+          "rawSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+          "canonicalSha256": "97c3a82e3e1420b815d912e8af51bed25c080e1a21edf4aa5c971404b29f1286",
+          "rawGitBlob": "a5678add242d39e40a2e6e3fe82bd7b09d4ef073"
+        },
+        {
+          "source": "src/lib/donations/reconcile.server.test.ts",
+          "archive": "s10.source",
+          "rawBytes": 24440,
+          "rawSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+          "canonicalSha256": "26638dae95d31a780c80e7bacc5e390313716f28442253f7e6024782549c8fa3",
+          "rawGitBlob": "02f9308c4dcc503ec03cf2c880fc7d291f09b7f2"
+        },
+        {
+          "source": "src/lib/operations/releaseSchema.ts",
+          "archive": "s11.source",
+          "rawBytes": 5118,
+          "rawSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+          "rawGitBlob": "84820d841b3a5c459718f212768c1662d02e4f88"
+        },
+        {
+          "source": "src/lib/operations/releaseManifest.ts",
+          "archive": "s12.source",
+          "rawBytes": 44055,
+          "rawSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+          "rawGitBlob": "3e7565ae02d885c8e44344661fcf1253ff07dfbc"
+        },
+        {
+          "source": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-helper-comparison.json",
+          "archive": "s13.source",
+          "rawBytes": 5622,
+          "rawSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+          "canonicalSha256": "b1afa5d56a9a5793ae7dc618479fd997b74d635093dd3f5eb2a7ea2b3af7ab77",
+          "rawGitBlob": "eb304997dccfe309c455e992db9f765ddb1a1871"
+        },
+        {
+          "source": ".superpowers/sdd/r01-forward-schema-plan-20261001/task-9-fix-4-stageb-20261002T091944Z/after-auth-catalog.json",
+          "archive": "s14.source",
+          "rawBytes": 642250,
+          "rawSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+          "canonicalSha256": "3cc9ac32628e8d4c3bf3c867604b3dcfc887c679e49c9b99b74a16c5d8b42e66",
+          "rawGitBlob": "ae67a6339bb9f12eafca3bebed13bc0c8a674c20"
+        },
+        {
+          "source": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+          "archive": "s15.source",
+          "rawBytes": 15241,
+          "rawSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "rawGitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+        },
+        {
+          "source": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+          "archive": "s16.source",
+          "rawBytes": 5204,
+          "rawSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "rawGitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+        },
+        {
+          "source": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+          "archive": "s17.source",
+          "rawBytes": 37542,
+          "rawSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "rawGitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+        },
+        {
+          "source": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+          "archive": "s18.source",
+          "rawBytes": 18234,
+          "rawSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+          "rawGitBlob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+        },
+        {
+          "source": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+          "archive": "s19.source",
+          "rawBytes": 34033,
+          "rawSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+          "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+          "rawGitBlob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+        },
+        {
+          "source": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+          "archive": "s20.source",
+          "rawBytes": 44473,
+          "rawSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+          "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+          "rawGitBlob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+        },
+        {
+          "source": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+          "archive": "s21.source",
+          "rawBytes": 214203,
+          "rawSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+          "canonicalSha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+          "rawGitBlob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+        },
+        {
+          "source": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+          "archive": "s22.source",
+          "rawBytes": 353352,
+          "rawSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+          "canonicalSha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+          "rawGitBlob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+        },
+        {
+          "source": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+          "archive": "s23.source",
+          "rawBytes": 204984,
+          "rawSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+          "canonicalSha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+          "rawGitBlob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+        }
+      ],
+      "logs": [
+        {
+          "file": "tests.stderr.log",
+          "rawBytes": 11275,
+          "rawSha256": "cc9a51fe7233a4fcef14e3f939ccbad90d316ee05ecf49ac35f1408abfda9a5c",
+          "canonicalSha256": "cc9a51fe7233a4fcef14e3f939ccbad90d316ee05ecf49ac35f1408abfda9a5c",
+          "rawGitBlob": "f53d32b843bb58b4f2f34a29edcf7a807d0091de"
+        },
+        {
+          "file": "tests.stdout.log",
+          "rawBytes": 28,
+          "rawSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+          "canonicalSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+          "rawGitBlob": "44f14d0b849aeb9e98dfb75656f3bc5931aeeed0"
+        }
+      ],
+      "refusals": [
+        {
+          "label": "receiptRLS",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptDefault",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptColumnGrant",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "creatorDefaultACL",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptIndex",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "nativeReceiptFK",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "receiptPersistence",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "issueHelperCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "allocatorCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetGrantOption",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "browserTargetExecute",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetCost",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetSearchPath",
+          "code": "55000",
+          "preserved": true
+        },
+        {
+          "label": "targetStrict",
+          "code": "55000",
+          "preserved": true
+        }
+      ],
+      "sourceBase": "d45b849d300f76700efcf5450a9b426e32cc372f",
+      "gapMetadata": {
+        "beforeGaps": [
+          {
+            "kind": "missing-function",
+            "name": "list_sponsorship_followup_assignees",
+            "feature": "sponsorship-followup",
+            "required": true
+          }
+        ],
+        "beforeGapCount": 1,
+        "afterGaps": [
+          {
+            "kind": "missing-function",
+            "name": "list_sponsorship_followup_assignees",
+            "feature": "sponsorship-followup",
+            "required": true
+          }
+        ],
+        "afterGapCount": 1
+      },
+      "allFourteenActual55000AndPreserved": true
+    }
+  ],
+  "identicalFrozenMaps": true,
+  "allCurrentAndArchivedBytesMatch": true,
+  "qualifiedComponent": "Own PG17.6 reconstruction with bound historical vendor/LF metadata; fresh actual17.11 CI startup/behavior still required.",
+  "rootAction": "read/hash only; no application/DB/test rerun",
+  "sourceReviewPending": true,
+  "freshFiveCiPending": true
+}

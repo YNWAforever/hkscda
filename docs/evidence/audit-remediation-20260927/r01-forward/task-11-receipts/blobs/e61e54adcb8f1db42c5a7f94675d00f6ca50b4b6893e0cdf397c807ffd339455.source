@@ -1,0 +1,5 @@
+NOTICE:  policy "staff can read payment public config" for relation "public.payment_public_config" does not exist, skipping
+NOTICE:  policy "staff can create draft payment public config" for relation "public.payment_public_config" does not exist, skipping
+NOTICE:  policy "staff can update draft payment public config" for relation "public.payment_public_config" does not exist, skipping
+NOTICE:  policy "staff can delete draft payment public config" for relation "public.payment_public_config" does not exist, skipping
+NOTICE:  trigger "set_updated_at" for relation "public.payment_public_config" does not exist, skipping

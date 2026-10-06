@@ -1,0 +1,2 @@
+NOTICE:  trigger "volunteer_attendance_event_immutable" for relation "public.volunteer_attendance_event" does not exist, skipping
+NOTICE:  trigger "protect_legacy_attendance" for relation "public.volunteer_registration" does not exist, skipping

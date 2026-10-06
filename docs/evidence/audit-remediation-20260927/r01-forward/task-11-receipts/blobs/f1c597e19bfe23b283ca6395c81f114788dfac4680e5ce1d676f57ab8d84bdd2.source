@@ -1,0 +1,110 @@
+[
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-0.sql.source",
+    "stdout": "scanner-0.stdout.log",
+    "stderr": "scanner-0.stderr.log",
+    "querySha256": "be5256c2f3091c0bd012696b52b91d26697f2a108a44b481e6adbd0a22e178e7",
+    "typed": {
+      "archive": "scanner-0.typed.json",
+      "rawSha256": "c3204fb3b460ce8cff1e795a7eb8110afea7a4a1bdcd16553cbe7e0c392dcc5d",
+      "codec": "R56 exact finite known-query uint32/null fields; raw JSON retained"
+    }
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-1.sql.source",
+    "stdout": "scanner-1.stdout.log",
+    "stderr": "scanner-1.stderr.log",
+    "querySha256": "5cd67e7fa70d8a430f52a963531e4bf5bfd70f97123ead50bc50f5ad1098b673",
+    "typed": {
+      "archive": "scanner-1.typed.json",
+      "rawSha256": "4632347c8089bdea4f4f3124d07f6ae6d1ad0f8607536285e4d55a6efc7f60f1",
+      "codec": "R56 exact finite known-query uint32/null fields; raw JSON retained"
+    }
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-2.sql.source",
+    "stdout": "scanner-2.stdout.log",
+    "stderr": "scanner-2.stderr.log",
+    "querySha256": "985720de78041b6407e881c19cdf8ee561e78182cdfa1c35c50c5bf2f608f698",
+    "typed": {
+      "archive": "scanner-2.typed.json",
+      "rawSha256": "d44d0be32812218abc2e46b06e26dd0df9f4b0d6d79c296d8a0a59fe464fbb8f",
+      "codec": "R56 exact finite known-query uint32/null fields; raw JSON retained"
+    }
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "-i",
+      "hkscda-task11-fix3-pg-c4f39419e50b416b8077becd931767c6",
+      "psql",
+      "-X",
+      "-qAt",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres"
+    ],
+    "exit": 0,
+    "source": "scanner-3.sql.source",
+    "stdout": "scanner-3.stdout.log",
+    "stderr": "scanner-3.stderr.log",
+    "querySha256": "ea2f714672ff8cb7ac30a6634e9563a052492f5bc43e68859888e6b1acef879d",
+    "typed": {
+      "archive": "scanner-3.typed.json",
+      "rawSha256": "53c24a2a0706b2307f93bf987b43aa330bf99283696809ea1e08417d4970dccf",
+      "codec": "R56 exact finite known-query uint32/null fields; raw JSON retained"
+    }
+  }
+]

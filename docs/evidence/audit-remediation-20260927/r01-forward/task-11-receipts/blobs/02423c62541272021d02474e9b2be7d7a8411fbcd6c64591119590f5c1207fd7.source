@@ -1,0 +1,68 @@
+
+src\lib\donations\financeCallbackForward.database.test.ts:
+62 |             await tx`set local role postgres`;
+63 |             observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action=${"receipt." + command} and a.entity_id=${command === "void" ? receipt : donation}) audits from public.receipt r where r.donation_ids @> array[${donation}::uuid]`;
+64 |             console.log(JSON.stringify({ command, actorState: banned ? "banned" : "unconfirmed", result, observation }));
+65 |           } catch (e) { error = e; }
+66 |           await tx.unsafe("rollback to savepoint task11_fence");
+67 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:67:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > banned finance actor cannot void a receipt [48.04ms]
+62 |             await tx`set local role postgres`;
+63 |             observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action=${"receipt." + command} and a.entity_id=${command === "void" ? receipt : donation}) audits from public.receipt r where r.donation_ids @> array[${donation}::uuid]`;
+64 |             console.log(JSON.stringify({ command, actorState: banned ? "banned" : "unconfirmed", result, observation }));
+65 |           } catch (e) { error = e; }
+66 |           await tx.unsafe("rollback to savepoint task11_fence");
+67 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:67:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > unconfirmed finance actor cannot void a receipt [14.31ms]
+62 |             await tx`set local role postgres`;
+63 |             observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action=${"receipt." + command} and a.entity_id=${command === "void" ? receipt : donation}) audits from public.receipt r where r.donation_ids @> array[${donation}::uuid]`;
+64 |             console.log(JSON.stringify({ command, actorState: banned ? "banned" : "unconfirmed", result, observation }));
+65 |           } catch (e) { error = e; }
+66 |           await tx.unsafe("rollback to savepoint task11_fence");
+67 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:67:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > banned finance actor cannot issue a receipt [18.23ms]
+62 |             await tx`set local role postgres`;
+63 |             observation = await tx`select r.status,(select count(*)::text from public.audit_log a where a.action=${"receipt." + command} and a.entity_id=${command === "void" ? receipt : donation}) audits from public.receipt r where r.donation_ids @> array[${donation}::uuid]`;
+64 |             console.log(JSON.stringify({ command, actorState: banned ? "banned" : "unconfirmed", result, observation }));
+65 |           } catch (e) { error = e; }
+66 |           await tx.unsafe("rollback to savepoint task11_fence");
+67 |           expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "42501"
+Received: undefined
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\src\lib\donations\financeCallbackForward.database.test.ts:67:68)
+      at async onTransactionConnected (bun:sql:359:46)
+(fail) Task11 manual receipt Auth fence > unconfirmed finance actor cannot issue a receipt [15.18ms]
+
+ 0 pass
+ 5 filtered out
+ 4 fail
+ 4 expect() calls
+Ran 4 tests across 1 file. [298.00ms]

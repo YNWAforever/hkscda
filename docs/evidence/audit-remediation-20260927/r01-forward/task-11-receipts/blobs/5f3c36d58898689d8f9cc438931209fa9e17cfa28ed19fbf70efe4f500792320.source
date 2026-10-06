@@ -1,0 +1,11 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/supabase/cli/contents/apps/cli/src/command-internal/db-bootstrap/start-local-database.ts?ref=v2.118.0"
+  ],
+  "exit": 0,
+  "upstreamGitBlob": "d1670d810312bc24a951a70b35728783d262b89f",
+  "rawSha256": "982bc428c68422c634f0d70ea31c74610977af77a3d63bf69933a3a13d75831f",
+  "bytes": 24079
+}

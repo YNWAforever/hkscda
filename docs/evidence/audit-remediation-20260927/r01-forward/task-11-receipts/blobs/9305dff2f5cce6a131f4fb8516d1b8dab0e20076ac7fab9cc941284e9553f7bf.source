@@ -1,0 +1,28 @@
+"""Read-only final HEAD verification; result is an owned self-reference sidecar."""
+import datetime,hashlib,json,pathlib,subprocess
+root=pathlib.Path.cwd();scratch=root/'.superpowers/sdd/r01-forward-schema-plan-20261001';prefix='docs/evidence/audit-remediation-20260927/r01-forward/'
+def git(*args):return subprocess.check_output(['git',*args])
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+head=git('rev-parse','HEAD').decode().strip();tree=git('rev-parse','HEAD^{tree}').decode().strip();assert not git('status','--porcelain')
+objects={}
+for entry in git('ls-tree','-r','-z',head).split(b'\0'):
+ if entry:
+  meta,path=entry.split(b'\t',1);objects[path.decode()]=meta.split()[2].decode()
+manifest_path=prefix+'task-11-fix1-source-binding.json';manifest=json.loads((root/manifest_path).read_text(encoding='utf-8'))
+for b in manifest['currentBindings']:
+ raw=(root/b['path']).read_bytes();assert sha(raw)==b['rawSha256'] and sha(raw.replace(b'\r\n',b'\n'))==b['canonicalSha256']
+ if b['sourceTrackedAtCommit']:assert objects[b['path']]==b['sourceGitBlob']
+for b in manifest['uniqueArchiveGitBindings']:
+ raw=(root/b['path']).read_bytes();assert sha(raw)==b['rawSha256'] and blob(raw)==objects[b['path']]==b['archiveGitBlob']
+changed=git('diff','--name-only',manifest['sourceCommit'],head).decode().splitlines()
+assert changed and all(p==prefix+'task-11-fix1-source-binding.json'or p==prefix+'task-11-evidence.md'or p.startswith(prefix+'task-11-receipts/')for p in changed),changed
+translation=manifest['translationBinding'];assert sha((root/translation['path']).read_bytes())==translation['rawSha256']
+addresses={}
+for path in [manifest_path,prefix+'task-11-evidence.md',prefix+'task-11-receipts/translation.json']:
+ raw=(root/path).read_bytes();assert blob(raw)==objects[path]or blob(raw.replace(b'\r\n',b'\n'))==objects[path]
+ addresses[path]={'gitBlob':objects[path],'rawSha256':sha(raw),'canonicalSha256':sha(raw.replace(b'\r\n',b'\n')),'bytes':len(raw)}
+sql=root/'supabase/migrations/20261002170945_r01_finance_callback_forward.sql';assert len(sql.read_bytes())==968852 and sha(sql.read_bytes())=='33a8588cbbee435b3fa0d02aab5b47b841689477aa4cd08ce0645b71eea6e8e4'
+result={'status':'DONE_WITH_CONCERNS','head':head,'tree':tree,'sourceCommit':manifest['sourceCommit'],'sourceTree':manifest['sourceTree'],'clean':True,'allCurrentBindingsPreserved':True,'currentBindings':len(manifest['currentBindings']),'allRawArchiveGitObjectsVerified':True,'archiveCounts':manifest['archiveCounts'],'metadataOnlyChangedPaths':changed,'addresses':addresses,'driverSha256':sha(pathlib.Path(__file__).read_bytes()),'sidecarQualification':'Owned ignored self-reference result written after closing HEAD; Git archive addresses above are actual committed objects. No claim this self-reference sidecar is already in that HEAD.','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'external':'SAME incremental review and fresh five CI/full17.11 including non-skipped finance pending; R52 aggregate qualification retained; no push/PR/prod.'}
+(scratch/'task-11-fix1-final-head-verification.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps(result))
