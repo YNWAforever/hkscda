@@ -8,7 +8,9 @@ import { join } from "node:path";
 const container = "supabase_db_hkscda-audit-integration-fresh";
 const template = "audit_pr135_20260929";
 const project = "iihqjzilgawhfdhdevam";
-const cli = ["bun", "x", "supabase@2.118.0"];
+// Select the pinned CLI's raw array transport; the decoder below still refuses
+// every unknown shape. Catalog and schema output always remain untrusted input.
+const cli = ["bun", "x", "supabase@2.118.0", "--agent", "no"];
 const canonical = (value: unknown): unknown =>
   Array.isArray(value)
     ? value.map(canonical)
