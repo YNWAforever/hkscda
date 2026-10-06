@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-06T17:30:20.994Z",
+  "probes": [
+    {
+      "url": "postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929",
+      "readOnly": true,
+      "rows": [
+        {
+          "server_version_num": "170006",
+          "version": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit"
+        }
+      ]
+    },
+    {
+      "url": "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+      "readOnly": true,
+      "rows": [
+        {
+          "server_version_num": "170006",
+          "version": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit"
+        }
+      ]
+    }
+  ],
+  "sql": "BEGIN READ ONLY; SELECT current_setting('server_version_num') AS server_version_num,version() AS version; ROLLBACK",
+  "unmeasuredColdCi170011": "NOT_RUN",
+  "commandSummary": [
+    "bun",
+    "--no-env-file",
+    "-e",
+    "readonly local engine SELECT"
+  ]
+}

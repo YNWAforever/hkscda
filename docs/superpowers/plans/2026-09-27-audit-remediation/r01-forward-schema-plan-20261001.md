@@ -108,6 +108,8 @@ Files: focused new migration; adjacent domain database tests or supabase/rls-tes
 Follow Common task steps. Expected: before fix missing-target regression fails; after exact forward migration meaningful role/transaction/idempotency tests exit0 and no unintended metadata/data drift. Task8 does not close the other 42 baseline requirements. Source code-complete/schema-ready in isolation is distinct from applied/deployed/operationally-enabled.
 
 
+**2026-10-07 Task8 source/isolation update:** source cd27b1fa plus typing-only19e8b1ad implements only the two RPCs; exact good modern registration is preserved and clone authority/audit is fenced. Hosted/modern owned clones on PG170006 each pass19tests/56assertions and12 actual SQL metadata refusals with rollback/replay/concurrency and complete watched preservation. Final committed-source safe local typecheck/units/lint/build all native0 (4604pass654skip; skips are not DB acceptance). See `docs/evidence/audit-remediation-20260927/r01-forward/task-8-evidence.md` and ZIP inventory. Prior policy fixture refusal, relation admission RED, harness/compiler failures and prescribed shared-opt-in hash drift remain preserved. PG170011 cold exact-head CI, hosted JWT/PostgREST and future policy/profile/terms/member acceptance are NOT_RUN; controller review required. Production application/deployment/operational enablement remains unauthorized and not performed.
+
 ### Task 9: Adoption coordinator and manual wrappers
 
 Scope (public schema, exact current manifest/call contracts): `mutate_adoption_coordinator_with_audit`, `search_manual_case_identity`, `create_manual_adoption_case`.
