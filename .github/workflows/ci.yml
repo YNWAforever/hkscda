@@ -271,6 +271,13 @@ jobs:
       - name: Start local Supabase stack
         run: bunx supabase start
 
+      - name: Run Task8 volunteer atomic transaction tests
+        run: bun --no-env-file test --timeout 15000 src/lib/volunteers/atomicForward.database.test.ts
+        env:
+          R01_VOLUNTEER_REQUIRE_DATABASE: "1"
+          R01_VOLUNTEER_ALLOW_LOCAL_FIXTURES: "1"
+          R01_VOLUNTEER_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Run Task11 finance callback transaction tests
         run: bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts
         env:

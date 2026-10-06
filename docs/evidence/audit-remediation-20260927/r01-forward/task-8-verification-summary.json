@@ -1,0 +1,36 @@
+{
+  "implementationCommit": "19e8b1ade0e4c24901f5c55297217a7dce78feb0",
+  "rawReceipts": {
+    "hosted": "task-8-atomic-receipts/hosted-1791307422018/receipt.json",
+    "modern": "task-8-atomic-receipts/modern-1791307474763/receipt.json",
+    "gates": "task-8-gates-receipts/1791307629565057000/receipt.json"
+  },
+  "modernRegistrationFullTuplePreserved": true,
+  "modernRegistrationBodyMd5": "36b3c46152c9d87510f2e42a38d3fce1",
+  "identicalFocusedSourceBindings": true,
+  "currentCoreSourcesMatchFocusedBindings": true,
+  "metadataRefusalsPerProfile": 12,
+  "focusedTestExitPerProfile": 0,
+  "focusedTestsPerProfile": "19pass/0fail/56assertions",
+  "finalGateNativeExits": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "finalGateSourceCommit": "19e8b1ade0e4c24901f5c55297217a7dce78feb0",
+  "allGateSourceComparatorsPreserved": true,
+  "migrationSha256": "c6235acdbf592eac7984c7b6054426f178c0c50e9028f831c0636e76bdaf44ad",
+  "rawArchiveSha256": "98657131f53327aa74b86fe69a1acce321ba2f1254bf828ce7896ba26181703e",
+  "rawArtifactCount": 407,
+  "allRawMembersByteEqual": true,
+  "locallyRehearsedServerVersionNum": [
+    "170006"
+  ],
+  "coldCi170011": "NOT_RUN",
+  "futureAutoapproveWaitlistAcceptance": "NOT_RUN",
+  "hostedPostgrestJwtAndPolicyProfileTermsMemberUat": "NOT_RUN",
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false
+}
