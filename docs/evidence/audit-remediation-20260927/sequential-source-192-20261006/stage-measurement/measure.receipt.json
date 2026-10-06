@@ -1,0 +1,23 @@
+{
+  "sha": "1cb0d20c06dcc7f39185cd39a5a98de99a94d16e",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    ".superpowers/sdd/sequential-merge-20261006/measure-slogan.mjs"
+  ],
+  "pid": 52420,
+  "atUtc": "2026-10-06T16:59:41.990459+00:00",
+  "exit": 0,
+  "elapsedSeconds": 13.974346800008789,
+  "environment": "same focused OS-only environment; Bun dotenv disabled",
+  "streams": [
+    {
+      "file": "measure.stdout",
+      "sha256": "ab19a1b489fb1ef81f041ca993286abfcb0eea13464a7fc90084f0e54a9b894f"
+    },
+    {
+      "file": "measure.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

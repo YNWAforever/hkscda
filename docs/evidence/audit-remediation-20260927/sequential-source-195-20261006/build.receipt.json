@@ -1,0 +1,30 @@
+{
+  "atUtc": "2026-10-06T17:45:27.856571+00:00",
+  "endUtc": "2026-10-06T17:46:36.362081+00:00",
+  "gate": "build",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "run",
+    "build"
+  ],
+  "pid": 49340,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+  "sha": "cdcd5479c09767929d65920719e5f65231d6092b",
+  "tree": "22fdf74384ce8ee1c5d0164de80e985388e526f7",
+  "exit": 0,
+  "elapsedSeconds": 68.50551300001098,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\cdcd5479c09767929d65920719e5f65231d6092b\\build.stdout",
+      "bytes": 79990,
+      "sha256": "96af704edca812df8ecb4d3122d17c0a8ab65efb667fde411288228ae38e24ec"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\cdcd5479c09767929d65920719e5f65231d6092b\\build.stderr",
+      "bytes": 69924,
+      "sha256": "aadded9ed0de54ad2d978defc0af29a23b1b523a5a9977e949c1c14c072ed35d"
+    }
+  ]
+}

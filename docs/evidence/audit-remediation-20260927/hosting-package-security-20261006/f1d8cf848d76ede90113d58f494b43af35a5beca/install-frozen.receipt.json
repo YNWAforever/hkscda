@@ -1,0 +1,31 @@
+{
+  "atUtc": "2026-10-06T14:47:44.945590+00:00",
+  "endUtc": "2026-10-06T14:47:53.530321+00:00",
+  "gate": "install-frozen",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "install",
+    "--frozen-lockfile",
+    "--ignore-scripts"
+  ],
+  "pid": 51480,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006",
+  "sha": "f1d8cf848d76ede90113d58f494b43af35a5beca",
+  "tree": "d11a0a7869d87882c6a5241e4ac087fd1f86df68",
+  "exit": 0,
+  "elapsedSeconds": 8.58472630000324,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\f1d8cf848d76ede90113d58f494b43af35a5beca\\install-frozen.stdout",
+      "bytes": 94,
+      "sha256": "f5622bcc86069f0e5e850f06c08720b5e9b0b0b76c417ca0ffd50dcb7ab3ca33"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-tanstack-security-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\f1d8cf848d76ede90113d58f494b43af35a5beca\\install-frozen.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+
+src\lib\content\serviceSloganCopy.test.ts:
+(fail) service slogan correction > uses the approved replacement for the exact obsolete slogan without touching unrelated 24-hour content [33320.09ms]
+  ^ this test timed out after 30000ms.
+(pass) service slogan correction > publishes volunteer group and knowledge routes while retaining the audit report [0.40ms]
+
+ 1 pass
+ 1 fail
+ 10 expect() calls
+Ran 2 tests across 1 file. [33.51s]

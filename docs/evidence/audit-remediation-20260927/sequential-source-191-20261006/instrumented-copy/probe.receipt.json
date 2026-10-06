@@ -1,0 +1,26 @@
+{
+  "sha": "ad333b908b865fbf6f6e3e8c594d438748b650c1",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "test",
+    "--isolate",
+    "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\measure-test.test.ts",
+    "--timeout",
+    "30000"
+  ],
+  "pid": 24056,
+  "exit": 0,
+  "elapsedSeconds": 0.6897202999971341,
+  "environment": "same focused OS-only environment; exact assertions unchanged, diagnostic markers only",
+  "streams": [
+    {
+      "file": "probe.stdout",
+      "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+    },
+    {
+      "file": "probe.stderr",
+      "sha256": "ec89c1aed4d3395335e3356634f66402796ba0ead632a7d734e13a41d35ff82f"
+    }
+  ]
+}
