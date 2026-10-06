@@ -1,0 +1,76 @@
+{
+  "parent": "46e593f845398f06c47fa96b8833c84f501bd1fc",
+  "scope": "one CREATE FUNCTION header rendering line, canonical body/config unchanged",
+  "executableBlobs": {
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    }
+  },
+  "watchedRedGates": {
+    "phase": "final",
+    "source": "46e593f845398f06c47fa96b8833c84f501bd1fc",
+    "startedAt": "2026-10-01T16:28:45.534509+00:00",
+    "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+    "gates": [
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 38.87,
+        "log": "task-3-final-typecheck.log"
+      },
+      {
+        "gate": "tests",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 1,
+        "elapsedSeconds": 87.23,
+        "log": "task-3-final-tests.log",
+        "summary": [
+          "\n 3227 pass",
+          " 232 skip",
+          " 1 fail",
+          " 10477 expect() calls"
+        ]
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 46.94,
+        "log": "task-3-final-lint.log"
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 73.93,
+        "log": "task-3-final-build.log"
+      }
+    ],
+    "completedAt": "2026-10-01T16:32:52.513883+00:00"
+  },
+  "focusedGreen": {
+    "command": "bun test src/lib/supabaseMigrations.test.ts --test-name-pattern \"every security definer function pins search_path\"",
+    "exit": 0,
+    "pass": 1,
+    "filtered": 46,
+    "fail": 0,
+    "assertions": 254
+  },
+  "retainedIgnoredLogs": [
+    {
+      "file": "task-3-header-rendering-red-tests.log",
+      "sha256": "837e98996f67d3d6648fc674af71196cd3735381547b3a935c6b799f7067fd9a",
+      "bytes": 408503
+    },
+    {
+      "file": "task-3-header-rendering-green.log",
+      "sha256": "a3c43dc34f5005da9935c9a93f2d0e2acb5d4a878f27a77640ba5d4db34939d7",
+      "bytes": 259
+    }
+  ],
+  "priorActualReceipts": "a991 SQL receipts remain immutable in task-3-animal-preference-binding.json",
+  "newActualAcceptance": "pending final hosted/modern composition apply/replay/five negatives and exact35e278 definition",
+  "fullGates": "pending final composition after new SQL/dependency SHA frozen"
+}

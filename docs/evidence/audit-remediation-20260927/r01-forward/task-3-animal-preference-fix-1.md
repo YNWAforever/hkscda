@@ -1,0 +1,9 @@
+# Shared trigger Fix Round 1: migration header rendering
+
+Parent: `46e593f845398f06c47fa96b8833c84f501bd1fc`. The first complete Task 3 composition gate run returned typecheck 0, tests 1 (3227 pass / 232 skip / 1 fail / 10477 assertions), lint 0 and build 0. Its sole failure was the existing source safety check rejecting the dynamically quoted `SET search_path TO ''public'', ''pg_temp''` header. Actual earlier database catalogs were correctly pinned and independently reviewed.
+
+One header line now renders the same setting as `SET search_path = public, pg_temp`. No body, runtime check, grant, owner, security mode or trigger attachment changes. The existing gate remains unchanged. Watched RED is retained from the failed full suite; focused GREEN `bun test src/lib/supabaseMigrations.test.ts --test-name-pattern "every security definer function pins search_path"` exited 0, 1 pass / 46 filtered / 0 fail / 254 assertions.
+
+SQL SHA256 advances from `a9912fb058ec09f1f10f73a4b14ce01fbde2fab69eff32818897487416b0978a` to `28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867`. Original actual receipts/source bindings retain their old bytes and are not relabeled. The current manifest checksum is updated for this unapplied migration. Final hosted and modern Task 3 composition must apply/replay and reject all five shared preflight mutations using the new SQL, verify exact canonical definition MD5 `35e278e91a05873c5da7949cf4782b7a` and exact config, and repeat the final four gates on frozen composition bytes. Those subsequent receipts are packaged by the Task 3 source binding.
+
+This separate commit excludes the uncommitted eight-object slice. No clone or gate process remained during edits. No production migration, release, provider action or new authority is inferred. Scoped controller review of this header/evidence delta remains separate.
