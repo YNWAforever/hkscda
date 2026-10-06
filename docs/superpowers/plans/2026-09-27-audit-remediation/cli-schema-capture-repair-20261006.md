@@ -7,3 +7,5 @@ Executed: native56616 reproducer failed before clone; pure regression20436/1; mi
 Next required gate: publish focused stacked draft against #197 and verify exact-head CI. Main merge remains held on the actual #183 finance ACL RED; Task1 five-column and Task8 full-scope source approvals remain pending after automatic review rejection. All14 production forward migrations remain DO_NOT_APPLY. No provider action, production migration or feature activation is part of this repair. Code rollback is a reviewed source revert; typed170011/full hosted and provider UAT are NOT_RUN.
 
 Publication executed: #198 stacked draft, initial published7b1eac3fb9acc8d046e47f974bf1cbc4db97ed34; source/evidence commits and push native0. Exact latest-head CI remains pending at this documentation capture; main merge and production admission remain held.
+
+Bound source CI complete: #198source2f993cd/run37424286905 attempt1 all five jobs and required DB steps SUCCESS; actual checkout ce721379 same tree9fee4c3b. Source/SQL unchanged by this evidence update. Main merge remains held on the known #183 RED and exact Task1/Task8 decisions; final documentation-head revalidation recorded in #198.
