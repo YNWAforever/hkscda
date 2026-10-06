@@ -1,0 +1,308 @@
+{
+  "checkedHead": "67143d23aff7b140120bc2f03cc548e27013ed90",
+  "repairSource": "960e275f754fb0d7904ddc27afeeafbf52358088",
+  "review": "Independent fix1 spec and quality approved; parent report task-8-source-fix1-review-20261007.md",
+  "rawReceipt": "docs/evidence/audit-remediation-20260927/r01-forward/task-8-fix-1-receipts/gates-1791311134417003700/receipt.json",
+  "nativeGateHarnessExit": 0,
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 83.78,
+      "log": "typecheck.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "gate": "tests",
+      "command": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "--isolate",
+        "--timeout",
+        "30000"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 124.88,
+      "log": "tests.log",
+      "sha256": "feae1ae81350cfc371f73b116e657226cc576a85589f0bc7cc7431a1db413aac",
+      "summary": [
+        "\n 4604 pass",
+        " 654 skip",
+        " 0 fail",
+        " 12539 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "lint"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 62.88,
+      "log": "lint.log",
+      "sha256": "238301ee0bc21cf716acb16ce3f5935f65b7b6dbd4940e0334aa1f129b7206f6",
+      "summary": [
+        "\u2716 52 problems (0 errors, 52 warnings)"
+      ]
+    },
+    {
+      "gate": "build",
+      "command": [
+        "bun",
+        "--no-env-file",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 136.13,
+      "log": "build.log",
+      "sha256": "30d9307d63ffb6050cfbd421c94763eaaddd187323ca47cb33c31e77f0687440"
+    }
+  ],
+  "frozenInputs": {
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "801a3e570b4c2c572306b8a2881bdd724c7d0ab810b6d9b22fb854dff8aded81",
+      "canonicalSha256": "801a3e570b4c2c572306b8a2881bdd724c7d0ab810b6d9b22fb854dff8aded81",
+      "archive": "s000.source",
+      "gitBlob": "f42b2b0289c944f09e1ae3510c5195cb83ed0cea",
+      "committedGitBlob": "f42b2b0289c944f09e1ae3510c5195cb83ed0cea",
+      "committedSha256": "801a3e570b4c2c572306b8a2881bdd724c7d0ab810b6d9b22fb854dff8aded81",
+      "committedCanonicalSha256": "801a3e570b4c2c572306b8a2881bdd724c7d0ab810b6d9b22fb854dff8aded81"
+    },
+    "supabase/rls-tests/helpers/runR01VolunteerAtomic.ts": {
+      "sha256": "386bef8dd60d62aa07de2e9a158d3ee9f44a592c8ea2aa032f0f049052c5a9e7",
+      "canonicalSha256": "386bef8dd60d62aa07de2e9a158d3ee9f44a592c8ea2aa032f0f049052c5a9e7",
+      "archive": "s001.source",
+      "gitBlob": "c46712b5581d08ba53ad8bc56e37462af17e71e1",
+      "committedGitBlob": "c46712b5581d08ba53ad8bc56e37462af17e71e1",
+      "committedSha256": "386bef8dd60d62aa07de2e9a158d3ee9f44a592c8ea2aa032f0f049052c5a9e7",
+      "committedCanonicalSha256": "386bef8dd60d62aa07de2e9a158d3ee9f44a592c8ea2aa032f0f049052c5a9e7"
+    },
+    "supabase/rls-tests/helpers/runR01VolunteerOverload.ts": {
+      "sha256": "6601d648b28136c3fce346da9ed65f3ac96bc0a2b4814db6c7eb5c8b275815a4",
+      "canonicalSha256": "6601d648b28136c3fce346da9ed65f3ac96bc0a2b4814db6c7eb5c8b275815a4",
+      "archive": "s002.source",
+      "gitBlob": "47721a0190a188277d15fcc336b8878e2f4cd0be",
+      "committedGitBlob": "47721a0190a188277d15fcc336b8878e2f4cd0be",
+      "committedSha256": "6601d648b28136c3fce346da9ed65f3ac96bc0a2b4814db6c7eb5c8b275815a4",
+      "committedCanonicalSha256": "6601d648b28136c3fce346da9ed65f3ac96bc0a2b4814db6c7eb5c8b275815a4"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-profile.ts": {
+      "sha256": "e0d81144ea284f163f4353c9480789ec44d7899b53d4a0c5e35ec752e5bf88b1",
+      "canonicalSha256": "e0d81144ea284f163f4353c9480789ec44d7899b53d4a0c5e35ec752e5bf88b1",
+      "archive": "s003.source",
+      "gitBlob": "0cd3a1a9cf02fb6161f4e640f0dab91779e95dad",
+      "committedGitBlob": "0cd3a1a9cf02fb6161f4e640f0dab91779e95dad",
+      "committedSha256": "e0d81144ea284f163f4353c9480789ec44d7899b53d4a0c5e35ec752e5bf88b1",
+      "committedCanonicalSha256": "e0d81144ea284f163f4353c9480789ec44d7899b53d4a0c5e35ec752e5bf88b1"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-generate.ts": {
+      "sha256": "979317e4fb9d01b908ec442bd712fc1573eccb0edb82388b993033620b37e883",
+      "canonicalSha256": "979317e4fb9d01b908ec442bd712fc1573eccb0edb82388b993033620b37e883",
+      "archive": "s004.source",
+      "gitBlob": "1ff9263dc21be5724645df03a4b680edc92ebb43",
+      "committedGitBlob": "1ff9263dc21be5724645df03a4b680edc92ebb43",
+      "committedSha256": "979317e4fb9d01b908ec442bd712fc1573eccb0edb82388b993033620b37e883",
+      "committedCanonicalSha256": "979317e4fb9d01b908ec442bd712fc1573eccb0edb82388b993033620b37e883"
+    },
+    "src/lib/volunteers/atomicForward.database.test.ts": {
+      "sha256": "0cc6088df62e531c5b8a2dde2e5fee406d1ec5f2ab54dd958f52e345786c5ef2",
+      "canonicalSha256": "0cc6088df62e531c5b8a2dde2e5fee406d1ec5f2ab54dd958f52e345786c5ef2",
+      "archive": "s005.source",
+      "gitBlob": "bef3a0be718a24ba73d111aed66fe8d43e519de4",
+      "committedGitBlob": "bef3a0be718a24ba73d111aed66fe8d43e519de4",
+      "committedSha256": "0cc6088df62e531c5b8a2dde2e5fee406d1ec5f2ab54dd958f52e345786c5ef2",
+      "committedCanonicalSha256": "0cc6088df62e531c5b8a2dde2e5fee406d1ec5f2ab54dd958f52e345786c5ef2"
+    },
+    "src/lib/volunteers/repository.server.ts": {
+      "sha256": "cc3c84bf3a8d8f0b4f70ba0e373ae97cfa9d59dd511f78e389cb5ebb837b76d1",
+      "canonicalSha256": "cc3c84bf3a8d8f0b4f70ba0e373ae97cfa9d59dd511f78e389cb5ebb837b76d1",
+      "archive": "s006.source",
+      "gitBlob": "f29d543d8d9b04f5412cb192214c4ba1755145dc",
+      "committedGitBlob": "f29d543d8d9b04f5412cb192214c4ba1755145dc",
+      "committedSha256": "cc3c84bf3a8d8f0b4f70ba0e373ae97cfa9d59dd511f78e389cb5ebb837b76d1",
+      "committedCanonicalSha256": "cc3c84bf3a8d8f0b4f70ba0e373ae97cfa9d59dd511f78e389cb5ebb837b76d1"
+    },
+    "src/lib/volunteers/service.ts": {
+      "sha256": "b0fe2bd1b3953ca0da2eb178ef71bcc117c1b86ad840b9aba7d65a1c2f83aa84",
+      "canonicalSha256": "b0fe2bd1b3953ca0da2eb178ef71bcc117c1b86ad840b9aba7d65a1c2f83aa84",
+      "archive": "s007.source",
+      "gitBlob": "45e8c3c82ff09c713ed660aaacc28d1e778a9a4c",
+      "committedGitBlob": "45e8c3c82ff09c713ed660aaacc28d1e778a9a4c",
+      "committedSha256": "b0fe2bd1b3953ca0da2eb178ef71bcc117c1b86ad840b9aba7d65a1c2f83aa84",
+      "committedCanonicalSha256": "b0fe2bd1b3953ca0da2eb178ef71bcc117c1b86ad840b9aba7d65a1c2f83aa84"
+    },
+    "supabase/migrations/20260925104051_volunteer_public_registration_idempotency.sql": {
+      "sha256": "90854ca126dc25871da809ff9a9eafeab9031cb24ccccf1f5429a58acc35a1a4",
+      "canonicalSha256": "90854ca126dc25871da809ff9a9eafeab9031cb24ccccf1f5429a58acc35a1a4",
+      "archive": "s008.source",
+      "gitBlob": "4e68c54d562331653245308198be4ad38bced973",
+      "committedGitBlob": "4e68c54d562331653245308198be4ad38bced973",
+      "committedSha256": "90854ca126dc25871da809ff9a9eafeab9031cb24ccccf1f5429a58acc35a1a4",
+      "committedCanonicalSha256": "90854ca126dc25871da809ff9a9eafeab9031cb24ccccf1f5429a58acc35a1a4"
+    },
+    "supabase/migrations/20261006163243_r01_volunteer_atomic_forward.sql": {
+      "sha256": "af8c834d95d38502d428dca95903e10d22cc57ed8df922f0a53cdb78d857ae9b",
+      "canonicalSha256": "af8c834d95d38502d428dca95903e10d22cc57ed8df922f0a53cdb78d857ae9b",
+      "archive": "s009.source",
+      "gitBlob": "aca48fe8978b6aa48393bf4ff492e222364857d9",
+      "committedGitBlob": "aca48fe8978b6aa48393bf4ff492e222364857d9",
+      "committedSha256": "af8c834d95d38502d428dca95903e10d22cc57ed8df922f0a53cdb78d857ae9b",
+      "committedCanonicalSha256": "af8c834d95d38502d428dca95903e10d22cc57ed8df922f0a53cdb78d857ae9b"
+    },
+    "supabase/rls-tests/helpers/runR01VolunteerForward.ts": {
+      "sha256": "2ee3244e09523815886b4da3e726af871f2fa774b7fb5338f5f5075f72b129cc",
+      "canonicalSha256": "2ee3244e09523815886b4da3e726af871f2fa774b7fb5338f5f5075f72b129cc",
+      "archive": "s010.source",
+      "gitBlob": "cfea9f65aa8e84ebb4a35cf4771fe74bd8f42495",
+      "committedGitBlob": "cfea9f65aa8e84ebb4a35cf4771fe74bd8f42495",
+      "committedSha256": "2ee3244e09523815886b4da3e726af871f2fa774b7fb5338f5f5075f72b129cc",
+      "committedCanonicalSha256": "2ee3244e09523815886b4da3e726af871f2fa774b7fb5338f5f5075f72b129cc"
+    },
+    "supabase/rls-tests/helpers/runR01VolunteerShapeRed.ts": {
+      "sha256": "f8d544e4ea2ca5f7dc01fb05a2698de70a1fa54d9c01c0670becf3502125b759",
+      "canonicalSha256": "f8d544e4ea2ca5f7dc01fb05a2698de70a1fa54d9c01c0670becf3502125b759",
+      "archive": "s011.source",
+      "gitBlob": "303dc18627b88247897dd85d263e20066c9a1bf0",
+      "committedGitBlob": "303dc18627b88247897dd85d263e20066c9a1bf0",
+      "committedSha256": "f8d544e4ea2ca5f7dc01fb05a2698de70a1fa54d9c01c0670becf3502125b759",
+      "committedCanonicalSha256": "f8d544e4ea2ca5f7dc01fb05a2698de70a1fa54d9c01c0670becf3502125b759"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-gates.py": {
+      "sha256": "f31192cb0b4d9c07a78756ca9a7ce17fda536c8891bbeefd5dc5c8df1e35d9b0",
+      "canonicalSha256": "92b147e297d8fce6b5459bb5801ca11d4d61355f8dfc6639b3427520a2b0ad80",
+      "archive": "s012.source",
+      "gitBlob": "b631b311fd4056438ae0f9ee518cc164242ccc99",
+      "committedGitBlob": "b63fefbd1003bebbc24255e12a4db6ac5032cdb9",
+      "committedSha256": "92b147e297d8fce6b5459bb5801ca11d4d61355f8dfc6639b3427520a2b0ad80",
+      "committedCanonicalSha256": "92b147e297d8fce6b5459bb5801ca11d4d61355f8dfc6639b3427520a2b0ad80"
+    },
+    "package.json": {
+      "sha256": "25abbc65388f07c9c43a6e770f99422cfc60e780064006c327065ec4f4bee28a",
+      "canonicalSha256": "25abbc65388f07c9c43a6e770f99422cfc60e780064006c327065ec4f4bee28a",
+      "archive": "s013.source",
+      "gitBlob": "37723be97ed953cf645338337e8ec8191abe9982",
+      "committedGitBlob": "37723be97ed953cf645338337e8ec8191abe9982",
+      "committedSha256": "25abbc65388f07c9c43a6e770f99422cfc60e780064006c327065ec4f4bee28a",
+      "committedCanonicalSha256": "25abbc65388f07c9c43a6e770f99422cfc60e780064006c327065ec4f4bee28a"
+    },
+    "bun.lock": {
+      "sha256": "9c06100e13a94c52c2de1106f3836a761fc881147d6ae7c64c307f71e11a366f",
+      "canonicalSha256": "9c06100e13a94c52c2de1106f3836a761fc881147d6ae7c64c307f71e11a366f",
+      "archive": "s014.source",
+      "gitBlob": "9b3b52b8205a9dcc041337bbce34e1da9da416fe",
+      "committedGitBlob": "9b3b52b8205a9dcc041337bbce34e1da9da416fe",
+      "committedSha256": "9c06100e13a94c52c2de1106f3836a761fc881147d6ae7c64c307f71e11a366f",
+      "committedCanonicalSha256": "9c06100e13a94c52c2de1106f3836a761fc881147d6ae7c64c307f71e11a366f"
+    },
+    "tsconfig.json": {
+      "sha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "canonicalSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "archive": "s015.source",
+      "gitBlob": "5080bdcc058940fb0a41ed02cc5298a65b9f99e6",
+      "committedGitBlob": "5080bdcc058940fb0a41ed02cc5298a65b9f99e6",
+      "committedSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+      "committedCanonicalSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491"
+    },
+    "eslint.config.js": {
+      "sha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "canonicalSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "archive": "s016.source",
+      "gitBlob": "2d972c0016abb8812712a3e20bc7dc4c01d0ecd2",
+      "committedGitBlob": "2d972c0016abb8812712a3e20bc7dc4c01d0ecd2",
+      "committedSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+      "committedCanonicalSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200"
+    },
+    "vite.config.ts": {
+      "sha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "canonicalSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "archive": "s017.source",
+      "gitBlob": "3b977120096bf07a73d33b24833575880b2afbb3",
+      "committedGitBlob": "3b977120096bf07a73d33b24833575880b2afbb3",
+      "committedSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+      "committedCanonicalSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c"
+    }
+  },
+  "environment": {
+    "actualLaunch": "PowerShell single-quoted here-string piped to python -; subprocess [sys.executable, docs/evidence/audit-remediation-20260927/r01-forward/task-8-gates.py] with sanitized env",
+    "nativeLaunchExit": 0,
+    "retainedOSKeys": [
+      "APPDATA",
+      "COMMONPROGRAMFILES",
+      "COMMONPROGRAMFILES(X86)",
+      "COMSPEC",
+      "HOMEDRIVE",
+      "HOMEPATH",
+      "LOCALAPPDATA",
+      "NUMBER_OF_PROCESSORS",
+      "OS",
+      "PATH",
+      "PATHEXT",
+      "PROCESSOR_ARCHITECTURE",
+      "PROGRAMDATA",
+      "PROGRAMFILES",
+      "PROGRAMFILES(X86)",
+      "SYSTEMROOT",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "WINDIR"
+    ],
+    "addedValues": {
+      "VITE_SUPABASE_URL": "http://127.0.0.1:59999",
+      "VITE_SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+      "SUPABASE_URL": "http://127.0.0.1:59999",
+      "SUPABASE_SERVICE_ROLE_KEY": "ci-placeholder-service-role-key",
+      "SUPABASE_LOCAL_URL": "http://127.0.0.1:59999"
+    },
+    "fixtureOptIns": [],
+    "testDatabaseURLs": [],
+    "providerCredentials": [],
+    "allFourGateCommandsUseNoEnvFile": true,
+    "bunVersion": "1.3.14",
+    "pythonVersion": "3.14.6",
+    "versionProbeNativeExit": 0,
+    "envFilesExist": {
+      ".env": false,
+      ".env.local": false,
+      ".env.development": false,
+      ".env.test": false
+    },
+    "preservationProbes": "Existing harness explicit loopback57322 postgres and52322 audit_pr135_20260929 readonly localSourceState; no mutation",
+    "nodeModulesJunction": "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/audit-tanstack-security-20261006/node_modules",
+    "coldPG170011CI": "NOT_RUN",
+    "externalUAT": "NOT_RUN"
+  },
+  "modernBefore": "bf0d926ef1c9952ca19e07980e94e9d273958c917621bc5e78490cd7c65f94be",
+  "modernAfter": "bf0d926ef1c9952ca19e07980e94e9d273958c917621bc5e78490cd7c65f94be",
+  "modernPreserved": true,
+  "templateBefore": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templateAfter": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templatePreserved": true,
+  "frozenInputsPreserved": true,
+  "archive": "docs/evidence/audit-remediation-20260927/r01-forward/task-8-controller-gates-20261007-raw-receipts.zip",
+  "archiveSha256": "9f6ed643b6a85acdce191bffd1cbb32d8d961ea05fa53ebd45775de526358cb0",
+  "archiveBytes": 308130,
+  "files": 26,
+  "rawBytes": 1624992,
+  "priorEvidencePreserved": true,
+  "databaseAcceptance": "Only the separate960e owned hosted+modern19tests56assertions14refusals; skipped full-suite DB tests are not acceptance",
+  "locallyRehearsedServerVersionNum": [
+    170006
+  ],
+  "coldExactHeadPG170011CI": "NOT_RUN",
+  "externalHostedJWTPostgRESTAndFuturePolicyUAT": "NOT_RUN",
+  "productionApplied": false,
+  "deployed": false,
+  "operationallyEnabled": false
+}

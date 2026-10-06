@@ -112,6 +112,8 @@ Follow Common task steps. Expected: before fix missing-target regression fails; 
 
 **Task8 fix round 1:** independent review found a partial-installation overload bypass missed by the original total-count probe. Actual two-direction RED reproduced it; repair960e275f now checks per-name cardinality and every tuple before mutation. Both owned profiles pass19tests/56assertions and14 actual55000 refusals with full preservation; relevant typecheck/lint0,52 baseline warnings. Original evidence archive/manifest unchanged; a separate immutable fix archive retains RED/GREEN/checks. See task-8-fix-1-evidence.md. Scoped re-review and cold exact-head CI required; earlier full gates remain historical and external/UAT limits remain NOT_RUN.
 
+**Task8 reviewed-fix controller gates:** independent fix1 review approved. Frozen67143d23 four native gates/harness0:4604pass654skip0fail12539assertions, type/lint/build0 with52baselinewarnings, OS-only/no-env-file/59999/noDBoptins. All18 executable hashes and both source raw hashes preserved. New immutable controller archive retains receipts; original evidence unchanged. Only170006 rehearsed; cold exact-head170011 CI and external/future-policy UAT NOT_RUN. See task-8-controller-gates-20261007-evidence.md.
+
 ### Task 9: Adoption coordinator and manual wrappers
 
 Scope (public schema, exact current manifest/call contracts): `mutate_adoption_coordinator_with_audit`, `search_manual_case_identity`, `create_manual_adoption_case`.
