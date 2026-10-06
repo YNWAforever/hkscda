@@ -1,0 +1,67 @@
+{
+  "pr": 196,
+  "testedHead": "8916e4c652aca925ba58315bb558d799b9222726",
+  "metadataCandidate": "38698aa83c510011aa2e0eb08b3a74d57369a696",
+  "predecessorMain": {
+    "merge_sha": "1b501fa8103cd22183358f058d7f85f69c78e7a0",
+    "main_ci": 37542947233,
+    "main_gates_green": true,
+    "exact_alias_ready": true,
+    "published_head": "3ec969b1ed8f3c9f92f07b72dc2f5874b0a6d025",
+    "source_ci": 37541504672,
+    "source_ci_green": true,
+    "status": "ACCEPTED source/main all5/requiredsteps and exactREADY1b501fa8; historical preservationUNKNOWN remains",
+    "ci_checkout": "b47ed1abdcf8e8a8cb11868ef366dd5932952353",
+    "ci_tree": "de79454ba83e47e8b076aad86f0c6cbaca864ee4",
+    "current_evidence": "r01-forward/task-12-current-qualification-20261007-lf.json",
+    "current_profile_evidence": "r01-forward/task-12-current-source-freeze-20261007.json",
+    "reviewed_source": "72fedaa965bb8bd822bf34a05575d8d385042a8e",
+    "native_finance_actual": {
+      "pass": 67,
+      "skip": 0,
+      "assertions": 238
+    },
+    "native_group_actual": {
+      "pass": 34,
+      "skip": 0,
+      "assertions": 132
+    },
+    "source_ci_acceptance_sha256": "555d6db902f97e7004565cf96bda3a1a4f9a03fa1e948fdd8facc6e7ccd4b97b",
+    "productionApplied": false,
+    "alias_id": "dpl_HkWKtjEfYdfJ9F7r9p3n4C6PoTXn",
+    "main_ci_acceptance": ".superpowers\\sdd\\sequential-merge-20261006\\main195-37542947233\\controller-acceptance.json",
+    "main_ci_native_actual": {
+      "finance": {
+        "pass": 67,
+        "skip": 0,
+        "fail": 0,
+        "assertions": 238,
+        "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+        "serverVersionNum": "NOT_REPORTED"
+      },
+      "group": {
+        "pass": 34,
+        "skip": 0,
+        "fail": 0,
+        "assertions": 132,
+        "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+        "serverVersionNum": "NOT_REPORTED"
+      }
+    }
+  },
+  "localAll7GatesZero": true,
+  "localTests": {
+    "pass": 4287,
+    "skip": 634,
+    "fail": 0,
+    "assertions": 12207
+  },
+  "currentGateReceipt": "current-integration-196-20261007.json",
+  "shippingSources": "15 canonically byte-exact to reviewed prepared96a21a00; current finance6bf/Group90d/Task12 current helper preserved",
+  "nativeCurrentCI": "PENDING finance67+Group34+document1/36assert zero skips mandatory",
+  "historicalRawTypedRestoration": "qualified original failures remain; no new acceptance",
+  "historicalLocal55321Preservation": "UNKNOWN",
+  "productionSQLApproved": false,
+  "productionSQLApplied": false,
+  "paymentDeliveryMediaEnabled": false
+}
