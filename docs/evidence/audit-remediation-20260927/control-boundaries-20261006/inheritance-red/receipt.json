@@ -1,0 +1,15 @@
+{
+  "atUtc": "2026-10-06T14:10:54.401796+00:00",
+  "mode": "red",
+  "container": "r01_acl_5f73f93cb1144ec6940f747637283fb0",
+  "image": "sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232",
+  "migrationSha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88",
+  "environment": "new network-none PostgreSQL cluster, tmpfs only, no ports/credentials/production data; existing Supabase clusters untouched",
+  "serverVersionNum": "170011",
+  "applyNativeExit": 0,
+  "effectiveControlWrites": "t|t",
+  "result": "watched RED: inherited control writes remain authorized",
+  "exit": 1,
+  "cleanupNativeExit": 0,
+  "cleanup": "only exact owned --rm tmpfs container stopped; no shared DB/role mutation"
+}
