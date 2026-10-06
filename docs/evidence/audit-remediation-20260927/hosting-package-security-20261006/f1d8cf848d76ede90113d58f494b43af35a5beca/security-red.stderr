@@ -1,0 +1,21 @@
+
+src\lib\dependencySecurity.test.ts:
+18 |       const parts = version.split(".").map(Number);
+19 |       const atLeastMinimum =
+20 |         parts[0] > minimum[0] ||
+21 |         (parts[0] === minimum[0] && parts[1] > minimum[1]) ||
+22 |         (parts[0] === minimum[0] && parts[1] === minimum[1] && parts[2] >= minimum[2]);
+23 |       expect(atLeastMinimum, `${name}@${version} is below the security patch ${minimum.join(".")}`).toBe(true);
+                                                                                                         ^
+error: @tanstack/react-start@1.167.50 is below the security patch 1.168.60
+
+Expected: true
+Received: false
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-tanstack-security-20261006\src\lib\dependencySecurity.test.ts:23:101)
+(fail) lockfile excludes vulnerable TanStack Start versions (GHSA-qx66-fv34-fjm8) [2.83ms]
+
+ 0 pass
+ 1 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [88.00ms]
