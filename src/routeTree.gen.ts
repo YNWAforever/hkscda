@@ -9,328 +9,288 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VolunteerRouteImport } from './routes/volunteer'
-import { Route as SupporterRouteImport } from './routes/supporter'
-import { Route as StoriesRouteImport } from './routes/stories'
-import { Route as SponsorsRouteImport } from './routes/sponsors'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as KnowledgeRouteImport } from './routes/knowledge'
-import { Route as InternshipsRouteImport } from './routes/internships'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as DonateRouteImport } from './routes/donate'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as DonateRouteImport } from './routes/donate'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as InternshipsRouteImport } from './routes/internships'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SponsorsRouteImport } from './routes/sponsors'
+import { Route as StoriesRouteImport } from './routes/stories'
+import { Route as SupporterRouteImport } from './routes/supporter'
+import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as VolunteerOperationsRouteImport } from './routes/volunteer/operations'
-import { Route as VolunteerGroupRouteImport } from './routes/volunteer/group'
-import { Route as StoriesSlugRouteImport } from './routes/stories/$slug'
-import { Route as SponsorsPledgeRouteImport } from './routes/sponsors_.pledge'
-import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
-import { Route as ReportAuditRouteImport } from './routes/report/audit'
-import { Route as ReportAdoptionRouteImport } from './routes/report/adoption'
-import { Route as ApiStoriesRouteImport } from './routes/api/stories'
-import { Route as ApiDonationsRouteImport } from './routes/api/donations'
-import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
-import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
-import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
-import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
-import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
-import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
-import { Route as AdminTasksRouteImport } from './routes/admin/tasks'
-import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
-import { Route as AdminSponsorshipsRouteImport } from './routes/admin/sponsorships'
-import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
-import { Route as AdminPaymentMethodsRouteImport } from './routes/admin/payment-methods'
-import { Route as AdminLoginRouteImport } from './routes/admin/login'
-import { Route as AdminInternshipsRouteImport } from './routes/admin/internships'
-import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
-import { Route as AdminFaqRouteImport } from './routes/admin/faq'
-import { Route as AdminContentRouteImport } from './routes/admin/content'
-import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
-import { Route as AdminAccessDeniedRouteImport } from './routes/admin/access-denied'
-import { Route as AdminAccessRouteImport } from './routes/admin/access'
-import { Route as AboutTnrRouteImport } from './routes/about/tnr'
-import { Route as AboutTeamRouteImport } from './routes/about/team'
-import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
 import { Route as AboutCccpRouteImport } from './routes/about/cccp'
-import { Route as ApiInternshipsIndexRouteImport } from './routes/api/internships/index'
-import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/applications/index'
-import { Route as VolunteerStatusTokenRouteImport } from './routes/volunteer/status.$token'
-import { Route as SponsorsStatusTokenRouteImport } from './routes/sponsors_.status.$token'
-import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
-import { Route as ApiWebhooksResendRouteImport } from './routes/api/webhooks/resend'
-import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
-import { Route as ApiWebhooksCodRouteImport } from './routes/api/webhooks/cod'
-import { Route as ApiVolunteerRegistrationsRouteImport } from './routes/api/volunteer/registrations'
-import { Route as ApiVolunteerPolicyRouteImport } from './routes/api/volunteer/policy'
-import { Route as ApiVolunteerOperationsRouteImport } from './routes/api/volunteer/operations'
-import { Route as ApiVolunteerGroupEnquiriesRouteImport } from './routes/api/volunteer/group-enquiries'
-import { Route as ApiVolunteerActivitiesRouteImport } from './routes/api/volunteer/activities'
-import { Route as ApiSupporterRecoveryRouteImport } from './routes/api/supporter/recovery'
-import { Route as ApiSupporterRecordsRouteImport } from './routes/api/supporter/records'
-import { Route as ApiSupporterPreferencesRouteImport } from './routes/api/supporter/preferences'
-import { Route as ApiStoriesMapRouteImport } from './routes/api/stories/map'
-import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
-import { Route as ApiSponsorshipsTermsRouteImport } from './routes/api/sponsorships/terms'
-import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
-import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
-import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
-import { Route as ApiJobsPublicUploadsRouteImport } from './routes/api/jobs/public-uploads'
-import { Route as ApiJobsPublicMediaRepairRouteImport } from './routes/api/jobs/public-media-repair'
-import { Route as ApiJobsDonationsRouteImport } from './routes/api/jobs/donations'
-import { Route as ApiJobsCrmExportsRouteImport } from './routes/api/jobs/crm-exports'
-import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
-import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
-import { Route as ApiInternalReadinessRouteImport } from './routes/api/internal/readiness'
-import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
-import { Route as ApiAdminTaskOverviewRouteImport } from './routes/api/admin/task-overview'
-import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
-import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
-import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
-import { Route as ApiAdminPaymentMethodsRouteImport } from './routes/api/admin/payment-methods'
-import { Route as ApiAdminMediaRepairsRouteImport } from './routes/api/admin/media-repairs'
-import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
-import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
-import { Route as ApiAdminInternshipsRouteImport } from './routes/api/admin/internships'
-import { Route as ApiAdminGovernanceRouteImport } from './routes/api/admin/governance'
-import { Route as ApiAdminFaqRouteImport } from './routes/api/admin/faq'
-import { Route as ApiAdminDocumentsRouteImport } from './routes/api/admin/documents'
-import { Route as ApiAdminContentReviewRouteImport } from './routes/api/admin/content-review'
-import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
-import { Route as ApiAdminAnnualReportsRouteImport } from './routes/api/admin/annual-reports'
-import { Route as ApiAdminAdoptionInstructionsRouteImport } from './routes/api/admin/adoption-instructions'
-import { Route as ApiAdminAdoptionInformationRouteImport } from './routes/api/admin/adoption-information'
-import { Route as ApiAdminAdoptionGuideReleasesRouteImport } from './routes/api/admin/adoption-guide-releases'
-import { Route as ApiAdminAboutPagesRouteImport } from './routes/api/admin/about-pages'
-import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
-import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
-import { Route as AdoptionStatusTokenRouteImport } from './routes/adoption/status.$token'
-import { Route as AdminVolunteersTasksRouteImport } from './routes/admin/volunteers/tasks'
-import { Route as AdminVolunteersSourcesRouteImport } from './routes/admin/volunteers/sources'
-import { Route as AdminVolunteersSimulationRouteImport } from './routes/admin/volunteers/simulation'
-import { Route as AdminVolunteersSettingsRouteImport } from './routes/admin/volunteers/settings'
-import { Route as AdminVolunteersQualificationsRouteImport } from './routes/admin/volunteers/qualifications'
-import { Route as AdminVolunteersPeopleRouteImport } from './routes/admin/volunteers/people'
-import { Route as AdminVolunteersOperationsRouteImport } from './routes/admin/volunteers/operations'
-import { Route as AdminVolunteersGroupEnquiriesRouteImport } from './routes/admin/volunteers/group-enquiries'
-import { Route as AdminVolunteersDailySettingsRouteImport } from './routes/admin/volunteers/daily-settings'
-import { Route as AdminVolunteersCalendarRouteImport } from './routes/admin/volunteers/calendar'
-import { Route as AdminVolunteersAssessmentsRouteImport } from './routes/admin/volunteers/assessments'
-import { Route as AdminVolunteersActivitiesRouteImport } from './routes/admin/volunteers/activities'
-import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
-import { Route as AdminCoordinatorTasksRouteImport } from './routes/admin/coordinator/tasks'
-import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
-import { Route as AdminCoordinatorReportsRouteImport } from './routes/admin/coordinator/reports'
-import { Route as AdminCoordinatorIntakeRouteImport } from './routes/admin/coordinator/intake'
-import { Route as AdminCoordinatorInboxRouteImport } from './routes/admin/coordinator/inbox'
-import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
-import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
-import { Route as AdminContentNewRouteImport } from './routes/admin/content/new'
-import { Route as AdminContentKnowledgeRouteImport } from './routes/admin/content/knowledge'
-import { Route as AdminContentDocumentsRouteImport } from './routes/admin/content/documents'
-import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
-import { Route as AdminContentAdoptionPreviewRouteImport } from './routes/admin/content/adoption-preview'
-import { Route as AdminContentAdoptionGuidesRouteImport } from './routes/admin/content/adoption-guides'
-import { Route as AdminContentAdoptionRouteImport } from './routes/admin/content/adoption'
-import { Route as AdminContentAboutRouteImport } from './routes/admin/content/about'
-import { Route as AdminContentIdRouteImport } from './routes/admin/content/$id'
-import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
+import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
+import { Route as AboutTeamRouteImport } from './routes/about/team'
+import { Route as AboutTnrRouteImport } from './routes/about/tnr'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAccessRouteImport } from './routes/admin/access'
+import { Route as AdminAccessDeniedRouteImport } from './routes/admin/access-denied'
+import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
+import { Route as AdminContentRouteImport } from './routes/admin/content'
+import { Route as AdminFaqRouteImport } from './routes/admin/faq'
+import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
+import { Route as AdminInternshipsRouteImport } from './routes/admin/internships'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminPaymentMethodsRouteImport } from './routes/admin/payment-methods'
+import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
+import { Route as AdminSponsorshipsRouteImport } from './routes/admin/sponsorships'
+import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
+import { Route as AdminTasksRouteImport } from './routes/admin/tasks'
+import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
+import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
+import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
+import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
+import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
+import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
+import { Route as ApiDonationsRouteImport } from './routes/api/donations'
+import { Route as ApiStoriesRouteImport } from './routes/api/stories'
+import { Route as ReportAdoptionRouteImport } from './routes/report/adoption'
+import { Route as ReportAuditRouteImport } from './routes/report/audit'
+import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
+import { Route as SponsorsPledgeRouteImport } from './routes/sponsors_.pledge'
+import { Route as StoriesSlugRouteImport } from './routes/stories/$slug'
+import { Route as VolunteerGroupRouteImport } from './routes/volunteer/group'
+import { Route as VolunteerOperationsRouteImport } from './routes/volunteer/operations'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
-import { Route as ApiVolunteerStatusTokenRouteImport } from './routes/api/volunteer/status/$token'
-import { Route as ApiSupporterRecoveryVerifyRouteImport } from './routes/api/supporter/recovery/verify'
-import { Route as ApiSupporterReceiptsReceiptIdRouteImport } from './routes/api/supporter/receipts/$receiptId'
-import { Route as ApiSponsorshipsStatusTokenRouteImport } from './routes/api/sponsorships/status/$token'
-import { Route as ApiSponsorshipsPledgesProofUploadUrlRouteImport } from './routes/api/sponsorships/pledges/proof-upload-url'
-import { Route as ApiDonationsDonationIdStatusRouteImport } from './routes/api/donations/$donationId/status'
-import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
-import { Route as ApiAdoptionApplicationsPhotoUploadUrlsRouteImport } from './routes/api/adoption/applications/photo-upload-urls'
-import { Route as ApiAdminVolunteersTasksRouteImport } from './routes/api/admin/volunteers/tasks'
-import { Route as ApiAdminVolunteersReviewerBulkRouteImport } from './routes/api/admin/volunteers/reviewer-bulk'
-import { Route as ApiAdminVolunteersRegistrationsRouteImport } from './routes/api/admin/volunteers/registrations'
-import { Route as ApiAdminVolunteersQualificationsRouteImport } from './routes/api/admin/volunteers/qualifications'
-import { Route as ApiAdminVolunteersPeopleRouteImport } from './routes/api/admin/volunteers/people'
-import { Route as ApiAdminVolunteersOverviewRouteImport } from './routes/api/admin/volunteers/overview'
-import { Route as ApiAdminVolunteersGroupEnquiriesRouteImport } from './routes/api/admin/volunteers/group-enquiries'
-import { Route as ApiAdminVolunteersCalendarRouteImport } from './routes/api/admin/volunteers/calendar'
-import { Route as ApiAdminVolunteersBulkRouteImport } from './routes/api/admin/volunteers/bulk'
-import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
-import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
-import { Route as ApiAdminSupportersFormatPreviewRouteImport } from './routes/api/admin/supporters/format-preview'
-import { Route as ApiAdminSupportersAssignmentBulkRouteImport } from './routes/api/admin/supporters/assignment-bulk'
-import { Route as ApiAdminSupportersAssignmentAssigneesRouteImport } from './routes/api/admin/supporters/assignment-assignees'
-import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
-import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
-import { Route as ApiAdminSponsorshipsFollowupBulkRouteImport } from './routes/api/admin/sponsorships/followup-bulk'
-import { Route as ApiAdminSponsorshipsFollowupAssigneesRouteImport } from './routes/api/admin/sponsorships/followup-assignees'
-import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
-import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
-import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
-import { Route as ApiAdminFinanceDeliveryJobsRouteImport } from './routes/api/admin/finance/delivery-jobs'
-import { Route as ApiAdminFinanceBankStatementPreviewRouteImport } from './routes/api/admin/finance/bank-statement-preview'
-import { Route as ApiAdminFinanceBankMatchOperationsRouteImport } from './routes/api/admin/finance/bank-match-operations'
-import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
-import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
-import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
-import { Route as ApiAdminExportsJobsRouteImport } from './routes/api/admin/exports/jobs'
-import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api/admin/exports/donations[.]csv'
-import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
-import { Route as ApiAdminDocumentsUploadTargetRouteImport } from './routes/api/admin/documents/upload-target'
-import { Route as ApiAdminDocumentsIdRouteImport } from './routes/api/admin/documents/$id'
-import { Route as ApiAdminContentReviewBulkRouteImport } from './routes/api/admin/content/review-bulk'
-import { Route as ApiAdminContentLinkSearchRouteImport } from './routes/api/admin/content/link-search'
-import { Route as ApiAdminContentIdRouteImport } from './routes/api/admin/content/$id'
-import { Route as ApiAdminAnnualReportsIdRouteImport } from './routes/api/admin/annual-reports/$id'
-import { Route as ApiAdminAnimalsReviewBulkRouteImport } from './routes/api/admin/animals/review-bulk'
-import { Route as ApiAdminAnimalsPhotoUploadUrlRouteImport } from './routes/api/admin/animals/photo-upload-url'
-import { Route as ApiAdminAnimalsListRouteImport } from './routes/api/admin/animals/list'
-import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
-import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
-import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
-import { Route as ApiAdminAdoptionsAssignmentBulkRouteImport } from './routes/api/admin/adoptions/assignment-bulk'
-import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admin/adoptions/adopters'
-import { Route as ApiAdminAdoptionInstructionsRestoreRouteImport } from './routes/api/admin/adoption-instructions/restore'
-import { Route as ApiAdminAdoptionInstructionsPublishRouteImport } from './routes/api/admin/adoption-instructions/publish'
-import { Route as ApiAdminAdoptionInstructionsPreviewRouteImport } from './routes/api/admin/adoption-instructions/preview'
-import { Route as ApiAdminAdoptionInstructionsHistoryRouteImport } from './routes/api/admin/adoption-instructions/history'
-import { Route as ApiAdminAdoptionInstructionsDraftRouteImport } from './routes/api/admin/adoption-instructions/draft'
-import { Route as ApiAdminAdoptionGuideReleasesIdRouteImport } from './routes/api/admin/adoption-guide-releases/$id'
-import { Route as ApiAdminAccessUsersRouteImport } from './routes/api/admin/access/users'
-import { Route as ApiAdminAccessInvitesRouteImport } from './routes/api/admin/access/invites'
-import { Route as ApiAdminAccessAuditRouteImport } from './routes/api/admin/access/audit'
-import { Route as AdminVolunteersRegistrationsIdRouteImport } from './routes/admin/volunteers/registrations/$id'
-import { Route as AdminVolunteersPeopleIdRouteImport } from './routes/admin/volunteers/people/$id'
-import { Route as AdminCoordinatorAdoptersIdRouteImport } from './routes/admin/coordinator/adopters/$id'
+import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/applications/index'
+import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
+import { Route as AdminContentIdRouteImport } from './routes/admin/content/$id'
+import { Route as AdminContentAboutRouteImport } from './routes/admin/content/about'
+import { Route as AdminContentAdoptionRouteImport } from './routes/admin/content/adoption'
+import { Route as AdminContentAdoptionGuidesRouteImport } from './routes/admin/content/adoption-guides'
+import { Route as AdminContentAdoptionPreviewRouteImport } from './routes/admin/content/adoption-preview'
+import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
+import { Route as AdminContentDocumentsRouteImport } from './routes/admin/content/documents'
+import { Route as AdminContentKnowledgeRouteImport } from './routes/admin/content/knowledge'
+import { Route as AdminContentNewRouteImport } from './routes/admin/content/new'
+import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
+import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
+import { Route as AdminCoordinatorInboxRouteImport } from './routes/admin/coordinator/inbox'
+import { Route as AdminCoordinatorIntakeRouteImport } from './routes/admin/coordinator/intake'
+import { Route as AdminCoordinatorReportsRouteImport } from './routes/admin/coordinator/reports'
+import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
+import { Route as AdminCoordinatorTasksRouteImport } from './routes/admin/coordinator/tasks'
+import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
+import { Route as AdminVolunteersActivitiesRouteImport } from './routes/admin/volunteers/activities'
+import { Route as AdminVolunteersAssessmentsRouteImport } from './routes/admin/volunteers/assessments'
+import { Route as AdminVolunteersCalendarRouteImport } from './routes/admin/volunteers/calendar'
+import { Route as AdminVolunteersDailySettingsRouteImport } from './routes/admin/volunteers/daily-settings'
+import { Route as AdminVolunteersGroupEnquiriesRouteImport } from './routes/admin/volunteers/group-enquiries'
+import { Route as AdminVolunteersOperationsRouteImport } from './routes/admin/volunteers/operations'
+import { Route as AdminVolunteersPeopleRouteImport } from './routes/admin/volunteers/people'
+import { Route as AdminVolunteersQualificationsRouteImport } from './routes/admin/volunteers/qualifications'
+import { Route as AdminVolunteersSettingsRouteImport } from './routes/admin/volunteers/settings'
+import { Route as AdminVolunteersSimulationRouteImport } from './routes/admin/volunteers/simulation'
+import { Route as AdminVolunteersSourcesRouteImport } from './routes/admin/volunteers/sources'
+import { Route as AdminVolunteersTasksRouteImport } from './routes/admin/volunteers/tasks'
+import { Route as AdoptionStatusTokenRouteImport } from './routes/adoption/status.$token'
+import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
+import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
+import { Route as ApiAdminAboutPagesRouteImport } from './routes/api/admin/about-pages'
+import { Route as ApiAdminAdoptionGuideReleasesRouteImport } from './routes/api/admin/adoption-guide-releases'
+import { Route as ApiAdminAdoptionInformationRouteImport } from './routes/api/admin/adoption-information'
+import { Route as ApiAdminAdoptionInstructionsRouteImport } from './routes/api/admin/adoption-instructions'
+import { Route as ApiAdminAnnualReportsRouteImport } from './routes/api/admin/annual-reports'
+import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
+import { Route as ApiAdminContentReviewRouteImport } from './routes/api/admin/content-review'
+import { Route as ApiAdminDocumentsRouteImport } from './routes/api/admin/documents'
+import { Route as ApiAdminFaqRouteImport } from './routes/api/admin/faq'
+import { Route as ApiAdminGovernanceRouteImport } from './routes/api/admin/governance'
+import { Route as ApiAdminInternshipsRouteImport } from './routes/api/admin/internships'
+import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
+import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
+import { Route as ApiAdminMediaRepairsRouteImport } from './routes/api/admin/media-repairs'
+import { Route as ApiAdminPaymentMethodsRouteImport } from './routes/api/admin/payment-methods'
+import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
+import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
+import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
+import { Route as ApiAdminTaskOverviewRouteImport } from './routes/api/admin/task-overview'
+import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
+import { Route as ApiInternalReadinessRouteImport } from './routes/api/internal/readiness'
+import { Route as ApiInternshipsIndexRouteImport } from './routes/api/internships/index'
+import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
+import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
+import { Route as ApiJobsCrmExportsRouteImport } from './routes/api/jobs/crm-exports'
+import { Route as ApiJobsDonationsRouteImport } from './routes/api/jobs/donations'
+import { Route as ApiJobsPublicMediaRepairRouteImport } from './routes/api/jobs/public-media-repair'
+import { Route as ApiJobsPublicUploadsRouteImport } from './routes/api/jobs/public-uploads'
+import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
+import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
+import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
+import { Route as ApiSponsorshipsTermsRouteImport } from './routes/api/sponsorships/terms'
+import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
+import { Route as ApiStoriesMapRouteImport } from './routes/api/stories/map'
+import { Route as ApiSupporterPreferencesRouteImport } from './routes/api/supporter/preferences'
+import { Route as ApiSupporterRecordsRouteImport } from './routes/api/supporter/records'
+import { Route as ApiSupporterRecoveryRouteImport } from './routes/api/supporter/recovery'
+import { Route as ApiVolunteerActivitiesRouteImport } from './routes/api/volunteer/activities'
+import { Route as ApiVolunteerGroupEnquiriesRouteImport } from './routes/api/volunteer/group-enquiries'
+import { Route as ApiVolunteerOperationsRouteImport } from './routes/api/volunteer/operations'
+import { Route as ApiVolunteerPolicyRouteImport } from './routes/api/volunteer/policy'
+import { Route as ApiVolunteerRegistrationsRouteImport } from './routes/api/volunteer/registrations'
+import { Route as ApiWebhooksCodRouteImport } from './routes/api/webhooks/cod'
+import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
+import { Route as ApiWebhooksResendRouteImport } from './routes/api/webhooks/resend'
+import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as SponsorsStatusTokenRouteImport } from './routes/sponsors_.status.$token'
+import { Route as VolunteerStatusTokenRouteImport } from './routes/volunteer/status.$token'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
-import { Route as ApiAdminVolunteersSourcesIndexRouteImport } from './routes/api/admin/volunteers/sources/index'
-import { Route as ApiAdminVolunteersSimulationIndexRouteImport } from './routes/api/admin/volunteers/simulation/index'
-import { Route as ApiAdminVolunteersSettingsIndexRouteImport } from './routes/api/admin/volunteers/settings/index'
-import { Route as ApiAdminVolunteersOperationsIndexRouteImport } from './routes/api/admin/volunteers/operations/index'
-import { Route as ApiAdminVolunteersJobsIndexRouteImport } from './routes/api/admin/volunteers/jobs/index'
-import { Route as ApiAdminVolunteersDailySettingsIndexRouteImport } from './routes/api/admin/volunteers/daily-settings/index'
-import { Route as ApiAdminVolunteersAssessmentsIndexRouteImport } from './routes/api/admin/volunteers/assessments/index'
-import { Route as ApiAdminAnimalsPublicationIndexRouteImport } from './routes/api/admin/animals/publication/index'
-import { Route as ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport } from './routes/api/admin/animals/draft-photo-upload-url/index'
-import { Route as ApiAdminVolunteersRegistrationsIdRouteImport } from './routes/api/admin/volunteers/registrations/$id'
-import { Route as ApiAdminVolunteersActivitiesIdRouteImport } from './routes/api/admin/volunteers/activities/$id'
-import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
-import { Route as ApiAdminSponsorshipsPledgesIdRouteImport } from './routes/api/admin/sponsorships/pledges/$id'
-import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
-import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
-import { Route as ApiAdminPaymentMethodsIdWithdrawRouteImport } from './routes/api/admin/payment-methods/$id/withdraw'
-import { Route as ApiAdminPaymentMethodsIdSubmitRouteImport } from './routes/api/admin/payment-methods/$id/submit'
-import { Route as ApiAdminPaymentMethodsIdReturnToDraftRouteImport } from './routes/api/admin/payment-methods/$id/return-to-draft'
-import { Route as ApiAdminPaymentMethodsIdPublishRouteImport } from './routes/api/admin/payment-methods/$id/publish'
-import { Route as ApiAdminExportsJobsIdRouteImport } from './routes/api/admin/exports/jobs/$id'
-import { Route as ApiAdminDocumentsIdPublishRouteImport } from './routes/api/admin/documents/$id/publish'
-import { Route as ApiAdminContentSocialCopyIdRouteImport } from './routes/api/admin/content/social-copy/$id'
-import { Route as ApiAdminContentNotificationDraftsIdRouteImport } from './routes/api/admin/content/notification-drafts/$id'
-import { Route as ApiAdminContentIdUpdatesRouteImport } from './routes/api/admin/content/$id/updates'
-import { Route as ApiAdminContentIdStoryProfileRouteImport } from './routes/api/admin/content/$id/story-profile'
-import { Route as ApiAdminContentIdSocialCopyRouteImport } from './routes/api/admin/content/$id/social-copy'
-import { Route as ApiAdminContentIdRevisionsRouteImport } from './routes/api/admin/content/$id/revisions'
-import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin/content/$id/publish'
-import { Route as ApiAdminContentIdPublicationMetadataRouteImport } from './routes/api/admin/content/$id/publication-metadata'
-import { Route as ApiAdminContentIdMediaUploadTargetRouteImport } from './routes/api/admin/content/$id/media-upload-target'
-import { Route as ApiAdminContentIdMediaPreviewRouteImport } from './routes/api/admin/content/$id/media-preview'
-import { Route as ApiAdminContentIdMediaFinalizeRouteImport } from './routes/api/admin/content/$id/media-finalize'
-import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/content/$id/media'
-import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
-import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
-import { Route as ApiAdminAnnualReportsIdPublishRouteImport } from './routes/api/admin/annual-reports/$id/publish'
-import { Route as ApiAdminAnimalsIdArchiveRouteImport } from './routes/api/admin/animals/$id/archive'
-import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
-import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
-import { Route as ApiAdminAdoptionsReportsSummaryRouteImport } from './routes/api/admin/adoptions/reports/summary'
-import { Route as ApiAdminAdoptionsReportsExportsRouteImport } from './routes/api/admin/adoptions/reports/exports'
-import { Route as ApiAdminAdoptionsIntakeItemsRouteImport } from './routes/api/admin/adoptions/intake/items'
-import { Route as ApiAdminAdoptionsIntakeIdentitySearchRouteImport } from './routes/api/admin/adoptions/intake/identity-search'
-import { Route as ApiAdminAdoptionsIntakeCasesRouteImport } from './routes/api/admin/adoptions/intake/cases'
-import { Route as ApiAdminAdoptionsExportsTasksDotcsvRouteImport } from './routes/api/admin/adoptions/exports/tasks[.]csv'
-import { Route as ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/successful-adoptions[.]csv'
-import { Route as ApiAdminAdoptionsExportsCasesDotcsvRouteImport } from './routes/api/admin/adoptions/exports/cases[.]csv'
-import { Route as ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/animals[.]csv'
-import { Route as ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport } from './routes/api/admin/adoptions/exports/adopters[.]csv'
-import { Route as ApiAdminAdoptionsCasesIdRouteImport } from './routes/api/admin/adoptions/cases/$id'
-import { Route as ApiAdminAdoptionsAnimalsPipelineRouteImport } from './routes/api/admin/adoptions/animals/pipeline'
-import { Route as ApiAdminAdoptionsAdoptersIdRouteImport } from './routes/api/admin/adoptions/adopters/$id'
-import { Route as ApiAdminAdoptionInstructionsRevisionsIdRouteImport } from './routes/api/admin/adoption-instructions/revisions/$id'
-import { Route as ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport } from './routes/api/admin/adoption-guide-releases/$id/withdraw'
-import { Route as ApiAdminAdoptionGuideReleasesIdSubmitRouteImport } from './routes/api/admin/adoption-guide-releases/$id/submit'
-import { Route as ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport } from './routes/api/admin/adoption-guide-releases/$id/return-to-draft'
-import { Route as ApiAdminAdoptionGuideReleasesIdPublishRouteImport } from './routes/api/admin/adoption-guide-releases/$id/publish'
-import { Route as ApiAdminAdoptionGuideReleasesIdPreviewRouteImport } from './routes/api/admin/adoption-guide-releases/$id/preview'
+import { Route as AdminCoordinatorAdoptersIdRouteImport } from './routes/admin/coordinator/adopters/$id'
+import { Route as AdminVolunteersPeopleIdRouteImport } from './routes/admin/volunteers/people/$id'
+import { Route as AdminVolunteersRegistrationsIdRouteImport } from './routes/admin/volunteers/registrations/$id'
+import { Route as ApiAdminAccessAuditRouteImport } from './routes/api/admin/access/audit'
+import { Route as ApiAdminAccessInvitesRouteImport } from './routes/api/admin/access/invites'
+import { Route as ApiAdminAccessUsersRouteImport } from './routes/api/admin/access/users'
+import { Route as ApiAdminAdoptionGuideReleasesIdRouteImport } from './routes/api/admin/adoption-guide-releases/$id'
+import { Route as ApiAdminAdoptionInstructionsDraftRouteImport } from './routes/api/admin/adoption-instructions/draft'
+import { Route as ApiAdminAdoptionInstructionsHistoryRouteImport } from './routes/api/admin/adoption-instructions/history'
+import { Route as ApiAdminAdoptionInstructionsPreviewRouteImport } from './routes/api/admin/adoption-instructions/preview'
+import { Route as ApiAdminAdoptionInstructionsPublishRouteImport } from './routes/api/admin/adoption-instructions/publish'
+import { Route as ApiAdminAdoptionInstructionsRestoreRouteImport } from './routes/api/admin/adoption-instructions/restore'
+import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admin/adoptions/adopters'
+import { Route as ApiAdminAdoptionsAssignmentBulkRouteImport } from './routes/api/admin/adoptions/assignment-bulk'
+import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
+import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
+import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
+import { Route as ApiAdminAnimalsListRouteImport } from './routes/api/admin/animals/list'
+import { Route as ApiAdminAnimalsPhotoUploadUrlRouteImport } from './routes/api/admin/animals/photo-upload-url'
+import { Route as ApiAdminAnimalsReviewBulkRouteImport } from './routes/api/admin/animals/review-bulk'
+import { Route as ApiAdminAnnualReportsIdRouteImport } from './routes/api/admin/annual-reports/$id'
+import { Route as ApiAdminContentIdRouteImport } from './routes/api/admin/content/$id'
+import { Route as ApiAdminContentLinkSearchRouteImport } from './routes/api/admin/content/link-search'
+import { Route as ApiAdminContentReviewBulkRouteImport } from './routes/api/admin/content/review-bulk'
+import { Route as ApiAdminDocumentsIdRouteImport } from './routes/api/admin/documents/$id'
+import { Route as ApiAdminDocumentsUploadTargetRouteImport } from './routes/api/admin/documents/upload-target'
+import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
+import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api/admin/exports/donations[.]csv'
+import { Route as ApiAdminExportsJobsRouteImport } from './routes/api/admin/exports/jobs'
+import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
+import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
+import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
+import { Route as ApiAdminFinanceBankMatchOperationsRouteImport } from './routes/api/admin/finance/bank-match-operations'
+import { Route as ApiAdminFinanceBankStatementPreviewRouteImport } from './routes/api/admin/finance/bank-statement-preview'
+import { Route as ApiAdminFinanceDeliveryJobsRouteImport } from './routes/api/admin/finance/delivery-jobs'
+import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
+import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
+import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
+import { Route as ApiAdminSponsorshipsFollowupAssigneesRouteImport } from './routes/api/admin/sponsorships/followup-assignees'
+import { Route as ApiAdminSponsorshipsFollowupBulkRouteImport } from './routes/api/admin/sponsorships/followup-bulk'
+import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
+import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
+import { Route as ApiAdminSupportersAssignmentAssigneesRouteImport } from './routes/api/admin/supporters/assignment-assignees'
+import { Route as ApiAdminSupportersAssignmentBulkRouteImport } from './routes/api/admin/supporters/assignment-bulk'
+import { Route as ApiAdminSupportersFormatPreviewRouteImport } from './routes/api/admin/supporters/format-preview'
+import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
+import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
+import { Route as ApiAdminVolunteersBulkRouteImport } from './routes/api/admin/volunteers/bulk'
+import { Route as ApiAdminVolunteersCalendarRouteImport } from './routes/api/admin/volunteers/calendar'
+import { Route as ApiAdminVolunteersGroupEnquiriesRouteImport } from './routes/api/admin/volunteers/group-enquiries'
+import { Route as ApiAdminVolunteersOverviewRouteImport } from './routes/api/admin/volunteers/overview'
+import { Route as ApiAdminVolunteersPeopleRouteImport } from './routes/api/admin/volunteers/people'
+import { Route as ApiAdminVolunteersQualificationsRouteImport } from './routes/api/admin/volunteers/qualifications'
+import { Route as ApiAdminVolunteersRegistrationsRouteImport } from './routes/api/admin/volunteers/registrations'
+import { Route as ApiAdminVolunteersReviewerBulkRouteImport } from './routes/api/admin/volunteers/reviewer-bulk'
+import { Route as ApiAdminVolunteersTasksRouteImport } from './routes/api/admin/volunteers/tasks'
+import { Route as ApiAdoptionApplicationsPhotoUploadUrlsRouteImport } from './routes/api/adoption/applications/photo-upload-urls'
+import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
+import { Route as ApiDonationsDonationIdStatusRouteImport } from './routes/api/donations/$donationId/status'
+import { Route as ApiSponsorshipsPledgesProofUploadUrlRouteImport } from './routes/api/sponsorships/pledges/proof-upload-url'
+import { Route as ApiSponsorshipsStatusTokenRouteImport } from './routes/api/sponsorships/status/$token'
+import { Route as ApiSupporterReceiptsReceiptIdRouteImport } from './routes/api/supporter/receipts/$receiptId'
+import { Route as ApiSupporterRecoveryVerifyRouteImport } from './routes/api/supporter/recovery/verify'
+import { Route as ApiVolunteerStatusTokenRouteImport } from './routes/api/volunteer/status/$token'
 import { Route as ApiAdminAccessUsersIdRouteImport } from './routes/api/admin/access/users/$id'
-import { Route as ApiAdminVolunteersRegistrationsIdStatusRouteImport } from './routes/api/admin/volunteers/registrations/$id/status'
-import { Route as ApiAdminVolunteersRegistrationsIdAttendanceRouteImport } from './routes/api/admin/volunteers/registrations/$id/attendance'
-import { Route as ApiAdminVolunteersJobsIdRetryRouteImport } from './routes/api/admin/volunteers/jobs/$id/retry'
-import { Route as ApiAdminVolunteersActivitiesIdCloneRouteImport } from './routes/api/admin/volunteers/activities/$id/clone'
-import { Route as ApiAdminSponsorshipsPledgesIdReviewRouteImport } from './routes/api/admin/sponsorships/pledges/$id/review'
-import { Route as ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport } from './routes/api/admin/sponsorships/pledges/$id/reminder-draft'
-import { Route as ApiAdminSponsorshipsPledgesIdProofUrlRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof-url'
-import { Route as ApiAdminSponsorshipsPledgesIdProofRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof'
-import { Route as ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport } from './routes/api/admin/sponsorships/pledges/$id/followup-assignment'
-import { Route as ApiAdminSponsorshipsPledgesIdFinanceRouteImport } from './routes/api/admin/sponsorships/pledges/$id/finance'
-import { Route as ApiAdminSponsorshipsPledgesIdCancelRouteImport } from './routes/api/admin/sponsorships/pledges/$id/cancel'
-import { Route as ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport } from './routes/api/admin/sponsorships/pledges/$id/assignments'
-import { Route as ApiAdminExportsJobsIdDownloadRouteImport } from './routes/api/admin/exports/jobs/$id/download'
-import { Route as ApiAdminDonationsDeliveryJobIdRetryRouteImport } from './routes/api/admin/donations/delivery/$jobId/retry'
-import { Route as ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport } from './routes/api/admin/content/updates/$updateId/notification-drafts'
-import { Route as ApiAdminAdoptionsCasesIdStatusRouteImport } from './routes/api/admin/adoptions/cases/$id/status'
-import { Route as ApiAdminAdoptionsCasesIdMatchesRouteImport } from './routes/api/admin/adoptions/cases/$id/matches'
-import { Route as ApiAdminAdoptionsCasesIdFollowupsRouteImport } from './routes/api/admin/adoptions/cases/$id/followups'
-import { Route as ApiAdminAdoptionsCasesIdFinalizeRouteImport } from './routes/api/admin/adoptions/cases/$id/finalize'
-import { Route as ApiAdminAdoptionsAnimalsIdStatusRouteImport } from './routes/api/admin/adoptions/animals/$id/status'
-import { Route as ApiAdminAdoptionsAnimalsIdInternalRouteImport } from './routes/api/admin/adoptions/animals/$id/internal'
+import { Route as ApiAdminAdoptionGuideReleasesIdPreviewRouteImport } from './routes/api/admin/adoption-guide-releases/$id/preview'
+import { Route as ApiAdminAdoptionGuideReleasesIdPublishRouteImport } from './routes/api/admin/adoption-guide-releases/$id/publish'
+import { Route as ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport } from './routes/api/admin/adoption-guide-releases/$id/return-to-draft'
+import { Route as ApiAdminAdoptionGuideReleasesIdSubmitRouteImport } from './routes/api/admin/adoption-guide-releases/$id/submit'
+import { Route as ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport } from './routes/api/admin/adoption-guide-releases/$id/withdraw'
+import { Route as ApiAdminAdoptionInstructionsRevisionsIdRouteImport } from './routes/api/admin/adoption-instructions/revisions/$id'
+import { Route as ApiAdminAdoptionsAdoptersIdRouteImport } from './routes/api/admin/adoptions/adopters/$id'
+import { Route as ApiAdminAdoptionsAnimalsPipelineRouteImport } from './routes/api/admin/adoptions/animals/pipeline'
+import { Route as ApiAdminAdoptionsCasesIdRouteImport } from './routes/api/admin/adoptions/cases/$id'
+import { Route as ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport } from './routes/api/admin/adoptions/exports/adopters[.]csv'
+import { Route as ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/animals[.]csv'
+import { Route as ApiAdminAdoptionsExportsCasesDotcsvRouteImport } from './routes/api/admin/adoptions/exports/cases[.]csv'
+import { Route as ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/successful-adoptions[.]csv'
+import { Route as ApiAdminAdoptionsExportsTasksDotcsvRouteImport } from './routes/api/admin/adoptions/exports/tasks[.]csv'
+import { Route as ApiAdminAdoptionsIntakeCasesRouteImport } from './routes/api/admin/adoptions/intake/cases'
+import { Route as ApiAdminAdoptionsIntakeIdentitySearchRouteImport } from './routes/api/admin/adoptions/intake/identity-search'
+import { Route as ApiAdminAdoptionsIntakeItemsRouteImport } from './routes/api/admin/adoptions/intake/items'
+import { Route as ApiAdminAdoptionsReportsExportsRouteImport } from './routes/api/admin/adoptions/reports/exports'
+import { Route as ApiAdminAdoptionsReportsSummaryRouteImport } from './routes/api/admin/adoptions/reports/summary'
+import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
+import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
+import { Route as ApiAdminAnimalsIdArchiveRouteImport } from './routes/api/admin/animals/$id/archive'
+import { Route as ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport } from './routes/api/admin/animals/draft-photo-upload-url/index'
+import { Route as ApiAdminAnimalsPublicationIndexRouteImport } from './routes/api/admin/animals/publication/index'
+import { Route as ApiAdminAnnualReportsIdPublishRouteImport } from './routes/api/admin/annual-reports/$id/publish'
+import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
+import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
+import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/content/$id/media'
+import { Route as ApiAdminContentIdMediaFinalizeRouteImport } from './routes/api/admin/content/$id/media-finalize'
+import { Route as ApiAdminContentIdMediaPreviewRouteImport } from './routes/api/admin/content/$id/media-preview'
+import { Route as ApiAdminContentIdMediaUploadTargetRouteImport } from './routes/api/admin/content/$id/media-upload-target'
+import { Route as ApiAdminContentIdPublicationMetadataRouteImport } from './routes/api/admin/content/$id/publication-metadata'
+import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin/content/$id/publish'
+import { Route as ApiAdminContentIdRevisionsRouteImport } from './routes/api/admin/content/$id/revisions'
+import { Route as ApiAdminContentIdSocialCopyRouteImport } from './routes/api/admin/content/$id/social-copy'
+import { Route as ApiAdminContentIdStoryProfileRouteImport } from './routes/api/admin/content/$id/story-profile'
+import { Route as ApiAdminContentIdUpdatesRouteImport } from './routes/api/admin/content/$id/updates'
+import { Route as ApiAdminContentNotificationDraftsIdRouteImport } from './routes/api/admin/content/notification-drafts/$id'
+import { Route as ApiAdminContentSocialCopyIdRouteImport } from './routes/api/admin/content/social-copy/$id'
+import { Route as ApiAdminDocumentsIdPublishRouteImport } from './routes/api/admin/documents/$id/publish'
+import { Route as ApiAdminExportsJobsIdRouteImport } from './routes/api/admin/exports/jobs/$id'
+import { Route as ApiAdminPaymentMethodsIdPublishRouteImport } from './routes/api/admin/payment-methods/$id/publish'
+import { Route as ApiAdminPaymentMethodsIdReturnToDraftRouteImport } from './routes/api/admin/payment-methods/$id/return-to-draft'
+import { Route as ApiAdminPaymentMethodsIdSubmitRouteImport } from './routes/api/admin/payment-methods/$id/submit'
+import { Route as ApiAdminPaymentMethodsIdWithdrawRouteImport } from './routes/api/admin/payment-methods/$id/withdraw'
+import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
+import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
+import { Route as ApiAdminSponsorshipsPledgesIdRouteImport } from './routes/api/admin/sponsorships/pledges/$id'
+import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
+import { Route as ApiAdminVolunteersActivitiesIdRouteImport } from './routes/api/admin/volunteers/activities/$id'
+import { Route as ApiAdminVolunteersAssessmentsIndexRouteImport } from './routes/api/admin/volunteers/assessments/index'
+import { Route as ApiAdminVolunteersDailySettingsIndexRouteImport } from './routes/api/admin/volunteers/daily-settings/index'
+import { Route as ApiAdminVolunteersJobsIndexRouteImport } from './routes/api/admin/volunteers/jobs/index'
+import { Route as ApiAdminVolunteersOperationsIndexRouteImport } from './routes/api/admin/volunteers/operations/index'
+import { Route as ApiAdminVolunteersRegistrationsIdRouteImport } from './routes/api/admin/volunteers/registrations/$id'
+import { Route as ApiAdminVolunteersSettingsIndexRouteImport } from './routes/api/admin/volunteers/settings/index'
+import { Route as ApiAdminVolunteersSimulationIndexRouteImport } from './routes/api/admin/volunteers/simulation/index'
+import { Route as ApiAdminVolunteersSourcesIndexRouteImport } from './routes/api/admin/volunteers/sources/index'
 import { Route as ApiAdminAccessInvitesIdResendRouteImport } from './routes/api/admin/access/invites/$id/resend'
-import { Route as ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport } from './routes/api/admin/content/$id/revisions/$revisionId/restore'
-import { Route as ApiAdminAdoptionsReportsExportsIdDownloadRouteImport } from './routes/api/admin/adoptions/reports/exports/$id/download'
+import { Route as ApiAdminAdoptionsAnimalsIdInternalRouteImport } from './routes/api/admin/adoptions/animals/$id/internal'
+import { Route as ApiAdminAdoptionsAnimalsIdStatusRouteImport } from './routes/api/admin/adoptions/animals/$id/status'
+import { Route as ApiAdminAdoptionsCasesIdFinalizeRouteImport } from './routes/api/admin/adoptions/cases/$id/finalize'
+import { Route as ApiAdminAdoptionsCasesIdFollowupsRouteImport } from './routes/api/admin/adoptions/cases/$id/followups'
+import { Route as ApiAdminAdoptionsCasesIdMatchesRouteImport } from './routes/api/admin/adoptions/cases/$id/matches'
+import { Route as ApiAdminAdoptionsCasesIdStatusRouteImport } from './routes/api/admin/adoptions/cases/$id/status'
+import { Route as ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport } from './routes/api/admin/content/updates/$updateId/notification-drafts'
+import { Route as ApiAdminDonationsDeliveryJobIdRetryRouteImport } from './routes/api/admin/donations/delivery/$jobId/retry'
+import { Route as ApiAdminExportsJobsIdDownloadRouteImport } from './routes/api/admin/exports/jobs/$id/download'
+import { Route as ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport } from './routes/api/admin/sponsorships/pledges/$id/assignments'
+import { Route as ApiAdminSponsorshipsPledgesIdCancelRouteImport } from './routes/api/admin/sponsorships/pledges/$id/cancel'
+import { Route as ApiAdminSponsorshipsPledgesIdFinanceRouteImport } from './routes/api/admin/sponsorships/pledges/$id/finance'
+import { Route as ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport } from './routes/api/admin/sponsorships/pledges/$id/followup-assignment'
+import { Route as ApiAdminSponsorshipsPledgesIdProofRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof'
+import { Route as ApiAdminSponsorshipsPledgesIdProofUrlRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof-url'
+import { Route as ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport } from './routes/api/admin/sponsorships/pledges/$id/reminder-draft'
+import { Route as ApiAdminSponsorshipsPledgesIdReviewRouteImport } from './routes/api/admin/sponsorships/pledges/$id/review'
+import { Route as ApiAdminVolunteersActivitiesIdCloneRouteImport } from './routes/api/admin/volunteers/activities/$id/clone'
+import { Route as ApiAdminVolunteersJobsIdRetryRouteImport } from './routes/api/admin/volunteers/jobs/$id/retry'
+import { Route as ApiAdminVolunteersRegistrationsIdAttendanceRouteImport } from './routes/api/admin/volunteers/registrations/$id/attendance'
+import { Route as ApiAdminVolunteersRegistrationsIdStatusRouteImport } from './routes/api/admin/volunteers/registrations/$id/status'
 import { Route as ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRouteImport } from './routes/api/admin/adoptions/applications/$applicationId/photos/$photoId'
+import { Route as ApiAdminAdoptionsReportsExportsIdDownloadRouteImport } from './routes/api/admin/adoptions/reports/exports/$id/download'
+import { Route as ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport } from './routes/api/admin/content/$id/revisions/$revisionId/restore'
 import { Route as ApiAdminSponsorshipsPledgesIdAssignmentsAssignmentIdEndRouteImport } from './routes/api/admin/sponsorships/pledges/$id/assignments/$assignmentId/end'
 
-const VolunteerRoute = VolunteerRouteImport.update({
-  id: '/volunteer',
-  path: '/volunteer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SupporterRoute = SupporterRouteImport.update({
-  id: '/supporter',
-  path: '/supporter',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StoriesRoute = StoriesRouteImport.update({
-  id: '/stories',
-  path: '/stories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SponsorsRoute = SponsorsRouteImport.update({
-  id: '/sponsors',
-  path: '/sponsors',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KnowledgeRoute = KnowledgeRouteImport.update({
-  id: '/knowledge',
-  path: '/knowledge',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InternshipsRoute = InternshipsRouteImport.update({
-  id: '/internships',
-  path: '/internships',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonateRoute = DonateRouteImport.update({
@@ -338,14 +298,49 @@ const DonateRoute = DonateRouteImport.update({
   path: '/donate',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
+const InternshipsRoute = InternshipsRouteImport.update({
+  id: '/internships',
+  path: '/internships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SponsorsRoute = SponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesRoute = StoriesRouteImport.update({
+  id: '/stories',
+  path: '/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupporterRoute = SupporterRouteImport.update({
+  id: '/supporter',
+  path: '/supporter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VolunteerRoute = VolunteerRouteImport.update({
+  id: '/volunteer',
+  path: '/volunteer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
@@ -353,154 +348,9 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VolunteerOperationsRoute = VolunteerOperationsRouteImport.update({
-  id: '/operations',
-  path: '/operations',
-  getParentRoute: () => VolunteerRoute,
-} as any)
-const VolunteerGroupRoute = VolunteerGroupRouteImport.update({
-  id: '/group',
-  path: '/group',
-  getParentRoute: () => VolunteerRoute,
-} as any)
-const StoriesSlugRoute = StoriesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => StoriesRoute,
-} as any)
-const SponsorsPledgeRoute = SponsorsPledgeRouteImport.update({
-  id: '/sponsors_/pledge',
-  path: '/sponsors/pledge',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SponsorsIdRoute = SponsorsIdRouteImport.update({
-  id: '/sponsors_/$id',
-  path: '/sponsors/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReportAuditRoute = ReportAuditRouteImport.update({
-  id: '/report/audit',
-  path: '/report/audit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReportAdoptionRoute = ReportAdoptionRouteImport.update({
-  id: '/report/adoption',
-  path: '/report/adoption',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiStoriesRoute = ApiStoriesRouteImport.update({
-  id: '/api/stories',
-  path: '/api/stories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiDonationsRoute = ApiDonationsRouteImport.update({
-  id: '/api/donations',
-  path: '/api/donations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiCspReportRoute = ApiCspReportRouteImport.update({
-  id: '/api/csp-report',
-  path: '/api/csp-report',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnimalsDogRoute = AnimalsDogRouteImport.update({
-  id: '/animals/dog',
-  path: '/animals/dog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnimalsCatRoute = AnimalsCatRouteImport.update({
-  id: '/animals/cat',
-  path: '/animals/cat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdoptionInstructionsRoute = AdoptionInstructionsRouteImport.update({
-  id: '/adoption/instructions',
-  path: '/adoption/instructions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdoptionApplyRoute = AdoptionApplyRouteImport.update({
-  id: '/adoption/apply',
-  path: '/adoption/apply',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
-  id: '/admin/volunteers',
-  path: '/admin/volunteers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTasksRoute = AdminTasksRouteImport.update({
-  id: '/admin/tasks',
-  path: '/admin/tasks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSupportersRoute = AdminSupportersRouteImport.update({
-  id: '/admin/supporters',
-  path: '/admin/supporters',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSponsorshipsRoute = AdminSponsorshipsRouteImport.update({
-  id: '/admin/sponsorships',
-  path: '/admin/sponsorships',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
-  id: '/admin/reset-password',
-  path: '/admin/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
-  id: '/admin/payment-methods',
-  path: '/admin/payment-methods',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminInternshipsRoute = AdminInternshipsRouteImport.update({
-  id: '/admin/internships',
-  path: '/admin/internships',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminGovernanceRoute = AdminGovernanceRouteImport.update({
-  id: '/admin/governance',
-  path: '/admin/governance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminFaqRoute = AdminFaqRouteImport.update({
-  id: '/admin/faq',
-  path: '/admin/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminContentRoute = AdminContentRouteImport.update({
-  id: '/admin/content',
-  path: '/admin/content',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
-  id: '/admin/applications',
-  path: '/admin/applications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAccessDeniedRoute = AdminAccessDeniedRouteImport.update({
-  id: '/admin/access-denied',
-  path: '/admin/access-denied',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAccessRoute = AdminAccessRouteImport.update({
-  id: '/admin/access',
-  path: '/admin/access',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutTnrRoute = AboutTnrRouteImport.update({
-  id: '/about/tnr',
-  path: '/about/tnr',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutTeamRoute = AboutTeamRouteImport.update({
-  id: '/about/team',
-  path: '/about/team',
+const AboutCccpRoute = AboutCccpRouteImport.update({
+  id: '/about/cccp',
+  path: '/about/cccp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutPrivacyRoute = AboutPrivacyRouteImport.update({
@@ -508,14 +358,164 @@ const AboutPrivacyRoute = AboutPrivacyRouteImport.update({
   path: '/about/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutCccpRoute = AboutCccpRouteImport.update({
-  id: '/about/cccp',
-  path: '/about/cccp',
+const AboutTeamRoute = AboutTeamRouteImport.update({
+  id: '/about/team',
+  path: '/about/team',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiInternshipsIndexRoute = ApiInternshipsIndexRouteImport.update({
-  id: '/api/internships/',
-  path: '/api/internships/',
+const AboutTnrRoute = AboutTnrRouteImport.update({
+  id: '/about/tnr',
+  path: '/about/tnr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAccessRoute = AdminAccessRouteImport.update({
+  id: '/admin/access',
+  path: '/admin/access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAccessDeniedRoute = AdminAccessDeniedRouteImport.update({
+  id: '/admin/access-denied',
+  path: '/admin/access-denied',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/admin/applications',
+  path: '/admin/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/admin/content',
+  path: '/admin/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFaqRoute = AdminFaqRouteImport.update({
+  id: '/admin/faq',
+  path: '/admin/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGovernanceRoute = AdminGovernanceRouteImport.update({
+  id: '/admin/governance',
+  path: '/admin/governance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminInternshipsRoute = AdminInternshipsRouteImport.update({
+  id: '/admin/internships',
+  path: '/admin/internships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
+  id: '/admin/payment-methods',
+  path: '/admin/payment-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
+  id: '/admin/reset-password',
+  path: '/admin/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSponsorshipsRoute = AdminSponsorshipsRouteImport.update({
+  id: '/admin/sponsorships',
+  path: '/admin/sponsorships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupportersRoute = AdminSupportersRouteImport.update({
+  id: '/admin/supporters',
+  path: '/admin/supporters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTasksRoute = AdminTasksRouteImport.update({
+  id: '/admin/tasks',
+  path: '/admin/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
+  id: '/admin/volunteers',
+  path: '/admin/volunteers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdoptionApplyRoute = AdoptionApplyRouteImport.update({
+  id: '/adoption/apply',
+  path: '/adoption/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdoptionInstructionsRoute = AdoptionInstructionsRouteImport.update({
+  id: '/adoption/instructions',
+  path: '/adoption/instructions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsCatRoute = AnimalsCatRouteImport.update({
+  id: '/animals/cat',
+  path: '/animals/cat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsDogRoute = AnimalsDogRouteImport.update({
+  id: '/animals/dog',
+  path: '/animals/dog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCspReportRoute = ApiCspReportRouteImport.update({
+  id: '/api/csp-report',
+  path: '/api/csp-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDonationsRoute = ApiDonationsRouteImport.update({
+  id: '/api/donations',
+  path: '/api/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStoriesRoute = ApiStoriesRouteImport.update({
+  id: '/api/stories',
+  path: '/api/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportAdoptionRoute = ReportAdoptionRouteImport.update({
+  id: '/report/adoption',
+  path: '/report/adoption',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportAuditRoute = ReportAuditRouteImport.update({
+  id: '/report/audit',
+  path: '/report/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SponsorsIdRoute = SponsorsIdRouteImport.update({
+  id: '/sponsors_/$id',
+  path: '/sponsors/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SponsorsPledgeRoute = SponsorsPledgeRouteImport.update({
+  id: '/sponsors_/pledge',
+  path: '/sponsors/pledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesSlugRoute = StoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => StoriesRoute,
+} as any)
+const VolunteerGroupRoute = VolunteerGroupRouteImport.update({
+  id: '/group',
+  path: '/group',
+  getParentRoute: () => VolunteerRoute,
+} as any)
+const VolunteerOperationsRoute = VolunteerOperationsRouteImport.update({
+  id: '/operations',
+  path: '/operations',
+  getParentRoute: () => VolunteerRoute,
+} as any)
+const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
+  id: '/admin/animals/new',
+  path: '/admin/animals/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminApplicationsIndexRoute = AdminApplicationsIndexRouteImport.update({
@@ -523,391 +523,30 @@ const AdminApplicationsIndexRoute = AdminApplicationsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminApplicationsRoute,
 } as any)
-const VolunteerStatusTokenRoute = VolunteerStatusTokenRouteImport.update({
-  id: '/status/$token',
-  path: '/status/$token',
-  getParentRoute: () => VolunteerRoute,
-} as any)
-const SponsorsStatusTokenRoute = SponsorsStatusTokenRouteImport.update({
-  id: '/sponsors_/status/$token',
-  path: '/sponsors/status/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
-  id: '/api/webhooks/stripe',
-  path: '/api/webhooks/stripe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiWebhooksResendRoute = ApiWebhooksResendRouteImport.update({
-  id: '/api/webhooks/resend',
-  path: '/api/webhooks/resend',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiWebhooksPaypalRoute = ApiWebhooksPaypalRouteImport.update({
-  id: '/api/webhooks/paypal',
-  path: '/api/webhooks/paypal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiWebhooksCodRoute = ApiWebhooksCodRouteImport.update({
-  id: '/api/webhooks/cod',
-  path: '/api/webhooks/cod',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiVolunteerRegistrationsRoute =
-  ApiVolunteerRegistrationsRouteImport.update({
-    id: '/api/volunteer/registrations',
-    path: '/api/volunteer/registrations',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiVolunteerPolicyRoute = ApiVolunteerPolicyRouteImport.update({
-  id: '/api/volunteer/policy',
-  path: '/api/volunteer/policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiVolunteerOperationsRoute = ApiVolunteerOperationsRouteImport.update({
-  id: '/api/volunteer/operations',
-  path: '/api/volunteer/operations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiVolunteerGroupEnquiriesRoute =
-  ApiVolunteerGroupEnquiriesRouteImport.update({
-    id: '/api/volunteer/group-enquiries',
-    path: '/api/volunteer/group-enquiries',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiVolunteerActivitiesRoute = ApiVolunteerActivitiesRouteImport.update({
-  id: '/api/volunteer/activities',
-  path: '/api/volunteer/activities',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSupporterRecoveryRoute = ApiSupporterRecoveryRouteImport.update({
-  id: '/api/supporter/recovery',
-  path: '/api/supporter/recovery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSupporterRecordsRoute = ApiSupporterRecordsRouteImport.update({
-  id: '/api/supporter/records',
-  path: '/api/supporter/records',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSupporterPreferencesRoute = ApiSupporterPreferencesRouteImport.update({
-  id: '/api/supporter/preferences',
-  path: '/api/supporter/preferences',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiStoriesMapRoute = ApiStoriesMapRouteImport.update({
-  id: '/map',
-  path: '/map',
-  getParentRoute: () => ApiStoriesRoute,
-} as any)
-const ApiStoriesSlugRoute = ApiStoriesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ApiStoriesRoute,
-} as any)
-const ApiSponsorshipsTermsRoute = ApiSponsorshipsTermsRouteImport.update({
-  id: '/api/sponsorships/terms',
-  path: '/api/sponsorships/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSponsorshipsPledgesRoute = ApiSponsorshipsPledgesRouteImport.update({
-  id: '/api/sponsorships/pledges',
-  path: '/api/sponsorships/pledges',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiJobsVolunteersRoute = ApiJobsVolunteersRouteImport.update({
-  id: '/api/jobs/volunteers',
-  path: '/api/jobs/volunteers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiJobsSponsorshipsRoute = ApiJobsSponsorshipsRouteImport.update({
-  id: '/api/jobs/sponsorships',
-  path: '/api/jobs/sponsorships',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiJobsPublicUploadsRoute = ApiJobsPublicUploadsRouteImport.update({
-  id: '/api/jobs/public-uploads',
-  path: '/api/jobs/public-uploads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiJobsPublicMediaRepairRoute =
-  ApiJobsPublicMediaRepairRouteImport.update({
-    id: '/api/jobs/public-media-repair',
-    path: '/api/jobs/public-media-repair',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiJobsDonationsRoute = ApiJobsDonationsRouteImport.update({
-  id: '/api/jobs/donations',
-  path: '/api/jobs/donations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiJobsCrmExportsRoute = ApiJobsCrmExportsRouteImport.update({
-  id: '/api/jobs/crm-exports',
-  path: '/api/jobs/crm-exports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiJobsAdoptionUploadsRoute = ApiJobsAdoptionUploadsRouteImport.update({
-  id: '/api/jobs/adoption-uploads',
-  path: '/api/jobs/adoption-uploads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiInternshipsAttachmentRoute =
-  ApiInternshipsAttachmentRouteImport.update({
-    id: '/api/internships/attachment',
-    path: '/api/internships/attachment',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiInternalReadinessRoute = ApiInternalReadinessRouteImport.update({
-  id: '/api/internal/readiness',
-  path: '/api/internal/readiness',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
-  id: '/api/adoption/applications',
-  path: '/api/adoption/applications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminTaskOverviewRoute = ApiAdminTaskOverviewRouteImport.update({
-  id: '/api/admin/task-overview',
-  path: '/api/admin/task-overview',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminSupportersRoute = ApiAdminSupportersRouteImport.update({
-  id: '/api/admin/supporters',
-  path: '/api/admin/supporters',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminReceiptsRoute = ApiAdminReceiptsRouteImport.update({
-  id: '/api/admin/receipts',
-  path: '/api/admin/receipts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminPaymentsRoute = ApiAdminPaymentsRouteImport.update({
-  id: '/api/admin/payments',
-  path: '/api/admin/payments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminPaymentMethodsRoute = ApiAdminPaymentMethodsRouteImport.update({
-  id: '/api/admin/payment-methods',
-  path: '/api/admin/payment-methods',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminMediaRepairsRoute = ApiAdminMediaRepairsRouteImport.update({
-  id: '/api/admin/media-repairs',
-  path: '/api/admin/media-repairs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
-  id: '/api/admin/me',
-  path: '/api/admin/me',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminKnowledgeRoute = ApiAdminKnowledgeRouteImport.update({
-  id: '/api/admin/knowledge',
-  path: '/api/admin/knowledge',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminInternshipsRoute = ApiAdminInternshipsRouteImport.update({
-  id: '/api/admin/internships',
-  path: '/api/admin/internships',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminGovernanceRoute = ApiAdminGovernanceRouteImport.update({
-  id: '/api/admin/governance',
-  path: '/api/admin/governance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminFaqRoute = ApiAdminFaqRouteImport.update({
-  id: '/api/admin/faq',
-  path: '/api/admin/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminDocumentsRoute = ApiAdminDocumentsRouteImport.update({
-  id: '/api/admin/documents',
-  path: '/api/admin/documents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminContentReviewRoute = ApiAdminContentReviewRouteImport.update({
-  id: '/api/admin/content-review',
-  path: '/api/admin/content-review',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminContentRoute = ApiAdminContentRouteImport.update({
-  id: '/api/admin/content',
-  path: '/api/admin/content',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminAnnualReportsRoute = ApiAdminAnnualReportsRouteImport.update({
-  id: '/api/admin/annual-reports',
-  path: '/api/admin/annual-reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminAdoptionInstructionsRoute =
-  ApiAdminAdoptionInstructionsRouteImport.update({
-    id: '/api/admin/adoption-instructions',
-    path: '/api/admin/adoption-instructions',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionInformationRoute =
-  ApiAdminAdoptionInformationRouteImport.update({
-    id: '/api/admin/adoption-information',
-    path: '/api/admin/adoption-information',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionGuideReleasesRoute =
-  ApiAdminAdoptionGuideReleasesRouteImport.update({
-    id: '/api/admin/adoption-guide-releases',
-    path: '/api/admin/adoption-guide-releases',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAboutPagesRoute = ApiAdminAboutPagesRouteImport.update({
-  id: '/api/admin/about-pages',
-  path: '/api/admin/about-pages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnimalsDogIdRoute = AnimalsDogIdRouteImport.update({
-  id: '/animals/dog_/$id',
-  path: '/animals/dog/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnimalsCatIdRoute = AnimalsCatIdRouteImport.update({
-  id: '/animals/cat_/$id',
-  path: '/animals/cat/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdoptionStatusTokenRoute = AdoptionStatusTokenRouteImport.update({
-  id: '/adoption/status/$token',
-  path: '/adoption/status/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVolunteersTasksRoute = AdminVolunteersTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
-  getParentRoute: () => AdminVolunteersRoute,
-} as any)
-const AdminVolunteersSourcesRoute = AdminVolunteersSourcesRouteImport.update({
-  id: '/sources',
-  path: '/sources',
-  getParentRoute: () => AdminVolunteersRoute,
-} as any)
-const AdminVolunteersSimulationRoute =
-  AdminVolunteersSimulationRouteImport.update({
-    id: '/simulation',
-    path: '/simulation',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersSettingsRoute = AdminVolunteersSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminVolunteersRoute,
-} as any)
-const AdminVolunteersQualificationsRoute =
-  AdminVolunteersQualificationsRouteImport.update({
-    id: '/qualifications',
-    path: '/qualifications',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersPeopleRoute = AdminVolunteersPeopleRouteImport.update({
-  id: '/people',
-  path: '/people',
-  getParentRoute: () => AdminVolunteersRoute,
-} as any)
-const AdminVolunteersOperationsRoute =
-  AdminVolunteersOperationsRouteImport.update({
-    id: '/operations',
-    path: '/operations',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersGroupEnquiriesRoute =
-  AdminVolunteersGroupEnquiriesRouteImport.update({
-    id: '/group-enquiries',
-    path: '/group-enquiries',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersDailySettingsRoute =
-  AdminVolunteersDailySettingsRouteImport.update({
-    id: '/daily-settings',
-    path: '/daily-settings',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersCalendarRoute = AdminVolunteersCalendarRouteImport.update({
-  id: '/calendar',
-  path: '/calendar',
-  getParentRoute: () => AdminVolunteersRoute,
-} as any)
-const AdminVolunteersAssessmentsRoute =
-  AdminVolunteersAssessmentsRouteImport.update({
-    id: '/assessments',
-    path: '/assessments',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersActivitiesRoute =
-  AdminVolunteersActivitiesRouteImport.update({
-    id: '/activities',
-    path: '/activities',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminSupportersIdRoute = AdminSupportersIdRouteImport.update({
+const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => AdminSupportersRoute,
+  getParentRoute: () => AdminApplicationsRoute,
 } as any)
-const AdminCoordinatorTasksRoute = AdminCoordinatorTasksRouteImport.update({
-  id: '/admin/coordinator/tasks',
-  path: '/admin/coordinator/tasks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCoordinatorStatusesRoute =
-  AdminCoordinatorStatusesRouteImport.update({
-    id: '/admin/coordinator/statuses',
-    path: '/admin/coordinator/statuses',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminCoordinatorReportsRoute = AdminCoordinatorReportsRouteImport.update({
-  id: '/admin/coordinator/reports',
-  path: '/admin/coordinator/reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCoordinatorIntakeRoute = AdminCoordinatorIntakeRouteImport.update({
-  id: '/admin/coordinator/intake',
-  path: '/admin/coordinator/intake',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCoordinatorInboxRoute = AdminCoordinatorInboxRouteImport.update({
-  id: '/admin/coordinator/inbox',
-  path: '/admin/coordinator/inbox',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCoordinatorAnimalsRoute = AdminCoordinatorAnimalsRouteImport.update({
-  id: '/admin/coordinator/animals',
-  path: '/admin/coordinator/animals',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminCoordinatorAdoptersRoute =
-  AdminCoordinatorAdoptersRouteImport.update({
-    id: '/admin/coordinator/adopters',
-    path: '/admin/coordinator/adopters',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminContentNewRoute = AdminContentNewRouteImport.update({
-  id: '/new',
-  path: '/new',
+const AdminContentIdRoute = AdminContentIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => AdminContentRoute,
 } as any)
-const AdminContentKnowledgeRoute = AdminContentKnowledgeRouteImport.update({
-  id: '/knowledge',
-  path: '/knowledge',
+const AdminContentAboutRoute = AdminContentAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => AdminContentRoute,
 } as any)
-const AdminContentDocumentsRoute = AdminContentDocumentsRouteImport.update({
-  id: '/documents',
-  path: '/documents',
+const AdminContentAdoptionRoute = AdminContentAdoptionRouteImport.update({
+  id: '/adoption',
+  path: '/adoption',
   getParentRoute: () => AdminContentRoute,
 } as any)
-const AdminContentAnnualReportsRoute =
-  AdminContentAnnualReportsRouteImport.update({
-    id: '/annual-reports',
-    path: '/annual-reports',
+const AdminContentAdoptionGuidesRoute =
+  AdminContentAdoptionGuidesRouteImport.update({
+    id: '/adoption-guides',
+    path: '/adoption-guides',
     getParentRoute: () => AdminContentRoute,
   } as any)
 const AdminContentAdoptionPreviewRoute =
@@ -916,351 +555,445 @@ const AdminContentAdoptionPreviewRoute =
     path: '/adoption-preview',
     getParentRoute: () => AdminContentRoute,
   } as any)
-const AdminContentAdoptionGuidesRoute =
-  AdminContentAdoptionGuidesRouteImport.update({
-    id: '/adoption-guides',
-    path: '/adoption-guides',
+const AdminContentAnnualReportsRoute =
+  AdminContentAnnualReportsRouteImport.update({
+    id: '/annual-reports',
+    path: '/annual-reports',
     getParentRoute: () => AdminContentRoute,
   } as any)
-const AdminContentAdoptionRoute = AdminContentAdoptionRouteImport.update({
-  id: '/adoption',
-  path: '/adoption',
+const AdminContentDocumentsRoute = AdminContentDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
   getParentRoute: () => AdminContentRoute,
 } as any)
-const AdminContentAboutRoute = AdminContentAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const AdminContentKnowledgeRoute = AdminContentKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
   getParentRoute: () => AdminContentRoute,
 } as any)
-const AdminContentIdRoute = AdminContentIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
+const AdminContentNewRoute = AdminContentNewRouteImport.update({
+  id: '/new',
+  path: '/new',
   getParentRoute: () => AdminContentRoute,
 } as any)
-const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
+const AdminCoordinatorAdoptersRoute =
+  AdminCoordinatorAdoptersRouteImport.update({
+    id: '/admin/coordinator/adopters',
+    path: '/admin/coordinator/adopters',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminCoordinatorAnimalsRoute = AdminCoordinatorAnimalsRouteImport.update({
+  id: '/admin/coordinator/animals',
+  path: '/admin/coordinator/animals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCoordinatorInboxRoute = AdminCoordinatorInboxRouteImport.update({
+  id: '/admin/coordinator/inbox',
+  path: '/admin/coordinator/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCoordinatorIntakeRoute = AdminCoordinatorIntakeRouteImport.update({
+  id: '/admin/coordinator/intake',
+  path: '/admin/coordinator/intake',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCoordinatorReportsRoute = AdminCoordinatorReportsRouteImport.update({
+  id: '/admin/coordinator/reports',
+  path: '/admin/coordinator/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCoordinatorStatusesRoute =
+  AdminCoordinatorStatusesRouteImport.update({
+    id: '/admin/coordinator/statuses',
+    path: '/admin/coordinator/statuses',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminCoordinatorTasksRoute = AdminCoordinatorTasksRouteImport.update({
+  id: '/admin/coordinator/tasks',
+  path: '/admin/coordinator/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupportersIdRoute = AdminSupportersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => AdminApplicationsRoute,
+  getParentRoute: () => AdminSupportersRoute,
 } as any)
-const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
-  id: '/admin/animals/new',
-  path: '/admin/animals/new',
+const AdminVolunteersActivitiesRoute =
+  AdminVolunteersActivitiesRouteImport.update({
+    id: '/activities',
+    path: '/activities',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersAssessmentsRoute =
+  AdminVolunteersAssessmentsRouteImport.update({
+    id: '/assessments',
+    path: '/assessments',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersCalendarRoute = AdminVolunteersCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersDailySettingsRoute =
+  AdminVolunteersDailySettingsRouteImport.update({
+    id: '/daily-settings',
+    path: '/daily-settings',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersGroupEnquiriesRoute =
+  AdminVolunteersGroupEnquiriesRouteImport.update({
+    id: '/group-enquiries',
+    path: '/group-enquiries',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersOperationsRoute =
+  AdminVolunteersOperationsRouteImport.update({
+    id: '/operations',
+    path: '/operations',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersPeopleRoute = AdminVolunteersPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersQualificationsRoute =
+  AdminVolunteersQualificationsRouteImport.update({
+    id: '/qualifications',
+    path: '/qualifications',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersSettingsRoute = AdminVolunteersSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersSimulationRoute =
+  AdminVolunteersSimulationRouteImport.update({
+    id: '/simulation',
+    path: '/simulation',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersSourcesRoute = AdminVolunteersSourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersTasksRoute = AdminVolunteersTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdoptionStatusTokenRoute = AdoptionStatusTokenRouteImport.update({
+  id: '/adoption/status/$token',
+  path: '/adoption/status/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiVolunteerStatusTokenRoute = ApiVolunteerStatusTokenRouteImport.update({
-  id: '/api/volunteer/status/$token',
-  path: '/api/volunteer/status/$token',
+const AnimalsCatIdRoute = AnimalsCatIdRouteImport.update({
+  id: '/animals/cat_/$id',
+  path: '/animals/cat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSupporterRecoveryVerifyRoute =
-  ApiSupporterRecoveryVerifyRouteImport.update({
-    id: '/verify',
-    path: '/verify',
-    getParentRoute: () => ApiSupporterRecoveryRoute,
-  } as any)
-const ApiSupporterReceiptsReceiptIdRoute =
-  ApiSupporterReceiptsReceiptIdRouteImport.update({
-    id: '/api/supporter/receipts/$receiptId',
-    path: '/api/supporter/receipts/$receiptId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiSponsorshipsStatusTokenRoute =
-  ApiSponsorshipsStatusTokenRouteImport.update({
-    id: '/api/sponsorships/status/$token',
-    path: '/api/sponsorships/status/$token',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiSponsorshipsPledgesProofUploadUrlRoute =
-  ApiSponsorshipsPledgesProofUploadUrlRouteImport.update({
-    id: '/proof-upload-url',
-    path: '/proof-upload-url',
-    getParentRoute: () => ApiSponsorshipsPledgesRoute,
-  } as any)
-const ApiDonationsDonationIdStatusRoute =
-  ApiDonationsDonationIdStatusRouteImport.update({
-    id: '/$donationId/status',
-    path: '/$donationId/status',
-    getParentRoute: () => ApiDonationsRoute,
-  } as any)
-const ApiAdoptionStatusTokenRoute = ApiAdoptionStatusTokenRouteImport.update({
-  id: '/api/adoption/status/$token',
-  path: '/api/adoption/status/$token',
+const AnimalsDogIdRoute = AnimalsDogIdRouteImport.update({
+  id: '/animals/dog_/$id',
+  path: '/animals/dog/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdoptionApplicationsPhotoUploadUrlsRoute =
-  ApiAdoptionApplicationsPhotoUploadUrlsRouteImport.update({
-    id: '/photo-upload-urls',
-    path: '/photo-upload-urls',
-    getParentRoute: () => ApiAdoptionApplicationsRoute,
-  } as any)
-const ApiAdminVolunteersTasksRoute = ApiAdminVolunteersTasksRouteImport.update({
-  id: '/api/admin/volunteers/tasks',
-  path: '/api/admin/volunteers/tasks',
+const ApiAdminAboutPagesRoute = ApiAdminAboutPagesRouteImport.update({
+  id: '/api/admin/about-pages',
+  path: '/api/admin/about-pages',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminVolunteersReviewerBulkRoute =
-  ApiAdminVolunteersReviewerBulkRouteImport.update({
-    id: '/api/admin/volunteers/reviewer-bulk',
-    path: '/api/admin/volunteers/reviewer-bulk',
+const ApiAdminAdoptionGuideReleasesRoute =
+  ApiAdminAdoptionGuideReleasesRouteImport.update({
+    id: '/api/admin/adoption-guide-releases',
+    path: '/api/admin/adoption-guide-releases',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminVolunteersRegistrationsRoute =
-  ApiAdminVolunteersRegistrationsRouteImport.update({
-    id: '/api/admin/volunteers/registrations',
-    path: '/api/admin/volunteers/registrations',
+const ApiAdminAdoptionInformationRoute =
+  ApiAdminAdoptionInformationRouteImport.update({
+    id: '/api/admin/adoption-information',
+    path: '/api/admin/adoption-information',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminVolunteersQualificationsRoute =
-  ApiAdminVolunteersQualificationsRouteImport.update({
-    id: '/api/admin/volunteers/qualifications',
-    path: '/api/admin/volunteers/qualifications',
+const ApiAdminAdoptionInstructionsRoute =
+  ApiAdminAdoptionInstructionsRouteImport.update({
+    id: '/api/admin/adoption-instructions',
+    path: '/api/admin/adoption-instructions',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminVolunteersPeopleRoute =
-  ApiAdminVolunteersPeopleRouteImport.update({
-    id: '/api/admin/volunteers/people',
-    path: '/api/admin/volunteers/people',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersOverviewRoute =
-  ApiAdminVolunteersOverviewRouteImport.update({
-    id: '/api/admin/volunteers/overview',
-    path: '/api/admin/volunteers/overview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersGroupEnquiriesRoute =
-  ApiAdminVolunteersGroupEnquiriesRouteImport.update({
-    id: '/api/admin/volunteers/group-enquiries',
-    path: '/api/admin/volunteers/group-enquiries',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersCalendarRoute =
-  ApiAdminVolunteersCalendarRouteImport.update({
-    id: '/api/admin/volunteers/calendar',
-    path: '/api/admin/volunteers/calendar',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersBulkRoute = ApiAdminVolunteersBulkRouteImport.update({
-  id: '/api/admin/volunteers/bulk',
-  path: '/api/admin/volunteers/bulk',
+const ApiAdminAnnualReportsRoute = ApiAdminAnnualReportsRouteImport.update({
+  id: '/api/admin/annual-reports',
+  path: '/api/admin/annual-reports',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminVolunteersActivitiesRoute =
-  ApiAdminVolunteersActivitiesRouteImport.update({
-    id: '/api/admin/volunteers/activities',
-    path: '/api/admin/volunteers/activities',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminSupportersTagBulkRoute =
-  ApiAdminSupportersTagBulkRouteImport.update({
-    id: '/tag-bulk',
-    path: '/tag-bulk',
-    getParentRoute: () => ApiAdminSupportersRoute,
-  } as any)
-const ApiAdminSupportersFormatPreviewRoute =
-  ApiAdminSupportersFormatPreviewRouteImport.update({
-    id: '/format-preview',
-    path: '/format-preview',
-    getParentRoute: () => ApiAdminSupportersRoute,
-  } as any)
-const ApiAdminSupportersAssignmentBulkRoute =
-  ApiAdminSupportersAssignmentBulkRouteImport.update({
-    id: '/assignment-bulk',
-    path: '/assignment-bulk',
-    getParentRoute: () => ApiAdminSupportersRoute,
-  } as any)
-const ApiAdminSupportersAssignmentAssigneesRoute =
-  ApiAdminSupportersAssignmentAssigneesRouteImport.update({
-    id: '/assignment-assignees',
-    path: '/assignment-assignees',
-    getParentRoute: () => ApiAdminSupportersRoute,
-  } as any)
-const ApiAdminSupportersIdRoute = ApiAdminSupportersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiAdminSupportersRoute,
+const ApiAdminContentRoute = ApiAdminContentRouteImport.update({
+  id: '/api/admin/content',
+  path: '/api/admin/content',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminSponsorshipsPledgesRoute =
-  ApiAdminSponsorshipsPledgesRouteImport.update({
-    id: '/api/admin/sponsorships/pledges',
-    path: '/api/admin/sponsorships/pledges',
+const ApiAdminContentReviewRoute = ApiAdminContentReviewRouteImport.update({
+  id: '/api/admin/content-review',
+  path: '/api/admin/content-review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminDocumentsRoute = ApiAdminDocumentsRouteImport.update({
+  id: '/api/admin/documents',
+  path: '/api/admin/documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminFaqRoute = ApiAdminFaqRouteImport.update({
+  id: '/api/admin/faq',
+  path: '/api/admin/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminGovernanceRoute = ApiAdminGovernanceRouteImport.update({
+  id: '/api/admin/governance',
+  path: '/api/admin/governance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminInternshipsRoute = ApiAdminInternshipsRouteImport.update({
+  id: '/api/admin/internships',
+  path: '/api/admin/internships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminKnowledgeRoute = ApiAdminKnowledgeRouteImport.update({
+  id: '/api/admin/knowledge',
+  path: '/api/admin/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
+  id: '/api/admin/me',
+  path: '/api/admin/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMediaRepairsRoute = ApiAdminMediaRepairsRouteImport.update({
+  id: '/api/admin/media-repairs',
+  path: '/api/admin/media-repairs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPaymentMethodsRoute = ApiAdminPaymentMethodsRouteImport.update({
+  id: '/api/admin/payment-methods',
+  path: '/api/admin/payment-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPaymentsRoute = ApiAdminPaymentsRouteImport.update({
+  id: '/api/admin/payments',
+  path: '/api/admin/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminReceiptsRoute = ApiAdminReceiptsRouteImport.update({
+  id: '/api/admin/receipts',
+  path: '/api/admin/receipts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminSupportersRoute = ApiAdminSupportersRouteImport.update({
+  id: '/api/admin/supporters',
+  path: '/api/admin/supporters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminTaskOverviewRoute = ApiAdminTaskOverviewRouteImport.update({
+  id: '/api/admin/task-overview',
+  path: '/api/admin/task-overview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
+  id: '/api/adoption/applications',
+  path: '/api/adoption/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternalReadinessRoute = ApiInternalReadinessRouteImport.update({
+  id: '/api/internal/readiness',
+  path: '/api/internal/readiness',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternshipsIndexRoute = ApiInternshipsIndexRouteImport.update({
+  id: '/api/internships/',
+  path: '/api/internships/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternshipsAttachmentRoute =
+  ApiInternshipsAttachmentRouteImport.update({
+    id: '/api/internships/attachment',
+    path: '/api/internships/attachment',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminSponsorshipsFollowupBulkRoute =
-  ApiAdminSponsorshipsFollowupBulkRouteImport.update({
-    id: '/api/admin/sponsorships/followup-bulk',
-    path: '/api/admin/sponsorships/followup-bulk',
+const ApiJobsAdoptionUploadsRoute = ApiJobsAdoptionUploadsRouteImport.update({
+  id: '/api/jobs/adoption-uploads',
+  path: '/api/jobs/adoption-uploads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsCrmExportsRoute = ApiJobsCrmExportsRouteImport.update({
+  id: '/api/jobs/crm-exports',
+  path: '/api/jobs/crm-exports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsDonationsRoute = ApiJobsDonationsRouteImport.update({
+  id: '/api/jobs/donations',
+  path: '/api/jobs/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsPublicMediaRepairRoute =
+  ApiJobsPublicMediaRepairRouteImport.update({
+    id: '/api/jobs/public-media-repair',
+    path: '/api/jobs/public-media-repair',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminSponsorshipsFollowupAssigneesRoute =
-  ApiAdminSponsorshipsFollowupAssigneesRouteImport.update({
-    id: '/api/admin/sponsorships/followup-assignees',
-    path: '/api/admin/sponsorships/followup-assignees',
+const ApiJobsPublicUploadsRoute = ApiJobsPublicUploadsRouteImport.update({
+  id: '/api/jobs/public-uploads',
+  path: '/api/jobs/public-uploads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsSponsorshipsRoute = ApiJobsSponsorshipsRouteImport.update({
+  id: '/api/jobs/sponsorships',
+  path: '/api/jobs/sponsorships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsVolunteersRoute = ApiJobsVolunteersRouteImport.update({
+  id: '/api/jobs/volunteers',
+  path: '/api/jobs/volunteers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSponsorshipsPledgesRoute = ApiSponsorshipsPledgesRouteImport.update({
+  id: '/api/sponsorships/pledges',
+  path: '/api/sponsorships/pledges',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSponsorshipsTermsRoute = ApiSponsorshipsTermsRouteImport.update({
+  id: '/api/sponsorships/terms',
+  path: '/api/sponsorships/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStoriesSlugRoute = ApiStoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ApiStoriesRoute,
+} as any)
+const ApiStoriesMapRoute = ApiStoriesMapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => ApiStoriesRoute,
+} as any)
+const ApiSupporterPreferencesRoute = ApiSupporterPreferencesRouteImport.update({
+  id: '/api/supporter/preferences',
+  path: '/api/supporter/preferences',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSupporterRecordsRoute = ApiSupporterRecordsRouteImport.update({
+  id: '/api/supporter/records',
+  path: '/api/supporter/records',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSupporterRecoveryRoute = ApiSupporterRecoveryRouteImport.update({
+  id: '/api/supporter/recovery',
+  path: '/api/supporter/recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVolunteerActivitiesRoute = ApiVolunteerActivitiesRouteImport.update({
+  id: '/api/volunteer/activities',
+  path: '/api/volunteer/activities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVolunteerGroupEnquiriesRoute =
+  ApiVolunteerGroupEnquiriesRouteImport.update({
+    id: '/api/volunteer/group-enquiries',
+    path: '/api/volunteer/group-enquiries',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminSponsorshipsDeliveriesRoute =
-  ApiAdminSponsorshipsDeliveriesRouteImport.update({
-    id: '/api/admin/sponsorships/deliveries',
-    path: '/api/admin/sponsorships/deliveries',
+const ApiVolunteerOperationsRoute = ApiVolunteerOperationsRouteImport.update({
+  id: '/api/volunteer/operations',
+  path: '/api/volunteer/operations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVolunteerPolicyRoute = ApiVolunteerPolicyRouteImport.update({
+  id: '/api/volunteer/policy',
+  path: '/api/volunteer/policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVolunteerRegistrationsRoute =
+  ApiVolunteerRegistrationsRouteImport.update({
+    id: '/api/volunteer/registrations',
+    path: '/api/volunteer/registrations',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminSponsorshipsAnimalsRoute =
-  ApiAdminSponsorshipsAnimalsRouteImport.update({
-    id: '/api/admin/sponsorships/animals',
-    path: '/api/admin/sponsorships/animals',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminPaymentMethodsIdRoute =
-  ApiAdminPaymentMethodsIdRouteImport.update({
+const ApiWebhooksCodRoute = ApiWebhooksCodRouteImport.update({
+  id: '/api/webhooks/cod',
+  path: '/api/webhooks/cod',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksPaypalRoute = ApiWebhooksPaypalRouteImport.update({
+  id: '/api/webhooks/paypal',
+  path: '/api/webhooks/paypal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksResendRoute = ApiWebhooksResendRouteImport.update({
+  id: '/api/webhooks/resend',
+  path: '/api/webhooks/resend',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
+  id: '/api/webhooks/stripe',
+  path: '/api/webhooks/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SponsorsStatusTokenRoute = SponsorsStatusTokenRouteImport.update({
+  id: '/sponsors_/status/$token',
+  path: '/sponsors/status/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VolunteerStatusTokenRoute = VolunteerStatusTokenRouteImport.update({
+  id: '/status/$token',
+  path: '/status/$token',
+  getParentRoute: () => VolunteerRoute,
+} as any)
+const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
+  id: '/admin/animals/$id/edit',
+  path: '/admin/animals/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCoordinatorAdoptersIdRoute =
+  AdminCoordinatorAdoptersIdRouteImport.update({
     id: '/$id',
     path: '/$id',
-    getParentRoute: () => ApiAdminPaymentMethodsRoute,
+    getParentRoute: () => AdminCoordinatorAdoptersRoute,
   } as any)
-const ApiAdminFinanceDeliveryJobsRoute =
-  ApiAdminFinanceDeliveryJobsRouteImport.update({
-    id: '/api/admin/finance/delivery-jobs',
-    path: '/api/admin/finance/delivery-jobs',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminFinanceBankStatementPreviewRoute =
-  ApiAdminFinanceBankStatementPreviewRouteImport.update({
-    id: '/api/admin/finance/bank-statement-preview',
-    path: '/api/admin/finance/bank-statement-preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminFinanceBankMatchOperationsRoute =
-  ApiAdminFinanceBankMatchOperationsRouteImport.update({
-    id: '/api/admin/finance/bank-match-operations',
-    path: '/api/admin/finance/bank-match-operations',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminFinanceActivityRoute = ApiAdminFinanceActivityRouteImport.update({
-  id: '/api/admin/finance/activity',
-  path: '/api/admin/finance/activity',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminExportsSupportersDotcsvRoute =
-  ApiAdminExportsSupportersDotcsvRouteImport.update({
-    id: '/api/admin/exports/supporters.csv',
-    path: '/api/admin/exports/supporters.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminExportsPaymentsDotcsvRoute =
-  ApiAdminExportsPaymentsDotcsvRouteImport.update({
-    id: '/api/admin/exports/payments.csv',
-    path: '/api/admin/exports/payments.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminExportsJobsRoute = ApiAdminExportsJobsRouteImport.update({
-  id: '/api/admin/exports/jobs',
-  path: '/api/admin/exports/jobs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminExportsDonationsDotcsvRoute =
-  ApiAdminExportsDonationsDotcsvRouteImport.update({
-    id: '/api/admin/exports/donations.csv',
-    path: '/api/admin/exports/donations.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminDonationsManualRoute = ApiAdminDonationsManualRouteImport.update({
-  id: '/api/admin/donations/manual',
-  path: '/api/admin/donations/manual',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminDocumentsUploadTargetRoute =
-  ApiAdminDocumentsUploadTargetRouteImport.update({
-    id: '/upload-target',
-    path: '/upload-target',
-    getParentRoute: () => ApiAdminDocumentsRoute,
-  } as any)
-const ApiAdminDocumentsIdRoute = ApiAdminDocumentsIdRouteImport.update({
+const AdminVolunteersPeopleIdRoute = AdminVolunteersPeopleIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => ApiAdminDocumentsRoute,
+  getParentRoute: () => AdminVolunteersPeopleRoute,
 } as any)
-const ApiAdminContentReviewBulkRoute =
-  ApiAdminContentReviewBulkRouteImport.update({
-    id: '/review-bulk',
-    path: '/review-bulk',
-    getParentRoute: () => ApiAdminContentRoute,
+const AdminVolunteersRegistrationsIdRoute =
+  AdminVolunteersRegistrationsIdRouteImport.update({
+    id: '/registrations/$id',
+    path: '/registrations/$id',
+    getParentRoute: () => AdminVolunteersRoute,
   } as any)
-const ApiAdminContentLinkSearchRoute =
-  ApiAdminContentLinkSearchRouteImport.update({
-    id: '/link-search',
-    path: '/link-search',
-    getParentRoute: () => ApiAdminContentRoute,
-  } as any)
-const ApiAdminContentIdRoute = ApiAdminContentIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiAdminContentRoute,
-} as any)
-const ApiAdminAnnualReportsIdRoute = ApiAdminAnnualReportsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiAdminAnnualReportsRoute,
-} as any)
-const ApiAdminAnimalsReviewBulkRoute =
-  ApiAdminAnimalsReviewBulkRouteImport.update({
-    id: '/api/admin/animals/review-bulk',
-    path: '/api/admin/animals/review-bulk',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAnimalsPhotoUploadUrlRoute =
-  ApiAdminAnimalsPhotoUploadUrlRouteImport.update({
-    id: '/api/admin/animals/photo-upload-url',
-    path: '/api/admin/animals/photo-upload-url',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAnimalsListRoute = ApiAdminAnimalsListRouteImport.update({
-  id: '/api/admin/animals/list',
-  path: '/api/admin/animals/list',
+const ApiAdminAccessAuditRoute = ApiAdminAccessAuditRouteImport.update({
+  id: '/api/admin/access/audit',
+  path: '/api/admin/access/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminAdoptionsTasksRoute = ApiAdminAdoptionsTasksRouteImport.update({
-  id: '/api/admin/adoptions/tasks',
-  path: '/api/admin/adoptions/tasks',
+const ApiAdminAccessInvitesRoute = ApiAdminAccessInvitesRouteImport.update({
+  id: '/api/admin/access/invites',
+  path: '/api/admin/access/invites',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminAdoptionsStatusesRoute =
-  ApiAdminAdoptionsStatusesRouteImport.update({
-    id: '/api/admin/adoptions/statuses',
-    path: '/api/admin/adoptions/statuses',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsCasesRoute = ApiAdminAdoptionsCasesRouteImport.update({
-  id: '/api/admin/adoptions/cases',
-  path: '/api/admin/adoptions/cases',
+const ApiAdminAccessUsersRoute = ApiAdminAccessUsersRouteImport.update({
+  id: '/api/admin/access/users',
+  path: '/api/admin/access/users',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminAdoptionsAssignmentBulkRoute =
-  ApiAdminAdoptionsAssignmentBulkRouteImport.update({
-    id: '/api/admin/adoptions/assignment-bulk',
-    path: '/api/admin/adoptions/assignment-bulk',
-    getParentRoute: () => rootRouteImport,
+const ApiAdminAdoptionGuideReleasesIdRoute =
+  ApiAdminAdoptionGuideReleasesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminAdoptionGuideReleasesRoute,
   } as any)
-const ApiAdminAdoptionsAdoptersRoute =
-  ApiAdminAdoptionsAdoptersRouteImport.update({
-    id: '/api/admin/adoptions/adopters',
-    path: '/api/admin/adoptions/adopters',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionInstructionsRestoreRoute =
-  ApiAdminAdoptionInstructionsRestoreRouteImport.update({
-    id: '/restore',
-    path: '/restore',
-    getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
-  } as any)
-const ApiAdminAdoptionInstructionsPublishRoute =
-  ApiAdminAdoptionInstructionsPublishRouteImport.update({
-    id: '/publish',
-    path: '/publish',
-    getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
-  } as any)
-const ApiAdminAdoptionInstructionsPreviewRoute =
-  ApiAdminAdoptionInstructionsPreviewRouteImport.update({
-    id: '/preview',
-    path: '/preview',
+const ApiAdminAdoptionInstructionsDraftRoute =
+  ApiAdminAdoptionInstructionsDraftRouteImport.update({
+    id: '/draft',
+    path: '/draft',
     getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
   } as any)
 const ApiAdminAdoptionInstructionsHistoryRoute =
@@ -1269,385 +1002,331 @@ const ApiAdminAdoptionInstructionsHistoryRoute =
     path: '/history',
     getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
   } as any)
-const ApiAdminAdoptionInstructionsDraftRoute =
-  ApiAdminAdoptionInstructionsDraftRouteImport.update({
-    id: '/draft',
-    path: '/draft',
+const ApiAdminAdoptionInstructionsPreviewRoute =
+  ApiAdminAdoptionInstructionsPreviewRouteImport.update({
+    id: '/preview',
+    path: '/preview',
     getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
   } as any)
-const ApiAdminAdoptionGuideReleasesIdRoute =
-  ApiAdminAdoptionGuideReleasesIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminAdoptionGuideReleasesRoute,
-  } as any)
-const ApiAdminAccessUsersRoute = ApiAdminAccessUsersRouteImport.update({
-  id: '/api/admin/access/users',
-  path: '/api/admin/access/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminAccessInvitesRoute = ApiAdminAccessInvitesRouteImport.update({
-  id: '/api/admin/access/invites',
-  path: '/api/admin/access/invites',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminAccessAuditRoute = ApiAdminAccessAuditRouteImport.update({
-  id: '/api/admin/access/audit',
-  path: '/api/admin/access/audit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVolunteersRegistrationsIdRoute =
-  AdminVolunteersRegistrationsIdRouteImport.update({
-    id: '/registrations/$id',
-    path: '/registrations/$id',
-    getParentRoute: () => AdminVolunteersRoute,
-  } as any)
-const AdminVolunteersPeopleIdRoute = AdminVolunteersPeopleIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminVolunteersPeopleRoute,
-} as any)
-const AdminCoordinatorAdoptersIdRoute =
-  AdminCoordinatorAdoptersIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AdminCoordinatorAdoptersRoute,
-  } as any)
-const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
-  id: '/admin/animals/$id/edit',
-  path: '/admin/animals/$id/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminVolunteersSourcesIndexRoute =
-  ApiAdminVolunteersSourcesIndexRouteImport.update({
-    id: '/api/admin/volunteers/sources/',
-    path: '/api/admin/volunteers/sources/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersSimulationIndexRoute =
-  ApiAdminVolunteersSimulationIndexRouteImport.update({
-    id: '/api/admin/volunteers/simulation/',
-    path: '/api/admin/volunteers/simulation/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersSettingsIndexRoute =
-  ApiAdminVolunteersSettingsIndexRouteImport.update({
-    id: '/api/admin/volunteers/settings/',
-    path: '/api/admin/volunteers/settings/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersOperationsIndexRoute =
-  ApiAdminVolunteersOperationsIndexRouteImport.update({
-    id: '/api/admin/volunteers/operations/',
-    path: '/api/admin/volunteers/operations/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersJobsIndexRoute =
-  ApiAdminVolunteersJobsIndexRouteImport.update({
-    id: '/api/admin/volunteers/jobs/',
-    path: '/api/admin/volunteers/jobs/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersDailySettingsIndexRoute =
-  ApiAdminVolunteersDailySettingsIndexRouteImport.update({
-    id: '/api/admin/volunteers/daily-settings/',
-    path: '/api/admin/volunteers/daily-settings/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersAssessmentsIndexRoute =
-  ApiAdminVolunteersAssessmentsIndexRouteImport.update({
-    id: '/api/admin/volunteers/assessments/',
-    path: '/api/admin/volunteers/assessments/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAnimalsPublicationIndexRoute =
-  ApiAdminAnimalsPublicationIndexRouteImport.update({
-    id: '/api/admin/animals/publication/',
-    path: '/api/admin/animals/publication/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute =
-  ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport.update({
-    id: '/api/admin/animals/draft-photo-upload-url/',
-    path: '/api/admin/animals/draft-photo-upload-url/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminVolunteersRegistrationsIdRoute =
-  ApiAdminVolunteersRegistrationsIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminVolunteersRegistrationsRoute,
-  } as any)
-const ApiAdminVolunteersActivitiesIdRoute =
-  ApiAdminVolunteersActivitiesIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminVolunteersActivitiesRoute,
-  } as any)
-const ApiAdminSupportersIdConsentsRoute =
-  ApiAdminSupportersIdConsentsRouteImport.update({
-    id: '/consents',
-    path: '/consents',
-    getParentRoute: () => ApiAdminSupportersIdRoute,
-  } as any)
-const ApiAdminSponsorshipsPledgesIdRoute =
-  ApiAdminSponsorshipsPledgesIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesRoute,
-  } as any)
-const ApiAdminReceiptsIdVoidRoute = ApiAdminReceiptsIdVoidRouteImport.update({
-  id: '/$id/void',
-  path: '/$id/void',
-  getParentRoute: () => ApiAdminReceiptsRoute,
-} as any)
-const ApiAdminPaymentsIdReconcileRoute =
-  ApiAdminPaymentsIdReconcileRouteImport.update({
-    id: '/$id/reconcile',
-    path: '/$id/reconcile',
-    getParentRoute: () => ApiAdminPaymentsRoute,
-  } as any)
-const ApiAdminPaymentMethodsIdWithdrawRoute =
-  ApiAdminPaymentMethodsIdWithdrawRouteImport.update({
-    id: '/withdraw',
-    path: '/withdraw',
-    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
-  } as any)
-const ApiAdminPaymentMethodsIdSubmitRoute =
-  ApiAdminPaymentMethodsIdSubmitRouteImport.update({
-    id: '/submit',
-    path: '/submit',
-    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
-  } as any)
-const ApiAdminPaymentMethodsIdReturnToDraftRoute =
-  ApiAdminPaymentMethodsIdReturnToDraftRouteImport.update({
-    id: '/return-to-draft',
-    path: '/return-to-draft',
-    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
-  } as any)
-const ApiAdminPaymentMethodsIdPublishRoute =
-  ApiAdminPaymentMethodsIdPublishRouteImport.update({
+const ApiAdminAdoptionInstructionsPublishRoute =
+  ApiAdminAdoptionInstructionsPublishRouteImport.update({
     id: '/publish',
     path: '/publish',
-    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
-  } as any)
-const ApiAdminExportsJobsIdRoute = ApiAdminExportsJobsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiAdminExportsJobsRoute,
-} as any)
-const ApiAdminDocumentsIdPublishRoute =
-  ApiAdminDocumentsIdPublishRouteImport.update({
-    id: '/publish',
-    path: '/publish',
-    getParentRoute: () => ApiAdminDocumentsIdRoute,
-  } as any)
-const ApiAdminContentSocialCopyIdRoute =
-  ApiAdminContentSocialCopyIdRouteImport.update({
-    id: '/social-copy/$id',
-    path: '/social-copy/$id',
-    getParentRoute: () => ApiAdminContentRoute,
-  } as any)
-const ApiAdminContentNotificationDraftsIdRoute =
-  ApiAdminContentNotificationDraftsIdRouteImport.update({
-    id: '/notification-drafts/$id',
-    path: '/notification-drafts/$id',
-    getParentRoute: () => ApiAdminContentRoute,
-  } as any)
-const ApiAdminContentIdUpdatesRoute =
-  ApiAdminContentIdUpdatesRouteImport.update({
-    id: '/updates',
-    path: '/updates',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdStoryProfileRoute =
-  ApiAdminContentIdStoryProfileRouteImport.update({
-    id: '/story-profile',
-    path: '/story-profile',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdSocialCopyRoute =
-  ApiAdminContentIdSocialCopyRouteImport.update({
-    id: '/social-copy',
-    path: '/social-copy',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdRevisionsRoute =
-  ApiAdminContentIdRevisionsRouteImport.update({
-    id: '/revisions',
-    path: '/revisions',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdPublishRoute =
-  ApiAdminContentIdPublishRouteImport.update({
-    id: '/publish',
-    path: '/publish',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdPublicationMetadataRoute =
-  ApiAdminContentIdPublicationMetadataRouteImport.update({
-    id: '/publication-metadata',
-    path: '/publication-metadata',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdMediaUploadTargetRoute =
-  ApiAdminContentIdMediaUploadTargetRouteImport.update({
-    id: '/media-upload-target',
-    path: '/media-upload-target',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdMediaPreviewRoute =
-  ApiAdminContentIdMediaPreviewRouteImport.update({
-    id: '/media-preview',
-    path: '/media-preview',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdMediaFinalizeRoute =
-  ApiAdminContentIdMediaFinalizeRouteImport.update({
-    id: '/media-finalize',
-    path: '/media-finalize',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminContentIdMediaRoute = ApiAdminContentIdMediaRouteImport.update({
-  id: '/media',
-  path: '/media',
-  getParentRoute: () => ApiAdminContentIdRoute,
-} as any)
-const ApiAdminContentIdLinksRoute = ApiAdminContentIdLinksRouteImport.update({
-  id: '/links',
-  path: '/links',
-  getParentRoute: () => ApiAdminContentIdRoute,
-} as any)
-const ApiAdminContentIdArchiveRoute =
-  ApiAdminContentIdArchiveRouteImport.update({
-    id: '/archive',
-    path: '/archive',
-    getParentRoute: () => ApiAdminContentIdRoute,
-  } as any)
-const ApiAdminAnnualReportsIdPublishRoute =
-  ApiAdminAnnualReportsIdPublishRouteImport.update({
-    id: '/publish',
-    path: '/publish',
-    getParentRoute: () => ApiAdminAnnualReportsIdRoute,
-  } as any)
-const ApiAdminAnimalsIdArchiveRoute =
-  ApiAdminAnimalsIdArchiveRouteImport.update({
-    id: '/api/admin/animals/$id/archive',
-    path: '/api/admin/animals/$id/archive',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsTasksIdRoute =
-  ApiAdminAdoptionsTasksIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminAdoptionsTasksRoute,
-  } as any)
-const ApiAdminAdoptionsStatusesIdRoute =
-  ApiAdminAdoptionsStatusesIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminAdoptionsStatusesRoute,
-  } as any)
-const ApiAdminAdoptionsReportsSummaryRoute =
-  ApiAdminAdoptionsReportsSummaryRouteImport.update({
-    id: '/api/admin/adoptions/reports/summary',
-    path: '/api/admin/adoptions/reports/summary',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsReportsExportsRoute =
-  ApiAdminAdoptionsReportsExportsRouteImport.update({
-    id: '/api/admin/adoptions/reports/exports',
-    path: '/api/admin/adoptions/reports/exports',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsIntakeItemsRoute =
-  ApiAdminAdoptionsIntakeItemsRouteImport.update({
-    id: '/api/admin/adoptions/intake/items',
-    path: '/api/admin/adoptions/intake/items',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsIntakeIdentitySearchRoute =
-  ApiAdminAdoptionsIntakeIdentitySearchRouteImport.update({
-    id: '/api/admin/adoptions/intake/identity-search',
-    path: '/api/admin/adoptions/intake/identity-search',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsIntakeCasesRoute =
-  ApiAdminAdoptionsIntakeCasesRouteImport.update({
-    id: '/api/admin/adoptions/intake/cases',
-    path: '/api/admin/adoptions/intake/cases',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsExportsTasksDotcsvRoute =
-  ApiAdminAdoptionsExportsTasksDotcsvRouteImport.update({
-    id: '/api/admin/adoptions/exports/tasks.csv',
-    path: '/api/admin/adoptions/exports/tasks.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute =
-  ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport.update({
-    id: '/api/admin/adoptions/exports/successful-adoptions.csv',
-    path: '/api/admin/adoptions/exports/successful-adoptions.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsExportsCasesDotcsvRoute =
-  ApiAdminAdoptionsExportsCasesDotcsvRouteImport.update({
-    id: '/api/admin/adoptions/exports/cases.csv',
-    path: '/api/admin/adoptions/exports/cases.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsExportsAnimalsDotcsvRoute =
-  ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport.update({
-    id: '/api/admin/adoptions/exports/animals.csv',
-    path: '/api/admin/adoptions/exports/animals.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsExportsAdoptersDotcsvRoute =
-  ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport.update({
-    id: '/api/admin/adoptions/exports/adopters.csv',
-    path: '/api/admin/adoptions/exports/adopters.csv',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsCasesIdRoute =
-  ApiAdminAdoptionsCasesIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminAdoptionsCasesRoute,
-  } as any)
-const ApiAdminAdoptionsAnimalsPipelineRoute =
-  ApiAdminAdoptionsAnimalsPipelineRouteImport.update({
-    id: '/api/admin/adoptions/animals/pipeline',
-    path: '/api/admin/adoptions/animals/pipeline',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminAdoptionsAdoptersIdRoute =
-  ApiAdminAdoptionsAdoptersIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => ApiAdminAdoptionsAdoptersRoute,
-  } as any)
-const ApiAdminAdoptionInstructionsRevisionsIdRoute =
-  ApiAdminAdoptionInstructionsRevisionsIdRouteImport.update({
-    id: '/revisions/$id',
-    path: '/revisions/$id',
     getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
   } as any)
-const ApiAdminAdoptionGuideReleasesIdWithdrawRoute =
-  ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport.update({
-    id: '/withdraw',
-    path: '/withdraw',
-    getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
+const ApiAdminAdoptionInstructionsRestoreRoute =
+  ApiAdminAdoptionInstructionsRestoreRouteImport.update({
+    id: '/restore',
+    path: '/restore',
+    getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
   } as any)
-const ApiAdminAdoptionGuideReleasesIdSubmitRoute =
-  ApiAdminAdoptionGuideReleasesIdSubmitRouteImport.update({
-    id: '/submit',
-    path: '/submit',
-    getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
+const ApiAdminAdoptionsAdoptersRoute =
+  ApiAdminAdoptionsAdoptersRouteImport.update({
+    id: '/api/admin/adoptions/adopters',
+    path: '/api/admin/adoptions/adopters',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminAdoptionGuideReleasesIdReturnToDraftRoute =
-  ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport.update({
-    id: '/return-to-draft',
-    path: '/return-to-draft',
+const ApiAdminAdoptionsAssignmentBulkRoute =
+  ApiAdminAdoptionsAssignmentBulkRouteImport.update({
+    id: '/api/admin/adoptions/assignment-bulk',
+    path: '/api/admin/adoptions/assignment-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsCasesRoute = ApiAdminAdoptionsCasesRouteImport.update({
+  id: '/api/admin/adoptions/cases',
+  path: '/api/admin/adoptions/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAdoptionsStatusesRoute =
+  ApiAdminAdoptionsStatusesRouteImport.update({
+    id: '/api/admin/adoptions/statuses',
+    path: '/api/admin/adoptions/statuses',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsTasksRoute = ApiAdminAdoptionsTasksRouteImport.update({
+  id: '/api/admin/adoptions/tasks',
+  path: '/api/admin/adoptions/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAnimalsListRoute = ApiAdminAnimalsListRouteImport.update({
+  id: '/api/admin/animals/list',
+  path: '/api/admin/animals/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAnimalsPhotoUploadUrlRoute =
+  ApiAdminAnimalsPhotoUploadUrlRouteImport.update({
+    id: '/api/admin/animals/photo-upload-url',
+    path: '/api/admin/animals/photo-upload-url',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnimalsReviewBulkRoute =
+  ApiAdminAnimalsReviewBulkRouteImport.update({
+    id: '/api/admin/animals/review-bulk',
+    path: '/api/admin/animals/review-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnnualReportsIdRoute = ApiAdminAnnualReportsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminAnnualReportsRoute,
+} as any)
+const ApiAdminContentIdRoute = ApiAdminContentIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminContentRoute,
+} as any)
+const ApiAdminContentLinkSearchRoute =
+  ApiAdminContentLinkSearchRouteImport.update({
+    id: '/link-search',
+    path: '/link-search',
+    getParentRoute: () => ApiAdminContentRoute,
+  } as any)
+const ApiAdminContentReviewBulkRoute =
+  ApiAdminContentReviewBulkRouteImport.update({
+    id: '/review-bulk',
+    path: '/review-bulk',
+    getParentRoute: () => ApiAdminContentRoute,
+  } as any)
+const ApiAdminDocumentsIdRoute = ApiAdminDocumentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminDocumentsRoute,
+} as any)
+const ApiAdminDocumentsUploadTargetRoute =
+  ApiAdminDocumentsUploadTargetRouteImport.update({
+    id: '/upload-target',
+    path: '/upload-target',
+    getParentRoute: () => ApiAdminDocumentsRoute,
+  } as any)
+const ApiAdminDonationsManualRoute = ApiAdminDonationsManualRouteImport.update({
+  id: '/api/admin/donations/manual',
+  path: '/api/admin/donations/manual',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminExportsDonationsDotcsvRoute =
+  ApiAdminExportsDonationsDotcsvRouteImport.update({
+    id: '/api/admin/exports/donations.csv',
+    path: '/api/admin/exports/donations.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminExportsJobsRoute = ApiAdminExportsJobsRouteImport.update({
+  id: '/api/admin/exports/jobs',
+  path: '/api/admin/exports/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminExportsPaymentsDotcsvRoute =
+  ApiAdminExportsPaymentsDotcsvRouteImport.update({
+    id: '/api/admin/exports/payments.csv',
+    path: '/api/admin/exports/payments.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminExportsSupportersDotcsvRoute =
+  ApiAdminExportsSupportersDotcsvRouteImport.update({
+    id: '/api/admin/exports/supporters.csv',
+    path: '/api/admin/exports/supporters.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminFinanceActivityRoute = ApiAdminFinanceActivityRouteImport.update({
+  id: '/api/admin/finance/activity',
+  path: '/api/admin/finance/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminFinanceBankMatchOperationsRoute =
+  ApiAdminFinanceBankMatchOperationsRouteImport.update({
+    id: '/api/admin/finance/bank-match-operations',
+    path: '/api/admin/finance/bank-match-operations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminFinanceBankStatementPreviewRoute =
+  ApiAdminFinanceBankStatementPreviewRouteImport.update({
+    id: '/api/admin/finance/bank-statement-preview',
+    path: '/api/admin/finance/bank-statement-preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminFinanceDeliveryJobsRoute =
+  ApiAdminFinanceDeliveryJobsRouteImport.update({
+    id: '/api/admin/finance/delivery-jobs',
+    path: '/api/admin/finance/delivery-jobs',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminPaymentMethodsIdRoute =
+  ApiAdminPaymentMethodsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminPaymentMethodsRoute,
+  } as any)
+const ApiAdminSponsorshipsAnimalsRoute =
+  ApiAdminSponsorshipsAnimalsRouteImport.update({
+    id: '/api/admin/sponsorships/animals',
+    path: '/api/admin/sponsorships/animals',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSponsorshipsDeliveriesRoute =
+  ApiAdminSponsorshipsDeliveriesRouteImport.update({
+    id: '/api/admin/sponsorships/deliveries',
+    path: '/api/admin/sponsorships/deliveries',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSponsorshipsFollowupAssigneesRoute =
+  ApiAdminSponsorshipsFollowupAssigneesRouteImport.update({
+    id: '/api/admin/sponsorships/followup-assignees',
+    path: '/api/admin/sponsorships/followup-assignees',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSponsorshipsFollowupBulkRoute =
+  ApiAdminSponsorshipsFollowupBulkRouteImport.update({
+    id: '/api/admin/sponsorships/followup-bulk',
+    path: '/api/admin/sponsorships/followup-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSponsorshipsPledgesRoute =
+  ApiAdminSponsorshipsPledgesRouteImport.update({
+    id: '/api/admin/sponsorships/pledges',
+    path: '/api/admin/sponsorships/pledges',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSupportersIdRoute = ApiAdminSupportersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminSupportersRoute,
+} as any)
+const ApiAdminSupportersAssignmentAssigneesRoute =
+  ApiAdminSupportersAssignmentAssigneesRouteImport.update({
+    id: '/assignment-assignees',
+    path: '/assignment-assignees',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminSupportersAssignmentBulkRoute =
+  ApiAdminSupportersAssignmentBulkRouteImport.update({
+    id: '/assignment-bulk',
+    path: '/assignment-bulk',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminSupportersFormatPreviewRoute =
+  ApiAdminSupportersFormatPreviewRouteImport.update({
+    id: '/format-preview',
+    path: '/format-preview',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminSupportersTagBulkRoute =
+  ApiAdminSupportersTagBulkRouteImport.update({
+    id: '/tag-bulk',
+    path: '/tag-bulk',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminVolunteersActivitiesRoute =
+  ApiAdminVolunteersActivitiesRouteImport.update({
+    id: '/api/admin/volunteers/activities',
+    path: '/api/admin/volunteers/activities',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersBulkRoute = ApiAdminVolunteersBulkRouteImport.update({
+  id: '/api/admin/volunteers/bulk',
+  path: '/api/admin/volunteers/bulk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminVolunteersCalendarRoute =
+  ApiAdminVolunteersCalendarRouteImport.update({
+    id: '/api/admin/volunteers/calendar',
+    path: '/api/admin/volunteers/calendar',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersGroupEnquiriesRoute =
+  ApiAdminVolunteersGroupEnquiriesRouteImport.update({
+    id: '/api/admin/volunteers/group-enquiries',
+    path: '/api/admin/volunteers/group-enquiries',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersOverviewRoute =
+  ApiAdminVolunteersOverviewRouteImport.update({
+    id: '/api/admin/volunteers/overview',
+    path: '/api/admin/volunteers/overview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersPeopleRoute =
+  ApiAdminVolunteersPeopleRouteImport.update({
+    id: '/api/admin/volunteers/people',
+    path: '/api/admin/volunteers/people',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersQualificationsRoute =
+  ApiAdminVolunteersQualificationsRouteImport.update({
+    id: '/api/admin/volunteers/qualifications',
+    path: '/api/admin/volunteers/qualifications',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersRegistrationsRoute =
+  ApiAdminVolunteersRegistrationsRouteImport.update({
+    id: '/api/admin/volunteers/registrations',
+    path: '/api/admin/volunteers/registrations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersReviewerBulkRoute =
+  ApiAdminVolunteersReviewerBulkRouteImport.update({
+    id: '/api/admin/volunteers/reviewer-bulk',
+    path: '/api/admin/volunteers/reviewer-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersTasksRoute = ApiAdminVolunteersTasksRouteImport.update({
+  id: '/api/admin/volunteers/tasks',
+  path: '/api/admin/volunteers/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdoptionApplicationsPhotoUploadUrlsRoute =
+  ApiAdoptionApplicationsPhotoUploadUrlsRouteImport.update({
+    id: '/photo-upload-urls',
+    path: '/photo-upload-urls',
+    getParentRoute: () => ApiAdoptionApplicationsRoute,
+  } as any)
+const ApiAdoptionStatusTokenRoute = ApiAdoptionStatusTokenRouteImport.update({
+  id: '/api/adoption/status/$token',
+  path: '/api/adoption/status/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDonationsDonationIdStatusRoute =
+  ApiDonationsDonationIdStatusRouteImport.update({
+    id: '/$donationId/status',
+    path: '/$donationId/status',
+    getParentRoute: () => ApiDonationsRoute,
+  } as any)
+const ApiSponsorshipsPledgesProofUploadUrlRoute =
+  ApiSponsorshipsPledgesProofUploadUrlRouteImport.update({
+    id: '/proof-upload-url',
+    path: '/proof-upload-url',
+    getParentRoute: () => ApiSponsorshipsPledgesRoute,
+  } as any)
+const ApiSponsorshipsStatusTokenRoute =
+  ApiSponsorshipsStatusTokenRouteImport.update({
+    id: '/api/sponsorships/status/$token',
+    path: '/api/sponsorships/status/$token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSupporterReceiptsReceiptIdRoute =
+  ApiSupporterReceiptsReceiptIdRouteImport.update({
+    id: '/api/supporter/receipts/$receiptId',
+    path: '/api/supporter/receipts/$receiptId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSupporterRecoveryVerifyRoute =
+  ApiSupporterRecoveryVerifyRouteImport.update({
+    id: '/verify',
+    path: '/verify',
+    getParentRoute: () => ApiSupporterRecoveryRoute,
+  } as any)
+const ApiVolunteerStatusTokenRoute = ApiVolunteerStatusTokenRouteImport.update({
+  id: '/api/volunteer/status/$token',
+  path: '/api/volunteer/status/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAccessUsersIdRoute = ApiAdminAccessUsersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminAccessUsersRoute,
+} as any)
+const ApiAdminAdoptionGuideReleasesIdPreviewRoute =
+  ApiAdminAdoptionGuideReleasesIdPreviewRouteImport.update({
+    id: '/preview',
+    path: '/preview',
     getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
   } as any)
 const ApiAdminAdoptionGuideReleasesIdPublishRoute =
@@ -1656,141 +1335,336 @@ const ApiAdminAdoptionGuideReleasesIdPublishRoute =
     path: '/publish',
     getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
   } as any)
-const ApiAdminAdoptionGuideReleasesIdPreviewRoute =
-  ApiAdminAdoptionGuideReleasesIdPreviewRouteImport.update({
-    id: '/preview',
-    path: '/preview',
+const ApiAdminAdoptionGuideReleasesIdReturnToDraftRoute =
+  ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport.update({
+    id: '/return-to-draft',
+    path: '/return-to-draft',
     getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
   } as any)
-const ApiAdminAccessUsersIdRoute = ApiAdminAccessUsersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiAdminAccessUsersRoute,
+const ApiAdminAdoptionGuideReleasesIdSubmitRoute =
+  ApiAdminAdoptionGuideReleasesIdSubmitRouteImport.update({
+    id: '/submit',
+    path: '/submit',
+    getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
+  } as any)
+const ApiAdminAdoptionGuideReleasesIdWithdrawRoute =
+  ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport.update({
+    id: '/withdraw',
+    path: '/withdraw',
+    getParentRoute: () => ApiAdminAdoptionGuideReleasesIdRoute,
+  } as any)
+const ApiAdminAdoptionInstructionsRevisionsIdRoute =
+  ApiAdminAdoptionInstructionsRevisionsIdRouteImport.update({
+    id: '/revisions/$id',
+    path: '/revisions/$id',
+    getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
+  } as any)
+const ApiAdminAdoptionsAdoptersIdRoute =
+  ApiAdminAdoptionsAdoptersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminAdoptionsAdoptersRoute,
+  } as any)
+const ApiAdminAdoptionsAnimalsPipelineRoute =
+  ApiAdminAdoptionsAnimalsPipelineRouteImport.update({
+    id: '/api/admin/adoptions/animals/pipeline',
+    path: '/api/admin/adoptions/animals/pipeline',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsCasesIdRoute =
+  ApiAdminAdoptionsCasesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminAdoptionsCasesRoute,
+  } as any)
+const ApiAdminAdoptionsExportsAdoptersDotcsvRoute =
+  ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/adopters.csv',
+    path: '/api/admin/adoptions/exports/adopters.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsAnimalsDotcsvRoute =
+  ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/animals.csv',
+    path: '/api/admin/adoptions/exports/animals.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsCasesDotcsvRoute =
+  ApiAdminAdoptionsExportsCasesDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/cases.csv',
+    path: '/api/admin/adoptions/exports/cases.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute =
+  ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/successful-adoptions.csv',
+    path: '/api/admin/adoptions/exports/successful-adoptions.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsTasksDotcsvRoute =
+  ApiAdminAdoptionsExportsTasksDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/tasks.csv',
+    path: '/api/admin/adoptions/exports/tasks.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsIntakeCasesRoute =
+  ApiAdminAdoptionsIntakeCasesRouteImport.update({
+    id: '/api/admin/adoptions/intake/cases',
+    path: '/api/admin/adoptions/intake/cases',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsIntakeIdentitySearchRoute =
+  ApiAdminAdoptionsIntakeIdentitySearchRouteImport.update({
+    id: '/api/admin/adoptions/intake/identity-search',
+    path: '/api/admin/adoptions/intake/identity-search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsIntakeItemsRoute =
+  ApiAdminAdoptionsIntakeItemsRouteImport.update({
+    id: '/api/admin/adoptions/intake/items',
+    path: '/api/admin/adoptions/intake/items',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsReportsExportsRoute =
+  ApiAdminAdoptionsReportsExportsRouteImport.update({
+    id: '/api/admin/adoptions/reports/exports',
+    path: '/api/admin/adoptions/reports/exports',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsReportsSummaryRoute =
+  ApiAdminAdoptionsReportsSummaryRouteImport.update({
+    id: '/api/admin/adoptions/reports/summary',
+    path: '/api/admin/adoptions/reports/summary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsStatusesIdRoute =
+  ApiAdminAdoptionsStatusesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminAdoptionsStatusesRoute,
+  } as any)
+const ApiAdminAdoptionsTasksIdRoute =
+  ApiAdminAdoptionsTasksIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminAdoptionsTasksRoute,
+  } as any)
+const ApiAdminAnimalsIdArchiveRoute =
+  ApiAdminAnimalsIdArchiveRouteImport.update({
+    id: '/api/admin/animals/$id/archive',
+    path: '/api/admin/animals/$id/archive',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute =
+  ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport.update({
+    id: '/api/admin/animals/draft-photo-upload-url/',
+    path: '/api/admin/animals/draft-photo-upload-url/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnimalsPublicationIndexRoute =
+  ApiAdminAnimalsPublicationIndexRouteImport.update({
+    id: '/api/admin/animals/publication/',
+    path: '/api/admin/animals/publication/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnnualReportsIdPublishRoute =
+  ApiAdminAnnualReportsIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminAnnualReportsIdRoute,
+  } as any)
+const ApiAdminContentIdArchiveRoute =
+  ApiAdminContentIdArchiveRouteImport.update({
+    id: '/archive',
+    path: '/archive',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
+const ApiAdminContentIdLinksRoute = ApiAdminContentIdLinksRouteImport.update({
+  id: '/links',
+  path: '/links',
+  getParentRoute: () => ApiAdminContentIdRoute,
 } as any)
-const ApiAdminVolunteersRegistrationsIdStatusRoute =
-  ApiAdminVolunteersRegistrationsIdStatusRouteImport.update({
-    id: '/status',
-    path: '/status',
-    getParentRoute: () => ApiAdminVolunteersRegistrationsIdRoute,
+const ApiAdminContentIdMediaRoute = ApiAdminContentIdMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => ApiAdminContentIdRoute,
+} as any)
+const ApiAdminContentIdMediaFinalizeRoute =
+  ApiAdminContentIdMediaFinalizeRouteImport.update({
+    id: '/media-finalize',
+    path: '/media-finalize',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminVolunteersRegistrationsIdAttendanceRoute =
-  ApiAdminVolunteersRegistrationsIdAttendanceRouteImport.update({
-    id: '/attendance',
-    path: '/attendance',
-    getParentRoute: () => ApiAdminVolunteersRegistrationsIdRoute,
+const ApiAdminContentIdMediaPreviewRoute =
+  ApiAdminContentIdMediaPreviewRouteImport.update({
+    id: '/media-preview',
+    path: '/media-preview',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminVolunteersJobsIdRetryRoute =
-  ApiAdminVolunteersJobsIdRetryRouteImport.update({
-    id: '/api/admin/volunteers/jobs/$id/retry',
-    path: '/api/admin/volunteers/jobs/$id/retry',
-    getParentRoute: () => rootRouteImport,
+const ApiAdminContentIdMediaUploadTargetRoute =
+  ApiAdminContentIdMediaUploadTargetRouteImport.update({
+    id: '/media-upload-target',
+    path: '/media-upload-target',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminVolunteersActivitiesIdCloneRoute =
-  ApiAdminVolunteersActivitiesIdCloneRouteImport.update({
-    id: '/clone',
-    path: '/clone',
-    getParentRoute: () => ApiAdminVolunteersActivitiesIdRoute,
+const ApiAdminContentIdPublicationMetadataRoute =
+  ApiAdminContentIdPublicationMetadataRouteImport.update({
+    id: '/publication-metadata',
+    path: '/publication-metadata',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminSponsorshipsPledgesIdReviewRoute =
-  ApiAdminSponsorshipsPledgesIdReviewRouteImport.update({
-    id: '/review',
-    path: '/review',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+const ApiAdminContentIdPublishRoute =
+  ApiAdminContentIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminSponsorshipsPledgesIdReminderDraftRoute =
-  ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport.update({
-    id: '/reminder-draft',
-    path: '/reminder-draft',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+const ApiAdminContentIdRevisionsRoute =
+  ApiAdminContentIdRevisionsRouteImport.update({
+    id: '/revisions',
+    path: '/revisions',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminSponsorshipsPledgesIdProofUrlRoute =
-  ApiAdminSponsorshipsPledgesIdProofUrlRouteImport.update({
-    id: '/proof-url',
-    path: '/proof-url',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+const ApiAdminContentIdSocialCopyRoute =
+  ApiAdminContentIdSocialCopyRouteImport.update({
+    id: '/social-copy',
+    path: '/social-copy',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminSponsorshipsPledgesIdProofRoute =
-  ApiAdminSponsorshipsPledgesIdProofRouteImport.update({
-    id: '/proof',
-    path: '/proof',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+const ApiAdminContentIdStoryProfileRoute =
+  ApiAdminContentIdStoryProfileRouteImport.update({
+    id: '/story-profile',
+    path: '/story-profile',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute =
-  ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport.update({
-    id: '/followup-assignment',
-    path: '/followup-assignment',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+const ApiAdminContentIdUpdatesRoute =
+  ApiAdminContentIdUpdatesRouteImport.update({
+    id: '/updates',
+    path: '/updates',
+    getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
-const ApiAdminSponsorshipsPledgesIdFinanceRoute =
-  ApiAdminSponsorshipsPledgesIdFinanceRouteImport.update({
-    id: '/finance',
-    path: '/finance',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
-  } as any)
-const ApiAdminSponsorshipsPledgesIdCancelRoute =
-  ApiAdminSponsorshipsPledgesIdCancelRouteImport.update({
-    id: '/cancel',
-    path: '/cancel',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
-  } as any)
-const ApiAdminSponsorshipsPledgesIdAssignmentsRoute =
-  ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport.update({
-    id: '/assignments',
-    path: '/assignments',
-    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
-  } as any)
-const ApiAdminExportsJobsIdDownloadRoute =
-  ApiAdminExportsJobsIdDownloadRouteImport.update({
-    id: '/download',
-    path: '/download',
-    getParentRoute: () => ApiAdminExportsJobsIdRoute,
-  } as any)
-const ApiAdminDonationsDeliveryJobIdRetryRoute =
-  ApiAdminDonationsDeliveryJobIdRetryRouteImport.update({
-    id: '/api/admin/donations/delivery/$jobId/retry',
-    path: '/api/admin/donations/delivery/$jobId/retry',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute =
-  ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport.update({
-    id: '/updates/$updateId/notification-drafts',
-    path: '/updates/$updateId/notification-drafts',
+const ApiAdminContentNotificationDraftsIdRoute =
+  ApiAdminContentNotificationDraftsIdRouteImport.update({
+    id: '/notification-drafts/$id',
+    path: '/notification-drafts/$id',
     getParentRoute: () => ApiAdminContentRoute,
   } as any)
-const ApiAdminAdoptionsCasesIdStatusRoute =
-  ApiAdminAdoptionsCasesIdStatusRouteImport.update({
-    id: '/status',
-    path: '/status',
-    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+const ApiAdminContentSocialCopyIdRoute =
+  ApiAdminContentSocialCopyIdRouteImport.update({
+    id: '/social-copy/$id',
+    path: '/social-copy/$id',
+    getParentRoute: () => ApiAdminContentRoute,
   } as any)
-const ApiAdminAdoptionsCasesIdMatchesRoute =
-  ApiAdminAdoptionsCasesIdMatchesRouteImport.update({
-    id: '/matches',
-    path: '/matches',
-    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+const ApiAdminDocumentsIdPublishRoute =
+  ApiAdminDocumentsIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminDocumentsIdRoute,
   } as any)
-const ApiAdminAdoptionsCasesIdFollowupsRoute =
-  ApiAdminAdoptionsCasesIdFollowupsRouteImport.update({
-    id: '/followups',
-    path: '/followups',
-    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+const ApiAdminExportsJobsIdRoute = ApiAdminExportsJobsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminExportsJobsRoute,
+} as any)
+const ApiAdminPaymentMethodsIdPublishRoute =
+  ApiAdminPaymentMethodsIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
   } as any)
-const ApiAdminAdoptionsCasesIdFinalizeRoute =
-  ApiAdminAdoptionsCasesIdFinalizeRouteImport.update({
-    id: '/finalize',
-    path: '/finalize',
-    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+const ApiAdminPaymentMethodsIdReturnToDraftRoute =
+  ApiAdminPaymentMethodsIdReturnToDraftRouteImport.update({
+    id: '/return-to-draft',
+    path: '/return-to-draft',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
   } as any)
-const ApiAdminAdoptionsAnimalsIdStatusRoute =
-  ApiAdminAdoptionsAnimalsIdStatusRouteImport.update({
-    id: '/api/admin/adoptions/animals/$id/status',
-    path: '/api/admin/adoptions/animals/$id/status',
+const ApiAdminPaymentMethodsIdSubmitRoute =
+  ApiAdminPaymentMethodsIdSubmitRouteImport.update({
+    id: '/submit',
+    path: '/submit',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
+  } as any)
+const ApiAdminPaymentMethodsIdWithdrawRoute =
+  ApiAdminPaymentMethodsIdWithdrawRouteImport.update({
+    id: '/withdraw',
+    path: '/withdraw',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
+  } as any)
+const ApiAdminPaymentsIdReconcileRoute =
+  ApiAdminPaymentsIdReconcileRouteImport.update({
+    id: '/$id/reconcile',
+    path: '/$id/reconcile',
+    getParentRoute: () => ApiAdminPaymentsRoute,
+  } as any)
+const ApiAdminReceiptsIdVoidRoute = ApiAdminReceiptsIdVoidRouteImport.update({
+  id: '/$id/void',
+  path: '/$id/void',
+  getParentRoute: () => ApiAdminReceiptsRoute,
+} as any)
+const ApiAdminSponsorshipsPledgesIdRoute =
+  ApiAdminSponsorshipsPledgesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesRoute,
+  } as any)
+const ApiAdminSupportersIdConsentsRoute =
+  ApiAdminSupportersIdConsentsRouteImport.update({
+    id: '/consents',
+    path: '/consents',
+    getParentRoute: () => ApiAdminSupportersIdRoute,
+  } as any)
+const ApiAdminVolunteersActivitiesIdRoute =
+  ApiAdminVolunteersActivitiesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminVolunteersActivitiesRoute,
+  } as any)
+const ApiAdminVolunteersAssessmentsIndexRoute =
+  ApiAdminVolunteersAssessmentsIndexRouteImport.update({
+    id: '/api/admin/volunteers/assessments/',
+    path: '/api/admin/volunteers/assessments/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminAdoptionsAnimalsIdInternalRoute =
-  ApiAdminAdoptionsAnimalsIdInternalRouteImport.update({
-    id: '/api/admin/adoptions/animals/$id/internal',
-    path: '/api/admin/adoptions/animals/$id/internal',
+const ApiAdminVolunteersDailySettingsIndexRoute =
+  ApiAdminVolunteersDailySettingsIndexRouteImport.update({
+    id: '/api/admin/volunteers/daily-settings/',
+    path: '/api/admin/volunteers/daily-settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersJobsIndexRoute =
+  ApiAdminVolunteersJobsIndexRouteImport.update({
+    id: '/api/admin/volunteers/jobs/',
+    path: '/api/admin/volunteers/jobs/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersOperationsIndexRoute =
+  ApiAdminVolunteersOperationsIndexRouteImport.update({
+    id: '/api/admin/volunteers/operations/',
+    path: '/api/admin/volunteers/operations/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersRegistrationsIdRoute =
+  ApiAdminVolunteersRegistrationsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminVolunteersRegistrationsRoute,
+  } as any)
+const ApiAdminVolunteersSettingsIndexRoute =
+  ApiAdminVolunteersSettingsIndexRouteImport.update({
+    id: '/api/admin/volunteers/settings/',
+    path: '/api/admin/volunteers/settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersSimulationIndexRoute =
+  ApiAdminVolunteersSimulationIndexRouteImport.update({
+    id: '/api/admin/volunteers/simulation/',
+    path: '/api/admin/volunteers/simulation/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersSourcesIndexRoute =
+  ApiAdminVolunteersSourcesIndexRouteImport.update({
+    id: '/api/admin/volunteers/sources/',
+    path: '/api/admin/volunteers/sources/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminAccessInvitesIdResendRoute =
@@ -1799,11 +1673,137 @@ const ApiAdminAccessInvitesIdResendRoute =
     path: '/$id/resend',
     getParentRoute: () => ApiAdminAccessInvitesRoute,
   } as any)
-const ApiAdminContentIdRevisionsRevisionIdRestoreRoute =
-  ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport.update({
-    id: '/$revisionId/restore',
-    path: '/$revisionId/restore',
-    getParentRoute: () => ApiAdminContentIdRevisionsRoute,
+const ApiAdminAdoptionsAnimalsIdInternalRoute =
+  ApiAdminAdoptionsAnimalsIdInternalRouteImport.update({
+    id: '/api/admin/adoptions/animals/$id/internal',
+    path: '/api/admin/adoptions/animals/$id/internal',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsAnimalsIdStatusRoute =
+  ApiAdminAdoptionsAnimalsIdStatusRouteImport.update({
+    id: '/api/admin/adoptions/animals/$id/status',
+    path: '/api/admin/adoptions/animals/$id/status',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsCasesIdFinalizeRoute =
+  ApiAdminAdoptionsCasesIdFinalizeRouteImport.update({
+    id: '/finalize',
+    path: '/finalize',
+    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+  } as any)
+const ApiAdminAdoptionsCasesIdFollowupsRoute =
+  ApiAdminAdoptionsCasesIdFollowupsRouteImport.update({
+    id: '/followups',
+    path: '/followups',
+    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+  } as any)
+const ApiAdminAdoptionsCasesIdMatchesRoute =
+  ApiAdminAdoptionsCasesIdMatchesRouteImport.update({
+    id: '/matches',
+    path: '/matches',
+    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+  } as any)
+const ApiAdminAdoptionsCasesIdStatusRoute =
+  ApiAdminAdoptionsCasesIdStatusRouteImport.update({
+    id: '/status',
+    path: '/status',
+    getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
+  } as any)
+const ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute =
+  ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport.update({
+    id: '/updates/$updateId/notification-drafts',
+    path: '/updates/$updateId/notification-drafts',
+    getParentRoute: () => ApiAdminContentRoute,
+  } as any)
+const ApiAdminDonationsDeliveryJobIdRetryRoute =
+  ApiAdminDonationsDeliveryJobIdRetryRouteImport.update({
+    id: '/api/admin/donations/delivery/$jobId/retry',
+    path: '/api/admin/donations/delivery/$jobId/retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminExportsJobsIdDownloadRoute =
+  ApiAdminExportsJobsIdDownloadRouteImport.update({
+    id: '/download',
+    path: '/download',
+    getParentRoute: () => ApiAdminExportsJobsIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdAssignmentsRoute =
+  ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport.update({
+    id: '/assignments',
+    path: '/assignments',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdCancelRoute =
+  ApiAdminSponsorshipsPledgesIdCancelRouteImport.update({
+    id: '/cancel',
+    path: '/cancel',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdFinanceRoute =
+  ApiAdminSponsorshipsPledgesIdFinanceRouteImport.update({
+    id: '/finance',
+    path: '/finance',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute =
+  ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport.update({
+    id: '/followup-assignment',
+    path: '/followup-assignment',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdProofRoute =
+  ApiAdminSponsorshipsPledgesIdProofRouteImport.update({
+    id: '/proof',
+    path: '/proof',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdProofUrlRoute =
+  ApiAdminSponsorshipsPledgesIdProofUrlRouteImport.update({
+    id: '/proof-url',
+    path: '/proof-url',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdReminderDraftRoute =
+  ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport.update({
+    id: '/reminder-draft',
+    path: '/reminder-draft',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdReviewRoute =
+  ApiAdminSponsorshipsPledgesIdReviewRouteImport.update({
+    id: '/review',
+    path: '/review',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminVolunteersActivitiesIdCloneRoute =
+  ApiAdminVolunteersActivitiesIdCloneRouteImport.update({
+    id: '/clone',
+    path: '/clone',
+    getParentRoute: () => ApiAdminVolunteersActivitiesIdRoute,
+  } as any)
+const ApiAdminVolunteersJobsIdRetryRoute =
+  ApiAdminVolunteersJobsIdRetryRouteImport.update({
+    id: '/api/admin/volunteers/jobs/$id/retry',
+    path: '/api/admin/volunteers/jobs/$id/retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersRegistrationsIdAttendanceRoute =
+  ApiAdminVolunteersRegistrationsIdAttendanceRouteImport.update({
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => ApiAdminVolunteersRegistrationsIdRoute,
+  } as any)
+const ApiAdminVolunteersRegistrationsIdStatusRoute =
+  ApiAdminVolunteersRegistrationsIdStatusRouteImport.update({
+    id: '/status',
+    path: '/status',
+    getParentRoute: () => ApiAdminVolunteersRegistrationsIdRoute,
+  } as any)
+const ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute =
+  ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRouteImport.update({
+    id: '/api/admin/adoptions/applications/$applicationId/photos/$photoId',
+    path: '/api/admin/adoptions/applications/$applicationId/photos/$photoId',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminAdoptionsReportsExportsIdDownloadRoute =
   ApiAdminAdoptionsReportsExportsIdDownloadRouteImport.update({
@@ -1811,11 +1811,11 @@ const ApiAdminAdoptionsReportsExportsIdDownloadRoute =
     path: '/$id/download',
     getParentRoute: () => ApiAdminAdoptionsReportsExportsRoute,
   } as any)
-const ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute =
-  ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRouteImport.update({
-    id: '/api/admin/adoptions/applications/$applicationId/photos/$photoId',
-    path: '/api/admin/adoptions/applications/$applicationId/photos/$photoId',
-    getParentRoute: () => rootRouteImport,
+const ApiAdminContentIdRevisionsRevisionIdRestoreRoute =
+  ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport.update({
+    id: '/$revisionId/restore',
+    path: '/$revisionId/restore',
+    getParentRoute: () => ApiAdminContentIdRevisionsRoute,
   } as any)
 const ApiAdminSponsorshipsPledgesIdAssignmentsAssignmentIdEndRoute =
   ApiAdminSponsorshipsPledgesIdAssignmentsAssignmentIdEndRouteImport.update({
@@ -3675,67 +3675,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/volunteer': {
-      id: '/volunteer'
-      path: '/volunteer'
-      fullPath: '/volunteer'
-      preLoaderRoute: typeof VolunteerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/supporter': {
-      id: '/supporter'
-      path: '/supporter'
-      fullPath: '/supporter'
-      preLoaderRoute: typeof SupporterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stories': {
-      id: '/stories'
-      path: '/stories'
-      fullPath: '/stories'
-      preLoaderRoute: typeof StoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sponsors': {
-      id: '/sponsors'
-      path: '/sponsors'
-      fullPath: '/sponsors'
-      preLoaderRoute: typeof SponsorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/knowledge': {
-      id: '/knowledge'
-      path: '/knowledge'
-      fullPath: '/knowledge'
-      preLoaderRoute: typeof KnowledgeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/internships': {
-      id: '/internships'
-      path: '/internships'
-      fullPath: '/internships'
-      preLoaderRoute: typeof InternshipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donate': {
@@ -3745,18 +3689,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DonateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
+    '/internships': {
+      id: '/internships'
+      path: '/internships'
+      fullPath: '/internships'
+      preLoaderRoute: typeof InternshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sponsors': {
+      id: '/sponsors'
+      path: '/sponsors'
+      fullPath: '/sponsors'
+      preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stories': {
+      id: '/stories'
+      path: '/stories'
+      fullPath: '/stories'
+      preLoaderRoute: typeof StoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supporter': {
+      id: '/supporter'
+      path: '/supporter'
+      fullPath: '/supporter'
+      preLoaderRoute: typeof SupporterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/volunteer': {
+      id: '/volunteer'
+      path: '/volunteer'
+      fullPath: '/volunteer'
+      preLoaderRoute: typeof VolunteerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/': {
@@ -3766,214 +3759,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/volunteer/operations': {
-      id: '/volunteer/operations'
-      path: '/operations'
-      fullPath: '/volunteer/operations'
-      preLoaderRoute: typeof VolunteerOperationsRouteImport
-      parentRoute: typeof VolunteerRoute
-    }
-    '/volunteer/group': {
-      id: '/volunteer/group'
-      path: '/group'
-      fullPath: '/volunteer/group'
-      preLoaderRoute: typeof VolunteerGroupRouteImport
-      parentRoute: typeof VolunteerRoute
-    }
-    '/stories/$slug': {
-      id: '/stories/$slug'
-      path: '/$slug'
-      fullPath: '/stories/$slug'
-      preLoaderRoute: typeof StoriesSlugRouteImport
-      parentRoute: typeof StoriesRoute
-    }
-    '/sponsors_/pledge': {
-      id: '/sponsors_/pledge'
-      path: '/sponsors/pledge'
-      fullPath: '/sponsors/pledge'
-      preLoaderRoute: typeof SponsorsPledgeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sponsors_/$id': {
-      id: '/sponsors_/$id'
-      path: '/sponsors/$id'
-      fullPath: '/sponsors/$id'
-      preLoaderRoute: typeof SponsorsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/report/audit': {
-      id: '/report/audit'
-      path: '/report/audit'
-      fullPath: '/report/audit'
-      preLoaderRoute: typeof ReportAuditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/report/adoption': {
-      id: '/report/adoption'
-      path: '/report/adoption'
-      fullPath: '/report/adoption'
-      preLoaderRoute: typeof ReportAdoptionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/stories': {
-      id: '/api/stories'
-      path: '/api/stories'
-      fullPath: '/api/stories'
-      preLoaderRoute: typeof ApiStoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/donations': {
-      id: '/api/donations'
-      path: '/api/donations'
-      fullPath: '/api/donations'
-      preLoaderRoute: typeof ApiDonationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/csp-report': {
-      id: '/api/csp-report'
-      path: '/api/csp-report'
-      fullPath: '/api/csp-report'
-      preLoaderRoute: typeof ApiCspReportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/animals/dog': {
-      id: '/animals/dog'
-      path: '/animals/dog'
-      fullPath: '/animals/dog'
-      preLoaderRoute: typeof AnimalsDogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/animals/cat': {
-      id: '/animals/cat'
-      path: '/animals/cat'
-      fullPath: '/animals/cat'
-      preLoaderRoute: typeof AnimalsCatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/adoption/instructions': {
-      id: '/adoption/instructions'
-      path: '/adoption/instructions'
-      fullPath: '/adoption/instructions'
-      preLoaderRoute: typeof AdoptionInstructionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/adoption/apply': {
-      id: '/adoption/apply'
-      path: '/adoption/apply'
-      fullPath: '/adoption/apply'
-      preLoaderRoute: typeof AdoptionApplyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/volunteers': {
-      id: '/admin/volunteers'
-      path: '/admin/volunteers'
-      fullPath: '/admin/volunteers'
-      preLoaderRoute: typeof AdminVolunteersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/tasks': {
-      id: '/admin/tasks'
-      path: '/admin/tasks'
-      fullPath: '/admin/tasks'
-      preLoaderRoute: typeof AdminTasksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/supporters': {
-      id: '/admin/supporters'
-      path: '/admin/supporters'
-      fullPath: '/admin/supporters'
-      preLoaderRoute: typeof AdminSupportersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/sponsorships': {
-      id: '/admin/sponsorships'
-      path: '/admin/sponsorships'
-      fullPath: '/admin/sponsorships'
-      preLoaderRoute: typeof AdminSponsorshipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/reset-password': {
-      id: '/admin/reset-password'
-      path: '/admin/reset-password'
-      fullPath: '/admin/reset-password'
-      preLoaderRoute: typeof AdminResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/payment-methods': {
-      id: '/admin/payment-methods'
-      path: '/admin/payment-methods'
-      fullPath: '/admin/payment-methods'
-      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/internships': {
-      id: '/admin/internships'
-      path: '/admin/internships'
-      fullPath: '/admin/internships'
-      preLoaderRoute: typeof AdminInternshipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/governance': {
-      id: '/admin/governance'
-      path: '/admin/governance'
-      fullPath: '/admin/governance'
-      preLoaderRoute: typeof AdminGovernanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/faq': {
-      id: '/admin/faq'
-      path: '/admin/faq'
-      fullPath: '/admin/faq'
-      preLoaderRoute: typeof AdminFaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/content': {
-      id: '/admin/content'
-      path: '/admin/content'
-      fullPath: '/admin/content'
-      preLoaderRoute: typeof AdminContentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/applications': {
-      id: '/admin/applications'
-      path: '/admin/applications'
-      fullPath: '/admin/applications'
-      preLoaderRoute: typeof AdminApplicationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/access-denied': {
-      id: '/admin/access-denied'
-      path: '/admin/access-denied'
-      fullPath: '/admin/access-denied'
-      preLoaderRoute: typeof AdminAccessDeniedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/access': {
-      id: '/admin/access'
-      path: '/admin/access'
-      fullPath: '/admin/access'
-      preLoaderRoute: typeof AdminAccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/tnr': {
-      id: '/about/tnr'
-      path: '/about/tnr'
-      fullPath: '/about/tnr'
-      preLoaderRoute: typeof AboutTnrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/team': {
-      id: '/about/team'
-      path: '/about/team'
-      fullPath: '/about/team'
-      preLoaderRoute: typeof AboutTeamRouteImport
+    '/about/cccp': {
+      id: '/about/cccp'
+      path: '/about/cccp'
+      fullPath: '/about/cccp'
+      preLoaderRoute: typeof AboutCccpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/privacy': {
@@ -3983,18 +3773,228 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about/cccp': {
-      id: '/about/cccp'
-      path: '/about/cccp'
-      fullPath: '/about/cccp'
-      preLoaderRoute: typeof AboutCccpRouteImport
+    '/about/team': {
+      id: '/about/team'
+      path: '/about/team'
+      fullPath: '/about/team'
+      preLoaderRoute: typeof AboutTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/internships/': {
-      id: '/api/internships/'
-      path: '/api/internships'
-      fullPath: '/api/internships/'
-      preLoaderRoute: typeof ApiInternshipsIndexRouteImport
+    '/about/tnr': {
+      id: '/about/tnr'
+      path: '/about/tnr'
+      fullPath: '/about/tnr'
+      preLoaderRoute: typeof AboutTnrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/access': {
+      id: '/admin/access'
+      path: '/admin/access'
+      fullPath: '/admin/access'
+      preLoaderRoute: typeof AdminAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/access-denied': {
+      id: '/admin/access-denied'
+      path: '/admin/access-denied'
+      fullPath: '/admin/access-denied'
+      preLoaderRoute: typeof AdminAccessDeniedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/admin/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/admin/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/faq': {
+      id: '/admin/faq'
+      path: '/admin/faq'
+      fullPath: '/admin/faq'
+      preLoaderRoute: typeof AdminFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/governance': {
+      id: '/admin/governance'
+      path: '/admin/governance'
+      fullPath: '/admin/governance'
+      preLoaderRoute: typeof AdminGovernanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/internships': {
+      id: '/admin/internships'
+      path: '/admin/internships'
+      fullPath: '/admin/internships'
+      preLoaderRoute: typeof AdminInternshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/payment-methods': {
+      id: '/admin/payment-methods'
+      path: '/admin/payment-methods'
+      fullPath: '/admin/payment-methods'
+      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reset-password': {
+      id: '/admin/reset-password'
+      path: '/admin/reset-password'
+      fullPath: '/admin/reset-password'
+      preLoaderRoute: typeof AdminResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/sponsorships': {
+      id: '/admin/sponsorships'
+      path: '/admin/sponsorships'
+      fullPath: '/admin/sponsorships'
+      preLoaderRoute: typeof AdminSponsorshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/supporters': {
+      id: '/admin/supporters'
+      path: '/admin/supporters'
+      fullPath: '/admin/supporters'
+      preLoaderRoute: typeof AdminSupportersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/tasks': {
+      id: '/admin/tasks'
+      path: '/admin/tasks'
+      fullPath: '/admin/tasks'
+      preLoaderRoute: typeof AdminTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/volunteers': {
+      id: '/admin/volunteers'
+      path: '/admin/volunteers'
+      fullPath: '/admin/volunteers'
+      preLoaderRoute: typeof AdminVolunteersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adoption/apply': {
+      id: '/adoption/apply'
+      path: '/adoption/apply'
+      fullPath: '/adoption/apply'
+      preLoaderRoute: typeof AdoptionApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adoption/instructions': {
+      id: '/adoption/instructions'
+      path: '/adoption/instructions'
+      fullPath: '/adoption/instructions'
+      preLoaderRoute: typeof AdoptionInstructionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/cat': {
+      id: '/animals/cat'
+      path: '/animals/cat'
+      fullPath: '/animals/cat'
+      preLoaderRoute: typeof AnimalsCatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/dog': {
+      id: '/animals/dog'
+      path: '/animals/dog'
+      fullPath: '/animals/dog'
+      preLoaderRoute: typeof AnimalsDogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/csp-report': {
+      id: '/api/csp-report'
+      path: '/api/csp-report'
+      fullPath: '/api/csp-report'
+      preLoaderRoute: typeof ApiCspReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/donations': {
+      id: '/api/donations'
+      path: '/api/donations'
+      fullPath: '/api/donations'
+      preLoaderRoute: typeof ApiDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/stories': {
+      id: '/api/stories'
+      path: '/api/stories'
+      fullPath: '/api/stories'
+      preLoaderRoute: typeof ApiStoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report/adoption': {
+      id: '/report/adoption'
+      path: '/report/adoption'
+      fullPath: '/report/adoption'
+      preLoaderRoute: typeof ReportAdoptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report/audit': {
+      id: '/report/audit'
+      path: '/report/audit'
+      fullPath: '/report/audit'
+      preLoaderRoute: typeof ReportAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sponsors_/$id': {
+      id: '/sponsors_/$id'
+      path: '/sponsors/$id'
+      fullPath: '/sponsors/$id'
+      preLoaderRoute: typeof SponsorsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sponsors_/pledge': {
+      id: '/sponsors_/pledge'
+      path: '/sponsors/pledge'
+      fullPath: '/sponsors/pledge'
+      preLoaderRoute: typeof SponsorsPledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stories/$slug': {
+      id: '/stories/$slug'
+      path: '/$slug'
+      fullPath: '/stories/$slug'
+      preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof StoriesRoute
+    }
+    '/volunteer/group': {
+      id: '/volunteer/group'
+      path: '/group'
+      fullPath: '/volunteer/group'
+      preLoaderRoute: typeof VolunteerGroupRouteImport
+      parentRoute: typeof VolunteerRoute
+    }
+    '/volunteer/operations': {
+      id: '/volunteer/operations'
+      path: '/operations'
+      fullPath: '/volunteer/operations'
+      preLoaderRoute: typeof VolunteerOperationsRouteImport
+      parentRoute: typeof VolunteerRoute
+    }
+    '/admin/animals/new': {
+      id: '/admin/animals/new'
+      path: '/admin/animals/new'
+      fullPath: '/admin/animals/new'
+      preLoaderRoute: typeof AdminAnimalsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/applications/': {
@@ -4004,543 +4004,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminApplicationsIndexRouteImport
       parentRoute: typeof AdminApplicationsRoute
     }
-    '/volunteer/status/$token': {
-      id: '/volunteer/status/$token'
-      path: '/status/$token'
-      fullPath: '/volunteer/status/$token'
-      preLoaderRoute: typeof VolunteerStatusTokenRouteImport
-      parentRoute: typeof VolunteerRoute
-    }
-    '/sponsors_/status/$token': {
-      id: '/sponsors_/status/$token'
-      path: '/sponsors/status/$token'
-      fullPath: '/sponsors/status/$token'
-      preLoaderRoute: typeof SponsorsStatusTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/webhooks/stripe': {
-      id: '/api/webhooks/stripe'
-      path: '/api/webhooks/stripe'
-      fullPath: '/api/webhooks/stripe'
-      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/webhooks/resend': {
-      id: '/api/webhooks/resend'
-      path: '/api/webhooks/resend'
-      fullPath: '/api/webhooks/resend'
-      preLoaderRoute: typeof ApiWebhooksResendRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/webhooks/paypal': {
-      id: '/api/webhooks/paypal'
-      path: '/api/webhooks/paypal'
-      fullPath: '/api/webhooks/paypal'
-      preLoaderRoute: typeof ApiWebhooksPaypalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/webhooks/cod': {
-      id: '/api/webhooks/cod'
-      path: '/api/webhooks/cod'
-      fullPath: '/api/webhooks/cod'
-      preLoaderRoute: typeof ApiWebhooksCodRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/volunteer/registrations': {
-      id: '/api/volunteer/registrations'
-      path: '/api/volunteer/registrations'
-      fullPath: '/api/volunteer/registrations'
-      preLoaderRoute: typeof ApiVolunteerRegistrationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/volunteer/policy': {
-      id: '/api/volunteer/policy'
-      path: '/api/volunteer/policy'
-      fullPath: '/api/volunteer/policy'
-      preLoaderRoute: typeof ApiVolunteerPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/volunteer/operations': {
-      id: '/api/volunteer/operations'
-      path: '/api/volunteer/operations'
-      fullPath: '/api/volunteer/operations'
-      preLoaderRoute: typeof ApiVolunteerOperationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/volunteer/group-enquiries': {
-      id: '/api/volunteer/group-enquiries'
-      path: '/api/volunteer/group-enquiries'
-      fullPath: '/api/volunteer/group-enquiries'
-      preLoaderRoute: typeof ApiVolunteerGroupEnquiriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/volunteer/activities': {
-      id: '/api/volunteer/activities'
-      path: '/api/volunteer/activities'
-      fullPath: '/api/volunteer/activities'
-      preLoaderRoute: typeof ApiVolunteerActivitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/supporter/recovery': {
-      id: '/api/supporter/recovery'
-      path: '/api/supporter/recovery'
-      fullPath: '/api/supporter/recovery'
-      preLoaderRoute: typeof ApiSupporterRecoveryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/supporter/records': {
-      id: '/api/supporter/records'
-      path: '/api/supporter/records'
-      fullPath: '/api/supporter/records'
-      preLoaderRoute: typeof ApiSupporterRecordsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/supporter/preferences': {
-      id: '/api/supporter/preferences'
-      path: '/api/supporter/preferences'
-      fullPath: '/api/supporter/preferences'
-      preLoaderRoute: typeof ApiSupporterPreferencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/stories/map': {
-      id: '/api/stories/map'
-      path: '/map'
-      fullPath: '/api/stories/map'
-      preLoaderRoute: typeof ApiStoriesMapRouteImport
-      parentRoute: typeof ApiStoriesRoute
-    }
-    '/api/stories/$slug': {
-      id: '/api/stories/$slug'
-      path: '/$slug'
-      fullPath: '/api/stories/$slug'
-      preLoaderRoute: typeof ApiStoriesSlugRouteImport
-      parentRoute: typeof ApiStoriesRoute
-    }
-    '/api/sponsorships/terms': {
-      id: '/api/sponsorships/terms'
-      path: '/api/sponsorships/terms'
-      fullPath: '/api/sponsorships/terms'
-      preLoaderRoute: typeof ApiSponsorshipsTermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/sponsorships/pledges': {
-      id: '/api/sponsorships/pledges'
-      path: '/api/sponsorships/pledges'
-      fullPath: '/api/sponsorships/pledges'
-      preLoaderRoute: typeof ApiSponsorshipsPledgesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/volunteers': {
-      id: '/api/jobs/volunteers'
-      path: '/api/jobs/volunteers'
-      fullPath: '/api/jobs/volunteers'
-      preLoaderRoute: typeof ApiJobsVolunteersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/sponsorships': {
-      id: '/api/jobs/sponsorships'
-      path: '/api/jobs/sponsorships'
-      fullPath: '/api/jobs/sponsorships'
-      preLoaderRoute: typeof ApiJobsSponsorshipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/public-uploads': {
-      id: '/api/jobs/public-uploads'
-      path: '/api/jobs/public-uploads'
-      fullPath: '/api/jobs/public-uploads'
-      preLoaderRoute: typeof ApiJobsPublicUploadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/public-media-repair': {
-      id: '/api/jobs/public-media-repair'
-      path: '/api/jobs/public-media-repair'
-      fullPath: '/api/jobs/public-media-repair'
-      preLoaderRoute: typeof ApiJobsPublicMediaRepairRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/donations': {
-      id: '/api/jobs/donations'
-      path: '/api/jobs/donations'
-      fullPath: '/api/jobs/donations'
-      preLoaderRoute: typeof ApiJobsDonationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/crm-exports': {
-      id: '/api/jobs/crm-exports'
-      path: '/api/jobs/crm-exports'
-      fullPath: '/api/jobs/crm-exports'
-      preLoaderRoute: typeof ApiJobsCrmExportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/jobs/adoption-uploads': {
-      id: '/api/jobs/adoption-uploads'
-      path: '/api/jobs/adoption-uploads'
-      fullPath: '/api/jobs/adoption-uploads'
-      preLoaderRoute: typeof ApiJobsAdoptionUploadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/internships/attachment': {
-      id: '/api/internships/attachment'
-      path: '/api/internships/attachment'
-      fullPath: '/api/internships/attachment'
-      preLoaderRoute: typeof ApiInternshipsAttachmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/internal/readiness': {
-      id: '/api/internal/readiness'
-      path: '/api/internal/readiness'
-      fullPath: '/api/internal/readiness'
-      preLoaderRoute: typeof ApiInternalReadinessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/adoption/applications': {
-      id: '/api/adoption/applications'
-      path: '/api/adoption/applications'
-      fullPath: '/api/adoption/applications'
-      preLoaderRoute: typeof ApiAdoptionApplicationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/task-overview': {
-      id: '/api/admin/task-overview'
-      path: '/api/admin/task-overview'
-      fullPath: '/api/admin/task-overview'
-      preLoaderRoute: typeof ApiAdminTaskOverviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/supporters': {
-      id: '/api/admin/supporters'
-      path: '/api/admin/supporters'
-      fullPath: '/api/admin/supporters'
-      preLoaderRoute: typeof ApiAdminSupportersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/receipts': {
-      id: '/api/admin/receipts'
-      path: '/api/admin/receipts'
-      fullPath: '/api/admin/receipts'
-      preLoaderRoute: typeof ApiAdminReceiptsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/payments': {
-      id: '/api/admin/payments'
-      path: '/api/admin/payments'
-      fullPath: '/api/admin/payments'
-      preLoaderRoute: typeof ApiAdminPaymentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/payment-methods': {
-      id: '/api/admin/payment-methods'
-      path: '/api/admin/payment-methods'
-      fullPath: '/api/admin/payment-methods'
-      preLoaderRoute: typeof ApiAdminPaymentMethodsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/media-repairs': {
-      id: '/api/admin/media-repairs'
-      path: '/api/admin/media-repairs'
-      fullPath: '/api/admin/media-repairs'
-      preLoaderRoute: typeof ApiAdminMediaRepairsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/me': {
-      id: '/api/admin/me'
-      path: '/api/admin/me'
-      fullPath: '/api/admin/me'
-      preLoaderRoute: typeof ApiAdminMeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/knowledge': {
-      id: '/api/admin/knowledge'
-      path: '/api/admin/knowledge'
-      fullPath: '/api/admin/knowledge'
-      preLoaderRoute: typeof ApiAdminKnowledgeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/internships': {
-      id: '/api/admin/internships'
-      path: '/api/admin/internships'
-      fullPath: '/api/admin/internships'
-      preLoaderRoute: typeof ApiAdminInternshipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/governance': {
-      id: '/api/admin/governance'
-      path: '/api/admin/governance'
-      fullPath: '/api/admin/governance'
-      preLoaderRoute: typeof ApiAdminGovernanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/faq': {
-      id: '/api/admin/faq'
-      path: '/api/admin/faq'
-      fullPath: '/api/admin/faq'
-      preLoaderRoute: typeof ApiAdminFaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/documents': {
-      id: '/api/admin/documents'
-      path: '/api/admin/documents'
-      fullPath: '/api/admin/documents'
-      preLoaderRoute: typeof ApiAdminDocumentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/content-review': {
-      id: '/api/admin/content-review'
-      path: '/api/admin/content-review'
-      fullPath: '/api/admin/content-review'
-      preLoaderRoute: typeof ApiAdminContentReviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/content': {
-      id: '/api/admin/content'
-      path: '/api/admin/content'
-      fullPath: '/api/admin/content'
-      preLoaderRoute: typeof ApiAdminContentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/annual-reports': {
-      id: '/api/admin/annual-reports'
-      path: '/api/admin/annual-reports'
-      fullPath: '/api/admin/annual-reports'
-      preLoaderRoute: typeof ApiAdminAnnualReportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoption-instructions': {
-      id: '/api/admin/adoption-instructions'
-      path: '/api/admin/adoption-instructions'
-      fullPath: '/api/admin/adoption-instructions'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoption-information': {
-      id: '/api/admin/adoption-information'
-      path: '/api/admin/adoption-information'
-      fullPath: '/api/admin/adoption-information'
-      preLoaderRoute: typeof ApiAdminAdoptionInformationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoption-guide-releases': {
-      id: '/api/admin/adoption-guide-releases'
-      path: '/api/admin/adoption-guide-releases'
-      fullPath: '/api/admin/adoption-guide-releases'
-      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/about-pages': {
-      id: '/api/admin/about-pages'
-      path: '/api/admin/about-pages'
-      fullPath: '/api/admin/about-pages'
-      preLoaderRoute: typeof ApiAdminAboutPagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/animals/dog_/$id': {
-      id: '/animals/dog_/$id'
-      path: '/animals/dog/$id'
-      fullPath: '/animals/dog/$id'
-      preLoaderRoute: typeof AnimalsDogIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/animals/cat_/$id': {
-      id: '/animals/cat_/$id'
-      path: '/animals/cat/$id'
-      fullPath: '/animals/cat/$id'
-      preLoaderRoute: typeof AnimalsCatIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/adoption/status/$token': {
-      id: '/adoption/status/$token'
-      path: '/adoption/status/$token'
-      fullPath: '/adoption/status/$token'
-      preLoaderRoute: typeof AdoptionStatusTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/volunteers/tasks': {
-      id: '/admin/volunteers/tasks'
-      path: '/tasks'
-      fullPath: '/admin/volunteers/tasks'
-      preLoaderRoute: typeof AdminVolunteersTasksRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/sources': {
-      id: '/admin/volunteers/sources'
-      path: '/sources'
-      fullPath: '/admin/volunteers/sources'
-      preLoaderRoute: typeof AdminVolunteersSourcesRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/simulation': {
-      id: '/admin/volunteers/simulation'
-      path: '/simulation'
-      fullPath: '/admin/volunteers/simulation'
-      preLoaderRoute: typeof AdminVolunteersSimulationRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/settings': {
-      id: '/admin/volunteers/settings'
-      path: '/settings'
-      fullPath: '/admin/volunteers/settings'
-      preLoaderRoute: typeof AdminVolunteersSettingsRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/qualifications': {
-      id: '/admin/volunteers/qualifications'
-      path: '/qualifications'
-      fullPath: '/admin/volunteers/qualifications'
-      preLoaderRoute: typeof AdminVolunteersQualificationsRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/people': {
-      id: '/admin/volunteers/people'
-      path: '/people'
-      fullPath: '/admin/volunteers/people'
-      preLoaderRoute: typeof AdminVolunteersPeopleRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/operations': {
-      id: '/admin/volunteers/operations'
-      path: '/operations'
-      fullPath: '/admin/volunteers/operations'
-      preLoaderRoute: typeof AdminVolunteersOperationsRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/group-enquiries': {
-      id: '/admin/volunteers/group-enquiries'
-      path: '/group-enquiries'
-      fullPath: '/admin/volunteers/group-enquiries'
-      preLoaderRoute: typeof AdminVolunteersGroupEnquiriesRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/daily-settings': {
-      id: '/admin/volunteers/daily-settings'
-      path: '/daily-settings'
-      fullPath: '/admin/volunteers/daily-settings'
-      preLoaderRoute: typeof AdminVolunteersDailySettingsRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/calendar': {
-      id: '/admin/volunteers/calendar'
-      path: '/calendar'
-      fullPath: '/admin/volunteers/calendar'
-      preLoaderRoute: typeof AdminVolunteersCalendarRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/assessments': {
-      id: '/admin/volunteers/assessments'
-      path: '/assessments'
-      fullPath: '/admin/volunteers/assessments'
-      preLoaderRoute: typeof AdminVolunteersAssessmentsRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/activities': {
-      id: '/admin/volunteers/activities'
-      path: '/activities'
-      fullPath: '/admin/volunteers/activities'
-      preLoaderRoute: typeof AdminVolunteersActivitiesRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/supporters/$id': {
-      id: '/admin/supporters/$id'
+    '/admin/applications/$id': {
+      id: '/admin/applications/$id'
       path: '/$id'
-      fullPath: '/admin/supporters/$id'
-      preLoaderRoute: typeof AdminSupportersIdRouteImport
-      parentRoute: typeof AdminSupportersRoute
+      fullPath: '/admin/applications/$id'
+      preLoaderRoute: typeof AdminApplicationsIdRouteImport
+      parentRoute: typeof AdminApplicationsRoute
     }
-    '/admin/coordinator/tasks': {
-      id: '/admin/coordinator/tasks'
-      path: '/admin/coordinator/tasks'
-      fullPath: '/admin/coordinator/tasks'
-      preLoaderRoute: typeof AdminCoordinatorTasksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/coordinator/statuses': {
-      id: '/admin/coordinator/statuses'
-      path: '/admin/coordinator/statuses'
-      fullPath: '/admin/coordinator/statuses'
-      preLoaderRoute: typeof AdminCoordinatorStatusesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/coordinator/reports': {
-      id: '/admin/coordinator/reports'
-      path: '/admin/coordinator/reports'
-      fullPath: '/admin/coordinator/reports'
-      preLoaderRoute: typeof AdminCoordinatorReportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/coordinator/intake': {
-      id: '/admin/coordinator/intake'
-      path: '/admin/coordinator/intake'
-      fullPath: '/admin/coordinator/intake'
-      preLoaderRoute: typeof AdminCoordinatorIntakeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/coordinator/inbox': {
-      id: '/admin/coordinator/inbox'
-      path: '/admin/coordinator/inbox'
-      fullPath: '/admin/coordinator/inbox'
-      preLoaderRoute: typeof AdminCoordinatorInboxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/coordinator/animals': {
-      id: '/admin/coordinator/animals'
-      path: '/admin/coordinator/animals'
-      fullPath: '/admin/coordinator/animals'
-      preLoaderRoute: typeof AdminCoordinatorAnimalsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/coordinator/adopters': {
-      id: '/admin/coordinator/adopters'
-      path: '/admin/coordinator/adopters'
-      fullPath: '/admin/coordinator/adopters'
-      preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/content/new': {
-      id: '/admin/content/new'
-      path: '/new'
-      fullPath: '/admin/content/new'
-      preLoaderRoute: typeof AdminContentNewRouteImport
-      parentRoute: typeof AdminContentRoute
-    }
-    '/admin/content/knowledge': {
-      id: '/admin/content/knowledge'
-      path: '/knowledge'
-      fullPath: '/admin/content/knowledge'
-      preLoaderRoute: typeof AdminContentKnowledgeRouteImport
-      parentRoute: typeof AdminContentRoute
-    }
-    '/admin/content/documents': {
-      id: '/admin/content/documents'
-      path: '/documents'
-      fullPath: '/admin/content/documents'
-      preLoaderRoute: typeof AdminContentDocumentsRouteImport
-      parentRoute: typeof AdminContentRoute
-    }
-    '/admin/content/annual-reports': {
-      id: '/admin/content/annual-reports'
-      path: '/annual-reports'
-      fullPath: '/admin/content/annual-reports'
-      preLoaderRoute: typeof AdminContentAnnualReportsRouteImport
-      parentRoute: typeof AdminContentRoute
-    }
-    '/admin/content/adoption-preview': {
-      id: '/admin/content/adoption-preview'
-      path: '/adoption-preview'
-      fullPath: '/admin/content/adoption-preview'
-      preLoaderRoute: typeof AdminContentAdoptionPreviewRouteImport
-      parentRoute: typeof AdminContentRoute
-    }
-    '/admin/content/adoption-guides': {
-      id: '/admin/content/adoption-guides'
-      path: '/adoption-guides'
-      fullPath: '/admin/content/adoption-guides'
-      preLoaderRoute: typeof AdminContentAdoptionGuidesRouteImport
-      parentRoute: typeof AdminContentRoute
-    }
-    '/admin/content/adoption': {
-      id: '/admin/content/adoption'
-      path: '/adoption'
-      fullPath: '/admin/content/adoption'
-      preLoaderRoute: typeof AdminContentAdoptionRouteImport
+    '/admin/content/$id': {
+      id: '/admin/content/$id'
+      path: '/$id'
+      fullPath: '/admin/content/$id'
+      preLoaderRoute: typeof AdminContentIdRouteImport
       parentRoute: typeof AdminContentRoute
     }
     '/admin/content/about': {
@@ -4550,438 +4025,585 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentAboutRouteImport
       parentRoute: typeof AdminContentRoute
     }
-    '/admin/content/$id': {
-      id: '/admin/content/$id'
-      path: '/$id'
-      fullPath: '/admin/content/$id'
-      preLoaderRoute: typeof AdminContentIdRouteImport
+    '/admin/content/adoption': {
+      id: '/admin/content/adoption'
+      path: '/adoption'
+      fullPath: '/admin/content/adoption'
+      preLoaderRoute: typeof AdminContentAdoptionRouteImport
       parentRoute: typeof AdminContentRoute
     }
-    '/admin/applications/$id': {
-      id: '/admin/applications/$id'
+    '/admin/content/adoption-guides': {
+      id: '/admin/content/adoption-guides'
+      path: '/adoption-guides'
+      fullPath: '/admin/content/adoption-guides'
+      preLoaderRoute: typeof AdminContentAdoptionGuidesRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/adoption-preview': {
+      id: '/admin/content/adoption-preview'
+      path: '/adoption-preview'
+      fullPath: '/admin/content/adoption-preview'
+      preLoaderRoute: typeof AdminContentAdoptionPreviewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/annual-reports': {
+      id: '/admin/content/annual-reports'
+      path: '/annual-reports'
+      fullPath: '/admin/content/annual-reports'
+      preLoaderRoute: typeof AdminContentAnnualReportsRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/documents': {
+      id: '/admin/content/documents'
+      path: '/documents'
+      fullPath: '/admin/content/documents'
+      preLoaderRoute: typeof AdminContentDocumentsRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/knowledge': {
+      id: '/admin/content/knowledge'
+      path: '/knowledge'
+      fullPath: '/admin/content/knowledge'
+      preLoaderRoute: typeof AdminContentKnowledgeRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/new': {
+      id: '/admin/content/new'
+      path: '/new'
+      fullPath: '/admin/content/new'
+      preLoaderRoute: typeof AdminContentNewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/coordinator/adopters': {
+      id: '/admin/coordinator/adopters'
+      path: '/admin/coordinator/adopters'
+      fullPath: '/admin/coordinator/adopters'
+      preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/animals': {
+      id: '/admin/coordinator/animals'
+      path: '/admin/coordinator/animals'
+      fullPath: '/admin/coordinator/animals'
+      preLoaderRoute: typeof AdminCoordinatorAnimalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/inbox': {
+      id: '/admin/coordinator/inbox'
+      path: '/admin/coordinator/inbox'
+      fullPath: '/admin/coordinator/inbox'
+      preLoaderRoute: typeof AdminCoordinatorInboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/intake': {
+      id: '/admin/coordinator/intake'
+      path: '/admin/coordinator/intake'
+      fullPath: '/admin/coordinator/intake'
+      preLoaderRoute: typeof AdminCoordinatorIntakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/reports': {
+      id: '/admin/coordinator/reports'
+      path: '/admin/coordinator/reports'
+      fullPath: '/admin/coordinator/reports'
+      preLoaderRoute: typeof AdminCoordinatorReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/statuses': {
+      id: '/admin/coordinator/statuses'
+      path: '/admin/coordinator/statuses'
+      fullPath: '/admin/coordinator/statuses'
+      preLoaderRoute: typeof AdminCoordinatorStatusesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/tasks': {
+      id: '/admin/coordinator/tasks'
+      path: '/admin/coordinator/tasks'
+      fullPath: '/admin/coordinator/tasks'
+      preLoaderRoute: typeof AdminCoordinatorTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/supporters/$id': {
+      id: '/admin/supporters/$id'
       path: '/$id'
-      fullPath: '/admin/applications/$id'
-      preLoaderRoute: typeof AdminApplicationsIdRouteImport
-      parentRoute: typeof AdminApplicationsRoute
+      fullPath: '/admin/supporters/$id'
+      preLoaderRoute: typeof AdminSupportersIdRouteImport
+      parentRoute: typeof AdminSupportersRoute
     }
-    '/admin/animals/new': {
-      id: '/admin/animals/new'
-      path: '/admin/animals/new'
-      fullPath: '/admin/animals/new'
-      preLoaderRoute: typeof AdminAnimalsNewRouteImport
+    '/admin/volunteers/activities': {
+      id: '/admin/volunteers/activities'
+      path: '/activities'
+      fullPath: '/admin/volunteers/activities'
+      preLoaderRoute: typeof AdminVolunteersActivitiesRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/assessments': {
+      id: '/admin/volunteers/assessments'
+      path: '/assessments'
+      fullPath: '/admin/volunteers/assessments'
+      preLoaderRoute: typeof AdminVolunteersAssessmentsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/calendar': {
+      id: '/admin/volunteers/calendar'
+      path: '/calendar'
+      fullPath: '/admin/volunteers/calendar'
+      preLoaderRoute: typeof AdminVolunteersCalendarRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/daily-settings': {
+      id: '/admin/volunteers/daily-settings'
+      path: '/daily-settings'
+      fullPath: '/admin/volunteers/daily-settings'
+      preLoaderRoute: typeof AdminVolunteersDailySettingsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/group-enquiries': {
+      id: '/admin/volunteers/group-enquiries'
+      path: '/group-enquiries'
+      fullPath: '/admin/volunteers/group-enquiries'
+      preLoaderRoute: typeof AdminVolunteersGroupEnquiriesRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/operations': {
+      id: '/admin/volunteers/operations'
+      path: '/operations'
+      fullPath: '/admin/volunteers/operations'
+      preLoaderRoute: typeof AdminVolunteersOperationsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/people': {
+      id: '/admin/volunteers/people'
+      path: '/people'
+      fullPath: '/admin/volunteers/people'
+      preLoaderRoute: typeof AdminVolunteersPeopleRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/qualifications': {
+      id: '/admin/volunteers/qualifications'
+      path: '/qualifications'
+      fullPath: '/admin/volunteers/qualifications'
+      preLoaderRoute: typeof AdminVolunteersQualificationsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/settings': {
+      id: '/admin/volunteers/settings'
+      path: '/settings'
+      fullPath: '/admin/volunteers/settings'
+      preLoaderRoute: typeof AdminVolunteersSettingsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/simulation': {
+      id: '/admin/volunteers/simulation'
+      path: '/simulation'
+      fullPath: '/admin/volunteers/simulation'
+      preLoaderRoute: typeof AdminVolunteersSimulationRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/sources': {
+      id: '/admin/volunteers/sources'
+      path: '/sources'
+      fullPath: '/admin/volunteers/sources'
+      preLoaderRoute: typeof AdminVolunteersSourcesRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/tasks': {
+      id: '/admin/volunteers/tasks'
+      path: '/tasks'
+      fullPath: '/admin/volunteers/tasks'
+      preLoaderRoute: typeof AdminVolunteersTasksRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/adoption/status/$token': {
+      id: '/adoption/status/$token'
+      path: '/adoption/status/$token'
+      fullPath: '/adoption/status/$token'
+      preLoaderRoute: typeof AdoptionStatusTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/volunteer/status/$token': {
-      id: '/api/volunteer/status/$token'
-      path: '/api/volunteer/status/$token'
-      fullPath: '/api/volunteer/status/$token'
-      preLoaderRoute: typeof ApiVolunteerStatusTokenRouteImport
+    '/animals/cat_/$id': {
+      id: '/animals/cat_/$id'
+      path: '/animals/cat/$id'
+      fullPath: '/animals/cat/$id'
+      preLoaderRoute: typeof AnimalsCatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/supporter/recovery/verify': {
-      id: '/api/supporter/recovery/verify'
-      path: '/verify'
-      fullPath: '/api/supporter/recovery/verify'
-      preLoaderRoute: typeof ApiSupporterRecoveryVerifyRouteImport
-      parentRoute: typeof ApiSupporterRecoveryRoute
-    }
-    '/api/supporter/receipts/$receiptId': {
-      id: '/api/supporter/receipts/$receiptId'
-      path: '/api/supporter/receipts/$receiptId'
-      fullPath: '/api/supporter/receipts/$receiptId'
-      preLoaderRoute: typeof ApiSupporterReceiptsReceiptIdRouteImport
+    '/animals/dog_/$id': {
+      id: '/animals/dog_/$id'
+      path: '/animals/dog/$id'
+      fullPath: '/animals/dog/$id'
+      preLoaderRoute: typeof AnimalsDogIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/sponsorships/status/$token': {
-      id: '/api/sponsorships/status/$token'
-      path: '/api/sponsorships/status/$token'
-      fullPath: '/api/sponsorships/status/$token'
-      preLoaderRoute: typeof ApiSponsorshipsStatusTokenRouteImport
+    '/api/admin/about-pages': {
+      id: '/api/admin/about-pages'
+      path: '/api/admin/about-pages'
+      fullPath: '/api/admin/about-pages'
+      preLoaderRoute: typeof ApiAdminAboutPagesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/sponsorships/pledges/proof-upload-url': {
-      id: '/api/sponsorships/pledges/proof-upload-url'
-      path: '/proof-upload-url'
-      fullPath: '/api/sponsorships/pledges/proof-upload-url'
-      preLoaderRoute: typeof ApiSponsorshipsPledgesProofUploadUrlRouteImport
-      parentRoute: typeof ApiSponsorshipsPledgesRoute
-    }
-    '/api/donations/$donationId/status': {
-      id: '/api/donations/$donationId/status'
-      path: '/$donationId/status'
-      fullPath: '/api/donations/$donationId/status'
-      preLoaderRoute: typeof ApiDonationsDonationIdStatusRouteImport
-      parentRoute: typeof ApiDonationsRoute
-    }
-    '/api/adoption/status/$token': {
-      id: '/api/adoption/status/$token'
-      path: '/api/adoption/status/$token'
-      fullPath: '/api/adoption/status/$token'
-      preLoaderRoute: typeof ApiAdoptionStatusTokenRouteImport
+    '/api/admin/adoption-guide-releases': {
+      id: '/api/admin/adoption-guide-releases'
+      path: '/api/admin/adoption-guide-releases'
+      fullPath: '/api/admin/adoption-guide-releases'
+      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/adoption/applications/photo-upload-urls': {
-      id: '/api/adoption/applications/photo-upload-urls'
-      path: '/photo-upload-urls'
-      fullPath: '/api/adoption/applications/photo-upload-urls'
-      preLoaderRoute: typeof ApiAdoptionApplicationsPhotoUploadUrlsRouteImport
-      parentRoute: typeof ApiAdoptionApplicationsRoute
-    }
-    '/api/admin/volunteers/tasks': {
-      id: '/api/admin/volunteers/tasks'
-      path: '/api/admin/volunteers/tasks'
-      fullPath: '/api/admin/volunteers/tasks'
-      preLoaderRoute: typeof ApiAdminVolunteersTasksRouteImport
+    '/api/admin/adoption-information': {
+      id: '/api/admin/adoption-information'
+      path: '/api/admin/adoption-information'
+      fullPath: '/api/admin/adoption-information'
+      preLoaderRoute: typeof ApiAdminAdoptionInformationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/reviewer-bulk': {
-      id: '/api/admin/volunteers/reviewer-bulk'
-      path: '/api/admin/volunteers/reviewer-bulk'
-      fullPath: '/api/admin/volunteers/reviewer-bulk'
-      preLoaderRoute: typeof ApiAdminVolunteersReviewerBulkRouteImport
+    '/api/admin/adoption-instructions': {
+      id: '/api/admin/adoption-instructions'
+      path: '/api/admin/adoption-instructions'
+      fullPath: '/api/admin/adoption-instructions'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/registrations': {
-      id: '/api/admin/volunteers/registrations'
-      path: '/api/admin/volunteers/registrations'
-      fullPath: '/api/admin/volunteers/registrations'
-      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsRouteImport
+    '/api/admin/annual-reports': {
+      id: '/api/admin/annual-reports'
+      path: '/api/admin/annual-reports'
+      fullPath: '/api/admin/annual-reports'
+      preLoaderRoute: typeof ApiAdminAnnualReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/qualifications': {
-      id: '/api/admin/volunteers/qualifications'
-      path: '/api/admin/volunteers/qualifications'
-      fullPath: '/api/admin/volunteers/qualifications'
-      preLoaderRoute: typeof ApiAdminVolunteersQualificationsRouteImport
+    '/api/admin/content': {
+      id: '/api/admin/content'
+      path: '/api/admin/content'
+      fullPath: '/api/admin/content'
+      preLoaderRoute: typeof ApiAdminContentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/people': {
-      id: '/api/admin/volunteers/people'
-      path: '/api/admin/volunteers/people'
-      fullPath: '/api/admin/volunteers/people'
-      preLoaderRoute: typeof ApiAdminVolunteersPeopleRouteImport
+    '/api/admin/content-review': {
+      id: '/api/admin/content-review'
+      path: '/api/admin/content-review'
+      fullPath: '/api/admin/content-review'
+      preLoaderRoute: typeof ApiAdminContentReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/overview': {
-      id: '/api/admin/volunteers/overview'
-      path: '/api/admin/volunteers/overview'
-      fullPath: '/api/admin/volunteers/overview'
-      preLoaderRoute: typeof ApiAdminVolunteersOverviewRouteImport
+    '/api/admin/documents': {
+      id: '/api/admin/documents'
+      path: '/api/admin/documents'
+      fullPath: '/api/admin/documents'
+      preLoaderRoute: typeof ApiAdminDocumentsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/group-enquiries': {
-      id: '/api/admin/volunteers/group-enquiries'
-      path: '/api/admin/volunteers/group-enquiries'
-      fullPath: '/api/admin/volunteers/group-enquiries'
-      preLoaderRoute: typeof ApiAdminVolunteersGroupEnquiriesRouteImport
+    '/api/admin/faq': {
+      id: '/api/admin/faq'
+      path: '/api/admin/faq'
+      fullPath: '/api/admin/faq'
+      preLoaderRoute: typeof ApiAdminFaqRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/calendar': {
-      id: '/api/admin/volunteers/calendar'
-      path: '/api/admin/volunteers/calendar'
-      fullPath: '/api/admin/volunteers/calendar'
-      preLoaderRoute: typeof ApiAdminVolunteersCalendarRouteImport
+    '/api/admin/governance': {
+      id: '/api/admin/governance'
+      path: '/api/admin/governance'
+      fullPath: '/api/admin/governance'
+      preLoaderRoute: typeof ApiAdminGovernanceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/bulk': {
-      id: '/api/admin/volunteers/bulk'
-      path: '/api/admin/volunteers/bulk'
-      fullPath: '/api/admin/volunteers/bulk'
-      preLoaderRoute: typeof ApiAdminVolunteersBulkRouteImport
+    '/api/admin/internships': {
+      id: '/api/admin/internships'
+      path: '/api/admin/internships'
+      fullPath: '/api/admin/internships'
+      preLoaderRoute: typeof ApiAdminInternshipsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/activities': {
-      id: '/api/admin/volunteers/activities'
-      path: '/api/admin/volunteers/activities'
-      fullPath: '/api/admin/volunteers/activities'
-      preLoaderRoute: typeof ApiAdminVolunteersActivitiesRouteImport
+    '/api/admin/knowledge': {
+      id: '/api/admin/knowledge'
+      path: '/api/admin/knowledge'
+      fullPath: '/api/admin/knowledge'
+      preLoaderRoute: typeof ApiAdminKnowledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/supporters/tag-bulk': {
-      id: '/api/admin/supporters/tag-bulk'
-      path: '/tag-bulk'
-      fullPath: '/api/admin/supporters/tag-bulk'
-      preLoaderRoute: typeof ApiAdminSupportersTagBulkRouteImport
-      parentRoute: typeof ApiAdminSupportersRoute
+    '/api/admin/me': {
+      id: '/api/admin/me'
+      path: '/api/admin/me'
+      fullPath: '/api/admin/me'
+      preLoaderRoute: typeof ApiAdminMeRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/api/admin/supporters/format-preview': {
-      id: '/api/admin/supporters/format-preview'
-      path: '/format-preview'
-      fullPath: '/api/admin/supporters/format-preview'
-      preLoaderRoute: typeof ApiAdminSupportersFormatPreviewRouteImport
-      parentRoute: typeof ApiAdminSupportersRoute
+    '/api/admin/media-repairs': {
+      id: '/api/admin/media-repairs'
+      path: '/api/admin/media-repairs'
+      fullPath: '/api/admin/media-repairs'
+      preLoaderRoute: typeof ApiAdminMediaRepairsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/api/admin/supporters/assignment-bulk': {
-      id: '/api/admin/supporters/assignment-bulk'
-      path: '/assignment-bulk'
-      fullPath: '/api/admin/supporters/assignment-bulk'
-      preLoaderRoute: typeof ApiAdminSupportersAssignmentBulkRouteImport
-      parentRoute: typeof ApiAdminSupportersRoute
+    '/api/admin/payment-methods': {
+      id: '/api/admin/payment-methods'
+      path: '/api/admin/payment-methods'
+      fullPath: '/api/admin/payment-methods'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/api/admin/supporters/assignment-assignees': {
-      id: '/api/admin/supporters/assignment-assignees'
-      path: '/assignment-assignees'
-      fullPath: '/api/admin/supporters/assignment-assignees'
-      preLoaderRoute: typeof ApiAdminSupportersAssignmentAssigneesRouteImport
-      parentRoute: typeof ApiAdminSupportersRoute
+    '/api/admin/payments': {
+      id: '/api/admin/payments'
+      path: '/api/admin/payments'
+      fullPath: '/api/admin/payments'
+      preLoaderRoute: typeof ApiAdminPaymentsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/api/admin/supporters/$id': {
-      id: '/api/admin/supporters/$id'
+    '/api/admin/receipts': {
+      id: '/api/admin/receipts'
+      path: '/api/admin/receipts'
+      fullPath: '/api/admin/receipts'
+      preLoaderRoute: typeof ApiAdminReceiptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/supporters': {
+      id: '/api/admin/supporters'
+      path: '/api/admin/supporters'
+      fullPath: '/api/admin/supporters'
+      preLoaderRoute: typeof ApiAdminSupportersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/task-overview': {
+      id: '/api/admin/task-overview'
+      path: '/api/admin/task-overview'
+      fullPath: '/api/admin/task-overview'
+      preLoaderRoute: typeof ApiAdminTaskOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/adoption/applications': {
+      id: '/api/adoption/applications'
+      path: '/api/adoption/applications'
+      fullPath: '/api/adoption/applications'
+      preLoaderRoute: typeof ApiAdoptionApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/readiness': {
+      id: '/api/internal/readiness'
+      path: '/api/internal/readiness'
+      fullPath: '/api/internal/readiness'
+      preLoaderRoute: typeof ApiInternalReadinessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internships/': {
+      id: '/api/internships/'
+      path: '/api/internships'
+      fullPath: '/api/internships/'
+      preLoaderRoute: typeof ApiInternshipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internships/attachment': {
+      id: '/api/internships/attachment'
+      path: '/api/internships/attachment'
+      fullPath: '/api/internships/attachment'
+      preLoaderRoute: typeof ApiInternshipsAttachmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/adoption-uploads': {
+      id: '/api/jobs/adoption-uploads'
+      path: '/api/jobs/adoption-uploads'
+      fullPath: '/api/jobs/adoption-uploads'
+      preLoaderRoute: typeof ApiJobsAdoptionUploadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/crm-exports': {
+      id: '/api/jobs/crm-exports'
+      path: '/api/jobs/crm-exports'
+      fullPath: '/api/jobs/crm-exports'
+      preLoaderRoute: typeof ApiJobsCrmExportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/donations': {
+      id: '/api/jobs/donations'
+      path: '/api/jobs/donations'
+      fullPath: '/api/jobs/donations'
+      preLoaderRoute: typeof ApiJobsDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/public-media-repair': {
+      id: '/api/jobs/public-media-repair'
+      path: '/api/jobs/public-media-repair'
+      fullPath: '/api/jobs/public-media-repair'
+      preLoaderRoute: typeof ApiJobsPublicMediaRepairRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/public-uploads': {
+      id: '/api/jobs/public-uploads'
+      path: '/api/jobs/public-uploads'
+      fullPath: '/api/jobs/public-uploads'
+      preLoaderRoute: typeof ApiJobsPublicUploadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/sponsorships': {
+      id: '/api/jobs/sponsorships'
+      path: '/api/jobs/sponsorships'
+      fullPath: '/api/jobs/sponsorships'
+      preLoaderRoute: typeof ApiJobsSponsorshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/volunteers': {
+      id: '/api/jobs/volunteers'
+      path: '/api/jobs/volunteers'
+      fullPath: '/api/jobs/volunteers'
+      preLoaderRoute: typeof ApiJobsVolunteersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sponsorships/pledges': {
+      id: '/api/sponsorships/pledges'
+      path: '/api/sponsorships/pledges'
+      fullPath: '/api/sponsorships/pledges'
+      preLoaderRoute: typeof ApiSponsorshipsPledgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sponsorships/terms': {
+      id: '/api/sponsorships/terms'
+      path: '/api/sponsorships/terms'
+      fullPath: '/api/sponsorships/terms'
+      preLoaderRoute: typeof ApiSponsorshipsTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/stories/$slug': {
+      id: '/api/stories/$slug'
+      path: '/$slug'
+      fullPath: '/api/stories/$slug'
+      preLoaderRoute: typeof ApiStoriesSlugRouteImport
+      parentRoute: typeof ApiStoriesRoute
+    }
+    '/api/stories/map': {
+      id: '/api/stories/map'
+      path: '/map'
+      fullPath: '/api/stories/map'
+      preLoaderRoute: typeof ApiStoriesMapRouteImport
+      parentRoute: typeof ApiStoriesRoute
+    }
+    '/api/supporter/preferences': {
+      id: '/api/supporter/preferences'
+      path: '/api/supporter/preferences'
+      fullPath: '/api/supporter/preferences'
+      preLoaderRoute: typeof ApiSupporterPreferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/supporter/records': {
+      id: '/api/supporter/records'
+      path: '/api/supporter/records'
+      fullPath: '/api/supporter/records'
+      preLoaderRoute: typeof ApiSupporterRecordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/supporter/recovery': {
+      id: '/api/supporter/recovery'
+      path: '/api/supporter/recovery'
+      fullPath: '/api/supporter/recovery'
+      preLoaderRoute: typeof ApiSupporterRecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/volunteer/activities': {
+      id: '/api/volunteer/activities'
+      path: '/api/volunteer/activities'
+      fullPath: '/api/volunteer/activities'
+      preLoaderRoute: typeof ApiVolunteerActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/volunteer/group-enquiries': {
+      id: '/api/volunteer/group-enquiries'
+      path: '/api/volunteer/group-enquiries'
+      fullPath: '/api/volunteer/group-enquiries'
+      preLoaderRoute: typeof ApiVolunteerGroupEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/volunteer/operations': {
+      id: '/api/volunteer/operations'
+      path: '/api/volunteer/operations'
+      fullPath: '/api/volunteer/operations'
+      preLoaderRoute: typeof ApiVolunteerOperationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/volunteer/policy': {
+      id: '/api/volunteer/policy'
+      path: '/api/volunteer/policy'
+      fullPath: '/api/volunteer/policy'
+      preLoaderRoute: typeof ApiVolunteerPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/volunteer/registrations': {
+      id: '/api/volunteer/registrations'
+      path: '/api/volunteer/registrations'
+      fullPath: '/api/volunteer/registrations'
+      preLoaderRoute: typeof ApiVolunteerRegistrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/cod': {
+      id: '/api/webhooks/cod'
+      path: '/api/webhooks/cod'
+      fullPath: '/api/webhooks/cod'
+      preLoaderRoute: typeof ApiWebhooksCodRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/paypal': {
+      id: '/api/webhooks/paypal'
+      path: '/api/webhooks/paypal'
+      fullPath: '/api/webhooks/paypal'
+      preLoaderRoute: typeof ApiWebhooksPaypalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/resend': {
+      id: '/api/webhooks/resend'
+      path: '/api/webhooks/resend'
+      fullPath: '/api/webhooks/resend'
+      preLoaderRoute: typeof ApiWebhooksResendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/stripe': {
+      id: '/api/webhooks/stripe'
+      path: '/api/webhooks/stripe'
+      fullPath: '/api/webhooks/stripe'
+      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sponsors_/status/$token': {
+      id: '/sponsors_/status/$token'
+      path: '/sponsors/status/$token'
+      fullPath: '/sponsors/status/$token'
+      preLoaderRoute: typeof SponsorsStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/volunteer/status/$token': {
+      id: '/volunteer/status/$token'
+      path: '/status/$token'
+      fullPath: '/volunteer/status/$token'
+      preLoaderRoute: typeof VolunteerStatusTokenRouteImport
+      parentRoute: typeof VolunteerRoute
+    }
+    '/admin/animals/$id/edit': {
+      id: '/admin/animals/$id/edit'
+      path: '/admin/animals/$id/edit'
+      fullPath: '/admin/animals/$id/edit'
+      preLoaderRoute: typeof AdminAnimalsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/adopters/$id': {
+      id: '/admin/coordinator/adopters/$id'
       path: '/$id'
-      fullPath: '/api/admin/supporters/$id'
-      preLoaderRoute: typeof ApiAdminSupportersIdRouteImport
-      parentRoute: typeof ApiAdminSupportersRoute
+      fullPath: '/admin/coordinator/adopters/$id'
+      preLoaderRoute: typeof AdminCoordinatorAdoptersIdRouteImport
+      parentRoute: typeof AdminCoordinatorAdoptersRoute
     }
-    '/api/admin/sponsorships/pledges': {
-      id: '/api/admin/sponsorships/pledges'
-      path: '/api/admin/sponsorships/pledges'
-      fullPath: '/api/admin/sponsorships/pledges'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/sponsorships/followup-bulk': {
-      id: '/api/admin/sponsorships/followup-bulk'
-      path: '/api/admin/sponsorships/followup-bulk'
-      fullPath: '/api/admin/sponsorships/followup-bulk'
-      preLoaderRoute: typeof ApiAdminSponsorshipsFollowupBulkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/sponsorships/followup-assignees': {
-      id: '/api/admin/sponsorships/followup-assignees'
-      path: '/api/admin/sponsorships/followup-assignees'
-      fullPath: '/api/admin/sponsorships/followup-assignees'
-      preLoaderRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/sponsorships/deliveries': {
-      id: '/api/admin/sponsorships/deliveries'
-      path: '/api/admin/sponsorships/deliveries'
-      fullPath: '/api/admin/sponsorships/deliveries'
-      preLoaderRoute: typeof ApiAdminSponsorshipsDeliveriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/sponsorships/animals': {
-      id: '/api/admin/sponsorships/animals'
-      path: '/api/admin/sponsorships/animals'
-      fullPath: '/api/admin/sponsorships/animals'
-      preLoaderRoute: typeof ApiAdminSponsorshipsAnimalsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/payment-methods/$id': {
-      id: '/api/admin/payment-methods/$id'
+    '/admin/volunteers/people/$id': {
+      id: '/admin/volunteers/people/$id'
       path: '/$id'
-      fullPath: '/api/admin/payment-methods/$id'
-      preLoaderRoute: typeof ApiAdminPaymentMethodsIdRouteImport
-      parentRoute: typeof ApiAdminPaymentMethodsRoute
+      fullPath: '/admin/volunteers/people/$id'
+      preLoaderRoute: typeof AdminVolunteersPeopleIdRouteImport
+      parentRoute: typeof AdminVolunteersPeopleRoute
     }
-    '/api/admin/finance/delivery-jobs': {
-      id: '/api/admin/finance/delivery-jobs'
-      path: '/api/admin/finance/delivery-jobs'
-      fullPath: '/api/admin/finance/delivery-jobs'
-      preLoaderRoute: typeof ApiAdminFinanceDeliveryJobsRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/volunteers/registrations/$id': {
+      id: '/admin/volunteers/registrations/$id'
+      path: '/registrations/$id'
+      fullPath: '/admin/volunteers/registrations/$id'
+      preLoaderRoute: typeof AdminVolunteersRegistrationsIdRouteImport
+      parentRoute: typeof AdminVolunteersRoute
     }
-    '/api/admin/finance/bank-statement-preview': {
-      id: '/api/admin/finance/bank-statement-preview'
-      path: '/api/admin/finance/bank-statement-preview'
-      fullPath: '/api/admin/finance/bank-statement-preview'
-      preLoaderRoute: typeof ApiAdminFinanceBankStatementPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/finance/bank-match-operations': {
-      id: '/api/admin/finance/bank-match-operations'
-      path: '/api/admin/finance/bank-match-operations'
-      fullPath: '/api/admin/finance/bank-match-operations'
-      preLoaderRoute: typeof ApiAdminFinanceBankMatchOperationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/finance/activity': {
-      id: '/api/admin/finance/activity'
-      path: '/api/admin/finance/activity'
-      fullPath: '/api/admin/finance/activity'
-      preLoaderRoute: typeof ApiAdminFinanceActivityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/exports/supporters.csv': {
-      id: '/api/admin/exports/supporters.csv'
-      path: '/api/admin/exports/supporters.csv'
-      fullPath: '/api/admin/exports/supporters.csv'
-      preLoaderRoute: typeof ApiAdminExportsSupportersDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/exports/payments.csv': {
-      id: '/api/admin/exports/payments.csv'
-      path: '/api/admin/exports/payments.csv'
-      fullPath: '/api/admin/exports/payments.csv'
-      preLoaderRoute: typeof ApiAdminExportsPaymentsDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/exports/jobs': {
-      id: '/api/admin/exports/jobs'
-      path: '/api/admin/exports/jobs'
-      fullPath: '/api/admin/exports/jobs'
-      preLoaderRoute: typeof ApiAdminExportsJobsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/exports/donations.csv': {
-      id: '/api/admin/exports/donations.csv'
-      path: '/api/admin/exports/donations.csv'
-      fullPath: '/api/admin/exports/donations.csv'
-      preLoaderRoute: typeof ApiAdminExportsDonationsDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/donations/manual': {
-      id: '/api/admin/donations/manual'
-      path: '/api/admin/donations/manual'
-      fullPath: '/api/admin/donations/manual'
-      preLoaderRoute: typeof ApiAdminDonationsManualRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/documents/upload-target': {
-      id: '/api/admin/documents/upload-target'
-      path: '/upload-target'
-      fullPath: '/api/admin/documents/upload-target'
-      preLoaderRoute: typeof ApiAdminDocumentsUploadTargetRouteImport
-      parentRoute: typeof ApiAdminDocumentsRoute
-    }
-    '/api/admin/documents/$id': {
-      id: '/api/admin/documents/$id'
-      path: '/$id'
-      fullPath: '/api/admin/documents/$id'
-      preLoaderRoute: typeof ApiAdminDocumentsIdRouteImport
-      parentRoute: typeof ApiAdminDocumentsRoute
-    }
-    '/api/admin/content/review-bulk': {
-      id: '/api/admin/content/review-bulk'
-      path: '/review-bulk'
-      fullPath: '/api/admin/content/review-bulk'
-      preLoaderRoute: typeof ApiAdminContentReviewBulkRouteImport
-      parentRoute: typeof ApiAdminContentRoute
-    }
-    '/api/admin/content/link-search': {
-      id: '/api/admin/content/link-search'
-      path: '/link-search'
-      fullPath: '/api/admin/content/link-search'
-      preLoaderRoute: typeof ApiAdminContentLinkSearchRouteImport
-      parentRoute: typeof ApiAdminContentRoute
-    }
-    '/api/admin/content/$id': {
-      id: '/api/admin/content/$id'
-      path: '/$id'
-      fullPath: '/api/admin/content/$id'
-      preLoaderRoute: typeof ApiAdminContentIdRouteImport
-      parentRoute: typeof ApiAdminContentRoute
-    }
-    '/api/admin/annual-reports/$id': {
-      id: '/api/admin/annual-reports/$id'
-      path: '/$id'
-      fullPath: '/api/admin/annual-reports/$id'
-      preLoaderRoute: typeof ApiAdminAnnualReportsIdRouteImport
-      parentRoute: typeof ApiAdminAnnualReportsRoute
-    }
-    '/api/admin/animals/review-bulk': {
-      id: '/api/admin/animals/review-bulk'
-      path: '/api/admin/animals/review-bulk'
-      fullPath: '/api/admin/animals/review-bulk'
-      preLoaderRoute: typeof ApiAdminAnimalsReviewBulkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/animals/photo-upload-url': {
-      id: '/api/admin/animals/photo-upload-url'
-      path: '/api/admin/animals/photo-upload-url'
-      fullPath: '/api/admin/animals/photo-upload-url'
-      preLoaderRoute: typeof ApiAdminAnimalsPhotoUploadUrlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/animals/list': {
-      id: '/api/admin/animals/list'
-      path: '/api/admin/animals/list'
-      fullPath: '/api/admin/animals/list'
-      preLoaderRoute: typeof ApiAdminAnimalsListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/tasks': {
-      id: '/api/admin/adoptions/tasks'
-      path: '/api/admin/adoptions/tasks'
-      fullPath: '/api/admin/adoptions/tasks'
-      preLoaderRoute: typeof ApiAdminAdoptionsTasksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/statuses': {
-      id: '/api/admin/adoptions/statuses'
-      path: '/api/admin/adoptions/statuses'
-      fullPath: '/api/admin/adoptions/statuses'
-      preLoaderRoute: typeof ApiAdminAdoptionsStatusesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/cases': {
-      id: '/api/admin/adoptions/cases'
-      path: '/api/admin/adoptions/cases'
-      fullPath: '/api/admin/adoptions/cases'
-      preLoaderRoute: typeof ApiAdminAdoptionsCasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/assignment-bulk': {
-      id: '/api/admin/adoptions/assignment-bulk'
-      path: '/api/admin/adoptions/assignment-bulk'
-      fullPath: '/api/admin/adoptions/assignment-bulk'
-      preLoaderRoute: typeof ApiAdminAdoptionsAssignmentBulkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/adopters': {
-      id: '/api/admin/adoptions/adopters'
-      path: '/api/admin/adoptions/adopters'
-      fullPath: '/api/admin/adoptions/adopters'
-      preLoaderRoute: typeof ApiAdminAdoptionsAdoptersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoption-instructions/restore': {
-      id: '/api/admin/adoption-instructions/restore'
-      path: '/restore'
-      fullPath: '/api/admin/adoption-instructions/restore'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRestoreRouteImport
-      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
-    }
-    '/api/admin/adoption-instructions/publish': {
-      id: '/api/admin/adoption-instructions/publish'
-      path: '/publish'
-      fullPath: '/api/admin/adoption-instructions/publish'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsPublishRouteImport
-      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
-    }
-    '/api/admin/adoption-instructions/preview': {
-      id: '/api/admin/adoption-instructions/preview'
-      path: '/preview'
-      fullPath: '/api/admin/adoption-instructions/preview'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsPreviewRouteImport
-      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
-    }
-    '/api/admin/adoption-instructions/history': {
-      id: '/api/admin/adoption-instructions/history'
-      path: '/history'
-      fullPath: '/api/admin/adoption-instructions/history'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsHistoryRouteImport
-      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
-    }
-    '/api/admin/adoption-instructions/draft': {
-      id: '/api/admin/adoption-instructions/draft'
-      path: '/draft'
-      fullPath: '/api/admin/adoption-instructions/draft'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsDraftRouteImport
-      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
-    }
-    '/api/admin/adoption-guide-releases/$id': {
-      id: '/api/admin/adoption-guide-releases/$id'
-      path: '/$id'
-      fullPath: '/api/admin/adoption-guide-releases/$id'
-      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdRouteImport
-      parentRoute: typeof ApiAdminAdoptionGuideReleasesRoute
-    }
-    '/api/admin/access/users': {
-      id: '/api/admin/access/users'
-      path: '/api/admin/access/users'
-      fullPath: '/api/admin/access/users'
-      preLoaderRoute: typeof ApiAdminAccessUsersRouteImport
+    '/api/admin/access/audit': {
+      id: '/api/admin/access/audit'
+      path: '/api/admin/access/audit'
+      fullPath: '/api/admin/access/audit'
+      preLoaderRoute: typeof ApiAdminAccessAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/access/invites': {
@@ -4991,431 +4613,431 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAccessInvitesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/access/audit': {
-      id: '/api/admin/access/audit'
-      path: '/api/admin/access/audit'
-      fullPath: '/api/admin/access/audit'
-      preLoaderRoute: typeof ApiAdminAccessAuditRouteImport
+    '/api/admin/access/users': {
+      id: '/api/admin/access/users'
+      path: '/api/admin/access/users'
+      fullPath: '/api/admin/access/users'
+      preLoaderRoute: typeof ApiAdminAccessUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/volunteers/registrations/$id': {
-      id: '/admin/volunteers/registrations/$id'
-      path: '/registrations/$id'
-      fullPath: '/admin/volunteers/registrations/$id'
-      preLoaderRoute: typeof AdminVolunteersRegistrationsIdRouteImport
-      parentRoute: typeof AdminVolunteersRoute
-    }
-    '/admin/volunteers/people/$id': {
-      id: '/admin/volunteers/people/$id'
+    '/api/admin/adoption-guide-releases/$id': {
+      id: '/api/admin/adoption-guide-releases/$id'
       path: '/$id'
-      fullPath: '/admin/volunteers/people/$id'
-      preLoaderRoute: typeof AdminVolunteersPeopleIdRouteImport
-      parentRoute: typeof AdminVolunteersPeopleRoute
+      fullPath: '/api/admin/adoption-guide-releases/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionGuideReleasesRoute
     }
-    '/admin/coordinator/adopters/$id': {
-      id: '/admin/coordinator/adopters/$id'
-      path: '/$id'
-      fullPath: '/admin/coordinator/adopters/$id'
-      preLoaderRoute: typeof AdminCoordinatorAdoptersIdRouteImport
-      parentRoute: typeof AdminCoordinatorAdoptersRoute
-    }
-    '/admin/animals/$id/edit': {
-      id: '/admin/animals/$id/edit'
-      path: '/admin/animals/$id/edit'
-      fullPath: '/admin/animals/$id/edit'
-      preLoaderRoute: typeof AdminAnimalsIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/sources/': {
-      id: '/api/admin/volunteers/sources/'
-      path: '/api/admin/volunteers/sources'
-      fullPath: '/api/admin/volunteers/sources/'
-      preLoaderRoute: typeof ApiAdminVolunteersSourcesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/simulation/': {
-      id: '/api/admin/volunteers/simulation/'
-      path: '/api/admin/volunteers/simulation'
-      fullPath: '/api/admin/volunteers/simulation/'
-      preLoaderRoute: typeof ApiAdminVolunteersSimulationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/settings/': {
-      id: '/api/admin/volunteers/settings/'
-      path: '/api/admin/volunteers/settings'
-      fullPath: '/api/admin/volunteers/settings/'
-      preLoaderRoute: typeof ApiAdminVolunteersSettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/operations/': {
-      id: '/api/admin/volunteers/operations/'
-      path: '/api/admin/volunteers/operations'
-      fullPath: '/api/admin/volunteers/operations/'
-      preLoaderRoute: typeof ApiAdminVolunteersOperationsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/jobs/': {
-      id: '/api/admin/volunteers/jobs/'
-      path: '/api/admin/volunteers/jobs'
-      fullPath: '/api/admin/volunteers/jobs/'
-      preLoaderRoute: typeof ApiAdminVolunteersJobsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/daily-settings/': {
-      id: '/api/admin/volunteers/daily-settings/'
-      path: '/api/admin/volunteers/daily-settings'
-      fullPath: '/api/admin/volunteers/daily-settings/'
-      preLoaderRoute: typeof ApiAdminVolunteersDailySettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/assessments/': {
-      id: '/api/admin/volunteers/assessments/'
-      path: '/api/admin/volunteers/assessments'
-      fullPath: '/api/admin/volunteers/assessments/'
-      preLoaderRoute: typeof ApiAdminVolunteersAssessmentsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/animals/publication/': {
-      id: '/api/admin/animals/publication/'
-      path: '/api/admin/animals/publication'
-      fullPath: '/api/admin/animals/publication/'
-      preLoaderRoute: typeof ApiAdminAnimalsPublicationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/animals/draft-photo-upload-url/': {
-      id: '/api/admin/animals/draft-photo-upload-url/'
-      path: '/api/admin/animals/draft-photo-upload-url'
-      fullPath: '/api/admin/animals/draft-photo-upload-url/'
-      preLoaderRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/volunteers/registrations/$id': {
-      id: '/api/admin/volunteers/registrations/$id'
-      path: '/$id'
-      fullPath: '/api/admin/volunteers/registrations/$id'
-      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdRouteImport
-      parentRoute: typeof ApiAdminVolunteersRegistrationsRoute
-    }
-    '/api/admin/volunteers/activities/$id': {
-      id: '/api/admin/volunteers/activities/$id'
-      path: '/$id'
-      fullPath: '/api/admin/volunteers/activities/$id'
-      preLoaderRoute: typeof ApiAdminVolunteersActivitiesIdRouteImport
-      parentRoute: typeof ApiAdminVolunteersActivitiesRoute
-    }
-    '/api/admin/supporters/$id/consents': {
-      id: '/api/admin/supporters/$id/consents'
-      path: '/consents'
-      fullPath: '/api/admin/supporters/$id/consents'
-      preLoaderRoute: typeof ApiAdminSupportersIdConsentsRouteImport
-      parentRoute: typeof ApiAdminSupportersIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id': {
-      id: '/api/admin/sponsorships/pledges/$id'
-      path: '/$id'
-      fullPath: '/api/admin/sponsorships/pledges/$id'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesRoute
-    }
-    '/api/admin/receipts/$id/void': {
-      id: '/api/admin/receipts/$id/void'
-      path: '/$id/void'
-      fullPath: '/api/admin/receipts/$id/void'
-      preLoaderRoute: typeof ApiAdminReceiptsIdVoidRouteImport
-      parentRoute: typeof ApiAdminReceiptsRoute
-    }
-    '/api/admin/payments/$id/reconcile': {
-      id: '/api/admin/payments/$id/reconcile'
-      path: '/$id/reconcile'
-      fullPath: '/api/admin/payments/$id/reconcile'
-      preLoaderRoute: typeof ApiAdminPaymentsIdReconcileRouteImport
-      parentRoute: typeof ApiAdminPaymentsRoute
-    }
-    '/api/admin/payment-methods/$id/withdraw': {
-      id: '/api/admin/payment-methods/$id/withdraw'
-      path: '/withdraw'
-      fullPath: '/api/admin/payment-methods/$id/withdraw'
-      preLoaderRoute: typeof ApiAdminPaymentMethodsIdWithdrawRouteImport
-      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
-    }
-    '/api/admin/payment-methods/$id/submit': {
-      id: '/api/admin/payment-methods/$id/submit'
-      path: '/submit'
-      fullPath: '/api/admin/payment-methods/$id/submit'
-      preLoaderRoute: typeof ApiAdminPaymentMethodsIdSubmitRouteImport
-      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
-    }
-    '/api/admin/payment-methods/$id/return-to-draft': {
-      id: '/api/admin/payment-methods/$id/return-to-draft'
-      path: '/return-to-draft'
-      fullPath: '/api/admin/payment-methods/$id/return-to-draft'
-      preLoaderRoute: typeof ApiAdminPaymentMethodsIdReturnToDraftRouteImport
-      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
-    }
-    '/api/admin/payment-methods/$id/publish': {
-      id: '/api/admin/payment-methods/$id/publish'
-      path: '/publish'
-      fullPath: '/api/admin/payment-methods/$id/publish'
-      preLoaderRoute: typeof ApiAdminPaymentMethodsIdPublishRouteImport
-      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
-    }
-    '/api/admin/exports/jobs/$id': {
-      id: '/api/admin/exports/jobs/$id'
-      path: '/$id'
-      fullPath: '/api/admin/exports/jobs/$id'
-      preLoaderRoute: typeof ApiAdminExportsJobsIdRouteImport
-      parentRoute: typeof ApiAdminExportsJobsRoute
-    }
-    '/api/admin/documents/$id/publish': {
-      id: '/api/admin/documents/$id/publish'
-      path: '/publish'
-      fullPath: '/api/admin/documents/$id/publish'
-      preLoaderRoute: typeof ApiAdminDocumentsIdPublishRouteImport
-      parentRoute: typeof ApiAdminDocumentsIdRoute
-    }
-    '/api/admin/content/social-copy/$id': {
-      id: '/api/admin/content/social-copy/$id'
-      path: '/social-copy/$id'
-      fullPath: '/api/admin/content/social-copy/$id'
-      preLoaderRoute: typeof ApiAdminContentSocialCopyIdRouteImport
-      parentRoute: typeof ApiAdminContentRoute
-    }
-    '/api/admin/content/notification-drafts/$id': {
-      id: '/api/admin/content/notification-drafts/$id'
-      path: '/notification-drafts/$id'
-      fullPath: '/api/admin/content/notification-drafts/$id'
-      preLoaderRoute: typeof ApiAdminContentNotificationDraftsIdRouteImport
-      parentRoute: typeof ApiAdminContentRoute
-    }
-    '/api/admin/content/$id/updates': {
-      id: '/api/admin/content/$id/updates'
-      path: '/updates'
-      fullPath: '/api/admin/content/$id/updates'
-      preLoaderRoute: typeof ApiAdminContentIdUpdatesRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/story-profile': {
-      id: '/api/admin/content/$id/story-profile'
-      path: '/story-profile'
-      fullPath: '/api/admin/content/$id/story-profile'
-      preLoaderRoute: typeof ApiAdminContentIdStoryProfileRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/social-copy': {
-      id: '/api/admin/content/$id/social-copy'
-      path: '/social-copy'
-      fullPath: '/api/admin/content/$id/social-copy'
-      preLoaderRoute: typeof ApiAdminContentIdSocialCopyRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/revisions': {
-      id: '/api/admin/content/$id/revisions'
-      path: '/revisions'
-      fullPath: '/api/admin/content/$id/revisions'
-      preLoaderRoute: typeof ApiAdminContentIdRevisionsRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/publish': {
-      id: '/api/admin/content/$id/publish'
-      path: '/publish'
-      fullPath: '/api/admin/content/$id/publish'
-      preLoaderRoute: typeof ApiAdminContentIdPublishRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/publication-metadata': {
-      id: '/api/admin/content/$id/publication-metadata'
-      path: '/publication-metadata'
-      fullPath: '/api/admin/content/$id/publication-metadata'
-      preLoaderRoute: typeof ApiAdminContentIdPublicationMetadataRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/media-upload-target': {
-      id: '/api/admin/content/$id/media-upload-target'
-      path: '/media-upload-target'
-      fullPath: '/api/admin/content/$id/media-upload-target'
-      preLoaderRoute: typeof ApiAdminContentIdMediaUploadTargetRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/media-preview': {
-      id: '/api/admin/content/$id/media-preview'
-      path: '/media-preview'
-      fullPath: '/api/admin/content/$id/media-preview'
-      preLoaderRoute: typeof ApiAdminContentIdMediaPreviewRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/media-finalize': {
-      id: '/api/admin/content/$id/media-finalize'
-      path: '/media-finalize'
-      fullPath: '/api/admin/content/$id/media-finalize'
-      preLoaderRoute: typeof ApiAdminContentIdMediaFinalizeRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/media': {
-      id: '/api/admin/content/$id/media'
-      path: '/media'
-      fullPath: '/api/admin/content/$id/media'
-      preLoaderRoute: typeof ApiAdminContentIdMediaRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/links': {
-      id: '/api/admin/content/$id/links'
-      path: '/links'
-      fullPath: '/api/admin/content/$id/links'
-      preLoaderRoute: typeof ApiAdminContentIdLinksRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/content/$id/archive': {
-      id: '/api/admin/content/$id/archive'
-      path: '/archive'
-      fullPath: '/api/admin/content/$id/archive'
-      preLoaderRoute: typeof ApiAdminContentIdArchiveRouteImport
-      parentRoute: typeof ApiAdminContentIdRoute
-    }
-    '/api/admin/annual-reports/$id/publish': {
-      id: '/api/admin/annual-reports/$id/publish'
-      path: '/publish'
-      fullPath: '/api/admin/annual-reports/$id/publish'
-      preLoaderRoute: typeof ApiAdminAnnualReportsIdPublishRouteImport
-      parentRoute: typeof ApiAdminAnnualReportsIdRoute
-    }
-    '/api/admin/animals/$id/archive': {
-      id: '/api/admin/animals/$id/archive'
-      path: '/api/admin/animals/$id/archive'
-      fullPath: '/api/admin/animals/$id/archive'
-      preLoaderRoute: typeof ApiAdminAnimalsIdArchiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/tasks/$id': {
-      id: '/api/admin/adoptions/tasks/$id'
-      path: '/$id'
-      fullPath: '/api/admin/adoptions/tasks/$id'
-      preLoaderRoute: typeof ApiAdminAdoptionsTasksIdRouteImport
-      parentRoute: typeof ApiAdminAdoptionsTasksRoute
-    }
-    '/api/admin/adoptions/statuses/$id': {
-      id: '/api/admin/adoptions/statuses/$id'
-      path: '/$id'
-      fullPath: '/api/admin/adoptions/statuses/$id'
-      preLoaderRoute: typeof ApiAdminAdoptionsStatusesIdRouteImport
-      parentRoute: typeof ApiAdminAdoptionsStatusesRoute
-    }
-    '/api/admin/adoptions/reports/summary': {
-      id: '/api/admin/adoptions/reports/summary'
-      path: '/api/admin/adoptions/reports/summary'
-      fullPath: '/api/admin/adoptions/reports/summary'
-      preLoaderRoute: typeof ApiAdminAdoptionsReportsSummaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/reports/exports': {
-      id: '/api/admin/adoptions/reports/exports'
-      path: '/api/admin/adoptions/reports/exports'
-      fullPath: '/api/admin/adoptions/reports/exports'
-      preLoaderRoute: typeof ApiAdminAdoptionsReportsExportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/intake/items': {
-      id: '/api/admin/adoptions/intake/items'
-      path: '/api/admin/adoptions/intake/items'
-      fullPath: '/api/admin/adoptions/intake/items'
-      preLoaderRoute: typeof ApiAdminAdoptionsIntakeItemsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/intake/identity-search': {
-      id: '/api/admin/adoptions/intake/identity-search'
-      path: '/api/admin/adoptions/intake/identity-search'
-      fullPath: '/api/admin/adoptions/intake/identity-search'
-      preLoaderRoute: typeof ApiAdminAdoptionsIntakeIdentitySearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/intake/cases': {
-      id: '/api/admin/adoptions/intake/cases'
-      path: '/api/admin/adoptions/intake/cases'
-      fullPath: '/api/admin/adoptions/intake/cases'
-      preLoaderRoute: typeof ApiAdminAdoptionsIntakeCasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/exports/tasks.csv': {
-      id: '/api/admin/adoptions/exports/tasks.csv'
-      path: '/api/admin/adoptions/exports/tasks.csv'
-      fullPath: '/api/admin/adoptions/exports/tasks.csv'
-      preLoaderRoute: typeof ApiAdminAdoptionsExportsTasksDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/exports/successful-adoptions.csv': {
-      id: '/api/admin/adoptions/exports/successful-adoptions.csv'
-      path: '/api/admin/adoptions/exports/successful-adoptions.csv'
-      fullPath: '/api/admin/adoptions/exports/successful-adoptions.csv'
-      preLoaderRoute: typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/exports/cases.csv': {
-      id: '/api/admin/adoptions/exports/cases.csv'
-      path: '/api/admin/adoptions/exports/cases.csv'
-      fullPath: '/api/admin/adoptions/exports/cases.csv'
-      preLoaderRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/exports/animals.csv': {
-      id: '/api/admin/adoptions/exports/animals.csv'
-      path: '/api/admin/adoptions/exports/animals.csv'
-      fullPath: '/api/admin/adoptions/exports/animals.csv'
-      preLoaderRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/exports/adopters.csv': {
-      id: '/api/admin/adoptions/exports/adopters.csv'
-      path: '/api/admin/adoptions/exports/adopters.csv'
-      fullPath: '/api/admin/adoptions/exports/adopters.csv'
-      preLoaderRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/cases/$id': {
-      id: '/api/admin/adoptions/cases/$id'
-      path: '/$id'
-      fullPath: '/api/admin/adoptions/cases/$id'
-      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdRouteImport
-      parentRoute: typeof ApiAdminAdoptionsCasesRoute
-    }
-    '/api/admin/adoptions/animals/pipeline': {
-      id: '/api/admin/adoptions/animals/pipeline'
-      path: '/api/admin/adoptions/animals/pipeline'
-      fullPath: '/api/admin/adoptions/animals/pipeline'
-      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsPipelineRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/adoptions/adopters/$id': {
-      id: '/api/admin/adoptions/adopters/$id'
-      path: '/$id'
-      fullPath: '/api/admin/adoptions/adopters/$id'
-      preLoaderRoute: typeof ApiAdminAdoptionsAdoptersIdRouteImport
-      parentRoute: typeof ApiAdminAdoptionsAdoptersRoute
-    }
-    '/api/admin/adoption-instructions/revisions/$id': {
-      id: '/api/admin/adoption-instructions/revisions/$id'
-      path: '/revisions/$id'
-      fullPath: '/api/admin/adoption-instructions/revisions/$id'
-      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRevisionsIdRouteImport
+    '/api/admin/adoption-instructions/draft': {
+      id: '/api/admin/adoption-instructions/draft'
+      path: '/draft'
+      fullPath: '/api/admin/adoption-instructions/draft'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsDraftRouteImport
       parentRoute: typeof ApiAdminAdoptionInstructionsRoute
     }
-    '/api/admin/adoption-guide-releases/$id/withdraw': {
-      id: '/api/admin/adoption-guide-releases/$id/withdraw'
-      path: '/withdraw'
-      fullPath: '/api/admin/adoption-guide-releases/$id/withdraw'
-      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport
-      parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
+    '/api/admin/adoption-instructions/history': {
+      id: '/api/admin/adoption-instructions/history'
+      path: '/history'
+      fullPath: '/api/admin/adoption-instructions/history'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsHistoryRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
     }
-    '/api/admin/adoption-guide-releases/$id/submit': {
-      id: '/api/admin/adoption-guide-releases/$id/submit'
-      path: '/submit'
-      fullPath: '/api/admin/adoption-guide-releases/$id/submit'
-      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdSubmitRouteImport
-      parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
+    '/api/admin/adoption-instructions/preview': {
+      id: '/api/admin/adoption-instructions/preview'
+      path: '/preview'
+      fullPath: '/api/admin/adoption-instructions/preview'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsPreviewRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
     }
-    '/api/admin/adoption-guide-releases/$id/return-to-draft': {
-      id: '/api/admin/adoption-guide-releases/$id/return-to-draft'
-      path: '/return-to-draft'
-      fullPath: '/api/admin/adoption-guide-releases/$id/return-to-draft'
-      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport
+    '/api/admin/adoption-instructions/publish': {
+      id: '/api/admin/adoption-instructions/publish'
+      path: '/publish'
+      fullPath: '/api/admin/adoption-instructions/publish'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsPublishRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
+    }
+    '/api/admin/adoption-instructions/restore': {
+      id: '/api/admin/adoption-instructions/restore'
+      path: '/restore'
+      fullPath: '/api/admin/adoption-instructions/restore'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRestoreRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
+    }
+    '/api/admin/adoptions/adopters': {
+      id: '/api/admin/adoptions/adopters'
+      path: '/api/admin/adoptions/adopters'
+      fullPath: '/api/admin/adoptions/adopters'
+      preLoaderRoute: typeof ApiAdminAdoptionsAdoptersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/assignment-bulk': {
+      id: '/api/admin/adoptions/assignment-bulk'
+      path: '/api/admin/adoptions/assignment-bulk'
+      fullPath: '/api/admin/adoptions/assignment-bulk'
+      preLoaderRoute: typeof ApiAdminAdoptionsAssignmentBulkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/cases': {
+      id: '/api/admin/adoptions/cases'
+      path: '/api/admin/adoptions/cases'
+      fullPath: '/api/admin/adoptions/cases'
+      preLoaderRoute: typeof ApiAdminAdoptionsCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/statuses': {
+      id: '/api/admin/adoptions/statuses'
+      path: '/api/admin/adoptions/statuses'
+      fullPath: '/api/admin/adoptions/statuses'
+      preLoaderRoute: typeof ApiAdminAdoptionsStatusesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/tasks': {
+      id: '/api/admin/adoptions/tasks'
+      path: '/api/admin/adoptions/tasks'
+      fullPath: '/api/admin/adoptions/tasks'
+      preLoaderRoute: typeof ApiAdminAdoptionsTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/list': {
+      id: '/api/admin/animals/list'
+      path: '/api/admin/animals/list'
+      fullPath: '/api/admin/animals/list'
+      preLoaderRoute: typeof ApiAdminAnimalsListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/photo-upload-url': {
+      id: '/api/admin/animals/photo-upload-url'
+      path: '/api/admin/animals/photo-upload-url'
+      fullPath: '/api/admin/animals/photo-upload-url'
+      preLoaderRoute: typeof ApiAdminAnimalsPhotoUploadUrlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/review-bulk': {
+      id: '/api/admin/animals/review-bulk'
+      path: '/api/admin/animals/review-bulk'
+      fullPath: '/api/admin/animals/review-bulk'
+      preLoaderRoute: typeof ApiAdminAnimalsReviewBulkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/annual-reports/$id': {
+      id: '/api/admin/annual-reports/$id'
+      path: '/$id'
+      fullPath: '/api/admin/annual-reports/$id'
+      preLoaderRoute: typeof ApiAdminAnnualReportsIdRouteImport
+      parentRoute: typeof ApiAdminAnnualReportsRoute
+    }
+    '/api/admin/content/$id': {
+      id: '/api/admin/content/$id'
+      path: '/$id'
+      fullPath: '/api/admin/content/$id'
+      preLoaderRoute: typeof ApiAdminContentIdRouteImport
+      parentRoute: typeof ApiAdminContentRoute
+    }
+    '/api/admin/content/link-search': {
+      id: '/api/admin/content/link-search'
+      path: '/link-search'
+      fullPath: '/api/admin/content/link-search'
+      preLoaderRoute: typeof ApiAdminContentLinkSearchRouteImport
+      parentRoute: typeof ApiAdminContentRoute
+    }
+    '/api/admin/content/review-bulk': {
+      id: '/api/admin/content/review-bulk'
+      path: '/review-bulk'
+      fullPath: '/api/admin/content/review-bulk'
+      preLoaderRoute: typeof ApiAdminContentReviewBulkRouteImport
+      parentRoute: typeof ApiAdminContentRoute
+    }
+    '/api/admin/documents/$id': {
+      id: '/api/admin/documents/$id'
+      path: '/$id'
+      fullPath: '/api/admin/documents/$id'
+      preLoaderRoute: typeof ApiAdminDocumentsIdRouteImport
+      parentRoute: typeof ApiAdminDocumentsRoute
+    }
+    '/api/admin/documents/upload-target': {
+      id: '/api/admin/documents/upload-target'
+      path: '/upload-target'
+      fullPath: '/api/admin/documents/upload-target'
+      preLoaderRoute: typeof ApiAdminDocumentsUploadTargetRouteImport
+      parentRoute: typeof ApiAdminDocumentsRoute
+    }
+    '/api/admin/donations/manual': {
+      id: '/api/admin/donations/manual'
+      path: '/api/admin/donations/manual'
+      fullPath: '/api/admin/donations/manual'
+      preLoaderRoute: typeof ApiAdminDonationsManualRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/exports/donations.csv': {
+      id: '/api/admin/exports/donations.csv'
+      path: '/api/admin/exports/donations.csv'
+      fullPath: '/api/admin/exports/donations.csv'
+      preLoaderRoute: typeof ApiAdminExportsDonationsDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/exports/jobs': {
+      id: '/api/admin/exports/jobs'
+      path: '/api/admin/exports/jobs'
+      fullPath: '/api/admin/exports/jobs'
+      preLoaderRoute: typeof ApiAdminExportsJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/exports/payments.csv': {
+      id: '/api/admin/exports/payments.csv'
+      path: '/api/admin/exports/payments.csv'
+      fullPath: '/api/admin/exports/payments.csv'
+      preLoaderRoute: typeof ApiAdminExportsPaymentsDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/exports/supporters.csv': {
+      id: '/api/admin/exports/supporters.csv'
+      path: '/api/admin/exports/supporters.csv'
+      fullPath: '/api/admin/exports/supporters.csv'
+      preLoaderRoute: typeof ApiAdminExportsSupportersDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/finance/activity': {
+      id: '/api/admin/finance/activity'
+      path: '/api/admin/finance/activity'
+      fullPath: '/api/admin/finance/activity'
+      preLoaderRoute: typeof ApiAdminFinanceActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/finance/bank-match-operations': {
+      id: '/api/admin/finance/bank-match-operations'
+      path: '/api/admin/finance/bank-match-operations'
+      fullPath: '/api/admin/finance/bank-match-operations'
+      preLoaderRoute: typeof ApiAdminFinanceBankMatchOperationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/finance/bank-statement-preview': {
+      id: '/api/admin/finance/bank-statement-preview'
+      path: '/api/admin/finance/bank-statement-preview'
+      fullPath: '/api/admin/finance/bank-statement-preview'
+      preLoaderRoute: typeof ApiAdminFinanceBankStatementPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/finance/delivery-jobs': {
+      id: '/api/admin/finance/delivery-jobs'
+      path: '/api/admin/finance/delivery-jobs'
+      fullPath: '/api/admin/finance/delivery-jobs'
+      preLoaderRoute: typeof ApiAdminFinanceDeliveryJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/payment-methods/$id': {
+      id: '/api/admin/payment-methods/$id'
+      path: '/$id'
+      fullPath: '/api/admin/payment-methods/$id'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsRoute
+    }
+    '/api/admin/sponsorships/animals': {
+      id: '/api/admin/sponsorships/animals'
+      path: '/api/admin/sponsorships/animals'
+      fullPath: '/api/admin/sponsorships/animals'
+      preLoaderRoute: typeof ApiAdminSponsorshipsAnimalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/deliveries': {
+      id: '/api/admin/sponsorships/deliveries'
+      path: '/api/admin/sponsorships/deliveries'
+      fullPath: '/api/admin/sponsorships/deliveries'
+      preLoaderRoute: typeof ApiAdminSponsorshipsDeliveriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/followup-assignees': {
+      id: '/api/admin/sponsorships/followup-assignees'
+      path: '/api/admin/sponsorships/followup-assignees'
+      fullPath: '/api/admin/sponsorships/followup-assignees'
+      preLoaderRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/followup-bulk': {
+      id: '/api/admin/sponsorships/followup-bulk'
+      path: '/api/admin/sponsorships/followup-bulk'
+      fullPath: '/api/admin/sponsorships/followup-bulk'
+      preLoaderRoute: typeof ApiAdminSponsorshipsFollowupBulkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/pledges': {
+      id: '/api/admin/sponsorships/pledges'
+      path: '/api/admin/sponsorships/pledges'
+      fullPath: '/api/admin/sponsorships/pledges'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/supporters/$id': {
+      id: '/api/admin/supporters/$id'
+      path: '/$id'
+      fullPath: '/api/admin/supporters/$id'
+      preLoaderRoute: typeof ApiAdminSupportersIdRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/assignment-assignees': {
+      id: '/api/admin/supporters/assignment-assignees'
+      path: '/assignment-assignees'
+      fullPath: '/api/admin/supporters/assignment-assignees'
+      preLoaderRoute: typeof ApiAdminSupportersAssignmentAssigneesRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/assignment-bulk': {
+      id: '/api/admin/supporters/assignment-bulk'
+      path: '/assignment-bulk'
+      fullPath: '/api/admin/supporters/assignment-bulk'
+      preLoaderRoute: typeof ApiAdminSupportersAssignmentBulkRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/format-preview': {
+      id: '/api/admin/supporters/format-preview'
+      path: '/format-preview'
+      fullPath: '/api/admin/supporters/format-preview'
+      preLoaderRoute: typeof ApiAdminSupportersFormatPreviewRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/tag-bulk': {
+      id: '/api/admin/supporters/tag-bulk'
+      path: '/tag-bulk'
+      fullPath: '/api/admin/supporters/tag-bulk'
+      preLoaderRoute: typeof ApiAdminSupportersTagBulkRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/volunteers/activities': {
+      id: '/api/admin/volunteers/activities'
+      path: '/api/admin/volunteers/activities'
+      fullPath: '/api/admin/volunteers/activities'
+      preLoaderRoute: typeof ApiAdminVolunteersActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/bulk': {
+      id: '/api/admin/volunteers/bulk'
+      path: '/api/admin/volunteers/bulk'
+      fullPath: '/api/admin/volunteers/bulk'
+      preLoaderRoute: typeof ApiAdminVolunteersBulkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/calendar': {
+      id: '/api/admin/volunteers/calendar'
+      path: '/api/admin/volunteers/calendar'
+      fullPath: '/api/admin/volunteers/calendar'
+      preLoaderRoute: typeof ApiAdminVolunteersCalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/group-enquiries': {
+      id: '/api/admin/volunteers/group-enquiries'
+      path: '/api/admin/volunteers/group-enquiries'
+      fullPath: '/api/admin/volunteers/group-enquiries'
+      preLoaderRoute: typeof ApiAdminVolunteersGroupEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/overview': {
+      id: '/api/admin/volunteers/overview'
+      path: '/api/admin/volunteers/overview'
+      fullPath: '/api/admin/volunteers/overview'
+      preLoaderRoute: typeof ApiAdminVolunteersOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/people': {
+      id: '/api/admin/volunteers/people'
+      path: '/api/admin/volunteers/people'
+      fullPath: '/api/admin/volunteers/people'
+      preLoaderRoute: typeof ApiAdminVolunteersPeopleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/qualifications': {
+      id: '/api/admin/volunteers/qualifications'
+      path: '/api/admin/volunteers/qualifications'
+      fullPath: '/api/admin/volunteers/qualifications'
+      preLoaderRoute: typeof ApiAdminVolunteersQualificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/registrations': {
+      id: '/api/admin/volunteers/registrations'
+      path: '/api/admin/volunteers/registrations'
+      fullPath: '/api/admin/volunteers/registrations'
+      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/reviewer-bulk': {
+      id: '/api/admin/volunteers/reviewer-bulk'
+      path: '/api/admin/volunteers/reviewer-bulk'
+      fullPath: '/api/admin/volunteers/reviewer-bulk'
+      preLoaderRoute: typeof ApiAdminVolunteersReviewerBulkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/tasks': {
+      id: '/api/admin/volunteers/tasks'
+      path: '/api/admin/volunteers/tasks'
+      fullPath: '/api/admin/volunteers/tasks'
+      preLoaderRoute: typeof ApiAdminVolunteersTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/adoption/applications/photo-upload-urls': {
+      id: '/api/adoption/applications/photo-upload-urls'
+      path: '/photo-upload-urls'
+      fullPath: '/api/adoption/applications/photo-upload-urls'
+      preLoaderRoute: typeof ApiAdoptionApplicationsPhotoUploadUrlsRouteImport
+      parentRoute: typeof ApiAdoptionApplicationsRoute
+    }
+    '/api/adoption/status/$token': {
+      id: '/api/adoption/status/$token'
+      path: '/api/adoption/status/$token'
+      fullPath: '/api/adoption/status/$token'
+      preLoaderRoute: typeof ApiAdoptionStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/donations/$donationId/status': {
+      id: '/api/donations/$donationId/status'
+      path: '/$donationId/status'
+      fullPath: '/api/donations/$donationId/status'
+      preLoaderRoute: typeof ApiDonationsDonationIdStatusRouteImport
+      parentRoute: typeof ApiDonationsRoute
+    }
+    '/api/sponsorships/pledges/proof-upload-url': {
+      id: '/api/sponsorships/pledges/proof-upload-url'
+      path: '/proof-upload-url'
+      fullPath: '/api/sponsorships/pledges/proof-upload-url'
+      preLoaderRoute: typeof ApiSponsorshipsPledgesProofUploadUrlRouteImport
+      parentRoute: typeof ApiSponsorshipsPledgesRoute
+    }
+    '/api/sponsorships/status/$token': {
+      id: '/api/sponsorships/status/$token'
+      path: '/api/sponsorships/status/$token'
+      fullPath: '/api/sponsorships/status/$token'
+      preLoaderRoute: typeof ApiSponsorshipsStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/supporter/receipts/$receiptId': {
+      id: '/api/supporter/receipts/$receiptId'
+      path: '/api/supporter/receipts/$receiptId'
+      fullPath: '/api/supporter/receipts/$receiptId'
+      preLoaderRoute: typeof ApiSupporterReceiptsReceiptIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/supporter/recovery/verify': {
+      id: '/api/supporter/recovery/verify'
+      path: '/verify'
+      fullPath: '/api/supporter/recovery/verify'
+      preLoaderRoute: typeof ApiSupporterRecoveryVerifyRouteImport
+      parentRoute: typeof ApiSupporterRecoveryRoute
+    }
+    '/api/volunteer/status/$token': {
+      id: '/api/volunteer/status/$token'
+      path: '/api/volunteer/status/$token'
+      fullPath: '/api/volunteer/status/$token'
+      preLoaderRoute: typeof ApiVolunteerStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/access/users/$id': {
+      id: '/api/admin/access/users/$id'
+      path: '/$id'
+      fullPath: '/api/admin/access/users/$id'
+      preLoaderRoute: typeof ApiAdminAccessUsersIdRouteImport
+      parentRoute: typeof ApiAdminAccessUsersRoute
+    }
+    '/api/admin/adoption-guide-releases/$id/preview': {
+      id: '/api/admin/adoption-guide-releases/$id/preview'
+      path: '/preview'
+      fullPath: '/api/admin/adoption-guide-releases/$id/preview'
+      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdPreviewRouteImport
       parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
     }
     '/api/admin/adoption-guide-releases/$id/publish': {
@@ -5425,165 +5047,396 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdPublishRouteImport
       parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
     }
-    '/api/admin/adoption-guide-releases/$id/preview': {
-      id: '/api/admin/adoption-guide-releases/$id/preview'
-      path: '/preview'
-      fullPath: '/api/admin/adoption-guide-releases/$id/preview'
-      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdPreviewRouteImport
+    '/api/admin/adoption-guide-releases/$id/return-to-draft': {
+      id: '/api/admin/adoption-guide-releases/$id/return-to-draft'
+      path: '/return-to-draft'
+      fullPath: '/api/admin/adoption-guide-releases/$id/return-to-draft'
+      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport
       parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
     }
-    '/api/admin/access/users/$id': {
-      id: '/api/admin/access/users/$id'
+    '/api/admin/adoption-guide-releases/$id/submit': {
+      id: '/api/admin/adoption-guide-releases/$id/submit'
+      path: '/submit'
+      fullPath: '/api/admin/adoption-guide-releases/$id/submit'
+      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdSubmitRouteImport
+      parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
+    }
+    '/api/admin/adoption-guide-releases/$id/withdraw': {
+      id: '/api/admin/adoption-guide-releases/$id/withdraw'
+      path: '/withdraw'
+      fullPath: '/api/admin/adoption-guide-releases/$id/withdraw'
+      preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport
+      parentRoute: typeof ApiAdminAdoptionGuideReleasesIdRoute
+    }
+    '/api/admin/adoption-instructions/revisions/$id': {
+      id: '/api/admin/adoption-instructions/revisions/$id'
+      path: '/revisions/$id'
+      fullPath: '/api/admin/adoption-instructions/revisions/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRevisionsIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
+    }
+    '/api/admin/adoptions/adopters/$id': {
+      id: '/api/admin/adoptions/adopters/$id'
       path: '/$id'
-      fullPath: '/api/admin/access/users/$id'
-      preLoaderRoute: typeof ApiAdminAccessUsersIdRouteImport
-      parentRoute: typeof ApiAdminAccessUsersRoute
+      fullPath: '/api/admin/adoptions/adopters/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionsAdoptersIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionsAdoptersRoute
     }
-    '/api/admin/volunteers/registrations/$id/status': {
-      id: '/api/admin/volunteers/registrations/$id/status'
-      path: '/status'
-      fullPath: '/api/admin/volunteers/registrations/$id/status'
-      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdStatusRouteImport
-      parentRoute: typeof ApiAdminVolunteersRegistrationsIdRoute
-    }
-    '/api/admin/volunteers/registrations/$id/attendance': {
-      id: '/api/admin/volunteers/registrations/$id/attendance'
-      path: '/attendance'
-      fullPath: '/api/admin/volunteers/registrations/$id/attendance'
-      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdAttendanceRouteImport
-      parentRoute: typeof ApiAdminVolunteersRegistrationsIdRoute
-    }
-    '/api/admin/volunteers/jobs/$id/retry': {
-      id: '/api/admin/volunteers/jobs/$id/retry'
-      path: '/api/admin/volunteers/jobs/$id/retry'
-      fullPath: '/api/admin/volunteers/jobs/$id/retry'
-      preLoaderRoute: typeof ApiAdminVolunteersJobsIdRetryRouteImport
+    '/api/admin/adoptions/animals/pipeline': {
+      id: '/api/admin/adoptions/animals/pipeline'
+      path: '/api/admin/adoptions/animals/pipeline'
+      fullPath: '/api/admin/adoptions/animals/pipeline'
+      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsPipelineRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/volunteers/activities/$id/clone': {
-      id: '/api/admin/volunteers/activities/$id/clone'
-      path: '/clone'
-      fullPath: '/api/admin/volunteers/activities/$id/clone'
-      preLoaderRoute: typeof ApiAdminVolunteersActivitiesIdCloneRouteImport
-      parentRoute: typeof ApiAdminVolunteersActivitiesIdRoute
+    '/api/admin/adoptions/cases/$id': {
+      id: '/api/admin/adoptions/cases/$id'
+      path: '/$id'
+      fullPath: '/api/admin/adoptions/cases/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionsCasesRoute
     }
-    '/api/admin/sponsorships/pledges/$id/review': {
-      id: '/api/admin/sponsorships/pledges/$id/review'
-      path: '/review'
-      fullPath: '/api/admin/sponsorships/pledges/$id/review'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdReviewRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/reminder-draft': {
-      id: '/api/admin/sponsorships/pledges/$id/reminder-draft'
-      path: '/reminder-draft'
-      fullPath: '/api/admin/sponsorships/pledges/$id/reminder-draft'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/proof-url': {
-      id: '/api/admin/sponsorships/pledges/$id/proof-url'
-      path: '/proof-url'
-      fullPath: '/api/admin/sponsorships/pledges/$id/proof-url'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdProofUrlRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/proof': {
-      id: '/api/admin/sponsorships/pledges/$id/proof'
-      path: '/proof'
-      fullPath: '/api/admin/sponsorships/pledges/$id/proof'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdProofRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/followup-assignment': {
-      id: '/api/admin/sponsorships/pledges/$id/followup-assignment'
-      path: '/followup-assignment'
-      fullPath: '/api/admin/sponsorships/pledges/$id/followup-assignment'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/finance': {
-      id: '/api/admin/sponsorships/pledges/$id/finance'
-      path: '/finance'
-      fullPath: '/api/admin/sponsorships/pledges/$id/finance'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdFinanceRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/cancel': {
-      id: '/api/admin/sponsorships/pledges/$id/cancel'
-      path: '/cancel'
-      fullPath: '/api/admin/sponsorships/pledges/$id/cancel'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdCancelRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/sponsorships/pledges/$id/assignments': {
-      id: '/api/admin/sponsorships/pledges/$id/assignments'
-      path: '/assignments'
-      fullPath: '/api/admin/sponsorships/pledges/$id/assignments'
-      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport
-      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
-    }
-    '/api/admin/exports/jobs/$id/download': {
-      id: '/api/admin/exports/jobs/$id/download'
-      path: '/download'
-      fullPath: '/api/admin/exports/jobs/$id/download'
-      preLoaderRoute: typeof ApiAdminExportsJobsIdDownloadRouteImport
-      parentRoute: typeof ApiAdminExportsJobsIdRoute
-    }
-    '/api/admin/donations/delivery/$jobId/retry': {
-      id: '/api/admin/donations/delivery/$jobId/retry'
-      path: '/api/admin/donations/delivery/$jobId/retry'
-      fullPath: '/api/admin/donations/delivery/$jobId/retry'
-      preLoaderRoute: typeof ApiAdminDonationsDeliveryJobIdRetryRouteImport
+    '/api/admin/adoptions/exports/adopters.csv': {
+      id: '/api/admin/adoptions/exports/adopters.csv'
+      path: '/api/admin/adoptions/exports/adopters.csv'
+      fullPath: '/api/admin/adoptions/exports/adopters.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/content/updates/$updateId/notification-drafts': {
-      id: '/api/admin/content/updates/$updateId/notification-drafts'
-      path: '/updates/$updateId/notification-drafts'
-      fullPath: '/api/admin/content/updates/$updateId/notification-drafts'
-      preLoaderRoute: typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport
+    '/api/admin/adoptions/exports/animals.csv': {
+      id: '/api/admin/adoptions/exports/animals.csv'
+      path: '/api/admin/adoptions/exports/animals.csv'
+      fullPath: '/api/admin/adoptions/exports/animals.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/cases.csv': {
+      id: '/api/admin/adoptions/exports/cases.csv'
+      path: '/api/admin/adoptions/exports/cases.csv'
+      fullPath: '/api/admin/adoptions/exports/cases.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/successful-adoptions.csv': {
+      id: '/api/admin/adoptions/exports/successful-adoptions.csv'
+      path: '/api/admin/adoptions/exports/successful-adoptions.csv'
+      fullPath: '/api/admin/adoptions/exports/successful-adoptions.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/tasks.csv': {
+      id: '/api/admin/adoptions/exports/tasks.csv'
+      path: '/api/admin/adoptions/exports/tasks.csv'
+      fullPath: '/api/admin/adoptions/exports/tasks.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsTasksDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/intake/cases': {
+      id: '/api/admin/adoptions/intake/cases'
+      path: '/api/admin/adoptions/intake/cases'
+      fullPath: '/api/admin/adoptions/intake/cases'
+      preLoaderRoute: typeof ApiAdminAdoptionsIntakeCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/intake/identity-search': {
+      id: '/api/admin/adoptions/intake/identity-search'
+      path: '/api/admin/adoptions/intake/identity-search'
+      fullPath: '/api/admin/adoptions/intake/identity-search'
+      preLoaderRoute: typeof ApiAdminAdoptionsIntakeIdentitySearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/intake/items': {
+      id: '/api/admin/adoptions/intake/items'
+      path: '/api/admin/adoptions/intake/items'
+      fullPath: '/api/admin/adoptions/intake/items'
+      preLoaderRoute: typeof ApiAdminAdoptionsIntakeItemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/reports/exports': {
+      id: '/api/admin/adoptions/reports/exports'
+      path: '/api/admin/adoptions/reports/exports'
+      fullPath: '/api/admin/adoptions/reports/exports'
+      preLoaderRoute: typeof ApiAdminAdoptionsReportsExportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/reports/summary': {
+      id: '/api/admin/adoptions/reports/summary'
+      path: '/api/admin/adoptions/reports/summary'
+      fullPath: '/api/admin/adoptions/reports/summary'
+      preLoaderRoute: typeof ApiAdminAdoptionsReportsSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/statuses/$id': {
+      id: '/api/admin/adoptions/statuses/$id'
+      path: '/$id'
+      fullPath: '/api/admin/adoptions/statuses/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionsStatusesIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionsStatusesRoute
+    }
+    '/api/admin/adoptions/tasks/$id': {
+      id: '/api/admin/adoptions/tasks/$id'
+      path: '/$id'
+      fullPath: '/api/admin/adoptions/tasks/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionsTasksIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionsTasksRoute
+    }
+    '/api/admin/animals/$id/archive': {
+      id: '/api/admin/animals/$id/archive'
+      path: '/api/admin/animals/$id/archive'
+      fullPath: '/api/admin/animals/$id/archive'
+      preLoaderRoute: typeof ApiAdminAnimalsIdArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/draft-photo-upload-url/': {
+      id: '/api/admin/animals/draft-photo-upload-url/'
+      path: '/api/admin/animals/draft-photo-upload-url'
+      fullPath: '/api/admin/animals/draft-photo-upload-url/'
+      preLoaderRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/publication/': {
+      id: '/api/admin/animals/publication/'
+      path: '/api/admin/animals/publication'
+      fullPath: '/api/admin/animals/publication/'
+      preLoaderRoute: typeof ApiAdminAnimalsPublicationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/annual-reports/$id/publish': {
+      id: '/api/admin/annual-reports/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/annual-reports/$id/publish'
+      preLoaderRoute: typeof ApiAdminAnnualReportsIdPublishRouteImport
+      parentRoute: typeof ApiAdminAnnualReportsIdRoute
+    }
+    '/api/admin/content/$id/archive': {
+      id: '/api/admin/content/$id/archive'
+      path: '/archive'
+      fullPath: '/api/admin/content/$id/archive'
+      preLoaderRoute: typeof ApiAdminContentIdArchiveRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/links': {
+      id: '/api/admin/content/$id/links'
+      path: '/links'
+      fullPath: '/api/admin/content/$id/links'
+      preLoaderRoute: typeof ApiAdminContentIdLinksRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media': {
+      id: '/api/admin/content/$id/media'
+      path: '/media'
+      fullPath: '/api/admin/content/$id/media'
+      preLoaderRoute: typeof ApiAdminContentIdMediaRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media-finalize': {
+      id: '/api/admin/content/$id/media-finalize'
+      path: '/media-finalize'
+      fullPath: '/api/admin/content/$id/media-finalize'
+      preLoaderRoute: typeof ApiAdminContentIdMediaFinalizeRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media-preview': {
+      id: '/api/admin/content/$id/media-preview'
+      path: '/media-preview'
+      fullPath: '/api/admin/content/$id/media-preview'
+      preLoaderRoute: typeof ApiAdminContentIdMediaPreviewRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media-upload-target': {
+      id: '/api/admin/content/$id/media-upload-target'
+      path: '/media-upload-target'
+      fullPath: '/api/admin/content/$id/media-upload-target'
+      preLoaderRoute: typeof ApiAdminContentIdMediaUploadTargetRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/publication-metadata': {
+      id: '/api/admin/content/$id/publication-metadata'
+      path: '/publication-metadata'
+      fullPath: '/api/admin/content/$id/publication-metadata'
+      preLoaderRoute: typeof ApiAdminContentIdPublicationMetadataRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/publish': {
+      id: '/api/admin/content/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/content/$id/publish'
+      preLoaderRoute: typeof ApiAdminContentIdPublishRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/revisions': {
+      id: '/api/admin/content/$id/revisions'
+      path: '/revisions'
+      fullPath: '/api/admin/content/$id/revisions'
+      preLoaderRoute: typeof ApiAdminContentIdRevisionsRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/social-copy': {
+      id: '/api/admin/content/$id/social-copy'
+      path: '/social-copy'
+      fullPath: '/api/admin/content/$id/social-copy'
+      preLoaderRoute: typeof ApiAdminContentIdSocialCopyRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/story-profile': {
+      id: '/api/admin/content/$id/story-profile'
+      path: '/story-profile'
+      fullPath: '/api/admin/content/$id/story-profile'
+      preLoaderRoute: typeof ApiAdminContentIdStoryProfileRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/updates': {
+      id: '/api/admin/content/$id/updates'
+      path: '/updates'
+      fullPath: '/api/admin/content/$id/updates'
+      preLoaderRoute: typeof ApiAdminContentIdUpdatesRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/notification-drafts/$id': {
+      id: '/api/admin/content/notification-drafts/$id'
+      path: '/notification-drafts/$id'
+      fullPath: '/api/admin/content/notification-drafts/$id'
+      preLoaderRoute: typeof ApiAdminContentNotificationDraftsIdRouteImport
       parentRoute: typeof ApiAdminContentRoute
     }
-    '/api/admin/adoptions/cases/$id/status': {
-      id: '/api/admin/adoptions/cases/$id/status'
-      path: '/status'
-      fullPath: '/api/admin/adoptions/cases/$id/status'
-      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdStatusRouteImport
-      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    '/api/admin/content/social-copy/$id': {
+      id: '/api/admin/content/social-copy/$id'
+      path: '/social-copy/$id'
+      fullPath: '/api/admin/content/social-copy/$id'
+      preLoaderRoute: typeof ApiAdminContentSocialCopyIdRouteImport
+      parentRoute: typeof ApiAdminContentRoute
     }
-    '/api/admin/adoptions/cases/$id/matches': {
-      id: '/api/admin/adoptions/cases/$id/matches'
-      path: '/matches'
-      fullPath: '/api/admin/adoptions/cases/$id/matches'
-      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdMatchesRouteImport
-      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    '/api/admin/documents/$id/publish': {
+      id: '/api/admin/documents/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/documents/$id/publish'
+      preLoaderRoute: typeof ApiAdminDocumentsIdPublishRouteImport
+      parentRoute: typeof ApiAdminDocumentsIdRoute
     }
-    '/api/admin/adoptions/cases/$id/followups': {
-      id: '/api/admin/adoptions/cases/$id/followups'
-      path: '/followups'
-      fullPath: '/api/admin/adoptions/cases/$id/followups'
-      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdFollowupsRouteImport
-      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    '/api/admin/exports/jobs/$id': {
+      id: '/api/admin/exports/jobs/$id'
+      path: '/$id'
+      fullPath: '/api/admin/exports/jobs/$id'
+      preLoaderRoute: typeof ApiAdminExportsJobsIdRouteImport
+      parentRoute: typeof ApiAdminExportsJobsRoute
     }
-    '/api/admin/adoptions/cases/$id/finalize': {
-      id: '/api/admin/adoptions/cases/$id/finalize'
-      path: '/finalize'
-      fullPath: '/api/admin/adoptions/cases/$id/finalize'
-      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdFinalizeRouteImport
-      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    '/api/admin/payment-methods/$id/publish': {
+      id: '/api/admin/payment-methods/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/payment-methods/$id/publish'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdPublishRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
     }
-    '/api/admin/adoptions/animals/$id/status': {
-      id: '/api/admin/adoptions/animals/$id/status'
-      path: '/api/admin/adoptions/animals/$id/status'
-      fullPath: '/api/admin/adoptions/animals/$id/status'
-      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsIdStatusRouteImport
+    '/api/admin/payment-methods/$id/return-to-draft': {
+      id: '/api/admin/payment-methods/$id/return-to-draft'
+      path: '/return-to-draft'
+      fullPath: '/api/admin/payment-methods/$id/return-to-draft'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdReturnToDraftRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
+    }
+    '/api/admin/payment-methods/$id/submit': {
+      id: '/api/admin/payment-methods/$id/submit'
+      path: '/submit'
+      fullPath: '/api/admin/payment-methods/$id/submit'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdSubmitRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
+    }
+    '/api/admin/payment-methods/$id/withdraw': {
+      id: '/api/admin/payment-methods/$id/withdraw'
+      path: '/withdraw'
+      fullPath: '/api/admin/payment-methods/$id/withdraw'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdWithdrawRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
+    }
+    '/api/admin/payments/$id/reconcile': {
+      id: '/api/admin/payments/$id/reconcile'
+      path: '/$id/reconcile'
+      fullPath: '/api/admin/payments/$id/reconcile'
+      preLoaderRoute: typeof ApiAdminPaymentsIdReconcileRouteImport
+      parentRoute: typeof ApiAdminPaymentsRoute
+    }
+    '/api/admin/receipts/$id/void': {
+      id: '/api/admin/receipts/$id/void'
+      path: '/$id/void'
+      fullPath: '/api/admin/receipts/$id/void'
+      preLoaderRoute: typeof ApiAdminReceiptsIdVoidRouteImport
+      parentRoute: typeof ApiAdminReceiptsRoute
+    }
+    '/api/admin/sponsorships/pledges/$id': {
+      id: '/api/admin/sponsorships/pledges/$id'
+      path: '/$id'
+      fullPath: '/api/admin/sponsorships/pledges/$id'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesRoute
+    }
+    '/api/admin/supporters/$id/consents': {
+      id: '/api/admin/supporters/$id/consents'
+      path: '/consents'
+      fullPath: '/api/admin/supporters/$id/consents'
+      preLoaderRoute: typeof ApiAdminSupportersIdConsentsRouteImport
+      parentRoute: typeof ApiAdminSupportersIdRoute
+    }
+    '/api/admin/volunteers/activities/$id': {
+      id: '/api/admin/volunteers/activities/$id'
+      path: '/$id'
+      fullPath: '/api/admin/volunteers/activities/$id'
+      preLoaderRoute: typeof ApiAdminVolunteersActivitiesIdRouteImport
+      parentRoute: typeof ApiAdminVolunteersActivitiesRoute
+    }
+    '/api/admin/volunteers/assessments/': {
+      id: '/api/admin/volunteers/assessments/'
+      path: '/api/admin/volunteers/assessments'
+      fullPath: '/api/admin/volunteers/assessments/'
+      preLoaderRoute: typeof ApiAdminVolunteersAssessmentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/adoptions/animals/$id/internal': {
-      id: '/api/admin/adoptions/animals/$id/internal'
-      path: '/api/admin/adoptions/animals/$id/internal'
-      fullPath: '/api/admin/adoptions/animals/$id/internal'
-      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsIdInternalRouteImport
+    '/api/admin/volunteers/daily-settings/': {
+      id: '/api/admin/volunteers/daily-settings/'
+      path: '/api/admin/volunteers/daily-settings'
+      fullPath: '/api/admin/volunteers/daily-settings/'
+      preLoaderRoute: typeof ApiAdminVolunteersDailySettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/jobs/': {
+      id: '/api/admin/volunteers/jobs/'
+      path: '/api/admin/volunteers/jobs'
+      fullPath: '/api/admin/volunteers/jobs/'
+      preLoaderRoute: typeof ApiAdminVolunteersJobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/operations/': {
+      id: '/api/admin/volunteers/operations/'
+      path: '/api/admin/volunteers/operations'
+      fullPath: '/api/admin/volunteers/operations/'
+      preLoaderRoute: typeof ApiAdminVolunteersOperationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/registrations/$id': {
+      id: '/api/admin/volunteers/registrations/$id'
+      path: '/$id'
+      fullPath: '/api/admin/volunteers/registrations/$id'
+      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdRouteImport
+      parentRoute: typeof ApiAdminVolunteersRegistrationsRoute
+    }
+    '/api/admin/volunteers/settings/': {
+      id: '/api/admin/volunteers/settings/'
+      path: '/api/admin/volunteers/settings'
+      fullPath: '/api/admin/volunteers/settings/'
+      preLoaderRoute: typeof ApiAdminVolunteersSettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/simulation/': {
+      id: '/api/admin/volunteers/simulation/'
+      path: '/api/admin/volunteers/simulation'
+      fullPath: '/api/admin/volunteers/simulation/'
+      preLoaderRoute: typeof ApiAdminVolunteersSimulationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/sources/': {
+      id: '/api/admin/volunteers/sources/'
+      path: '/api/admin/volunteers/sources'
+      fullPath: '/api/admin/volunteers/sources/'
+      preLoaderRoute: typeof ApiAdminVolunteersSourcesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/access/invites/$id/resend': {
@@ -5593,12 +5446,159 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAccessInvitesIdResendRouteImport
       parentRoute: typeof ApiAdminAccessInvitesRoute
     }
-    '/api/admin/content/$id/revisions/$revisionId/restore': {
-      id: '/api/admin/content/$id/revisions/$revisionId/restore'
-      path: '/$revisionId/restore'
-      fullPath: '/api/admin/content/$id/revisions/$revisionId/restore'
-      preLoaderRoute: typeof ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport
-      parentRoute: typeof ApiAdminContentIdRevisionsRoute
+    '/api/admin/adoptions/animals/$id/internal': {
+      id: '/api/admin/adoptions/animals/$id/internal'
+      path: '/api/admin/adoptions/animals/$id/internal'
+      fullPath: '/api/admin/adoptions/animals/$id/internal'
+      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsIdInternalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/animals/$id/status': {
+      id: '/api/admin/adoptions/animals/$id/status'
+      path: '/api/admin/adoptions/animals/$id/status'
+      fullPath: '/api/admin/adoptions/animals/$id/status'
+      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsIdStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/cases/$id/finalize': {
+      id: '/api/admin/adoptions/cases/$id/finalize'
+      path: '/finalize'
+      fullPath: '/api/admin/adoptions/cases/$id/finalize'
+      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdFinalizeRouteImport
+      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    }
+    '/api/admin/adoptions/cases/$id/followups': {
+      id: '/api/admin/adoptions/cases/$id/followups'
+      path: '/followups'
+      fullPath: '/api/admin/adoptions/cases/$id/followups'
+      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdFollowupsRouteImport
+      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    }
+    '/api/admin/adoptions/cases/$id/matches': {
+      id: '/api/admin/adoptions/cases/$id/matches'
+      path: '/matches'
+      fullPath: '/api/admin/adoptions/cases/$id/matches'
+      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdMatchesRouteImport
+      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    }
+    '/api/admin/adoptions/cases/$id/status': {
+      id: '/api/admin/adoptions/cases/$id/status'
+      path: '/status'
+      fullPath: '/api/admin/adoptions/cases/$id/status'
+      preLoaderRoute: typeof ApiAdminAdoptionsCasesIdStatusRouteImport
+      parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
+    }
+    '/api/admin/content/updates/$updateId/notification-drafts': {
+      id: '/api/admin/content/updates/$updateId/notification-drafts'
+      path: '/updates/$updateId/notification-drafts'
+      fullPath: '/api/admin/content/updates/$updateId/notification-drafts'
+      preLoaderRoute: typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport
+      parentRoute: typeof ApiAdminContentRoute
+    }
+    '/api/admin/donations/delivery/$jobId/retry': {
+      id: '/api/admin/donations/delivery/$jobId/retry'
+      path: '/api/admin/donations/delivery/$jobId/retry'
+      fullPath: '/api/admin/donations/delivery/$jobId/retry'
+      preLoaderRoute: typeof ApiAdminDonationsDeliveryJobIdRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/exports/jobs/$id/download': {
+      id: '/api/admin/exports/jobs/$id/download'
+      path: '/download'
+      fullPath: '/api/admin/exports/jobs/$id/download'
+      preLoaderRoute: typeof ApiAdminExportsJobsIdDownloadRouteImport
+      parentRoute: typeof ApiAdminExportsJobsIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/assignments': {
+      id: '/api/admin/sponsorships/pledges/$id/assignments'
+      path: '/assignments'
+      fullPath: '/api/admin/sponsorships/pledges/$id/assignments'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/cancel': {
+      id: '/api/admin/sponsorships/pledges/$id/cancel'
+      path: '/cancel'
+      fullPath: '/api/admin/sponsorships/pledges/$id/cancel'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdCancelRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/finance': {
+      id: '/api/admin/sponsorships/pledges/$id/finance'
+      path: '/finance'
+      fullPath: '/api/admin/sponsorships/pledges/$id/finance'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdFinanceRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/followup-assignment': {
+      id: '/api/admin/sponsorships/pledges/$id/followup-assignment'
+      path: '/followup-assignment'
+      fullPath: '/api/admin/sponsorships/pledges/$id/followup-assignment'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/proof': {
+      id: '/api/admin/sponsorships/pledges/$id/proof'
+      path: '/proof'
+      fullPath: '/api/admin/sponsorships/pledges/$id/proof'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdProofRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/proof-url': {
+      id: '/api/admin/sponsorships/pledges/$id/proof-url'
+      path: '/proof-url'
+      fullPath: '/api/admin/sponsorships/pledges/$id/proof-url'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdProofUrlRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/reminder-draft': {
+      id: '/api/admin/sponsorships/pledges/$id/reminder-draft'
+      path: '/reminder-draft'
+      fullPath: '/api/admin/sponsorships/pledges/$id/reminder-draft'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/review': {
+      id: '/api/admin/sponsorships/pledges/$id/review'
+      path: '/review'
+      fullPath: '/api/admin/sponsorships/pledges/$id/review'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdReviewRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/volunteers/activities/$id/clone': {
+      id: '/api/admin/volunteers/activities/$id/clone'
+      path: '/clone'
+      fullPath: '/api/admin/volunteers/activities/$id/clone'
+      preLoaderRoute: typeof ApiAdminVolunteersActivitiesIdCloneRouteImport
+      parentRoute: typeof ApiAdminVolunteersActivitiesIdRoute
+    }
+    '/api/admin/volunteers/jobs/$id/retry': {
+      id: '/api/admin/volunteers/jobs/$id/retry'
+      path: '/api/admin/volunteers/jobs/$id/retry'
+      fullPath: '/api/admin/volunteers/jobs/$id/retry'
+      preLoaderRoute: typeof ApiAdminVolunteersJobsIdRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/registrations/$id/attendance': {
+      id: '/api/admin/volunteers/registrations/$id/attendance'
+      path: '/attendance'
+      fullPath: '/api/admin/volunteers/registrations/$id/attendance'
+      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdAttendanceRouteImport
+      parentRoute: typeof ApiAdminVolunteersRegistrationsIdRoute
+    }
+    '/api/admin/volunteers/registrations/$id/status': {
+      id: '/api/admin/volunteers/registrations/$id/status'
+      path: '/status'
+      fullPath: '/api/admin/volunteers/registrations/$id/status'
+      preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdStatusRouteImport
+      parentRoute: typeof ApiAdminVolunteersRegistrationsIdRoute
+    }
+    '/api/admin/adoptions/applications/$applicationId/photos/$photoId': {
+      id: '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
+      path: '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
+      fullPath: '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
+      preLoaderRoute: typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/adoptions/reports/exports/$id/download': {
       id: '/api/admin/adoptions/reports/exports/$id/download'
@@ -5607,12 +5607,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionsReportsExportsIdDownloadRouteImport
       parentRoute: typeof ApiAdminAdoptionsReportsExportsRoute
     }
-    '/api/admin/adoptions/applications/$applicationId/photos/$photoId': {
-      id: '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
-      path: '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
-      fullPath: '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
-      preLoaderRoute: typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/api/admin/content/$id/revisions/$revisionId/restore': {
+      id: '/api/admin/content/$id/revisions/$revisionId/restore'
+      path: '/$revisionId/restore'
+      fullPath: '/api/admin/content/$id/revisions/$revisionId/restore'
+      preLoaderRoute: typeof ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport
+      parentRoute: typeof ApiAdminContentIdRevisionsRoute
     }
     '/api/admin/sponsorships/pledges/$id/assignments/$assignmentId/end': {
       id: '/api/admin/sponsorships/pledges/$id/assignments/$assignmentId/end'
