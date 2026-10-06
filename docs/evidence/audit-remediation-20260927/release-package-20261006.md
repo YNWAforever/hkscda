@@ -1,5 +1,7 @@
 # R01 交付包 · 2026-10-06
 
+**2026-10-06 最新執行：** #196／#197 已提交、push 及建立 draft PR；兩個已綁定 source 的五個 CI gates 和必要 DB steps 全綠。本機 explicit unit4279 pass／634 skip／0 fail，原六項 API failures 保留且新 CI 同項實際通過。整組尚未合併：#183 付款權限 RED、Task8 source 安全邊界批准及 R265 raw preservation failure 仍未解除。完整 SHA／command／exit／environment 見 [新執行收據](conditional-merge-receipt-20261006.md)。下文及歷史記錄為此前 capture；publication／fresh CI 狀態以新收據為準。
+
 ## 目前可審閱的交付
 
 Task13 的16個程式／SQL／測試／文件已本機提交：e5a28c47b839fa12b770d1e639b0a74368021675，tree d3bc880b023b0108e5b532f24b6266228809428d，父提交為 #195 的2e176ebdf8647a1d13ae92a57116a3e73fa437b0。本 Task14 文件位於本機分支 codex/audit-r01-release-package-20261006；實際 commit 身分記錄於本機交付報告。

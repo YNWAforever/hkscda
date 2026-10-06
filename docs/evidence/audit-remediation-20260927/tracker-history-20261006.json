@@ -1,6 +1,6 @@
 {
   "date": "2026-10-06T03:46:47.054972+00:00",
-  "qualification": "Exact original changed9 status rows from both trackers; first beforearchives retained; current revisions do not rewrite historical UI/raw execution/source evidence.",
+  "qualification": "Exact original changed9 status rows from both trackers; first beforearchives retained; current revisions do not rewrite historical UI/raw execution/source evidence.;20 rows now include two original R01 rows before the actual publication correction; original18 rows preserved",
   "rows": [
     {
       "tracker": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
@@ -325,6 +325,46 @@
         "test_evidence": "Red-to-green production fail-closed Turnstile/limiter tests and adoption 503 no-write test; 73 affected API/security tests passed; T07 red-to-green proof token 30 focused isolated pass; updated full suite 2830 pass 83 skip 0 fail; typecheck lint build exit 0; browser/provider UAT pending; predecessor #134 main CI 5/5; production protection pairs present; source completion separated from provider/browser UAT; no new secret inspection or provider challenge performed",
         "owner_blocker": "hosted Turnstile/browser/rate-limit and private-upload journey UAT; relevant legacy schema dependencies remain R01"
       }
+    },
+    {
+      "tracker": "docs/evidence/audit-remediation-20260927/tracker.csv",
+      "beforeRawSha256": "59f5cb99e974be649ece27216faa8f25c4dbb682464cc27fb6e84520f1244150",
+      "row": {
+        "issue_id": "R01",
+        "baseline_status": "公開需知已修；其餘相容性待查／修",
+        "tasks": "T01、T02",
+        "implementation_status": "partial overall: reviewed draft source #183-#195; Task13 local e5a reviewed/57 SQL cases+111 named no-op; Task1 fiveACL and Task8 two scanner proposals unapplied",
+        "code_complete": "partial overall; Task13 scoped source reviewed locally; source holds remain",
+        "schema_ready": "isolated qualified only: 17.6 strengthening57+namedNoOp111; 17.11 modern restoration2+seed no-op; strict raw pg_statistic+inventory55000 failed; H1 not admitted",
+        "deployed": "partial (#182 original readonly clamp at main4bb); new #183-#195 and Task13 e5a not deployed/applied",
+        "operationally_enabled": "no new R01 activation; existing readonly clamp only; checkout/payment/new delivery/media schedules off",
+        "current_sha": "e5a28c47b839fa12b770d1e639b0a74368021675",
+        "pr_commit": "drafts #183-#195 unmerged; Task13 local e5a28c47b839fa12b770d1e639b0a74368021675/tree d3bc880b023b0108e5b532f24b6266228809428d; no Task13 PR",
+        "test_evidence": "release-package-20261006.md + release-evidence-20261006.json; local type/lint/build0; qualified units4279/634skip/0; R26857+111 no-op0; publication twice blocked prelaunch/freshCI NOT_RUN; first failures retained",
+        "owner_blocker": "exact Task1/Task8 source approvals; Task13 publication approval and fresh exact-head CI including native17.11 document/role API steps; named production migration approval/backup/UAT; strict raw restore held"
+      },
+      "capturedAtUtc": "2026-10-06 04:47:53 UTC",
+      "reason": "Before actual Task13/Task14 publication and fresh CI reconciliation"
+    },
+    {
+      "tracker": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+      "beforeRawSha256": "7a7ff3a383e958a032165c875b03d30d063c0cebdd1d306e62f51e4e74007021",
+      "row": {
+        "issue_id": "R01",
+        "baseline_status": "公開需知已修；其餘相容性待查／修",
+        "tasks": "T01、T02",
+        "implementation_status": "partial overall: reviewed draft source #183-#195; Task13 local e5a reviewed/57 SQL cases+111 named no-op; Task1 fiveACL and Task8 two scanner proposals unapplied",
+        "code_complete": "partial overall; Task13 scoped source reviewed locally; source holds remain",
+        "schema_ready": "isolated qualified only: 17.6 strengthening57+namedNoOp111; 17.11 modern restoration2+seed no-op; strict raw pg_statistic+inventory55000 failed; H1 not admitted",
+        "deployed": "partial (#182 original readonly clamp at main4bb); new #183-#195 and Task13 e5a not deployed/applied",
+        "operationally_enabled": "no new R01 activation; existing readonly clamp only; checkout/payment/new delivery/media schedules off",
+        "current_sha": "e5a28c47b839fa12b770d1e639b0a74368021675",
+        "pr_commit": "drafts #183-#195 unmerged; Task13 local e5a28c47b839fa12b770d1e639b0a74368021675/tree d3bc880b023b0108e5b532f24b6266228809428d; no Task13 PR",
+        "test_evidence": "release-package-20261006.md + release-evidence-20261006.json; local type/lint/build0; qualified units4279/634skip/0; R26857+111 no-op0; publication twice blocked prelaunch/freshCI NOT_RUN; first failures retained",
+        "owner_blocker": "exact Task1/Task8 source approvals; Task13 publication approval and fresh exact-head CI including native17.11 document/role API steps; named production migration approval/backup/UAT; strict raw restore held"
+      },
+      "capturedAtUtc": "2026-10-06 04:47:53 UTC",
+      "reason": "Before actual Task13/Task14 publication and fresh CI reconciliation"
     }
   ]
 }

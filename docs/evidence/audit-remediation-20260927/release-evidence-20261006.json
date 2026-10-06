@@ -139,9 +139,19 @@
   ],
   "Task13": {
     "localCommit": "e5a28c47b839fa12b770d1e639b0a74368021675",
-    "push": "NOT_STARTED_AUTO_REVIEW_REJECTED_TWICE",
-    "pullRequest": "NOT_CREATED",
-    "freshExactHeadCI": "NOT_RUN",
+    "push": "SUCCESS_NATIVE_EXIT0_20261006",
+    "pullRequest": "https://github.com/YNWAforever/hkscda/pull/196",
+    "freshExactHeadCI": {
+      "run": 37413919942,
+      "attempt": 1,
+      "source": "e5a28c47b839fa12b770d1e639b0a74368021675",
+      "actualCheckout": "782a6e5f30663f6331b36fa05d80a3b72919cd05",
+      "sameSourceTree": true,
+      "fiveIndividualJobs": "SUCCESS",
+      "requiredDBSteps": "SUCCESS",
+      "documentStep": "1 pass / 0 fail / 36 assertions on actual PG17.11.0.002; no skipped document case",
+      "qualification": "stacked-base CI; not production readiness"
+    },
     "independentStrengthening": {
       "ruling": 268,
       "nativeExit": 0,
@@ -3091,5 +3101,80 @@
       "off-machine recovery",
       "Storage object bytes"
     ]
-  }
+  },
+  "publicationBefore20261006": {
+    "localCommit": "e5a28c47b839fa12b770d1e639b0a74368021675",
+    "push": "NOT_STARTED_AUTO_REVIEW_REJECTED_TWICE",
+    "pullRequest": "NOT_CREATED",
+    "freshExactHeadCI": "NOT_RUN",
+    "independentStrengthening": {
+      "ruling": 268,
+      "nativeExit": 0,
+      "namedNoOpRows": 111,
+      "permissions": 17,
+      "business": 26,
+      "siteKnowledgeRaces": 12,
+      "annualRaces": 2,
+      "cleanup": "program completion/source finally flow/template check; no independent explicit cleanup receipt",
+      "noOpRaw": "in-memory not independently archived"
+    },
+    "native170011Modern": {
+      "restorationApplications": 2,
+      "namedRaw": "byteequal within each original capture group; backend1569/1660 distinct across groups",
+      "seededBaselineCounts": [
+        2,
+        2,
+        4,
+        0,
+        0,
+        0
+      ],
+      "seedRaw": "before/after byteequal; historical committed states preserved; not zero-data profile",
+      "cleanup": "four owned containers removed",
+      "notClaimed": "170011 strengthening/typed CI full role matrix/H1"
+    },
+    "strictRawRestoration": {
+      "nativeExit": 1,
+      "ruling": 265,
+      "catalogDifference": "pg_statistic;489 identities192changed",
+      "inventoryDifference": true,
+      "cause": "NOT_RECORDED",
+      "waiver": false
+    },
+    "ordinaryQualifications": {
+      "fullUnit": {
+        "pass": 4279,
+        "skip": 634,
+        "fail": 0,
+        "assertions": 12176,
+        "files": 628,
+        "tests": 4913,
+        "explicitOptionalApi": "UNAVAILABLE_LOOPBACK_59999"
+      },
+      "sloganFocused": {
+        "pass": 7,
+        "assertions": 38,
+        "sourceAndTimeoutUnchanged": true
+      },
+      "dedicated56322": "NOT_RUN_MISSING_LOCAL_CREDENTIALS",
+      "typed55322_170011": "NOT_RUN_LOCAL_ACTUAL_170006",
+      "strictRawRestoration": "FAILED_PG_STATISTIC_AND_INVENTORY_DRIFT",
+      "independentStrengthening": {
+        "ruling": 268,
+        "nativeExit": 0,
+        "NoOpRows": 111,
+        "actualResults": [
+          17,
+          26,
+          12,
+          2
+        ],
+        "restorationSubmitted": false,
+        "strictRawRestoration": "HELD"
+      },
+      "routeTree": "GIT_DIFF_EXIT0_C18C7B"
+    }
+  },
+  "freshPublicationReceipt": "conditional-merge-receipt-20261006.md",
+  "freshPublicationEvidence": "conditional-merge-evidence-20261006.json"
 }
