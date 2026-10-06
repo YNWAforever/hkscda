@@ -1,0 +1,614 @@
+{
+  "scope": "Retrievable committed index of existing Task1 receipts; metadata repair only, no new execution or acceptance",
+  "current_sql": {
+    "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+    "canonical_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f"
+  },
+  "bindings": [
+    {
+      "path": "sequential-source-184-20261006.md",
+      "raw_bytes": 4015,
+      "raw_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e",
+      "lf_bytes": 4015,
+      "lf_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "2c869a19123b39e4146b2ccbd30aabde402b118a",
+      "committed_bytes": 4015,
+      "committed_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e"
+    },
+    {
+      "path": "r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5",
+      "committed_bytes": 5844,
+      "committed_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f"
+    },
+    {
+      "path": "current-source-release-state-20261007.json",
+      "raw_bytes": 22649,
+      "raw_sha256": "f09b7620a044b61d22372ad4d5ee47a8d17620515ef260186c8d2da6b2d2f129",
+      "lf_bytes": 22125,
+      "lf_sha256": "13b0dcdc8e72bff518dacb1fa75f404b4b12534bf35d687da201ed2661c9f4ed",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "d588681bdb67f82c120448ec3dacfa86fa11c3d5",
+      "committed_bytes": 22125,
+      "committed_sha256": "13b0dcdc8e72bff518dacb1fa75f404b4b12534bf35d687da201ed2661c9f4ed"
+    },
+    {
+      "path": "control-boundaries-20261006/payment-hosted-final.receipt.json",
+      "raw_bytes": 2499,
+      "raw_sha256": "a7534a76004a58b1acc9ef16a763b57ff82adeae19dd556db50773fe008094b9",
+      "lf_bytes": 2499,
+      "lf_sha256": "a7534a76004a58b1acc9ef16a763b57ff82adeae19dd556db50773fe008094b9",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "5e747e68ed9845e8819e7ef14c1e750dd886ca27",
+      "committed_bytes": 2499,
+      "committed_sha256": "a7534a76004a58b1acc9ef16a763b57ff82adeae19dd556db50773fe008094b9"
+    },
+    {
+      "path": "control-boundaries-20261006/payment-hosted-final.stdout",
+      "raw_bytes": 2753,
+      "raw_sha256": "9f31b0f6649418e6d471c46b68c2faeb8265bd0c4eaf63ecb37730a55bbdd528",
+      "lf_bytes": 2753,
+      "lf_sha256": "9f31b0f6649418e6d471c46b68c2faeb8265bd0c4eaf63ecb37730a55bbdd528",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "c85c6dcb0d95c705e0e6cc78ce276116756720de",
+      "committed_bytes": 2753,
+      "committed_sha256": "9f31b0f6649418e6d471c46b68c2faeb8265bd0c4eaf63ecb37730a55bbdd528"
+    },
+    {
+      "path": "control-boundaries-20261006/payment-hosted-final.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "committed_bytes": 0,
+      "committed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "control-boundaries-20261006/payment-modern-final.receipt.json",
+      "raw_bytes": 2507,
+      "raw_sha256": "b8299ab03a325c98a4f83f8226fe186fc26c94116ea30643b026c400add7fa80",
+      "lf_bytes": 2507,
+      "lf_sha256": "b8299ab03a325c98a4f83f8226fe186fc26c94116ea30643b026c400add7fa80",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "d564828fe9caffd0f29b7af0af727a869f69a15c",
+      "committed_bytes": 2507,
+      "committed_sha256": "b8299ab03a325c98a4f83f8226fe186fc26c94116ea30643b026c400add7fa80"
+    },
+    {
+      "path": "control-boundaries-20261006/payment-modern-final.stdout",
+      "raw_bytes": 2760,
+      "raw_sha256": "751fbf7ea9e8d6dee37e1391c914490bfbc3136dbc3033746475ed3aea9eaf8a",
+      "lf_bytes": 2760,
+      "lf_sha256": "751fbf7ea9e8d6dee37e1391c914490bfbc3136dbc3033746475ed3aea9eaf8a",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "eb8c47e668e8571182d2707b4a7b49a423b35ba1",
+      "committed_bytes": 2760,
+      "committed_sha256": "751fbf7ea9e8d6dee37e1391c914490bfbc3136dbc3033746475ed3aea9eaf8a"
+    },
+    {
+      "path": "control-boundaries-20261006/payment-modern-final.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "committed_bytes": 0,
+      "committed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "control-boundaries-20261006/actor-red.receipt.json",
+      "raw_bytes": 2420,
+      "raw_sha256": "3c411375d746f23778816c534ef6ce45bda7e5f4bd84a4e5cf2f407daf429301",
+      "lf_bytes": 2420,
+      "lf_sha256": "3c411375d746f23778816c534ef6ce45bda7e5f4bd84a4e5cf2f407daf429301",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "8e546cebe2c105375d85aefa73f93c127871bdae",
+      "committed_bytes": 2420,
+      "committed_sha256": "3c411375d746f23778816c534ef6ce45bda7e5f4bd84a4e5cf2f407daf429301"
+    },
+    {
+      "path": "control-boundaries-20261006/actor-red.stdout",
+      "raw_bytes": 1769,
+      "raw_sha256": "dd74a6f77d1369ac1fd8673e48e13b82cca206eab1b5816408e4105205cab92d",
+      "lf_bytes": 1769,
+      "lf_sha256": "dd74a6f77d1369ac1fd8673e48e13b82cca206eab1b5816408e4105205cab92d",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "a0a21ddb58f0514addc06c38646a53ccc5af0dcd",
+      "committed_bytes": 1769,
+      "committed_sha256": "dd74a6f77d1369ac1fd8673e48e13b82cca206eab1b5816408e4105205cab92d"
+    },
+    {
+      "path": "control-boundaries-20261006/actor-red.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "committed_bytes": 0,
+      "committed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "control-boundaries-20261006/reviewed-task-1-green-db.json",
+      "raw_bytes": 3384,
+      "raw_sha256": "5cd3b947802fe844634e4949a12292ca458826ed9f202fd8013990b521ef50a3",
+      "lf_bytes": 3384,
+      "lf_sha256": "5cd3b947802fe844634e4949a12292ca458826ed9f202fd8013990b521ef50a3",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "b58016190d3d61e0b4636086e939fc4c71fcaa43",
+      "committed_bytes": 3384,
+      "committed_sha256": "5cd3b947802fe844634e4949a12292ca458826ed9f202fd8013990b521ef50a3"
+    },
+    {
+      "path": "control-boundaries-20261006/reviewed-task-1-green-db.log",
+      "raw_bytes": 1220,
+      "raw_sha256": "1ca198cb5295083bb1d45ba10e2f1ec77f3870fde98f014d3c71f97c5f250bb5",
+      "lf_bytes": 1220,
+      "lf_sha256": "1ca198cb5295083bb1d45ba10e2f1ec77f3870fde98f014d3c71f97c5f250bb5",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "8aa47cbd7a19c45f423f154ae58c3ff6ddfaa0b4",
+      "committed_bytes": 1220,
+      "committed_sha256": "1ca198cb5295083bb1d45ba10e2f1ec77f3870fde98f014d3c71f97c5f250bb5"
+    },
+    {
+      "path": "control-boundaries-20261006/reviewed-task-1-green-modern-db.json",
+      "raw_bytes": 3391,
+      "raw_sha256": "087c4ade82e192c1654dd9836eb0cb71ab3308790012e6f9d18eb38a8a1e59af",
+      "lf_bytes": 3391,
+      "lf_sha256": "087c4ade82e192c1654dd9836eb0cb71ab3308790012e6f9d18eb38a8a1e59af",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "13eaf3cad230748bc8dbc7bdfa87eccadb955be0",
+      "committed_bytes": 3391,
+      "committed_sha256": "087c4ade82e192c1654dd9836eb0cb71ab3308790012e6f9d18eb38a8a1e59af"
+    },
+    {
+      "path": "control-boundaries-20261006/reviewed-task-1-green-modern-db.log",
+      "raw_bytes": 1224,
+      "raw_sha256": "5bb4cb1a1e9feda57b8a3d3408d8ca161bf1a7137ad070db9249706fad1e766d",
+      "lf_bytes": 1224,
+      "lf_sha256": "5bb4cb1a1e9feda57b8a3d3408d8ca161bf1a7137ad070db9249706fad1e766d",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "6564bd4afaa8dfcbf14d87ce3b4849ca1c9716f0",
+      "committed_bytes": 1224,
+      "committed_sha256": "5bb4cb1a1e9feda57b8a3d3408d8ca161bf1a7137ad070db9249706fad1e766d"
+    },
+    {
+      "path": "control-boundaries-20261006/task-1-actor-red-modern-db.json",
+      "raw_bytes": 2006,
+      "raw_sha256": "de754a2b71203380670a4c94ebf4644188fded6b5c175fe6f9952c9a2c24be0a",
+      "lf_bytes": 2006,
+      "lf_sha256": "de754a2b71203380670a4c94ebf4644188fded6b5c175fe6f9952c9a2c24be0a",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "4f6e5aabad9437c27dbb74b22fbcdb7a93716801",
+      "committed_bytes": 2006,
+      "committed_sha256": "de754a2b71203380670a4c94ebf4644188fded6b5c175fe6f9952c9a2c24be0a"
+    },
+    {
+      "path": "control-boundaries-20261006/task-1-actor-red-modern-db.log",
+      "raw_bytes": 1063,
+      "raw_sha256": "114278fabf8720cd821eb4be5b78d39c0e7ae24e1c0d98e22ac88cddc7ce0dd2",
+      "lf_bytes": 1063,
+      "lf_sha256": "114278fabf8720cd821eb4be5b78d39c0e7ae24e1c0d98e22ac88cddc7ce0dd2",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "a76570acc55fc69ffaf7dba914a0c8553d2469fe",
+      "committed_bytes": 1063,
+      "committed_sha256": "114278fabf8720cd821eb4be5b78d39c0e7ae24e1c0d98e22ac88cddc7ce0dd2"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-red/receipt.json",
+      "raw_bytes": 751,
+      "raw_sha256": "df8dafce4f23a98d88dc70b6e0ef935ee9d7665d3aa7d34d530cb9dc65daf414",
+      "lf_bytes": 736,
+      "lf_sha256": "c045a2226a47eed72257f4f6da397f7afbd01ee3d99fdd589181f4fd9d54eb07",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "bc96794adca3f380b1f16a590e762cb0f578e8c7",
+      "committed_bytes": 751,
+      "committed_sha256": "df8dafce4f23a98d88dc70b6e0ef935ee9d7665d3aa7d34d530cb9dc65daf414"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-red/migration.source",
+      "raw_bytes": 9408,
+      "raw_sha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88",
+      "lf_bytes": 9408,
+      "lf_sha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "1dfb9f98c1e31134c26d2674c370fd95ff682591",
+      "committed_bytes": 9408,
+      "committed_sha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-red/apply.stdout",
+      "raw_bytes": 32,
+      "raw_sha256": "a95549d6117504d3da643f6ded5b67f2235d02d57dcaf0a348d4e24a6782b7d5",
+      "lf_bytes": 32,
+      "lf_sha256": "a95549d6117504d3da643f6ded5b67f2235d02d57dcaf0a348d4e24a6782b7d5",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "5d4d332cb6df8b91a8d394d241dd5dec51ab1511",
+      "committed_bytes": 32,
+      "committed_sha256": "a95549d6117504d3da643f6ded5b67f2235d02d57dcaf0a348d4e24a6782b7d5"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-red/apply.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "committed_bytes": 0,
+      "committed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-green/receipt.json",
+      "raw_bytes": 748,
+      "raw_sha256": "369660ff5cd6469f3f31fb35065b410acd483c7bb01673a4a5c48b48ecd64415",
+      "lf_bytes": 733,
+      "lf_sha256": "7b3c0850782722cd1e32858d26b53216bdecf6b46ac0862f7e753f8596de42d0",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "424509e144e2b951d8317a4f6e5c02b38268d66e",
+      "committed_bytes": 748,
+      "committed_sha256": "369660ff5cd6469f3f31fb35065b410acd483c7bb01673a4a5c48b48ecd64415"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-green/migration.source",
+      "raw_bytes": 9573,
+      "raw_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "lf_bytes": 9573,
+      "lf_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "5592e8aacf0550db48bf3839fd6e80f4c0d77a39",
+      "committed_bytes": 9573,
+      "committed_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-green/apply.stdout",
+      "raw_bytes": 10,
+      "raw_sha256": "c3d98b84c948a3db28ef94479d6eb8e4c7d456764db4ca199d851cac87d73eeb",
+      "lf_bytes": 10,
+      "lf_sha256": "c3d98b84c948a3db28ef94479d6eb8e4c7d456764db4ca199d851cac87d73eeb",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "69a9cab481706de19c607a88755aba8e4174c88c",
+      "committed_bytes": 10,
+      "committed_sha256": "c3d98b84c948a3db28ef94479d6eb8e4c7d456764db4ca199d851cac87d73eeb"
+    },
+    {
+      "path": "control-boundaries-20261006/inheritance-green/apply.stderr",
+      "raw_bytes": 200,
+      "raw_sha256": "4939373041d29885fbf5572df6103f8e7e0209e1e3cbdcee6d79a7ca6d7084d3",
+      "lf_bytes": 200,
+      "lf_sha256": "4939373041d29885fbf5572df6103f8e7e0209e1e3cbdcee6d79a7ca6d7084d3",
+      "committed_at": "8317da9fb1f1d509a211c806c93e90845458538c",
+      "git_blob": "4195c489b77198ef9c953f3ca9aac67303bd51c3",
+      "committed_bytes": 200,
+      "committed_sha256": "4939373041d29885fbf5572df6103f8e7e0209e1e3cbdcee6d79a7ca6d7084d3"
+    }
+  ],
+  "original_actor_and_profile_records": [
+    {
+      "receipt": "control-boundaries-20261006/payment-hosted-final.receipt.json",
+      "result": "control-boundaries-20261006/reviewed-task-1-green-db.json",
+      "original_source_head": "a3125547139dee5c022c1701b063e431790dcec3",
+      "original_dirty_candidate_pins": [
+        {
+          "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+          "sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f"
+        },
+        {
+          "path": "src/lib/donations/idempotency.database.test.ts",
+          "sha256": "ed4a8ffea28115fee0e5e766d7953f50e9e7b3d3492856cc2ff69336099d0c65"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/runR01Forward.ts",
+          "sha256": "76df6bc268bf8bebc652da17b636c98c3c42b482d31348b0f32bc109bdc219e3"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/paymentIntentAcl.ts",
+          "sha256": "eee071f14ea1951ba09e86186f0e7d8da4921a050f0d416266da3b550a548668"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+          "sha256": "c4481c8c119818477580e567f4ed33676398d53a95feb1de1a048953899773e5"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts",
+          "sha256": "0375959baa1825ee88268a84d9777fb079c582016dff6f49c737f7700ff15952"
+        }
+      ],
+      "original_argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "supabase/rls-tests/helpers/runR01Forward.ts",
+        "green",
+        "20261001101333_r01_payment_idempotency_forward.sql"
+      ],
+      "original_pid": 29880,
+      "original_environment": "OS-only inheritance; Bun dotenv disabled; provider credentials absent; synthetic/unavailable loopback; only focused disposable-clone optin as named",
+      "original_native_exit": 0,
+      "original_result_environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+      "original_source_catalog_hash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "original_test_command": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000",
+      "original_test_exit": 0,
+      "original_test_summary": [
+        "\n 7 pass",
+        " 0 fail",
+        " 85 expect() calls"
+      ],
+      "original_result": "GREEN",
+      "original_migration": {
+        "file": "20261001101333_r01_payment_idempotency_forward.sql",
+        "canonicalSha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+        "firstApply": 0,
+        "secondApply": 0,
+        "secondApplyCatalogHash": "a2749531a8333e42ea2cb8508e23382f85ff2b72417fbc95341bc2381f98e4e9",
+        "legacyFactsPreserved": true,
+        "metadataPreserved": true,
+        "tempShadowPreserved": true,
+        "rejected": [
+          {
+            "case": "explicit-control-column-grant",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "unexpected-write-grantor",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "wrong-column-type",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "unexpected-column-default",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "nonunique-index",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "unexpected-fingerprint-constraint",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "invalid-existing-keyed-null",
+            "sqlState": "23514",
+            "restored": true
+          }
+        ],
+        "oldColumnRightsHash": "c98b215a277521c76d3e4c79c2e026a111e4a5ba34b7ad8badb1e45824bc756c",
+        "oldColumnRightsAssertions": 4588,
+        "exactOldColumnAclConversion": true,
+        "grantOptionVariant": true
+      },
+      "original_sources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "b88a5372aa4f80bfa384c62c5c19a915c7823d5b513c0464eb3bd7813fb338c5",
+        "modernPreserved": true,
+        "scope": "public/private schema metadata + retained managed prerequisites + all synthetic table row hashes (including ledger) + sequences; no original DDL/DML/session termination"
+      }
+    },
+    {
+      "receipt": "control-boundaries-20261006/payment-modern-final.receipt.json",
+      "result": "control-boundaries-20261006/reviewed-task-1-green-modern-db.json",
+      "original_source_head": "a3125547139dee5c022c1701b063e431790dcec3",
+      "original_dirty_candidate_pins": [
+        {
+          "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+          "sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f"
+        },
+        {
+          "path": "src/lib/donations/idempotency.database.test.ts",
+          "sha256": "ed4a8ffea28115fee0e5e766d7953f50e9e7b3d3492856cc2ff69336099d0c65"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/runR01Forward.ts",
+          "sha256": "76df6bc268bf8bebc652da17b636c98c3c42b482d31348b0f32bc109bdc219e3"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/paymentIntentAcl.ts",
+          "sha256": "eee071f14ea1951ba09e86186f0e7d8da4921a050f0d416266da3b550a548668"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+          "sha256": "c4481c8c119818477580e567f4ed33676398d53a95feb1de1a048953899773e5"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts",
+          "sha256": "0375959baa1825ee88268a84d9777fb079c582016dff6f49c737f7700ff15952"
+        }
+      ],
+      "original_argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "supabase/rls-tests/helpers/runR01Forward.ts",
+        "green-modern",
+        "20261001101333_r01_payment_idempotency_forward.sql"
+      ],
+      "original_pid": 23348,
+      "original_environment": "OS-only inheritance; Bun dotenv disabled; provider credentials absent; synthetic/unavailable loopback; only focused disposable-clone optin as named",
+      "original_native_exit": 0,
+      "original_result_environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+      "original_source_catalog_hash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "original_test_command": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000",
+      "original_test_exit": 0,
+      "original_test_summary": [
+        "\n 7 pass",
+        " 0 fail",
+        " 85 expect() calls"
+      ],
+      "original_result": "GREEN",
+      "original_migration": {
+        "file": "20261001101333_r01_payment_idempotency_forward.sql",
+        "canonicalSha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+        "firstApply": 0,
+        "secondApply": 0,
+        "secondApplyCatalogHash": "cb6e55b6b1a74eb8f99738ed666a6ac56c06da392d6d59592302e3bf57eca131",
+        "legacyFactsPreserved": true,
+        "metadataPreserved": true,
+        "tempShadowPreserved": true,
+        "rejected": [
+          {
+            "case": "explicit-control-column-grant",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "unexpected-write-grantor",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "wrong-column-type",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "unexpected-column-default",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "nonunique-index",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "unexpected-fingerprint-constraint",
+            "sqlState": "55000",
+            "restored": true
+          },
+          {
+            "case": "invalid-existing-keyed-null",
+            "sqlState": "23514",
+            "restored": true
+          }
+        ],
+        "oldColumnRightsHash": "6aecd0422c1f2b333facac7a34ae0c53bbf7bb8baa9b6befa8b2224af60dc29d",
+        "oldColumnRightsAssertions": 4588,
+        "exactOldColumnAclConversion": true,
+        "grantOptionVariant": true
+      },
+      "original_sources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "b88a5372aa4f80bfa384c62c5c19a915c7823d5b513c0464eb3bd7813fb338c5",
+        "modernPreserved": true,
+        "scope": "public/private schema metadata + retained managed prerequisites + all synthetic table row hashes (including ledger) + sequences; no original DDL/DML/session termination"
+      }
+    },
+    {
+      "receipt": "control-boundaries-20261006/actor-red.receipt.json",
+      "result": "control-boundaries-20261006/task-1-actor-red-modern-db.json",
+      "original_source_head": "a3125547139dee5c022c1701b063e431790dcec3",
+      "original_dirty_candidate_pins": [
+        {
+          "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+          "sha256": "5c25abdd2507c102e2892db9c8ed878132301ca7aecd55c9e33f304790d230c6"
+        },
+        {
+          "path": "src/lib/donations/idempotency.database.test.ts",
+          "sha256": "bfd695ea12efde602842f0559dff9b21242f4939b71ef21eef2e2128dabfdbf1"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/runR01Forward.ts",
+          "sha256": "5bc0ce675724788754ad9d0ab9e150456c5b749c92fb7a79032b07a0576bd9df"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/paymentIntentAcl.ts",
+          "sha256": "63cd7dc3f44abf8555087da203e604a1d7d74f7d5dd93da7374728ee508253c0"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+          "sha256": "baaf4eb47ad7cf726963f745573dd871ba50489f519b08e5fb08549855a4b49d"
+        },
+        {
+          "path": "supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts",
+          "sha256": "928ddac130800f93bf384f8de6134fd810c0a2f2546f7043085f7906ca3ff651"
+        }
+      ],
+      "original_argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "supabase/rls-tests/helpers/runR01Forward.ts",
+        "actor-red-modern"
+      ],
+      "original_pid": 32284,
+      "original_environment": "OS-only inheritance; Bun dotenv disabled; provider credentials absent; synthetic/unavailable loopback; only focused disposable-clone optin as named",
+      "original_native_exit": 1,
+      "original_result_environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+      "original_source_catalog_hash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "original_test_command": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000 --test-name-pattern JWT finance actors",
+      "original_test_exit": 1,
+      "original_test_summary": [
+        "\n 0 pass",
+        " 1 fail",
+        " 1 expect() calls"
+      ],
+      "original_result": "watched RED",
+      "original_migration": null,
+      "original_sources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "b88a5372aa4f80bfa384c62c5c19a915c7823d5b513c0464eb3bd7813fb338c5",
+        "modernPreserved": true,
+        "scope": "public/private schema metadata + retained managed prerequisites + all synthetic table row hashes (including ledger) + sequences; no original DDL/DML/session termination"
+      }
+    }
+  ],
+  "original_inheritance_records": {
+    "red": {
+      "atUtc": "2026-10-06T14:10:54.401796+00:00",
+      "mode": "red",
+      "container": "r01_acl_5f73f93cb1144ec6940f747637283fb0",
+      "image": "sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232",
+      "migrationSha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88",
+      "environment": "new network-none PostgreSQL cluster, tmpfs only, no ports/credentials/production data; existing Supabase clusters untouched",
+      "serverVersionNum": "170011",
+      "applyNativeExit": 0,
+      "effectiveControlWrites": "t|t",
+      "result": "watched RED: inherited control writes remain authorized",
+      "exit": 1,
+      "cleanupNativeExit": 0,
+      "cleanup": "only exact owned --rm tmpfs container stopped; no shared DB/role mutation"
+    },
+    "green": {
+      "atUtc": "2026-10-06T14:11:43.071409+00:00",
+      "mode": "green",
+      "container": "r01_acl_1fc2807577a142af9050f76ecebd6c0c",
+      "image": "sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232",
+      "migrationSha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "environment": "new network-none PostgreSQL cluster, tmpfs only, no ports/credentials/production data; existing Supabase clusters untouched",
+      "serverVersionNum": "170011",
+      "applyNativeExit": 3,
+      "prestateRestored": true,
+      "result": "GREEN: inherited late-grant authority rejected atomically",
+      "exit": 0,
+      "cleanupNativeExit": 0,
+      "cleanup": "only exact owned --rm tmpfs container stopped; no shared DB/role mutation"
+    }
+  },
+  "qualifications": [
+    "Actor RED is the original 5c25 candidate on source a3125547 with dirty source pins; it is not an execution of the final 90e SQL.",
+    "Final hosted and modern receipts explicitly pin 90e SQL and their dirty candidate source hashes; original checkout a3125547 is not a claim of a clean committed execution head.",
+    "Inheritance RED pins 16af75e2; inheritance GREEN pins 90e and records native apply exit3 / atomic rejection, restored prestate, and outer exit0. This is a refusal proof, not a successful schema apply.",
+    "Reviewed hosted/modern GREEN results record original scoped managed synthetic prerequisites and table counts. Native inheritance PG170011 does not establish native full-profile admission.",
+    "Current source-only approval is recorded by the existing 20261007 runbook, and the subsequent source integration is in sequential-source-184-20261006.md. Source/main acceptance for #183 and its #200 hosting recovery remain in current-source-release-state-20261007.json. No new approval is inferred from this index.",
+    "Historical profile/predecessor digests retain their original composition scope. This index resolves the nonexistent sequential-source-183-20261006.md pointer without rewriting history.",
+    "All14 new R01 SQL and Task8 remain DO_NOT_APPLY, unapproved/unapplied/disabled; original553 preservation UNKNOWN; #196 native CI serverVersionNum NOT_REPORTED; #197 exact-head CI pending."
+  ]
+}

@@ -46,3 +46,11 @@ Payment/new checkout/new delivery/new media activation disabled；既有 signed 
 Hosted 真實角色 JWT、direct API/export/private files、完整手機／鍵盤／staff journeys、正式 terms/content approvals、provider sandbox callback/refund/payment、email test sink、full typed restore/off-machine backup/Storage restore 都仍按 [staff handoff](staff-handoff-20261006.md)逐項 not-run／待 owner。Turnstile／Upstash 四項由使用者已報設定，不再要求提供 secret；配置不是 hosted challenge/rate-limit 驗收。
 
 [UI／同環境 performance 資格](ui-performance-handoff-20261006.md)仍為原實測；本次沒有新的 before/after 截圖、兩地 cold/warm 或可宣稱改善數據。R11 字型 evidence 的 partial/拒絕結果保持，不能由 source merge 推 font acceptance。
+
+## Current documentation repair qualification
+
+[Task1 committed receipt index](task-1-current-receipt-index-20261007.json) replaces the nonexistent sequential-source-183-20261006.md manifest pointer. It retains the original actor RED earlier candidate and the final 90e hosted/modern GREEN and inheritance-refusal pins separately; no new execution or profile acceptance is inferred. Current source-evidence digests bind canonical LF bytes of retrievable committed files; RAW/LF sizes and hashes are recorded separately in the fix controller proof.
+
+The current manifest Task10 profile/predecessor evidence digest is corrected to actual RAW/LF e67984c9ef09c0842f9af4833ffd82fca08a6ea812618f3de6dcbf43aabf05e7. The historical advertised 0484a68084e254e80770f23983603df44d1a3fc0d769cb57f6469442293db006 does not match that tracked receipt at legacy6547 or its stated predecessor; the historical manifest and receipt remain unchanged. This correction does not grant profile admission. All14 current rollback pointers use the 20261007 runbook.
+
+Both R01 current_sha fields denote the latest accepted source/main merge #196 (1ff22d6516a05e3cc82a6d041e5d12a117ca83af), with main37545626481 and captured exact READY dpl_6eqTvjA9hXHYvj8gpirksNiejbUy. The evolving #197 documentation head requires its own exact-head CI and conditional merge. All14 SQL and Task8 remain DO_NOT_APPLY, unapproved/unapplied/disabled; original553 preservation UNKNOWN, native CI serverVersionNum NOT_REPORTED, external UAT NOT_RUN.

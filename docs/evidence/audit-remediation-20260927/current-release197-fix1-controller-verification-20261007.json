@@ -1,0 +1,1126 @@
+{
+  "scope": "metadata-only pointer/digest/status and whole tracked RAW preservation; no DB/provider or suites",
+  "base": "8317da9fb1f1d509a211c806c93e90845458538c",
+  "observedHead": "8317da9fb1f1d509a211c806c93e90845458538c",
+  "createdAtUtc": "2026-10-06T23:42:51.725793+00:00",
+  "command": "python C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\r01-forward-repair-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-197-current-fix1-validator-20261007.py",
+  "environment": {
+    "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+    "platform": "win32",
+    "no_environment_files_read": true
+  },
+  "nativeExit": 0,
+  "checks": 501,
+  "failures": [],
+  "migrationBindings": [
+    {
+      "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+      "raw_bytes": 9573,
+      "raw_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "lf_bytes": 9573,
+      "lf_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "git_blob": "5592e8aacf0550db48bf3839fd6e80f4c0d77a39"
+    },
+    {
+      "path": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+      "raw_bytes": 15241,
+      "raw_sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "lf_bytes": 15241,
+      "lf_sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "git_blob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    {
+      "path": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+      "raw_bytes": 37542,
+      "raw_sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "lf_bytes": 37542,
+      "lf_sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "git_blob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    {
+      "path": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+      "raw_bytes": 5204,
+      "raw_sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "lf_bytes": 5204,
+      "lf_sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "git_blob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    {
+      "path": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+      "raw_bytes": 18234,
+      "raw_sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "lf_bytes": 18234,
+      "lf_sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "git_blob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    {
+      "path": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+      "raw_bytes": 34033,
+      "raw_sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "lf_bytes": 34033,
+      "lf_sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "git_blob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    {
+      "path": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+      "raw_bytes": 44473,
+      "raw_sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "lf_bytes": 44473,
+      "lf_sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "git_blob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    {
+      "path": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+      "raw_bytes": 214203,
+      "raw_sha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "lf_bytes": 214203,
+      "lf_sha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "git_blob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    {
+      "path": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+      "raw_bytes": 353352,
+      "raw_sha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "lf_bytes": 353352,
+      "lf_sha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "git_blob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+    },
+    {
+      "path": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+      "raw_bytes": 204984,
+      "raw_sha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "lf_bytes": 204984,
+      "lf_sha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "git_blob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+    },
+    {
+      "path": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "raw_bytes": 1402952,
+      "raw_sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+      "lf_bytes": 1402952,
+      "lf_sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+      "git_blob": "50633029eb1647593d09f72baeac60096ca078b5"
+    },
+    {
+      "path": "supabase/migrations/20261003005322_r01_group_enquiry_forward.sql",
+      "raw_bytes": 1286399,
+      "raw_sha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+      "lf_bytes": 1286399,
+      "lf_sha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+      "git_blob": "c7c7da6b9c5e0a315c90d5fcc248b603170cf23f"
+    },
+    {
+      "path": "supabase/migrations/20261003075753_r01_document_publication_guards_forward.sql",
+      "raw_bytes": 40738,
+      "raw_sha256": "9ed664a6fe3bf2d8f93e2a96f34e6cf6b556c8b97e2ea63eb0ed132d0074ce82",
+      "lf_bytes": 40738,
+      "lf_sha256": "9ed664a6fe3bf2d8f93e2a96f34e6cf6b556c8b97e2ea63eb0ed132d0074ce82",
+      "git_blob": "0bf26b69c0ba9905ef69b7c786df89306eb5fe1b"
+    },
+    {
+      "path": "supabase/migrations/20261006023123_r01_document_publication_fence.sql",
+      "raw_bytes": 43776,
+      "raw_sha256": "4e158fadbe754781c5b2424108767158ccbb64bde3945d98337bee139d08da4b",
+      "lf_bytes": 43776,
+      "lf_sha256": "4e158fadbe754781c5b2424108767158ccbb64bde3945d98337bee139d08da4b",
+      "git_blob": "54173c06c6961bf653cf096f78314453191ccb3e"
+    }
+  ],
+  "manifestPointerBindings": [
+    {
+      "order": "1",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-1-fix4-evidence.md",
+      "raw_bytes": 2579,
+      "raw_sha256": "a70ec337fc03252f8db4e6a3029d6fcc34ddf1f8d02a9f55242d17b8928b8db4",
+      "lf_bytes": 2579,
+      "lf_sha256": "a70ec337fc03252f8db4e6a3029d6fcc34ddf1f8d02a9f55242d17b8928b8db4",
+      "git_blob": "b97d977db4d54ebf15b203367e6c170fb07a424e"
+    },
+    {
+      "order": "1",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/release-evidence-20261006.json",
+      "raw_bytes": 121169,
+      "raw_sha256": "1f3207386249670a90ff0c5b2d5193a62012564589db1697e20e91a8e0cae88a",
+      "lf_bytes": 121169,
+      "lf_sha256": "1f3207386249670a90ff0c5b2d5193a62012564589db1697e20e91a8e0cae88a",
+      "git_blob": "1e6a18793c4c525d86e7131b3c48e5d5de2c5eb3"
+    },
+    {
+      "order": "1",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/task-1-current-receipt-index-20261007.json",
+      "raw_bytes": 29986,
+      "raw_sha256": "95981a1872690814adce938023d1ec98ece22bd5258616caa539d05cf07be23e",
+      "lf_bytes": 29986,
+      "lf_sha256": "95981a1872690814adce938023d1ec98ece22bd5258616caa539d05cf07be23e",
+      "git_blob": "2bca357c248d40312a1fac6b3ad2ad7c643dd3b0"
+    },
+    {
+      "order": "1",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "2",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-2-adoption-upload.md",
+      "raw_bytes": 12446,
+      "raw_sha256": "6e865f88742a74413e825ee8864f28e53b2487296937ab4dd332805c2f3c9bac",
+      "lf_bytes": 12446,
+      "lf_sha256": "6e865f88742a74413e825ee8864f28e53b2487296937ab4dd332805c2f3c9bac",
+      "git_blob": "bb13d0518e50196bd33aa0a35e001ae538c494da"
+    },
+    {
+      "order": "2",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-1-fix4-evidence.md",
+      "raw_bytes": 2579,
+      "raw_sha256": "a70ec337fc03252f8db4e6a3029d6fcc34ddf1f8d02a9f55242d17b8928b8db4",
+      "lf_bytes": 2579,
+      "lf_sha256": "a70ec337fc03252f8db4e6a3029d6fcc34ddf1f8d02a9f55242d17b8928b8db4",
+      "git_blob": "b97d977db4d54ebf15b203367e6c170fb07a424e"
+    },
+    {
+      "order": "2",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-184-20261006.md",
+      "raw_bytes": 4015,
+      "raw_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e",
+      "lf_bytes": 4015,
+      "lf_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e",
+      "git_blob": "2c869a19123b39e4146b2ccbd30aabde402b118a"
+    },
+    {
+      "order": "2",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "3",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-3-sponsorship-fix-1.md",
+      "raw_bytes": 6595,
+      "raw_sha256": "3d34dfdf15f49cc73f190aafa757402012ed1a67d2540e88542436e39f8aef9f",
+      "lf_bytes": 6595,
+      "lf_sha256": "3d34dfdf15f49cc73f190aafa757402012ed1a67d2540e88542436e39f8aef9f",
+      "git_blob": "702dbc9f21844352986ed1bd71b2ce01269f5aaa"
+    },
+    {
+      "order": "3",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-3-animal-preference-fix-1.md",
+      "raw_bytes": 1867,
+      "raw_sha256": "0b6dcd861a59c7bff847eb4cddbe11fe2d4ba2b3253df5fbc41dacc8e16df9a5",
+      "lf_bytes": 1867,
+      "lf_sha256": "0b6dcd861a59c7bff847eb4cddbe11fe2d4ba2b3253df5fbc41dacc8e16df9a5",
+      "git_blob": "a7181f0cdb29684fb509e6730b8168988aca6ea5"
+    },
+    {
+      "order": "3",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-187-20261006.md",
+      "raw_bytes": 4670,
+      "raw_sha256": "0f3795cad651ec0bba811086537cfd9a080d3f92313970fce796160d37f98f42",
+      "lf_bytes": 4670,
+      "lf_sha256": "0f3795cad651ec0bba811086537cfd9a080d3f92313970fce796160d37f98f42",
+      "git_blob": "32b37b9cf0a4b21924802a5efa5ad2733f81508c"
+    },
+    {
+      "order": "3",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "4",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-3-animal-preference-fix-1.md",
+      "raw_bytes": 1867,
+      "raw_sha256": "0b6dcd861a59c7bff847eb4cddbe11fe2d4ba2b3253df5fbc41dacc8e16df9a5",
+      "lf_bytes": 1867,
+      "lf_sha256": "0b6dcd861a59c7bff847eb4cddbe11fe2d4ba2b3253df5fbc41dacc8e16df9a5",
+      "git_blob": "a7181f0cdb29684fb509e6730b8168988aca6ea5"
+    },
+    {
+      "order": "4",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-3-core-scope-guard-fix-1.md",
+      "raw_bytes": 1666,
+      "raw_sha256": "666102aa356d36c7e56c21a45aa1a0bc624eb7d4e0256da9aa2b601ea61e8204",
+      "lf_bytes": 1666,
+      "lf_sha256": "666102aa356d36c7e56c21a45aa1a0bc624eb7d4e0256da9aa2b601ea61e8204",
+      "git_blob": "9e8a6241d34082b8ea6c74a65f6d4191be73b2f1"
+    },
+    {
+      "order": "4",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-186-20261006.md",
+      "raw_bytes": 4281,
+      "raw_sha256": "2667d4de347d23e729d9d238075a9c51906f1a574ec1b3dd91fd6a39d3deb732",
+      "lf_bytes": 4281,
+      "lf_sha256": "2667d4de347d23e729d9d238075a9c51906f1a574ec1b3dd91fd6a39d3deb732",
+      "git_blob": "7084fe1b7267e8da2f40afec56d81541a0ab96b7"
+    },
+    {
+      "order": "4",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "5",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-4-fix-1-internship-upload.md",
+      "raw_bytes": 7366,
+      "raw_sha256": "696e9005e1d14779d31c84dccd555f91642bf23bb4c197484e13f3456f745ca5",
+      "lf_bytes": 7366,
+      "lf_sha256": "696e9005e1d14779d31c84dccd555f91642bf23bb4c197484e13f3456f745ca5",
+      "git_blob": "2222d4d3d37ae1b21e3018cb839fd739d69152f8"
+    },
+    {
+      "order": "5",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-3-sponsorship-fix-1.md",
+      "raw_bytes": 6595,
+      "raw_sha256": "3d34dfdf15f49cc73f190aafa757402012ed1a67d2540e88542436e39f8aef9f",
+      "lf_bytes": 6595,
+      "lf_sha256": "3d34dfdf15f49cc73f190aafa757402012ed1a67d2540e88542436e39f8aef9f",
+      "git_blob": "702dbc9f21844352986ed1bd71b2ce01269f5aaa"
+    },
+    {
+      "order": "5",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-188-20261006.md",
+      "raw_bytes": 6579,
+      "raw_sha256": "e7f0c9e5ce18dc24224ce8d4019dae220607b55672b8a77638a53afddb0f99cd",
+      "lf_bytes": 6512,
+      "lf_sha256": "2564858f388d46dd9435365925a7149993801a7bf429a84268367092441f0bfa",
+      "git_blob": "f34cff528fc6d04cbfab42419c99f8b7e506bfdc"
+    },
+    {
+      "order": "5",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "6",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-5-fix-1-privilege-preflight.md",
+      "raw_bytes": 12897,
+      "raw_sha256": "03f057aeded1012d2b2ae1fbea19b7cb25f40c8f65dbfc9e528f846c521e575b",
+      "lf_bytes": 12897,
+      "lf_sha256": "03f057aeded1012d2b2ae1fbea19b7cb25f40c8f65dbfc9e528f846c521e575b",
+      "git_blob": "7f0c61c28e553216fcfd76dea519c5b51b3c3a76"
+    },
+    {
+      "order": "6",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-4-fix-1-internship-upload.md",
+      "raw_bytes": 7366,
+      "raw_sha256": "696e9005e1d14779d31c84dccd555f91642bf23bb4c197484e13f3456f745ca5",
+      "lf_bytes": 7366,
+      "lf_sha256": "696e9005e1d14779d31c84dccd555f91642bf23bb4c197484e13f3456f745ca5",
+      "git_blob": "2222d4d3d37ae1b21e3018cb839fd739d69152f8"
+    },
+    {
+      "order": "6",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-189-20261006.md",
+      "raw_bytes": 8384,
+      "raw_sha256": "b411545b2ca8402cbeb9bf50cc2599f8c4026bb603be1b235da6add5f3e2304a",
+      "lf_bytes": 8316,
+      "lf_sha256": "309ed510ce87cce44033eca3f997d448699ed988d3fa80064fd583825bfeb560",
+      "git_blob": "9b6a4fd8d061e3d062370ad9b778dfbcb374593f"
+    },
+    {
+      "order": "6",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "7",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-evidence.md",
+      "raw_bytes": 11239,
+      "raw_sha256": "5e83ef8dd2b240906273429a3066194e36b426d30cc174cec90d38373e22eb1e",
+      "lf_bytes": 11239,
+      "lf_sha256": "5e83ef8dd2b240906273429a3066194e36b426d30cc174cec90d38373e22eb1e",
+      "git_blob": "2bb5a549678f0b297cb51239d3c669ac8923126a"
+    },
+    {
+      "order": "7",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-5-fix-1-privilege-preflight.md",
+      "raw_bytes": 12897,
+      "raw_sha256": "03f057aeded1012d2b2ae1fbea19b7cb25f40c8f65dbfc9e528f846c521e575b",
+      "lf_bytes": 12897,
+      "lf_sha256": "03f057aeded1012d2b2ae1fbea19b7cb25f40c8f65dbfc9e528f846c521e575b",
+      "git_blob": "7f0c61c28e553216fcfd76dea519c5b51b3c3a76"
+    },
+    {
+      "order": "7",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-190-20261006.md",
+      "raw_bytes": 10125,
+      "raw_sha256": "c994fccf847d364cbd98e2c0373a24e03f193faf54a59fe2ecb0aa603d7e6d05",
+      "lf_bytes": 10044,
+      "lf_sha256": "b0d78c8df5bada3fb5f03e8ae6a24b506773bb10761565cdbbfa98410d62f522",
+      "git_blob": "396668e6284484d389bd2fa897c7021d1ba94639"
+    },
+    {
+      "order": "7",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "8",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-evidence.md",
+      "raw_bytes": 9913,
+      "raw_sha256": "a16d94b6944266337ed81e242538a1c2e47a3d6d9a76c33370fc55a118f0041b",
+      "lf_bytes": 9913,
+      "lf_sha256": "a16d94b6944266337ed81e242538a1c2e47a3d6d9a76c33370fc55a118f0041b",
+      "git_blob": "91ded6b6a083fa0de6a2b3c26c6423763089e07e"
+    },
+    {
+      "order": "8",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-evidence.md",
+      "raw_bytes": 11239,
+      "raw_sha256": "5e83ef8dd2b240906273429a3066194e36b426d30cc174cec90d38373e22eb1e",
+      "lf_bytes": 11239,
+      "lf_sha256": "5e83ef8dd2b240906273429a3066194e36b426d30cc174cec90d38373e22eb1e",
+      "git_blob": "2bb5a549678f0b297cb51239d3c669ac8923126a"
+    },
+    {
+      "order": "8",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-191-20261006.md",
+      "raw_bytes": 9886,
+      "raw_sha256": "82ad001c8cc8220ba61daf5fb6247bbb5649c97789711618426beb14e3ba22ad",
+      "lf_bytes": 9801,
+      "lf_sha256": "c95acd8e1581d54bf907cca53886f2baadd4f661518ba56f5ba6c694713481e4",
+      "git_blob": "2e934ffb876b3436efbbb1222549a43e57e660a8"
+    },
+    {
+      "order": "8",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "9",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-4-evidence.md",
+      "raw_bytes": 11631,
+      "raw_sha256": "f3ba996589ea61a61adf708508fa9f1e31a38b98013ade5d28ebcd9f2d8d475d",
+      "lf_bytes": 11631,
+      "lf_sha256": "f3ba996589ea61a61adf708508fa9f1e31a38b98013ade5d28ebcd9f2d8d475d",
+      "git_blob": "87424c97b796a014810e9902d896dea685519f23"
+    },
+    {
+      "order": "9",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-7-evidence.md",
+      "raw_bytes": 9913,
+      "raw_sha256": "a16d94b6944266337ed81e242538a1c2e47a3d6d9a76c33370fc55a118f0041b",
+      "lf_bytes": 9913,
+      "lf_sha256": "a16d94b6944266337ed81e242538a1c2e47a3d6d9a76c33370fc55a118f0041b",
+      "git_blob": "91ded6b6a083fa0de6a2b3c26c6423763089e07e"
+    },
+    {
+      "order": "9",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-192-20261006.md",
+      "raw_bytes": 11174,
+      "raw_sha256": "ff15c84247592833366073208f89030fe65f71a504d781473430e8a735673bce",
+      "lf_bytes": 11174,
+      "lf_sha256": "ff15c84247592833366073208f89030fe65f71a504d781473430e8a735673bce",
+      "git_blob": "ad8ae18e7ac267fa1b2161890e3f3efa0f9ad79f"
+    },
+    {
+      "order": "9",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "10",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-evidence.md",
+      "raw_bytes": 31420,
+      "raw_sha256": "e67984c9ef09c0842f9af4833ffd82fca08a6ea812618f3de6dcbf43aabf05e7",
+      "lf_bytes": 31420,
+      "lf_sha256": "e67984c9ef09c0842f9af4833ffd82fca08a6ea812618f3de6dcbf43aabf05e7",
+      "git_blob": "e59f9d54ce7a52da83e00e96e11d25bf484a4725"
+    },
+    {
+      "order": "10",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-9-fix-4-evidence.md",
+      "raw_bytes": 11631,
+      "raw_sha256": "f3ba996589ea61a61adf708508fa9f1e31a38b98013ade5d28ebcd9f2d8d475d",
+      "lf_bytes": 11631,
+      "lf_sha256": "f3ba996589ea61a61adf708508fa9f1e31a38b98013ade5d28ebcd9f2d8d475d",
+      "git_blob": "87424c97b796a014810e9902d896dea685519f23"
+    },
+    {
+      "order": "10",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-193-20261006.md",
+      "raw_bytes": 12440,
+      "raw_sha256": "36365839fa763cef3f90f11ba6c744960fcb71aa8ab5358635c8e7d29e338a6a",
+      "lf_bytes": 12356,
+      "lf_sha256": "2740cb24920b3226fb41e18fc7be135c0531f38b00d6a734cbce4a10dfeaa88a",
+      "git_blob": "909b8aaceddc636446c35742df652d1c62d563e2"
+    },
+    {
+      "order": "10",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "11",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md",
+      "raw_bytes": 183947,
+      "raw_sha256": "628d3eca1fd8e91829e3fa0e58b841439a2a2eca94f6393a59920e0cdb3b9b6f",
+      "lf_bytes": 183947,
+      "lf_sha256": "628d3eca1fd8e91829e3fa0e58b841439a2a2eca94f6393a59920e0cdb3b9b6f",
+      "git_blob": "834fe43eb43ceb4ffa57b1e50e4516877e197156"
+    },
+    {
+      "order": "11",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-10-evidence.md",
+      "raw_bytes": 31420,
+      "raw_sha256": "e67984c9ef09c0842f9af4833ffd82fca08a6ea812618f3de6dcbf43aabf05e7",
+      "lf_bytes": 31420,
+      "lf_sha256": "e67984c9ef09c0842f9af4833ffd82fca08a6ea812618f3de6dcbf43aabf05e7",
+      "git_blob": "e59f9d54ce7a52da83e00e96e11d25bf484a4725"
+    },
+    {
+      "order": "11",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-green-qualification-lf.json",
+      "raw_bytes": 29273,
+      "raw_sha256": "d2d125ee8ca1f66fdf9b88d833600799bb28746111513aa9cce99f98259a00d5",
+      "lf_bytes": 29273,
+      "lf_sha256": "d2d125ee8ca1f66fdf9b88d833600799bb28746111513aa9cce99f98259a00d5",
+      "git_blob": "462c5906226b026ce6eb4fced1c1cd7d5e179720"
+    },
+    {
+      "order": "11",
+      "field": "current_scoped_profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-green-qualification-lf.json",
+      "raw_bytes": 29273,
+      "raw_sha256": "d2d125ee8ca1f66fdf9b88d833600799bb28746111513aa9cce99f98259a00d5",
+      "lf_bytes": 29273,
+      "lf_sha256": "d2d125ee8ca1f66fdf9b88d833600799bb28746111513aa9cce99f98259a00d5",
+      "git_blob": "462c5906226b026ce6eb4fced1c1cd7d5e179720"
+    },
+    {
+      "order": "11",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "12",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-evidence.md",
+      "raw_bytes": 12286,
+      "raw_sha256": "6e65327f3df0a9829fd363e416f9f3b42fde7ffcafd10d18bede46266d8ee67f",
+      "lf_bytes": 12286,
+      "lf_sha256": "6e65327f3df0a9829fd363e416f9f3b42fde7ffcafd10d18bede46266d8ee67f",
+      "git_blob": "277aeab5d3b0020699db0c89987ac6e5e1297cd6"
+    },
+    {
+      "order": "12",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-11-evidence.md",
+      "raw_bytes": 183947,
+      "raw_sha256": "628d3eca1fd8e91829e3fa0e58b841439a2a2eca94f6393a59920e0cdb3b9b6f",
+      "lf_bytes": 183947,
+      "lf_sha256": "628d3eca1fd8e91829e3fa0e58b841439a2a2eca94f6393a59920e0cdb3b9b6f",
+      "git_blob": "834fe43eb43ceb4ffa57b1e50e4516877e197156"
+    },
+    {
+      "order": "12",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-qualification-20261007-lf.json",
+      "raw_bytes": 39457,
+      "raw_sha256": "cc0078213134f7de8710e409e787a2bc00d91343717fedf72b8c0f5a1bac8e16",
+      "lf_bytes": 39457,
+      "lf_sha256": "cc0078213134f7de8710e409e787a2bc00d91343717fedf72b8c0f5a1bac8e16",
+      "git_blob": "2013a4dbc3a3eae8bc8b603d4a4b02620d6dd6fa"
+    },
+    {
+      "order": "12",
+      "field": "current_scoped_profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-current-source-freeze-20261007.json",
+      "raw_bytes": 16393,
+      "raw_sha256": "7e0a5e9a4a9eb90e95c760e014db6f831e8a96e836ee4cd3039903a8d1b7844c",
+      "lf_bytes": 16393,
+      "lf_sha256": "7e0a5e9a4a9eb90e95c760e014db6f831e8a96e836ee4cd3039903a8d1b7844c",
+      "git_blob": "55017f03033834a4518813d910bf2a8f10a1bd8b"
+    },
+    {
+      "order": "12",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "13",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/../r01-forward/document-publication-guards.md",
+      "raw_bytes": 6279,
+      "raw_sha256": "da221cada0ec0974d368965bd3e90e84d5afc84cf51b91cd9f0001cf56930d1c",
+      "lf_bytes": 6279,
+      "lf_sha256": "da221cada0ec0974d368965bd3e90e84d5afc84cf51b91cd9f0001cf56930d1c",
+      "git_blob": "c7cb7fb21628abba1a7742c7a822da926dec67a4"
+    },
+    {
+      "order": "13",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward/task-12-evidence.md",
+      "raw_bytes": 12286,
+      "raw_sha256": "6e65327f3df0a9829fd363e416f9f3b42fde7ffcafd10d18bede46266d8ee67f",
+      "lf_bytes": 12286,
+      "lf_sha256": "6e65327f3df0a9829fd363e416f9f3b42fde7ffcafd10d18bede46266d8ee67f",
+      "git_blob": "277aeab5d3b0020699db0c89987ac6e5e1297cd6"
+    },
+    {
+      "order": "13",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/current-integration-196-20261007.json",
+      "raw_bytes": 4762,
+      "raw_sha256": "2486f375d28a969ff1d852fc949d6d3fcf11240a65bd88117876fb1702f54738",
+      "lf_bytes": 4762,
+      "lf_sha256": "2486f375d28a969ff1d852fc949d6d3fcf11240a65bd88117876fb1702f54738",
+      "git_blob": "9abaad5fafc62d9987b495f109e0a735b4f9c98f"
+    },
+    {
+      "order": "13",
+      "field": "current_scoped_profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/current-integration-196-release-qualification-20261007.json",
+      "raw_bytes": 2580,
+      "raw_sha256": "88254b9432d092094d0ec59d1a7cc10e01a701e364376c66a350179cb71bc1fa",
+      "lf_bytes": 2580,
+      "lf_sha256": "88254b9432d092094d0ec59d1a7cc10e01a701e364376c66a350179cb71bc1fa",
+      "git_blob": "79419b3e82ab6b46c7e8359d956d2c87714c688e"
+    },
+    {
+      "order": "13",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "order": "14",
+      "field": "profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/../r01-forward/document-publication-guards.md",
+      "raw_bytes": 6279,
+      "raw_sha256": "da221cada0ec0974d368965bd3e90e84d5afc84cf51b91cd9f0001cf56930d1c",
+      "lf_bytes": 6279,
+      "lf_sha256": "da221cada0ec0974d368965bd3e90e84d5afc84cf51b91cd9f0001cf56930d1c",
+      "git_blob": "c7cb7fb21628abba1a7742c7a822da926dec67a4"
+    },
+    {
+      "order": "14",
+      "field": "predecessor_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/../r01-forward/document-publication-guards.md",
+      "raw_bytes": 6279,
+      "raw_sha256": "da221cada0ec0974d368965bd3e90e84d5afc84cf51b91cd9f0001cf56930d1c",
+      "lf_bytes": 6279,
+      "lf_sha256": "da221cada0ec0974d368965bd3e90e84d5afc84cf51b91cd9f0001cf56930d1c",
+      "git_blob": "c7cb7fb21628abba1a7742c7a822da926dec67a4"
+    },
+    {
+      "order": "14",
+      "field": "current_source_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/current-integration-196-20261007.json",
+      "raw_bytes": 4762,
+      "raw_sha256": "2486f375d28a969ff1d852fc949d6d3fcf11240a65bd88117876fb1702f54738",
+      "lf_bytes": 4762,
+      "lf_sha256": "2486f375d28a969ff1d852fc949d6d3fcf11240a65bd88117876fb1702f54738",
+      "git_blob": "9abaad5fafc62d9987b495f109e0a735b4f9c98f"
+    },
+    {
+      "order": "14",
+      "field": "current_scoped_profile_evidence",
+      "path": "docs/evidence/audit-remediation-20260927/current-integration-196-release-qualification-20261007.json",
+      "raw_bytes": 2580,
+      "raw_sha256": "88254b9432d092094d0ec59d1a7cc10e01a701e364376c66a350179cb71bc1fa",
+      "lf_bytes": 2580,
+      "lf_sha256": "88254b9432d092094d0ec59d1a7cc10e01a701e364376c66a350179cb71bc1fa",
+      "git_blob": "79419b3e82ab6b46c7e8359d956d2c87714c688e"
+    },
+    {
+      "order": "14",
+      "field": "backup_rollback_retest",
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    }
+  ],
+  "preservedTrackedRawFiles": 9230,
+  "preservationSnapshotSha256": "87e6b09a82bd07a134d8d20990f506c7ddd0735137a38f34bf3a6f1615810437",
+  "changedPreservedFiles": [],
+  "onlyR01ChangedInBothTrackers": true,
+  "all14SqlUnchangedUnapprovedUnappliedDisabled": true,
+  "historical553Preservation": "UNKNOWN",
+  "nativeServerVersionNum": "NOT_REPORTED (captured #196 CI)",
+  "newExactHead197CI": "PENDING",
+  "notRun": [
+    "DB",
+    "provider",
+    "suites",
+    "push",
+    "merge",
+    "cleanup"
+  ],
+  "task1IndexBindings": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/sequential-source-184-20261006.md",
+      "raw_bytes": 4015,
+      "raw_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e",
+      "lf_bytes": 4015,
+      "lf_sha256": "31c7df3ebb3f7ca5740ea0157b196326d452ffdbbdd723d1e7b559d7aca6b75e",
+      "git_blob": "2c869a19123b39e4146b2ccbd30aabde402b118a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261007.md",
+      "raw_bytes": 5883,
+      "raw_sha256": "d77ff48e2b396d58e9a1a0b6c0b1a9ab1767cddf6925d20aabeeb68a4f22956d",
+      "lf_bytes": 5844,
+      "lf_sha256": "fc30c6d8cfc41013df9a2d6fe62a49a0a11d368dd9825c33636d33667353911f",
+      "git_blob": "685103d8077edbd3581c27968a04e419d016ece5"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/current-source-release-state-20261007.json",
+      "raw_bytes": 22649,
+      "raw_sha256": "f09b7620a044b61d22372ad4d5ee47a8d17620515ef260186c8d2da6b2d2f129",
+      "lf_bytes": 22125,
+      "lf_sha256": "13b0dcdc8e72bff518dacb1fa75f404b4b12534bf35d687da201ed2661c9f4ed",
+      "git_blob": "d588681bdb67f82c120448ec3dacfa86fa11c3d5"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/payment-hosted-final.receipt.json",
+      "raw_bytes": 2499,
+      "raw_sha256": "a7534a76004a58b1acc9ef16a763b57ff82adeae19dd556db50773fe008094b9",
+      "lf_bytes": 2499,
+      "lf_sha256": "a7534a76004a58b1acc9ef16a763b57ff82adeae19dd556db50773fe008094b9",
+      "git_blob": "5e747e68ed9845e8819e7ef14c1e750dd886ca27"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/payment-hosted-final.stdout",
+      "raw_bytes": 2753,
+      "raw_sha256": "9f31b0f6649418e6d471c46b68c2faeb8265bd0c4eaf63ecb37730a55bbdd528",
+      "lf_bytes": 2753,
+      "lf_sha256": "9f31b0f6649418e6d471c46b68c2faeb8265bd0c4eaf63ecb37730a55bbdd528",
+      "git_blob": "c85c6dcb0d95c705e0e6cc78ce276116756720de"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/payment-hosted-final.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/payment-modern-final.receipt.json",
+      "raw_bytes": 2507,
+      "raw_sha256": "b8299ab03a325c98a4f83f8226fe186fc26c94116ea30643b026c400add7fa80",
+      "lf_bytes": 2507,
+      "lf_sha256": "b8299ab03a325c98a4f83f8226fe186fc26c94116ea30643b026c400add7fa80",
+      "git_blob": "d564828fe9caffd0f29b7af0af727a869f69a15c"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/payment-modern-final.stdout",
+      "raw_bytes": 2760,
+      "raw_sha256": "751fbf7ea9e8d6dee37e1391c914490bfbc3136dbc3033746475ed3aea9eaf8a",
+      "lf_bytes": 2760,
+      "lf_sha256": "751fbf7ea9e8d6dee37e1391c914490bfbc3136dbc3033746475ed3aea9eaf8a",
+      "git_blob": "eb8c47e668e8571182d2707b4a7b49a423b35ba1"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/payment-modern-final.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/actor-red.receipt.json",
+      "raw_bytes": 2420,
+      "raw_sha256": "3c411375d746f23778816c534ef6ce45bda7e5f4bd84a4e5cf2f407daf429301",
+      "lf_bytes": 2420,
+      "lf_sha256": "3c411375d746f23778816c534ef6ce45bda7e5f4bd84a4e5cf2f407daf429301",
+      "git_blob": "8e546cebe2c105375d85aefa73f93c127871bdae"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/actor-red.stdout",
+      "raw_bytes": 1769,
+      "raw_sha256": "dd74a6f77d1369ac1fd8673e48e13b82cca206eab1b5816408e4105205cab92d",
+      "lf_bytes": 1769,
+      "lf_sha256": "dd74a6f77d1369ac1fd8673e48e13b82cca206eab1b5816408e4105205cab92d",
+      "git_blob": "a0a21ddb58f0514addc06c38646a53ccc5af0dcd"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/actor-red.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/reviewed-task-1-green-db.json",
+      "raw_bytes": 3384,
+      "raw_sha256": "5cd3b947802fe844634e4949a12292ca458826ed9f202fd8013990b521ef50a3",
+      "lf_bytes": 3384,
+      "lf_sha256": "5cd3b947802fe844634e4949a12292ca458826ed9f202fd8013990b521ef50a3",
+      "git_blob": "b58016190d3d61e0b4636086e939fc4c71fcaa43"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/reviewed-task-1-green-db.log",
+      "raw_bytes": 1220,
+      "raw_sha256": "1ca198cb5295083bb1d45ba10e2f1ec77f3870fde98f014d3c71f97c5f250bb5",
+      "lf_bytes": 1220,
+      "lf_sha256": "1ca198cb5295083bb1d45ba10e2f1ec77f3870fde98f014d3c71f97c5f250bb5",
+      "git_blob": "8aa47cbd7a19c45f423f154ae58c3ff6ddfaa0b4"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/reviewed-task-1-green-modern-db.json",
+      "raw_bytes": 3391,
+      "raw_sha256": "087c4ade82e192c1654dd9836eb0cb71ab3308790012e6f9d18eb38a8a1e59af",
+      "lf_bytes": 3391,
+      "lf_sha256": "087c4ade82e192c1654dd9836eb0cb71ab3308790012e6f9d18eb38a8a1e59af",
+      "git_blob": "13eaf3cad230748bc8dbc7bdfa87eccadb955be0"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/reviewed-task-1-green-modern-db.log",
+      "raw_bytes": 1224,
+      "raw_sha256": "5bb4cb1a1e9feda57b8a3d3408d8ca161bf1a7137ad070db9249706fad1e766d",
+      "lf_bytes": 1224,
+      "lf_sha256": "5bb4cb1a1e9feda57b8a3d3408d8ca161bf1a7137ad070db9249706fad1e766d",
+      "git_blob": "6564bd4afaa8dfcbf14d87ce3b4849ca1c9716f0"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/task-1-actor-red-modern-db.json",
+      "raw_bytes": 2006,
+      "raw_sha256": "de754a2b71203380670a4c94ebf4644188fded6b5c175fe6f9952c9a2c24be0a",
+      "lf_bytes": 2006,
+      "lf_sha256": "de754a2b71203380670a4c94ebf4644188fded6b5c175fe6f9952c9a2c24be0a",
+      "git_blob": "4f6e5aabad9437c27dbb74b22fbcdb7a93716801"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/task-1-actor-red-modern-db.log",
+      "raw_bytes": 1063,
+      "raw_sha256": "114278fabf8720cd821eb4be5b78d39c0e7ae24e1c0d98e22ac88cddc7ce0dd2",
+      "lf_bytes": 1063,
+      "lf_sha256": "114278fabf8720cd821eb4be5b78d39c0e7ae24e1c0d98e22ac88cddc7ce0dd2",
+      "git_blob": "a76570acc55fc69ffaf7dba914a0c8553d2469fe"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-red/receipt.json",
+      "raw_bytes": 751,
+      "raw_sha256": "df8dafce4f23a98d88dc70b6e0ef935ee9d7665d3aa7d34d530cb9dc65daf414",
+      "lf_bytes": 736,
+      "lf_sha256": "c045a2226a47eed72257f4f6da397f7afbd01ee3d99fdd589181f4fd9d54eb07",
+      "git_blob": "bc96794adca3f380b1f16a590e762cb0f578e8c7"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-red/migration.source",
+      "raw_bytes": 9408,
+      "raw_sha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88",
+      "lf_bytes": 9408,
+      "lf_sha256": "16af75e25406c4d70b2ccf454a551d305d90bfec46356609cd645f478b111c88",
+      "git_blob": "1dfb9f98c1e31134c26d2674c370fd95ff682591"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-red/apply.stdout",
+      "raw_bytes": 32,
+      "raw_sha256": "a95549d6117504d3da643f6ded5b67f2235d02d57dcaf0a348d4e24a6782b7d5",
+      "lf_bytes": 32,
+      "lf_sha256": "a95549d6117504d3da643f6ded5b67f2235d02d57dcaf0a348d4e24a6782b7d5",
+      "git_blob": "5d4d332cb6df8b91a8d394d241dd5dec51ab1511"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-red/apply.stderr",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lf_bytes": 0,
+      "lf_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-green/receipt.json",
+      "raw_bytes": 748,
+      "raw_sha256": "369660ff5cd6469f3f31fb35065b410acd483c7bb01673a4a5c48b48ecd64415",
+      "lf_bytes": 733,
+      "lf_sha256": "7b3c0850782722cd1e32858d26b53216bdecf6b46ac0862f7e753f8596de42d0",
+      "git_blob": "424509e144e2b951d8317a4f6e5c02b38268d66e"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-green/migration.source",
+      "raw_bytes": 9573,
+      "raw_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "lf_bytes": 9573,
+      "lf_sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "git_blob": "5592e8aacf0550db48bf3839fd6e80f4c0d77a39"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-green/apply.stdout",
+      "raw_bytes": 10,
+      "raw_sha256": "c3d98b84c948a3db28ef94479d6eb8e4c7d456764db4ca199d851cac87d73eeb",
+      "lf_bytes": 10,
+      "lf_sha256": "c3d98b84c948a3db28ef94479d6eb8e4c7d456764db4ca199d851cac87d73eeb",
+      "git_blob": "69a9cab481706de19c607a88755aba8e4174c88c"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/control-boundaries-20261006/inheritance-green/apply.stderr",
+      "raw_bytes": 200,
+      "raw_sha256": "4939373041d29885fbf5572df6103f8e7e0209e1e3cbdcee6d79a7ca6d7084d3",
+      "lf_bytes": 200,
+      "lf_sha256": "4939373041d29885fbf5572df6103f8e7e0209e1e3cbdcee6d79a7ca6d7084d3",
+      "git_blob": "4195c489b77198ef9c953f3ca9aac67303bd51c3"
+    }
+  ],
+  "validatorScriptSha256": "0e6533da9ae8f1bd37d224de8c723300d5089c77b0281940f1ef7ef02d422694",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/r01-forward-repair-20261001/.superpowers/sdd/r01-forward-schema-plan-20261001/task-197-current-fix1-validator-20261007.py",
+    "docs/evidence/audit-remediation-20260927/current-release197-fix1-controller-verification-20261007.json"
+  ],
+  "trackerOtherRowRawHashes": {
+    "docs/evidence/audit-remediation-20260927/tracker.csv": "ed2b12d8155cb81e9210a6016d2878c6f2dba808b667c63a25e96dd5ab65c1d7",
+    "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv": "f4cdcb439b526dc52c1eb011e4f50637f2d3d462da099cdc5849c576dcc390cb"
+  },
+  "preservedTrackedRawBindingsAggregateSha256": "76bcafa36e51edb2c01310871ffa813aa3cd2b216396bf80ede07ca0af9072b8",
+  "historicalOriginalFilesUnchanged": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/conditional-merge-evidence-20261006.json",
+      "raw_bytes": 52205,
+      "raw_sha256": "1a81089823bdade2b0ca0746f566e5dc910c8436041a7316f00e952b4b9c0894",
+      "lf_bytes": 52205,
+      "lf_sha256": "1a81089823bdade2b0ca0746f566e5dc910c8436041a7316f00e952b4b9c0894",
+      "git_blob": "46aede1e17a98dba75fe55fe7301ba76f885c3e0"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/conditional-merge-receipt-20261006.md",
+      "raw_bytes": 5766,
+      "raw_sha256": "061c2df0408f7eea0f36139176697cba7f5d7784c214e9a1ce9c6c0b254bb1f9",
+      "lf_bytes": 5766,
+      "lf_sha256": "061c2df0408f7eea0f36139176697cba7f5d7784c214e9a1ce9c6c0b254bb1f9",
+      "git_blob": "615fe5cf315fad5a022c226c2ac44163e2485bc8"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-decision-chronology-20261006.md",
+      "raw_bytes": 916195,
+      "raw_sha256": "e3b7e141f9f26d30842576b94d00d281533d582ef5ae8d3cec664bbe9dee090a",
+      "lf_bytes": 916195,
+      "lf_sha256": "e3b7e141f9f26d30842576b94d00d281533d582ef5ae8d3cec664bbe9dee090a",
+      "git_blob": "7873a44d5a0fa4526a7ffdb5a606e3a7f92f786f"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward-migration-manifest-20261006.csv",
+      "raw_bytes": 16953,
+      "raw_sha256": "790eea5cf4f2df16765a0cd90139644fa17d71f029b7fe04751be8f93ae22ba6",
+      "lf_bytes": 16953,
+      "lf_sha256": "790eea5cf4f2df16765a0cd90139644fa17d71f029b7fe04751be8f93ae22ba6",
+      "git_blob": "a73c3b11875c10cf509365a4329bb9bcae954083"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261006.md",
+      "raw_bytes": 4272,
+      "raw_sha256": "2bc291d711fe55c8c4735e13ab0169028b26c8c95f24f6332408156c82e5d60b",
+      "lf_bytes": 4272,
+      "lf_sha256": "2bc291d711fe55c8c4735e13ab0169028b26c8c95f24f6332408156c82e5d60b",
+      "git_blob": "ddfee7eb5d55aa35c676cf13a809f797bdd8c1e1"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-source-ci-disposition-20261006.csv",
+      "raw_bytes": 11976,
+      "raw_sha256": "203fe8b4a5e14118ced66c6f14b4c3a5a46c282530d1b6486333a22bd17687a6",
+      "lf_bytes": 11976,
+      "lf_sha256": "203fe8b4a5e14118ced66c6f14b4c3a5a46c282530d1b6486333a22bd17687a6",
+      "git_blob": "e730bcccf74fc57ef5d3592343e4b5718a228171"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/raw-preservation-followup-20261006.json",
+      "raw_bytes": 412170,
+      "raw_sha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce",
+      "lf_bytes": 412170,
+      "lf_sha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce",
+      "git_blob": "ba24a20cc8eb68f360a7cc76b9ed09a397bd3991"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/raw-preservation-followup-20261006.md",
+      "raw_bytes": 4753,
+      "raw_sha256": "cdfca53b35383278eac09dec3c8bd558ef5a7abcf38f98ec551a156055ed2a2f",
+      "lf_bytes": 4753,
+      "lf_sha256": "cdfca53b35383278eac09dec3c8bd558ef5a7abcf38f98ec551a156055ed2a2f",
+      "git_blob": "a21f345fb7871c5dce70a4ed2c067bd65a1e5d9a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/release-evidence-20261006.json",
+      "raw_bytes": 121169,
+      "raw_sha256": "1f3207386249670a90ff0c5b2d5193a62012564589db1697e20e91a8e0cae88a",
+      "lf_bytes": 121169,
+      "lf_sha256": "1f3207386249670a90ff0c5b2d5193a62012564589db1697e20e91a8e0cae88a",
+      "git_blob": "1e6a18793c4c525d86e7131b3c48e5d5de2c5eb3"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/release-package-20261006.md",
+      "raw_bytes": 6954,
+      "raw_sha256": "acf27c780643073900df6eb102519a4259c4cf6d9f74933e92cb9eda1d2bf911",
+      "lf_bytes": 6954,
+      "lf_sha256": "acf27c780643073900df6eb102519a4259c4cf6d9f74933e92cb9eda1d2bf911",
+      "git_blob": "3a591d6a92180b974455916c3c4f52a59dbb26b3"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/staff-handoff-20261006.md",
+      "raw_bytes": 4271,
+      "raw_sha256": "876ad2793a12bdd3b60b8d2101a5ab7d9062e98512fa1694b03189e081672aa2",
+      "lf_bytes": 4271,
+      "lf_sha256": "876ad2793a12bdd3b60b8d2101a5ab7d9062e98512fa1694b03189e081672aa2",
+      "git_blob": "e987d02a3ffbb7fedf998c009de03e303a24eb00"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/tracker-history-20261006.json",
+      "raw_bytes": 55242,
+      "raw_sha256": "2a1dca6ed36121687f9816f04f51ee96f870ff40838e012eea77ec6c1e29b324",
+      "lf_bytes": 55242,
+      "lf_sha256": "2a1dca6ed36121687f9816f04f51ee96f870ff40838e012eea77ec6c1e29b324",
+      "git_blob": "2a20ae3325705e48a43acba182d1d1dc6a1a70f1"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/tracker-reconciliation-20261006.csv",
+      "raw_bytes": 8179,
+      "raw_sha256": "a613ed114873fa7288d1d7d30ce1ef6a4a07d1c5f32256c0924e9c60a9f59ef5",
+      "lf_bytes": 8179,
+      "lf_sha256": "a613ed114873fa7288d1d7d30ce1ef6a4a07d1c5f32256c0924e9c60a9f59ef5",
+      "git_blob": "67796e7b5a819d7a73f083010497ce69530b1f3d"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/ui-performance-handoff-20261006.md",
+      "raw_bytes": 1539,
+      "raw_sha256": "112c67a49a89c18393400f72dd6a27c0c59ec0b370cf4b7f0945a84144aa13fd",
+      "lf_bytes": 1539,
+      "lf_sha256": "112c67a49a89c18393400f72dd6a27c0c59ec0b370cf4b7f0945a84144aa13fd",
+      "git_blob": "546cfc1934a8d211b07dd6420f72aa35c0ff051f"
+    }
+  ],
+  "fixedDocumentationBindings": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward-migration-manifest-20261007.csv",
+      "raw_bytes": 24642,
+      "raw_sha256": "a0ec4e71d6793bf53c0d00e7015621bfeb97d124251062bce1e3856c470e7c8c",
+      "lf_bytes": 24642,
+      "lf_sha256": "a0ec4e71d6793bf53c0d00e7015621bfeb97d124251062bce1e3856c470e7c8c",
+      "git_blob": "c8c818eaf59cec765431990da66b4e278d8f1ea1"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/task-1-current-receipt-index-20261007.json",
+      "raw_bytes": 29986,
+      "raw_sha256": "95981a1872690814adce938023d1ec98ece22bd5258616caa539d05cf07be23e",
+      "lf_bytes": 29986,
+      "lf_sha256": "95981a1872690814adce938023d1ec98ece22bd5258616caa539d05cf07be23e",
+      "git_blob": "2bca357c248d40312a1fac6b3ad2ad7c643dd3b0"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/release-package-20261007-current.md",
+      "raw_bytes": 10067,
+      "raw_sha256": "d2548ad4b7eb62e371ec4f3150648274f7e5202cc20b3bf443a53bfc909ac434",
+      "lf_bytes": 10067,
+      "lf_sha256": "d2548ad4b7eb62e371ec4f3150648274f7e5202cc20b3bf443a53bfc909ac434",
+      "git_blob": "20dfab97a98411741e18ab30cf1f987eb3e634e6"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/tracker.csv",
+      "raw_bytes": 24702,
+      "raw_sha256": "437efce2e653823afdb4e822e9bfdb12708f7012afcc7ea05605a59ad5944bc5",
+      "lf_bytes": 24702,
+      "lf_sha256": "437efce2e653823afdb4e822e9bfdb12708f7012afcc7ea05605a59ad5944bc5",
+      "git_blob": "6c38e4b81a52a7d4188ebbb82bd43143537bbae3"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+      "raw_bytes": 24689,
+      "raw_sha256": "10774653e75485cde07fda904e2bf812cf6e23729e4289a177d75552755a6d10",
+      "lf_bytes": 24689,
+      "lf_sha256": "10774653e75485cde07fda904e2bf812cf6e23729e4289a177d75552755a6d10",
+      "git_blob": "dc104e1f12dcb2cb63bb9039afc251072d75c249"
+    }
+  ],
+  "rawTrackerSnapshotSha256": "c2d506c52f8c989d25afff222dbc83aba13eabef047156906b680052e4e24596"
+}
