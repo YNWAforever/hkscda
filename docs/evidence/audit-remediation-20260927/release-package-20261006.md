@@ -1,5 +1,7 @@
 # R01 交付包 · 2026-10-06
 
+**2026-10-06 CLI capture 後續：** source4684e14 已修正 pinned CLI array 解析，先重現 RED 再完成獨立審閱及 typecheck/tests/lint/build native0。實際 tracked capture47336/0 證明 missing170006：158空表、9新增guard、兩次套用及context refusal raw-equal，零豁免，正常drop；typed170011及hosted/provider UAT仍NOT_RUN。此 source 未merge；Task1/#183 finance ACL RED及Task8 exact source decisions仍pending，14正式forward files仍DO_NOT_APPLY。[完整新證據](cli-schema-capture-followup-20261006.md)。下方及既有報告保留原capture資格。
+
 **2026-10-06 後續實測：** #197 source887 的五個 CI jobs 及必要 DB steps 全綠。無 migration 的控制實驗重現 setup autoanalyze 漂移；等待實際 setup 完成後，原嚴格 comparator 在 modern170006 兩次套用及角色／actor 拒絕均 raw-equal，零豁免。這是指定 profile 的新證據；歷史 R265 失敗保留，missing／typed 全矩陣未測。#183 真實權限 RED 及 Task1／Task8 source approval 仍未解除，整條 stack 未合併。詳見 [診斷與範圍](raw-preservation-followup-20261006.md)。下方是較早 capture，按其原時間與環境閱讀。
 
 **2026-10-06 最新執行：** #196／#197 已提交、push 及建立 draft PR；兩個已綁定 source 的五個 CI gates 和必要 DB steps 全綠。本機 explicit unit4279 pass／634 skip／0 fail，原六項 API failures 保留且新 CI 同項實際通過。整組尚未合併：#183 付款權限 RED、Task8 source 安全邊界批准及 R265 raw preservation failure 仍未解除。完整 SHA／command／exit／environment 見 [新執行收據](conditional-merge-receipt-20261006.md)。下文及歷史記錄為此前 capture；publication／fresh CI 狀態以新收據為準。

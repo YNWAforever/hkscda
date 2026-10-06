@@ -405,6 +405,46 @@
       },
       "capturedAtUtc": "2026-10-06T05:36:59.164036+00:00",
       "reason": "Before source887 fresh-CI and observed setup-autoanalyze/strict modern raw-proof follow-up"
+    },
+    {
+      "tracker": "docs/evidence/audit-remediation-20260927/tracker.csv",
+      "beforeRawSha256": "a0883e697c959f0109476e9baf410e858497ec7228c5cd5a23fa5ed1215b5db1",
+      "row": {
+        "issue_id": "R01",
+        "baseline_status": "公開需知已修；其餘相容性待查／修",
+        "tasks": "T01、T02",
+        "implementation_status": "partial overall: reviewed drafts #183-#197; Task13 source e5a published #196, fresh PG17.11 CI passed; Task1 fiveACL and Task8 exact scanner proposal unapplied",
+        "code_complete": "partial overall; Task13 reviewed source published and fresh CI passed; source holds remain",
+        "schema_ready": "isolated qualified: source887 PG17.11 CI1pass36assertions/API129pass9skip; modern170006 strict full-raw two-apply/context-refusal0 after observed setup autoanalyze, zero exemptions; historical R26555000 retained; missing/typed full restoration NOT_RUN; no production admission",
+        "deployed": "partial (#182 readonly clamp at main4bb); new #183-#197 unmerged/unapplied",
+        "operationally_enabled": "no new R01 activation; existing readonly clamp only; checkout/payment/new delivery/media schedules off",
+        "current_sha": "e5a28c47b839fa12b770d1e639b0a74368021675",
+        "pr_commit": "drafts #183-#197 unmerged; Task13 #196 e5a28c47b839fa12b770d1e639b0a74368021675; package #197 tested887a0c71a8b363dd6eb8c4f6742969d980c1d51c/run37415957277",
+        "test_evidence": "raw-preservation-followup-20261006.md/json; observer57144/0 no-migration drift192/489 across13relations; settled50608/0 modern raw/context no-op; #197 source887 run37415957277 all5jobs+requiredDBsteps SUCCESS; earlier local/failed receipts retained",
+        "owner_blocker": "Task1/#183 actual finance-actor write RED; exact Task1 ACL/Task8 full-scope source approvals pending after auto-review rejection; missing/typed full restoration not claimed; named production migration approval/backup/hosted and provider UAT; conditional merge approval cannot waive failing gates"
+      },
+      "capturedAtUtc": "2026-10-06T06:27:47.149969+00:00",
+      "reason": "Before focused CLI parser source4684e14 and actual missing170006 receipt47336 reconciliation; earlier source887/98 CI and missing NOT_RUN qualification retained historically"
+    },
+    {
+      "tracker": "docs/superpowers/plans/2026-09-27-audit-remediation/HKSCDA_Remediation_Tracker.csv",
+      "beforeRawSha256": "4c51da7a85fc8a920e41a720d32cb336f50727e04dd835619ac3e1a33be37084",
+      "row": {
+        "issue_id": "R01",
+        "baseline_status": "公開需知已修；其餘相容性待查／修",
+        "tasks": "T01、T02",
+        "implementation_status": "partial overall: reviewed drafts #183-#197; Task13 source e5a published #196, fresh PG17.11 CI passed; Task1 fiveACL and Task8 exact scanner proposal unapplied",
+        "code_complete": "partial overall; Task13 reviewed source published and fresh CI passed; source holds remain",
+        "schema_ready": "isolated qualified: source887 PG17.11 CI1pass36assertions/API129pass9skip; modern170006 strict full-raw two-apply/context-refusal0 after observed setup autoanalyze, zero exemptions; historical R26555000 retained; missing/typed full restoration NOT_RUN; no production admission",
+        "deployed": "partial (#182 readonly clamp at main4bb); new #183-#197 unmerged/unapplied",
+        "operationally_enabled": "no new R01 activation; existing readonly clamp only; checkout/payment/new delivery/media schedules off",
+        "current_sha": "e5a28c47b839fa12b770d1e639b0a74368021675",
+        "pr_commit": "drafts #183-#197 unmerged; Task13 #196 e5a28c47b839fa12b770d1e639b0a74368021675; package #197 tested887a0c71a8b363dd6eb8c4f6742969d980c1d51c/run37415957277",
+        "test_evidence": "raw-preservation-followup-20261006.md/json; observer57144/0 no-migration drift192/489 across13relations; settled50608/0 modern raw/context no-op; #197 source887 run37415957277 all5jobs+requiredDBsteps SUCCESS; earlier local/failed receipts retained",
+        "owner_blocker": "Task1/#183 actual finance-actor write RED; exact Task1 ACL/Task8 full-scope source approvals pending after auto-review rejection; missing/typed full restoration not claimed; named production migration approval/backup/hosted and provider UAT; conditional merge approval cannot waive failing gates"
+      },
+      "capturedAtUtc": "2026-10-06T06:27:47.149969+00:00",
+      "reason": "Before focused CLI parser source4684e14 and actual missing170006 receipt47336 reconciliation; earlier source887/98 CI and missing NOT_RUN qualification retained historically"
     }
   ]
 }
