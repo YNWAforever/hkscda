@@ -1,0 +1,44 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\atomicForward.database.test.ts:
+PostgresError: function public.mutate_crm_supporter_with_audit(unknown, unknown, jsonb, jsonb, uuid, timestamp with time zone, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CRM forward commands on owned synthetic clone > missing-target create commits supporter roles and actor audit [36.07ms]
+PostgresError: function public.replace_supporter_roles_atomic(uuid, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CRM forward commands on owned synthetic clone > missing-target roles replace within one transaction [23.89ms]
+PostgresError: function public.append_crm_consents_with_audit(jsonb, uuid, uuid, timestamp with time zone, jsonb) does not exist
+    errno: "42883",
+     hint: "No function matches the given name and argument types. You might need to add explicit type casts.",
+ severity: "ERROR",
+ position: "8",
+     file: "parse_func.c",
+  routine: "ParseFuncOrColumn",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) R01 CRM forward commands on owned synthetic clone > missing-target consent append deduplicates immutable rows and audits [11.85ms]
+
+ 0 pass
+ 1 filtered out
+ 3 fail
+Ran 3 tests across 1 file. [167.00ms]

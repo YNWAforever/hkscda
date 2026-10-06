@@ -1,0 +1,450 @@
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:1: trailing whitespace.
++{
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:2: trailing whitespace.
++  "downloadedAtUtc": "2026-10-01T23:52:47.2947125Z",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:3: trailing whitespace.
++  "head": "8b665fa4c05c20d728a7fb9617312c377618bc07",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:4: trailing whitespace.
++  "run": 36942406286,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:5: trailing whitespace.
++  "job": 110637449346,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:6: trailing whitespace.
++  "command": "gh api repos/YNWAforever/hkscda/actions/jobs/110637449346/logs",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:7: trailing whitespace.
++  "exit": 0,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:8: trailing whitespace.
++  "file": "task-6-ci-36942406286-attempt1-rls.log",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:9: trailing whitespace.
++  "sha256": "3253123dd0f2c53ed83e9b0feb2736be0697eb6ed7e4b0cacbf052601952f609",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:10: trailing whitespace.
++  "bytes": 127807,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:11: trailing whitespace.
++  "error": "ERROR: R01 CRM table metadata differs: supporter (SQLSTATE 55000)",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:12: trailing whitespace.
++  "failedStep": "Start local Supabase stack",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.json:13: trailing whitespace.
++  "behaviorSteps": "skipped"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:103: trailing whitespace.
++2026-10-01T23:47:23.4194214Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:107: trailing whitespace.
++2026-10-01T23:47:23.4196402Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:110: trailing whitespace.
++2026-10-01T23:47:23.4197779Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:112: trailing whitespace.
++2026-10-01T23:47:23.4198297Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:114: trailing whitespace.
++2026-10-01T23:47:23.4199389Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:116: trailing whitespace.
++2026-10-01T23:47:23.4200001Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:118: trailing whitespace.
++2026-10-01T23:47:23.4200826Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:142: trailing whitespace.
++2026-10-01T23:47:27.8084448Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:224: trailing whitespace.
++2026-10-01T23:47:27.8134061Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:1226: trailing whitespace.
++2026-10-01T23:48:38.8102790Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:1235: trailing whitespace.
++2026-10-01T23:48:38.8105506Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:1343: trailing whitespace.
++2026-10-01T23:48:38.8148153Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:1353: trailing whitespace.
++2026-10-01T23:48:38.8151921Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/actual-ci-36942406286-attempt1-rls.log:1365: trailing whitespace.
++2026-10-01T23:48:38.8155714Z 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/after-gates-command.log:1: trailing whitespace.
++{"phase":"after-gates","observedAt":"2026-10-02T00:28:23.512Z","template":"c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6","modern":"943093e7e93194acf7f18ccab233c375a194a196f06e7efe5d661e08dc081d08","meaning":"read-only aggregate catalog/row/ledger/source hashes; no normalization or reset"}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/before-gates-command.log:1: trailing whitespace.
++{"phase":"before-gates","observedAt":"2026-10-02T00:22:59.477Z","template":"c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6","modern":"7a89ed0638d732159b40568ea284955ea14b86167a2de11fd282db2aa2104803","meaning":"read-only aggregate catalog/row/ledger/source hashes; no normalization or reset"}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/diagnosis-executed-script.ts:26: trailing whitespace.
++}catch(e){receipt.failure={message:(e as Error).message,errno:(e as {errno?:string}).errno};throw e}finally{await clone.close();receipt.templateBefore=clone.templateBefore;receipt.templatePreserved=clone.templatePreserved;receipt.modernBefore=modernBefore;receipt.modernPreserved=await localSourceState(url)===modernBefore;receipt.frozenInputsPreserved=hash(await blobs())===hash(frozen);receipt.cleanup='normal newly owned clone drop only';receipt.completedAt=new Date().toISOString();await writeFile(out+'/diagnosis.json',JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify({result:receipt.result,actualMigrationResult:receipt.actualMigrationResult,componentCatalogFacetsChanged:receipt.componentCatalogFacetsChanged,componentExtraFacetsChanged:receipt.componentExtraFacetsChanged,fullRollbackPreserved:receipt.fullRollbackPreserved,templatePreserved:receipt.templatePreserved,modernPreserved:receipt.modernPreserved,frozenInputsPreserved:receipt.frozenInputsPreserved,failure:receipt.failure}));}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/diagnosis.log:1: trailing whitespace.
++{"result":"Actual component RED: d608 rejects source-derived #150/#177 supporter profile","actualMigrationResult":{"status":"55000","message":"R01 CRM table metadata differs: supporter","setupComplete":true},"componentCatalogFacetsChanged":["columns","relations"],"componentExtraFacetsChanged":[],"fullRollbackPreserved":true,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql:11: new blank line at EOF.
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/final-component-command.log:1: trailing whitespace.
++{"mode":"green-component","testExit":0,"testSummary":["\n 25 pass"," 0 fail"," 205 expect() calls"],"refusalCount":64,"manifestAfter":1,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/final-hosted-command.log:1: trailing whitespace.
++{"mode":"green","testExit":0,"testSummary":["\n 25 pass"," 0 fail"," 205 expect() calls"],"refusalCount":63,"manifestAfter":22,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/final-modern-command.log:1: trailing whitespace.
++{"mode":"green-modern","testExit":0,"testSummary":["\n 25 pass"," 0 fail"," 205 expect() calls"],"refusalCount":63,"manifestAfter":1,"templatePreserved":true,"modernPreserved":true,"frozenInputsPreserved":true}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/format-preparation.log:1: trailing whitespace.
++supabase/rls-tests/helpers/runR01CrmForward.ts 373ms
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/format-preparation.log:2: trailing whitespace.
++docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-diagnose.ts 21ms
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/generation.log:1: trailing whitespace.
++{"file":"20261001213914_r01_crm_atomic_forward.sql","bytes":44473,"sha256":"2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:1: trailing whitespace.
++{
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:2: trailing whitespace.
++  "phase": "final",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:3: trailing whitespace.
++  "source": "8b665fa4c05c20d728a7fb9617312c377618bc07",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:4: trailing whitespace.
++  "startedAt": "2026-10-02T00:23:01.288828+00:00",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:5: trailing whitespace.
++  "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:6: trailing whitespace.
++  "gates": [
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:7: trailing whitespace.
++    {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:8: trailing whitespace.
++      "gate": "typecheck",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:9: trailing whitespace.
++      "command": "bun run typecheck",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:10: trailing whitespace.
++      "exit": 0,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:11: trailing whitespace.
++      "elapsedSeconds": 58.14,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:12: trailing whitespace.
++      "log": "task-6-final-typecheck.log"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:13: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:14: trailing whitespace.
++    {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:15: trailing whitespace.
++      "gate": "tests",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:16: trailing whitespace.
++      "command": "bun test --isolate --timeout 30000",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:17: trailing whitespace.
++      "exit": 0,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:18: trailing whitespace.
++      "elapsedSeconds": 113.29,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:19: trailing whitespace.
++      "log": "task-6-final-tests.log",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:20: trailing whitespace.
++      "summary": [
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:21: trailing whitespace.
++        "\n 3235 pass",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:22: trailing whitespace.
++        " 292 skip",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:23: trailing whitespace.
++        " 0 fail",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:24: trailing whitespace.
++        " 10499 expect() calls"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:25: trailing whitespace.
++      ]
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:26: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:27: trailing whitespace.
++    {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:28: trailing whitespace.
++      "gate": "lint",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:29: trailing whitespace.
++      "command": "bun run lint",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:30: trailing whitespace.
++      "exit": 0,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:31: trailing whitespace.
++      "elapsedSeconds": 47.02,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:32: trailing whitespace.
++      "log": "task-6-final-lint.log"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:33: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:34: trailing whitespace.
++    {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:35: trailing whitespace.
++      "gate": "build",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:36: trailing whitespace.
++      "command": "bun run build",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:37: trailing whitespace.
++      "exit": 0,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:38: trailing whitespace.
++      "elapsedSeconds": 91.38,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:39: trailing whitespace.
++      "log": "task-6-final-build.log"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:40: trailing whitespace.
++    }
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:41: trailing whitespace.
++  ],
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:42: trailing whitespace.
++  "testedFinalSourceBlobs": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:43: trailing whitespace.
++    "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:44: trailing whitespace.
++      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:45: trailing whitespace.
++      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:46: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:47: trailing whitespace.
++    "supabase/migrations/20260928120000_crm_assignment_bulk.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:48: trailing whitespace.
++      "sha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:49: trailing whitespace.
++      "canonicalSha256": "941b203c92e4a4fb163917a230008d6b8d19161927916e406c8ef668a8c42f09"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:50: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:51: trailing whitespace.
++    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-maintenance-fragment.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:52: trailing whitespace.
++      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:53: trailing whitespace.
++      "canonicalSha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:54: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:55: trailing whitespace.
++    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/executed-assignment-column-fragment.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:56: trailing whitespace.
++      "sha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:57: trailing whitespace.
++      "canonicalSha256": "c810e2dd0d10db228840954eec63b1697473236aeeda0a050c52e2e54cfe088c"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:58: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:59: trailing whitespace.
++    "src/lib/crm/atomicForward.database.test.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:60: trailing whitespace.
++      "sha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:61: trailing whitespace.
++      "canonicalSha256": "68b2a483dde454ce2012dde945a1cb4e994a158209c11c73c77d629fb761d72a"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:62: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:63: trailing whitespace.
++    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-generate.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:64: trailing whitespace.
++      "sha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:65: trailing whitespace.
++      "canonicalSha256": "9eebab93cfb4a6adec7fb70e2dc66dda01c088fe4a8261d8aa0633625f40a8da"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:66: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:67: trailing whitespace.
++    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-gates.py": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:68: trailing whitespace.
++      "sha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:69: trailing whitespace.
++      "canonicalSha256": "86edb0e3cdd512ffbfeb17f6071bf919721a29fb49b4ac6e5576616526ecfa7c"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:70: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:71: trailing whitespace.
++    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:72: trailing whitespace.
++      "sha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:73: trailing whitespace.
++      "canonicalSha256": "e9018aac140a408038340839e95de97e9f40ce15529034fe78bdbd98bdc556f5"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:74: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:75: trailing whitespace.
++    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:76: trailing whitespace.
++      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:77: trailing whitespace.
++      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:78: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:79: trailing whitespace.
++    "src/lib/crm/service.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:80: trailing whitespace.
++      "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:81: trailing whitespace.
++      "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:82: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:83: trailing whitespace.
++    "src/lib/crm/repository.server.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:84: trailing whitespace.
++      "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:85: trailing whitespace.
++      "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:86: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:87: trailing whitespace.
++    "src/lib/crm/http.server.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:88: trailing whitespace.
++      "sha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:89: trailing whitespace.
++      "canonicalSha256": "cf76dde404231670c111301c129bd8a9ca55643685c9bd8351b0ff972ca77f67"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:90: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:91: trailing whitespace.
++    "src/lib/crm/consent.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:92: trailing whitespace.
++      "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:93: trailing whitespace.
++      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:94: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:95: trailing whitespace.
++    "src/lib/crm/schemas.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:96: trailing whitespace.
++      "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:97: trailing whitespace.
++      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:98: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:99: trailing whitespace.
++    "src/lib/crm/types.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:100: trailing whitespace.
++      "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:101: trailing whitespace.
++      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:102: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:103: trailing whitespace.
++    "src/lib/admin/session.server.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:104: trailing whitespace.
++      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:105: trailing whitespace.
++      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:106: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:107: trailing whitespace.
++    "src/lib/donations/supabase.server.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:108: trailing whitespace.
++      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:109: trailing whitespace.
++      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:110: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:111: trailing whitespace.
++    "src/lib/operations/releaseSchema.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:112: trailing whitespace.
++      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:113: trailing whitespace.
++      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:114: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:115: trailing whitespace.
++    "src/lib/operations/releaseManifest.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:116: trailing whitespace.
++      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:117: trailing whitespace.
++      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:118: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:119: trailing whitespace.
++    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:120: trailing whitespace.
++      "sha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:121: trailing whitespace.
++      "canonicalSha256": "63f93487d21b1ce054bc505b3426c19f163a99476a1336ea980141a9c0911224"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:122: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:123: trailing whitespace.
++    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:124: trailing whitespace.
++      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:125: trailing whitespace.
++      "canonicalSha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:126: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:127: trailing whitespace.
++    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:128: trailing whitespace.
++      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:129: trailing whitespace.
++      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:130: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:131: trailing whitespace.
++    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:132: trailing whitespace.
++      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:133: trailing whitespace.
++      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:134: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:135: trailing whitespace.
++    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:136: trailing whitespace.
++      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:137: trailing whitespace.
++      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:138: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:139: trailing whitespace.
++    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:140: trailing whitespace.
++      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:141: trailing whitespace.
++      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:142: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:143: trailing whitespace.
++    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:144: trailing whitespace.
++      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:145: trailing whitespace.
++      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:146: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:147: trailing whitespace.
++    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:148: trailing whitespace.
++      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:149: trailing whitespace.
++      "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:150: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:151: trailing whitespace.
++    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:152: trailing whitespace.
++      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:153: trailing whitespace.
++      "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:154: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:155: trailing whitespace.
++    "src/lib/crm/atomicForward.http.test.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:156: trailing whitespace.
++      "sha256": "d8fae8e5ce8ab234d9caa5280c17b7e7aa1619342b92da22d14759e8c7a757a5",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:157: trailing whitespace.
++      "canonicalSha256": "d8fae8e5ce8ab234d9caa5280c17b7e7aa1619342b92da22d14759e8c7a757a5"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:158: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:159: trailing whitespace.
++    "package.json": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:160: trailing whitespace.
++      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:161: trailing whitespace.
++      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:162: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:163: trailing whitespace.
++    "bun.lock": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:164: trailing whitespace.
++      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:165: trailing whitespace.
++      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:166: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:167: trailing whitespace.
++    "tsconfig.json": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:168: trailing whitespace.
++      "sha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:169: trailing whitespace.
++      "canonicalSha256": "eedf081bc0041fce1ad9fdbecc052ed2b805406c55d9e695c163f30afe07d491"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:170: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:171: trailing whitespace.
++    "eslint.config.js": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:172: trailing whitespace.
++      "sha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:173: trailing whitespace.
++      "canonicalSha256": "ea32851f80711fede88d74bd6d7382ba4f028b60b1a84050504ad644dd4e4200"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:174: trailing whitespace.
++    },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:175: trailing whitespace.
++    "vite.config.ts": {
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:176: trailing whitespace.
++      "sha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c",
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:177: trailing whitespace.
++      "canonicalSha256": "3be5c1376fa2f91312da21df35bbb81017cd631b9bf09269455e0241d39b714c"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:178: trailing whitespace.
++    }
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:179: trailing whitespace.
++  },
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:180: trailing whitespace.
++  "frozenInputsPreserved": true,
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:181: trailing whitespace.
++  "completedAt": "2026-10-02T00:28:11.159042+00:00"
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-gates.json:182: trailing whitespace.
++}
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-lint.log:116: new blank line at EOF.
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-tests.log:505: trailing whitespace.
++119 | 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-tests.log:1860: trailing whitespace.
++35 | 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-tests.log:2370: trailing whitespace.
++116 | 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-tests.log:2437: trailing whitespace.
++140 | 
+docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts/task-6-final-tests.log:4886: trailing whitespace.
++235 | 

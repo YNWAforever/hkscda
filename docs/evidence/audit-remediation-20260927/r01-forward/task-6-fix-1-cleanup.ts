@@ -1,0 +1,19 @@
+import {SQL} from 'bun';
+import {readFile,writeFile} from 'node:fs/promises';
+import {snapshot,hash,localSourceState} from '../../../../supabase/rls-tests/helpers/productionSchemaClone';
+const dir='docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-receipts',before=JSON.parse(await readFile(dir+'/first-fixture-starvation-before.json','utf8'));
+if(before.clone!=='r01_clone_fbb702655a17498dbc6d0ea5e2d4c6a0')throw Error('Wrong owned clone');
+const db=new SQL('postgresql://supabase_admin:postgres@127.0.0.1:52322/'+before.clone,{max:1});
+await db`begin read only`;
+const catalog=hash(await snapshot(db)),rows=[];
+for(const t of await db`select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('r','p') union all select 'auth.users' order by 1`){const [r]=await db.unsafe(`select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' order by to_jsonb(t)::text),'')) hash from ${t.name} t`);rows.push([t.name,r]);}
+const extras=await db`select jsonb_build_object('auth',(select to_jsonb(c) from pg_class c where c.oid='auth.users'::regclass),'authColumns',(select jsonb_agg(jsonb_build_object('name',a.attname,'acl',a.attacl::text) order by a.attnum) from pg_attribute a where a.attrelid='auth.users'::regclass and a.attnum>0 and not a.attisdropped),'defaults',(select jsonb_agg(to_jsonb(d) order by d.defaclrole,d.defaclnamespace,d.defaclobjtype) from pg_default_acl d),'native',(select jsonb_agg(to_jsonb(t) order by t.oid) from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where c.conrelid in ('public.supporter'::regclass,'public.supporter_role'::regclass,'public.consent'::regclass,'public.admin_user'::regclass)),'depend',(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d join pg_trigger t on d.classid='pg_trigger'::regclass and d.objid=t.oid join pg_constraint c on c.oid=t.tgconstraint where c.conrelid in ('public.supporter'::regclass,'public.supporter_role'::regclass,'public.consent'::regclass,'public.admin_user'::regclass)),'ledger',(select md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),'')) from supabase_migrations.schema_migrations t)) value`;
+await db`rollback`;await db.close();
+const source=Object.fromEntries(await Promise.all(Object.keys(before.source).map(async p=>[p,hash(await readFile(p,'utf8'))]))),template=await localSourceState('postgresql://postgres:postgres@127.0.0.1:52322/audit_pr135_20260929'),modern=await localSourceState('postgresql://postgres:postgres@127.0.0.1:57322/postgres');
+const after={catalog,rows:hash(rows),authDefaultsNativeDependenciesLedger:hash(extras),source,template,modern};
+const equal=Object.fromEntries(Object.entries(after).map(([k,v])=>[k,hash(v)===hash(before[k])]));
+await writeFile(dir+'/first-fixture-starvation-after.json',JSON.stringify({after,equal,exit:-1,qualification:'fixture pool starvation; no domain RED or migration verdict'},null,2)+'\n');
+console.log(JSON.stringify(equal));
+if(Object.values(equal).some(v=>!v))throw Error('Preservation mismatch; keep clone');
+const admin=new SQL('postgresql://supabase_admin:postgres@127.0.0.1:52322/postgres',{max:1});const sessions=await admin`select pid from pg_stat_activity where datname=${before.clone}`;if(sessions.length)throw Error('Owned clone still has sessions');await admin.unsafe('drop database '+before.clone);await admin.close();
+await writeFile(dir+'/first-fixture-starvation-cleanup.json',JSON.stringify({clone:before.clone,normalDrop:true,forcedDrop:false,postgresBackendTermination:false,fullPreservation:equal,exit:-1},null,2)+'\n');console.log('Normal owned clone DROP complete');

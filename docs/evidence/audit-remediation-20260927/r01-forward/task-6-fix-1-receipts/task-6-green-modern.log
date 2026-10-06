@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\atomicForward.database.test.ts:
+(pass) R01 CRM forward commands on owned synthetic clone > missing-target create commits supporter roles and actor audit [39.27ms]
+(pass) R01 CRM forward commands on owned synthetic clone > missing-target roles replace within one transaction [24.69ms]
+(pass) R01 CRM forward commands on owned synthetic clone > missing-target consent append deduplicates immutable rows and audits [22.57ms]
+(pass) R01 CRM forward commands on owned synthetic clone > versioned actor rejects managed Auth ban without mutation [23.17ms]
+(pass) R01 CRM forward commands on owned synthetic clone > legacy defect create refuses an unauthorized staff actor [12.73ms]
+(pass) R01 CRM forward commands on owned synthetic clone > legacy defect consent refuses a banned actor [13.43ms]
+(pass) R01 CRM forward commands on owned synthetic clone > legacy defect consent refuses row identity mismatch [8.99ms]
+(pass) R01 CRM forward commands on owned synthetic clone > legacy defect consent refuses empty audit-only append [10.11ms]
+(pass) R01 CRM forward commands on owned synthetic clone > create rejects stale role, status, unconfirmed, missing and banned actors [117.44ms]
+(pass) R01 CRM forward commands on owned synthetic clone > update rejects stale role, status, unconfirmed, missing and banned actors [132.52ms]
+(pass) R01 CRM forward commands on owned synthetic clone > consent rejects stale role, status, unconfirmed, missing and banned actors [117.90ms]
+(pass) R01 CRM forward commands on owned synthetic clone > each public command and private bridge rejects direct anon and authenticated execution [34.75ms]
+(pass) R01 CRM forward commands on owned synthetic clone > service has no effective managed Auth column access and bridge adds none [34.53ms]
+(pass) R01 CRM forward commands on owned synthetic clone > create retry retains supporter identity while valid consent retry preserves one immutable fact [22.47ms]
+(pass) R01 CRM forward commands on owned synthetic clone > audit failure rolls back profile roles version and consent history [27.60ms]
+(pass) R01 CRM forward commands on owned synthetic clone > actorless role utility rolls back invalid role and triggers monotonic stale-version rejection [21.42ms]
+(pass) R01 CRM forward commands on owned synthetic clone > consent payload rejects malformed and missing identities before audit [36.40ms]
+(pass) R01 CRM forward commands on owned synthetic clone > temporary shadow tables cannot bypass actor or redirect audited writes [15.05ms]
+(pass) R01 CRM forward commands on owned synthetic clone > concurrent edits commit exactly one audit and reject the stale version [44.96ms]
+(pass) R01 CRM forward commands on owned synthetic clone > concurrent ban first fences waiting CRM command and rejects after commit [51.21ms]
+(pass) R01 CRM forward commands on owned synthetic clone > CRM command first holds actor SHARE fences until audited commit before ban [47.94ms]
+(pass) R01 CRM forward commands on owned synthetic clone > concurrent disable first fences waiting CRM command and rejects after commit [44.40ms]
+(pass) R01 CRM forward commands on owned synthetic clone > CRM command first holds actor SHARE fences until audited commit before disable [49.15ms]
+(pass) R01 CRM forward commands on owned synthetic clone > concurrent role first fences waiting CRM command and rejects after commit [44.10ms]
+(pass) R01 CRM forward commands on owned synthetic clone > CRM command first holds actor SHARE fences until audited commit before role [44.09ms]
+
+ 25 pass
+ 0 fail
+ 205 expect() calls
+Ran 25 tests across 1 file. [1119.00ms]

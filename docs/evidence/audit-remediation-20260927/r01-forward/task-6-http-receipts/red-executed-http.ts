@@ -62,9 +62,6 @@ async function withCrmErrors(operation: () => Promise<Response>) {
     if (error instanceof z.ZodError) {
       return jsonResponse({ error: "Invalid CRM request" }, { status: 400 });
     }
-    if (error && typeof error === "object" && "code" in error && error.code === "42501") {
-      return jsonResponse({ error: "Forbidden" }, { status: 403 });
-    }
     if (error && typeof error === "object" && "code" in error && error.code === "P4090") {
       return jsonResponse(
         {

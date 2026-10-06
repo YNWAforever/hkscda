@@ -1,0 +1,1404 @@
+﻿2026-10-01T23:47:19.0255242Z Current runner version: '2.337.0'
+2026-10-01T23:47:19.0280267Z ##[group]Runner Image Provisioner
+2026-10-01T23:47:19.0281131Z Hosted Compute Agent
+2026-10-01T23:47:19.0281920Z Version: 20260901.588
+2026-10-01T23:47:19.0282583Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-01T23:47:19.0283364Z Build Date: 2026-09-01T19:56:44Z
+2026-10-01T23:47:19.0284082Z Worker ID: {680f9bd3-0f81-424f-affc-c94fe7a1d215}
+2026-10-01T23:47:19.0284819Z Azure Region: northcentralus
+2026-10-01T23:47:19.0285510Z ##[endgroup]
+2026-10-01T23:47:19.0286977Z ##[group]Operating System
+2026-10-01T23:47:19.0287625Z Ubuntu
+2026-10-01T23:47:19.0288253Z 24.04.5
+2026-10-01T23:47:19.0288784Z LTS
+2026-10-01T23:47:19.0289803Z ##[endgroup]
+2026-10-01T23:47:19.0290389Z ##[group]Runner Image
+2026-10-01T23:47:19.0290990Z Image: ubuntu-24.04
+2026-10-01T23:47:19.0291636Z Version: 20260927.320.1
+2026-10-01T23:47:19.0292924Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-01T23:47:19.0294576Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+2026-10-01T23:47:19.0295554Z ##[endgroup]
+2026-10-01T23:47:19.0296793Z ##[group]GITHUB_TOKEN Permissions
+2026-10-01T23:47:19.0298698Z Contents: read
+2026-10-01T23:47:19.0299789Z Metadata: read
+2026-10-01T23:47:19.0300385Z Packages: read
+2026-10-01T23:47:19.0300990Z ##[endgroup]
+2026-10-01T23:47:19.0303052Z Secret source: Actions
+2026-10-01T23:47:19.0304144Z Cache mode: write
+2026-10-01T23:47:19.0304864Z Prepare workflow directory
+2026-10-01T23:47:19.0712705Z Prepare all required actions
+2026-10-01T23:47:19.0783447Z Getting action download info
+2026-10-01T23:47:19.3358435Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-01T23:47:19.4304588Z Download action repository 'oven-sh/setup-bun@v2' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-10-01T23:47:19.8039475Z Complete job name: rls-matrix
+2026-10-01T23:47:19.8910605Z ##[group]Run actions/checkout@v4
+2026-10-01T23:47:19.8911523Z with:
+2026-10-01T23:47:19.8911975Z   repository: YNWAforever/hkscda
+2026-10-01T23:47:19.8915955Z   token: ***
+2026-10-01T23:47:19.8916378Z   ssh-strict: true
+2026-10-01T23:47:19.8916879Z   ssh-user: git
+2026-10-01T23:47:19.8917336Z   persist-credentials: true
+2026-10-01T23:47:19.8917820Z   clean: true
+2026-10-01T23:47:19.8918255Z   sparse-checkout-cone-mode: true
+2026-10-01T23:47:19.8918775Z   fetch-depth: 1
+2026-10-01T23:47:19.8919388Z   fetch-tags: false
+2026-10-01T23:47:19.8919835Z   show-progress: true
+2026-10-01T23:47:19.8920284Z   lfs: false
+2026-10-01T23:47:19.8920685Z   submodules: false
+2026-10-01T23:47:19.8921127Z   set-safe-directory: true
+2026-10-01T23:47:19.8921632Z   allow-unsafe-pr-checkout: false
+2026-10-01T23:47:19.8922415Z ##[endgroup]
+2026-10-01T23:47:19.9912922Z Syncing repository: YNWAforever/hkscda
+2026-10-01T23:47:19.9915818Z ##[group]Getting Git version info
+2026-10-01T23:47:19.9917002Z Working directory is '/home/runner/work/hkscda/hkscda'
+2026-10-01T23:47:19.9918629Z [command]/usr/bin/git version
+2026-10-01T23:47:20.0024727Z git version 2.55.0
+2026-10-01T23:47:20.0053686Z ##[endgroup]
+2026-10-01T23:47:20.0071274Z Temporarily overriding HOME='/home/runner/work/_temp/88767949-6c00-4ffe-8b57-3d0422e5455d' before making global git config changes
+2026-10-01T23:47:20.0073843Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-01T23:47:20.0077777Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hkscda/hkscda
+2026-10-01T23:47:20.0136481Z Deleting the contents of '/home/runner/work/hkscda/hkscda'
+2026-10-01T23:47:20.0141882Z ##[group]Initializing the repository
+2026-10-01T23:47:20.0145520Z [command]/usr/bin/git init /home/runner/work/hkscda/hkscda
+2026-10-01T23:47:20.0267687Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-01T23:47:20.0270185Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-01T23:47:20.0272009Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-01T23:47:20.0272839Z hint: call:
+2026-10-01T23:47:20.0273270Z hint:
+2026-10-01T23:47:20.0273815Z hint: 	git config --global init.defaultBranch <name>
+2026-10-01T23:47:20.0274522Z hint:
+2026-10-01T23:47:20.0275141Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-01T23:47:20.0276153Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-01T23:47:20.0276960Z hint:
+2026-10-01T23:47:20.0277385Z hint: 	git branch -m <name>
+2026-10-01T23:47:20.0277862Z hint:
+2026-10-01T23:47:20.0278498Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-01T23:47:20.0283080Z Initialized empty Git repository in /home/runner/work/hkscda/hkscda/.git/
+2026-10-01T23:47:20.0296586Z [command]/usr/bin/git remote add origin https://github.com/YNWAforever/hkscda
+2026-10-01T23:47:20.0351296Z ##[endgroup]
+2026-10-01T23:47:20.0352835Z ##[group]Disabling automatic garbage collection
+2026-10-01T23:47:20.0356837Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-01T23:47:20.0392285Z ##[endgroup]
+2026-10-01T23:47:20.0394015Z ##[group]Setting up auth
+2026-10-01T23:47:20.0412158Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-01T23:47:20.0461139Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-01T23:47:20.0986222Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-01T23:47:20.1043055Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-01T23:47:20.1265688Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-01T23:47:20.1303941Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-01T23:47:20.1530592Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-01T23:47:20.1573000Z ##[endgroup]
+2026-10-01T23:47:20.1573831Z ##[group]Fetching the repository
+2026-10-01T23:47:20.1583271Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +80165f5b7d500161975e0c4c0da2a4dd7daf14e3:refs/remotes/pull/190/merge
+2026-10-01T23:47:22.9295952Z From https://github.com/YNWAforever/hkscda
+2026-10-01T23:47:22.9300284Z  * [new ref]         80165f5b7d500161975e0c4c0da2a4dd7daf14e3 -> pull/190/merge
+2026-10-01T23:47:22.9305834Z ##[endgroup]
+2026-10-01T23:47:22.9307304Z ##[group]Determining the checkout info
+2026-10-01T23:47:22.9309361Z ##[endgroup]
+2026-10-01T23:47:22.9312403Z [command]/usr/bin/git sparse-checkout disable
+2026-10-01T23:47:22.9386096Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-01T23:47:22.9420943Z ##[group]Checking out the ref
+2026-10-01T23:47:22.9425534Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/190/merge
+2026-10-01T23:47:23.4193696Z Note: switching to 'refs/remotes/pull/190/merge'.
+2026-10-01T23:47:23.4194214Z 
+2026-10-01T23:47:23.4194530Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-01T23:47:23.4195241Z changes and commit them, and you can discard any commits you make in this
+2026-10-01T23:47:23.4195984Z state without impacting any branches by switching back to a branch.
+2026-10-01T23:47:23.4196402Z 
+2026-10-01T23:47:23.4196728Z If you want to create a new branch to retain commits you create, you may
+2026-10-01T23:47:23.4197413Z do so (now or later) by using -c with the switch command. Example:
+2026-10-01T23:47:23.4197779Z 
+2026-10-01T23:47:23.4197962Z   git switch -c <new-branch-name>
+2026-10-01T23:47:23.4198297Z 
+2026-10-01T23:47:23.4198746Z Or undo this operation with:
+2026-10-01T23:47:23.4199389Z 
+2026-10-01T23:47:23.4199628Z   git switch -
+2026-10-01T23:47:23.4200001Z 
+2026-10-01T23:47:23.4200336Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-01T23:47:23.4200826Z 
+2026-10-01T23:47:23.4201320Z HEAD is now at 80165f5 Merge 8b665fa4c05c20d728a7fb9617312c377618bc07 into 592bcebda2dc0154d20684a1a2240cfbdd8ae3d1
+2026-10-01T23:47:23.4222658Z ##[endgroup]
+2026-10-01T23:47:23.4271890Z [command]/usr/bin/git log -1 --format=%H
+2026-10-01T23:47:23.4299507Z 80165f5b7d500161975e0c4c0da2a4dd7daf14e3
+2026-10-01T23:47:23.4595788Z ##[group]Run oven-sh/setup-bun@v2
+2026-10-01T23:47:23.4596213Z with:
+2026-10-01T23:47:23.4596510Z   bun-version: 1.3.14
+2026-10-01T23:47:23.4596827Z   no-cache: false
+2026-10-01T23:47:23.4600249Z   token: ***
+2026-10-01T23:47:23.4600551Z ##[endgroup]
+2026-10-01T23:47:23.7365604Z Cache hit for: bun-fR4r1tsFeXfPQkusQwkKD2kGnsE=
+2026-10-01T23:47:24.4350191Z Received 33843767 of 33843767 (100.0%), 57.3 MBs/sec
+2026-10-01T23:47:24.4351085Z Cache Size: ~32 MB (33843767 B)
+2026-10-01T23:47:24.4384164Z [command]/usr/bin/tar -xf /home/runner/work/_temp/7f34ba7f-1314-4e08-9dba-e3869d5b67c2/cache.tzst -P -C /home/runner/work/hkscda/hkscda --use-compress-program unzstd
+2026-10-01T23:47:24.6066514Z Cache restored successfully
+2026-10-01T23:47:24.6091869Z [command]/home/runner/.bun/bin/bun --revision
+2026-10-01T23:47:24.6150775Z 1.3.14+0d9b296af
+2026-10-01T23:47:24.6152407Z Using a cached version of Bun: 1.3.14+0d9b296af
+2026-10-01T23:47:24.6303370Z ##[group]Run bun install --frozen-lockfile
+2026-10-01T23:47:24.6303861Z [36;1mbun install --frozen-lockfile[0m
+2026-10-01T23:47:24.6601387Z shell: /usr/bin/bash -e {0}
+2026-10-01T23:47:24.6601804Z ##[endgroup]
+2026-10-01T23:47:24.6733743Z bun install v1.3.14 (0d9b296a)
+2026-10-01T23:47:27.8084448Z 
+2026-10-01T23:47:27.8085159Z + @axe-core/playwright@4.13.0
+2026-10-01T23:47:27.8085953Z + @eslint/js@9.39.4
+2026-10-01T23:47:27.8086610Z + @lovable.dev/vite-tanstack-config@2.3.2
+2026-10-01T23:47:27.8087298Z + @types/node@22.19.17
+2026-10-01T23:47:27.8090408Z + @types/react@19.2.14
+2026-10-01T23:47:27.8091170Z + @types/react-dom@19.2.3
+2026-10-01T23:47:27.8091795Z + @vitejs/plugin-react@5.2.0
+2026-10-01T23:47:27.8092362Z + bun-types@1.3.14
+2026-10-01T23:47:27.8092887Z + eslint@9.39.4
+2026-10-01T23:47:27.8093396Z + eslint-config-prettier@10.1.8
+2026-10-01T23:47:27.8093996Z + eslint-plugin-prettier@5.5.5
+2026-10-01T23:47:27.8094613Z + eslint-plugin-react-hooks@5.2.0
+2026-10-01T23:47:27.8095294Z + eslint-plugin-react-refresh@0.4.26
+2026-10-01T23:47:27.8095904Z + globals@15.15.0
+2026-10-01T23:47:27.8096402Z + nitro@3.0.260603-beta
+2026-10-01T23:47:27.8096942Z + playwright@1.60.0
+2026-10-01T23:47:27.8097521Z + playwright-lighthouse@4.0.0
+2026-10-01T23:47:27.8098264Z + prettier@3.8.3
+2026-10-01T23:47:27.8098786Z + typescript@5.9.3
+2026-10-01T23:47:27.8099886Z + typescript-eslint@8.59.0
+2026-10-01T23:47:27.8100499Z + vite@7.3.2
+2026-10-01T23:47:27.8101052Z + @hookform/resolvers@5.2.2
+2026-10-01T23:47:27.8101688Z + @pdf-lib/fontkit@1.1.1
+2026-10-01T23:47:27.8102401Z + @radix-ui/react-accordion@1.2.12
+2026-10-01T23:47:27.8103104Z + @radix-ui/react-alert-dialog@1.1.15
+2026-10-01T23:47:27.8103761Z + @radix-ui/react-aspect-ratio@1.1.8
+2026-10-01T23:47:27.8104407Z + @radix-ui/react-avatar@1.1.11
+2026-10-01T23:47:27.8105030Z + @radix-ui/react-checkbox@1.3.3
+2026-10-01T23:47:27.8105644Z + @radix-ui/react-collapsible@1.1.12
+2026-10-01T23:47:27.8106286Z + @radix-ui/react-context-menu@2.2.16
+2026-10-01T23:47:27.8106924Z + @radix-ui/react-dialog@1.1.15
+2026-10-01T23:47:27.8107572Z + @radix-ui/react-dropdown-menu@2.1.16
+2026-10-01T23:47:27.8108217Z + @radix-ui/react-hover-card@1.1.15
+2026-10-01T23:47:27.8108839Z + @radix-ui/react-label@2.1.8
+2026-10-01T23:47:27.8109696Z + @radix-ui/react-menubar@1.1.16
+2026-10-01T23:47:27.8110342Z + @radix-ui/react-navigation-menu@1.2.14
+2026-10-01T23:47:27.8111009Z + @radix-ui/react-popover@1.1.15
+2026-10-01T23:47:27.8111621Z + @radix-ui/react-progress@1.1.8
+2026-10-01T23:47:27.8112751Z + @radix-ui/react-radio-group@1.3.8
+2026-10-01T23:47:27.8113392Z + @radix-ui/react-scroll-area@1.2.10
+2026-10-01T23:47:27.8114013Z + @radix-ui/react-select@2.2.6
+2026-10-01T23:47:27.8114623Z + @radix-ui/react-separator@1.1.8
+2026-10-01T23:47:27.8115221Z + @radix-ui/react-slider@1.3.6
+2026-10-01T23:47:27.8115797Z + @radix-ui/react-slot@1.2.4
+2026-10-01T23:47:27.8116357Z + @radix-ui/react-switch@1.2.6
+2026-10-01T23:47:27.8116943Z + @radix-ui/react-tabs@1.1.13
+2026-10-01T23:47:27.8117532Z + @radix-ui/react-toggle@1.1.10
+2026-10-01T23:47:27.8118135Z + @radix-ui/react-toggle-group@1.1.11
+2026-10-01T23:47:27.8119345Z + @radix-ui/react-tooltip@1.2.8
+2026-10-01T23:47:27.8120006Z + @supabase/supabase-js@2.108.1
+2026-10-01T23:47:27.8120795Z + @tailwindcss/vite@4.2.4
+2026-10-01T23:47:27.8121212Z + @tanstack/react-query@5.100.1
+2026-10-01T23:47:27.8121862Z + @tanstack/react-router@1.168.25
+2026-10-01T23:47:27.8122322Z + @tanstack/react-start@1.167.50
+2026-10-01T23:47:27.8122973Z + @tanstack/router-plugin@1.167.28
+2026-10-01T23:47:27.8123448Z + @upstash/ratelimit@2.0.8
+2026-10-01T23:47:27.8123973Z + @upstash/redis@1.38.0
+2026-10-01T23:47:27.8124402Z + class-variance-authority@0.7.1
+2026-10-01T23:47:27.8124833Z + clsx@2.1.1
+2026-10-01T23:47:27.8125150Z + cmdk@1.1.1
+2026-10-01T23:47:27.8125479Z + date-fns@4.1.0
+2026-10-01T23:47:27.8125849Z + embla-carousel-react@8.6.0
+2026-10-01T23:47:27.8126271Z + input-otp@1.4.2
+2026-10-01T23:47:27.8126666Z + lucide-react@0.575.0
+2026-10-01T23:47:27.8127037Z + pdf-lib@1.17.1
+2026-10-01T23:47:27.8127722Z + react@19.2.5
+2026-10-01T23:47:27.8128141Z + react-day-picker@9.14.0
+2026-10-01T23:47:27.8128542Z + react-dom@19.2.5
+2026-10-01T23:47:27.8129097Z + react-hook-form@7.73.1
+2026-10-01T23:47:27.8129540Z + react-resizable-panels@4.10.0
+2026-10-01T23:47:27.8129979Z + recharts@2.15.4
+2026-10-01T23:47:27.8130623Z + resend@6.12.4
+2026-10-01T23:47:27.8130958Z + sonner@2.0.7
+2026-10-01T23:47:27.8131287Z + stripe@22.2.2
+2026-10-01T23:47:27.8131641Z + tailwind-merge@3.5.0
+2026-10-01T23:47:27.8132026Z + tailwindcss@4.2.4
+2026-10-01T23:47:27.8132385Z + tw-animate-css@1.4.0
+2026-10-01T23:47:27.8132744Z + vaul@1.1.2
+2026-10-01T23:47:27.8133100Z + vite-tsconfig-paths@6.1.1
+2026-10-01T23:47:27.8133503Z + web-vitals@5.1.0
+2026-10-01T23:47:27.8133862Z + zod@3.25.76
+2026-10-01T23:47:27.8134061Z 
+2026-10-01T23:47:27.8134225Z 612 packages installed [3.14s]
+2026-10-01T23:47:27.8246080Z ##[group]Run bunx supabase start
+2026-10-01T23:47:27.8246600Z [36;1mbunx supabase start[0m
+2026-10-01T23:47:27.8332565Z shell: /usr/bin/bash -e {0}
+2026-10-01T23:47:27.8332988Z ##[endgroup]
+2026-10-01T23:47:27.8518066Z Resolving dependencies
+2026-10-01T23:47:28.8860440Z Resolved, downloaded and extracted [46]
+2026-10-01T23:47:28.8966520Z Saved lockfile
+2026-10-01T23:47:30.1175051Z 2.8.1: Pulling from supabase/kong
+2026-10-01T23:47:30.1820015Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.1841537Z Retrying after 4s: public.ecr.aws/supabase/kong:2.8.1
+2026-10-01T23:47:30.2156926Z v2.197.0: Pulling from supabase/gotrue
+2026-10-01T23:47:30.2226772Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.2248355Z Retrying after 4s: public.ecr.aws/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-01T23:47:30.2265905Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.2290253Z Retrying after 4s: public.ecr.aws/supabase/mailpit:v1.31.3
+2026-10-01T23:47:30.2307793Z 0.58.0-alpine: Pulling from supabase/vector
+2026-10-01T23:47:30.2309171Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.2334120Z Retrying after 4s: public.ecr.aws/supabase/edge-runtime:v1.77.1
+2026-10-01T23:47:30.2340735Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.2355623Z Retrying after 4s: public.ecr.aws/supabase/storage-api:v1.79.28
+2026-10-01T23:47:30.2432466Z 1.50.15: Pulling from supabase/logflare
+2026-10-01T23:47:30.2464286Z 17.11.0.002: Pulling from supabase/postgres
+2026-10-01T23:47:30.2766909Z v2.140.3: Pulling from supabase/realtime
+2026-10-01T23:47:30.2823369Z v16.4: Pulling from supabase/postgrest
+2026-10-01T23:47:30.2878449Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.2899686Z v0.99.0: Pulling from supabase/postgres-meta
+2026-10-01T23:47:30.2912693Z Retrying after 4s: public.ecr.aws/supabase/gotrue:v2.197.0
+2026-10-01T23:47:30.3143601Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.3160302Z Retrying after 4s: public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-01T23:47:30.3212176Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.3228112Z Retrying after 4s: public.ecr.aws/supabase/logflare:1.50.15
+2026-10-01T23:47:30.3493040Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.3510473Z Retrying after 4s: public.ecr.aws/supabase/postgrest:v16.4
+2026-10-01T23:47:30.3553313Z 55afa1ecc21d: Already exists
+2026-10-01T23:47:30.3586789Z 921bfecda4c1: Pulling fs layer
+2026-10-01T23:47:30.3587544Z 80af27af8935: Pulling fs layer
+2026-10-01T23:47:30.3587911Z 30fdcf1539bd: Pulling fs layer
+2026-10-01T23:47:30.3588181Z 7c115bed1203: Pulling fs layer
+2026-10-01T23:47:30.3588659Z 4f4fb700ef54: Pulling fs layer
+2026-10-01T23:47:30.3588908Z 7c115bed1203: Waiting
+2026-10-01T23:47:30.3589297Z 4f4fb700ef54: Waiting
+2026-10-01T23:47:30.3642429Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:30.3658316Z Retrying after 4s: public.ecr.aws/supabase/postgres-meta:v0.99.0
+2026-10-01T23:47:30.3991309Z 062e450697fa: Pulling fs layer
+2026-10-01T23:47:30.3991620Z f372fa8cfc9c: Pulling fs layer
+2026-10-01T23:47:30.3992224Z 67a16200f65d: Pulling fs layer
+2026-10-01T23:47:30.3992657Z a58f068d2d7a: Pulling fs layer
+2026-10-01T23:47:30.3993079Z 049cea4edf36: Pulling fs layer
+2026-10-01T23:47:30.3993446Z 062e450697fa: Waiting
+2026-10-01T23:47:30.3993791Z 6043e85c60a3: Pulling fs layer
+2026-10-01T23:47:30.3994166Z f372fa8cfc9c: Waiting
+2026-10-01T23:47:30.3994533Z f1ffadb0c9ec: Pulling fs layer
+2026-10-01T23:47:30.3994953Z 67a16200f65d: Waiting
+2026-10-01T23:47:30.3995489Z fe4c2b07afe1: Pulling fs layer
+2026-10-01T23:47:30.3999349Z a58f068d2d7a: Waiting
+2026-10-01T23:47:30.3999799Z 87dc5681ef25: Pulling fs layer
+2026-10-01T23:47:30.4000064Z 049cea4edf36: Waiting
+2026-10-01T23:47:30.4000274Z 6043e85c60a3: Waiting
+2026-10-01T23:47:30.4000502Z f1ffadb0c9ec: Waiting
+2026-10-01T23:47:30.4000714Z 8ed24ba27cff: Pulling fs layer
+2026-10-01T23:47:30.4000944Z fe4c2b07afe1: Waiting
+2026-10-01T23:47:30.4001150Z 78a53c0cbd41: Pulling fs layer
+2026-10-01T23:47:30.4001641Z 87dc5681ef25: Waiting
+2026-10-01T23:47:30.4002093Z 4d4189eeb96e: Pulling fs layer
+2026-10-01T23:47:30.4002698Z 8ed24ba27cff: Waiting
+2026-10-01T23:47:30.4003100Z 78a53c0cbd41: Waiting
+2026-10-01T23:47:30.4003456Z 4d4189eeb96e: Waiting
+2026-10-01T23:47:30.4735423Z 30fdcf1539bd: Download complete
+2026-10-01T23:47:30.4788150Z 921bfecda4c1: Download complete
+2026-10-01T23:47:30.5458830Z 4f4fb700ef54: Verifying Checksum
+2026-10-01T23:47:30.5466724Z 4f4fb700ef54: Download complete
+2026-10-01T23:47:30.5653314Z 7c115bed1203: Verifying Checksum
+2026-10-01T23:47:30.5654022Z 7c115bed1203: Download complete
+2026-10-01T23:47:30.6804122Z 80af27af8935: Verifying Checksum
+2026-10-01T23:47:30.6805174Z 80af27af8935: Download complete
+2026-10-01T23:47:30.7682797Z 062e450697fa: Verifying Checksum
+2026-10-01T23:47:30.7683660Z 062e450697fa: Download complete
+2026-10-01T23:47:30.8926459Z a58f068d2d7a: Verifying Checksum
+2026-10-01T23:47:30.8952644Z a58f068d2d7a: Download complete
+2026-10-01T23:47:30.9265153Z f372fa8cfc9c: Verifying Checksum
+2026-10-01T23:47:30.9269708Z f372fa8cfc9c: Download complete
+2026-10-01T23:47:30.9317142Z 67a16200f65d: Verifying Checksum
+2026-10-01T23:47:30.9329586Z 67a16200f65d: Download complete
+2026-10-01T23:47:30.9986891Z 049cea4edf36: Verifying Checksum
+2026-10-01T23:47:31.0005690Z 049cea4edf36: Download complete
+2026-10-01T23:47:31.0184376Z 6043e85c60a3: Verifying Checksum
+2026-10-01T23:47:31.0185414Z 6043e85c60a3: Download complete
+2026-10-01T23:47:31.0410666Z f1ffadb0c9ec: Verifying Checksum
+2026-10-01T23:47:31.0416143Z f1ffadb0c9ec: Download complete
+2026-10-01T23:47:31.0965248Z fe4c2b07afe1: Verifying Checksum
+2026-10-01T23:47:31.0967192Z fe4c2b07afe1: Download complete
+2026-10-01T23:47:31.1236554Z 87dc5681ef25: Verifying Checksum
+2026-10-01T23:47:31.1237287Z 87dc5681ef25: Download complete
+2026-10-01T23:47:31.1930552Z 78a53c0cbd41: Verifying Checksum
+2026-10-01T23:47:31.1931696Z 78a53c0cbd41: Download complete
+2026-10-01T23:47:31.2051623Z 4d4189eeb96e: Verifying Checksum
+2026-10-01T23:47:31.2052612Z 4d4189eeb96e: Download complete
+2026-10-01T23:47:31.2395632Z 8ed24ba27cff: Verifying Checksum
+2026-10-01T23:47:31.2396228Z 8ed24ba27cff: Download complete
+2026-10-01T23:47:32.0573447Z 062e450697fa: Pull complete
+2026-10-01T23:47:34.5742922Z 921bfecda4c1: Pull complete
+2026-10-01T23:47:34.6542541Z v2.197.0: Pulling from supabase/gotrue
+2026-10-01T23:47:34.6555844Z 2.8.1: Pulling from supabase/kong
+2026-10-01T23:47:34.7047722Z v1.31.3: Pulling from supabase/mailpit
+2026-10-01T23:47:34.7113542Z v1.79.28: Pulling from supabase/storage-api
+2026-10-01T23:47:34.7163939Z 2026.09.28-sha-5e59b60: Pulling from supabase/studio
+2026-10-01T23:47:34.7327341Z v1.77.1: Pulling from supabase/edge-runtime
+2026-10-01T23:47:34.7616389Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:34.7635239Z Retrying after 8s: public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-01T23:47:34.7751493Z 213ec9aee27d: Pulling fs layer
+2026-10-01T23:47:34.7752387Z a70653f7a2d5: Pulling fs layer
+2026-10-01T23:47:34.7753133Z 531e3bd93090: Pulling fs layer
+2026-10-01T23:47:34.7753861Z 814dd06d26c7: Pulling fs layer
+2026-10-01T23:47:34.7754556Z 814dd06d26c7: Waiting
+2026-10-01T23:47:34.7788164Z 55afa1ecc21d: Already exists
+2026-10-01T23:47:34.7804746Z 71eb50013731: Pulling fs layer
+2026-10-01T23:47:34.7805424Z 74c409e3506a: Pulling fs layer
+2026-10-01T23:47:34.7806293Z e5d190db8191: Pulling fs layer
+2026-10-01T23:47:34.7806816Z f30f4fcb85f4: Pulling fs layer
+2026-10-01T23:47:34.7807281Z c0cb7126d877: Pulling fs layer
+2026-10-01T23:47:34.7807670Z 71eb50013731: Waiting
+2026-10-01T23:47:34.7808631Z 74c409e3506a: Waiting
+2026-10-01T23:47:34.7809036Z e5d190db8191: Waiting
+2026-10-01T23:47:34.7810342Z f30f4fcb85f4: Waiting
+2026-10-01T23:47:34.7810762Z c0cb7126d877: Waiting
+2026-10-01T23:47:34.7876986Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:34.7908635Z Retrying after 8s: public.ecr.aws/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-01T23:47:34.7997503Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:34.8021465Z Retrying after 8s: public.ecr.aws/supabase/postgres-meta:v0.99.0
+2026-10-01T23:47:34.8100652Z 774043ccc8cc: Pulling fs layer
+2026-10-01T23:47:34.8103288Z 8a4221b43423: Pulling fs layer
+2026-10-01T23:47:34.8103746Z 6b96467f84f7: Pulling fs layer
+2026-10-01T23:47:34.8104171Z b6a94ebfb5d3: Pulling fs layer
+2026-10-01T23:47:34.8104594Z d6df31423628: Pulling fs layer
+2026-10-01T23:47:34.8105010Z 911b0bac1c2c: Pulling fs layer
+2026-10-01T23:47:34.8106299Z 774043ccc8cc: Waiting
+2026-10-01T23:47:34.8106698Z 8a4221b43423: Waiting
+2026-10-01T23:47:34.8107663Z 6b96467f84f7: Waiting
+2026-10-01T23:47:34.8108058Z b6a94ebfb5d3: Waiting
+2026-10-01T23:47:34.8108414Z d6df31423628: Waiting
+2026-10-01T23:47:34.8108876Z 911b0bac1c2c: Waiting
+2026-10-01T23:47:34.8367799Z d0c1d894c237: Pulling fs layer
+2026-10-01T23:47:34.8368631Z f0bff0b17bb6: Pulling fs layer
+2026-10-01T23:47:34.8372422Z bf5074c0b7fa: Pulling fs layer
+2026-10-01T23:47:34.8373473Z 76bc8d85aed0: Pulling fs layer
+2026-10-01T23:47:34.8374633Z 8039b21a00ac: Pulling fs layer
+2026-10-01T23:47:34.8376311Z 0c91f59dd719: Pulling fs layer
+2026-10-01T23:47:34.8376810Z b3906d47c2de: Pulling fs layer
+2026-10-01T23:47:34.8379260Z ff3f1422973f: Pulling fs layer
+2026-10-01T23:47:34.8379708Z 9851544581cc: Pulling fs layer
+2026-10-01T23:47:34.8380125Z b64e840f12f0: Pulling fs layer
+2026-10-01T23:47:34.8380535Z e568217ef856: Pulling fs layer
+2026-10-01T23:47:34.8380935Z 11fed3630d94: Pulling fs layer
+2026-10-01T23:47:34.8381349Z afa03ed6b259: Pulling fs layer
+2026-10-01T23:47:34.8381762Z 24eea9e7dbd7: Pulling fs layer
+2026-10-01T23:47:34.8382170Z d0c1d894c237: Waiting
+2026-10-01T23:47:34.8382831Z f0bff0b17bb6: Waiting
+2026-10-01T23:47:34.8383183Z bf5074c0b7fa: Waiting
+2026-10-01T23:47:34.8383539Z 76bc8d85aed0: Waiting
+2026-10-01T23:47:34.8383888Z 8039b21a00ac: Waiting
+2026-10-01T23:47:34.8384233Z 0c91f59dd719: Waiting
+2026-10-01T23:47:34.8384576Z b3906d47c2de: Waiting
+2026-10-01T23:47:34.8384924Z ff3f1422973f: Waiting
+2026-10-01T23:47:34.8385210Z 9851544581cc: Waiting
+2026-10-01T23:47:34.8385410Z b64e840f12f0: Waiting
+2026-10-01T23:47:34.8385607Z e568217ef856: Waiting
+2026-10-01T23:47:34.8385946Z 11fed3630d94: Waiting
+2026-10-01T23:47:34.8386328Z afa03ed6b259: Waiting
+2026-10-01T23:47:34.8386721Z 24eea9e7dbd7: Waiting
+2026-10-01T23:47:34.8422815Z e2de96513ba9: Already exists
+2026-10-01T23:47:34.8444888Z 0a0b1cce89bf: Pulling fs layer
+2026-10-01T23:47:34.8489279Z 6c11b30372ef: Pulling fs layer
+2026-10-01T23:47:34.8498797Z 0a0b1cce89bf: Waiting
+2026-10-01T23:47:34.8500046Z 6c11b30372ef: Waiting
+2026-10-01T23:47:34.8500969Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:34.8501976Z Retrying after 8s: public.ecr.aws/supabase/postgrest:v16.4
+2026-10-01T23:47:34.8672924Z a70653f7a2d5: Verifying Checksum
+2026-10-01T23:47:34.8674623Z a70653f7a2d5: Download complete
+2026-10-01T23:47:34.8846850Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:34.8877218Z Retrying after 8s: public.ecr.aws/supabase/logflare:1.50.15
+2026-10-01T23:47:34.9035838Z 213ec9aee27d: Verifying Checksum
+2026-10-01T23:47:34.9041302Z 213ec9aee27d: Download complete
+2026-10-01T23:47:34.9612012Z 814dd06d26c7: Verifying Checksum
+2026-10-01T23:47:34.9613628Z 814dd06d26c7: Download complete
+2026-10-01T23:47:34.9986023Z 71eb50013731: Verifying Checksum
+2026-10-01T23:47:34.9986903Z 71eb50013731: Download complete
+2026-10-01T23:47:35.0639361Z 74c409e3506a: Verifying Checksum
+2026-10-01T23:47:35.0640671Z 74c409e3506a: Download complete
+2026-10-01T23:47:35.0709836Z 531e3bd93090: Verifying Checksum
+2026-10-01T23:47:35.0710822Z 531e3bd93090: Download complete
+2026-10-01T23:47:35.1629502Z f30f4fcb85f4: Verifying Checksum
+2026-10-01T23:47:35.1630894Z f30f4fcb85f4: Download complete
+2026-10-01T23:47:35.1656177Z c0cb7126d877: Verifying Checksum
+2026-10-01T23:47:35.1657053Z c0cb7126d877: Download complete
+2026-10-01T23:47:35.1750223Z 213ec9aee27d: Pull complete
+2026-10-01T23:47:35.2201462Z e5d190db8191: Verifying Checksum
+2026-10-01T23:47:35.2207130Z e5d190db8191: Download complete
+2026-10-01T23:47:35.3218427Z 6b96467f84f7: Verifying Checksum
+2026-10-01T23:47:35.3220497Z 6b96467f84f7: Download complete
+2026-10-01T23:47:35.3950397Z 774043ccc8cc: Verifying Checksum
+2026-10-01T23:47:35.3951216Z 774043ccc8cc: Download complete
+2026-10-01T23:47:35.5098423Z 8a4221b43423: Verifying Checksum
+2026-10-01T23:47:35.5101203Z 8a4221b43423: Download complete
+2026-10-01T23:47:35.8196179Z b6a94ebfb5d3: Verifying Checksum
+2026-10-01T23:47:35.8203108Z b6a94ebfb5d3: Download complete
+2026-10-01T23:47:35.8234355Z 71eb50013731: Pull complete
+2026-10-01T23:47:35.8915668Z 911b0bac1c2c: Download complete
+2026-10-01T23:47:36.1741624Z d0c1d894c237: Verifying Checksum
+2026-10-01T23:47:36.1743054Z d0c1d894c237: Download complete
+2026-10-01T23:47:36.2798563Z a70653f7a2d5: Pull complete
+2026-10-01T23:47:36.4102822Z bf5074c0b7fa: Verifying Checksum
+2026-10-01T23:47:36.4103976Z bf5074c0b7fa: Download complete
+2026-10-01T23:47:36.5264310Z 76bc8d85aed0: Verifying Checksum
+2026-10-01T23:47:36.5265230Z 76bc8d85aed0: Download complete
+2026-10-01T23:47:36.6010452Z f0bff0b17bb6: Verifying Checksum
+2026-10-01T23:47:36.6011456Z f0bff0b17bb6: Download complete
+2026-10-01T23:47:36.6970345Z 0c91f59dd719: Verifying Checksum
+2026-10-01T23:47:36.6971223Z 0c91f59dd719: Download complete
+2026-10-01T23:47:36.8900165Z b3906d47c2de: Verifying Checksum
+2026-10-01T23:47:36.8901923Z b3906d47c2de: Download complete
+2026-10-01T23:47:36.9212327Z 74c409e3506a: Pull complete
+2026-10-01T23:47:36.9231477Z 80af27af8935: Pull complete
+2026-10-01T23:47:36.9242776Z d0c1d894c237: Pull complete
+2026-10-01T23:47:37.0652206Z 30fdcf1539bd: Pull complete
+2026-10-01T23:47:37.0661081Z ff3f1422973f: Verifying Checksum
+2026-10-01T23:47:37.0662135Z ff3f1422973f: Download complete
+2026-10-01T23:47:37.1931895Z 7c115bed1203: Pull complete
+2026-10-01T23:47:37.2351850Z 4f4fb700ef54: Pull complete
+2026-10-01T23:47:37.2836609Z d6df31423628: Verifying Checksum
+2026-10-01T23:47:37.2837887Z d6df31423628: Download complete
+2026-10-01T23:47:37.2859802Z Digest: sha256:5dcf67db0ee378caa87f3395cb9484ebe3e97bb0334d119f2ac33116e00c5773
+2026-10-01T23:47:37.2904092Z Status: Downloaded newer image for public.ecr.aws/supabase/vector:0.58.0-alpine
+2026-10-01T23:47:37.2917771Z public.ecr.aws/supabase/vector:0.58.0-alpine
+2026-10-01T23:47:37.3834832Z b64e840f12f0: Verifying Checksum
+2026-10-01T23:47:37.3835718Z b64e840f12f0: Download complete
+2026-10-01T23:47:37.4084161Z 9851544581cc: Verifying Checksum
+2026-10-01T23:47:37.4085285Z 9851544581cc: Download complete
+2026-10-01T23:47:37.4414632Z 8039b21a00ac: Verifying Checksum
+2026-10-01T23:47:37.4415990Z 8039b21a00ac: Download complete
+2026-10-01T23:47:37.5468763Z afa03ed6b259: Verifying Checksum
+2026-10-01T23:47:37.5472195Z afa03ed6b259: Download complete
+2026-10-01T23:47:37.5724310Z 11fed3630d94: Verifying Checksum
+2026-10-01T23:47:37.5729998Z 11fed3630d94: Download complete
+2026-10-01T23:47:37.6722805Z 24eea9e7dbd7: Verifying Checksum
+2026-10-01T23:47:37.6728619Z 24eea9e7dbd7: Download complete
+2026-10-01T23:47:37.7904688Z e568217ef856: Verifying Checksum
+2026-10-01T23:47:37.7906702Z e568217ef856: Download complete
+2026-10-01T23:47:37.7924731Z 6c11b30372ef: Verifying Checksum
+2026-10-01T23:47:37.7935151Z 6c11b30372ef: Download complete
+2026-10-01T23:47:37.8254083Z 0a0b1cce89bf: Verifying Checksum
+2026-10-01T23:47:37.8256252Z 0a0b1cce89bf: Download complete
+2026-10-01T23:47:39.0195177Z 0a0b1cce89bf: Pull complete
+2026-10-01T23:47:39.0227090Z e5d190db8191: Pull complete
+2026-10-01T23:47:39.1561065Z f30f4fcb85f4: Pull complete
+2026-10-01T23:47:39.1984791Z c0cb7126d877: Pull complete
+2026-10-01T23:47:39.2337429Z Digest: sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b
+2026-10-01T23:47:39.2338831Z Status: Downloaded newer image for public.ecr.aws/supabase/gotrue:v2.197.0
+2026-10-01T23:47:39.2402556Z public.ecr.aws/supabase/gotrue:v2.197.0
+2026-10-01T23:47:39.3736647Z 6c11b30372ef: Pull complete
+2026-10-01T23:47:39.3904492Z Digest: sha256:ed9b00c609e77e99c79b93f1178255ebc271868920f2c69a8d166bd5634ed10d
+2026-10-01T23:47:39.3935561Z Status: Downloaded newer image for public.ecr.aws/supabase/mailpit:v1.31.3
+2026-10-01T23:47:39.3955441Z public.ecr.aws/supabase/mailpit:v1.31.3
+2026-10-01T23:47:39.7347638Z 774043ccc8cc: Pull complete
+2026-10-01T23:47:40.6238577Z f0bff0b17bb6: Pull complete
+2026-10-01T23:47:40.7600843Z bf5074c0b7fa: Pull complete
+2026-10-01T23:47:40.7800193Z 76bc8d85aed0: Pull complete
+2026-10-01T23:47:41.1370735Z f372fa8cfc9c: Pull complete
+2026-10-01T23:47:41.3121513Z 8a4221b43423: Pull complete
+2026-10-01T23:47:41.3348505Z 6b96467f84f7: Pull complete
+2026-10-01T23:47:41.3440563Z 67a16200f65d: Pull complete
+2026-10-01T23:47:41.3590326Z a58f068d2d7a: Pull complete
+2026-10-01T23:47:41.3827926Z 049cea4edf36: Pull complete
+2026-10-01T23:47:41.4222305Z 6043e85c60a3: Pull complete
+2026-10-01T23:47:41.4247316Z 531e3bd93090: Pull complete
+2026-10-01T23:47:41.4460773Z 814dd06d26c7: Pull complete
+2026-10-01T23:47:41.4521875Z Digest: sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d
+2026-10-01T23:47:41.4543989Z Status: Downloaded newer image for public.ecr.aws/supabase/kong:2.8.1
+2026-10-01T23:47:41.4553817Z public.ecr.aws/supabase/kong:2.8.1
+2026-10-01T23:47:41.4695810Z f1ffadb0c9ec: Pull complete
+2026-10-01T23:47:41.4832672Z fe4c2b07afe1: Pull complete
+2026-10-01T23:47:41.4971442Z 87dc5681ef25: Pull complete
+2026-10-01T23:47:42.7214059Z b6a94ebfb5d3: Pull complete
+2026-10-01T23:47:43.1657546Z Error response from daemon: toomanyrequests: Rate exceeded
+2026-10-01T23:47:43.1729826Z 17.11.0.002: Pulling from supabase/postgres
+2026-10-01T23:47:43.1938603Z 2026.09.28-sha-5e59b60: Pulling from supabase/studio
+2026-10-01T23:47:43.2126070Z v16.4: Pulling from supabase/postgrest
+2026-10-01T23:47:43.2880279Z toomanyrequests: Rate exceeded
+2026-10-01T23:47:43.2961539Z 8ed24ba27cff: Pull complete
+2026-10-01T23:47:43.3180982Z d0c1d894c237: Already exists
+2026-10-01T23:47:43.3244749Z 61adb98c1ee5: Pulling fs layer
+2026-10-01T23:47:43.3246776Z 0bd435952039: Pulling fs layer
+2026-10-01T23:47:43.3247923Z 583ec90c6715: Pulling fs layer
+2026-10-01T23:47:43.3248790Z 5ed2e2ddfb89: Pulling fs layer
+2026-10-01T23:47:43.3250178Z e80f8e2e99d6: Pulling fs layer
+2026-10-01T23:47:43.3250996Z 232deb54e13d: Pulling fs layer
+2026-10-01T23:47:43.3254229Z 0f473b3071cf: Pulling fs layer
+2026-10-01T23:47:43.3256288Z 75d1eb89a82b: Pulling fs layer
+2026-10-01T23:47:43.3257665Z b19532946444: Pulling fs layer
+2026-10-01T23:47:43.3258694Z 2240af07ff04: Pulling fs layer
+2026-10-01T23:47:43.3259695Z a45c069d14ec: Pulling fs layer
+2026-10-01T23:47:43.3260392Z 0ba5f2e703c2: Pulling fs layer
+2026-10-01T23:47:43.3261276Z 2647d19058a7: Pulling fs layer
+2026-10-01T23:47:43.3262380Z dc33104fda30: Pulling fs layer
+2026-10-01T23:47:43.3263203Z b79880533e0a: Pulling fs layer
+2026-10-01T23:47:43.3264019Z 0e2d5cb5dee4: Pulling fs layer
+2026-10-01T23:47:43.3266146Z 949763475ae7: Pulling fs layer
+2026-10-01T23:47:43.3266820Z 4197ef27502e: Pulling fs layer
+2026-10-01T23:47:43.3267473Z cecab6d00c31: Pulling fs layer
+2026-10-01T23:47:43.3268139Z 22e811bdd64a: Pulling fs layer
+2026-10-01T23:47:43.3268735Z b0b708853afb: Pulling fs layer
+2026-10-01T23:47:43.3269640Z 5ab47e19d7ba: Pulling fs layer
+2026-10-01T23:47:43.3270243Z dd1bf2fa4fa2: Pulling fs layer
+2026-10-01T23:47:43.3272051Z adf6436fcbd6: Pulling fs layer
+2026-10-01T23:47:43.3272650Z 250c68ac8298: Pulling fs layer
+2026-10-01T23:47:43.3273978Z ea69d2e3c12d: Pulling fs layer
+2026-10-01T23:47:43.3274790Z 4b82e8682a19: Pulling fs layer
+2026-10-01T23:47:43.3275876Z 90c1869f70bf: Pulling fs layer
+2026-10-01T23:47:43.3277111Z b79880533e0a: Waiting
+2026-10-01T23:47:43.3277648Z 0e2d5cb5dee4: Waiting
+2026-10-01T23:47:43.3279563Z 949763475ae7: Waiting
+2026-10-01T23:47:43.3280438Z 4197ef27502e: Waiting
+2026-10-01T23:47:43.3281022Z cecab6d00c31: Waiting
+2026-10-01T23:47:43.3281562Z 22e811bdd64a: Waiting
+2026-10-01T23:47:43.3282112Z b0b708853afb: Waiting
+2026-10-01T23:47:43.3283648Z 5ab47e19d7ba: Waiting
+2026-10-01T23:47:43.3284259Z dd1bf2fa4fa2: Waiting
+2026-10-01T23:47:43.3284800Z adf6436fcbd6: Waiting
+2026-10-01T23:47:43.3285780Z 250c68ac8298: Waiting
+2026-10-01T23:47:43.3286614Z ea69d2e3c12d: Waiting
+2026-10-01T23:47:43.3287158Z 4b82e8682a19: Waiting
+2026-10-01T23:47:43.3288035Z 90c1869f70bf: Waiting
+2026-10-01T23:47:43.3288679Z 5ed2e2ddfb89: Waiting
+2026-10-01T23:47:43.3289283Z e80f8e2e99d6: Waiting
+2026-10-01T23:47:43.3290160Z 232deb54e13d: Waiting
+2026-10-01T23:47:43.3290699Z 0f473b3071cf: Waiting
+2026-10-01T23:47:43.3291445Z 75d1eb89a82b: Waiting
+2026-10-01T23:47:43.3292034Z b19532946444: Waiting
+2026-10-01T23:47:43.3292814Z 2240af07ff04: Waiting
+2026-10-01T23:47:43.3293391Z a45c069d14ec: Waiting
+2026-10-01T23:47:43.3294262Z 0ba5f2e703c2: Waiting
+2026-10-01T23:47:43.3294998Z 2647d19058a7: Waiting
+2026-10-01T23:47:43.3295661Z dc33104fda30: Waiting
+2026-10-01T23:47:43.3663774Z 774043ccc8cc: Already exists
+2026-10-01T23:47:43.3695323Z 8ab8fd6c9445: Pulling fs layer
+2026-10-01T23:47:43.3696636Z 61592f5b6030: Pulling fs layer
+2026-10-01T23:47:43.3697897Z 8d9d84ee3188: Pulling fs layer
+2026-10-01T23:47:43.3700345Z dc40c63c08b5: Pulling fs layer
+2026-10-01T23:47:43.3701099Z 380d67659cd5: Pulling fs layer
+2026-10-01T23:47:43.3701774Z dc1fc1d6f98f: Pulling fs layer
+2026-10-01T23:47:43.3702454Z 75a5c7dfb5a4: Pulling fs layer
+2026-10-01T23:47:43.3703570Z 9fedd65dec7f: Pulling fs layer
+2026-10-01T23:47:43.3704403Z 61592f5b6030: Waiting
+2026-10-01T23:47:43.3705712Z 8d9d84ee3188: Waiting
+2026-10-01T23:47:43.3706338Z dc40c63c08b5: Waiting
+2026-10-01T23:47:43.3707063Z 380d67659cd5: Waiting
+2026-10-01T23:47:43.3708272Z dc1fc1d6f98f: Waiting
+2026-10-01T23:47:43.3709317Z 75a5c7dfb5a4: Waiting
+2026-10-01T23:47:43.3710213Z 9fedd65dec7f: Waiting
+2026-10-01T23:47:43.3711854Z 8ab8fd6c9445: Waiting
+2026-10-01T23:47:43.4126138Z 1.50.15: Pulling from supabase/logflare
+2026-10-01T23:47:43.4137538Z 78a53c0cbd41: Pull complete
+2026-10-01T23:47:43.4334038Z 0bd435952039: Verifying Checksum
+2026-10-01T23:47:43.4334556Z 0bd435952039: Download complete
+2026-10-01T23:47:43.4368740Z 4d4189eeb96e: Pull complete
+2026-10-01T23:47:43.4455248Z Digest: sha256:f66c721c71b576f5854c78f86df0c78a98368d900dcf62e4ddd96c6913139999
+2026-10-01T23:47:43.4456275Z Status: Downloaded newer image for public.ecr.aws/supabase/realtime:v2.140.3
+2026-10-01T23:47:43.4486819Z public.ecr.aws/supabase/realtime:v2.140.3
+2026-10-01T23:47:43.4622883Z 61adb98c1ee5: Download complete
+2026-10-01T23:47:43.5243673Z 5ed2e2ddfb89: Verifying Checksum
+2026-10-01T23:47:43.5244502Z 5ed2e2ddfb89: Download complete
+2026-10-01T23:47:43.5482184Z 119d43eec815: Pulling fs layer
+2026-10-01T23:47:43.5483012Z a54a651cf647: Pulling fs layer
+2026-10-01T23:47:43.5483810Z 8de6758ae3cd: Pulling fs layer
+2026-10-01T23:47:43.5484621Z 6f529730c983: Pulling fs layer
+2026-10-01T23:47:43.5485432Z f7be8c0cae2a: Pulling fs layer
+2026-10-01T23:47:43.5486162Z 5d1c897c38a0: Pulling fs layer
+2026-10-01T23:47:43.5486845Z 07e700c802b2: Pulling fs layer
+2026-10-01T23:47:43.5487595Z 03c1d40cdb55: Pulling fs layer
+2026-10-01T23:47:43.5488283Z 4f4fb700ef54: Pulling fs layer
+2026-10-01T23:47:43.5489208Z b03f939add7f: Pulling fs layer
+2026-10-01T23:47:43.5489928Z 8de6758ae3cd: Waiting
+2026-10-01T23:47:43.5490620Z 6f529730c983: Waiting
+2026-10-01T23:47:43.5491259Z f7be8c0cae2a: Waiting
+2026-10-01T23:47:43.5491851Z 5d1c897c38a0: Waiting
+2026-10-01T23:47:43.5492468Z 07e700c802b2: Waiting
+2026-10-01T23:47:43.5493095Z 03c1d40cdb55: Waiting
+2026-10-01T23:47:43.5493770Z 4f4fb700ef54: Waiting
+2026-10-01T23:47:43.5494342Z b03f939add7f: Waiting
+2026-10-01T23:47:43.5494942Z 119d43eec815: Waiting
+2026-10-01T23:47:43.5495575Z a54a651cf647: Waiting
+2026-10-01T23:47:43.5627385Z v0.99.0: Pulling from supabase/postgres-meta
+2026-10-01T23:47:43.5817678Z e80f8e2e99d6: Verifying Checksum
+2026-10-01T23:47:43.5827986Z e80f8e2e99d6: Download complete
+2026-10-01T23:47:43.6151057Z 232deb54e13d: Verifying Checksum
+2026-10-01T23:47:43.6152699Z 232deb54e13d: Download complete
+2026-10-01T23:47:43.6780070Z 0f473b3071cf: Verifying Checksum
+2026-10-01T23:47:43.6784668Z 0f473b3071cf: Download complete
+2026-10-01T23:47:43.6799450Z a8ac7f6c67ab: Pulling fs layer
+2026-10-01T23:47:43.6803798Z cea7eb9bbe80: Pulling fs layer
+2026-10-01T23:47:43.6804697Z 51c53f95c2ca: Pulling fs layer
+2026-10-01T23:47:43.6805505Z 3cddab114eda: Pulling fs layer
+2026-10-01T23:47:43.6806262Z 0282d618b52c: Pulling fs layer
+2026-10-01T23:47:43.6807034Z 3d9090abcf25: Pulling fs layer
+2026-10-01T23:47:43.6807659Z 2f3356853560: Pulling fs layer
+2026-10-01T23:47:43.6808293Z bb8f02002931: Pulling fs layer
+2026-10-01T23:47:43.6809222Z 45dd7940c54d: Pulling fs layer
+2026-10-01T23:47:43.6809915Z e969b0bb2c88: Pulling fs layer
+2026-10-01T23:47:43.6810529Z a8ac7f6c67ab: Waiting
+2026-10-01T23:47:43.6811100Z cea7eb9bbe80: Waiting
+2026-10-01T23:47:43.6811768Z 51c53f95c2ca: Waiting
+2026-10-01T23:47:43.6812399Z 3cddab114eda: Waiting
+2026-10-01T23:47:43.6813024Z 0282d618b52c: Waiting
+2026-10-01T23:47:43.6813585Z 3d9090abcf25: Waiting
+2026-10-01T23:47:43.6814159Z 2f3356853560: Waiting
+2026-10-01T23:47:43.6814701Z bb8f02002931: Waiting
+2026-10-01T23:47:43.6815281Z 45dd7940c54d: Waiting
+2026-10-01T23:47:43.6815855Z e969b0bb2c88: Waiting
+2026-10-01T23:47:43.6842461Z v16.4: Pulling from supabase/postgrest
+2026-10-01T23:47:43.7666126Z 75d1eb89a82b: Download complete
+2026-10-01T23:47:43.7673262Z b19532946444: Verifying Checksum
+2026-10-01T23:47:43.7675758Z b19532946444: Download complete
+2026-10-01T23:47:43.8110442Z 9d7a4870f477: Pulling fs layer
+2026-10-01T23:47:43.8111113Z 9d7a4870f477: Waiting
+2026-10-01T23:47:43.8779585Z 2240af07ff04: Verifying Checksum
+2026-10-01T23:47:43.8780317Z 2240af07ff04: Download complete
+2026-10-01T23:47:43.8817427Z a45c069d14ec: Verifying Checksum
+2026-10-01T23:47:43.8819813Z a45c069d14ec: Download complete
+2026-10-01T23:47:43.9850056Z 2647d19058a7: Verifying Checksum
+2026-10-01T23:47:43.9851275Z 2647d19058a7: Download complete
+2026-10-01T23:47:43.9909920Z 0ba5f2e703c2: Verifying Checksum
+2026-10-01T23:47:43.9912905Z 0ba5f2e703c2: Download complete
+2026-10-01T23:47:44.0729995Z dc33104fda30: Verifying Checksum
+2026-10-01T23:47:44.0733188Z dc33104fda30: Download complete
+2026-10-01T23:47:44.0793939Z b79880533e0a: Verifying Checksum
+2026-10-01T23:47:44.0794784Z b79880533e0a: Download complete
+2026-10-01T23:47:44.1552385Z 0e2d5cb5dee4: Verifying Checksum
+2026-10-01T23:47:44.1552945Z 0e2d5cb5dee4: Download complete
+2026-10-01T23:47:44.1674416Z 949763475ae7: Verifying Checksum
+2026-10-01T23:47:44.1674943Z 949763475ae7: Download complete
+2026-10-01T23:47:44.2367184Z 4197ef27502e: Verifying Checksum
+2026-10-01T23:47:44.2368432Z 4197ef27502e: Download complete
+2026-10-01T23:47:44.2640769Z cecab6d00c31: Download complete
+2026-10-01T23:47:44.3402824Z 22e811bdd64a: Verifying Checksum
+2026-10-01T23:47:44.3404063Z 22e811bdd64a: Download complete
+2026-10-01T23:47:44.3613657Z b0b708853afb: Verifying Checksum
+2026-10-01T23:47:44.3614494Z b0b708853afb: Download complete
+2026-10-01T23:47:44.4303737Z 5ab47e19d7ba: Verifying Checksum
+2026-10-01T23:47:44.4306934Z 5ab47e19d7ba: Download complete
+2026-10-01T23:47:44.4682204Z dd1bf2fa4fa2: Download complete
+2026-10-01T23:47:44.5424568Z adf6436fcbd6: Verifying Checksum
+2026-10-01T23:47:44.5426730Z adf6436fcbd6: Download complete
+2026-10-01T23:47:44.5572820Z 250c68ac8298: Verifying Checksum
+2026-10-01T23:47:44.5577702Z 250c68ac8298: Download complete
+2026-10-01T23:47:44.6279990Z ea69d2e3c12d: Verifying Checksum
+2026-10-01T23:47:44.6283322Z ea69d2e3c12d: Download complete
+2026-10-01T23:47:44.6397196Z 4b82e8682a19: Verifying Checksum
+2026-10-01T23:47:44.6397952Z 4b82e8682a19: Download complete
+2026-10-01T23:47:44.7321135Z 90c1869f70bf: Download complete
+2026-10-01T23:47:44.7394526Z 8ab8fd6c9445: Verifying Checksum
+2026-10-01T23:47:44.7397064Z 8ab8fd6c9445: Download complete
+2026-10-01T23:47:44.8206778Z 583ec90c6715: Verifying Checksum
+2026-10-01T23:47:44.8207354Z 583ec90c6715: Download complete
+2026-10-01T23:47:44.8506770Z 8d9d84ee3188: Download complete
+2026-10-01T23:47:44.9116585Z dc40c63c08b5: Verifying Checksum
+2026-10-01T23:47:44.9117245Z dc40c63c08b5: Download complete
+2026-10-01T23:47:44.9674109Z 61adb98c1ee5: Pull complete
+2026-10-01T23:47:45.0746754Z 61592f5b6030: Verifying Checksum
+2026-10-01T23:47:45.0756088Z 61592f5b6030: Download complete
+2026-10-01T23:47:45.1138480Z dc1fc1d6f98f: Verifying Checksum
+2026-10-01T23:47:45.1140266Z dc1fc1d6f98f: Download complete
+2026-10-01T23:47:45.1629860Z 75a5c7dfb5a4: Download complete
+2026-10-01T23:47:45.9117150Z 0bd435952039: Pull complete
+2026-10-01T23:47:45.9171159Z 8ab8fd6c9445: Pull complete
+2026-10-01T23:47:45.9246651Z d6df31423628: Pull complete
+2026-10-01T23:47:45.9249673Z 8039b21a00ac: Pull complete
+2026-10-01T23:47:45.9743147Z 0c91f59dd719: Pull complete
+2026-10-01T23:47:45.9940870Z 119d43eec815: Verifying Checksum
+2026-10-01T23:47:45.9942346Z 119d43eec815: Download complete
+2026-10-01T23:47:46.0774996Z b3906d47c2de: Pull complete
+2026-10-01T23:47:46.1274805Z ff3f1422973f: Pull complete
+2026-10-01T23:47:46.2742330Z 380d67659cd5: Verifying Checksum
+2026-10-01T23:47:46.2745321Z 380d67659cd5: Download complete
+2026-10-01T23:47:46.2939443Z a54a651cf647: Verifying Checksum
+2026-10-01T23:47:46.2940618Z a54a651cf647: Download complete
+2026-10-01T23:47:46.4032282Z 8de6758ae3cd: Verifying Checksum
+2026-10-01T23:47:46.4033918Z 8de6758ae3cd: Download complete
+2026-10-01T23:47:46.5275023Z f7be8c0cae2a: Verifying Checksum
+2026-10-01T23:47:46.5285842Z f7be8c0cae2a: Download complete
+2026-10-01T23:47:46.5288704Z 9fedd65dec7f: Verifying Checksum
+2026-10-01T23:47:46.5289698Z 9fedd65dec7f: Download complete
+2026-10-01T23:47:46.9779906Z 07e700c802b2: Verifying Checksum
+2026-10-01T23:47:46.9783065Z 07e700c802b2: Download complete
+2026-10-01T23:47:47.0164551Z 5d1c897c38a0: Verifying Checksum
+2026-10-01T23:47:47.0178346Z 5d1c897c38a0: Download complete
+2026-10-01T23:47:47.0948585Z 4f4fb700ef54: Verifying Checksum
+2026-10-01T23:47:47.0949981Z 4f4fb700ef54: Download complete
+2026-10-01T23:47:47.1015557Z 03c1d40cdb55: Verifying Checksum
+2026-10-01T23:47:47.1016248Z 03c1d40cdb55: Download complete
+2026-10-01T23:47:47.2094870Z b03f939add7f: Verifying Checksum
+2026-10-01T23:47:47.2095760Z b03f939add7f: Download complete
+2026-10-01T23:47:47.3163189Z 6f529730c983: Verifying Checksum
+2026-10-01T23:47:47.3166020Z 6f529730c983: Download complete
+2026-10-01T23:47:47.3192209Z cea7eb9bbe80: Download complete
+2026-10-01T23:47:47.7201486Z 3cddab114eda: Verifying Checksum
+2026-10-01T23:47:47.7202830Z 3cddab114eda: Download complete
+2026-10-01T23:47:47.7568304Z a8ac7f6c67ab: Verifying Checksum
+2026-10-01T23:47:47.7569566Z a8ac7f6c67ab: Download complete
+2026-10-01T23:47:47.8201678Z 0282d618b52c: Verifying Checksum
+2026-10-01T23:47:47.8203724Z 0282d618b52c: Download complete
+2026-10-01T23:47:47.9028574Z 3d9090abcf25: Verifying Checksum
+2026-10-01T23:47:47.9031715Z 3d9090abcf25: Download complete
+2026-10-01T23:47:47.9240924Z 2f3356853560: Verifying Checksum
+2026-10-01T23:47:47.9242156Z 2f3356853560: Download complete
+2026-10-01T23:47:48.1160335Z 45dd7940c54d: Verifying Checksum
+2026-10-01T23:47:48.1161466Z 45dd7940c54d: Download complete
+2026-10-01T23:47:48.3204051Z e969b0bb2c88: Verifying Checksum
+2026-10-01T23:47:48.3204622Z e969b0bb2c88: Download complete
+2026-10-01T23:47:48.3730074Z 51c53f95c2ca: Verifying Checksum
+2026-10-01T23:47:48.3731070Z 51c53f95c2ca: Download complete
+2026-10-01T23:47:48.3775813Z bb8f02002931: Verifying Checksum
+2026-10-01T23:47:48.3776757Z bb8f02002931: Download complete
+2026-10-01T23:47:48.7792193Z 9d7a4870f477: Verifying Checksum
+2026-10-01T23:47:48.7793121Z 9d7a4870f477: Download complete
+2026-10-01T23:47:49.0713933Z 911b0bac1c2c: Pull complete
+2026-10-01T23:47:49.0907025Z Digest: sha256:645d0e45446181f3e9d87efeef637b494615f32365befff00e2d2b0fe8535fef
+2026-10-01T23:47:49.0908777Z Status: Downloaded newer image for public.ecr.aws/supabase/edge-runtime:v1.77.1
+2026-10-01T23:47:49.0920708Z public.ecr.aws/supabase/edge-runtime:v1.77.1
+2026-10-01T23:47:49.4553237Z 9d7a4870f477: Pull complete
+2026-10-01T23:47:49.4634264Z Digest: sha256:d155c6718ed9a9f990d159a2ab7c0a3f16944dbb6d0a0344557421042acfe0df
+2026-10-01T23:47:49.4635853Z Status: Downloaded newer image for ghcr.io/supabase/postgrest:v16.4
+2026-10-01T23:47:49.4651559Z ghcr.io/supabase/postgrest:v16.4
+2026-10-01T23:47:50.0581460Z 119d43eec815: Pull complete
+2026-10-01T23:47:50.5752027Z 9851544581cc: Pull complete
+2026-10-01T23:47:50.6525406Z b64e840f12f0: Pull complete
+2026-10-01T23:47:50.7863689Z 61592f5b6030: Pull complete
+2026-10-01T23:47:50.9363950Z 8d9d84ee3188: Pull complete
+2026-10-01T23:47:50.9644836Z dc40c63c08b5: Pull complete
+2026-10-01T23:47:51.6501646Z a8ac7f6c67ab: Pull complete
+2026-10-01T23:47:51.6774411Z cea7eb9bbe80: Pull complete
+2026-10-01T23:47:52.1416263Z a54a651cf647: Pull complete
+2026-10-01T23:47:52.2204668Z 8de6758ae3cd: Pull complete
+2026-10-01T23:47:56.5689244Z 51c53f95c2ca: Pull complete
+2026-10-01T23:47:56.7968073Z 3cddab114eda: Pull complete
+2026-10-01T23:47:56.8192384Z 0282d618b52c: Pull complete
+2026-10-01T23:47:57.2183816Z 3d9090abcf25: Pull complete
+2026-10-01T23:47:57.2381313Z 2f3356853560: Pull complete
+2026-10-01T23:47:59.5660907Z 380d67659cd5: Pull complete
+2026-10-01T23:48:02.0736565Z dc1fc1d6f98f: Pull complete
+2026-10-01T23:48:02.1324614Z 75a5c7dfb5a4: Pull complete
+2026-10-01T23:48:03.1813666Z 6f529730c983: Pull complete
+2026-10-01T23:48:03.1826447Z bb8f02002931: Pull complete
+2026-10-01T23:48:03.2088243Z f7be8c0cae2a: Pull complete
+2026-10-01T23:48:03.3864699Z 45dd7940c54d: Pull complete
+2026-10-01T23:48:03.4264941Z e969b0bb2c88: Pull complete
+2026-10-01T23:48:03.4357850Z Digest: sha256:9a079ac1c94d89629262822a4bd1902d5b1be4adb464e5a0a8fd078aaed72158
+2026-10-01T23:48:03.4389966Z Status: Downloaded newer image for ghcr.io/supabase/postgres-meta:v0.99.0
+2026-10-01T23:48:03.4396013Z ghcr.io/supabase/postgres-meta:v0.99.0
+2026-10-01T23:48:04.0219554Z 5d1c897c38a0: Pull complete
+2026-10-01T23:48:05.2573427Z 07e700c802b2: Pull complete
+2026-10-01T23:48:05.3068559Z 03c1d40cdb55: Pull complete
+2026-10-01T23:48:05.3583422Z 4f4fb700ef54: Pull complete
+2026-10-01T23:48:05.3781447Z b03f939add7f: Pull complete
+2026-10-01T23:48:05.3836896Z Digest: sha256:a82f96c8845c1bcab128cfe17b4e325943ab949b657e9629a0bcc66f1d363179
+2026-10-01T23:48:05.3857418Z Status: Downloaded newer image for public.ecr.aws/supabase/logflare:1.50.15
+2026-10-01T23:48:05.3870227Z public.ecr.aws/supabase/logflare:1.50.15
+2026-10-01T23:48:12.8637739Z 583ec90c6715: Pull complete
+2026-10-01T23:48:12.9206597Z 5ed2e2ddfb89: Pull complete
+2026-10-01T23:48:12.9446292Z e80f8e2e99d6: Pull complete
+2026-10-01T23:48:12.9623968Z 232deb54e13d: Pull complete
+2026-10-01T23:48:13.0067907Z 0f473b3071cf: Pull complete
+2026-10-01T23:48:13.0309521Z 75d1eb89a82b: Pull complete
+2026-10-01T23:48:13.0783407Z b19532946444: Pull complete
+2026-10-01T23:48:13.0892711Z 2240af07ff04: Pull complete
+2026-10-01T23:48:13.1015869Z a45c069d14ec: Pull complete
+2026-10-01T23:48:13.1135881Z 0ba5f2e703c2: Pull complete
+2026-10-01T23:48:13.1288062Z 2647d19058a7: Pull complete
+2026-10-01T23:48:13.1416799Z dc33104fda30: Pull complete
+2026-10-01T23:48:13.1531663Z b79880533e0a: Pull complete
+2026-10-01T23:48:13.1717681Z 0e2d5cb5dee4: Pull complete
+2026-10-01T23:48:13.1910730Z 949763475ae7: Pull complete
+2026-10-01T23:48:13.2080006Z 4197ef27502e: Pull complete
+2026-10-01T23:48:13.2210507Z cecab6d00c31: Pull complete
+2026-10-01T23:48:13.2355253Z 22e811bdd64a: Pull complete
+2026-10-01T23:48:13.2464267Z b0b708853afb: Pull complete
+2026-10-01T23:48:13.2595642Z 5ab47e19d7ba: Pull complete
+2026-10-01T23:48:13.2750572Z dd1bf2fa4fa2: Pull complete
+2026-10-01T23:48:13.2755878Z 9fedd65dec7f: Pull complete
+2026-10-01T23:48:13.2829336Z Digest: sha256:e4b6110f496ddcd3b3ceb8a23caf59016586a23b5cd363099fbc7b224152ebbc
+2026-10-01T23:48:13.2830571Z Status: Downloaded newer image for public.ecr.aws/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-01T23:48:13.2839129Z public.ecr.aws/supabase/studio:2026.09.28-sha-5e59b60
+2026-10-01T23:48:13.3080435Z adf6436fcbd6: Pull complete
+2026-10-01T23:48:13.3186114Z 250c68ac8298: Pull complete
+2026-10-01T23:48:13.3282563Z ea69d2e3c12d: Pull complete
+2026-10-01T23:48:13.3461402Z 4b82e8682a19: Pull complete
+2026-10-01T23:48:13.3587880Z 90c1869f70bf: Pull complete
+2026-10-01T23:48:13.3632568Z Digest: sha256:0450166354dc9c1d25f0322ac8b580774d4fb0184d2b087f6e4fe9499c66cf53
+2026-10-01T23:48:13.3643336Z Status: Downloaded newer image for public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-01T23:48:13.3653430Z public.ecr.aws/supabase/postgres:17.11.0.002
+2026-10-01T23:48:18.1222148Z e568217ef856: Pull complete
+2026-10-01T23:48:18.4855963Z 11fed3630d94: Pull complete
+2026-10-01T23:48:18.4973251Z afa03ed6b259: Pull complete
+2026-10-01T23:48:18.5049701Z 24eea9e7dbd7: Pull complete
+2026-10-01T23:48:18.5087136Z Digest: sha256:1f6c99d3952d78d57129802aa2ae8a80d75e327492cf24742fd0aeaf90967b96
+2026-10-01T23:48:18.5100248Z Status: Downloaded newer image for public.ecr.aws/supabase/storage-api:v1.79.28
+2026-10-01T23:48:18.5108272Z public.ecr.aws/supabase/storage-api:v1.79.28
+2026-10-01T23:48:18.5347705Z Starting database...
+2026-10-01T23:48:29.1543957Z Initialising schema...
+2026-10-01T23:48:34.5020800Z Seeding globals from roles.sql...
+2026-10-01T23:48:34.5348870Z Applying migration 20260611162942_create_animals_table.sql...
+2026-10-01T23:48:34.5512110Z Applying migration 20260611162956_create_adoption_applications_table.sql...
+2026-10-01T23:48:34.5569687Z Applying migration 20260623160506_phase_2_donations_mvp.sql...
+2026-10-01T23:48:34.6309323Z Applying migration 20260623183933_donor_ops_crm_foundation.sql...
+2026-10-01T23:48:34.6584354Z Applying migration 20260626140914_adoption_coordinator_foundation.sql...
+2026-10-01T23:48:34.7329824Z Applying migration 20260626144836_adoption_coordinator_workflow_rpcs.sql...
+2026-10-01T23:48:34.7378534Z Applying migration 20260626201620_secure_adoption_applications_policy.sql...
+2026-10-01T23:48:34.7417863Z Applying migration 20260626202523_harden_webhook_event_processing.sql...
+2026-10-01T23:48:34.7449615Z Applying migration 20260627091500_tighten_animals_admin_policy.sql...
+2026-10-01T23:48:34.7482444Z Applying migration 20260627110000_coordinator_task_timeline.sql...
+2026-10-01T23:48:34.7565728Z Applying migration 20260628120000_harden_receipt_and_payment_lifecycle.sql...
+2026-10-01T23:48:34.7611336Z Applying migration 20260628130000_harden_role_grants_drop_stale_policy.sql...
+2026-10-01T23:48:34.7652506Z Applying migration 20260628140000_revoke_residual_anon_grants.sql...
+2026-10-01T23:48:34.7691839Z Applying migration 20260628143000_coordinator_ops_workbench.sql...
+2026-10-01T23:48:34.7788036Z Applying migration 20260628150000_revoke_residual_anon_write_grants.sql...
+2026-10-01T23:48:34.7824758Z Applying migration 20260628160000_validate_rpc_actor.sql...
+2026-10-01T23:48:34.7871607Z Applying migration 20260630120000_donation_lifecycle_integrity.sql...
+2026-10-01T23:48:34.7945091Z Applying migration 20260630154259_add_animal_english_content_fields.sql...
+2026-10-01T23:48:34.7976136Z Applying migration 20260701105726_admin_access_management.sql...
+2026-10-01T23:48:34.8019846Z Applying migration 20260701185227_public_adoption_journey_phase_1.sql...
+2026-10-01T23:48:34.8322502Z Applying migration 20260702130000_sponsorship_pledge_phase_2.sql...
+2026-10-01T23:48:34.8483831Z Applying migration 20260704165600_volunteer_activity_management_v1.sql...
+2026-10-01T23:48:34.8670194Z Applying migration 20260705120000_story_promotion_center.sql...
+2026-10-01T23:48:34.8998611Z Applying migration 20260716120000_contextual_donation_attribution.sql...
+2026-10-01T23:48:34.9045481Z Applying migration 20260718100000_public_documents_and_donation_purpose.sql...
+2026-10-01T23:48:34.9220332Z Applying migration 20260718110000_adoption_information.sql...
+2026-10-01T23:48:34.9315786Z Applying migration 20260718111000_correct_adult_cat_copy.sql...
+2026-10-01T23:48:34.9339118Z Applying migration 20260718120000_group_enquiries_and_knowledge.sql...
+2026-10-01T23:48:34.9460988Z Applying migration 20260718121000_seed_knowledge_guides.sql...
+2026-10-01T23:48:34.9510051Z Applying migration 20260718122000_correct_service_slogan.sql...
+2026-10-01T23:48:34.9533625Z Applying migration 20260719120000_document_admin_mutation_hardening.sql...
+2026-10-01T23:48:34.9593889Z Applying migration 20260719223000_public_document_read_policies.sql...
+2026-10-01T23:48:34.9630869Z Applying migration 20260720100000_cod_alipayhk_payment_support.sql...
+2026-10-01T23:48:34.9668613Z Applying migration 20260731120000_adoption_guide_release_cms.sql...
+2026-10-01T23:48:34.9880275Z Applying migration 20260801180000_adoption_guide_release_cms_advisor_fixes.sql...
+2026-10-01T23:48:34.9972082Z Applying migration 20260803120000_audit_animal_mutations.sql...
+2026-10-01T23:48:35.0020636Z Applying migration 20260805120000_animal_mutation_audit_atomicity.sql...
+2026-10-01T23:48:35.0123971Z Applying migration 20260816120000_cod_payment_order_reference.sql...
+2026-10-01T23:48:35.0151163Z Applying migration 20260829120000_governance_board_members.sql...
+2026-10-01T23:48:35.0206872Z Applying migration 20260829180000_sponsorship_pledge_admin_review.sql...
+2026-10-01T23:48:35.0462483Z Applying migration 20260830120000_faq_entry.sql...
+2026-10-01T23:48:35.0560477Z Applying migration 20260830130000_adoption_rules_care_topics.sql...
+2026-10-01T23:48:35.0698200Z Applying migration 20260830140000_about_page_content.sql...
+2026-10-01T23:48:35.0760665Z Applying migration 20260831120000_payment_public_config.sql...
+2026-10-01T23:48:35.0918607Z Applying migration 20260831160000_content_media_storage_bucket.sql...
+2026-10-01T23:48:35.0941616Z Applying migration 20260905144848_public_supporter_identity_claims.sql...
+2026-10-01T23:48:35.1093521Z Applying migration 20260905150012_content_revision_lifecycle.sql...
+2026-10-01T23:48:35.1328191Z Applying migration 20260905155357_crm_manual_gift_delivery_jobs.sql...
+2026-10-01T23:48:35.1446116Z Applying migration 20260905155426_content_private_media_sessions.sql...
+2026-10-01T23:48:35.1627292Z Applying migration 20260905162615_crm_complete_read_models.sql...
+2026-10-01T23:48:35.1687437Z Applying migration 20260905163559_content_bounded_authoring_reads.sql...
+2026-10-01T23:48:35.1726494Z Applying migration 20260905163900_volunteer_atomic_approval.sql...
+2026-10-01T23:48:35.1772383Z Applying migration 20260906162436_animal_catalog_membership.sql...
+2026-10-01T23:48:35.1864088Z Applying migration 20260906181657_animal_public_profile.sql...
+2026-10-01T23:48:35.1902349Z Applying migration 20260911120000_sponsorship_public_identity_protection.sql...
+2026-10-01T23:48:35.1960651Z Applying migration 20260911130000_animal_images_bucket.sql...
+2026-10-01T23:48:35.1980469Z Applying migration 20260911140000_animal_publication_state.sql...
+2026-10-01T23:48:35.2027233Z Applying migration 20260911150000_preserve_eligibility_on_species_change.sql...
+2026-10-01T23:48:35.2052972Z Applying migration 20260911160000_correct_legacy_sponsor_species.sql...
+2026-10-01T23:48:35.2105331Z Applying migration 20260911170000_publish_fostered_animals.sql...
+2026-10-01T23:48:35.2145658Z Applying migration 20260911180000_sponsorship_second_month.sql...
+2026-10-01T23:48:35.2186505Z Applying migration 20260911190000_sponsorship_monthly_ledger.sql...
+2026-10-01T23:48:35.2368017Z Applying migration 20260912120000_sponsorship_assignments.sql...
+2026-10-01T23:48:35.2507418Z Applying migration 20260913060000_verified_baseline_compatibility.sql...
+2026-10-01T23:48:35.2825286Z Applying migration 20260913062837_volunteer_versioned_policy.sql...
+2026-10-01T23:48:35.3343651Z Applying migration 20260913062952_volunteer_atomic_attendance.sql...
+2026-10-01T23:48:35.3439684Z Applying migration 20260913064921_volunteer_profile_commands.sql...
+2026-10-01T23:48:35.3518141Z Applying migration 20260913065257_volunteer_policy_validation.sql...
+2026-10-01T23:48:35.3588383Z Applying migration 20260913065833_volunteer_daily_policy.sql...
+2026-10-01T23:48:35.3754129Z Applying migration 20260913070057_volunteer_initial_policy_catalogue.sql...
+2026-10-01T23:48:35.3808809Z Applying migration 20260913070128_volunteer_monthly_assessments.sql...
+2026-10-01T23:48:35.3952923Z Applying migration 20260913071632_animal_public_column_boundary.sql...
+2026-10-01T23:48:35.4001536Z Applying migration 20260913071639_volunteer_runtime_jobs.sql...
+2026-10-01T23:48:35.4063102Z Applying migration 20260913071927_sponsorship_exact_proof_review.sql...
+2026-10-01T23:48:35.4143433Z Applying migration 20260913072235_volunteer_booking_enforcement.sql...
+2026-10-01T23:48:35.4186943Z Applying migration 20260913072454_veterinary_internship_workflow.sql...
+2026-10-01T23:48:35.4387639Z Applying migration 20260913072851_volunteer_group_operations.sql...
+2026-10-01T23:48:35.4568402Z Applying migration 20260913073012_sponsorship_financial_closure.sql...
+2026-10-01T23:48:35.4829768Z Applying migration 20260913073314_animal_publication_lifecycle.sql...
+2026-10-01T23:48:35.4945863Z Applying migration 20260913075040_volunteer_verified_service_history.sql...
+2026-10-01T23:48:35.4988662Z Applying migration 20260913075643_volunteer_release_transitions.sql...
+2026-10-01T23:48:35.5097480Z Applying migration 20260913075913_sponsorship_contact_verification.sql...
+2026-10-01T23:48:35.5155945Z Applying migration 20260913080143_volunteer_immutable_qualification_evidence.sql...
+2026-10-01T23:48:35.5187362Z Applying migration 20260913080152_sponsorship_role_handoff.sql...
+2026-10-01T23:48:35.5254758Z Applying migration 20260913080537_volunteer_policy_simulation.sql...
+2026-10-01T23:48:35.5286200Z Applying migration 20260913080838_sponsorship_allocation_retry.sql...
+2026-10-01T23:48:35.5350039Z Applying migration 20260913081521_sponsorship_partial_refunds.sql...
+2026-10-01T23:48:35.5475565Z Applying migration 20260913081533_volunteer_policy_sources.sql...
+2026-10-01T23:48:35.5713122Z Applying migration 20260913081720_volunteer_legacy_identity_reconciliation.sql...
+2026-10-01T23:48:35.5785074Z Applying migration 20260913082300_atomic_animal_preference_eligibility.sql...
+2026-10-01T23:48:35.5819556Z Applying migration 20260913083120_volunteer_public_availability_summary.sql...
+2026-10-01T23:48:35.5847740Z Applying migration 20260913083503_sponsorship_refund_read_models.sql...
+2026-10-01T23:48:35.5879979Z Applying migration 20260913084120_volunteer_notification_claim_fencing.sql...
+2026-10-01T23:48:35.5923624Z Applying migration 20260913084247_volunteer_booking_shape_guard.sql...
+2026-10-01T23:48:35.5951556Z Applying migration 20260913084717_factual_history_runtime_privileges.sql...
+2026-10-01T23:48:35.6000299Z Applying migration 20260913084920_volunteer_operational_tasks.sql...
+2026-10-01T23:48:35.6075956Z Applying migration 20260913085252_volunteer_promotion_review_tasks.sql...
+2026-10-01T23:48:35.6112636Z Applying migration 20260913085500_volunteer_tier_candidates.sql...
+2026-10-01T23:48:35.6197122Z Applying migration 20260913090746_volunteer_schedule_integrity.sql...
+2026-10-01T23:48:35.6234547Z Applying migration 20260913092132_restrict_receipt_issuance_rpc.sql...
+2026-10-01T23:48:35.6268159Z Applying migration 20260913113000_mail_delivery_evidence.sql...
+2026-10-01T23:48:35.6379501Z Applying migration 20260913180745_volunteer_admin_directory_read.sql...
+2026-10-01T23:48:35.6413909Z Applying migration 20260913182552_volunteer_legacy_list_alias_fix.sql...
+2026-10-01T23:48:35.6442521Z Applying migration 20260914160716_volunteer_member_booking_correctness.sql...
+2026-10-01T23:48:35.6561337Z Applying migration 20260914160736_volunteer_bulk_operations.sql...
+2026-10-01T23:48:35.6710267Z Applying migration 20260914161341_admin_content_quality_review.sql...
+2026-10-01T23:48:35.6797987Z Applying migration 20260914162305_animal_nonpublic_review_transition.sql...
+2026-10-01T23:48:35.6819656Z Applying migration 20260914163506_volunteer_policy_read_summary.sql...
+2026-10-01T23:48:35.6844125Z Applying migration 20260914164558_editorial_verified_actor.sql...
+2026-10-01T23:48:35.6884300Z Applying migration 20260915120000_content_admin_filters.sql...
+2026-10-01T23:48:35.6913838Z Applying migration 20260925040818_featured_public_story_filter.sql...
+2026-10-01T23:48:35.6938871Z Applying migration 20260925053245_cms_promotion_atomicity.sql...
+2026-10-01T23:48:35.6999749Z Applying migration 20260925103900_atomic_admin_content_audit.sql...
+2026-10-01T23:48:35.7047750Z Applying migration 20260925103937_atomic_crm_supporter_audit.sql...
+2026-10-01T23:48:35.7091020Z Applying migration 20260925104012_donation_checkout_idempotency.sql...
+2026-10-01T23:48:35.7130148Z Applying migration 20260925104051_volunteer_public_registration_idempotency.sql...
+2026-10-01T23:48:35.7173683Z Applying migration 20260925104926_atomic_adoption_coordinator_audit.sql...
+2026-10-01T23:48:35.7213324Z Applying migration 20260925110000_admin_user_access_atomicity.sql...
+2026-10-01T23:48:35.7277339Z Applying migration 20260925123000_adoption_upload_intents.sql...
+2026-10-01T23:48:35.7320311Z Applying migration 20260925133500_atomic_admin_invite_activation.sql...
+2026-10-01T23:48:35.7346557Z Applying migration 20260925141325_animal_archive_atomic_audit.sql...
+2026-10-01T23:48:35.7371068Z Applying migration 20260925143941_guarded_provider_denial.sql...
+2026-10-01T23:48:35.7397189Z Applying migration 20260925144915_guarded_provider_refund.sql...
+2026-10-01T23:48:35.7422240Z Applying migration 20260925150722_revoke_public_role_maintenance_privileges.sql...
+2026-10-01T23:48:35.7504262Z Applying migration 20260926060314_atomic_group_enquiry_audit.sql...
+2026-10-01T23:48:35.7537052Z Applying migration 20260926070652_sponsorship_proof_upload_cleanup.sql...
+2026-10-01T23:48:35.7598358Z Applying migration 20260926074203_internship_attachment_upload_cleanup.sql...
+2026-10-01T23:48:35.7667125Z Applying migration 20260926082239_atomic_receipt_void_audit.sql...
+2026-10-01T23:48:35.7700327Z Applying migration 20260926083940_atomic_manual_receipt_issue_audit.sql...
+2026-10-01T23:48:35.7726366Z Applying migration 20260926091057_staff_sponsorship_proof_upload_cleanup.sql...
+2026-10-01T23:48:35.7790456Z Applying migration 20260926100000_public_submission_retry_fingerprints.sql...
+2026-10-01T23:48:35.7812172Z Applying migration 20260926110000_manual_case_identity_search.sql...
+2026-10-01T23:48:35.7839835Z Applying migration 20260926120000_volunteer_notification_exhausted_claim_recovery.sql...
+2026-10-01T23:48:35.7864643Z Applying migration 20260926130000_atomic_adoption_case_status_validation.sql...
+2026-10-01T23:48:35.7899080Z Applying migration 20260926133000_expose_manual_adoption_case_rpc.sql...
+2026-10-01T23:48:35.7925684Z Applying migration 20260926140000_cleanup_expired_adoption_applications.sql...
+2026-10-01T23:48:35.7949408Z Applying migration 20260926143000_atomic_public_sponsorship_pledge.sql...
+2026-10-01T23:48:35.7975959Z Applying migration 20260926150000_guard_published_document_slots.sql...
+2026-10-01T23:48:35.8022375Z Applying migration 20260926152438_adoption_instruction_page_cms.sql...
+2026-10-01T23:48:35.8292772Z Applying migration 20260926160000_animal_draft_upload_cleanup.sql...
+2026-10-01T23:48:35.8364061Z Applying migration 20260926170000_animal_publication_media_copy.sql...
+2026-10-01T23:48:35.8435043Z Applying migration 20260926180000_animal_publication_publish_receipt.sql...
+2026-10-01T23:48:35.8490100Z Applying migration 20260926190000_content_publication_media_after_commit.sql...
+2026-10-01T23:48:35.8546262Z Applying migration 20260927090000_crm_private_export_jobs.sql...
+2026-10-01T23:48:35.8684092Z Applying migration 20260927110000_crm_supporter_edit_version.sql...
+2026-10-01T23:48:35.8730619Z Applying migration 20260927120000_checkout_policy_gate.sql...
+2026-10-01T23:48:35.8871663Z Applying migration 20260927120500_estate_versioned_commands.sql...
+2026-10-01T23:48:35.8949271Z Applying migration 20260927122000_content_publication_eligibility.sql...
+2026-10-01T23:48:35.9003296Z Applying migration 20260927130000_payment_instruction_snapshots.sql...
+2026-10-01T23:48:35.9093303Z Applying migration 20260927130500_atomic_adoption_fee_reorder.sql...
+2026-10-01T23:48:35.9150198Z Applying migration 20260927130600_sponsor_public_profile_fields.sql...
+2026-10-01T23:48:35.9176383Z Applying migration 20260927140000_donation_delivery_recovery.sql...
+2026-10-01T23:48:35.9214270Z Applying migration 20260927140500_media_repair_retry_schedule.sql...
+2026-10-01T23:48:35.9367863Z Applying migration 20260927143710_public_animal_listing_page.sql...
+2026-10-01T23:48:35.9451397Z Applying migration 20260927150000_sponsorship_terms_document_kind.sql...
+2026-10-01T23:48:35.9478633Z Applying migration 20260927163302_supporter_marketing_preference.sql...
+2026-10-01T23:48:35.9503965Z Applying migration 20260927172030_crm_tag_bulk.sql...
+2026-10-01T23:48:35.9610670Z Applying migration 20260927181701_volunteer_review_bulk.sql...
+2026-10-01T23:48:35.9751869Z Applying migration 20260927183000_adoption_assignment_bulk.sql...
+2026-10-01T23:48:35.9884573Z Applying migration 20260927184500_animal_review_bulk.sql...
+2026-10-01T23:48:35.9993729Z Applying migration 20260927190000_cms_review_bulk.sql...
+2026-10-01T23:48:36.0109910Z Applying migration 20260927201916_manual_payment_atomic_reference.sql...
+2026-10-01T23:48:36.0149794Z Applying migration 20260927211801_editorial_quality_queue.sql...
+2026-10-01T23:48:36.0188259Z Applying migration 20260928073000_sponsorship_followup_assignment.sql...
+2026-10-01T23:48:36.0267855Z Applying migration 20260928080000_sponsorship_followup_bulk.sql...
+2026-10-01T23:48:36.0373986Z Applying migration 20260928090000_finance_bank_dryrun.sql...
+2026-10-01T23:48:36.0407619Z Applying migration 20260928100000_finance_delivery_retry_guard.sql...
+2026-10-01T23:48:36.0447533Z Applying migration 20260928110000_finance_bank_match_confirmation.sql...
+2026-10-01T23:48:36.0571025Z Applying migration 20260928113000_crm_supporter_version_fence.sql...
+2026-10-01T23:48:36.0591574Z Applying migration 20260928120000_crm_assignment_bulk.sql...
+2026-10-01T23:48:36.0726146Z Applying migration 20260930120000_supporter_recovery_single_use.sql...
+2026-10-01T23:48:36.0797764Z Applying migration 20261001080000_service_readonly_evidence_privileges.sql...
+2026-10-01T23:48:36.0834104Z Applying migration 20261001101333_r01_payment_idempotency_forward.sql...
+2026-10-01T23:48:36.0895302Z Applying migration 20261001134252_r01_adoption_upload_forward.sql...
+2026-10-01T23:48:36.0982892Z Applying migration 20261001150925_r01_sponsorship_submission_forward.sql...
+2026-10-01T23:48:36.1135923Z Applying migration 20261001154743_r01_animal_preference_record_fields.sql...
+2026-10-01T23:48:36.1179839Z Applying migration 20261001175310_r01_internship_upload_forward.sql...
+2026-10-01T23:48:36.1277891Z Applying migration 20261001193722_r01_animal_draft_archive_forward.sql...
+2026-10-01T23:48:36.1431930Z Applying migration 20261001213914_r01_crm_atomic_forward.sql...
+2026-10-01T23:48:36.3075638Z Stopping containers...
+2026-10-01T23:48:38.7821641Z ERROR: R01 CRM table metadata differs: supporter (SQLSTATE 55000)
+2026-10-01T23:48:38.7822867Z At statement: 1
+2026-10-01T23:48:38.7823336Z do $migration$
+2026-10-01T23:48:38.7824294Z declare v_function oid; v_catalog jsonb; v_actual jsonb; v_table oid; v_name text; v_hashes text[]; v_default record; v_public_create boolean; v_private_create boolean;
+2026-10-01T23:48:38.7824988Z begin
+2026-10-01T23:48:38.7825471Z   if current_user <> 'postgres' then raise exception 'R01 CRM owner context differs' using errcode='55000'; end if;
+2026-10-01T23:48:38.7826095Z   if not pg_catalog.has_schema_privilege('service_role','private','USAGE')
+2026-10-01T23:48:38.7826626Z     or pg_catalog.has_any_column_privilege('service_role','auth.users','SELECT,UPDATE')
+2026-10-01T23:48:38.7827141Z     or not pg_catalog.has_table_privilege('postgres','auth.users','SELECT')
+2026-10-01T23:48:38.7827605Z     or not pg_catalog.has_table_privilege('postgres','auth.users','UPDATE')
+2026-10-01T23:48:38.7835350Z     or (select count(*) from pg_catalog.pg_attribute where attrelid='auth.users'::pg_catalog.regclass and not attisdropped and ((attname='id' and atttypid='uuid'::pg_catalog.regtype and attnotnull) or (attname in ('email_confirmed_at','banned_until') and atttypid='timestamptz'::pg_catalog.regtype)))<>3 then
+2026-10-01T23:48:38.7836697Z     raise exception 'R01 CRM managed Auth prerequisites differ' using errcode='55000';
+2026-10-01T23:48:38.7837125Z   end if;
+2026-10-01T23:48:38.7837447Z   -- Same normalized catalog projection as the reviewed schema clone. Only the
+2026-10-01T23:48:38.7837997Z   -- five CRM write/actor tables below are bound; other domains are not rewritten.
+2026-10-01T23:48:38.7839423Z   select catalog into v_catalog from (with pinned as materialized (select pg_catalog.set_config('search_path','',true)) select jsonb_build_object(
+2026-10-01T23:48:38.7841922Z  'schemas',(select jsonb_agg(jsonb_build_object('name',nspname,'owner',pg_get_userbyid(nspowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(nspacl,acldefault('n',nspowner))) x)) order by nspname) from pg_namespace where nspname in ('public','private')),
+2026-10-01T23:48:38.7846667Z  'relations',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'kind',c.relkind,'owner',pg_get_userbyid(c.relowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(c.relacl,acldefault(case when c.relkind='S' then 's'::"char" else 'r'::"char" end,c.relowner))) x),'rls',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'options',c.reloptions,'replicaIdentity',c.relreplident) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7853519Z  'columns',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',a.attname,'position',a.attnum,'type',format_type(a.atttypid,a.atttypmod),'collation',(select cn.nspname||'.'||co.collname from pg_collation co join pg_namespace cn on cn.oid=co.collnamespace where co.oid=a.attcollation),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(a.attacl) x),'default',pg_get_expr(d.adbin,d.adrelid)) order by n.nspname,c.relname,a.attnum) from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname in ('public','private') and a.attnum>0 and not a.attisdropped),
+2026-10-01T23:48:38.7860163Z  'sequences',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'type',format_type(s.seqtypid,-1),'start',s.seqstart::text,'increment',s.seqincrement::text,'min',s.seqmin::text,'max',s.seqmax::text,'cache',s.seqcache::text,'cycle',s.seqcycle,'ownedBy',(select jsonb_build_object('schema',tn.nspname,'table',tc.relname,'column',a.attname,'dependency',d.deptype) from pg_depend d join pg_class tc on tc.oid=d.refobjid join pg_namespace tn on tn.oid=tc.relnamespace join pg_attribute a on a.attrelid=tc.oid and a.attnum=d.refobjsubid where d.classid='pg_class'::regclass and d.objid=c.oid and d.refclassid='pg_class'::regclass and d.deptype in ('a','i'))) order by n.nspname,c.relname) from pg_sequence s join pg_class c on c.oid=s.seqrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7866168Z  'functions',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'args',pg_get_function_identity_arguments(p.oid),'result',pg_get_function_result(p.oid),'owner',pg_get_userbyid(p.proowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x),'config',p.proconfig,'definer',p.prosecdef,'volatility',p.provolatile,'parallel',p.proparallel,'bodyMd5',md5(pg_get_functiondef(p.oid))) order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private') and p.prokind in ('f','p')),
+2026-10-01T23:48:38.7870962Z  'constraints',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',con.conname,'type',con.contype,'validated',con.convalidated,'definition',pg_get_constraintdef(con.oid,true)) order by n.nspname,c.relname,con.conname) from pg_constraint con join pg_namespace n on n.oid=con.connamespace left join pg_class c on c.oid=con.conrelid where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7873541Z  'indexes',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'definition',pg_get_indexdef(i.indexrelid),'valid',i.indisvalid,'ready',i.indisready,'unique',i.indisunique) order by n.nspname,c.relname,pg_get_indexdef(i.indexrelid)) from pg_index i join pg_class c on c.oid=i.indrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7875966Z  'triggers',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',t.tgname,'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid,true)) order by n.nspname,c.relname,t.tgname) from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and not t.tgisinternal),
+2026-10-01T23:48:38.7879623Z  'policies',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',p.polname,'command',p.polcmd,'permissive',p.polpermissive,'roles',(select jsonb_agg(case when r=0 then 'PUBLIC' else pg_get_userbyid(r) end order by case when r=0 then 'PUBLIC' else pg_get_userbyid(r) end) from unnest(p.polroles) r),'using',pg_get_expr(p.polqual,p.polrelid),'check',pg_get_expr(p.polwithcheck,p.polrelid)) order by n.nspname,c.relname,p.polname) from pg_policy p join pg_class c on c.oid=p.polrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7883930Z  'defaults',(select jsonb_agg(jsonb_build_object('owner',pg_get_userbyid(d.defaclrole),'schema',coalesce(n.nspname,''),'kind',d.defaclobjtype,'entries',(select jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(a.grantor),'grantee',case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,'privilege',a.privilege_type,'grantable',a.is_grantable) order by pg_get_userbyid(a.grantor),case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,a.privilege_type) from aclexplode(d.defaclacl) a)) order by pg_get_userbyid(d.defaclrole),coalesce(n.nspname,''),d.defaclobjtype) from pg_default_acl d left join pg_namespace n on n.oid=d.defaclnamespace where d.defaclnamespace=0 or n.nspname in ('public','private')),
+2026-10-01T23:48:38.7888849Z  'types',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',t.typname,'kind',t.typtype,'owner',pg_get_userbyid(t.typowner),'acl',(select coalesce(jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by pg_get_userbyid(x.grantor),case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,x.privilege_type),'[]'::jsonb) from aclexplode(coalesce(t.typacl,acldefault('T',t.typowner))) x),'enum',(select jsonb_agg(e.enumlabel order by e.enumsortorder) from pg_enum e where e.enumtypid=t.oid)) order by n.nspname,t.typname) from pg_type t join pg_namespace n on n.oid=t.typnamespace where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7892896Z  'views',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'definitionMd5',md5(pg_get_viewdef(c.oid,true))) order by n.nspname,c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('v','m')),
+2026-10-01T23:48:38.7894684Z  'extensions',(select jsonb_agg(jsonb_build_object('name',e.extname,'version',e.extversion,'schema',n.nspname,'owner',pg_get_userbyid(e.extowner)) order by e.extname) from pg_extension e join pg_namespace n on n.oid=e.extnamespace where n.nspname in ('public','private')),
+2026-10-01T23:48:38.7896903Z  'extensionMembers',(select jsonb_agg(jsonb_build_object('extension',e.extname,'object',pg_describe_object(d.classid,d.objid,d.objsubid)) order by e.extname,pg_describe_object(d.classid,d.objid,d.objsubid)) from pg_depend d join pg_extension e on e.oid=d.refobjid join pg_namespace n on n.oid=e.extnamespace where d.refclassid='pg_extension'::regclass and d.deptype='e' and n.nspname in ('public','private')),
+2026-10-01T23:48:38.7898568Z  'databaseOwner',(select pg_get_userbyid(datdba) from pg_database where datname=current_database()),
+2026-10-01T23:48:38.7900039Z  'roles',(select jsonb_agg(jsonb_build_object('name',rolname,'super',rolsuper,'inherit',rolinherit,'login',rolcanlogin,'bypassRls',rolbypassrls) order by rolname) from pg_roles where rolname in ('anon','authenticated','service_role','postgres','supabase_admin')),
+2026-10-01T23:48:38.7902139Z  'memberships',(select jsonb_agg(jsonb_build_object('role',pg_get_userbyid(roleid),'member',pg_get_userbyid(member),'grantor',pg_get_userbyid(grantor),'admin',admin_option,'inherit',inherit_option,'set',set_option) order by pg_get_userbyid(roleid),pg_get_userbyid(member),pg_get_userbyid(grantor)) from pg_auth_members where pg_get_userbyid(member) in ('anon','authenticated','service_role'))
+2026-10-01T23:48:38.7903687Z ) catalog from pinned) captured;
+2026-10-01T23:48:38.7904074Z   v_name := 'supporter'; v_table := pg_catalog.to_regclass('public.'||v_name);
+2026-10-01T23:48:38.7904706Z   if v_table is null then raise exception 'R01 CRM prerequisite table absent: supporter' using errcode='55000'; end if;
+2026-10-01T23:48:38.7906007Z   select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))
+2026-10-01T23:48:38.7907806Z     || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual
+2026-10-01T23:48:38.7909277Z   from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
+2026-10-01T23:48:38.7909868Z   -- Empty facets are [] in the captured profile, never SQL NULL.
+2026-10-01T23:48:38.7910596Z   select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);
+2026-10-01T23:48:38.7911775Z   if pg_catalog.md5(v_actual::text) not in ('3148b717a290aa5be32b446245ddc1ce','8ac590a6fec96f6c2cbaa48e7be16c97') then raise exception 'R01 CRM table metadata differs: supporter' using errcode='55000'; end if;
+2026-10-01T23:48:38.7912712Z   v_name := 'supporter_role'; v_table := pg_catalog.to_regclass('public.'||v_name);
+2026-10-01T23:48:38.7913428Z   if v_table is null then raise exception 'R01 CRM prerequisite table absent: supporter_role' using errcode='55000'; end if;
+2026-10-01T23:48:38.7914733Z   select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))
+2026-10-01T23:48:38.7916674Z     || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual
+2026-10-01T23:48:38.7917876Z   from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
+2026-10-01T23:48:38.7918375Z   -- Empty facets are [] in the captured profile, never SQL NULL.
+2026-10-01T23:48:38.7919310Z   select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);
+2026-10-01T23:48:38.7920516Z   if pg_catalog.md5(v_actual::text) not in ('42e54bc9095fec260c06c0a0abcdaa99','0ecced41c05768089eace4c02023d22a') then raise exception 'R01 CRM table metadata differs: supporter_role' using errcode='55000'; end if;
+2026-10-01T23:48:38.7921445Z   v_name := 'consent'; v_table := pg_catalog.to_regclass('public.'||v_name);
+2026-10-01T23:48:38.7922051Z   if v_table is null then raise exception 'R01 CRM prerequisite table absent: consent' using errcode='55000'; end if;
+2026-10-01T23:48:38.7923318Z   select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))
+2026-10-01T23:48:38.7925110Z     || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual
+2026-10-01T23:48:38.7926431Z   from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
+2026-10-01T23:48:38.7926935Z   -- Empty facets are [] in the captured profile, never SQL NULL.
+2026-10-01T23:48:38.7927644Z   select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);
+2026-10-01T23:48:38.7928799Z   if pg_catalog.md5(v_actual::text) not in ('b0910115759516475c6d75ad981f0472','cfcca1dcec350f6b1a66dc13e0cdce7a') then raise exception 'R01 CRM table metadata differs: consent' using errcode='55000'; end if;
+2026-10-01T23:48:38.7929944Z   v_name := 'audit_log'; v_table := pg_catalog.to_regclass('public.'||v_name);
+2026-10-01T23:48:38.7930578Z   if v_table is null then raise exception 'R01 CRM prerequisite table absent: audit_log' using errcode='55000'; end if;
+2026-10-01T23:48:38.7931855Z   select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))
+2026-10-01T23:48:38.7933665Z     || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual
+2026-10-01T23:48:38.7935304Z   from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
+2026-10-01T23:48:38.7935932Z   -- Empty facets are [] in the captured profile, never SQL NULL.
+2026-10-01T23:48:38.7936634Z   select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);
+2026-10-01T23:48:38.7937789Z   if pg_catalog.md5(v_actual::text) not in ('5fc405c73d66e35453f7e2bebc7ee56e','65bb62e35c43389f61c9afcd31fb1808') then raise exception 'R01 CRM table metadata differs: audit_log' using errcode='55000'; end if;
+2026-10-01T23:48:38.7939569Z   v_name := 'admin_user'; v_table := pg_catalog.to_regclass('public.'||v_name);
+2026-10-01T23:48:38.7940813Z   if v_table is null then raise exception 'R01 CRM prerequisite table absent: admin_user' using errcode='55000'; end if;
+2026-10-01T23:48:38.7943069Z   select pg_catalog.jsonb_object_agg(k,(select pg_catalog.jsonb_agg(e.value order by e.ordinality) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name))
+2026-10-01T23:48:38.7946781Z     || pg_catalog.jsonb_build_object('shape',(select pg_catalog.jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_catalog.pg_rewrite r where r.ev_class=c.oid)) from pg_catalog.pg_class c where c.oid=v_table)) into v_actual
+2026-10-01T23:48:38.7948778Z   from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;
+2026-10-01T23:48:38.7949883Z   -- Empty facets are [] in the captured profile, never SQL NULL.
+2026-10-01T23:48:38.7951015Z   select pg_catalog.jsonb_object_agg(key,case when value='null'::jsonb then '[]'::jsonb else value end) into v_actual from pg_catalog.jsonb_each(v_actual);
+2026-10-01T23:48:38.7952926Z   if pg_catalog.md5(v_actual::text) not in ('270bf82ae3cd7989bf451639f80f6eb1','20f917785e938aab9c65b7791d47e580') then raise exception 'R01 CRM table metadata differs: admin_user' using errcode='55000'; end if;
+2026-10-01T23:48:38.7954446Z   -- Native RI enforcement is not in the public snapshot. All four ordinary
+2026-10-01T23:48:38.7955363Z   -- enabled triggers and their single internal constraint dependency are required.
+2026-10-01T23:48:38.7957165Z   if exists(select 1 from pg_catalog.pg_constraint c where c.conrelid in ('public.supporter'::regclass,'public.supporter_role'::regclass,'public.consent'::regclass,'public.admin_user'::regclass) and c.contype='f' and (
+2026-10-01T23:48:38.7959545Z     c.confupdtype<>'a' or c.confdeltype not in ('a','c') or c.condeferrable or c.condeferred
+2026-10-01T23:48:38.7960506Z     or (select count(*) from pg_catalog.pg_trigger t where t.tgconstraint=c.oid)<>4
+2026-10-01T23:48:38.7968780Z     or exists(select 1 from (values ('pg_catalog."RI_FKey_check_ins"()'::regprocedure,5,true),('pg_catalog."RI_FKey_check_upd"()'::regprocedure,17,true),('pg_catalog."RI_FKey_noaction_upd"()'::regprocedure,17,false),(case when c.confdeltype='c' then 'pg_catalog."RI_FKey_cascade_del"()'::regprocedure else 'pg_catalog."RI_FKey_noaction_del"()'::regprocedure end,9,false)) expected(function_oid,event_type,own_side) where (select count(*) from pg_catalog.pg_trigger t where t.tgconstraint=c.oid and t.tgrelid=case when expected.own_side then c.conrelid else c.confrelid end and t.tgconstrrelid=case when expected.own_side then c.confrelid else c.conrelid end and t.tgconstrindid=c.conindid and t.tgfoid=expected.function_oid and t.tgtype=expected.event_type and t.tgenabled='O' and t.tgisinternal and t.tgparentid=0 and not t.tgdeferrable and not t.tginitdeferred and t.tgnargs=0 and t.tgattr::text='' and t.tgargs=''::bytea and t.tgqual is null and t.tgoldtable is null and t.tgnewtable is null and (select count(*) from pg_catalog.pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid)=1 and exists(select 1 from pg_catalog.pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid and d.objsubid=0 and d.refclassid='pg_constraint'::regclass and d.refobjid=c.oid and d.refobjsubid=0 and d.deptype='i'))<>1)
+2026-10-01T23:48:38.7977800Z   )) then raise exception 'R01 CRM native FK enforcement differs' using errcode='55000'; end if;
+2026-10-01T23:48:38.7979283Z   -- Preserve149/177 version trigger helpers; exact reviewed definitions, postgres ownership and historical effective ACLs.
+2026-10-01T23:48:38.7982283Z   if not exists(select 1 from pg_catalog.pg_proc p where p.oid='private.bump_supporter_edit_version()'::regprocedure and p.proowner='postgres'::regrole and (select count(*) from pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))))=1 and not exists(select 1 from pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where a.grantor<>p.proowner or a.grantee<>p.proowner or a.privilege_type<>'EXECUTE' or a.is_grantable) and pg_catalog.md5(pg_catalog.pg_get_functiondef(p.oid)) in ('d1fd0a986ef9bb089e9d5025e4177a49','08619e0337db72d3d685130718c47538'))
+2026-10-01T23:48:38.7986528Z     or not exists(select 1 from pg_catalog.pg_proc p where p.oid='private.bump_supporter_edit_version_from_role()'::regprocedure and p.proowner='postgres'::regrole and (select count(*) from pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))))=2 and not exists(select 1 from pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where a.grantor<>p.proowner or a.grantee not in(0,p.proowner) or a.privilege_type<>'EXECUTE' or a.is_grantable) and pg_catalog.md5(pg_catalog.pg_get_functiondef(p.oid))='3b3d61191955f415e4ed1a22389d71fb') then raise exception 'R01 CRM version trigger helpers differ' using errcode='55000'; end if;
+2026-10-01T23:48:38.7990393Z   v_function := pg_catalog.to_regprocedure('public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb)');
+2026-10-01T23:48:38.7992916Z   if (select count(*) from pg_catalog.pg_proc where pronamespace='public'::regnamespace and proname='mutate_crm_supporter_with_audit')<>(case when v_function is null then 0 else 1 end) then raise exception 'R01 CRM overload/required function differs: mutate_crm_supporter_with_audit' using errcode='55000'; end if;
+2026-10-01T23:48:38.7994122Z   if v_function is not null and (
+2026-10-01T23:48:38.7996902Z     not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.prokind='f' and p.pronargdefaults=0 and p.proargdefaults is null and p.proowner='postgres'::regrole and p.prosecdef=false and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and not p.proisstrict and not p.proleakproof and p.procost=100 and p.prorows=0 and p.prosupport=0 and l.lanname='plpgsql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='p_operation text, p_supporter_id uuid, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb' and pg_catalog.pg_get_function_result(p.oid)='jsonb' and pg_catalog.md5(p.prosrc) in ('a239e42582809956b821b1bfe1fb2962','b855a871526b63f13a1d653757a2f4c1'))
+2026-10-01T23:48:38.8000629Z     or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+2026-10-01T23:48:38.8002129Z     or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+2026-10-01T23:48:38.8004081Z     or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE')
+2026-10-01T23:48:38.8005506Z   ) then raise exception 'R01 CRM function contract differs: mutate_crm_supporter_with_audit' using errcode='55000'; end if;
+2026-10-01T23:48:38.8006219Z   v_function := pg_catalog.to_regprocedure('public.replace_supporter_roles_atomic(uuid,jsonb)');
+2026-10-01T23:48:38.8007801Z   if (select count(*) from pg_catalog.pg_proc where pronamespace='public'::regnamespace and proname='replace_supporter_roles_atomic')<>(case when v_function is null then 0 else 1 end) then raise exception 'R01 CRM overload/required function differs: replace_supporter_roles_atomic' using errcode='55000'; end if;
+2026-10-01T23:48:38.8009250Z   if v_function is not null and (
+2026-10-01T23:48:38.8011784Z     not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.prokind='f' and p.pronargdefaults=0 and p.proargdefaults is null and p.proowner='postgres'::regrole and p.prosecdef=false and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and not p.proisstrict and not p.proleakproof and p.procost=100 and p.prorows=0 and p.prosupport=0 and l.lanname='plpgsql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='p_supporter_id uuid, p_roles jsonb' and pg_catalog.pg_get_function_result(p.oid)='void' and pg_catalog.md5(p.prosrc) in ('f2c7e2d7478e45b8320a59b43b56f818'))
+2026-10-01T23:48:38.8014518Z     or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+2026-10-01T23:48:38.8016038Z     or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+2026-10-01T23:48:38.8017697Z     or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE')
+2026-10-01T23:48:38.8019693Z   ) then raise exception 'R01 CRM function contract differs: replace_supporter_roles_atomic' using errcode='55000'; end if;
+2026-10-01T23:48:38.8020519Z   v_function := pg_catalog.to_regprocedure('public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb)');
+2026-10-01T23:48:38.8021950Z   if (select count(*) from pg_catalog.pg_proc where pronamespace='public'::regnamespace and proname='append_crm_consents_with_audit')<>(case when v_function is null then 0 else 1 end) then raise exception 'R01 CRM overload/required function differs: append_crm_consents_with_audit' using errcode='55000'; end if;
+2026-10-01T23:48:38.8023250Z   if v_function is not null and (
+2026-10-01T23:48:38.8025929Z     not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.prokind='f' and p.pronargdefaults=0 and p.proargdefaults is null and p.proowner='postgres'::regrole and p.prosecdef=false and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and not p.proisstrict and not p.proleakproof and p.procost=100 and p.prorows=0 and p.prosupport=0 and l.lanname='plpgsql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='p_rows jsonb, p_actor_user_id uuid, p_supporter_id uuid, p_at timestamp with time zone, p_detail jsonb' and pg_catalog.pg_get_function_result(p.oid)='void' and pg_catalog.md5(p.prosrc) in ('65f1847569ad471a239e0c1a1dd60324','fad2e7acedab10443930040b3e667939'))
+2026-10-01T23:48:38.8029088Z     or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+2026-10-01T23:48:38.8030610Z     or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+2026-10-01T23:48:38.8032283Z     or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE')
+2026-10-01T23:48:38.8033391Z   ) then raise exception 'R01 CRM function contract differs: append_crm_consents_with_audit' using errcode='55000'; end if;
+2026-10-01T23:48:38.8034321Z   v_function := pg_catalog.to_regprocedure('public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb)');
+2026-10-01T23:48:38.8036093Z   if v_function is null or (select count(*) from pg_catalog.pg_proc where pronamespace='public'::regnamespace and proname='mutate_crm_supporter_if_version_with_audit')<>(case when v_function is null then 0 else 1 end) then raise exception 'R01 CRM overload/required function differs: mutate_crm_supporter_if_version_with_audit' using errcode='55000'; end if;
+2026-10-01T23:48:38.8037381Z   if v_function is not null and (
+2026-10-01T23:48:38.8041407Z     not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.prokind='f' and p.pronargdefaults=0 and p.proargdefaults is null and p.proowner='postgres'::regrole and p.prosecdef=false and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and not p.proisstrict and not p.proleakproof and p.procost=100 and p.prorows=0 and p.prosupport=0 and l.lanname='plpgsql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='p_supporter_id uuid, p_expected_version bigint, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb' and pg_catalog.pg_get_function_result(p.oid)='jsonb' and pg_catalog.md5(p.prosrc) in ('c39e9474fb941717626a0e9e3afd1477','f6963da392c67e51fea8e5b451698238'))
+2026-10-01T23:48:38.8044652Z     or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+2026-10-01T23:48:38.8046165Z     or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+2026-10-01T23:48:38.8047817Z     or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE')
+2026-10-01T23:48:38.8049285Z   ) then raise exception 'R01 CRM function contract differs: mutate_crm_supporter_if_version_with_audit' using errcode='55000'; end if;
+2026-10-01T23:48:38.8050031Z   v_function := pg_catalog.to_regprocedure('private.require_crm_supporter_actor(uuid)');
+2026-10-01T23:48:38.8051328Z   if (select count(*) from pg_catalog.pg_proc where pronamespace='private'::regnamespace and proname='require_crm_supporter_actor')<>(case when v_function is null then 0 else 1 end) then raise exception 'R01 CRM overload/required function differs: require_crm_supporter_actor' using errcode='55000'; end if;
+2026-10-01T23:48:38.8052449Z   if v_function is not null and (
+2026-10-01T23:48:38.8054673Z     not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_language l on l.oid=p.prolang where p.oid=v_function and p.prokind='f' and p.pronargdefaults=0 and p.proargdefaults is null and p.proowner='postgres'::regrole and p.prosecdef=true and p.proconfig=array['search_path=""']::text[] and p.provolatile='v' and p.proparallel='u' and not p.proisstrict and not p.proleakproof and p.procost=100 and p.prorows=0 and p.prosupport=0 and l.lanname='plpgsql' and pg_catalog.pg_get_function_identity_arguments(p.oid)='p_actor uuid' and pg_catalog.pg_get_function_result(p.oid)='void' and pg_catalog.md5(p.prosrc) in ('60f3f9ec8d075cfd67c0e992d2667030'))
+2026-10-01T23:48:38.8057286Z     or (select count(*) from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function)<>2
+2026-10-01T23:48:38.8058768Z     or exists(select 1 from pg_catalog.pg_proc p,lateral pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a where p.oid=v_function and (a.grantor<>p.proowner or a.grantee not in(p.proowner,'service_role'::regrole) or a.privilege_type<>'EXECUTE' or a.is_grantable))
+2026-10-01T23:48:38.8060715Z     or not pg_catalog.has_function_privilege('service_role',v_function,'EXECUTE') or pg_catalog.has_function_privilege('anon',v_function,'EXECUTE') or pg_catalog.has_function_privilege('authenticated',v_function,'EXECUTE')
+2026-10-01T23:48:38.8061812Z   ) then raise exception 'R01 CRM function contract differs: require_crm_supporter_actor' using errcode='55000'; end if;
+2026-10-01T23:48:38.8063965Z   v_public_create := pg_catalog.to_regprocedure('public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb)') is null or pg_catalog.to_regprocedure('public.replace_supporter_roles_atomic(uuid,jsonb)') is null or pg_catalog.to_regprocedure('public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb)') is null or pg_catalog.to_regprocedure('public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb)') is null;
+2026-10-01T23:48:38.8065929Z   v_private_create := pg_catalog.to_regprocedure('private.require_crm_supporter_actor(uuid)') is null;
+2026-10-01T23:48:38.8066528Z   -- Current postgres creation defaults: global baseline plus schema additions.
+2026-10-01T23:48:38.8067014Z   -- Never strip an unfamiliar recipient or modify creator defaults.
+2026-10-01T23:48:38.8068346Z   for v_default in select d.* from pg_catalog.pg_default_acl d where d.defaclrole='postgres'::regrole and d.defaclobjtype='f' and ((d.defaclnamespace=0 and (v_public_create or v_private_create)) or (d.defaclnamespace='public'::regnamespace and v_public_create) or (d.defaclnamespace='private'::regnamespace and v_private_create)) loop
+2026-10-01T23:48:38.8071511Z     if exists(select 1 from pg_catalog.aclexplode(v_default.defaclacl) a where a.grantor<>'postgres'::regrole or a.is_grantable or a.grantee not in(0,'postgres'::regrole,'anon'::regrole,'authenticated'::regrole,'service_role'::regrole) or a.privilege_type<>'EXECUTE') or (v_default.defaclnamespace=0 and (select array_agg(a.privilege_type order by a.privilege_type) from pg_catalog.aclexplode(v_default.defaclacl) a where a.grantee='postgres'::regrole) is distinct from array['EXECUTE']::text[]) then raise exception 'R01 CRM function creation default ACL differs' using errcode='55000'; end if;
+2026-10-01T23:48:38.8073666Z   end loop;
+2026-10-01T23:48:38.8073981Z   -- No writes precede this line. Exact good definitions retain their OIDs/ACLs.
+2026-10-01T23:48:38.8074535Z   v_function := pg_catalog.to_regprocedure('private.require_crm_supporter_actor(uuid)');
+2026-10-01T23:48:38.8075267Z   if v_function is null or (select pg_catalog.md5(prosrc) from pg_catalog.pg_proc where oid=v_function)<>'60f3f9ec8d075cfd67c0e992d2667030' then
+2026-10-01T23:48:38.8076049Z     execute $definition$create or replace function private.require_crm_supporter_actor(p_actor uuid)
+2026-10-01T23:48:38.8076521Z returns void
+2026-10-01T23:48:38.8076714Z language plpgsql
+2026-10-01T23:48:38.8076915Z security definer
+2026-10-01T23:48:38.8077112Z set search_path = ''
+2026-10-01T23:48:38.8077318Z as $function$
+2026-10-01T23:48:38.8077510Z begin
+2026-10-01T23:48:38.8077815Z   -- Own-domain Auth then admin SHARE fences non-key ban/role/status changes.
+2026-10-01T23:48:38.8078204Z   perform 1 from auth.users u
+2026-10-01T23:48:38.8078509Z   where u.id = p_actor and u.email_confirmed_at is not null
+2026-10-01T23:48:38.8079265Z     and (u.banned_until is null or u.banned_until <= pg_catalog.clock_timestamp())
+2026-10-01T23:48:38.8079656Z   for share;
+2026-10-01T23:48:38.8079849Z   if not found then
+2026-10-01T23:48:38.8080157Z     raise exception 'supporter_edit_forbidden' using errcode = '42501';
+2026-10-01T23:48:38.8080512Z   end if;
+2026-10-01T23:48:38.8080709Z   perform 1 from public.admin_user a
+2026-10-01T23:48:38.8081019Z   where a.auth_user_id = p_actor and a.status = 'active'
+2026-10-01T23:48:38.8081334Z     and a.role in ('treasurer', 'admin')
+2026-10-01T23:48:38.8081590Z   for share;
+2026-10-01T23:48:38.8081772Z   if not found then
+2026-10-01T23:48:38.8082070Z     raise exception 'supporter_edit_forbidden' using errcode = '42501';
+2026-10-01T23:48:38.8082413Z   end if;
+2026-10-01T23:48:38.8082587Z end;
+2026-10-01T23:48:38.8082775Z $function$;$definition$;
+2026-10-01T23:48:38.8083008Z     if v_function is null then
+2026-10-01T23:48:38.8083498Z       revoke all on function private.require_crm_supporter_actor(uuid) from public,anon,authenticated,service_role;
+2026-10-01T23:48:38.8084287Z       grant execute on function private.require_crm_supporter_actor(uuid) to service_role;
+2026-10-01T23:48:38.8084707Z     end if;
+2026-10-01T23:48:38.8084882Z   end if;
+2026-10-01T23:48:38.8085383Z   v_function := pg_catalog.to_regprocedure('public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb)');
+2026-10-01T23:48:38.8086275Z   if v_function is null or (select pg_catalog.md5(prosrc) from pg_catalog.pg_proc where oid=v_function)<>'b855a871526b63f13a1d653757a2f4c1' then
+2026-10-01T23:48:38.8087454Z     execute $definition$create or replace function public.mutate_crm_supporter_with_audit(p_operation text, p_supporter_id uuid, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb)
+2026-10-01T23:48:38.8088322Z returns jsonb
+2026-10-01T23:48:38.8088517Z language plpgsql
+2026-10-01T23:48:38.8088726Z security invoker
+2026-10-01T23:48:38.8089177Z set search_path = ''
+2026-10-01T23:48:38.8089445Z as $function$
+2026-10-01T23:48:38.8089631Z declare
+2026-10-01T23:48:38.8089835Z   v_supporter public.supporter;
+2026-10-01T23:48:38.8090082Z begin
+2026-10-01T23:48:38.8090342Z   perform private.require_crm_supporter_actor(p_actor_user_id);
+2026-10-01T23:48:38.8090702Z   if p_operation = 'create' then
+2026-10-01T23:48:38.8091059Z     if p_input is null or p_roles is null or jsonb_typeof(p_roles) <> 'array' then
+2026-10-01T23:48:38.8091469Z       raise exception 'invalid_supporter_payload';
+2026-10-01T23:48:38.8091745Z     end if;
+2026-10-01T23:48:38.8092082Z     insert into public.supporter(name,email,phone,language,tags,source,deleted_at)
+2026-10-01T23:48:38.8092486Z     values (
+2026-10-01T23:48:38.8092793Z       p_input->>'name', (p_input->>'email')::public.citext, p_input->>'phone',
+2026-10-01T23:48:38.8093313Z       p_input->>'language',
+2026-10-01T23:48:38.8093614Z       array(select jsonb_array_elements_text(p_input->'tags')),
+2026-10-01T23:48:38.8093945Z       p_input->>'source', null
+2026-10-01T23:48:38.8094170Z     )
+2026-10-01T23:48:38.8094362Z     on conflict (email) do update set
+2026-10-01T23:48:38.8094634Z       name = excluded.name,
+2026-10-01T23:48:38.8094869Z       phone = excluded.phone,
+2026-10-01T23:48:38.8095111Z       language = excluded.language,
+2026-10-01T23:48:38.8095371Z       tags = excluded.tags,
+2026-10-01T23:48:38.8095611Z       source = excluded.source,
+2026-10-01T23:48:38.8095846Z       deleted_at = null
+2026-10-01T23:48:38.8096072Z     returning * into v_supporter;
+2026-10-01T23:48:38.8096329Z   elsif p_operation = 'update' then
+2026-10-01T23:48:38.8096632Z     if p_supporter_id is null or p_input is null then
+2026-10-01T23:48:38.8096968Z       raise exception 'invalid_supporter_payload';
+2026-10-01T23:48:38.8097258Z     end if;
+2026-10-01T23:48:38.8097459Z     update public.supporter set
+2026-10-01T23:48:38.8097791Z       name = case when p_input ? 'name' then p_input->>'name' else name end,
+2026-10-01T23:48:38.8098264Z       phone = case when p_input ? 'phone' then p_input->>'phone' else phone end,
+2026-10-01T23:48:38.8098810Z       language = case when p_input ? 'language' then p_input->>'language' else language end,
+2026-10-01T23:48:38.8099744Z       tags = case when p_input ? 'tags' then array(select jsonb_array_elements_text(p_input->'tags')) else tags end,
+2026-10-01T23:48:38.8100480Z       deleted_at = case when p_input ? 'deleted_at' then (p_input->>'deleted_at')::timestamptz else deleted_at end
+2026-10-01T23:48:38.8100971Z     where id = p_supporter_id
+2026-10-01T23:48:38.8101221Z     returning * into v_supporter;
+2026-10-01T23:48:38.8101468Z     if not found then
+2026-10-01T23:48:38.8101710Z       raise exception 'supporter_not_found';
+2026-10-01T23:48:38.8101976Z     end if;
+2026-10-01T23:48:38.8102154Z   else
+2026-10-01T23:48:38.8102376Z     raise exception 'invalid_supporter_operation';
+2026-10-01T23:48:38.8102657Z   end if;
+2026-10-01T23:48:38.8102790Z 
+2026-10-01T23:48:38.8102880Z   if p_roles is not null then
+2026-10-01T23:48:38.8103146Z     if jsonb_typeof(p_roles) <> 'array' then
+2026-10-01T23:48:38.8103449Z       raise exception 'invalid_supporter_roles';
+2026-10-01T23:48:38.8103858Z     end if;
+2026-10-01T23:48:38.8104159Z     delete from public.supporter_role where supporter_id = v_supporter.id;
+2026-10-01T23:48:38.8104600Z     insert into public.supporter_role(supporter_id, role)
+2026-10-01T23:48:38.8105031Z     select v_supporter.id, role from jsonb_array_elements_text(p_roles) as role;
+2026-10-01T23:48:38.8105403Z   end if;
+2026-10-01T23:48:38.8105506Z 
+2026-10-01T23:48:38.8105759Z   insert into public.audit_log(actor_user_id, action, entity, entity_id, "timestamp", detail)
+2026-10-01T23:48:38.8106195Z   values (
+2026-10-01T23:48:38.8106377Z     p_actor_user_id,
+2026-10-01T23:48:38.8106772Z     case when p_operation = 'create' then 'supporter.create_or_update' else 'supporter.update' end,
+2026-10-01T23:48:38.8107333Z     'supporter', v_supporter.id::text, p_at, coalesce(p_detail, '{}'::jsonb)
+2026-10-01T23:48:38.8107693Z   );
+2026-10-01T23:48:38.8107992Z   return jsonb_build_object('id', v_supporter.id, 'email', v_supporter.email);
+2026-10-01T23:48:38.8108358Z end;
+2026-10-01T23:48:38.8108538Z $function$;$definition$;
+2026-10-01T23:48:38.8108772Z     if v_function is null then
+2026-10-01T23:48:38.8109571Z       revoke all on function public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) from public,anon,authenticated,service_role;
+2026-10-01T23:48:38.8110558Z       grant execute on function public.mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) to service_role;
+2026-10-01T23:48:38.8111125Z     end if;
+2026-10-01T23:48:38.8111304Z   end if;
+2026-10-01T23:48:38.8111672Z   v_function := pg_catalog.to_regprocedure('public.replace_supporter_roles_atomic(uuid,jsonb)');
+2026-10-01T23:48:38.8112559Z   if v_function is null or (select pg_catalog.md5(prosrc) from pg_catalog.pg_proc where oid=v_function)<>'f2c7e2d7478e45b8320a59b43b56f818' then
+2026-10-01T23:48:38.8113422Z     execute $definition$create or replace function public.replace_supporter_roles_atomic(p_supporter_id uuid, p_roles jsonb)
+2026-10-01T23:48:38.8113962Z returns void
+2026-10-01T23:48:38.8114151Z language plpgsql
+2026-10-01T23:48:38.8114347Z security invoker
+2026-10-01T23:48:38.8114540Z set search_path = ''
+2026-10-01T23:48:38.8114750Z as $function$
+2026-10-01T23:48:38.8114931Z begin
+2026-10-01T23:48:38.8115174Z   if p_roles is null or jsonb_typeof(p_roles) <> 'array' then
+2026-10-01T23:48:38.8115526Z     raise exception 'invalid_supporter_roles';
+2026-10-01T23:48:38.8115804Z   end if;
+2026-10-01T23:48:38.8116100Z   perform 1 from public.supporter where id = p_supporter_id for update;
+2026-10-01T23:48:38.8116465Z   if not found then
+2026-10-01T23:48:38.8116690Z     raise exception 'supporter_not_found';
+2026-10-01T23:48:38.8116962Z   end if;
+2026-10-01T23:48:38.8117253Z   delete from public.supporter_role where supporter_id = p_supporter_id;
+2026-10-01T23:48:38.8117681Z   insert into public.supporter_role(supporter_id, role)
+2026-10-01T23:48:38.8118113Z   select p_supporter_id, role from jsonb_array_elements_text(p_roles) as role;
+2026-10-01T23:48:38.8118494Z end;
+2026-10-01T23:48:38.8118680Z $function$;$definition$;
+2026-10-01T23:48:38.8119103Z     if v_function is null then
+2026-10-01T23:48:38.8119633Z       revoke all on function public.replace_supporter_roles_atomic(uuid,jsonb) from public,anon,authenticated,service_role;
+2026-10-01T23:48:38.8120360Z       grant execute on function public.replace_supporter_roles_atomic(uuid,jsonb) to service_role;
+2026-10-01T23:48:38.8120793Z     end if;
+2026-10-01T23:48:38.8120967Z   end if;
+2026-10-01T23:48:38.8121411Z   v_function := pg_catalog.to_regprocedure('public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb)');
+2026-10-01T23:48:38.8122265Z   if v_function is null or (select pg_catalog.md5(prosrc) from pg_catalog.pg_proc where oid=v_function)<>'fad2e7acedab10443930040b3e667939' then
+2026-10-01T23:48:38.8123464Z     execute $definition$create or replace function public.append_crm_consents_with_audit(p_rows jsonb, p_actor_user_id uuid, p_supporter_id uuid, p_at timestamp with time zone, p_detail jsonb)
+2026-10-01T23:48:38.8124210Z returns void
+2026-10-01T23:48:38.8124394Z language plpgsql
+2026-10-01T23:48:38.8124594Z security invoker
+2026-10-01T23:48:38.8124786Z set search_path = ''
+2026-10-01T23:48:38.8124990Z as $function$
+2026-10-01T23:48:38.8125173Z begin
+2026-10-01T23:48:38.8125416Z   if p_rows is null or jsonb_typeof(p_rows) <> 'array' then
+2026-10-01T23:48:38.8125815Z     raise exception 'invalid_consent_rows' using errcode = '22023';
+2026-10-01T23:48:38.8126143Z   end if;
+2026-10-01T23:48:38.8126417Z   if p_supporter_id is null or jsonb_array_length(p_rows) = 0 or exists (
+2026-10-01T23:48:38.8126819Z     select 1 from jsonb_array_elements(p_rows) as row
+2026-10-01T23:48:38.8127127Z     where jsonb_typeof(row) <> 'object'
+2026-10-01T23:48:38.8127462Z       or row->>'supporter_id' is distinct from p_supporter_id::text
+2026-10-01T23:48:38.8127778Z   ) then
+2026-10-01T23:48:38.8128038Z     raise exception 'invalid_consent_rows' using errcode = '22023';
+2026-10-01T23:48:38.8128357Z   end if;
+2026-10-01T23:48:38.8128625Z   perform private.require_crm_supporter_actor(p_actor_user_id);
+2026-10-01T23:48:38.8129206Z   perform 1 from public.supporter where id = p_supporter_id for update;
+2026-10-01T23:48:38.8129570Z   if not found then
+2026-10-01T23:48:38.8129799Z     raise exception 'supporter_not_found';
+2026-10-01T23:48:38.8130056Z   end if;
+2026-10-01T23:48:38.8130370Z   insert into public.consent(supporter_id, channel, status, source, "timestamp")
+2026-10-01T23:48:38.8130964Z   select p_supporter_id, row->>'channel', row->>'status', row->>'source', (row->>'timestamp')::timestamptz
+2026-10-01T23:48:38.8131440Z   from jsonb_array_elements(p_rows) as row
+2026-10-01T23:48:38.8132019Z   on conflict (supporter_id, channel, status, source, "timestamp") do nothing;
+2026-10-01T23:48:38.8132560Z   insert into public.audit_log(actor_user_id, action, entity, entity_id, "timestamp", detail)
+2026-10-01T23:48:38.8133247Z   values (p_actor_user_id, 'consent.append', 'supporter', p_supporter_id::text, p_at, coalesce(p_detail, '{}'::jsonb));
+2026-10-01T23:48:38.8133746Z end;
+2026-10-01T23:48:38.8133971Z $function$;$definition$;
+2026-10-01T23:48:38.8134201Z     if v_function is null then
+2026-10-01T23:48:38.8134810Z       revoke all on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) from public,anon,authenticated,service_role;
+2026-10-01T23:48:38.8135699Z       grant execute on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) to service_role;
+2026-10-01T23:48:38.8136217Z     end if;
+2026-10-01T23:48:38.8136389Z   end if;
+2026-10-01T23:48:38.8136938Z   v_function := pg_catalog.to_regprocedure('public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb)');
+2026-10-01T23:48:38.8137874Z   if v_function is null or (select pg_catalog.md5(prosrc) from pg_catalog.pg_proc where oid=v_function)<>'f6963da392c67e51fea8e5b451698238' then
+2026-10-01T23:48:38.8139392Z     execute $definition$create or replace function public.mutate_crm_supporter_if_version_with_audit(p_supporter_id uuid, p_expected_version bigint, p_input jsonb, p_roles jsonb, p_actor_user_id uuid, p_at timestamp with time zone, p_detail jsonb)
+2026-10-01T23:48:38.8140334Z returns jsonb
+2026-10-01T23:48:38.8140524Z language plpgsql
+2026-10-01T23:48:38.8140718Z security invoker
+2026-10-01T23:48:38.8140910Z set search_path = ''
+2026-10-01T23:48:38.8141111Z as $function$
+2026-10-01T23:48:38.8141299Z declare
+2026-10-01T23:48:38.8141496Z   v_supporter public.supporter%rowtype;
+2026-10-01T23:48:38.8141768Z   v_current_roles text[];
+2026-10-01T23:48:38.8141988Z   v_new_roles text[];
+2026-10-01T23:48:38.8142195Z begin
+2026-10-01T23:48:38.8142500Z   if p_supporter_id is null or p_expected_version is null or p_expected_version < 1
+2026-10-01T23:48:38.8142959Z     or p_input is null or jsonb_typeof(p_input) <> 'object' then
+2026-10-01T23:48:38.8143382Z     raise exception 'invalid_supporter_payload' using errcode = '22023';
+2026-10-01T23:48:38.8143732Z   end if;
+2026-10-01T23:48:38.8144134Z   perform private.require_crm_supporter_actor(p_actor_user_id);
+2026-10-01T23:48:38.8144524Z   select * into v_supporter from public.supporter
+2026-10-01T23:48:38.8144829Z   where id = p_supporter_id for update;
+2026-10-01T23:48:38.8145096Z   if not found then
+2026-10-01T23:48:38.8145387Z     raise exception 'supporter_not_found' using errcode = 'P4040';
+2026-10-01T23:48:38.8145718Z   end if;
+2026-10-01T23:48:38.8145954Z   if v_supporter.edit_version <> p_expected_version then
+2026-10-01T23:48:38.8146369Z     raise exception 'supporter_version_conflict' using errcode = 'P4090';
+2026-10-01T23:48:38.8146722Z   end if;
+2026-10-01T23:48:38.8146914Z   if p_roles is not null and
+2026-10-01T23:48:38.8147250Z     (jsonb_typeof(p_roles) <> 'array' or jsonb_array_length(p_roles) = 0) then
+2026-10-01T23:48:38.8147719Z     raise exception 'invalid_supporter_roles' using errcode = '22023';
+2026-10-01T23:48:38.8148057Z   end if;
+2026-10-01T23:48:38.8148153Z 
+2026-10-01T23:48:38.8148257Z   update public.supporter set
+2026-10-01T23:48:38.8148591Z     name = case when p_input ? 'name' then p_input->>'name' else name end,
+2026-10-01T23:48:38.8149191Z     phone = case when p_input ? 'phone' then p_input->>'phone' else phone end,
+2026-10-01T23:48:38.8149709Z     language = case when p_input ? 'language' then p_input->>'language' else language end,
+2026-10-01T23:48:38.8150131Z     tags = case when p_input ? 'tags'
+2026-10-01T23:48:38.8150509Z       then array(select jsonb_array_elements_text(p_input->'tags')) else tags end,
+2026-10-01T23:48:38.8150927Z     deleted_at = case when p_input ? 'deleted_at'
+2026-10-01T23:48:38.8151298Z       then (p_input->>'deleted_at')::timestamptz else deleted_at end
+2026-10-01T23:48:38.8151765Z   where id = p_supporter_id;
+2026-10-01T23:48:38.8151921Z 
+2026-10-01T23:48:38.8152010Z   if p_roles is not null then
+2026-10-01T23:48:38.8152307Z     select array_agg(role order by role) into v_current_roles
+2026-10-01T23:48:38.8152717Z       from public.supporter_role where supporter_id = p_supporter_id;
+2026-10-01T23:48:38.8153122Z     select array_agg(role order by role) into v_new_roles
+2026-10-01T23:48:38.8153467Z       from jsonb_array_elements_text(p_roles) as role;
+2026-10-01T23:48:38.8153809Z     if v_current_roles is distinct from v_new_roles then
+2026-10-01T23:48:38.8154214Z       delete from public.supporter_role where supporter_id = p_supporter_id;
+2026-10-01T23:48:38.8154637Z       insert into public.supporter_role(supporter_id, role)
+2026-10-01T23:48:38.8155066Z       select p_supporter_id, role from jsonb_array_elements_text(p_roles) as role;
+2026-10-01T23:48:38.8155440Z     end if;
+2026-10-01T23:48:38.8155610Z   end if;
+2026-10-01T23:48:38.8155714Z 
+2026-10-01T23:48:38.8155963Z   insert into public.audit_log(actor_user_id, action, entity, entity_id, "timestamp", detail)
+2026-10-01T23:48:38.8156456Z   values (p_actor_user_id, 'supporter.update', 'supporter',
+2026-10-01T23:48:38.8156855Z     p_supporter_id::text, p_at, coalesce(p_detail, '{}'::jsonb));
+2026-10-01T23:48:38.8157302Z   select * into v_supporter from public.supporter where id = p_supporter_id;
+2026-10-01T23:48:38.8157795Z   return jsonb_build_object('id', v_supporter.id, 'email', v_supporter.email,
+2026-10-01T23:48:38.8158195Z     'editVersion', v_supporter.edit_version);
+2026-10-01T23:48:38.8158461Z end;
+2026-10-01T23:48:38.8158644Z $function$;$definition$;
+2026-10-01T23:48:38.8158872Z     if v_function is null then
+2026-10-01T23:48:38.8159748Z       revoke all on function public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb) from public,anon,authenticated,service_role;
+2026-10-01T23:48:38.8160831Z       grant execute on function public.mutate_crm_supporter_if_version_with_audit(uuid,bigint,jsonb,jsonb,uuid,timestamptz,jsonb) to service_role;
+2026-10-01T23:48:38.8161445Z     end if;
+2026-10-01T23:48:38.8161621Z   end if;
+2026-10-01T23:48:38.8161788Z end;
+2026-10-01T23:48:38.8161961Z $migration$
+2026-10-01T23:48:38.8162238Z Try rerunning the command with --debug to troubleshoot the error.
+2026-10-01T23:48:38.8173634Z ##[error]Process completed with exit code 1.
+2026-10-01T23:48:38.8284962Z ##[group]Run bunx supabase stop
+2026-10-01T23:48:38.8285284Z [36;1mbunx supabase stop[0m
+2026-10-01T23:48:38.8347946Z shell: /usr/bin/bash -e {0}
+2026-10-01T23:48:38.8348206Z ##[endgroup]
+2026-10-01T23:48:39.2969528Z Stopping containers...
+2026-10-01T23:48:39.3463037Z Stopped supabase local development setup.
+2026-10-01T23:48:39.8156489Z Post job cleanup.
+2026-10-01T23:48:39.9012401Z [command]/usr/bin/git version
+2026-10-01T23:48:39.9055805Z git version 2.55.0
+2026-10-01T23:48:39.9101307Z Temporarily overriding HOME='/home/runner/work/_temp/ea9bf914-4591-4901-8783-7725ca8e2252' before making global git config changes
+2026-10-01T23:48:39.9102650Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-01T23:48:39.9108127Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hkscda/hkscda
+2026-10-01T23:48:39.9147437Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-01T23:48:39.9185287Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-01T23:48:39.9481600Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-01T23:48:39.9521468Z http.https://github.com/.extraheader
+2026-10-01T23:48:39.9534115Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-01T23:48:39.9574586Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-01T23:48:39.9849914Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-01T23:48:39.9900966Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-01T23:48:40.0334019Z Cleaning up orphan processes
+2026-10-01T23:48:40.0885202Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

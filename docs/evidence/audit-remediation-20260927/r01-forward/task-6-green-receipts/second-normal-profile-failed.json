@@ -1,0 +1,392 @@
+{
+  "mode": "green",
+  "startedAt": "2026-10-01T21:54:22.358Z",
+  "sourceCommit": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+  "testedExecutableBlobs": {
+    "src/lib/crm/atomicForward.database.test.ts": {
+      "sha256": "8e116c3bb05d2c6bbbd8e146c235bbf1030bb97068c0b0fd81fbc0df6c3ede45",
+      "canonicalSha256": "8e116c3bb05d2c6bbbd8e146c235bbf1030bb97068c0b0fd81fbc0df6c3ede45"
+    },
+    "supabase/rls-tests/helpers/runR01CrmForward.ts": {
+      "sha256": "9a073484ab6e9959f132f212d5f846a9e2971fe491b05864fd9c12a98dafefda",
+      "canonicalSha256": "9a073484ab6e9959f132f212d5f846a9e2971fe491b05864fd9c12a98dafefda"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "src/lib/crm/service.ts": {
+      "sha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110",
+      "canonicalSha256": "3d0c9a111dba2218fe9bb19c343931cc9323b877e96666b8d3eb66514a5a3110"
+    },
+    "src/lib/crm/repository.server.ts": {
+      "sha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b",
+      "canonicalSha256": "6356d3ffc03cea299ffcc9a08e87ac9ac770aa618a506f92f9912c4284c0a92b"
+    },
+    "src/lib/crm/http.server.ts": {
+      "sha256": "23b777f66064243497aaeca973231f8704dd1edd772d98ba65a01592ecf7d134",
+      "canonicalSha256": "23b777f66064243497aaeca973231f8704dd1edd772d98ba65a01592ecf7d134"
+    },
+    "src/lib/crm/consent.ts": {
+      "sha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172",
+      "canonicalSha256": "a7b7708d76261fe05d1289f63b762fe1afd0832b9d43e918969ed4bd3c0d0172"
+    },
+    "src/lib/crm/schemas.ts": {
+      "sha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a",
+      "canonicalSha256": "1c8fd23735159b2e1b62b09f2e34b4ccb69f78db79102c25785c72ce4ecbfc1a"
+    },
+    "src/lib/crm/types.ts": {
+      "sha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c",
+      "canonicalSha256": "1cfc0c7058927d9b082b9dd3903b2f95e96934b786ea72786af3463450cf9d8c"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "d68f2c90521be8762c97effd9de007ba30d80e9a05d75a031334e9d2981dea62",
+      "canonicalSha256": "d68f2c90521be8762c97effd9de007ba30d80e9a05d75a031334e9d2981dea62"
+    },
+    "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql": {
+      "sha256": "7b8f93094b1eed98b22874e10c5d110332e89f5ca615e95ae9258362f6fd3511",
+      "canonicalSha256": "7b8f93094b1eed98b22874e10c5d110332e89f5ca615e95ae9258362f6fd3511"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    },
+    "supabase/migrations/20260925103937_atomic_crm_supporter_audit.sql": {
+      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2",
+      "canonicalSha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+    },
+    "supabase/migrations/20260927110000_crm_supporter_edit_version.sql": {
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c",
+      "canonicalSha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+    }
+  },
+  "clone": "r01_clone_51b97d14f26f40238943422ec7a95eb0",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "productionActions": "schema/catalog read only; no production actor calls or data",
+  "dependencyGate": "controller released PR189 exact592 CI36928397189 allfiveSUCCESS",
+  "task1Applied": false,
+  "manifestInitial": 44,
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "issues": 41
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "issues": 41
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "issues": 33
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "issues": 30
+    },
+    {
+      "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "issues": 25
+    }
+  ],
+  "manifestBeforeTask6": 25,
+  "preMigrationRowHash": "3c72ccaf08d41f77b5de81edee258e2766759a707c5e691fef2598c98102d11a",
+  "preMigrationCompleteAuthDefaultNativeLedgerHash": "512e7e0f89fc7e75ee7039c5ae24e2ed23cd3ee6a7b4b063569eeb48eed8a579",
+  "refusals": [
+    {
+      "case": "Auth direct SELECT(email)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "Auth direct UPDATE(banned_until)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "Auth PUBLIC SELECT(email)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "Auth PUBLIC UPDATE(banned_until)",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "public unknown schema creation default",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "private unknown schema creation default",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unknown global creation default",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "public schema default grant option",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "private schema default grant option",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "global default grant option",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "global owner default missing",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "consent rule",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "consent persistence",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter column type",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter owner",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter RLS",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "supporter version trigger disabled",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "role version trigger disabled",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "consent index dropped",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper argument names",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper body",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper ACL",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper owner",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper configuration",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper security definer",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrapper cost",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unknown private bridge",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "mutate_crm_supporter_with_audit overload",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "replace_supporter_roles_atomic overload",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "append_crm_consents_with_audit overload",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_c_570128",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_a_570126",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_a_570127",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native admin_user_last_invited_by_fkey RI_ConstraintTrigger_c_570129",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_c_570518",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_a_570516",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_a_570517",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native consent_supporter_id_fkey RI_ConstraintTrigger_c_570519",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_c_571043",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_a_571041",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_a_571042",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_crm_assignee_user_id_fkey RI_ConstraintTrigger_c_571044",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_c_571048",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_a_571046",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_a_571047",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "native supporter_role_supporter_id_fkey RI_ConstraintTrigger_c_571049",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "replace_supporter_roles_atomic(uuid,jsonb) security definer",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) set search_path='public'",
+      "status": "55000",
+      "preserved": true
+    },
+    {
+      "case": "mutate_crm_supporter_with_audit(text,uuid,jsonb,jsonb,uuid,timestamptz,jsonb) cost 1",
+      "status": "55000",
+      "preserved": true
+    }
+  ],
+  "failure": {
+    "message": "R01 CRM table metadata differs: supporter",
+    "errno": "55000"
+  },
+  "templateBefore": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templatePreserved": true,
+  "modernBefore": "2a008c317589a983c000926b42f1938ed19d34e7737bb3ba358d251e2f877631",
+  "modernPreserved": true,
+  "frozenInputsPreserved": true,
+  "cleanup": "normal newly owned clone drop only",
+  "completedAt": "2026-10-01T21:54:49.573Z"
+}

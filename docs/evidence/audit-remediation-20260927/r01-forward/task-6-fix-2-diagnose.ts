@@ -1,0 +1,251 @@
+/** Fix2 authorized source-component reconstruction, always rolled back. */
+import { readFile, writeFile } from "node:fs/promises";
+import type { SQL } from "bun";
+import {
+  captureModernLocalSchema,
+  createProductionClone,
+  localSourceState,
+  snapshot,
+  hash,
+} from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+if (process.env.R01_CRM_ALLOW_LOCAL_FIXTURES !== "1" || process.argv[2] !== "diagnose")
+  throw Error("Explicit Fix2 owned fixture opt-in required");
+const out = "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-receipts",
+  base = "8b665fa4c05c20d728a7fb9617312c377618bc07",
+  forward = "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql";
+const oldBinding = JSON.parse(
+  await readFile(
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-1-source-binding.json",
+    "utf8",
+  ),
+);
+const files = [
+  "supabase/migrations/20260925150722_revoke_public_role_maintenance_privileges.sql",
+  "supabase/migrations/20260928120000_crm_assignment_bulk.sql",
+];
+const paths = [
+  ...Object.keys(oldBinding.finalHttpAndGateSourceMap),
+  "docs/evidence/audit-remediation-20260927/r01-forward/task-6-fix-2-diagnose.ts",
+  ...files,
+];
+const blobs = async () =>
+  Object.fromEntries(
+    await Promise.all(
+      paths.map(async (p) => {
+        const s = await readFile(p, "utf8");
+        return [p, { sha256: hash(s), canonicalSha256: hash(s.replaceAll("\r\n", "\n")) }];
+      }),
+    ),
+  );
+const frozen = await blobs(),
+  text = await readFile(forward, "utf8");
+if (hash(text) !== "d608db6bbfb3091eabaf7c0d97e7ba6350caa0bfc01cccac12d928e5fe0c3cb9")
+  throw Error("Exact immutable Fix1 SQL required");
+const maintenance = await readFile(files[0], "utf8"),
+  assignment = await readFile(files[1], "utf8");
+const start = assignment.indexOf("revoke insert, update on public.supporter"),
+  end = assignment.indexOf("create index supporter_crm_assignee_active_idx");
+if (start < 0 || end < start) throw Error("Exact reviewed assignment fragment absent");
+const columnFence = assignment.slice(start, end);
+await writeFile(out + "/executed-maintenance-fragment.sql", maintenance);
+await writeFile(out + "/executed-assignment-column-fragment.sql", columnFence);
+const url = "postgresql://postgres:postgres@127.0.0.1:57322/postgres",
+  modernBefore = await localSourceState(url),
+  capture = await captureModernLocalSchema(),
+  clone = await createProductionClone(capture),
+  db = clone.sql;
+const receipt: Record<string, unknown> = {
+  mode: "Fix2 focused #150/#177 source-component reconstruction",
+  sourceCommit: base,
+  startedAt: new Date().toISOString(),
+  clone: clone.name,
+  zeroApplicationTables: clone.tableCount,
+  schemaParity: true,
+  sourceCatalogHash: hash(capture.catalog),
+  testedExecutableBlobs: frozen,
+  sourceFragments: {
+    maintenance: { file: files[0], sha256: hash(maintenance) },
+    assignment: {
+      file: files[1],
+      wholeFileSha256: hash(assignment),
+      fragmentSha256: hash(columnFence),
+    },
+  },
+  scope:
+    "Owned clone rollback transaction only. No full history/new stack/engine/cluster/Auth changes. Task1 excluded. PG17.6 component reconstruction is not exact CI17.11.0.002 bootstrap proof.",
+};
+const rows = async () => {
+  const a = [];
+  for (const t of await db`select n.nspname||'.'||c.relname name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind in ('r','p') union all select 'auth.users' order by 1`) {
+    const [r] = await db.unsafe(
+      `select count(*)::text count,md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' order by to_jsonb(t)::text),'')) hash from ${t.name} t`,
+    );
+    a.push([t.name, r]);
+  }
+  return hash(a);
+};
+const extra = async (sql: SQL = db) => ({
+  auth: await sql`select to_jsonb(c) fullTable,(select jsonb_agg(to_jsonb(a) order by a.attnum) from pg_attribute a where a.attrelid=c.oid and a.attnum>0) fullColumns from pg_class c where c.oid='auth.users'::regclass`,
+  defaults:
+    await sql`select to_jsonb(d) value from pg_default_acl d order by d.defaclrole,d.defaclnamespace,d.defaclobjtype`,
+  native:
+    await sql`select to_jsonb(t) trigger,(select jsonb_agg(to_jsonb(d) order by d.classid,d.objid,d.objsubid,d.refclassid,d.refobjid,d.refobjsubid,d.deptype) from pg_depend d where d.classid='pg_trigger'::regclass and d.objid=t.oid) dependencies from pg_trigger t join pg_constraint c on c.oid=t.tgconstraint where c.conrelid in ('public.supporter'::regclass,'public.supporter_role'::regclass,'public.consent'::regclass,'public.admin_user'::regclass) order by t.oid`,
+  functions:
+    await sql`select to_jsonb(p)-'prosrc'-'probin'-'prosqlbody' metadata,md5(p.prosrc) bodyMd5,md5(pg_get_functiondef(p.oid)) definitionMd5 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private') and p.prokind in ('f','p') order by p.oid`,
+  roles: await sql`select to_jsonb(r) metadata from pg_roles r order by r.oid`,
+  memberships:
+    await sql`select to_jsonb(m) metadata from pg_auth_members m order by m.roleid,m.member,m.grantor`,
+  ledger:
+    await sql`select md5(coalesce(string_agg(to_jsonb(t)::text,E'\n' order by to_jsonb(t)::text),'')) hash from supabase_migrations.schema_migrations t`,
+});
+const profiles = async (sql: SQL) => {
+  const c = await snapshot(sql),
+    p = [];
+  for (const name of ["supporter", "supporter_role", "consent", "audit_log", "admin_user"]) {
+    const facets = Object.fromEntries(
+      ["relations", "columns", "constraints", "indexes", "triggers", "policies"].map((k) => [
+        k,
+        ((c[k] ?? []) as Record<string, unknown>[]).filter(
+          (x) => x.schema === "public" && (x.table ?? x.name) === name,
+        ),
+      ]),
+    );
+    const [shape] =
+      await sql`select jsonb_build_object('persistence',c.relpersistence,'rules',c.relhasrules,'rewrites',(select count(*) from pg_rewrite r where r.ev_class=c.oid)) value from pg_class c where c.oid=${"public." + name}::regclass`;
+    const profile = { ...facets, shape: shape.value };
+    const [d] =
+      await sql`select jsonb_typeof(${profile}::jsonb) profileType,md5(${profile}::jsonb::text) md5`;
+    if (d.profiletype !== "object") throw Error("Object profile transport required");
+    p.push({ name, ...d, profile });
+  }
+  return p;
+};
+try {
+  receipt.environment =
+    await db`select version(),current_user,session_user,current_setting('server_version') serverVersion,current_setting('search_path') initialPath`;
+  const deps = [
+    [
+      "20261001134252_r01_adoption_upload_forward.sql",
+      "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+    ],
+    [
+      "20261001154743_r01_animal_preference_record_fields.sql",
+      "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+    ],
+    [
+      "20261001150925_r01_sponsorship_submission_forward.sql",
+      "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+    ],
+    [
+      "20261001175310_r01_internship_upload_forward.sql",
+      "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+    ],
+    [
+      "20261001193722_r01_animal_draft_archive_forward.sql",
+      "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+    ],
+  ];
+  for (const [f, sha] of deps) {
+    const s = await readFile("supabase/migrations/" + f, "utf8");
+    if (hash(s) !== sha) throw Error("Accepted dependency changed");
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(s);
+    });
+  }
+  receipt.dependencies = deps;
+  const before = await snapshot(db),
+    beforeExtra = await extra(),
+    beforeRows = await rows();
+  await writeFile(out + "/catalog-before.json", JSON.stringify(before, null, 2) + "\n");
+  await writeFile(out + "/extra-before.json", JSON.stringify(beforeExtra, null, 2) + "\n");
+  receipt.beforeProfiles = await profiles(db);
+  const preserve = async () =>
+    hash(await snapshot(db)) === hash(before) &&
+    hash(await extra()) === hash(beforeExtra) &&
+    (await rows()) === beforeRows;
+  const rollback = Error("Accepted baseline forced rollback");
+  let accepted = false;
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(text);
+      accepted = true;
+      throw rollback;
+    });
+  } catch (e) {
+    if (e !== rollback) throw e;
+  }
+  receipt.normalBaselineAccepted = accepted;
+  receipt.normalBaselineRollbackPreserved = await preserve();
+  if (!accepted || !receipt.normalBaselineRollbackPreserved)
+    throw Error("Invalid positive baseline");
+  let status = "success",
+    message = "",
+    setupComplete = false;
+  try {
+    await db.begin(async (tx) => {
+      await tx`set local role postgres`;
+      await tx.unsafe(maintenance);
+      await tx.unsafe(columnFence);
+      setupComplete = true;
+      const after = await snapshot(tx),
+        afterExtra = await extra(tx);
+      receipt.reconstructedProfiles = await profiles(tx);
+      receipt.componentCatalogFacetsChanged = Object.keys(before).filter(
+        (k) => hash(before[k]) !== hash(after[k]),
+      );
+      receipt.componentExtraFacetsChanged = Object.keys(beforeExtra).filter(
+        (k) =>
+          hash(beforeExtra[k as keyof typeof beforeExtra]) !==
+          hash(afterExtra[k as keyof typeof afterExtra]),
+      );
+      await writeFile(out + "/catalog-reconstructed.json", JSON.stringify(after, null, 2) + "\n");
+      await writeFile(
+        out + "/extra-reconstructed.json",
+        JSON.stringify(afterExtra, null, 2) + "\n",
+      );
+      await tx.unsafe(text);
+      throw Error("Unexpected old profile acceptance");
+    });
+  } catch (e) {
+    status = (e as { errno?: string }).errno ?? "unexpected";
+    message = (e as Error).message;
+  }
+  receipt.actualMigrationResult = { status, message, setupComplete };
+  receipt.fullRollbackPreserved = await preserve();
+  if (
+    status !== "55000" ||
+    message !== "R01 CRM table metadata differs: supporter" ||
+    !setupComplete ||
+    !receipt.fullRollbackPreserved
+  )
+    throw Error("Concrete component diagnosis failed");
+  receipt.result = "Actual component RED: d608 rejects source-derived #150/#177 supporter profile";
+} catch (e) {
+  receipt.failure = { message: (e as Error).message, errno: (e as { errno?: string }).errno };
+  throw e;
+} finally {
+  await clone.close();
+  receipt.templateBefore = clone.templateBefore;
+  receipt.templatePreserved = clone.templatePreserved;
+  receipt.modernBefore = modernBefore;
+  receipt.modernPreserved = (await localSourceState(url)) === modernBefore;
+  receipt.frozenInputsPreserved = hash(await blobs()) === hash(frozen);
+  receipt.cleanup = "normal newly owned clone drop only";
+  receipt.completedAt = new Date().toISOString();
+  await writeFile(out + "/diagnosis.json", JSON.stringify(receipt, null, 2) + "\n");
+  console.log(
+    JSON.stringify({
+      result: receipt.result,
+      actualMigrationResult: receipt.actualMigrationResult,
+      componentCatalogFacetsChanged: receipt.componentCatalogFacetsChanged,
+      componentExtraFacetsChanged: receipt.componentExtraFacetsChanged,
+      fullRollbackPreserved: receipt.fullRollbackPreserved,
+      templatePreserved: receipt.templatePreserved,
+      modernPreserved: receipt.modernPreserved,
+      frozenInputsPreserved: receipt.frozenInputsPreserved,
+      failure: receipt.failure,
+    }),
+  );
+}
