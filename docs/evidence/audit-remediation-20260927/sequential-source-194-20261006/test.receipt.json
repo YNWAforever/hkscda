@@ -1,0 +1,32 @@
+{
+  "atUtc": "2026-10-06T17:39:12.504547+00:00",
+  "endUtc": "2026-10-06T17:40:15.968140+00:00",
+  "gate": "test",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "test",
+    "--isolate",
+    "--timeout",
+    "30000"
+  ],
+  "pid": 11452,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+  "sha": "aec27c3cb2c9a8d2449a4fb3b341702a637500b1",
+  "tree": "0cebf7bcc977c86490fa5890d77a89e03c922303",
+  "exit": 0,
+  "elapsedSeconds": 63.46361700000125,
+  "environment": "OS-only inheritance; Bun dotenv disabled; loopback placeholders; no provider credentials or fixture mutation opt-ins",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\aec27c3cb2c9a8d2449a4fb3b341702a637500b1\\test.stdout",
+      "bytes": 2991,
+      "sha256": "4a2240d2dab6b8317c5c3e9efffe8cbf69248690f3ae7bf1512e339490d9e335"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\aec27c3cb2c9a8d2449a4fb3b341702a637500b1\\test.stderr",
+      "bytes": 549059,
+      "sha256": "70f4fa38033f53a2bf41399e017e1623f1fffcb70b0965822f0802be01da6699"
+    }
+  ]
+}
