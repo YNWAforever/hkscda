@@ -1,0 +1,899 @@
+{
+  "sourceHead": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+  "scope": "synthetic diagnostic only; no application source change, no real receipt, DB, provider, email or payment",
+  "decision": "REJECT_SUBSET; R11 size/glyph coverage remains open",
+  "native": [
+    {
+      "name": "full",
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\compare.ts",
+        "full",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output"
+      ],
+      "pid": 17396,
+      "exitCode": 0,
+      "startedUtc": "2026-10-06T08:17:55.135371+00:00",
+      "elapsedSeconds": 9.699203099997249,
+      "head": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+      "scriptSha256": "0f34cdf1caf03e38e7091236acb9cb8477673b900755ddff3ecebbcce161d9c6",
+      "environment": "OS allowlist, Bun dotenv disabled, synthetic receipts; no providers/DB optins"
+    },
+    {
+      "name": "subset",
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\compare.ts",
+        "subset",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output"
+      ],
+      "pid": 53236,
+      "exitCode": 0,
+      "startedUtc": "2026-10-06T08:18:04.847578+00:00",
+      "elapsedSeconds": 2.1892750000115484,
+      "head": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+      "scriptSha256": "0f34cdf1caf03e38e7091236acb9cb8477673b900755ddff3ecebbcce161d9c6",
+      "environment": "OS allowlist, Bun dotenv disabled, synthetic receipts; no providers/DB optins"
+    }
+  ],
+  "generation": [
+    {
+      "mode": "full",
+      "sourceUnchanged": true,
+      "fontSha256": "64e61735caad749acbea2f3a4700b3f25c97dc44c15e5bf860ef61ed6bc20126",
+      "fetches": 1,
+      "samples": [
+        {
+          "id": "common",
+          "name": "陳美琪 Ada Chan 王小明",
+          "missing": [],
+          "bytes": 4338692,
+          "elapsedMs": 1003.4899000000005,
+          "cpuUserMicros": 1016000,
+          "cpuSystemMicros": 141000,
+          "pages": 1,
+          "sha256": "aeaf5767a6134e9fd192fde11ae32455d4e649ca8863b228c9a0b1ee1aff70d4"
+        },
+        {
+          "id": "rare",
+          "name": "龘龖靐齉堃喆鄺岑 𠮷𠮟𨳒𠝹",
+          "missing": [
+            "靐",
+            "𠮷"
+          ],
+          "bytes": 4338685,
+          "elapsedMs": 801.2403999999997,
+          "cpuUserMicros": 672000,
+          "cpuSystemMicros": 94000,
+          "pages": 1,
+          "sha256": "c2de4a25a963e2ccb08d8e6078ffc69cf27b9d83471680efcbd893b207acf015"
+        },
+        {
+          "id": "long",
+          "name": "龘王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王 Ada Chan",
+          "missing": [],
+          "bytes": 4338769,
+          "elapsedMs": 869.0356000000002,
+          "cpuUserMicros": 719000,
+          "cpuSystemMicros": 47000,
+          "pages": 1,
+          "sha256": "c7e596eee26af53a5bb82e860f606fdd6af231521dac444e6f0f4b214259c2fb"
+        },
+        {
+          "id": "mixed",
+          "name": "葉黃鄭蘇龘 Ada José Chloë 2026",
+          "missing": [],
+          "bytes": 4338710,
+          "elapsedMs": 899.7986999999994,
+          "cpuUserMicros": 718000,
+          "cpuSystemMicros": 16000,
+          "pages": 1,
+          "sha256": "490ad2ec3378102937f86e337e286f94c9af53d8b35e55e8ccb7007fc43daee8"
+        }
+      ]
+    },
+    {
+      "mode": "subset",
+      "sourceUnchanged": true,
+      "fontSha256": "64e61735caad749acbea2f3a4700b3f25c97dc44c15e5bf860ef61ed6bc20126",
+      "fetches": 1,
+      "samples": [
+        {
+          "id": "common",
+          "name": "陳美琪 Ada Chan 王小明",
+          "missing": [],
+          "bytes": 6784,
+          "elapsedMs": 218.81730000000005,
+          "cpuUserMicros": 218000,
+          "cpuSystemMicros": 63000,
+          "pages": 1,
+          "sha256": "c1c6a0004e551e1de90bd8396dcb7ff736b9fddc5064518120851b1c824b62fb"
+        },
+        {
+          "id": "rare",
+          "name": "龘龖靐齉堃喆鄺岑 𠮷𠮟𨳒𠝹",
+          "missing": [
+            "靐",
+            "𠮷"
+          ],
+          "bytes": 8145,
+          "elapsedMs": 63.218399999999974,
+          "cpuUserMicros": 78000,
+          "cpuSystemMicros": 62000,
+          "pages": 1,
+          "sha256": "3bb58223ded1117a4c0cb0bf5fdd4600c70c7e50cff5c11e4b578c2655c42236"
+        },
+        {
+          "id": "long",
+          "name": "龘王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王 Ada Chan",
+          "missing": [],
+          "bytes": 6241,
+          "elapsedMs": 456.0467000000001,
+          "cpuUserMicros": 187000,
+          "cpuSystemMicros": 16000,
+          "pages": 1,
+          "sha256": "44f965c72b7098c8507b44077c2646a6846988b871403190927f707e209bbaa7"
+        },
+        {
+          "id": "mixed",
+          "name": "葉黃鄭蘇龘 Ada José Chloë 2026",
+          "missing": [],
+          "bytes": 7648,
+          "elapsedMs": 144.8197,
+          "cpuUserMicros": 47000,
+          "cpuSystemMicros": 16000,
+          "pages": 1,
+          "sha256": "69d524f29022017685e70c1277f0778341fe98b5218908924460d0431e250ed0"
+        }
+      ]
+    }
+  ],
+  "inspection": {
+    "renders": [
+      {
+        "label": "full-common",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-common.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-common"
+        ],
+        "pid": 38420,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:29.241868+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [],
+        "textSha256": "1f3b037bef6d7255b95c0ec492fb6236fb3c5195192068d22a7a5d8e2a208832",
+        "pngSha256": "b9d8268b5021bf5c0181aa93722583b67a6d0c32883f42a745666dba4babadde"
+      },
+      {
+        "label": "full-rare",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-rare.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-rare"
+        ],
+        "pid": 42784,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:30.793184+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [
+          "靐",
+          "𠮷"
+        ],
+        "textSha256": "9676a0cb57bdfa4fae6fc33224b0afac105e1507748476a4dce35f8e51ec4c77",
+        "pngSha256": "0e4075f0a2e7cdb0208e0e7cfc53ce94824dd78815042e5d27a4bc13146dd90f"
+      },
+      {
+        "label": "full-long",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-long.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-long"
+        ],
+        "pid": 44308,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:32.624313+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [],
+        "textSha256": "b39187d27c37465c25e56839ee9c7479fbea155c14052759faa6adbbeb87d80c",
+        "pngSha256": "e8132867131a847e81a509fb16d179edfe651812d7f6c02d71f9d001bf74a242"
+      },
+      {
+        "label": "full-mixed",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-mixed.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-mixed"
+        ],
+        "pid": 20456,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:34.506665+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [
+          "6"
+        ],
+        "textSha256": "6e46dc172ecb1937e664e3180e4edaa6f0d1f7d6c0c4d2e2349bbd67b397b651",
+        "pngSha256": "886ed5f8b9824fd0b8ed026ffbf4e1491cd442281a3a83ce204fb4f00dc8c79f"
+      },
+      {
+        "label": "subset-common",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-common.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-common"
+        ],
+        "pid": 48084,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:35.815696+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [],
+        "textSha256": "1f3b037bef6d7255b95c0ec492fb6236fb3c5195192068d22a7a5d8e2a208832",
+        "pngSha256": "9ffb960b2c370233138b14bc9bb5da2be8cac5e0d657f9bffa38e616e4b6911b"
+      },
+      {
+        "label": "subset-rare",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-rare.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-rare"
+        ],
+        "pid": 9104,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:36.076697+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [
+          "靐",
+          "𠮷"
+        ],
+        "textSha256": "9676a0cb57bdfa4fae6fc33224b0afac105e1507748476a4dce35f8e51ec4c77",
+        "pngSha256": "94a3b443ab63437e183eacd6da061db416673f35d3687bf852cfc0a95b17439e"
+      },
+      {
+        "label": "subset-long",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-long.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-long"
+        ],
+        "pid": 7392,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:36.313030+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [],
+        "textSha256": "b39187d27c37465c25e56839ee9c7479fbea155c14052759faa6adbbeb87d80c",
+        "pngSha256": "6eb4293e4b9c6faaa6a0544a9c20dc6c1de32c9fc0e6cab21397242c2b2398ce"
+      },
+      {
+        "label": "subset-mixed",
+        "argv": [
+          "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+          "-png",
+          "-r",
+          "120",
+          "-singlefile",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-mixed.pdf",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-mixed"
+        ],
+        "pid": 35736,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:18:36.557671+00:00",
+        "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+        "missingExpectedCharacters": [],
+        "textSha256": "917c2a9e50c4ba190e94dc3864e744e79a1f6e5e175ef9f50ce7951ed2f644e9",
+        "pngSha256": "1ebea36d8f260ec9192d243f1c9f4c86991d5ba94c86b4925e7f1ae6b55b3c80"
+      }
+    ],
+    "comparisons": [
+      {
+        "case": "common",
+        "imageSize": [
+          993,
+          1404
+        ],
+        "differingPixels": 4717,
+        "boundingBox": [
+          134,
+          108,
+          530,
+          707
+        ],
+        "textEqual": true
+      },
+      {
+        "case": "rare",
+        "imageSize": [
+          993,
+          1404
+        ],
+        "differingPixels": 6059,
+        "boundingBox": [
+          132,
+          108,
+          530,
+          708
+        ],
+        "textEqual": true
+      },
+      {
+        "case": "long",
+        "imageSize": [
+          993,
+          1404
+        ],
+        "differingPixels": 3892,
+        "boundingBox": [
+          134,
+          108,
+          530,
+          807
+        ],
+        "textEqual": true
+      },
+      {
+        "case": "mixed",
+        "imageSize": [
+          993,
+          1404
+        ],
+        "differingPixels": 5942,
+        "boundingBox": [
+          132,
+          108,
+          530,
+          708
+        ],
+        "textEqual": false
+      }
+    ],
+    "productionOrProviderAccess": false
+  },
+  "inspectionWrapper": {
+    "firstExit": 1,
+    "firstChunk": "ea3e5b",
+    "reason": "scratch filename inspect.py shadowed standard-library inspect; no rendering occurred",
+    "correctedFilename": "inspect_receipts.py",
+    "correctedExit": 0,
+    "correctedChunk": "7f7954",
+    "warning": "Pillow getdata deprecation; Poppler unavailable Symbol/ArialUnicode display-font messages retained for all eight renders",
+    "finalExit": 0,
+    "finalChunk": "7abded / follow-up session19404"
+  },
+  "notRun": [
+    "new 100-PDF batch/recovery experiment",
+    "provider delivery",
+    "hosted PDF reader acceptance",
+    "safe replacement font",
+    "production application"
+  ],
+  "artifacts": {
+    "compare.ts": {
+      "bytes": 2580,
+      "sha256": "0f34cdf1caf03e38e7091236acb9cb8477673b900755ddff3ecebbcce161d9c6"
+    },
+    "inspect_receipts.py": {
+      "bytes": 2596,
+      "sha256": "d3f8d5011c7d841a9907d6ceedf07e95cf78b075604c1f57a4f73914e18440c1"
+    },
+    "pair-common.png": {
+      "bytes": 70501,
+      "sha256": "5e1d23689304226485adc489edc5ac1408d71f882fc9bb5a755ac10bfcf6ec03"
+    },
+    "pair-rare.png": {
+      "bytes": 72939,
+      "sha256": "4502a65e3a1c2a3113e6e9db3c7bedf1296d4d6cafdddf086b37a64eeee36344"
+    },
+    "pair-long.png": {
+      "bytes": 70973,
+      "sha256": "b907958af637c8e223ee48c825a2abfa9c1b6588a1692898c56d556859e9e88b"
+    },
+    "pair-mixed.png": {
+      "bytes": 73051,
+      "sha256": "7d5173afda881de0d73b8dd232a47ffca7bbc1997bc7639842e4e0c7473c95e8"
+    }
+  },
+  "unchangedApplicationFiles": {
+    "src/lib/donations/receipt-pdf.server.ts": "b55edcd9c9d9a8e5b50617ff269fa26c17a24fbe36b7c1f55b85556144c925c2",
+    "src/lib/donations/receiptFont.server.ts": "e1a96751ea31c8535289ae72e887affed9d20ae0bfe71cfcb3fa476668946302",
+    "src/assets/fonts/NotoSansHK-Regular.ttf": "64e61735caad749acbea2f3a4700b3f25c97dc44c15e5bf860ef61ed6bc20126"
+  },
+  "initialDiagnostic": {
+    "native": [
+      {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\compare.ts",
+          "full",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output"
+        ],
+        "pid": 47704,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:06:07.370449+00:00",
+        "elapsedSeconds": 9.248241299996153,
+        "sourceHead": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+        "scriptSha256": "eaf0ddc19667e40a5f70c5f8b5c4a91f04fadd377005bfa90d148fbc655b087c",
+        "environment": "OS allowlist only, synthetic receipt settings, fetch completely intercepted; no env files/providers/DB"
+      },
+      {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\compare.ts",
+          "subset",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output"
+        ],
+        "pid": 49832,
+        "exitCode": 0,
+        "startedUtc": "2026-10-06T08:06:16.714752+00:00",
+        "elapsedSeconds": 2.251166200003354,
+        "sourceHead": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+        "scriptSha256": "eaf0ddc19667e40a5f70c5f8b5c4a91f04fadd377005bfa90d148fbc655b087c",
+        "environment": "OS allowlist only, synthetic receipt settings, fetch completely intercepted; no env files/providers/DB"
+      }
+    ],
+    "generation": [
+      {
+        "mode": "full",
+        "sourceUnchanged": true,
+        "fontSha256": "64e61735caad749acbea2f3a4700b3f25c97dc44c15e5bf860ef61ed6bc20126",
+        "fetches": 1,
+        "samples": [
+          {
+            "id": "common",
+            "name": "陳美琪 Ada Chan 王小明",
+            "missing": [],
+            "bytes": 4338692,
+            "elapsedMs": 1049.9987,
+            "cpuUserMicros": 1063000,
+            "cpuSystemMicros": 63000,
+            "pages": 1,
+            "sha256": "ccf0f16ae35a67d1c61c3f3faf499d4dcd4419d761aa3f4ce7b7604318374c38"
+          },
+          {
+            "id": "rare",
+            "name": "龘龖靐齉堃喆鄺岑 𠮷𠮟𨳒𠝹",
+            "missing": [
+              "靐",
+              "𠮷"
+            ],
+            "bytes": 4338686,
+            "elapsedMs": 779.0360999999994,
+            "cpuUserMicros": 812000,
+            "cpuSystemMicros": 32000,
+            "pages": 1,
+            "sha256": "41209cf859fdfab3f5efbfc476b148d2f670d1562780c1a5649866a1f92bfd73"
+          },
+          {
+            "id": "long",
+            "name": "龘王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王 Ada Chan",
+            "missing": [],
+            "bytes": 4338768,
+            "elapsedMs": 845.5532999999996,
+            "cpuUserMicros": 657000,
+            "cpuSystemMicros": 171000,
+            "pages": 1,
+            "sha256": "7a8d2b145836fb062ce68f17ea21d3d18395bf7af83bd6fa015e25ae79e42917"
+          },
+          {
+            "id": "mixed",
+            "name": "葉黃鄭蘇龘 Ada José Chloë 2026",
+            "missing": [],
+            "bytes": 4338710,
+            "elapsedMs": 575.7415999999994,
+            "cpuUserMicros": 515000,
+            "cpuSystemMicros": 78000,
+            "pages": 1,
+            "sha256": "5db9e6920edc113716ed6289c4c87bdc483c40063eb24043d863aae16f039c91"
+          }
+        ]
+      },
+      {
+        "mode": "subset",
+        "sourceUnchanged": true,
+        "fontSha256": "64e61735caad749acbea2f3a4700b3f25c97dc44c15e5bf860ef61ed6bc20126",
+        "fetches": 1,
+        "samples": [
+          {
+            "id": "common",
+            "name": "陳美琪 Ada Chan 王小明",
+            "missing": [],
+            "bytes": 6781,
+            "elapsedMs": 365.32039999999984,
+            "cpuUserMicros": 172000,
+            "cpuSystemMicros": 62000,
+            "pages": 1,
+            "sha256": "cd21a54ffd243d32ddde7a6d3bf69a8cf934db829675cab809af839d9d1beb0d"
+          },
+          {
+            "id": "rare",
+            "name": "龘龖靐齉堃喆鄺岑 𠮷𠮟𨳒𠝹",
+            "missing": [
+              "靐",
+              "𠮷"
+            ],
+            "bytes": 8142,
+            "elapsedMs": 101.71529999999984,
+            "cpuUserMicros": 47000,
+            "cpuSystemMicros": 47000,
+            "pages": 1,
+            "sha256": "b33a204008fe7771a85654af21aab8803377b62bd606d68e7f6ac8d38c1d532d"
+          },
+          {
+            "id": "long",
+            "name": "龘王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王王 Ada Chan",
+            "missing": [],
+            "bytes": 6241,
+            "elapsedMs": 153.086,
+            "cpuUserMicros": 156000,
+            "cpuSystemMicros": 16000,
+            "pages": 1,
+            "sha256": "f87b252df5dd419ef160b48bbf50b43c03aec02590a39f4d3b8ab543aec7119b"
+          },
+          {
+            "id": "mixed",
+            "name": "葉黃鄭蘇龘 Ada José Chloë 2026",
+            "missing": [],
+            "bytes": 7647,
+            "elapsedMs": 70.6694,
+            "cpuUserMicros": 78000,
+            "cpuSystemMicros": 0,
+            "pages": 1,
+            "sha256": "3c9160518d07709399ad1e4b8f2c8addc23eeba332ef4444a9afe4796278b913"
+          }
+        ]
+      }
+    ],
+    "inspection": {
+      "renders": [
+        {
+          "label": "full-common",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-common.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-common"
+          ],
+          "pid": 4412,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:26.599671+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [],
+          "textSha256": "1f3b037bef6d7255b95c0ec492fb6236fb3c5195192068d22a7a5d8e2a208832",
+          "pngSha256": "b9d8268b5021bf5c0181aa93722583b67a6d0c32883f42a745666dba4babadde"
+        },
+        {
+          "label": "full-rare",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-rare.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-rare"
+          ],
+          "pid": 50468,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:27.635263+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [
+            "靐",
+            "𠮷"
+          ],
+          "textSha256": "9676a0cb57bdfa4fae6fc33224b0afac105e1507748476a4dce35f8e51ec4c77",
+          "pngSha256": "0e4075f0a2e7cdb0208e0e7cfc53ce94824dd78815042e5d27a4bc13146dd90f"
+        },
+        {
+          "label": "full-long",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-long.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-long"
+          ],
+          "pid": 22944,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:28.521487+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [],
+          "textSha256": "b39187d27c37465c25e56839ee9c7479fbea155c14052759faa6adbbeb87d80c",
+          "pngSha256": "e8132867131a847e81a509fb16d179edfe651812d7f6c02d71f9d001bf74a242"
+        },
+        {
+          "label": "full-mixed",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-mixed.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\full-mixed"
+          ],
+          "pid": 42108,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:30.038376+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [
+            "6"
+          ],
+          "textSha256": "6e46dc172ecb1937e664e3180e4edaa6f0d1f7d6c0c4d2e2349bbd67b397b651",
+          "pngSha256": "886ed5f8b9824fd0b8ed026ffbf4e1491cd442281a3a83ce204fb4f00dc8c79f"
+        },
+        {
+          "label": "subset-common",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-common.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-common"
+          ],
+          "pid": 56940,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:30.839449+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [],
+          "textSha256": "1f3b037bef6d7255b95c0ec492fb6236fb3c5195192068d22a7a5d8e2a208832",
+          "pngSha256": "9ffb960b2c370233138b14bc9bb5da2be8cac5e0d657f9bffa38e616e4b6911b"
+        },
+        {
+          "label": "subset-rare",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-rare.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-rare"
+          ],
+          "pid": 17384,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:30.988238+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [
+            "靐",
+            "𠮷"
+          ],
+          "textSha256": "9676a0cb57bdfa4fae6fc33224b0afac105e1507748476a4dce35f8e51ec4c77",
+          "pngSha256": "94a3b443ab63437e183eacd6da061db416673f35d3687bf852cfc0a95b17439e"
+        },
+        {
+          "label": "subset-long",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-long.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-long"
+          ],
+          "pid": 44420,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:31.286138+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [],
+          "textSha256": "b39187d27c37465c25e56839ee9c7479fbea155c14052759faa6adbbeb87d80c",
+          "pngSha256": "6eb4293e4b9c6faaa6a0544a9c20dc6c1de32c9fc0e6cab21397242c2b2398ce"
+        },
+        {
+          "label": "subset-mixed",
+          "argv": [
+            "C:\\Users\\laich\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+            "-png",
+            "-r",
+            "120",
+            "-singlefile",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-mixed.pdf",
+            "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\r11-font-diagnostic-20261006\\output\\subset-mixed"
+          ],
+          "pid": 60612,
+          "exitCode": 0,
+          "startedUtc": "2026-10-06T08:07:31.439927+00:00",
+          "stderr": "Syntax Error: No display font for 'Symbol'\r\nSyntax Error: No display font for 'ArialUnicode'\r\n",
+          "missingExpectedCharacters": [],
+          "textSha256": "917c2a9e50c4ba190e94dc3864e744e79a1f6e5e175ef9f50ce7951ed2f644e9",
+          "pngSha256": "1ebea36d8f260ec9192d243f1c9f4c86991d5ba94c86b4925e7f1ae6b55b3c80"
+        }
+      ],
+      "comparisons": [
+        {
+          "case": "common",
+          "imageSize": [
+            993,
+            1404
+          ],
+          "differingPixels": 4717,
+          "boundingBox": [
+            134,
+            108,
+            530,
+            707
+          ],
+          "textEqual": true
+        },
+        {
+          "case": "rare",
+          "imageSize": [
+            993,
+            1404
+          ],
+          "differingPixels": 6059,
+          "boundingBox": [
+            132,
+            108,
+            530,
+            708
+          ],
+          "textEqual": true
+        },
+        {
+          "case": "long",
+          "imageSize": [
+            993,
+            1404
+          ],
+          "differingPixels": 3892,
+          "boundingBox": [
+            134,
+            108,
+            530,
+            807
+          ],
+          "textEqual": true
+        },
+        {
+          "case": "mixed",
+          "imageSize": [
+            993,
+            1404
+          ],
+          "differingPixels": 5942,
+          "boundingBox": [
+            132,
+            108,
+            530,
+            708
+          ],
+          "textEqual": false
+        }
+      ],
+      "productionOrProviderAccess": false
+    },
+    "inspectionWrapper": {
+      "firstExit": 1,
+      "firstChunk": "ea3e5b",
+      "reason": "scratch filename inspect.py shadowed standard-library inspect; no rendering occurred",
+      "correctedFilename": "inspect_receipts.py",
+      "correctedExit": 0,
+      "correctedChunk": "7f7954",
+      "warning": "Pillow getdata deprecation; Poppler unavailable Symbol/ArialUnicode display-font messages retained for all eight renders",
+      "finalExit": 0,
+      "finalChunk": "7abded / follow-up session19404"
+    }
+  },
+  "localValidation": [
+    {
+      "name": "receipt-tests",
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "test",
+        "src/lib/donations/receipt-pdf.server.test.ts",
+        "src/lib/donations/receiptFont.server.test.ts"
+      ],
+      "pid": 1504,
+      "exitCode": 0,
+      "head": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+      "environment": "OS allowlist, Bun dotenv disabled, synthetic unavailable loopback; no providers/DB optins",
+      "stdoutSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+      "stderrSha256": "1303698caf43c884f53c8d0bd505283cc4427c9c70018a3ce8a845cd69130c62"
+    },
+    {
+      "name": "typecheck",
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "pid": 34300,
+      "exitCode": 0,
+      "head": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+      "environment": "OS allowlist, Bun dotenv disabled, synthetic unavailable loopback; no providers/DB optins",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diagnostic-strict-types",
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--strict",
+        "--skipLibCheck",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "bundler",
+        "--types",
+        "vite/client,bun-types",
+        "docs/evidence/audit-remediation-20260927/r11-font/compare.ts"
+      ],
+      "pid": 52572,
+      "exitCode": 0,
+      "startedUtc": "2026-10-06T08:17:50.342300+00:00",
+      "elapsedSeconds": 4.790497100009816,
+      "head": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+      "scriptSha256": "0f34cdf1caf03e38e7091236acb9cb8477673b900755ddff3ecebbcce161d9c6",
+      "environment": "OS allowlist, Bun dotenv disabled, synthetic receipts; no providers/DB optins"
+    }
+  ],
+  "firstDiagnosticStrictFailure": {
+    "name": "diagnostic-strict-types",
+    "argv": [
+      "C:/Program Files/nodejs/node.exe",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--strict",
+      "--skipLibCheck",
+      "--target",
+      "ES2022",
+      "--module",
+      "ESNext",
+      "--moduleResolution",
+      "bundler",
+      "--types",
+      "vite/client,bun-types",
+      "docs/evidence/audit-remediation-20260927/r11-font/compare.ts"
+    ],
+    "pid": 11972,
+    "exitCode": 2,
+    "head": "051ab5034b4ed416494b3814f51c8d2f03a67ff5",
+    "environment": "OS allowlist, Bun dotenv disabled, synthetic unavailable loopback; no providers/DB optins",
+    "stdoutSha256": "a06d42fb070bbf71ce355c2385e999d8bad6f18cf66f705661ed7209c897314a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostic": "TS2352: fetch stub missing Bun preconnect; fixed with a no-op preconnect, no application changes"
+  }
+}
