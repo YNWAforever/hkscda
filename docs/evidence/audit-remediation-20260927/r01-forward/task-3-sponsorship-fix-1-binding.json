@@ -1,0 +1,1544 @@
+{
+  "originalBase": "66766c17f8c69d54fedd9d063b68949761e6047d",
+  "fixBase": "3a61d9d48d2dbbf645d72cfd7210b0425300e761",
+  "scope": "Original eight-object Fix Round1 I1: rule-free permanent ordinary target tables; no approved helper/shared trigger changes",
+  "packagedAt": "2026-10-01T17:26:27.340322+00:00",
+  "executableBlobs": {
+    "src/lib/sponsorship/submissionIntent.database.test.ts": {
+      "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+      "gitBlob": "1fd49cab6c3ba49297f28caa0a01303d1b2b10ca"
+    },
+    "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+      "sha256": "da8ee1e488af595a710c99e0b3174bb0eca3ffb5ceadd7ab4a33e2f91553a3a3",
+      "gitBlob": "584e4c85802216dccb23e26ad2ae261ef3fbcf17"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "gitBlob": "eb0831f96f8440c682ad48b4126c7c24e671888a"
+    },
+    "src/lib/sponsorship/proofIntent.server.ts": {
+      "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+      "gitBlob": "0301478e0ddf43150588458c7a6083d5a08aa83a"
+    },
+    "src/lib/sponsorship/proofCleanup.server.ts": {
+      "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+      "gitBlob": "ed2bbe1afbd70683d11e8157fc243e60f06361cd"
+    },
+    "src/lib/sponsorship/submission.server.ts": {
+      "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+      "gitBlob": "e203a1c0388836419f29aa83f0b0a5041abb45fd"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+      "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+      "gitBlob": "492643bb866a086b720bcbc83b2dadb4a011a828"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "gitBlob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "gitBlob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "gitBlob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    }
+  },
+  "otherFrozenCompositionFiles": {
+    "supabase/rls-tests/helpers/productionSchemaClone.test.ts": {
+      "sha256": "dccb2c30c88e28e20b948cadbebd7a45a77a06edfc24de1ba8eac5180a7807d1",
+      "gitBlob": "aee6da0e5c95ac6d1e3ac42a72f1b5da95772f8c"
+    },
+    "supabase/rls-tests/helpers/runR01CoreScopeGuard.ts": {
+      "sha256": "02e9be947518c089d7991906d01b19cc44d36259268bba5128aa15004838612f",
+      "gitBlob": "981538c15a258ad5bafa4c0b9ee83e27254b4a74"
+    },
+    "supabase/rls-tests/animalPreferenceCompatibility.rls.test.ts": {
+      "sha256": "e479a29b883afdce6fc7bf36ad43ba4f0a669d7058dfef01bf5b6ae4d6382166",
+      "gitBlob": "3b47187e207a8c07767f6e912a40c1b140ac3a14"
+    },
+    "supabase/rls-tests/helpers/runR01AnimalPreferenceForward.ts": {
+      "sha256": "a4a8fa3c7fb8e41568597dadc6c77611563298668e35ba590bd723ccb1eeef6d",
+      "gitBlob": "accd1535174584e428aa6c0f101cc30f98ee6231"
+    }
+  },
+  "watchedProfileDriftRed": {
+    "runnerExit": 1,
+    "actorSuiteNotRun": true,
+    "receipt": {
+      "mode": "green-modern",
+      "startedAt": "2026-10-01T17:06:56.229Z",
+      "sourceCommit": "3a61d9d48d2dbbf645d72cfd7210b0425300e761",
+      "testedExecutableBlobs": {
+        "src/lib/sponsorship/submissionIntent.database.test.ts": {
+          "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+          "canonicalSha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da"
+        },
+        "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+          "sha256": "ab53aec3d3b90c5f368f78fc3233db50244d10c68864addf1ce3b402f68624f6",
+          "canonicalSha256": "ab53aec3d3b90c5f368f78fc3233db50244d10c68864addf1ce3b402f68624f6"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "src/lib/sponsorship/proofIntent.server.ts": {
+          "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+          "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3"
+        },
+        "src/lib/sponsorship/proofCleanup.server.ts": {
+          "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+          "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035"
+        },
+        "src/lib/sponsorship/submission.server.ts": {
+          "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+          "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+          "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+          "canonicalSha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5",
+          "canonicalSha256": "272c08e9fe485ea3fd2a98398c11c45b328b43ee6ae633f6de4d4e73a9c6a0a5"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        }
+      },
+      "productionActions": "catalog/schema reads only; zero production rows or actor RPC",
+      "environment": "unique guarded owned clone52322; source57322/template52322 read-only; inert Storage port only",
+      "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "clone": "r01_clone_0b787c8e0de04d7282f210e52e71a5a2",
+      "schemaParity": true,
+      "zeroApplicationTables": 162,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "private.bump_sponsorship_followup_version",
+          "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+        },
+        {
+          "name": "private.bump_supporter_edit_version",
+          "hash": "08619e0337db72d3d685130718c47538"
+        },
+        {
+          "name": "private.has_admin_role",
+          "hash": "5369d861219863bb6601e7fa7d4be528"
+        },
+        {
+          "name": "private.increment_sponsorship_proof_revision",
+          "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+        },
+        {
+          "name": "private.is_valid_animal_public_profile",
+          "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+        },
+        {
+          "name": "private.normalize_public_animal_age",
+          "hash": "1f85086f172d61fff31de8d854f32a55"
+        },
+        {
+          "name": "private.preserve_sponsorship_contact_submission",
+          "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+        },
+        {
+          "name": "private.preserve_sponsorship_financial_history",
+          "hash": "2958be6daf21371da650f59bf5a89b15"
+        },
+        {
+          "name": "private.queue_sponsorship_transition",
+          "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+        },
+        {
+          "name": "private.snapshot_sponsorship_proof_contact",
+          "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+        },
+        {
+          "name": "private.sponsorship_cancel_transition",
+          "hash": "17036bab02ad4087b0727e395faac4b1"
+        },
+        {
+          "name": "private.sponsorship_proof_financial_transition",
+          "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+        },
+        {
+          "name": "public.enforce_current_animal_preference",
+          "hash": "5d9512de7da0c787523292316c6603e7"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.record_exact_sponsorship_payment_proof",
+          "hash": "2ab62b2fc24f6a119afce18e905a4099"
+        },
+        {
+          "name": "public.record_public_consent_intents",
+          "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+        },
+        {
+          "name": "public.record_sponsorship_payment_proof",
+          "hash": "426bd826423032326a8252dd282544ff"
+        },
+        {
+          "name": "public.set_animal_catalog_membership_defaults",
+          "hash": "fa013ae528d796d1cdee6f769d16abeb"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "preferenceDependency": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "beforeDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "afterDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "onlyReviewedFunctionBodyDelta": true,
+        "allOtherCatalogPreserved": true,
+        "firstApply": 0,
+        "secondApply": 0,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "manifestBeforeTask3": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "function public execute",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong trigger",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent insert rule",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent unlogged",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent insert rule",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent unlogged",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        }
+      ],
+      "intentProfileHash": "952b221dbacb1fdf77ac0b59fa64e25c13ba099f61a4353039031e29b9c31b8a",
+      "watchedProfileDriftRed": [
+        {
+          "case": "sponsorship_proof_upload_intent insert rule",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent unlogged",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent insert rule",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent unlogged",
+          "sqlState": "success",
+          "preserved": true,
+          "profilePreserved": true
+        }
+      ],
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "0e1437ff69c1c79049b572084871aa15e7097cc593b32b17c999f5b24d40f8f0",
+        "modernPreserved": true
+      },
+      "cleanup": "exact owned clone normally dropped; no force or session termination",
+      "completedAt": "2026-10-01T17:07:15.265Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "finalActualRuns": {
+    "green": {
+      "mode": "green",
+      "startedAt": "2026-10-01T17:16:18.445Z",
+      "sourceCommit": "3a61d9d48d2dbbf645d72cfd7210b0425300e761",
+      "testedExecutableBlobs": {
+        "src/lib/sponsorship/submissionIntent.database.test.ts": {
+          "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+          "canonicalSha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da"
+        },
+        "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+          "sha256": "da8ee1e488af595a710c99e0b3174bb0eca3ffb5ceadd7ab4a33e2f91553a3a3",
+          "canonicalSha256": "da8ee1e488af595a710c99e0b3174bb0eca3ffb5ceadd7ab4a33e2f91553a3a3"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "src/lib/sponsorship/proofIntent.server.ts": {
+          "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+          "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3"
+        },
+        "src/lib/sponsorship/proofCleanup.server.ts": {
+          "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+          "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035"
+        },
+        "src/lib/sponsorship/submission.server.ts": {
+          "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+          "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+          "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+          "canonicalSha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        }
+      },
+      "productionActions": "catalog/schema reads only; zero production rows or actor RPC",
+      "environment": "unique guarded owned clone52322; source57322/template52322 read-only; inert Storage port only",
+      "sourceCatalogHash": "33b97d3a27da5629e8196a9241f78400682bb9c053a7adbd49f0c4c7ec55b959",
+      "clone": "r01_clone_0ec12d83854f468daa5209eab2d8b43e",
+      "schemaParity": true,
+      "zeroApplicationTables": 158,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "private.bump_sponsorship_followup_version",
+          "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+        },
+        {
+          "name": "private.bump_supporter_edit_version",
+          "hash": "d1fd0a986ef9bb089e9d5025e4177a49"
+        },
+        {
+          "name": "private.has_admin_role",
+          "hash": "5369d861219863bb6601e7fa7d4be528"
+        },
+        {
+          "name": "private.increment_sponsorship_proof_revision",
+          "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+        },
+        {
+          "name": "private.is_valid_animal_public_profile",
+          "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+        },
+        {
+          "name": "private.normalize_public_animal_age",
+          "hash": "1f85086f172d61fff31de8d854f32a55"
+        },
+        {
+          "name": "private.preserve_sponsorship_contact_submission",
+          "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+        },
+        {
+          "name": "private.preserve_sponsorship_financial_history",
+          "hash": "2958be6daf21371da650f59bf5a89b15"
+        },
+        {
+          "name": "private.queue_sponsorship_transition",
+          "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+        },
+        {
+          "name": "private.snapshot_sponsorship_proof_contact",
+          "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+        },
+        {
+          "name": "private.sponsorship_cancel_transition",
+          "hash": "17036bab02ad4087b0727e395faac4b1"
+        },
+        {
+          "name": "private.sponsorship_proof_financial_transition",
+          "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+        },
+        {
+          "name": "public.enforce_current_animal_preference",
+          "hash": "5d9512de7da0c787523292316c6603e7"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.record_exact_sponsorship_payment_proof",
+          "hash": "2ab62b2fc24f6a119afce18e905a4099"
+        },
+        {
+          "name": "public.record_public_consent_intents",
+          "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+        },
+        {
+          "name": "public.record_sponsorship_payment_proof",
+          "hash": "e93e65d46d250f17a8df976521c9317e"
+        },
+        {
+          "name": "public.set_animal_catalog_membership_defaults",
+          "hash": "16d251076045243facecbe0088b5422c"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 44
+      },
+      "preferenceDependency": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "beforeDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "afterDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "onlyReviewedFunctionBodyDelta": true,
+        "allOtherCatalogPreserved": true,
+        "firstApply": 0,
+        "secondApply": 0,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "manifestBeforeTask3": {
+        "requirements": 146,
+        "issues": 41
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "function public execute",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong trigger",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent insert rule",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent unlogged",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent insert rule",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent unlogged",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        }
+      ],
+      "intentProfileHash": "952b221dbacb1fdf77ac0b59fa64e25c13ba099f61a4353039031e29b9c31b8a",
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 33
+      },
+      "migration": {
+        "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernTask3TargetsAndAllOtherCatalogPreserved": false,
+        "modernIntentionalPreferenceBodyDelta": false,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "rejected": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "function public execute",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "wrong trigger",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_proof_upload_intent insert rule",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_proof_upload_intent unlogged",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_staff_proof_upload_intent insert rule",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_staff_proof_upload_intent unlogged",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          }
+        ],
+        "dependency": {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "task1Applied": false
+        }
+      },
+      "testCommand": "bun test src/lib/sponsorship/submissionIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 12 pass",
+        " 0 fail",
+        " 74 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "fa65d6f8a3a056bf7033d2976be3aaa8bad89e74f7e10745a117ed3a3ca70fba",
+        "modernPreserved": true
+      },
+      "cleanup": "exact owned clone normally dropped; no force or session termination",
+      "completedAt": "2026-10-01T17:18:05.850Z",
+      "testedExecutableBlobsPreserved": true
+    },
+    "green-modern": {
+      "mode": "green-modern",
+      "startedAt": "2026-10-01T17:18:53.997Z",
+      "sourceCommit": "3a61d9d48d2dbbf645d72cfd7210b0425300e761",
+      "testedExecutableBlobs": {
+        "src/lib/sponsorship/submissionIntent.database.test.ts": {
+          "sha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da",
+          "canonicalSha256": "5939a6dbbbc91d1a019a3359191f260cbdd0b4621d2dfb4030209a69b34506da"
+        },
+        "supabase/rls-tests/helpers/runR01SponsorshipForward.ts": {
+          "sha256": "da8ee1e488af595a710c99e0b3174bb0eca3ffb5ceadd7ab4a33e2f91553a3a3",
+          "canonicalSha256": "da8ee1e488af595a710c99e0b3174bb0eca3ffb5ceadd7ab4a33e2f91553a3a3"
+        },
+        "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+          "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+          "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+        },
+        "src/lib/sponsorship/proofIntent.server.ts": {
+          "sha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3",
+          "canonicalSha256": "8d9aa4c096bfcd2a8d6d4f8522a04425ee7ce068bb646cf284db8685ca1229b3"
+        },
+        "src/lib/sponsorship/proofCleanup.server.ts": {
+          "sha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035",
+          "canonicalSha256": "8be0550acc94a8ad841b424d03f5bdd8282461fa302ff3498a591b837c4eb035"
+        },
+        "src/lib/sponsorship/submission.server.ts": {
+          "sha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c",
+          "canonicalSha256": "c78c884bc9d4f0b0de8185eb6f105e529b6e81381aa999b88b0fe3de508db87c"
+        },
+        "docs/evidence/audit-remediation-20260927/r01-forward/task-3-reviewed-paths.json": {
+          "sha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590",
+          "canonicalSha256": "c98cf7e061987c2518b13fa0fc38aac37e57b1b23de809f5b4653db5a963e590"
+        },
+        "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+          "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+          "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+        },
+        "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+        },
+        "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+          "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+          "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+        }
+      },
+      "productionActions": "catalog/schema reads only; zero production rows or actor RPC",
+      "environment": "unique guarded owned clone52322; source57322/template52322 read-only; inert Storage port only",
+      "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+      "clone": "r01_clone_c0a73da4229444c0ab334fca3162a7ac",
+      "schemaParity": true,
+      "zeroApplicationTables": 162,
+      "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+      "reviewedFunctions": [
+        {
+          "name": "private.bump_sponsorship_followup_version",
+          "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+        },
+        {
+          "name": "private.bump_supporter_edit_version",
+          "hash": "08619e0337db72d3d685130718c47538"
+        },
+        {
+          "name": "private.has_admin_role",
+          "hash": "5369d861219863bb6601e7fa7d4be528"
+        },
+        {
+          "name": "private.increment_sponsorship_proof_revision",
+          "hash": "c2deeea50dad2f8a74103e6d2cb9038f"
+        },
+        {
+          "name": "private.is_valid_animal_public_profile",
+          "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+        },
+        {
+          "name": "private.normalize_public_animal_age",
+          "hash": "1f85086f172d61fff31de8d854f32a55"
+        },
+        {
+          "name": "private.preserve_sponsorship_contact_submission",
+          "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+        },
+        {
+          "name": "private.preserve_sponsorship_financial_history",
+          "hash": "2958be6daf21371da650f59bf5a89b15"
+        },
+        {
+          "name": "private.queue_sponsorship_transition",
+          "hash": "102f43282fe6e2a6d779a07274f5ee3e"
+        },
+        {
+          "name": "private.snapshot_sponsorship_proof_contact",
+          "hash": "e03bbf5adcb14a5bf4e449a078d7c3b0"
+        },
+        {
+          "name": "private.sponsorship_cancel_transition",
+          "hash": "17036bab02ad4087b0727e395faac4b1"
+        },
+        {
+          "name": "private.sponsorship_proof_financial_transition",
+          "hash": "1cffd96ff9632a755a7a5597d6ee127c"
+        },
+        {
+          "name": "public.enforce_current_animal_preference",
+          "hash": "5d9512de7da0c787523292316c6603e7"
+        },
+        {
+          "name": "public.log_animal_mutation",
+          "hash": "264525288c36bf724df4dc72dcafba82"
+        },
+        {
+          "name": "public.record_exact_sponsorship_payment_proof",
+          "hash": "2ab62b2fc24f6a119afce18e905a4099"
+        },
+        {
+          "name": "public.record_public_consent_intents",
+          "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+        },
+        {
+          "name": "public.record_sponsorship_payment_proof",
+          "hash": "426bd826423032326a8252dd282544ff"
+        },
+        {
+          "name": "public.set_animal_catalog_membership_defaults",
+          "hash": "fa013ae528d796d1cdee6f769d16abeb"
+        },
+        {
+          "name": "public.set_updated_at",
+          "hash": "4d6804d5850641a33867814c9e76a714"
+        }
+      ],
+      "manifestBefore": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "preferenceDependency": {
+        "file": "20261001154743_r01_animal_preference_record_fields.sql",
+        "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+        "beforeDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "5d9512de7da0c787523292316c6603e7",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "afterDefinition": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "args": "",
+          "name": "enforce_current_animal_preference",
+          "owner": "postgres",
+          "config": [
+            "search_path=public, pg_temp"
+          ],
+          "result": "trigger",
+          "schema": "public",
+          "bodyMd5": "35e278e91a05873c5da7949cf4782b7a",
+          "definer": true,
+          "parallel": "u",
+          "volatility": "v"
+        },
+        "onlyReviewedFunctionBodyDelta": true,
+        "allOtherCatalogPreserved": true,
+        "firstApply": 0,
+        "secondApply": 0,
+        "rejected": [
+          {
+            "case": "unexpected body",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "public execute",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "wrong config",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "disabled attachment",
+            "sqlState": "55000",
+            "preserved": true
+          },
+          {
+            "case": "missing both attachments",
+            "sqlState": "55000",
+            "preserved": true
+          }
+        ]
+      },
+      "manifestBeforeTask3": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "preflightResults": [
+        {
+          "case": "client grant",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "owner ACL drift",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "service grant option",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "missing service right",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "function public execute",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong index",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong trigger",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "wrong function body",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent insert rule",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_proof_upload_intent unlogged",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent insert rule",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        },
+        {
+          "case": "sponsorship_staff_proof_upload_intent unlogged",
+          "sqlState": "55000",
+          "preserved": true,
+          "profilePreserved": true
+        }
+      ],
+      "intentProfileHash": "952b221dbacb1fdf77ac0b59fa64e25c13ba099f61a4353039031e29b9c31b8a",
+      "manifestAfter": {
+        "requirements": 146,
+        "issues": 1
+      },
+      "migration": {
+        "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+        "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+        "firstApply": 0,
+        "secondApply": 0,
+        "unrelatedCatalogPreserved": true,
+        "modernTask3TargetsAndAllOtherCatalogPreserved": true,
+        "modernIntentionalPreferenceBodyDelta": true,
+        "preexistingRowsPreserved": true,
+        "tempShadowPreserved": true,
+        "rejected": [
+          {
+            "case": "client grant",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "owner ACL drift",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "service grant option",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "missing service right",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "function public execute",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "wrong index",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "wrong trigger",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "wrong function body",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_proof_upload_intent insert rule",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_proof_upload_intent unlogged",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_staff_proof_upload_intent insert rule",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          },
+          {
+            "case": "sponsorship_staff_proof_upload_intent unlogged",
+            "sqlState": "55000",
+            "preserved": true,
+            "profilePreserved": true
+          }
+        ],
+        "dependency": {
+          "file": "20261001134252_r01_adoption_upload_forward.sql",
+          "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+          "task1Applied": false
+        }
+      },
+      "testCommand": "bun test src/lib/sponsorship/submissionIntent.database.test.ts --timeout 30000",
+      "testExit": 0,
+      "testSummary": [
+        "\n 12 pass",
+        " 0 fail",
+        " 74 expect() calls"
+      ],
+      "ledgerPreserved": true,
+      "preexistingSyntheticFactsPreservedAfterTests": true,
+      "result": "GREEN",
+      "originalSources": {
+        "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+        "templatePreserved": true,
+        "modernBeforeHash": "fa65d6f8a3a056bf7033d2976be3aaa8bad89e74f7e10745a117ed3a3ca70fba",
+        "modernPreserved": true
+      },
+      "cleanup": "exact owned clone normally dropped; no force or session termination",
+      "completedAt": "2026-10-01T17:19:55.485Z",
+      "testedExecutableBlobsPreserved": true
+    }
+  },
+  "finalGates": {
+    "phase": "final",
+    "source": "3a61d9d48d2dbbf645d72cfd7210b0425300e761",
+    "startedAt": "2026-10-01T17:20:21.460269+00:00",
+    "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+    "gates": [
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 46.25,
+        "log": "task-3-final-typecheck.log"
+      },
+      {
+        "gate": "tests",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 0,
+        "elapsedSeconds": 95.21,
+        "log": "task-3-final-tests.log",
+        "summary": [
+          "\n 3228 pass",
+          " 232 skip",
+          " 0 fail",
+          " 10477 expect() calls"
+        ]
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 0,
+        "elapsedSeconds": 57.62,
+        "log": "task-3-final-lint.log"
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 128.04,
+        "log": "task-3-final-build.log"
+      }
+    ],
+    "completedAt": "2026-10-01T17:25:48.587595+00:00"
+  },
+  "gateWrapper": {
+    "file": ".superpowers/sdd/r01-forward-schema-plan-20261001/run-task-3-gates.py",
+    "sha256": "a461dfde58e5b6a56a369524535f80e32959a2ca21227c238efa122c600280d6",
+    "command": "python .superpowers/sdd/r01-forward-schema-plan-20261001/run-task-3-gates.py final",
+    "exit": 0
+  },
+  "retainedIgnoredEvidence": [
+    {
+      "file": "task-3-fix-1-red-db.json",
+      "sha256": "ef17e7420094bd903bbc7dcbffbb2d6511fcf14d9abd5bf372d8099a522382c5",
+      "bytes": 10780
+    },
+    {
+      "file": "task-3-fix-1-red-runner.log",
+      "sha256": "5fcf216a6774ffceeb147b66346cbd36655303ace2cf1af59e6f98e8ea574aba",
+      "bytes": 9452
+    },
+    {
+      "file": "task-3-fix-1-green-db.json",
+      "sha256": "4318ee5c7e117a6aa195aaf0554c8e4da0107c0b6e64213710bbf8f9c8082387",
+      "bytes": 12948
+    },
+    {
+      "file": "task-3-fix-1-green-db.log",
+      "sha256": "cde700f9e20bcd2c00152672ca15020d764f772665a7bf30497cdd3e2839b50a",
+      "bytes": 2049
+    },
+    {
+      "file": "task-3-fix-1-green-modern-db.json",
+      "sha256": "e0984f78898f777e1049e6dadaf2b6cc53e2a2dff22ce9cdba1b97e20cabdea6",
+      "bytes": 12950
+    },
+    {
+      "file": "task-3-fix-1-green-modern-db.log",
+      "sha256": "35326247a11d53df7d66cec5de972963850656ce3284c124ffa8a1043408e974",
+      "bytes": 2049
+    },
+    {
+      "file": "task-3-fix-1-final-gates-runner.log",
+      "sha256": "de05ffb5b3104be5ca7a56c7748158cb9834d3837d02b02efa32e3c15bd68121",
+      "bytes": 573
+    },
+    {
+      "file": "task-3-final-typecheck.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    {
+      "file": "task-3-final-tests.log",
+      "sha256": "362a38ea5da73ab463c588b47c7df94092d60a168e1bab2f6b04b3afc9424376",
+      "bytes": 407806
+    },
+    {
+      "file": "task-3-final-lint.log",
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696
+    },
+    {
+      "file": "task-3-final-build.log",
+      "sha256": "330f3ede0754d4e676f0db10ae805d99e92f3896662c0a145f46f66e0c21274d",
+      "bytes": 120068
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-final-build.log",
+      "sha256": "e562b4ef4ce6b0a443ee79c5733504e7d114efeba94153ed79b7aee52e69739d",
+      "bytes": 120067
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-final-gates-runner.log",
+      "sha256": "56e6b54f93550d543bfe527bdc3df16595f5c9d1a18057574fdcb71cf3c077a3",
+      "bytes": 573
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-final-gates.json",
+      "sha256": "024132d34584b058a5aabeb6068d592744ebc357380ea536504786ff997d956e",
+      "bytes": 1140
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-final-lint.log",
+      "sha256": "4b77b16ead76de1cda1471c58463019e00b8f64b31608da6bab7ffbcffe76390",
+      "bytes": 14687
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-final-tests.log",
+      "sha256": "f5fd4b79b45a6a466cebb6971036a41a0e932c41f88b561875a8c39fbaa412d5",
+      "bytes": 408663
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-final-typecheck.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-fix-1-final-gates-runner.log",
+      "sha256": "e663d1b2def21c09ed7fb391873f9cc8e37688fadacf2b34dccd8ee301629552",
+      "bytes": 9808
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-fix-1-green-db.json",
+      "sha256": "1807154827e5b3104cf495f7cf346ba74206a36f019ae7134492f0f8adf8e038",
+      "bytes": 12948
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-fix-1-green-db.log",
+      "sha256": "9d4365b75fb5c2b72c20c95454de3aef6881cb54958bddd4a824f1de0bcc7da6",
+      "bytes": 2047
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-fix-1-green-modern-db.json",
+      "sha256": "951584c38494c6d480fcff71a35b3d9ec7eabd1786047bf7d644c48a342dce3c",
+      "bytes": 12950
+    },
+    {
+      "file": "task-3-fix-1-before-format-manifest-task-3-fix-1-green-modern-db.log",
+      "sha256": "d26d6b37c40198fddb6e1b9f1f5980b9ea1b6af5d1c78216e30d4c54d71b32ca",
+      "bytes": 2049
+    }
+  ],
+  "previousEvidence": "task-3-source-binding.json and task-3-final-gates.json retain original3a receipts/hashes; ignored artifacts copied under task-3-original8-3a61-* before new runs",
+  "gateDatabaseEffects": {
+    "clonePrestate": "fa65d6f8a3a056bf7033d2976be3aaa8bad89e74f7e10745a117ed3a3ca70fba",
+    "beforeFirstFix1Gates": "0e1437ff69c1c79049b572084871aa15e7097cc593b32b17c999f5b24d40f8f0",
+    "afterFix1Gates": {
+      "observedAt": "2026-10-01T17:26:25.712Z",
+      "templateHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+      "modernHash": "a409c86a5285e159081758f73f60f5f6bc8d5cd979ca7476da81397a397c6c5b",
+      "actions": "aggregate read-only helper; no restoration/reset/actor calls",
+      "scope": "post authorized synthetic full-gate fixtures, distinct from per-clone preservation"
+    },
+    "reason": "authorized synthetic checkout/instruction fixtures commit audit/policy writes on57322; no global across-gate modern equality claim, reset or source restoration"
+  },
+  "notRun": [
+    "exact Fix1 HEAD CI and scoped re-review (controller subsequent)",
+    "production migration/release/enablement",
+    "Task1-dependent full checkout/provider journey",
+    "remote Storage/provider/callback/email sending",
+    "hosted/browser actor UAT",
+    "generic shared-harness rewrite dependency validation"
+  ],
+  "retainedOriginal3aArtifactMap": [
+    {
+      "originalFile": "task-3-final-build.log",
+      "versionedFile": "task-3-original8-3a61-task-3-final-build.log",
+      "sha256": "8b801314f9535d2ff62d48eec319e9a9b2a82f8464695be307fa9e582e025145",
+      "bytes": 120067
+    },
+    {
+      "originalFile": "task-3-final-gates-runner.log",
+      "versionedFile": "task-3-original8-3a61-task-3-final-gates-runner.log",
+      "sha256": "56e6b54f93550d543bfe527bdc3df16595f5c9d1a18057574fdcb71cf3c077a3",
+      "bytes": 573
+    },
+    {
+      "originalFile": "task-3-final-gates.json",
+      "versionedFile": "task-3-original8-3a61-task-3-final-gates.json",
+      "sha256": "76fb10ba374efd446153653ddd6a6b493d02928c4a90931d2d75bc9660df4577",
+      "bytes": 1142
+    },
+    {
+      "originalFile": "task-3-final-lint.log",
+      "versionedFile": "task-3-original8-3a61-task-3-final-lint.log",
+      "sha256": "e585b5e60a02fa30eafafebbaa230c2a2cb11842f92bc42a5991ca99220ae05a",
+      "bytes": 13696
+    },
+    {
+      "originalFile": "task-3-final-tests.log",
+      "versionedFile": "task-3-original8-3a61-task-3-final-tests.log",
+      "sha256": "caf154092b1a3ea19fdeb2b5c0b4101e201ed01dcca7f7a36006dbb5ac7be767",
+      "bytes": 407907
+    },
+    {
+      "originalFile": "task-3-final-typecheck.log",
+      "versionedFile": "task-3-original8-3a61-task-3-final-typecheck.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "bytes": 15
+    },
+    {
+      "originalFile": "task-3-green-db.json",
+      "versionedFile": "task-3-original8-3a61-task-3-green-db.json",
+      "sha256": "065298d8e83491daa0d3be3bc15e227b08d8fb259c46d75f976173a0f81ec1f6",
+      "bytes": 10195
+    },
+    {
+      "originalFile": "task-3-green-db.log",
+      "versionedFile": "task-3-original8-3a61-task-3-green-db.log",
+      "sha256": "3094c7d1295a70f4e1ab80e63810ced1c20e03414ba0cfb8cb073d77548555ce",
+      "bytes": 2044
+    },
+    {
+      "originalFile": "task-3-green-modern-db.json",
+      "versionedFile": "task-3-original8-3a61-task-3-green-modern-db.json",
+      "sha256": "fde92f3fb89fef2b880d392e3e2907790940dabafd42f4dd723f5ecdca5b78ee",
+      "bytes": 10197
+    },
+    {
+      "originalFile": "task-3-green-modern-db.log",
+      "versionedFile": "task-3-original8-3a61-task-3-green-modern-db.log",
+      "sha256": "4f40eb2ff73320c2e739bbfe1dbb550c631d1c509e14ab3142da4fa97981a084",
+      "bytes": 2045
+    },
+    {
+      "originalFile": "task-3-post-gate-source-state.json",
+      "versionedFile": "task-3-original8-3a61-task-3-post-gate-source-state.json",
+      "sha256": "fe5bdcf5e7a961d260e2ce66fe673b0fa4f99913c13001178c7a5127a47c4aa8",
+      "bytes": 391
+    }
+  ],
+  "firstFix1GateFailure": {
+    "phase": "final",
+    "source": "3a61d9d48d2dbbf645d72cfd7210b0425300e761",
+    "startedAt": "2026-10-01T17:10:20.213856+00:00",
+    "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+    "gates": [
+      {
+        "gate": "typecheck",
+        "command": "bun run typecheck",
+        "exit": 0,
+        "elapsedSeconds": 47.16,
+        "log": "task-3-final-typecheck.log"
+      },
+      {
+        "gate": "tests",
+        "command": "bun test --isolate --timeout 30000",
+        "exit": 1,
+        "elapsedSeconds": 93.6,
+        "log": "task-3-final-tests.log",
+        "summary": [
+          "\n 3227 pass",
+          " 232 skip",
+          " 1 fail",
+          " 10477 expect() calls"
+        ]
+      },
+      {
+        "gate": "lint",
+        "command": "bun run lint",
+        "exit": 1,
+        "elapsedSeconds": 68.26,
+        "log": "task-3-final-lint.log"
+      },
+      {
+        "gate": "build",
+        "command": "bun run build",
+        "exit": 0,
+        "elapsedSeconds": 79.23,
+        "log": "task-3-final-build.log"
+      }
+    ],
+    "completedAt": "2026-10-01T17:15:08.474649+00:00"
+  }
+}
