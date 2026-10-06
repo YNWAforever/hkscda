@@ -661,7 +661,7 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
   // Read definitions across schemas: a public trigger may call an external helper.
   // No definition is invoked; bodies remain in memory and never enter receipts.
   const rows = (await sql.unsafe(
-    "select p.oid,n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.proconfig config,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(p.proowner) owner,p.pronargs arguments,array(select tn.nspname||'.'||t.typname from unnest(p.proargtypes) with ordinality a(type_oid,position) join pg_type t on t.oid=a.type_oid join pg_namespace tn on tn.oid=t.typnamespace order by a.position) \"argumentTypes\",format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
+    "select p.oid,n.nspname schema,p.proname name,case when p.prokind in ('f','p') then pg_get_functiondef(p.oid) else '' end body,l.lanname language,(n.nspname='pg_catalog' and p.oid<16384) system,p.prosrc source,p.proconfig config,p.probin library,e.extname extension,e.extversion \"extensionVersion\",pg_get_userbyid(e.extowner) \"extensionOwner\",(select nspname from pg_namespace where oid=e.extnamespace) \"extensionSchema\",d.deptype membership,pg_get_userbyid(p.proowner) owner,p.prokind kind,p.prosecdef definer,p.pronargdefaults defaults,pg_get_expr(p.proargdefaults,0) \"defaultExpression\",p.provolatile volatility,p.proparallel parallel,p.proisstrict strict,p.proleakproof leakproof,p.procost cost,p.prorows rows,p.prosupport::oid support,p.proretset \"returnsSet\",p.provariadic::oid variadic,p.protrftypes transforms,p.proallargtypes \"allArgumentTypes\",p.proargmodes \"argumentModes\",p.proargnames \"argumentNames\",p.prosqlbody::text \"sqlBody\",(select n.nspname||'.'||t.typname from pg_type t join pg_namespace n on n.oid=t.typnamespace where t.oid=p.prorettype) \"resultType\",(select jsonb_agg(jsonb_build_object('grantor',pg_get_userbyid(x.grantor),'grantee',case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end,'privilege',x.privilege_type,'grantable',x.is_grantable) order by case when x.grantee=0 then 'PUBLIC' else pg_get_userbyid(x.grantee) end) from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x) \"nativeAcl\",(select jsonb_build_object('kind',a.aggkind,'directArguments',a.aggnumdirectargs,'transition',a.aggtransfn::oid::bigint,'combine',a.aggcombinefn::oid::bigint,'final',a.aggfinalfn::oid::bigint,'serial',a.aggserialfn::oid::bigint,'deserial',a.aggdeserialfn::oid::bigint,'movingTransition',a.aggmtransfn::oid::bigint,'movingInverseTransition',a.aggminvtransfn::oid::bigint,'movingFinal',a.aggmfinalfn::oid::bigint,'finalExtra',a.aggfinalextra,'movingFinalExtra',a.aggmfinalextra,'finalModify',a.aggfinalmodify,'movingFinalModify',a.aggmfinalmodify,'sortOperator',a.aggsortop::bigint,'transitionType',(select n.nspname||'.'||t.typname from pg_type t join pg_namespace n on n.oid=t.typnamespace where t.oid=a.aggtranstype),'transitionSpace',a.aggtransspace,'movingTransitionType',(select n.nspname||'.'||t.typname from pg_type t join pg_namespace n on n.oid=t.typnamespace where t.oid=a.aggmtranstype),'movingTransitionSpace',a.aggmtransspace,'initial',a.agginitval,'movingInitial',a.aggminitval) from pg_aggregate a where a.aggfnoid=p.oid) aggregation,p.pronargs arguments,array(select tn.nspname||'.'||t.typname from unnest(p.proargtypes) with ordinality a(type_oid,position) join pg_type t on t.oid=a.type_oid join pg_namespace tn on tn.oid=t.typnamespace order by a.position) \"argumentTypes\",format_type(p.prorettype,-1) result from pg_proc p join pg_namespace n on n.oid=p.pronamespace join pg_language l on l.oid=p.prolang left join pg_depend d on d.classid='pg_proc'::regclass and d.objid=p.oid and d.deptype='e' and d.refclassid='pg_extension'::regclass left join pg_extension e on e.oid=d.refobjid where n.nspname !~ '^pg_toast'",
   )) as {
     schema: string;
     name: string;
@@ -678,6 +678,52 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
     result: string;
     oid: number;
     argumentTypes: string[];
+    extensionOwner: string | null;
+    extensionSchema: string | null;
+    membership: string | null;
+    kind: string;
+    definer: boolean;
+    defaults: number;
+    defaultExpression: string | null;
+    volatility: string;
+    parallel: string;
+    strict: boolean;
+    leakproof: boolean;
+    cost: number;
+    rows: number;
+    support: number;
+    returnsSet: boolean;
+    variadic: number;
+    transforms: number[] | null;
+    allArgumentTypes: number[] | null;
+    argumentModes: string[] | null;
+    argumentNames: string[] | null;
+    sqlBody: string | null;
+    resultType: string;
+    nativeAcl: { grantor: string; grantee: string; privilege: string; grantable: boolean }[] | null;
+    aggregation: {
+      kind: string;
+      directArguments: number;
+      transition: number;
+      combine: number;
+      final: number;
+      serial: number;
+      deserial: number;
+      movingTransition: number;
+      movingInverseTransition: number;
+      movingFinal: number;
+      finalExtra: boolean;
+      movingFinalExtra: boolean;
+      finalModify: string;
+      movingFinalModify: string;
+      sortOperator: number;
+      transitionType: string;
+      transitionSpace: number;
+      movingTransitionType: string | null;
+      movingTransitionSpace: number;
+      initial: string | null;
+      movingInitial: string | null;
+    } | null;
   }[];
   // Operators can invoke opaque code without spelling a function call. Do not
   // infer operand types or overload resolution: every possible overload must
@@ -779,6 +825,123 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
       reviewedPlanner(o.join, o.joinOid, c[4], c[5], true)
     );
   };
+  // Ruling27: only the captured citext1.6 aggregates and exact callbacks.
+  // ACL/membership/default/config checks bind the native implementation rather
+  // than accepting a function name, extension name or arbitrary aggregate.
+  const capturedCitext = (r: (typeof rows)[number], kind: "f" | "a", strict: boolean) =>
+    r.schema === "public" &&
+    r.owner === "supabase_admin" &&
+    r.extension === "citext" &&
+    r.extensionVersion === "1.6" &&
+    r.extensionOwner === "supabase_admin" &&
+    r.extensionSchema === "public" &&
+    r.membership === "e" &&
+    r.kind === kind &&
+    r.definer === false &&
+    r.config === null &&
+    r.defaults === 0 &&
+    r.defaultExpression === null &&
+    r.volatility === "i" &&
+    r.parallel === "s" &&
+    r.strict === strict &&
+    r.leakproof === false &&
+    r.cost === 1 &&
+    r.rows === 0 &&
+    r.support === 0 &&
+    r.returnsSet === false &&
+    r.variadic === 0 &&
+    r.transforms === null &&
+    r.allArgumentTypes === null &&
+    r.argumentModes === null &&
+    r.argumentNames === null &&
+    r.sqlBody === null &&
+    Array.isArray(r.nativeAcl) &&
+    r.nativeAcl.length === 6 &&
+    ["PUBLIC", "anon", "authenticated", "postgres", "service_role", "supabase_admin"].every(
+      (grantee) =>
+        r.nativeAcl!.filter(
+          (a) =>
+            a.grantee === grantee &&
+            a.grantor === "supabase_admin" &&
+            a.privilege === "EXECUTE" &&
+            a.grantable === false,
+        ).length === 1,
+    );
+  const capturedCitextCallback = (r: (typeof rows)[number], name: string, result: string) =>
+    r.name === name &&
+    capturedCitext(r, "f", true) &&
+    r.language === "c" &&
+    r.source === name &&
+    r.library === "$libdir/citext" &&
+    r.arguments === 2 &&
+    JSON.stringify(r.argumentTypes) === JSON.stringify(["public.citext", "public.citext"]) &&
+    r.resultType === result;
+  const reviewedAggregateNative = (r: (typeof rows)[number]) =>
+    ["citext_smaller", "citext_larger"].includes(r.name) &&
+    capturedCitextCallback(r, r.name, "public.citext") &&
+    r.aggregation === null;
+  const reviewedAggregate = (r: (typeof rows)[number]) => {
+    if (
+      !["min", "max"].includes(r.name) ||
+      !capturedCitext(r, "a", false) ||
+      r.language !== "internal" ||
+      r.source !== "aggregate_dummy" ||
+      r.library !== null ||
+      r.arguments !== 1 ||
+      JSON.stringify(r.argumentTypes) !== JSON.stringify(["public.citext"]) ||
+      r.resultType !== "public.citext"
+    )
+      return false;
+    const a = r.aggregation,
+      minimum = r.name === "min";
+    if (
+      !a ||
+      a.kind !== "n" ||
+      a.directArguments !== 0 ||
+      a.transitionType !== "public.citext" ||
+      a.transitionSpace !== 0 ||
+      a.initial !== null ||
+      a.movingTransitionType !== null ||
+      a.movingTransitionSpace !== 0 ||
+      a.movingInitial !== null ||
+      a.finalExtra !== false ||
+      a.movingFinalExtra !== false ||
+      a.finalModify !== "r" ||
+      a.movingFinalModify !== "r" ||
+      [
+        a.final,
+        a.serial,
+        a.deserial,
+        a.movingTransition,
+        a.movingInverseTransition,
+        a.movingFinal,
+      ].some((x) => x !== 0)
+    )
+      return false;
+    const support = rows.find((p) => p.oid === a.transition);
+    if (
+      !support ||
+      !reviewedAggregateNative(support) ||
+      a.combine !== support.oid ||
+      support.name !== (minimum ? "citext_smaller" : "citext_larger")
+    )
+      return false;
+    const sort = operators.find((o) => o.oid === a.sortOperator);
+    const callback = rows.find((p) => p.oid === sort?.implementationOid);
+    return (
+      !!sort &&
+      sort.owner === "supabase_admin" &&
+      sort.schema === "public" &&
+      sort.name === (minimum ? "<" : ">") &&
+      reviewedOperator(sort) &&
+      !!callback &&
+      capturedCitextCallback(callback, minimum ? "citext_lt" : "citext_gt", "pg_catalog.bool") &&
+      sort.restriction === (minimum ? "pg_catalog.scalarltsel" : "pg_catalog.scalargtsel") &&
+      sort.restrictionOid === (minimum ? 103 : 104) &&
+      sort.join === (minimum ? "pg_catalog.scalarltjoinsel" : "pg_catalog.scalargtjoinsel") &&
+      sort.joinOid === (minimum ? 107 : 108)
+    );
+  };
   const customSymbols = new Set(operators.filter((o) => !reviewedOperator(o)).map((o) => o.name));
   const unsafeOperator = (body: string, resolved?: number[], ownCoreScope = false) => {
     // Stored defaults/checks are deparsed under pg_catalog-only search_path.
@@ -862,7 +1025,9 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
           (!r.system &&
             !reviewedUuid(r) &&
             !reviewedNative(r) &&
-            !["sql", "plpgsql"].includes(r.language)),
+            !reviewedAggregateNative(r) &&
+            !reviewedAggregate(r) &&
+            (r.kind === "a" || r.aggregation != null || !["sql", "plpgsql"].includes(r.language))),
       )
       .map((r) => `${r.schema}.${r.name}`),
   );
@@ -884,6 +1049,8 @@ export async function assertSafeFixtureTables(sql: SQL, tables: string[]) {
         !r.system &&
         !reviewedUuid(r) &&
         !reviewedNative(r) &&
+        !reviewedAggregateNative(r) &&
+        !reviewedAggregate(r) &&
         !unsafe.has(`${r.schema}.${r.name}`) &&
         [...unsafe].some((name) => calls(r.body, name))
       ) {

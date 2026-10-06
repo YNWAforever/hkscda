@@ -1,0 +1,27 @@
+import { captureProductionSchema, captureModernLocalSchema, createProductionClone, assertSafeFixtureTables, snapshot, hash, localSourceState } from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
+import { writeFile } from "node:fs/promises";
+if (process.env.R01_VOLUNTEER_ALLOW_LOCAL_FIXTURES !== "1") throw new Error("Explicit isolated fixture optin required");
+const profile = process.argv[2];
+if (!["modern", "hosted"].includes(profile)) throw new Error("Exact read-only profile required");
+const modernUrl = "postgresql://postgres:postgres@127.0.0.1:57322/postgres";
+const modernBefore = await localSourceState(modernUrl);
+const capture = profile === "modern" ? await captureModernLocalSchema() : await captureProductionSchema();
+const clone = await createProductionClone(capture);
+const tables = ["auth.users", "admin_user", "supporter", "volunteer_activity", "volunteer_registration", "supporter_consent_intent", "audit_log"];
+const receipt: Record<string, unknown> = { profile, sourceCatalogHash: hash(capture.catalog), clone: clone.name, schemaParity: true, zeroApplicationTables: clone.tableCount, tables, environment: "new schema-only loopback clone; no application fixture DML or provider call", startedAt: new Date().toISOString() };
+try {
+  const before = hash(await snapshot(clone.sql));
+  await assertSafeFixtureTables(clone.sql, tables);
+  receipt.fullOriginalScopeAccepted = true;
+  receipt.catalogUnchanged = before === hash(await snapshot(clone.sql));
+  if (!receipt.catalogUnchanged) throw new Error("Scan changed metadata");
+} finally {
+  await clone.close();
+  receipt.templatePreserved = clone.templatePreserved;
+  receipt.modernPreserved = modernBefore === await localSourceState(modernUrl);
+  receipt.cleanup = "normal exact owned clone DROP, no shared roles/DB/ledger mutation";
+  receipt.completedAt = new Date().toISOString();
+  await writeFile(new URL(`./task8-scan-${profile}-native-json.json`, import.meta.url), JSON.stringify(receipt, null, 2) + "\n", { flag: "wx" });
+  if (!receipt.templatePreserved || !receipt.modernPreserved) throw new Error("Original synthetic sources changed");
+  console.log(JSON.stringify(receipt));
+}

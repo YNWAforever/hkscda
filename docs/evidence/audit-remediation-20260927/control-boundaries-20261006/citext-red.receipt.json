@@ -1,0 +1,56 @@
+{
+  "atUtc": "2026-10-06T13:57:26.859566+00:00",
+  "endUtc": "2026-10-06T13:57:27.061740+00:00",
+  "name": "citext-red",
+  "argv": [
+    "C:/Users/laich/.bun/bin/bun.exe",
+    "--no-env-file",
+    "test",
+    "supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts"
+  ],
+  "pid": 7160,
+  "supervisorPid": 43864,
+  "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001",
+  "SHA": "a3125547139dee5c022c1701b063e431790dcec3",
+  "dirtyCandidatePins": [
+    {
+      "path": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+      "sha256": "5c25abdd2507c102e2892db9c8ed878132301ca7aecd55c9e33f304790d230c6"
+    },
+    {
+      "path": "src/lib/donations/idempotency.database.test.ts",
+      "sha256": "bfd695ea12efde602842f0559dff9b21242f4939b71ef21eef2e2128dabfdbf1"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/runR01Forward.ts",
+      "sha256": "5bc0ce675724788754ad9d0ab9e150456c5b749c92fb7a79032b07a0576bd9df"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/paymentIntentAcl.ts",
+      "sha256": "63cd7dc3f44abf8555087da203e604a1d7d74f7d5dd93da7374728ee508253c0"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaClone.ts",
+      "sha256": "baaf4eb47ad7cf726963f745573dd871ba50489f519b08e5fb08549855a4b49d"
+    },
+    {
+      "path": "supabase/rls-tests/helpers/productionSchemaCloneAggregates.test.ts",
+      "sha256": "928ddac130800f93bf384f8de6134fd810c0a2f2546f7043085f7906ca3ff651"
+    }
+  ],
+  "exit": 1,
+  "elapsedSeconds": 0.20217929998761974,
+  "environment": "OS-only inheritance; Bun dotenv disabled; provider credentials absent; synthetic/unavailable loopback; only focused disposable-clone optin as named",
+  "streams": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\control-boundaries-20261006\\citext-red.stdout",
+      "bytes": 28,
+      "SHA256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\control-boundaries-20261006\\citext-red.stderr",
+      "bytes": 1499,
+      "SHA256": "23bf29474aa294b7cf6276bddd47c4d887594675739e8f457a1bd566aed44178"
+    }
+  ]
+}
