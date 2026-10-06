@@ -83,7 +83,14 @@ try {
   }
   receipt.baselineAccepted = true;
   receipt.baselineRollbackPreserved = baseline === hash(await snapshot(db));
-  const results = [];
+  const results: {
+    name: string;
+    setup: string;
+    setupReached: boolean;
+    expected: string;
+    actual: string;
+    preserved: boolean;
+  }[] = [];
   receipt.results = results;
   for (const [name, setup] of cases) {
     let setupReached = false,

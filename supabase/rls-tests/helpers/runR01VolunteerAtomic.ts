@@ -202,7 +202,7 @@ try {
       ],
       ["unlogged persistence", "alter table public.audit_log set unlogged"],
     ];
-    const refusals = [];
+    const refusals: { name: string; errno: string; preserved: boolean }[] = [];
     receipt.refusals = refusals;
     for (const [name, setup] of negatives) {
       let code = "success";
