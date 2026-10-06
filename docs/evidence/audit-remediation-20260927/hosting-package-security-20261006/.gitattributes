@@ -1,0 +1,5 @@
+* -text
+*.stdout -diff
+*.stderr -diff
+*.receipt.json -diff
+*.source -diff
