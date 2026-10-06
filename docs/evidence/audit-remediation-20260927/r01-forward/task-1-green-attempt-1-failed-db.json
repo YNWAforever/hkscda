@@ -1,0 +1,48 @@
+{
+  "mode": "green",
+  "startedAt": "2026-10-01T10:15:50.476Z",
+  "productionActions": "schema/catalog reads only; no production rows or mutation",
+  "environment": "new guarded DB at loopback52322; managed synthetic Auth/Storage retained",
+  "sourceCatalogHash": "35bb5327140b49ae9ee3c507b468d5ef3d2f43e21745a0a2830a86c09b9dd170",
+  "catalogCounts": {
+    "columns": 2176,
+    "constraints": 808,
+    "databaseOwner": "postgres",
+    "defaults": 6,
+    "extensionMembers": 136,
+    "extensions": 2,
+    "functions": 353,
+    "indexes": 396,
+    "memberships": null,
+    "policies": 82,
+    "relations": 557,
+    "roles": 5,
+    "schemas": 2,
+    "triggers": 145,
+    "types": 326,
+    "views": 3
+  },
+  "clone": "r01_clone_d2b096370fb2423cb56a575821e163f3",
+  "schemaParity": true,
+  "zeroApplicationTables": 158,
+  "managedPrerequisitesHash": "482cc9eb2636bcdcc71e4217c34992570389e0c668119ef3ebe74d0a3464b00c",
+  "legacyFactsBeforeHash": "2524f20744f4d0329cfb76efbdfb0a5d336c53ec8279f710c8a7ed022213633b",
+  "migration": {
+    "file": "20261001101333_r01_payment_idempotency_forward.sql",
+    "canonicalSha256": "5c25abdd2507c102e2892db9c8ed878132301ca7aecd55c9e33f304790d230c6",
+    "firstApply": 0,
+    "secondApply": 0,
+    "secondApplyCatalogHash": "8443ecd3d16b4b40a311c200588d2aa21957309a915bffd6a645f15d77bdb2e1",
+    "legacyFactsPreserved": true,
+    "metadataPreserved": true
+  },
+  "testCommand": "bun test src/lib/donations/idempotency.database.test.ts --timeout 30000",
+  "testExit": 1,
+  "testSummary": [
+    "\n 5 pass",
+    " 1 fail",
+    " 23 expect() calls"
+  ],
+  "cleanup": "only exact newly-created clone dropped without FORCE/session termination",
+  "completedAt": "2026-10-01T10:20:09.292Z"
+}

@@ -1,0 +1,20 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\helpers\productionSchemaClone.test.ts:
+(pass) R01 test-only clone boundaries > remote, existing, ambiguous and unexpected-credential DB URLs are refused [2.14ms]
+(pass) R01 test-only clone boundaries > catalog comparison ignores JSON key order and detects grant option/owner changes [7.04ms]
+(pass) R01 test-only clone boundaries > data, role, cluster, schedule and network invocation SQL cannot enter restore [1.51ms]
+(pass) R01 test-only clone boundaries > dollar-quoted function bodies are stored as one definition without invocation [0.70ms]
+(pass) R01 test-only clone boundaries > pinned dump inert settings allow quoted heap but never role or replication changes [0.17ms]
+(pass) R01 test-only clone boundaries > CTAS and non-definition TABLE forms are rejected without evaluating requests [0.51ms]
+(pass) R01 test-only clone boundaries > all reviewed HTTP verbs and direct webhook entrypoints are refused in executable DDL [0.14ms]
+(pass) R01 test-only clone boundaries > direct external webhook trigger is rejected even without a collected body [0.72ms]
+(pass) R01 test-only clone boundaries > transitive external-schema executable bodies are inspected before fixtures [0.59ms]
+(pass) R01 test-only clone boundaries > unreviewed external C and missing trigger entrypoints fail closed [0.10ms]
+(pass) R01 test-only clone boundaries > only exact reviewed pgcrypto UUID implementation can pass opaque-function fencing [0.55ms]
+(pass) R01 test-only clone boundaries > inspected safe external SQL helper remains usable, while absent dependencies fail closed [0.13ms]
+
+ 12 pass
+ 0 fail
+ 45 expect() calls
+Ran 12 tests across 1 file. [119.00ms]

@@ -1,0 +1,12 @@
+332 |       );
+333 |     if (
+334 |       !storesOnly &&
+335 |       (networkPrimitive.test(statement) || [...unsafe].some((name) => calls(statement, name)))
+336 |     )
+337 |       throw new Error("Potential network-bearing DDL evaluation refused");
+                      ^
+error: Potential network-bearing DDL evaluation refused
+      at schemaStatements (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.ts:337:17)
+      at captureModernLocalSchema (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\r01-forward-repair-20261001\supabase\rls-tests\helpers\productionSchemaClone.ts:396:5)
+
+Bun v1.3.14 (Windows x64)
