@@ -1,1 +1,3 @@
 task-8-raw-receipts.zip -text -diff
+task-8-fix-1-raw-receipts.zip -text -diff
+task-8-fix-1-raw-manifest.json -text
