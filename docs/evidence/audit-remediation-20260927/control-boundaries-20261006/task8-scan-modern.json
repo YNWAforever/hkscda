@@ -1,0 +1,22 @@
+{
+  "profile": "modern",
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "clone": "r01_clone_dcaa0955236645aca20f7375a378efd9",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "tables": [
+    "auth.users",
+    "admin_user",
+    "supporter",
+    "volunteer_activity",
+    "volunteer_registration",
+    "supporter_consent_intent",
+    "audit_log"
+  ],
+  "environment": "new schema-only loopback clone; no application fixture DML or provider call",
+  "startedAt": "2026-10-06T14:16:14.761Z",
+  "templatePreserved": true,
+  "modernPreserved": true,
+  "cleanup": "normal exact owned clone DROP, no shared roles/DB/ledger mutation",
+  "completedAt": "2026-10-06T14:16:16.965Z"
+}

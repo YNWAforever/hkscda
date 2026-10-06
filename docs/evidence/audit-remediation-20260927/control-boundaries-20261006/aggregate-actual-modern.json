@@ -1,0 +1,536 @@
+[
+  {
+    "oid": 17880,
+    "schema": "public",
+    "name": "citext_lt",
+    "language": "c",
+    "system": false,
+    "source": "citext_lt",
+    "config": null,
+    "library": "$libdir/citext",
+    "extension": "citext",
+    "extensionVersion": "1.6",
+    "extensionOwner": "supabase_admin",
+    "extensionSchema": "public",
+    "membership": "e",
+    "owner": "supabase_admin",
+    "kind": "f",
+    "definer": false,
+    "defaults": 0,
+    "defaultExpression": null,
+    "volatility": "i",
+    "parallel": "s",
+    "strict": true,
+    "leakproof": false,
+    "cost": 1,
+    "rows": 0,
+    "support": 0,
+    "returnsSet": false,
+    "variadic": 0,
+    "transforms": null,
+    "allArgumentTypes": null,
+    "argumentModes": null,
+    "argumentNames": null,
+    "sqlBody": null,
+    "resultType": "pg_catalog.bool",
+    "nativeAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_admin",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "aggregation": null,
+    "arguments": 2,
+    "argumentTypes": [
+      "public.citext",
+      "public.citext"
+    ],
+    "result": "boolean",
+    "bodyHasSlash": true,
+    "bodyBytes": 172
+  },
+  {
+    "oid": 17882,
+    "schema": "public",
+    "name": "citext_gt",
+    "language": "c",
+    "system": false,
+    "source": "citext_gt",
+    "config": null,
+    "library": "$libdir/citext",
+    "extension": "citext",
+    "extensionVersion": "1.6",
+    "extensionOwner": "supabase_admin",
+    "extensionSchema": "public",
+    "membership": "e",
+    "owner": "supabase_admin",
+    "kind": "f",
+    "definer": false,
+    "defaults": 0,
+    "defaultExpression": null,
+    "volatility": "i",
+    "parallel": "s",
+    "strict": true,
+    "leakproof": false,
+    "cost": 1,
+    "rows": 0,
+    "support": 0,
+    "returnsSet": false,
+    "variadic": 0,
+    "transforms": null,
+    "allArgumentTypes": null,
+    "argumentModes": null,
+    "argumentNames": null,
+    "sqlBody": null,
+    "resultType": "pg_catalog.bool",
+    "nativeAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_admin",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "aggregation": null,
+    "arguments": 2,
+    "argumentTypes": [
+      "public.citext",
+      "public.citext"
+    ],
+    "result": "boolean",
+    "bodyHasSlash": true,
+    "bodyBytes": 172
+  },
+  {
+    "oid": 17904,
+    "schema": "public",
+    "name": "citext_smaller",
+    "language": "c",
+    "system": false,
+    "source": "citext_smaller",
+    "config": null,
+    "library": "$libdir/citext",
+    "extension": "citext",
+    "extensionVersion": "1.6",
+    "extensionOwner": "supabase_admin",
+    "extensionSchema": "public",
+    "membership": "e",
+    "owner": "supabase_admin",
+    "kind": "f",
+    "definer": false,
+    "defaults": 0,
+    "defaultExpression": null,
+    "volatility": "i",
+    "parallel": "s",
+    "strict": true,
+    "leakproof": false,
+    "cost": 1,
+    "rows": 0,
+    "support": 0,
+    "returnsSet": false,
+    "variadic": 0,
+    "transforms": null,
+    "allArgumentTypes": null,
+    "argumentModes": null,
+    "argumentNames": null,
+    "sqlBody": null,
+    "resultType": "public.citext",
+    "nativeAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_admin",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "aggregation": null,
+    "arguments": 2,
+    "argumentTypes": [
+      "public.citext",
+      "public.citext"
+    ],
+    "result": "citext",
+    "bodyHasSlash": true,
+    "bodyBytes": 181
+  },
+  {
+    "oid": 17905,
+    "schema": "public",
+    "name": "citext_larger",
+    "language": "c",
+    "system": false,
+    "source": "citext_larger",
+    "config": null,
+    "library": "$libdir/citext",
+    "extension": "citext",
+    "extensionVersion": "1.6",
+    "extensionOwner": "supabase_admin",
+    "extensionSchema": "public",
+    "membership": "e",
+    "owner": "supabase_admin",
+    "kind": "f",
+    "definer": false,
+    "defaults": 0,
+    "defaultExpression": null,
+    "volatility": "i",
+    "parallel": "s",
+    "strict": true,
+    "leakproof": false,
+    "cost": 1,
+    "rows": 0,
+    "support": 0,
+    "returnsSet": false,
+    "variadic": 0,
+    "transforms": null,
+    "allArgumentTypes": null,
+    "argumentModes": null,
+    "argumentNames": null,
+    "sqlBody": null,
+    "resultType": "public.citext",
+    "nativeAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_admin",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "aggregation": null,
+    "arguments": 2,
+    "argumentTypes": [
+      "public.citext",
+      "public.citext"
+    ],
+    "result": "citext",
+    "bodyHasSlash": true,
+    "bodyBytes": 179
+  },
+  {
+    "oid": 17906,
+    "schema": "public",
+    "name": "min",
+    "language": "internal",
+    "system": false,
+    "source": "aggregate_dummy",
+    "config": null,
+    "library": null,
+    "extension": "citext",
+    "extensionVersion": "1.6",
+    "extensionOwner": "supabase_admin",
+    "extensionSchema": "public",
+    "membership": "e",
+    "owner": "supabase_admin",
+    "kind": "a",
+    "definer": false,
+    "defaults": 0,
+    "defaultExpression": null,
+    "volatility": "i",
+    "parallel": "s",
+    "strict": false,
+    "leakproof": false,
+    "cost": 1,
+    "rows": 0,
+    "support": 0,
+    "returnsSet": false,
+    "variadic": 0,
+    "transforms": null,
+    "allArgumentTypes": null,
+    "argumentModes": null,
+    "argumentNames": null,
+    "sqlBody": null,
+    "resultType": "public.citext",
+    "nativeAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_admin",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "aggregation": {
+      "kind": "n",
+      "final": "0",
+      "serial": "0",
+      "combine": "17904",
+      "initial": null,
+      "deserial": "0",
+      "finalExtra": false,
+      "transition": "17904",
+      "finalModify": "r",
+      "movingFinal": "0",
+      "sortOperator": "17888",
+      "movingInitial": null,
+      "transitionType": "public.citext",
+      "directArguments": 0,
+      "transitionSpace": 0,
+      "movingFinalExtra": false,
+      "movingTransition": "0",
+      "movingFinalModify": "r",
+      "movingTransitionType": null,
+      "movingTransitionSpace": 0,
+      "movingInverseTransition": "0"
+    },
+    "arguments": 1,
+    "argumentTypes": [
+      "public.citext"
+    ],
+    "result": "citext",
+    "bodyHasSlash": false,
+    "bodyBytes": 0
+  },
+  {
+    "oid": 17907,
+    "schema": "public",
+    "name": "max",
+    "language": "internal",
+    "system": false,
+    "source": "aggregate_dummy",
+    "config": null,
+    "library": null,
+    "extension": "citext",
+    "extensionVersion": "1.6",
+    "extensionOwner": "supabase_admin",
+    "extensionSchema": "public",
+    "membership": "e",
+    "owner": "supabase_admin",
+    "kind": "a",
+    "definer": false,
+    "defaults": 0,
+    "defaultExpression": null,
+    "volatility": "i",
+    "parallel": "s",
+    "strict": false,
+    "leakproof": false,
+    "cost": 1,
+    "rows": 0,
+    "support": 0,
+    "returnsSet": false,
+    "variadic": 0,
+    "transforms": null,
+    "allArgumentTypes": null,
+    "argumentModes": null,
+    "argumentNames": null,
+    "sqlBody": null,
+    "resultType": "public.citext",
+    "nativeAcl": [
+      {
+        "grantee": "PUBLIC",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "supabase_admin",
+        "grantor": "supabase_admin",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "aggregation": {
+      "kind": "n",
+      "final": "0",
+      "serial": "0",
+      "combine": "17905",
+      "initial": null,
+      "deserial": "0",
+      "finalExtra": false,
+      "transition": "17905",
+      "finalModify": "r",
+      "movingFinal": "0",
+      "sortOperator": "17886",
+      "movingInitial": null,
+      "transitionType": "public.citext",
+      "directArguments": 0,
+      "transitionSpace": 0,
+      "movingFinalExtra": false,
+      "movingTransition": "0",
+      "movingFinalModify": "r",
+      "movingTransitionType": null,
+      "movingTransitionSpace": 0,
+      "movingInverseTransition": "0"
+    },
+    "arguments": 1,
+    "argumentTypes": [
+      "public.citext"
+    ],
+    "result": "citext",
+    "bodyHasSlash": false,
+    "bodyBytes": 0
+  }
+]
