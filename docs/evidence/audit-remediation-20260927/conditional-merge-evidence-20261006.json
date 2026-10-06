@@ -1,0 +1,1314 @@
+{
+  "observedAtUtc": "2026-10-06 04:47:53 UTC",
+  "authorization": {
+    "human": "commit and merge if all go green",
+    "scope": "Commit/publish reviewed source and conditional sequential merge; no new production DDL or activation"
+  },
+  "main": "4bbd4a4dffbd053328e92c03281a23d1d4ebe682",
+  "publications": [
+    {
+      "pr": 196,
+      "url": "https://github.com/YNWAforever/hkscda/pull/196",
+      "source": "e5a28c47b839fa12b770d1e639b0a74368021675",
+      "sourceTree": "d3bc880b023b0108e5b532f24b6266228809428d",
+      "base": "codex/audit-r01-group-enquiry-20261003",
+      "actualCheckout": "782a6e5f30663f6331b36fa05d80a3b72919cd05",
+      "checkoutTree": "d3bc880b023b0108e5b532f24b6266228809428d",
+      "sameTree": true,
+      "ci": {
+        "run": 37413919942,
+        "attempt": 1,
+        "jobs": [
+          {
+            "id": 112108227738,
+            "name": "verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413919942,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Typecheck",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Test",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Lint",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Build",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Route tree is current",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108784657,
+            "name": "rls-matrix",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413919942,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Start local Supabase stack",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Run Task11 finance callback transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Run Task12 group enquiry transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Run Task13 document publication transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Run RLS behavioral tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 9
+              },
+              {
+                "name": "Run database-backed transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 10
+              },
+              {
+                "name": "Run volunteer bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 11
+              },
+              {
+                "name": "Run content publication eligibility database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 12
+              },
+              {
+                "name": "Run media repair database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 13
+              },
+              {
+                "name": "Run public listing database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 14
+              },
+              {
+                "name": "Run supporter portal preference database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 15
+              },
+              {
+                "name": "Run CRM tag bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 16
+              },
+              {
+                "name": "Run volunteer reviewer bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Run adoption assignment bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Run animal review bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              },
+              {
+                "name": "Run manual finance atomic database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 20
+              },
+              {
+                "name": "Run CMS quality queue database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 21
+              },
+              {
+                "name": "Run CMS review bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 22
+              },
+              {
+                "name": "Stop local Supabase stack",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 23
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 45
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 46
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 47
+              }
+            ]
+          },
+          {
+            "id": 112108784667,
+            "name": "performance-verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413919942,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Build against the fixture",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Install performance verifier browser",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Verify public performance",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Upload performance artefacts",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Report unavailable artefacts",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108784677,
+            "name": "brand-verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413919942,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Build against the fixture",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Install brand verifier browser",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Verify public brand",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Upload brand artefacts",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Report unavailable artefacts",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108784741,
+            "name": "a11y-verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413919942,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Build against the fixture",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Install a11y verifier browser",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Verify public a11y",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Upload a11y artefacts",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Report unavailable artefacts",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          }
+        ]
+      },
+      "merged": false
+    },
+    {
+      "pr": 197,
+      "url": "https://github.com/YNWAforever/hkscda/pull/197",
+      "source": "3dd2af008b9f1c4886b650d9ef805fab146d79ef",
+      "sourceTree": "131a378b27ae46cefc4d9e136446c08f229aaf30",
+      "base": "codex/audit-r01-document-guards-20261003",
+      "actualCheckout": "552aa3d302dc7e1ad9b07326bbc16886c1e0dcbd",
+      "checkoutTree": "131a378b27ae46cefc4d9e136446c08f229aaf30",
+      "sameTree": true,
+      "ci": {
+        "run": 37413943076,
+        "attempt": 1,
+        "jobs": [
+          {
+            "id": 112108300092,
+            "name": "verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413943076,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Typecheck",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Test",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Lint",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Build",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Route tree is current",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108984864,
+            "name": "performance-verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413943076,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Build against the fixture",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Install performance verifier browser",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Verify public performance",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Upload performance artefacts",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Report unavailable artefacts",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108984895,
+            "name": "a11y-verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413943076,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Build against the fixture",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Install a11y verifier browser",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Verify public a11y",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Upload a11y artefacts",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Report unavailable artefacts",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108984906,
+            "name": "brand-verify",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413943076,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Build against the fixture",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Install brand verifier browser",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Verify public brand",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Upload brand artefacts",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Report unavailable artefacts",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 9
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              }
+            ]
+          },
+          {
+            "id": 112108984971,
+            "name": "rls-matrix",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 37413943076,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run bun install --frozen-lockfile",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Start local Supabase stack",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Run Task11 finance callback transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Run Task12 group enquiry transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Run Task13 document publication transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Run RLS behavioral tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 9
+              },
+              {
+                "name": "Run database-backed transaction tests",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 10
+              },
+              {
+                "name": "Run volunteer bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 11
+              },
+              {
+                "name": "Run content publication eligibility database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 12
+              },
+              {
+                "name": "Run media repair database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 13
+              },
+              {
+                "name": "Run public listing database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 14
+              },
+              {
+                "name": "Run supporter portal preference database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 15
+              },
+              {
+                "name": "Run CRM tag bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 16
+              },
+              {
+                "name": "Run volunteer reviewer bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              },
+              {
+                "name": "Run adoption assignment bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 18
+              },
+              {
+                "name": "Run animal review bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 19
+              },
+              {
+                "name": "Run manual finance atomic database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 20
+              },
+              {
+                "name": "Run CMS quality queue database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 21
+              },
+              {
+                "name": "Run CMS review bulk database scenarios",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 22
+              },
+              {
+                "name": "Stop local Supabase stack",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 23
+              },
+              {
+                "name": "Post Run oven-sh/setup-bun@v2",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 45
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 46
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 47
+              }
+            ]
+          }
+        ]
+      },
+      "merged": false
+    }
+  ],
+  "logs": [
+    {
+      "pr": 196,
+      "logUrl": "https://github.com/YNWAforever/hkscda/actions/runs/37413919942",
+      "job": 112108784657,
+      "excerpts": [
+        "2026-10-06T04:31:45.0900881Z Retrying after 4s: public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:31:49.9346802Z Retrying after 8s: public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:31:58.7321699Z 17.11.0.002: Pulling from supabase/postgres",
+        "2026-10-06T04:32:28.6402325Z Status: Downloaded newer image for public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:32:28.6425948Z public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:33:16.3363789Z ##[group]Run bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts",
+        "2026-10-06T04:33:16.3420136Z   R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:16.3420618Z   R01_FINANCE_CALLBACK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:17.9127319Z  67 pass",
+        "2026-10-06T04:33:17.9127490Z  0 fail",
+        "2026-10-06T04:33:17.9127660Z  238 expect() calls",
+        "2026-10-06T04:33:17.9267728Z ##[group]Run bun test --timeout 15000 src/lib/groupEnquiries/atomicForward.database.test.ts",
+        "2026-10-06T04:33:17.9325329Z   R01_GROUP_ENQUIRY_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:17.9325818Z   R01_GROUP_ENQUIRY_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:19.0455046Z  34 pass",
+        "2026-10-06T04:33:19.0455373Z  0 fail",
+        "2026-10-06T04:33:19.0455886Z  132 expect() calls",
+        "2026-10-06T04:33:19.0618157Z ##[group]Run bun test --timeout 120000 supabase/rls-tests/documentPublicationGuards.database.test.ts",
+        "2026-10-06T04:33:19.0693692Z   R01_DOCUMENT_PUBLICATION_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:19.0694679Z   R01_DOCUMENT_PUBLICATION_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:22.8658691Z (pass) document publication: actual permissions, audit, races and strengthening no-op [3750.56ms]",
+        "2026-10-06T04:33:22.8661241Z  1 pass",
+        "2026-10-06T04:33:22.8661620Z  0 fail",
+        "2026-10-06T04:33:22.8662032Z  36 expect() calls",
+        "2026-10-06T04:33:25.6495505Z (pass) RLS behavioral matrix: money/PII tables > admin_user > admin cannot write admin_user directly [12.36ms]",
+        "2026-10-06T04:33:26.4037085Z (pass) published document slot integrity > cannot unpublish a PDF asset while a live slot references it [12.93ms]",
+        "2026-10-06T04:33:26.4124276Z (pass) published document slot integrity > cannot unpublish a PDF asset used by a published knowledge post [8.71ms]",
+        "2026-10-06T04:33:26.4176751Z (pass) published document slot integrity > cannot publish a knowledge post referencing a draft PDF asset [5.24ms]",
+        "2026-10-06T04:33:26.4233847Z (pass) published document slot integrity > cannot publish a slot referencing a draft PDF asset [5.72ms]",
+        "2026-10-06T04:33:26.7014216Z  129 pass",
+        "2026-10-06T04:33:26.7014373Z  9 skip",
+        "2026-10-06T04:33:26.7014526Z  0 fail",
+        "2026-10-06T04:33:26.7014688Z  549 expect() calls",
+        "2026-10-06T04:33:26.7265763Z $ CRM_TEST_ALLOW_LOCAL_FIXTURES=1 CRM_TEST_DATABASE_URL=***127.0.0.1:55322/postgres CHECKOUT_POLICY_TEST_DATABASE_URL=***127.0.0.1:55322/postgres CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES=1 CMS_LIFECYCLE_TEST_DATABASE_URL=***127.0.0.1:55322/postgres bun test src/lib/crm/manualGift.database.test.ts src/lib/supporters/publicIdentity.database.test.ts src/lib/content/lifecycle.integration.test.ts src/lib/content/contentRead.integration.test.ts src/lib/donations/checkoutPolicy.database.test.ts src/lib/paymentPublicConfig/instructions.database.test.ts src/lib/donations/deliveryRecovery.database.test.ts",
+        "2026-10-06T04:33:34.8374897Z  40 pass",
+        "2026-10-06T04:33:34.8375066Z  0 fail",
+        "2026-10-06T04:33:34.8375247Z  209 expect() calls",
+        "2026-10-06T04:33:34.8536149Z   VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:34.8536837Z   VOLUNTEER_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:43.8539610Z  3 pass",
+        "2026-10-06T04:33:43.8539749Z  0 fail",
+        "2026-10-06T04:33:43.8539862Z  272 expect() calls",
+        "2026-10-06T04:33:43.8708661Z   CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:43.8709101Z   CMS_LIFECYCLE_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:43.9545680Z  1 pass",
+        "2026-10-06T04:33:43.9545987Z  0 fail",
+        "2026-10-06T04:33:43.9546411Z  13 expect() calls",
+        "2026-10-06T04:33:43.9724236Z   MEDIA_REPAIR_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:43.9724665Z   MEDIA_REPAIR_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:44.0990185Z  2 pass",
+        "2026-10-06T04:33:44.0990397Z  0 fail",
+        "2026-10-06T04:33:44.0990587Z  450 expect() calls",
+        "2026-10-06T04:33:44.1133084Z   PUBLIC_LISTING_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:44.1133532Z   PUBLIC_LISTING_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:44.5249348Z  2 pass",
+        "2026-10-06T04:33:44.5249552Z  0 fail",
+        "2026-10-06T04:33:44.5249757Z  22 expect() calls",
+        "2026-10-06T04:33:44.5469363Z   SUPPORTER_PORTAL_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:44.5470027Z   SUPPORTER_PORTAL_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:44.6749389Z  4 pass",
+        "2026-10-06T04:33:44.6749695Z  0 fail",
+        "2026-10-06T04:33:44.6750018Z  14 expect() calls",
+        "2026-10-06T04:33:44.6878838Z   CRM_TAG_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:44.6879288Z   CRM_TAG_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:49.4252256Z  6 pass",
+        "2026-10-06T04:33:49.4252420Z  0 fail",
+        "2026-10-06T04:33:49.4252599Z  49 expect() calls",
+        "2026-10-06T04:33:49.4372776Z   VOLUNTEER_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:49.4373345Z   VOLUNTEER_REVIEW_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:33:59.4731276Z  7 pass",
+        "2026-10-06T04:33:59.4731438Z  0 fail",
+        "2026-10-06T04:33:59.4731612Z  42 expect() calls",
+        "2026-10-06T04:33:59.4879190Z   ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:33:59.4879723Z   ADOPTION_ASSIGNMENT_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:05.1155436Z  8 pass",
+        "2026-10-06T04:34:05.1155630Z  0 fail",
+        "2026-10-06T04:34:05.1155825Z  54 expect() calls",
+        "2026-10-06T04:34:05.1316380Z   ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:05.1316801Z   ANIMAL_REVIEW_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:10.1491700Z  8 pass",
+        "2026-10-06T04:34:10.1491871Z  0 fail",
+        "2026-10-06T04:34:10.1492031Z  55 expect() calls",
+        "2026-10-06T04:34:10.1644529Z   MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:10.1645132Z   MANUAL_FINANCE_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:10.7931566Z  4 pass",
+        "2026-10-06T04:34:10.7931794Z  0 fail",
+        "2026-10-06T04:34:10.7932017Z  29 expect() calls",
+        "2026-10-06T04:34:10.8080382Z   CMS_QUALITY_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:10.8080776Z   CMS_QUALITY_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:10.9523366Z  2 pass",
+        "2026-10-06T04:34:10.9523471Z  0 fail",
+        "2026-10-06T04:34:10.9523582Z  122 expect() calls",
+        "2026-10-06T04:34:10.9646244Z   CMS_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:10.9646630Z   CMS_REVIEW_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:15.9556908Z  8 pass",
+        "2026-10-06T04:34:15.9557111Z  0 fail",
+        "2026-10-06T04:34:15.9557261Z  55 expect() calls"
+      ],
+      "localDecodedLog": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/conditional-merge-20261006/pr196-rls.log",
+        "bytes": 152600,
+        "sha256": "005c7d5c0b55aceba6cfa848ff9bf09c2c0357f49ad45e2dd1463048d1e0ad35"
+      }
+    },
+    {
+      "pr": 197,
+      "logUrl": "https://github.com/YNWAforever/hkscda/actions/runs/37413943076",
+      "job": 112108984971,
+      "excerpts": [
+        "2026-10-06T04:32:28.8017463Z Retrying after 4s: public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:32:33.0830149Z 17.11.0.002: Pulling from supabase/postgres",
+        "2026-10-06T04:33:09.7385269Z Status: Downloaded newer image for public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:33:09.7397922Z public.ecr.aws/supabase/postgres:17.11.0.002",
+        "2026-10-06T04:34:00.6852697Z ##[group]Run bun test --timeout 15000 src/lib/donations/financeCallbackForward.database.test.ts",
+        "2026-10-06T04:34:00.6918569Z   R01_FINANCE_CALLBACK_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:00.6919285Z   R01_FINANCE_CALLBACK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:02.9850239Z  67 pass",
+        "2026-10-06T04:34:02.9850920Z  0 fail",
+        "2026-10-06T04:34:02.9851504Z  238 expect() calls",
+        "2026-10-06T04:34:03.0037206Z ##[group]Run bun test --timeout 15000 src/lib/groupEnquiries/atomicForward.database.test.ts",
+        "2026-10-06T04:34:03.0102577Z   R01_GROUP_ENQUIRY_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:03.0103532Z   R01_GROUP_ENQUIRY_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:04.7689996Z  34 pass",
+        "2026-10-06T04:34:04.7690377Z  0 fail",
+        "2026-10-06T04:34:04.7690702Z  132 expect() calls",
+        "2026-10-06T04:34:04.7787373Z ##[group]Run bun test --timeout 120000 supabase/rls-tests/documentPublicationGuards.database.test.ts",
+        "2026-10-06T04:34:04.7862948Z   R01_DOCUMENT_PUBLICATION_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:04.7864047Z   R01_DOCUMENT_PUBLICATION_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:10.7186446Z (pass) document publication: actual permissions, audit, races and strengthening no-op [5871.31ms]",
+        "2026-10-06T04:34:10.7224160Z  1 pass",
+        "2026-10-06T04:34:10.7224523Z  0 fail",
+        "2026-10-06T04:34:10.7224837Z  36 expect() calls",
+        "2026-10-06T04:34:12.5316860Z (pass) RLS behavioral matrix: money/PII tables > admin_user > admin cannot write admin_user directly [18.93ms]",
+        "2026-10-06T04:34:12.9605014Z (pass) published document slot integrity > cannot unpublish a PDF asset while a live slot references it [17.49ms]",
+        "2026-10-06T04:34:12.9716657Z (pass) published document slot integrity > cannot unpublish a PDF asset used by a published knowledge post [11.32ms]",
+        "2026-10-06T04:34:12.9794672Z (pass) published document slot integrity > cannot publish a knowledge post referencing a draft PDF asset [7.81ms]",
+        "2026-10-06T04:34:12.9864394Z (pass) published document slot integrity > cannot publish a slot referencing a draft PDF asset [6.99ms]",
+        "2026-10-06T04:34:13.3882730Z  129 pass",
+        "2026-10-06T04:34:13.3882926Z  9 skip",
+        "2026-10-06T04:34:13.3883340Z  0 fail",
+        "2026-10-06T04:34:13.3883649Z  549 expect() calls",
+        "2026-10-06T04:34:13.4131371Z $ CRM_TEST_ALLOW_LOCAL_FIXTURES=1 CRM_TEST_DATABASE_URL=***127.0.0.1:55322/postgres CHECKOUT_POLICY_TEST_DATABASE_URL=***127.0.0.1:55322/postgres CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES=1 CMS_LIFECYCLE_TEST_DATABASE_URL=***127.0.0.1:55322/postgres bun test src/lib/crm/manualGift.database.test.ts src/lib/supporters/publicIdentity.database.test.ts src/lib/content/lifecycle.integration.test.ts src/lib/content/contentRead.integration.test.ts src/lib/donations/checkoutPolicy.database.test.ts src/lib/paymentPublicConfig/instructions.database.test.ts src/lib/donations/deliveryRecovery.database.test.ts",
+        "2026-10-06T04:34:24.3809508Z  40 pass",
+        "2026-10-06T04:34:24.3810024Z  0 fail",
+        "2026-10-06T04:34:24.3810557Z  209 expect() calls",
+        "2026-10-06T04:34:24.4033765Z   VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:24.4034985Z   VOLUNTEER_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:37.0830252Z  3 pass",
+        "2026-10-06T04:34:37.0830564Z  0 fail",
+        "2026-10-06T04:34:37.0830854Z  272 expect() calls",
+        "2026-10-06T04:34:37.1061880Z   CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:37.1062690Z   CMS_LIFECYCLE_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:37.2261785Z  1 pass",
+        "2026-10-06T04:34:37.2262288Z  0 fail",
+        "2026-10-06T04:34:37.2262892Z  13 expect() calls",
+        "2026-10-06T04:34:37.2419435Z   MEDIA_REPAIR_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:37.2420073Z   MEDIA_REPAIR_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:37.4130170Z  2 pass",
+        "2026-10-06T04:34:37.4130662Z  0 fail",
+        "2026-10-06T04:34:37.4130900Z  450 expect() calls",
+        "2026-10-06T04:34:37.4238516Z   PUBLIC_LISTING_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:37.4239148Z   PUBLIC_LISTING_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:38.2084491Z  2 pass",
+        "2026-10-06T04:34:38.2089773Z  0 fail",
+        "2026-10-06T04:34:38.2090375Z  22 expect() calls",
+        "2026-10-06T04:34:38.2250989Z   SUPPORTER_PORTAL_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:38.2251631Z   SUPPORTER_PORTAL_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:38.3850376Z  4 pass",
+        "2026-10-06T04:34:38.3851131Z  0 fail",
+        "2026-10-06T04:34:38.3851863Z  14 expect() calls",
+        "2026-10-06T04:34:38.3995274Z   CRM_TAG_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:38.3995887Z   CRM_TAG_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:43.4352785Z  6 pass",
+        "2026-10-06T04:34:43.4353409Z  0 fail",
+        "2026-10-06T04:34:43.4353750Z  49 expect() calls",
+        "2026-10-06T04:34:43.4527796Z   VOLUNTEER_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:43.4528479Z   VOLUNTEER_REVIEW_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:53.8154302Z  7 pass",
+        "2026-10-06T04:34:53.8154628Z  0 fail",
+        "2026-10-06T04:34:53.8154966Z  42 expect() calls",
+        "2026-10-06T04:34:53.8292810Z   ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:53.8307220Z   ADOPTION_ASSIGNMENT_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:34:59.4775284Z  8 pass",
+        "2026-10-06T04:34:59.4775749Z  0 fail",
+        "2026-10-06T04:34:59.4776209Z  54 expect() calls",
+        "2026-10-06T04:34:59.4970092Z   ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:34:59.4970917Z   ANIMAL_REVIEW_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:35:04.9000101Z  8 pass",
+        "2026-10-06T04:35:04.9000297Z  0 fail",
+        "2026-10-06T04:35:04.9000506Z  55 expect() calls",
+        "2026-10-06T04:35:04.9160351Z   MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:35:04.9160988Z   MANUAL_FINANCE_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:35:05.6220226Z  4 pass",
+        "2026-10-06T04:35:05.6220550Z  0 fail",
+        "2026-10-06T04:35:05.6220782Z  29 expect() calls",
+        "2026-10-06T04:35:05.6402131Z   CMS_QUALITY_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:35:05.6402869Z   CMS_QUALITY_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:35:05.8658918Z  2 pass",
+        "2026-10-06T04:35:05.8659605Z  0 fail",
+        "2026-10-06T04:35:05.8660154Z  122 expect() calls",
+        "2026-10-06T04:35:05.8807553Z   CMS_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: 1",
+        "2026-10-06T04:35:05.8808186Z   CMS_REVIEW_BULK_TEST_DATABASE_URL: ***127.0.0.1:55322/postgres",
+        "2026-10-06T04:35:11.3195002Z  8 pass",
+        "2026-10-06T04:35:11.3195378Z  0 fail",
+        "2026-10-06T04:35:11.3195754Z  55 expect() calls"
+      ],
+      "localDecodedLog": {
+        "path": ".superpowers/sdd/r01-forward-schema-plan-20261001/conditional-merge-20261006/pr197-rls.log",
+        "bytes": 155864,
+        "sha256": "6192174323ce76f3b57bd172ae25e48914a043d37ad64953c853c5294c5b1d80"
+      }
+    }
+  ],
+  "production": {
+    "readOnlyObservedAt": "2026-10-06T04:34:56.970406+00:00",
+    "project": "iihqjzilgawhfdhdevam",
+    "serverVersionNum": "170006",
+    "publicTables": 154,
+    "publicFunctions": 304,
+    "migrationLedgerRows": 112,
+    "newForwardFilesApplied": 0,
+    "fullCompatibilityChecker": "NOT_RUN_THIS_TURN"
+  },
+  "holds": {
+    "paymentActorRed": "#183 remains unresolved; source-only permission amendment pending exact human authorization after historical auto-review rejection",
+    "volunteerFixtureScanner": "Exact citext aggregate/callback correction pending exact human authorization; full scan scope retained",
+    "strictRawRestoration": "R265 native1/55000 pg_statistic+inventory drift remains unclosed; same489 identities192 changed; analysis does not establish process causation",
+    "providerHostedUAT": "NOT_RUN",
+    "productionMigrationApproval": "NOT_GRANTED_FOR_NEW_14"
+  },
+  "local": {
+    "testedSource": "3dd2af008b9f1c4886b650d9ef805fab146d79ef",
+    "typecheck": {
+      "exit": 0,
+      "pid": 62160,
+      "seconds": 52.38
+    },
+    "lint": {
+      "exit": 0,
+      "pid": 28136,
+      "seconds": 65.44,
+      "errors": 0,
+      "warnings": 52
+    },
+    "build": {
+      "exit": 0,
+      "pid": 41296,
+      "seconds": 115.22
+    },
+    "unitsFirst": {
+      "exit": 1,
+      "pid": 29056,
+      "pass": 4319,
+      "skip": 578,
+      "fail": 6,
+      "assertions": 12262,
+      "qualification": "API tests defaulted to existing 55321 stack; six actual corresponding assertions pass non-skipped in each fresh CI RLS matrix; original failure retained"
+    },
+    "unitsExplicitIsolation": {
+      "exit": 0,
+      "pid": 48848,
+      "supervisorPid": 32592,
+      "seconds": 108.068,
+      "pass": 4279,
+      "skip": 634,
+      "fail": 0,
+      "assertions": 12176,
+      "tests": 4913,
+      "files": 628,
+      "api": "http://127.0.0.1:59999",
+      "dotenv": "DISABLED",
+      "qualification": "Unavailable API is not DB acceptance; separate fresh PG17.11 CI RLS matrix passes the six previously failed API assertions; original local1 retained",
+      "stdoutSHA256": "816140b2def6ed5f5b8dff8d29a7445a948655d75449ba3ce9a6e77b7e371a35",
+      "stderrSHA256": "146666aaf68bec63ef215a7c97cb9d69d0031dde090862d02429093fc1aa1a38"
+    }
+  }
+}
