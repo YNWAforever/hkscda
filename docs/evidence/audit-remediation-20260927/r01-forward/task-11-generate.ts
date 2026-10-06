@@ -14,6 +14,7 @@ import {
 import { targetDefinitions, signatures } from "./task-11-targets";
 import { assertCapture } from "./task-11-receipt";
 import { verifyNativeQualification, correlatedNativeGuards } from "./task-11-native-profile";
+import { verifyColdEvidence, withObservedPairs } from "./task-11-cold-profile";
 const root = process.cwd();
 const inputPath = process.argv[2],
   file = process.argv[3];
@@ -62,6 +63,7 @@ const native = await verifyNativeQualification(
   root,
   dirname(inputs.nativePrerequisite),
 );
+const cold = await verifyColdEvidence(root);
 const defs = await targetDefinitions(root);
 const generationPaths = [
   ...new Set([
@@ -71,6 +73,8 @@ const generationPaths = [
     ...inputs.captures,
     inputs.nativePrerequisite,
     "docs/evidence/audit-remediation-20260927/r01-forward/task-11-native-profile.ts",
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-11-cold-profile.ts",
+    ...cold.paths,
     ...Object.keys(native.bindings),
     ...profiles.flatMap((p) => Object.keys(p.bindings as Record<string, unknown>)),
   ]),
@@ -154,13 +158,16 @@ const helpers = profiles.map((p) =>
     (f) => !(f.schema === "public" && names.includes(String(f.name))),
   ),
 );
-const nativeGuards = correlatedNativeGuards(
+const historicalGuards = correlatedNativeGuards(
   unique(profiles.map((p) => withoutTargets(p.catalog as Record<string, unknown>))).map(json),
   unique(helpers).map(json),
   json(native.pair.catalog),
   json(native.pair.helpers),
 );
-let sql = `-- R01 Task11: exact five target closure; two manual actor fences, Ruling48.\n-- Ruling57: complete native catalogue/helper pair remains correlated.\n-- No data/backfill/provider/email/checkout/schedule change.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb;v_actual jsonb;v_before jsonb;v_fn oid;v_native boolean;\nbegin\n if current_user<>'postgres' then raise exception 'R01 finance owner context differs' using errcode='55000';end if;\n select catalog into v_catalog from (${catalogQuery}) captured;\n v_before:=${projectionSql};\n${nativeGuards.catalog} if exists(select 1 from pg_catalog.pg_roles b cross join pg_catalog.pg_roles s where b.rolname in('anon','authenticated') and s.rolname in('service_role','postgres','supabase_admin') and (pg_catalog.pg_has_role(b.oid,s.oid,'USAGE') or pg_catalog.pg_has_role(b.oid,s.oid,'SET'))) then raise exception 'R01 finance effective browser access differs' using errcode='55000';end if;\n`;
+const nativeGuards = withObservedPairs(historicalGuards, cold.evidence.profiles.map((p) => ({
+  catalog: json(p.pair.catalog), helpers: json(p.pair.helpers),
+})));
+let sql = `-- R01 Task11: exact five target closure; two manual actor fences, Ruling48.\n-- Ruling57: complete native catalogue/helper pair remains correlated.\n-- No data/backfill/provider/email/checkout/schedule change.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb;v_actual jsonb;v_before jsonb;v_fn oid;v_native boolean;v_observed integer;\nbegin\n if current_user<>'postgres' then raise exception 'R01 finance owner context differs' using errcode='55000';end if;\n select catalog into v_catalog from (${catalogQuery}) captured;\n v_before:=${projectionSql};\n${nativeGuards.catalog} if exists(select 1 from pg_catalog.pg_roles b cross join pg_catalog.pg_roles s where b.rolname in('anon','authenticated') and s.rolname in('service_role','postgres','supabase_admin') and (pg_catalog.pg_has_role(b.oid,s.oid,'USAGE') or pg_catalog.pg_has_role(b.oid,s.oid,'SET'))) then raise exception 'R01 finance effective browser access differs' using errcode='55000';end if;\n`;
 for (const [label, query, key] of [
   ["Auth", authQuery, "auth"],
   ["native", nativeQuery, "native"],
@@ -247,6 +254,8 @@ await writeFile(
       profileCount: 3,
       nativePrerequisite: inputs.nativePrerequisite,
       supplementalProfileCount: 1,
+      observedControlAclProfileCount: cold.evidence.profiles.length,
+      observedControlAclSourceBase: cold.evidence.sourceBase,
       frozenInputs,
     },
     null,
