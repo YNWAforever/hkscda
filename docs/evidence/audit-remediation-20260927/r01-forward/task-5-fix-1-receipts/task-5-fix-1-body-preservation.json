@@ -1,0 +1,8 @@
+{
+  "fixBase": "1ba6a79a60309651c134aa0d525e632be64a43ac",
+  "oldSqlSha256": "4e535bfb6677cf5e249a0bf7188e0e83658be3c00189acc486deca863edb859e",
+  "newSqlSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+  "creationPhaseByteIdentical": true,
+  "creationPhaseSha256": "4e414fbe225f9bc3ac5cd39a96f85f4613ad199e2feeafdf9a42cdae857cb84e",
+  "meaning": "Entire creation/replacement phase unchanged, including public functions, private bridge, modes/config/signatures/owner/ACL and trigger creation; native RI preflight and shared helper unchanged."
+}

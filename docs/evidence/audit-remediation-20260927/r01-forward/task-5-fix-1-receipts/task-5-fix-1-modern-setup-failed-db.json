@@ -1,0 +1,221 @@
+{
+  "mode": "green-modern",
+  "evidenceLabel": "task-5-fix-1",
+  "startedAt": "2026-10-01T20:47:52.977Z",
+  "sourceCommit": "1ba6a79a60309651c134aa0d525e632be64a43ac",
+  "testedExecutableBlobs": {
+    "src/lib/animals/draftIntent.database.test.ts": {
+      "sha256": "e03dc9da8cd57cdc47a1acf01fcaa1059071a62ff83e2708110ea09b55399e09",
+      "canonicalSha256": "e03dc9da8cd57cdc47a1acf01fcaa1059071a62ff83e2708110ea09b55399e09"
+    },
+    "src/lib/animals/draftIntent.testSupport.ts": {
+      "sha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0",
+      "canonicalSha256": "213b8e20248d01b7617e8d9fa6208a9231bd216a96cd81cb691f1ac078dddfd0"
+    },
+    "src/lib/animals/draftUpload.server.ts": {
+      "sha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1",
+      "canonicalSha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1"
+    },
+    "src/lib/animals/draftUploadCleanup.server.ts": {
+      "sha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809",
+      "canonicalSha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809"
+    },
+    "src/lib/animals/photoUpload.http.server.ts": {
+      "sha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48",
+      "canonicalSha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48"
+    },
+    "src/lib/animals/photoUpload.ts": {
+      "sha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a",
+      "canonicalSha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+    },
+    "src/lib/supabase.server.ts": {
+      "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+    },
+    "src/lib/http/publicJson.server.ts": {
+      "sha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "6ec13e8f504c0f185f74ca0ab0459319f9b00593c1684dcc9c82a4a38e02879b",
+      "canonicalSha256": "6ec13e8f504c0f185f74ca0ab0459319f9b00593c1684dcc9c82a4a38e02879b"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-fix-1-gates.py": {
+      "sha256": "9f9c8173333cbe36426744d33ef36981a6c63a69b37f0dba8bf3c68d50ded8f4",
+      "canonicalSha256": "9f9c8173333cbe36426744d33ef36981a6c63a69b37f0dba8bf3c68d50ded8f4"
+    },
+    "package.json": {
+      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+    },
+    "bun.lock": {
+      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+    },
+    "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": {
+      "sha256": "1d7196a9be2ea7fab3421ad12dc32afa03bda0fc6f416ad6a182e184502a846c",
+      "canonicalSha256": "1d7196a9be2ea7fab3421ad12dc32afa03bda0fc6f416ad6a182e184502a846c"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-reviewed-paths.json": {
+      "sha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27",
+      "canonicalSha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "canonicalSha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca"
+    }
+  },
+  "productionActions": "catalog/schema reads only; no production data or actor RPC",
+  "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+  "upstreamCiHold": "controller released PR188 exact490 CI36913123561 attempt1 allfiveSUCCESS",
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "clone": "r01_clone_527a22a5d5734fddb67318d6fb94ac3e",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "reviewedFunctions": [
+    {
+      "name": "private.bump_sponsorship_followup_version",
+      "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+    },
+    {
+      "name": "private.bump_supporter_edit_version",
+      "hash": "08619e0337db72d3d685130718c47538"
+    },
+    {
+      "name": "private.is_valid_animal_public_profile",
+      "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+    },
+    {
+      "name": "private.lock_admin_user_mutation",
+      "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+    },
+    {
+      "name": "private.normalize_public_animal_age",
+      "hash": "1f85086f172d61fff31de8d854f32a55"
+    },
+    {
+      "name": "private.preserve_sponsorship_contact_submission",
+      "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+    },
+    {
+      "name": "private.require_active_admin_user",
+      "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+    },
+    {
+      "name": "private.sponsorship_cancel_transition",
+      "hash": "17036bab02ad4087b0727e395faac4b1"
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7"
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "name": "public.record_public_consent_intents",
+      "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults",
+      "hash": "fa013ae528d796d1cdee6f769d16abeb"
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714"
+    }
+  ],
+  "authPrivilegeProfile": {
+    "serviceselect": false,
+    "serviceupdate": false,
+    "servicecolumnselect": false,
+    "servicecolumnupdate": false,
+    "acl": "{supabase_auth_admin=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin,postgres=ar*wdDxtm/supabase_auth_admin}"
+  },
+  "manifestBefore": {
+    "requirements": 146,
+    "issues": 1
+  },
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "issues": 1
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "issues": 1
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "issues": 1
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "issues": 1
+    }
+  ],
+  "task1Applied": false,
+  "manifestBeforeTask5": {
+    "requirements": 146,
+    "issues": 1
+  },
+  "privilegePreflightResults": [
+    {
+      "case": "Auth service SELECT(email)",
+      "sqlState": "42883",
+      "effective": null,
+      "preserved": true
+    }
+  ],
+  "originalSources": {
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "f52f62aa3d27df6715922036a02c103cfbc82bd178981a8e3c272df9602fc448",
+    "modernPreserved": true
+  },
+  "cleanup": "only exact owned clone normally dropped; no force/session termination",
+  "completedAt": "2026-10-01T20:48:06.371Z",
+  "testedExecutableBlobsPreserved": true
+}

@@ -1,0 +1,58 @@
+{
+  "mode": "red-actor",
+  "startedAt": "2026-10-01T19:31:00.751Z",
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "archiveProfile": [
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "service_role",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "args": "p_actor_user_id uuid, p_animal_id uuid, p_archived boolean",
+      "name": "set_animal_archived_with_audit",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "result": "jsonb",
+      "schema": "public",
+      "bodyMd5": "24c511a72fdb32759907fbd2b0f71d73",
+      "definer": false,
+      "parallel": "u",
+      "volatility": "v"
+    }
+  ],
+  "zeroApplicationTables": 162,
+  "schemaParity": true,
+  "testedExecutableBlobs": {
+    "src/lib/animals/draftIntent.database.test.ts": "79925e803606824c03e71cc150447b3f270a640dd4b6c4d79331596d7fdd3273",
+    "src/lib/animals/draftIntent.testSupport.ts": "ec052706e2b44b79dbbc885d5d010b787791317b317ab74027831d209a36cbb5",
+    "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": "9a33a88ddb5fd60e08f3c79b384adf8979982154ebc6d62bf9a52bc10dcae7d6",
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+  },
+  "productionActions": "schema/catalog only; no data read or actor calls",
+  "testExit": 1,
+  "testSummary": [
+    "\n 0 pass",
+    " 6 fail",
+    " 6 expect() calls"
+  ],
+  "result": "watched RED: known legacy archive accepts unauthorized actor",
+  "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templatePreserved": true,
+  "modernBeforeHash": "d62f75103778083c73460f549da2e99b76c8e1e2da8fc61d63b43e14e977d5e9",
+  "modernPreserved": true,
+  "testedExecutableBlobsPreserved": true,
+  "cleanup": "only newly owned clone normally dropped",
+  "completedAt": "2026-10-01T19:31:04.619Z"
+}

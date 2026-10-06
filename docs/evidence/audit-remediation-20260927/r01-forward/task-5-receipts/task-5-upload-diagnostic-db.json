@@ -1,0 +1,695 @@
+{
+  "mode": "green-modern",
+  "startedAt": "2026-10-01T19:56:28.176Z",
+  "sourceCommit": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+  "testedExecutableBlobs": {
+    "src/lib/animals/draftIntent.database.test.ts": {
+      "sha256": "837627f4c44d2f8640edb3a7b4c2bbb79fb6493e788d3f63d713aca7b24643e3",
+      "canonicalSha256": "837627f4c44d2f8640edb3a7b4c2bbb79fb6493e788d3f63d713aca7b24643e3"
+    },
+    "src/lib/animals/draftIntent.testSupport.ts": {
+      "sha256": "c0099c8e0c33c5476d0254a4e87580f365b8126a7f327563f0f91329c17d4c42",
+      "canonicalSha256": "c0099c8e0c33c5476d0254a4e87580f365b8126a7f327563f0f91329c17d4c42"
+    },
+    "src/lib/animals/draftUpload.server.ts": {
+      "sha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1",
+      "canonicalSha256": "3fdcba5b07068d5298bb6b837529120a7ed74093b29d64ac80d403a1b0d469b1"
+    },
+    "src/lib/animals/draftUploadCleanup.server.ts": {
+      "sha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809",
+      "canonicalSha256": "e2427a4a925db5f480f7e964bab4ed22fae6cf3ba79c7cfcd2fa9d9e9ada6809"
+    },
+    "src/lib/animals/photoUpload.http.server.ts": {
+      "sha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48",
+      "canonicalSha256": "910097a59b27c06a35cb6ab91c058a6b0fc7f0032ddcd2f54f68f7da4feccc48"
+    },
+    "src/lib/animals/photoUpload.ts": {
+      "sha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a",
+      "canonicalSha256": "fa5f134e4fe58e60e5e4a12884e6ad6d65b8070ed72c8935d7665a932bdb221a"
+    },
+    "src/lib/admin/session.server.ts": {
+      "sha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f",
+      "canonicalSha256": "4d5bf1e327bc10f8e7bdc98b74f31c134f640113eb861b4676995c6c3e542b2f"
+    },
+    "src/lib/donations/supabase.server.ts": {
+      "sha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f",
+      "canonicalSha256": "c4cf8e59c5f451f72931e88ef621aaa626a888d97b163ffead9fbf642fa33c7f"
+    },
+    "src/lib/supabase.server.ts": {
+      "sha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b",
+      "canonicalSha256": "a35fb104f769565c10b9b225fedcbcecce9f2631f914e48e63ef7855e96f054b"
+    },
+    "src/lib/http/publicJson.server.ts": {
+      "sha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262",
+      "canonicalSha256": "4141eb08fab0c0dff2b6b243363ea5d25c19f05f7a817463afb4edb580a5e262"
+    },
+    "src/lib/operations/releaseSchema.ts": {
+      "sha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564",
+      "canonicalSha256": "cdac0d8ed865baa86bbc677646047ff624cace3b194de7c37af12cebdba83564"
+    },
+    "src/lib/operations/releaseManifest.ts": {
+      "sha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3",
+      "canonicalSha256": "265b09ab72462910442f83af75d8d8994de28c9d28b176f7b8b06afc155a26e3"
+    },
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv": {
+      "sha256": "82bcc1530f45f742a036945df543966767ec9c5aecff834ad9a2b1fe61724793",
+      "canonicalSha256": "82bcc1530f45f742a036945df543966767ec9c5aecff834ad9a2b1fe61724793"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-gates.py": {
+      "sha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2",
+      "canonicalSha256": "4ee2da709c2bb89e2b59fd5e3dd71460fe678477caf89f4e8fcfe4ba4e2147c2"
+    },
+    "package.json": {
+      "sha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a",
+      "canonicalSha256": "5b6b2837055faddb7729deedd9fb5e150323318fdc0b15ca849174ecda806c9a"
+    },
+    "bun.lock": {
+      "sha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84",
+      "canonicalSha256": "7b3b012cc619e99dea6e7aaa2a306b15f68387ba15e0a68da57bd7f75f1c4a84"
+    },
+    "supabase/rls-tests/helpers/runR01AnimalDraftForward.ts": {
+      "sha256": "445ea5b69d71c63fa1b4d85b5c247abd024b7d7d6da7f220c0814f31d74db493",
+      "canonicalSha256": "445ea5b69d71c63fa1b4d85b5c247abd024b7d7d6da7f220c0814f31d74db493"
+    },
+    "supabase/rls-tests/helpers/productionSchemaClone.ts": {
+      "sha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519",
+      "canonicalSha256": "5352ca4c2660e341b88bb34519e369aa7420711bb9df7c80daff5dadd9387519"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-5-reviewed-paths.json": {
+      "sha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27",
+      "canonicalSha256": "23a39c07ed3ed67f01ce2d67f31f6df79f52e1be2390a860c419b9f5f29d9c27"
+    },
+    "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql": {
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "canonicalSha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3"
+    },
+    "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql": {
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "canonicalSha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867"
+    },
+    "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql": {
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "canonicalSha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c"
+    },
+    "supabase/migrations/20261001175310_r01_internship_upload_forward.sql": {
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "canonicalSha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41"
+    },
+    "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql": {
+      "sha256": "ee913551969c28167a9f6233d8dc4e6c9a3b45326e3e5deff96e56cf34c31fd9",
+      "canonicalSha256": "ee913551969c28167a9f6233d8dc4e6c9a3b45326e3e5deff96e56cf34c31fd9"
+    }
+  },
+  "productionActions": "catalog/schema reads only; no production data or actor RPC",
+  "environment": "owned zero-data clone52322; template52322/source57322 readonly; SQL actor and inert Auth/Storage DI only",
+  "upstreamCiHold": "controller released PR188 exact490 CI36913123561 attempt1 allfiveSUCCESS",
+  "sourceCatalogHash": "50bbc03d22ed2a419087aa56027e7be5a4c10c61cbf71662aa59398d317c4a63",
+  "clone": "r01_clone_fe64b47f7e584d7a991cab77208e197e",
+  "schemaParity": true,
+  "zeroApplicationTables": 162,
+  "managedPrerequisitesHash": "2ecaca60ec0ee761ab184ce109a10b39f8d3f0d286eb9d2c5809495409bc964c",
+  "reviewedFunctions": [
+    {
+      "name": "private.bump_sponsorship_followup_version",
+      "hash": "dcc7753eeeabc0d3a78720fe3976babf"
+    },
+    {
+      "name": "private.bump_supporter_edit_version",
+      "hash": "08619e0337db72d3d685130718c47538"
+    },
+    {
+      "name": "private.is_valid_animal_public_profile",
+      "hash": "8dcbee84f0c4a120e7420fdf37c51af0"
+    },
+    {
+      "name": "private.lock_admin_user_mutation",
+      "hash": "6fb4cca8ae606d99ac4858d0468ed513"
+    },
+    {
+      "name": "private.normalize_public_animal_age",
+      "hash": "1f85086f172d61fff31de8d854f32a55"
+    },
+    {
+      "name": "private.preserve_sponsorship_contact_submission",
+      "hash": "3e28a9f8b90f2985feb8d13c05f3c890"
+    },
+    {
+      "name": "private.require_active_admin_user",
+      "hash": "98a21ca5b11cbf94c3d0302744af1a87"
+    },
+    {
+      "name": "private.sponsorship_cancel_transition",
+      "hash": "17036bab02ad4087b0727e395faac4b1"
+    },
+    {
+      "name": "public.enforce_current_animal_preference",
+      "hash": "5d9512de7da0c787523292316c6603e7"
+    },
+    {
+      "name": "public.log_animal_mutation",
+      "hash": "264525288c36bf724df4dc72dcafba82"
+    },
+    {
+      "name": "public.record_public_consent_intents",
+      "hash": "77515c5eca8cd500d3d1f7fbaeb8f73f"
+    },
+    {
+      "name": "public.set_animal_catalog_membership_defaults",
+      "hash": "fa013ae528d796d1cdee6f769d16abeb"
+    },
+    {
+      "name": "public.set_updated_at",
+      "hash": "4d6804d5850641a33867814c9e76a714"
+    }
+  ],
+  "authPrivilegeProfile": {
+    "serviceselect": false,
+    "serviceupdate": false,
+    "acl": "{supabase_auth_admin=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin,postgres=ar*wdDxtm/supabase_auth_admin}"
+  },
+  "manifestBefore": {
+    "requirements": 146,
+    "issues": 1
+  },
+  "dependencies": [
+    {
+      "file": "20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "issues": 1
+    },
+    {
+      "file": "20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "issues": 1
+    },
+    {
+      "file": "20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "issues": 1
+    },
+    {
+      "file": "20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "issues": 1
+    }
+  ],
+  "task1Applied": false,
+  "manifestBeforeTask5": {
+    "requirements": 146,
+    "issues": 1
+  },
+  "foreignKeyTriggers": [
+    {
+      "conname": "animal_draft_id_fkey",
+      "trigger": {
+        "oid": "481819",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1654",
+        "tgname": "RI_ConstraintTrigger_a_481819",
+        "tgqual": null,
+        "tgtype": 9,
+        "tgnargs": 0,
+        "tgrelid": "479063",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481818",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "480875",
+        "tgconstrrelid": "479507",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481819",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481818",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_id_fkey",
+      "trigger": {
+        "oid": "481820",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1655",
+        "tgname": "RI_ConstraintTrigger_a_481820",
+        "tgqual": null,
+        "tgtype": 17,
+        "tgnargs": 0,
+        "tgrelid": "479063",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481818",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "480875",
+        "tgconstrrelid": "479507",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481820",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481818",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_id_fkey",
+      "trigger": {
+        "oid": "481821",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1644",
+        "tgname": "RI_ConstraintTrigger_c_481821",
+        "tgqual": null,
+        "tgtype": 5,
+        "tgnargs": 0,
+        "tgrelid": "479507",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481818",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "480875",
+        "tgconstrrelid": "479063",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481821",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481818",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_id_fkey",
+      "trigger": {
+        "oid": "481822",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1645",
+        "tgname": "RI_ConstraintTrigger_c_481822",
+        "tgqual": null,
+        "tgtype": 17,
+        "tgnargs": 0,
+        "tgrelid": "479507",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481818",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "480875",
+        "tgconstrrelid": "479063",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481822",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481818",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_updated_by_fkey",
+      "trigger": {
+        "oid": "481824",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1654",
+        "tgname": "RI_ConstraintTrigger_a_481824",
+        "tgqual": null,
+        "tgtype": 9,
+        "tgnargs": 0,
+        "tgrelid": "24860",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481823",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "26672",
+        "tgconstrrelid": "479507",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481824",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481823",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_updated_by_fkey",
+      "trigger": {
+        "oid": "481825",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1655",
+        "tgname": "RI_ConstraintTrigger_a_481825",
+        "tgqual": null,
+        "tgtype": 17,
+        "tgnargs": 0,
+        "tgrelid": "24860",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481823",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "26672",
+        "tgconstrrelid": "479507",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481825",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481823",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_updated_by_fkey",
+      "trigger": {
+        "oid": "481826",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1644",
+        "tgname": "RI_ConstraintTrigger_c_481826",
+        "tgqual": null,
+        "tgtype": 5,
+        "tgnargs": 0,
+        "tgrelid": "479507",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481823",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "26672",
+        "tgconstrrelid": "24860",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481826",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481823",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    },
+    {
+      "conname": "animal_draft_updated_by_fkey",
+      "trigger": {
+        "oid": "481827",
+        "tgargs": "\\x",
+        "tgattr": [],
+        "tgfoid": "1645",
+        "tgname": "RI_ConstraintTrigger_c_481827",
+        "tgqual": null,
+        "tgtype": 17,
+        "tgnargs": 0,
+        "tgrelid": "479507",
+        "tgenabled": "O",
+        "tgnewtable": null,
+        "tgoldtable": null,
+        "tgparentid": "0",
+        "tgconstraint": "481823",
+        "tgdeferrable": false,
+        "tgisinternal": true,
+        "tgconstrindid": "26672",
+        "tgconstrrelid": "24860",
+        "tginitdeferred": false
+      },
+      "dependencies": [
+        {
+          "objid": "481827",
+          "classid": "2620",
+          "deptype": "i",
+          "objsubid": 0,
+          "refobjid": "481823",
+          "refclassid": "2606",
+          "refobjsubid": 0
+        }
+      ]
+    }
+  ],
+  "modernKnownArchiveBodyDelta": true,
+  "preflightResults": [
+    {
+      "case": "client grant",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "client column grant",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "owner ACL drift",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "service grant option",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "missing service right",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "disabled RLS",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unexpected policy",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong default",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong index",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "disabled trigger",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong trigger args",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong function body",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "definer drift",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "config drift",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "public execute",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unexpected overload",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "insert rewrite rule",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unlogged relation",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong column type",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong collation",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "extra FK",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "not validated constraint",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "wrong owner",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "forced RLS",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "unknown archive body",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper client execute",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper grant option",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper wrong owner",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper invoker drift",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper wrong config",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper wrong body",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "helper overload",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "disabled animal_draft_id_fkey referenced action",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "disabled animal_draft_id_fkey intent check",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "disabled animal_draft_updated_by_fkey referenced action",
+      "sqlState": "55000",
+      "preserved": true
+    },
+    {
+      "case": "disabled animal_draft_updated_by_fkey intent check",
+      "sqlState": "55000",
+      "preserved": true
+    }
+  ],
+  "manifestAfter": {
+    "requirements": 146,
+    "issues": 1
+  },
+  "migration": {
+    "file": "20261001193722_r01_animal_draft_archive_forward.sql",
+    "sha256": "ee913551969c28167a9f6233d8dc4e6c9a3b45326e3e5deff96e56cf34c31fd9",
+    "firstApply": 0,
+    "secondApply": 0,
+    "unrelatedCatalogPreserved": true,
+    "modernGoodMediaCatalogPreserved": true,
+    "knownArchiveBodyHardened": true,
+    "preexistingRowsPreserved": true,
+    "tempShadowPreserved": true,
+    "relationProfileHash": "a87578da70fce1b63d3c035cece9294a4715ada175cb5c573011aa6cec58cd3a"
+  },
+  "ownedTestChildTimeout": true,
+  "testCommand": "bun test src/lib/animals/draftIntent.database.test.ts --timeout 30000 --test-name-pattern actual upload handler",
+  "testExit": 143,
+  "testSummary": null,
+  "originalSources": {
+    "templateBeforeHash": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+    "templatePreserved": true,
+    "modernBeforeHash": "d62f75103778083c73460f549da2e99b76c8e1e2da8fc61d63b43e14e977d5e9",
+    "modernPreserved": true
+  },
+  "cleanup": "only exact owned clone normally dropped; no force/session termination",
+  "completedAt": "2026-10-01T19:58:51.732Z",
+  "testedExecutableBlobsPreserved": true
+}

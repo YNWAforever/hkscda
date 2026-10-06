@@ -1,0 +1,43 @@
+{
+  "phase": "final",
+  "source": "1ba6a79a60309651c134aa0d525e632be64a43ac",
+  "startedAt": "2026-10-01T20:52:37.080947+00:00",
+  "environment": "loopback DB57322/Auth52321; build DB54329 ci-placeholder keys; inherited feature DB opt-ins removed",
+  "gates": [
+    {
+      "gate": "typecheck",
+      "command": "bun run typecheck",
+      "exit": 0,
+      "elapsedSeconds": 31.6,
+      "log": "task-5-fix-1-final-typecheck.log"
+    },
+    {
+      "gate": "tests",
+      "command": "bun test --isolate --timeout 30000",
+      "exit": 0,
+      "elapsedSeconds": 79.89,
+      "log": "task-5-fix-1-final-tests.log",
+      "summary": [
+        "\n 3228 pass",
+        " 266 skip",
+        " 0 fail",
+        " 10478 expect() calls"
+      ]
+    },
+    {
+      "gate": "lint",
+      "command": "bun run lint",
+      "exit": 0,
+      "elapsedSeconds": 79.87,
+      "log": "task-5-fix-1-final-lint.log"
+    },
+    {
+      "gate": "build",
+      "command": "bun run build",
+      "exit": 0,
+      "elapsedSeconds": 112.01,
+      "log": "task-5-fix-1-final-build.log"
+    }
+  ],
+  "completedAt": "2026-10-01T20:57:40.465654+00:00"
+}
