@@ -101,9 +101,6 @@ enforces the pairing.
   the caller doesn't act on) is typed `Promise<unknown>`, never `Promise<void>` —
   TypeScript's void-return exemption does not apply through a `Promise<T>` type
   argument, so `Promise<void>` rejects the real implementation at the call site.
-  Landed independently three times (`volunteers/service.ts`,
-  `publicAdoption/submission.server.ts`, `sponsorship/submission.server.ts`)
-  before being written down here.
 - CSS theming: use `var(--color-*)` tokens from `styles.css`, never hardcoded colours
 - Tests: `*.test.ts` beside the source, `bun:test`, dependency-injected fakes
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)
