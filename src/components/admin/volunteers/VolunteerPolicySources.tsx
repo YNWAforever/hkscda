@@ -256,7 +256,7 @@ export function VolunteerPolicySources() {
         </button>
         {preview.error && <p role="alert">草稿未完整或版本已改變，請先返回模板設定核對。</p>}
         {preview.data && (
-          <div className="space-y-3 rounded bg-slate-50 p-3">
+          <div className="space-y-3 rounded bg-[var(--color-surface-offset)] p-3">
             <p>
               來源：{preview.data.effective_body.name} · 義工容量{" "}
               {preview.data.effective_body.capacity.volunteers.value}

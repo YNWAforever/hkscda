@@ -43,7 +43,7 @@ export function AnimalPicker({
             key={a.id}
             aria-pressed={value === a.id}
             onClick={() => onChange(a.id)}
-            className={`flex w-full items-center gap-2 rounded border p-2 text-left ${value === a.id ? "border-blue-600 bg-blue-50" : ""}`}
+            className={`flex w-full items-center gap-2 rounded border p-2 text-left ${value === a.id ? "border-[var(--color-primary)] bg-[var(--color-primary-highlight)]" : ""}`}
           >
             {a.image_url && (
               <img alt="" src={a.image_url} className="h-10 w-10 rounded object-cover" />

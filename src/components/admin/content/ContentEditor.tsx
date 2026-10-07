@@ -558,7 +558,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           : `已儲存草稿 · 版本 ${content.version ?? "—"}`}
       </p>
       {conflict ? (
-        <div role="alert" className="rounded border border-amber-500 p-3">
+        <div role="alert" className="rounded border border-[var(--color-warning)] p-3">
           <p>
             內容已有較新版本或發布網址衝突。你的輸入已保留，請比較最新內容；重新載入前請先複製要保留的文字。
           </p>
@@ -621,7 +621,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       {pendingPublishedMedia > 0 ? (
         <p
           role="status"
-          className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
+          className="rounded-md border border-[var(--color-warning)] bg-[var(--color-warning-highlight)] p-3 text-sm text-[var(--color-warning)]"
         >
           內容已發布，{pendingPublishedMedia} 張圖片正在同步；系統會自動重試。
         </p>

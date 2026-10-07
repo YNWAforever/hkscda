@@ -181,7 +181,7 @@ export function VolunteerPolicySimulation() {
           />
         </label>
         <button
-          className="min-h-11 rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-50"
+          className="min-h-11 rounded bg-[var(--color-panel)] px-4 py-2 text-[var(--color-text-inverse)] disabled:opacity-50"
           disabled={simulate.isPending || !draft}
         >
           執行模擬

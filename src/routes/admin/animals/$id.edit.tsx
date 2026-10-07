@@ -41,8 +41,10 @@ function EditAnimalPage() {
 function EditAnimalContent({ animal, isLoading }: { animal?: Animal | null; isLoading: boolean }) {
   const { copy } = useAdminLanguage();
 
-  if (isLoading) return <div className="p-6 text-gray-400">{copy.common.loading}</div>;
-  if (!animal) return <div className="p-6 text-gray-400">{copy.form.notFound}</div>;
+  if (isLoading)
+    return <div className="p-6 text-[var(--color-text-faint)]">{copy.common.loading}</div>;
+  if (!animal)
+    return <div className="p-6 text-[var(--color-text-faint)]">{copy.form.notFound}</div>;
 
   return (
     <div className="p-6 space-y-4">

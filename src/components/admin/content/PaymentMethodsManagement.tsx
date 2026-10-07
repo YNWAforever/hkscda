@@ -37,7 +37,10 @@ export function PaymentMethodsManagementView({
     <div className="space-y-6">
       <h1 className="text-xl font-bold">付款方式設定</h1>
       {errorMessage ? (
-        <p role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-md bg-[var(--color-error-highlight)] p-3 text-sm text-[var(--color-error)]"
+        >
           {errorMessage}
         </p>
       ) : null}

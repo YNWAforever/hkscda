@@ -35,6 +35,14 @@ describe("AdminResetPasswordForm", () => {
     expect(markup).toContain("返回登入");
   });
 
+  test("renders exactly one h1 naming the page, whatever the recovery status", () => {
+    for (const status of ["checking", "ready", "invalid"] as const) {
+      const markup = render(status);
+      expect((markup.match(/<h1[\s>]/g) ?? []).length).toBe(1);
+      expect(markup).toMatch(/<h1[^>]*>[^<]*重設密碼[^<]*<\/h1>/);
+    }
+  });
+
   test("announces safe form errors", () => {
     const markup = render("ready", "暫時未能更新密碼，請稍後再試。");
     expect(markup).toContain('role="alert"');

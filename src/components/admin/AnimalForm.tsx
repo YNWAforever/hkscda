@@ -438,7 +438,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               placeholder={copy.form.namePlaceholder}
               className={field}
             />
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+            {errors.name && (
+              <p className="text-[var(--color-error)] text-xs mt-1">{errors.name.message}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{copy.form.chineseAge}</label>
@@ -448,7 +450,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               placeholder={copy.form.agePlaceholder}
               className={field}
             />
-            {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age.message}</p>}
+            {errors.age && (
+              <p className="text-[var(--color-error)] text-xs mt-1">{errors.age.message}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{copy.form.chineseNotes}</label>
@@ -847,7 +851,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           ))}
         </section>
       )}
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-[var(--color-error)] text-sm">{error}</p>}
 
       {draftRevision > 0 && (
         <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
@@ -944,14 +948,14 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
+          className="px-6 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
         >
           {saving ? copy.common.saving : copy.common.save}
         </button>
         <button
           type="button"
           onClick={() => navigate({ to: "/admin" })}
-          className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+          className="px-6 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-surface-offset)]"
         >
           {copy.common.cancel}
         </button>

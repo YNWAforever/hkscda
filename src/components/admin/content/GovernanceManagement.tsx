@@ -137,7 +137,7 @@ export function GovernanceManagement() {
         </table>
       ) : null}
       {deactivateMutation.isError ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-[var(--color-error)]">
           卸任操作失敗，請再試一次。
         </p>
       ) : null}
@@ -188,7 +188,7 @@ export function GovernanceManagement() {
             />
           </label>
           {upsertMutation.isError ? (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-[var(--color-error)]">
               儲存失敗，請檢查資料後再試一次。
             </p>
           ) : null}
