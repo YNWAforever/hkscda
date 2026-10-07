@@ -86,6 +86,14 @@ Run `bun test src/lib/testRunnerContract.test.ts` → PASS. Run the Gate. Then r
 
 `git add package.json .github/workflows/ci.yml CLAUDE.md AGENTS.md src/lib/testRunnerContract.test.ts` (plus `bunfig.toml` if kept), then commit: `fix(test): run the local suite with --isolate, matching CI`.
 
+- [ ] **Step 7: Sync the instruction files (prompt-audit findings F3, F5)**
+
+Make two doc-only edits:
+- In `AGENTS.md`, replace line 78 (`` `assertTurnstileConfigFromEnv()` boot-fails on an inconsistent production pair. ``) with the four lines at `CLAUDE.md:78-81`, verbatim, starting `` `assertTurnstileConfigFromEnv()`/`assertUpstashConfigFromEnv()` boot-fail on an `` and ending `` logs once via `warnUpstashDisabledOnce()`. ``. `CLAUDE.md` is the newer side (`52c3c9f`, 2026-09-01).
+- In both files, delete the three-line history note under **Discarded side-effect deps** that starts `Landed independently three times` and ends `before being written down here.` (`CLAUDE.md:104-106` and `AGENTS.md:101-103` before this task's edits). Leave the rule above it unchanged.
+
+Verify: `git diff --no-index CLAUDE.md AGENTS.md` prints no differences, and the Gate passes. Commit `docs: bring AGENTS.md in line with CLAUDE.md and drop a history note`.
+
 ---
 
 ### Task 2: One Bun version for CI and local
