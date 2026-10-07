@@ -6,13 +6,8 @@ import { describe, expect, test } from "bun:test";
 
 const ROUTES_DIR = dirname(fileURLToPath(import.meta.url));
 
-/**
- * Routes the guard skips. `about/cccp.tsx` never renders a page of its own (a 301
- * redirect). The other two still inherit the homepage title: they were not in the
- * SP-1 Task 3 route list, so no title or description has been approved for them.
- * Give each a `pageHead` and delete it from this list.
- */
-const ALLOWLIST = ["about/cccp.tsx", "about/index.tsx", "adoption/instructions.tsx"];
+/** Routes that never render a page of their own (a 301 redirect). */
+const ALLOWLIST = ["about/cccp.tsx"];
 
 /**
  * A route declares its title by calling pageHead(...) or by opening its head

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SectionHeading } from "../../components/site/SectionHeading";
@@ -15,9 +15,14 @@ const loadAdoptionInstructions = createAdoptionInstructionsLoader(() =>
 );
 export const Route = createFileRoute("/adoption/instructions")({
   loader: loadAdoptionInstructions,
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/adoption/instructions") }],
-  }),
+  // The description is the CMS hero copy the page renders; when the loader failed
+  // there is none and the root default applies.
+  head: ({ loaderData }) =>
+    pageHead({
+      title: "領養流程",
+      description: loaderData?.status === "ok" ? loaderData.data.copy.hero.description : undefined,
+      path: "/adoption/instructions",
+    }),
   component: InstructionsPage,
 });
 

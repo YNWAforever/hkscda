@@ -3,7 +3,7 @@ import { publicUrl } from "@/lib/publicOrigin";
 export const SITE_TITLE_SUFFIX = "香港拯救貓狗協會 HKSCDA";
 const SOCIAL_TITLE_SUFFIX = "HKSCDA";
 
-export type IndexablePage = { title: string; description: string; path: string };
+export type IndexablePage = { title: string; description?: string; path: string };
 export type PrivatePage = { title: string; private: true };
 export type HeadMeta = Record<string, string>;
 
@@ -12,7 +12,8 @@ export type HeadMeta = Record<string, string>;
  * `__root.tsx`.
  *
  * An indexable page gets its own title, description, social tags and canonical.
- * A private page (a token status link) gets a title only, plus noindex and
+ * A missing, empty or blank description leaves the description tags out, so the
+ * root default applies. A private page (a token status link) gets a title only, plus noindex and
  * no-referrer, and no URL anywhere: the address carries a secret token.
  */
 export function pageHead(page: IndexablePage | PrivatePage): {
@@ -33,15 +34,22 @@ export function pageHead(page: IndexablePage | PrivatePage): {
   }
 
   const socialTitle = `${page.title} · ${SOCIAL_TITLE_SUFFIX}`;
+  const description = page.description?.trim();
   return {
-    meta: [
-      { title },
-      { name: "description", content: page.description },
-      { property: "og:title", content: socialTitle },
-      { property: "og:description", content: page.description },
-      { name: "twitter:title", content: socialTitle },
-      { name: "twitter:description", content: page.description },
-    ],
+    meta: description
+      ? [
+          { title },
+          { name: "description", content: description },
+          { property: "og:title", content: socialTitle },
+          { property: "og:description", content: description },
+          { name: "twitter:title", content: socialTitle },
+          { name: "twitter:description", content: description },
+        ]
+      : [
+          { title },
+          { property: "og:title", content: socialTitle },
+          { name: "twitter:title", content: socialTitle },
+        ],
     links: [{ rel: "canonical", href: publicUrl(page.path) }],
   };
 }

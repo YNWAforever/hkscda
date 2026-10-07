@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import {
   ArrowRight,
   CheckCircle2,
@@ -19,9 +19,14 @@ import { SectionHeading } from "../../components/site/SectionHeading";
 import heroImg from "@/assets/dog-smiling.jpg";
 
 export const Route = createFileRoute("/about/")({
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/about") }],
-  }),
+  // The description is the CMS hero copy the page renders; with no content (the
+  // loader returned null) the root default applies.
+  head: ({ loaderData }) =>
+    pageHead({
+      title: "使命與歷史",
+      description: loaderData?.content?.hero.description,
+      path: "/about",
+    }),
   // Server rendered: the figures arrive with the first response rather than after
   // a browser round trip, and the counting rules live in one projection shared
   // with the home page instead of being restated here.

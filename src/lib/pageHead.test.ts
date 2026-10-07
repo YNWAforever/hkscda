@@ -16,6 +16,20 @@ describe("pageHead", () => {
     expect(head.links).toEqual([{ rel: "canonical", href: publicUrl("/animals/cat") }]);
   });
 
+  test("a missing, empty or blank description leaves the description tags out", () => {
+    for (const description of [undefined, "", "   "]) {
+      const head = pageHead({ title: "使命與歷史", description, path: "/about" });
+
+      expect(head.meta).toEqual([
+        { title: "使命與歷史 · 香港拯救貓狗協會 HKSCDA" },
+        { property: "og:title", content: "使命與歷史 · HKSCDA" },
+        { name: "twitter:title", content: "使命與歷史 · HKSCDA" },
+      ]);
+      expect(head.links).toEqual([{ rel: "canonical", href: publicUrl("/about") }]);
+    }
+    expect(pageHead({ title: "使命與歷史", path: "/about" }).meta).toHaveLength(3);
+  });
+
   test("private pages are noindex, no-referrer and carry no URL", () => {
     const head = pageHead({ title: "申請狀態", private: true });
 
