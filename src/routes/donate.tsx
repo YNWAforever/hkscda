@@ -129,6 +129,7 @@ const copy = {
     receipt: "我需要退稅收條",
     emailConsent: "我同意以電郵接收捐款確認及收條通知",
     pics: "個人資料只會用於處理捐款、收條、查詢及法例要求的紀錄保存。您可要求查閱、更正或撤回通訊同意。",
+    consentLegend: "收據及通訊同意",
     donate: "繼續捐款",
     processing: "處理中",
     success: "多謝您的支持。付款確認後，系統會發出確認電郵及合資格收條。",
@@ -170,6 +171,7 @@ const copy = {
     receipt: "I need a tax receipt",
     emailConsent: "I agree to receive donation confirmation and receipt updates by email",
     pics: "Personal data is used only for donation processing, receipts, enquiries, and legally required record keeping. You may request access, correction, or consent withdrawal.",
+    consentLegend: "Receipts and communication consent",
     donate: "Continue donation",
     processing: "Processing",
     success:
@@ -795,7 +797,7 @@ export function DonatePage({
 
               <fieldset className="space-y-3 rounded-md bg-[var(--color-surface-offset)] p-4">
                 <legend className="text-sm font-bold text-[var(--color-panel)]">
-                  Receipts and communication consent
+                  {t.consentLegend}
                 </legend>
                 {[
                   {

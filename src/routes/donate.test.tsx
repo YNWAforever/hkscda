@@ -367,3 +367,14 @@ test("donation contacts use the donation inbox without WhatsApp options", async 
   });
   expect(payload.consents).toEqual({ email: true, whatsapp: false });
 });
+
+test("the consent legend follows the page language", async () => {
+  const { DonatePage } = await import("./donate");
+
+  const html = renderToStaticMarkup(
+    <DonatePage initialSlots={[]} initialMethods={[]} initialSearch={{}} />,
+  );
+
+  expect(html).toContain("收據及通訊同意");
+  expect(html).not.toContain("Receipts and communication consent");
+});
