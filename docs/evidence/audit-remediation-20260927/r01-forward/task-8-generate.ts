@@ -1,6 +1,7 @@
 /** Reproducible Task8 forward SQL from measured profiles and exact legacy bodies. */
 import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { task8Vector, verifyTask8ColdBinding } from "./task-8-cold-fix-1-profile";
 import { catalogQuery } from "../../../../supabase/rls-tests/helpers/productionSchemaClone";
 import {
   tables,
@@ -21,6 +22,7 @@ if (
 const profiles = await Promise.all(
   [hostedPath, modernPath].map(async (p) => JSON.parse(await readFile(p, "utf8"))),
 );
+profiles.push(await verifyTask8ColdBinding(process.cwd(), profiles));
 const legacy = (
   await readFile(
     "supabase/migrations/20260925104051_volunteer_public_registration_idempotency.sql",
@@ -77,7 +79,7 @@ const specs = names.map((name) => {
   delete next.definition;
   return { name, args: match[1], result: match[2], old, next, body };
 });
-let sql = `-- R01 Task8: only idempotent registration and atomic audited clone.\n-- No table/grant/backfill/provider/activation changes. Known good modern\n-- registration entrypoint is retained byte-for-byte. Unknown profiles refuse.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb; v_actual jsonb; v_name text; v_target jsonb;\nbegin\n  if current_user <> 'postgres' then raise exception 'R01 volunteer owner context differs' using errcode='55000'; end if;\n  select catalog into v_catalog from (${catalogQuery}) captured;\n`;
+let sql = `-- R01 Task8: only idempotent registration and atomic audited clone.\n-- No table/grant/backfill/provider/activation changes. Known good modern\n-- registration entrypoint is retained byte-for-byte. Unknown profiles refuse.\nset local search_path = '';\ndo $migration$\ndeclare v_catalog jsonb; v_actual jsonb; v_name text; v_target jsonb; v_profile jsonb := '{"tables":{}}'::jsonb;\nbegin\n  if current_user <> 'postgres' then raise exception 'R01 volunteer owner context differs' using errcode='55000'; end if;\n  select catalog into v_catalog from (${catalogQuery}) captured;\n`;
 for (const name of tables) {
   const values = profiles.map((p) =>
     Object.fromEntries(
@@ -91,6 +93,7 @@ for (const name of tables) {
     ),
   );
   sql += `  v_name:=${literal(name)};\n  select pg_catalog.jsonb_object_agg(k,(select coalesce(pg_catalog.jsonb_agg(e.value order by e.ordinality),'[]'::jsonb) from pg_catalog.jsonb_array_elements(v_catalog->k) with ordinality e(value,ordinality) where e.value->>'schema'='public' and coalesce(e.value->>'table',e.value->>'name')=v_name)) into v_actual from unnest(array['relations','columns','constraints','indexes','triggers','policies']) k;\n  if v_actual not in (${unique(values).map(json).join(",")}) then raise exception 'R01 volunteer table profile differs: ${name}' using errcode='55000'; end if;\n`;
+  sql += "  v_profile:=pg_catalog.jsonb_set(v_profile,array['tables',v_name],v_actual);\n";
 }
 for (const [name, query, key] of [
   ["helper", functionsQuery, "functions"],
@@ -98,7 +101,7 @@ for (const [name, query, key] of [
   ["native FK", nativeQuery, "native"],
   ["index flags", indexDetailsQuery, "indexes"],
   ["relation shape", shapeQuery, "shape"],
-])
+]) {
   sql += `  select value into v_actual from (${query}) captured;\n  if v_actual not in (${unique(
     profiles.map((p) => p[key]),
   )
@@ -106,12 +109,17 @@ for (const [name, query, key] of [
     .join(
       ",",
     )}) then raise exception 'R01 volunteer ${name} profile differs' using errcode='55000'; end if;\n`;
-for (const key of ["schemas", "defaults", "roles", "memberships"])
+  sql += `  v_profile:=v_profile||pg_catalog.jsonb_build_object('${key}',v_actual);\n`;
+}
+for (const key of ["schemas", "defaults", "roles", "memberships"]) {
   sql += `  if v_catalog->'${key}' not in (${unique(profiles.map((p) => p.catalog[key]))
     .map(json)
     .join(
       ",",
     )}) then raise exception 'R01 volunteer ${key} differs' using errcode='55000'; end if;\n`;
+  sql += `  v_profile:=v_profile||pg_catalog.jsonb_build_object('${key}',v_catalog->'${key}');\n`;
+}
+sql += `  if v_profile not in (${profiles.map((p) => json(task8Vector(p))).join(",")}) then raise exception 'R01 volunteer correlated profile differs' using errcode='55000'; end if;\n`;
 sql += `  select value into v_target from (${targetQuery}) captured;\n  if exists(select 1 from pg_catalog.jsonb_array_elements(v_target) e group by e->>'name' having pg_catalog.count(*)>1) then raise exception 'R01 volunteer unexpected overload' using errcode='55000'; end if;\n  for v_actual in select e from pg_catalog.jsonb_array_elements(v_target) e loop\n    case v_actual->>'name'\n`;
 for (const s of specs) {
   sql += `    when ${literal(s.name)} then\n      if v_actual<>${json(s.old)} and (v_actual-'definition')<>${json(s.next)} then raise exception 'R01 volunteer target differs: ${s.name}' using errcode='55000'; end if;\n`;

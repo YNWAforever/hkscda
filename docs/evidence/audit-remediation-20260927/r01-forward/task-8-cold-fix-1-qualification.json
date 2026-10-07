@@ -1,0 +1,1459 @@
+{
+  "receiptVersion": 1,
+  "receiptType": "task8-cold-fix-1-source-qualification",
+  "productionApplied": false,
+  "productionSQL": "DO_NOT_APPLY",
+  "providerCalls": false,
+  "deployment": false,
+  "operationalEnablement": false,
+  "native19": "NOT_RUN",
+  "freshRequiredCI": "NOT_RUN locally; root will dispatch final source",
+  "sharedEndpointsQueried": false,
+  "sourceChanges": {
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-generate.ts": {
+      "bytes": 8753,
+      "rawSHA256": "fa75032c825141525a2fb3b9a3f8533290f03e3e35cde284e182748fbe30b664",
+      "lfSHA256": "fa75032c825141525a2fb3b9a3f8533290f03e3e35cde284e182748fbe30b664"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.ts": {
+      "bytes": 3255,
+      "rawSHA256": "809c0cb88804661fea0da9d5372f39842b9046579eb1230c064a18c46aed324f",
+      "lfSHA256": "809c0cb88804661fea0da9d5372f39842b9046579eb1230c064a18c46aed324f"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.test.ts": {
+      "bytes": 2860,
+      "rawSHA256": "f9108c4d6f2b142fbcd3c3419b08caba74d779c01ec0f342f83cebc71f5d44e8",
+      "lfSHA256": "f9108c4d6f2b142fbcd3c3419b08caba74d779c01ec0f342f83cebc71f5d44e8"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-binding.json": {
+      "bytes": 866516,
+      "rawSHA256": "fe20d3fd0c047770e0b81e76e9ec428ef78b1e546252c52a8fc62a6ed2320d87",
+      "lfSHA256": "fe20d3fd0c047770e0b81e76e9ec428ef78b1e546252c52a8fc62a6ed2320d87"
+    },
+    "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-raw-receipts.zip": {
+      "bytes": 7145190,
+      "rawSHA256": "1eada8392d26f302d26be0548503f5b71e0c6c74676ba048db06239ecef9ecaa"
+    },
+    "supabase/migrations/20261006163243_r01_volunteer_atomic_forward.sql": {
+      "bytes": 1360292,
+      "rawSHA256": "cf6ee8a04d88469ada06b45dbd12b14a8293a29a6208d9ba05fa22dfe5f6ad8f",
+      "lfSHA256": "cf6ee8a04d88469ada06b45dbd12b14a8293a29a6208d9ba05fa22dfe5f6ad8f"
+    }
+  },
+  "profileQuerySourcesUnchanged": {
+    "catalog": "4222e0347d97a45a2a5d3b6e44f56b8cb283f5ced0d2e4f1f9829cb2edc57b85",
+    "functions": "5428ccee60e0f7328b900624ac90f7518db082b22bd3746b744bbe391aab1339",
+    "targets": "cdc890169bf2654c20c9d9679e4f239ecf007e9d99c381f17ad222c236c0c154",
+    "auth": "e7466b2849ed718a4ccf5b29700ac481ae9d626a7bf835c62d7babab6cae8494",
+    "native": "6a9bd9238246ffa1ed857084ace6425674e04177f17abbe13b4a9f6c9022561d",
+    "indexes": "2158d47d423f484d10b8799147dcad38e4489ac12401df405ff074005d1aebdd",
+    "shape": "4f5d07e57b5017b12dcf8a73b0a2e94099e828b884f9646a0595aa2d98dcfeea"
+  },
+  "completeObservedColdProfileRawSHA256": "c1d07067ce3435d9340e465c1d9d5ad310deeef09272c79761d2437c385793d0",
+  "completeObservedColdProfileArchive": "task-8-cold-fix-1-raw-receipts.zip",
+  "coldBindingRawSHA256": "fe20d3fd0c047770e0b81e76e9ec428ef78b1e546252c52a8fc62a6ed2320d87",
+  "coldBindingObjectSHA256": "d65be2200bc1029ca9a3b69a68d41b71b7193b3319bdf902be2ee78c6a87a5d1",
+  "greenArchive": "task-8-cold-fix-1-green-receipts.zip",
+  "greenArchiveRawSHA256": "1b99a02add2037f892c21fc894791543f667744f8a13d6a596c7730455ba2541",
+  "greenReceiptRawSHA256": "d4bdd001070b0c882405626c34a2cae287498658654223ceaf026712c8d2096f",
+  "nativeRuntime": {
+    "version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+    "database": "postgres",
+    "currentUser": "postgres",
+    "databaseOwner": "postgres",
+    "serverVersionNum": "170011"
+  },
+  "exactImages": {
+    "db": {
+      "id": "d8364385f7d11e2f47fe89b993f537c998a53f7e6aee30126107443bf0999caf",
+      "imageId": "sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108",
+      "imageName": "public.ecr.aws/supabase/postgres:17.11.0.004"
+    },
+    "auth": {
+      "id": "fa940b7ef34084dcdcfcd637284897c3398e8554fafafa11dd825b273f6a6502",
+      "imageId": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+      "imageName": "public.ecr.aws/supabase/gotrue:v2.197.0"
+    }
+  },
+  "nativeExits": {
+    "originalSupporterRedCapture": 0,
+    "exactContextSupporterRedCapture": 0,
+    "watchedAdmissionRed": 1,
+    "initialApplyTwiceGreen": 0,
+    "reservedRoleSetupFailure": 1,
+    "psqlExitAssertionFailure": 1,
+    "finalFullRollbackGreen": 0,
+    "psqlExpectedRoleRefusal": 3,
+    "portable205Tests": 0,
+    "focusedLint": 0,
+    "targetedFormatting": 0,
+    "deterministicGeneration": 0
+  },
+  "requiredFinalFlags": {
+    "fullSevenTableScannerPassed": true,
+    "actualAdmissionAcceptedTwice": true,
+    "completeProfileRollbackPreserved": true,
+    "frozenInputsPreserved": true,
+    "ownershipAndConfigPreserved": true,
+    "dockerIdentitiesPreserved": true,
+    "actualSqlRefusalCasesPassed": true,
+    "syntheticBusinessRollbackPassed": true
+  },
+  "actualSqlRefusals": [
+    {
+      "name": "table grant option",
+      "setup": "grant select on public.supporter to authenticated with grant option",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "column grant option",
+      "setup": "grant update(name) on public.supporter to authenticated with grant option",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "RLS",
+      "setup": "alter table public.volunteer_activity disable row level security",
+      "message": "R01 volunteer table profile differs: volunteer_activity",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "column shape",
+      "setup": "alter table public.supporter add column task8_unknown text",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "constraint",
+      "setup": "alter table public.supporter add constraint task8_unknown check(name <> 'unknown')",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "index addition",
+      "setup": "create index task8_unknown on public.supporter(name)",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "trigger",
+      "setup": "alter table public.supporter disable trigger bump_supporter_edit_version",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "policy",
+      "setup": "create policy task8_unknown on public.supporter for select to anon using(true)",
+      "message": "R01 volunteer table profile differs: supporter",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "helper configuration",
+      "setup": "alter function private.bump_supporter_edit_version() set search_path='public'",
+      "message": "R01 volunteer helper profile differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "managed Auth column ACL",
+      "setup": "grant select(email) on auth.users to anon",
+      "message": "R01 volunteer managed Auth profile differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "native FK",
+      "setup": "alter table public.volunteer_registration alter constraint volunteer_registration_activity_id_fkey deferrable initially deferred",
+      "message": "R01 volunteer table profile differs: volunteer_registration",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "index flags",
+      "setup": "alter table public.supporter cluster on supporter_pkey",
+      "message": "R01 volunteer index flags profile differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "relation shape",
+      "setup": "create rule task8_unknown as on delete to public.supporter do instead nothing",
+      "message": "R01 volunteer relation shape profile differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "schema privilege",
+      "setup": "grant create on schema public to anon",
+      "message": "R01 volunteer schemas differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "default privilege",
+      "setup": "alter default privileges for role postgres in schema public revoke execute on functions from anon",
+      "message": "R01 volunteer defaults differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "role membership",
+      "setup": "grant authenticated to anon",
+      "message": "R01 volunteer memberships differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "clone overload after registration absent",
+      "setup": "drop function public.create_volunteer_registration_idempotent(uuid,uuid,text,integer,text,text,text,text,text,integer,integer,text,text,text,text,timestamp with time zone,boolean,boolean); create function public.clone_volunteer_activity_with_audit(uuid) returns uuid language sql as 'select $1'",
+      "message": "R01 volunteer unexpected overload",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "registration overload after clone absent",
+      "setup": "drop function public.clone_volunteer_activity_with_audit(uuid,uuid,timestamp with time zone); create function public.create_volunteer_registration_idempotent(uuid) returns uuid language sql as 'select $1'",
+      "message": "R01 volunteer unexpected overload",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "unknown target body",
+      "setup": "create or replace function public.clone_volunteer_activity_with_audit(p_source_activity_id uuid,p_actor_user_id uuid,p_starts_at timestamp with time zone default null) returns uuid language plpgsql security definer set search_path='' as 'begin return p_source_activity_id; end'",
+      "message": "R01 volunteer target differs: clone_volunteer_activity_with_audit",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "crossed modern supporter with cold helpers",
+      "setup": "revoke insert(id,name,email,phone,language,tags,source,deleted_at,created_at,updated_at,edit_version),update(id,name,email,phone,language,tags,source,deleted_at,created_at,updated_at,edit_version) on public.supporter from authenticated; grant insert,update on public.supporter to authenticated",
+      "message": "R01 volunteer correlated profile differs",
+      "errno": "55000",
+      "setupSucceeded": true,
+      "targetPreflightPreserved": true
+    },
+    {
+      "name": "role attributes",
+      "setupSucceeded": true,
+      "applicationUser": "postgres",
+      "setupUser": "supabase_admin",
+      "errno": "55000",
+      "nativeExit": 3,
+      "rollback": "connection terminated on expected error; no COMMIT"
+    }
+  ],
+  "syntheticBusiness": {
+    "anon cannot clone": {
+      "errno": "42501",
+      "domainRowsPreserved": true
+    },
+    "authenticated cannot clone": {
+      "errno": "42501",
+      "domainRowsPreserved": true
+    },
+    "missing actor": {
+      "errno": "42501",
+      "domainRowsPreserved": true
+    },
+    "banned actor": {
+      "errno": "42501",
+      "domainRowsPreserved": true
+    },
+    "unconfirmed actor": {
+      "errno": "42501",
+      "domainRowsPreserved": true
+    },
+    "non-staff actor": {
+      "errno": "42501",
+      "domainRowsPreserved": true
+    },
+    "audit failure": {
+      "errno": "P0001",
+      "domainRowsPreserved": true
+    },
+    "registrationIdempotent": true,
+    "consentFacts": 2,
+    "cloneAuditCount": 1
+  },
+  "businessAndTargetPreflightSuffix": {
+    "equalAfterLF": true,
+    "sha256": "942e8a499eeb65fefb87264b057ccdfaa9af6f57f0ee6e5ba7bddb25b88dc0bd",
+    "bytes": 15851,
+    "registrationTuplePreserved": true,
+    "cloneNextBody": "992175f4f75d5380f61092f2fc8b52af"
+  },
+  "deterministicCompiledSQLRawEqual": true,
+  "startupPhaseLimitation": {
+    "initialCILog": {
+      "databaseStartLine": 919,
+      "schemaInitialisationLine": 920,
+      "Task8MigrationLine": 1108,
+      "supporter55000Line": 1110,
+      "containersStartedObserved": false
+    },
+    "ownedStartupLog": {
+      "databaseStartLine": 298,
+      "schemaInitialisationLine": 299,
+      "containersStartLine": 487,
+      "healthCheckLine": 490
+    },
+    "observedColdVectorPhase": "After full owned project startup and exact DB/Auth health readiness",
+    "GoTrueInternalMigrationTiming": "Not separately proven by available startup messages",
+    "freshCIRequired": "Pre-container Task8 startup admission and native19 must be observed in fresh required CI"
+  },
+  "generatedLocalAPIKeys": "Raw startup stdout preserved only ignored; excluded from both tracked archives with byte/hash-only boundary manifest",
+  "originalIncidents": "55321/55322 UNKNOWN; 52322/57322 preserved, no query/reset/rebaseline or waiver",
+  "nativeLaunchers": [
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-pointer-20261007.json",
+      "pointerRawSHA256": "f144d2e78229b3177cebc6e4a9d5cb66b0c999d784f0e316f5143b0e137371c0",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\ci-201-startup-diagnosis-20261007-001\\capture.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337229321139500"
+        ],
+        "nativeExit": 0,
+        "pid": 12540,
+        "elapsedSeconds": 13.46,
+        "retainedOSKeys": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "OS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "envFilesProvidersCIFixtureOptins": "OMITTED",
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337229321139500",
+        "streams": [
+          {
+            "file": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337229321139500.stdout",
+            "bytes": 303,
+            "sha256": "8ef614ed507cd72c911306ec938f7d96772dedaf37a6bfde5b07f214edeea63b"
+          },
+          {
+            "file": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337229321139500.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "original553523573Queried": false,
+        "productionApplied": false
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-exact-context-pointer-20261007-001.json",
+      "pointerRawSHA256": "2364e57da4359efabd370e876a30f8cd3ddda3e7826e8e91bdc1d6466578bccf",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\ci-201-exact-context-20261007-001\\capture.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337595273569900"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 9.28917384147644,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337595273569900",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "0c6fabc1705c14fd97b55efcbe79c6674277294b001ce40b1ae150792397b3e0",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-red-pointer-20261007.json",
+      "pointerRawSHA256": "be745dc43878ecfb1baae121a9a4d3300f40d7737b80b075fd20aa9db250d619",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\rollback-test.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337676350537900"
+        ],
+        "nativeExit": 1,
+        "elapsedSeconds": 9.530948162078857,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337676350537900",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "f0b50aeb8ce886447f0b134cc5527ec2e8bc3f670afb18fdfc07d2cc23d709b3",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-green-pointer-20261007.json",
+      "pointerRawSHA256": "4338cc04118782ddc643105eed19364de99cdd0e4b5f1c5a19f3a36dc0f65435",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\rollback-test.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337899162694400"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 9.704059362411499,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791337899162694400",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "94d3157a2c764815f3b8e5709053f8ea04990ca3bc5f43b5cd5b85e0996686a1",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-full-green-pointer-20261007.json",
+      "pointerRawSHA256": "785c552c4f5113ab269bb6bcbccc2690c941621d89611f854e88cc8531e10db3",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\full-rollback-test.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338070853693500"
+        ],
+        "nativeExit": 1,
+        "elapsedSeconds": 9.67990493774414,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338070853693500",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "a215457b987bfd90723448596786f94955c9f2c7a33b046116e5138888c6d320",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-full-green-r2-pointer-20261007.json",
+      "pointerRawSHA256": "a69e91f9ecb2877b887e1f5af762e8d182f3a51bfd6f29f786b7dbe2fd76af13",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\full-rollback-test.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338134802750500"
+        ],
+        "nativeExit": 1,
+        "elapsedSeconds": 11.391334056854248,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338134802750500",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "a8f4f3f8b2aae8790a014c3ece6dc4e1ed3e53715b24e538c8707b2254036ef9",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-full-green-r3-pointer-20261007.json",
+      "pointerRawSHA256": "78a5fa2bd63642dce710794e38a73eed9014b7ddc89b615a677cb6b7667ea715",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\full-rollback-test.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338171429843600"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 13.721888542175293,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338171429843600",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "5a8810d7341ae3c8babc7283856597dd49b81fee6b51c280e9d72d141530dd86",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-full-green-final-pointer-20261007.json",
+      "pointerRawSHA256": "53ec363a38bbdad24e2800f0a47a5e8b4ea8bef22406f5108db64095f45206d8",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\full-rollback-final.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ownership.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-native-201-20261007\\ready.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338338126077500"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 17.886605978012085,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338338126077500",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "cc56d010496436c42b105779438b165d105b9f74d677fc009b4897d9f9a92830",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-unit-r2-pointer-20261007.json",
+      "pointerRawSHA256": "e0d520902afd2fd97c384b6d141d92d6967598f02bca8bd6c02e0d773d06b368",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "test",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.test.ts"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 1.0738699436187744,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338290093049500",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6",
+        "stderrSha256": "e103db109d468ba60277e6e60dc89b99bcf806093e31f27dd9324ff1a4983a01"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-lint-pointer-20261007.json",
+      "pointerRawSHA256": "9b0dc5628dc94ecd4cb2177d949e5b621125b2392d89c7e3d28afcbb79f9b26b",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "node_modules/eslint/bin/eslint.js",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-generate.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.test.ts"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 12.893075942993164,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338291952944400",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-generate-r2-pointer-20261007.json",
+      "pointerRawSHA256": "ee60598a5eeb1cff02c6f599bd886b17b96a050ad999e1a7efc23e671ec23160",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-generate.ts",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\hosted.json",
+          "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-work-20261007\\modern.json",
+          "supabase/migrations/20261006163243_r01_volunteer_atomic_forward.sql"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 0.146561861038208,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338326898253000",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "e094f878ded92df51a8784fd1fe026c5183df07c3d2a0352b8495d1b4a5e0849",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "pointerPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-fix-1-format-pointer-20261007.json",
+      "pointerRawSHA256": "252880a22739e4336705b2ffa77e3ee32d23bca23f3212f8977f946572816665",
+      "receipt": {
+        "argv": [
+          "C:/Users/laich/.bun/bin/bun.exe",
+          "--no-env-file",
+          "node_modules/prettier/bin/prettier.cjs",
+          "--write",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-generate.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.ts",
+          "docs/evidence/audit-remediation-20260927/r01-forward/task-8-cold-fix-1-profile.test.ts"
+        ],
+        "nativeExit": 0,
+        "elapsedSeconds": 1.1181790828704834,
+        "out": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338256451059500",
+        "cleanOSEnvironment": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMDRIVE",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "stdoutSha256": "9caf3aef97e9019159ba8aeeff1f02e2e9e50f92e44b4818eb93f02bc12eabfd",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "ownedDockerAndPsqlNativeCommands": [
+    {
+      "name": "identity-db",
+      "argv": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "--format",
+        "{\"id\":{{json .Id}},\"name\":{{json .Name}},\"imageId\":{{json .Image}},\"imageName\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"ports\":{{json .NetworkSettings.Ports}},\"mounts\":{{json .Mounts}}}",
+        "supabase_db_hkscda-task8-cold-201-20261007"
+      ],
+      "pid": 6196,
+      "nativeExit": 0,
+      "stdoutSha256": "cc9b57b3abddbf20e832b20d65547789f6c2ff700ca4546c924605b23970bd03",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": null
+    },
+    {
+      "name": "identity-auth",
+      "argv": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "--format",
+        "{\"id\":{{json .Id}},\"name\":{{json .Name}},\"imageId\":{{json .Image}},\"imageName\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"ports\":{{json .NetworkSettings.Ports}},\"mounts\":{{json .Mounts}}}",
+        "supabase_auth_hkscda-task8-cold-201-20261007"
+      ],
+      "pid": 29268,
+      "nativeExit": 0,
+      "stdoutSha256": "a1a8e0459725362c22411f96d483df70e5c80ac01426b4be87ec607be7d0c27d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": null
+    },
+    {
+      "name": "before-runtime",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 3844,
+      "nativeExit": 0,
+      "stdoutSha256": "f20dc6a67ba418c84a31fbb778b4a88bb4d4ed24825050ff0cd736fd85a63033",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "373971099a66ee9b5bad1983f9f0cfce0a5d3ee915dd7528ee2cf3e4f24cc69a"
+    },
+    {
+      "name": "before-ledger",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 18384,
+      "nativeExit": 0,
+      "stdoutSha256": "77ada4615ecf333956bb89d2983794cb5cfe94a0776ae81ebe802a76996d295c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "0c147cfc45b5264fe16f92635357b1e36d9d4987829a8f0cd8047c89b32385b7"
+    },
+    {
+      "name": "before-catalog",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 23212,
+      "nativeExit": 0,
+      "stdoutSha256": "962343a5d9a688c634c5f3fa8860ee65e59543afe91cc461cce298f4eaf41cb2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "f9ba411d8fe4863db057767a9660f4ca9472b3fce1f67f211d80f238256d9c4f"
+    },
+    {
+      "name": "before-functions",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 45528,
+      "nativeExit": 0,
+      "stdoutSha256": "3d6b4d5ff6cbfdff57d6487a2c52e1145d5a5cbc985e54ed4bf81c2a55f96004",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "f8e4d5b7ff1923ecb14fa6d697762872a3e73d66c76380ed8965a9c384f57617"
+    },
+    {
+      "name": "before-targets",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 51332,
+      "nativeExit": 0,
+      "stdoutSha256": "28e8047848f6bad49ff46c09f1bb4b26ec7225210e460baa784116b1693c0ea8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "4a0a1c4e85d3c788d70b7e14650aa96dbf5be58bfd1663cad8df448963e27662"
+    },
+    {
+      "name": "before-auth",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 60616,
+      "nativeExit": 0,
+      "stdoutSha256": "873de345fa7fa488729b4e9c20be98bd77f44fcdb240ce601463301a48eb2afe",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "41cfce0305cede41cda3aa5cdef9d4a323fa4bb3ec3ba628baa5a6a9a745aabb"
+    },
+    {
+      "name": "before-native",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 60540,
+      "nativeExit": 0,
+      "stdoutSha256": "7aa8dc2199195019889c4da34abe6233de1d87e67263f5bc5739eb0234921c16",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "b238fccb3fb7ac05e3894d5f5166b27712f059a226a4fd2fbffb140f7610fc71"
+    },
+    {
+      "name": "before-indexes",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 34588,
+      "nativeExit": 0,
+      "stdoutSha256": "d328ac8156c1d0e474e67e95afabe4fa72d8299459f1f78472d100f4c34fedb2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "1892ba65e530be4d8be90917ff4cb0c06699f610d97f42183468c6071479c439"
+    },
+    {
+      "name": "before-shape",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 22804,
+      "nativeExit": 0,
+      "stdoutSha256": "51bd93b87d2c16da10a44da74948861d8d9de3567cc68b1dd81c883debebf53b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "6fbb3446c54968143d23f9bee7e729f435cc367d8dbef3855db00b4d8b152ff1"
+    },
+    {
+      "name": "before-ledger-full",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 7760,
+      "nativeExit": 0,
+      "stdoutSha256": "77ada4615ecf333956bb89d2983794cb5cfe94a0776ae81ebe802a76996d295c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "0c147cfc45b5264fe16f92635357b1e36d9d4987829a8f0cd8047c89b32385b7"
+    },
+    {
+      "name": "before-sequences",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 28252,
+      "nativeExit": 0,
+      "stdoutSha256": "4fd2fbf33d3bb0fc5427683731378b3731b0357f7ee33b63da31340a900c6abe",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "c68b803f795ae52b0d59ae7fae206049ed043710259fe00d8e1f80396aff1d92"
+    },
+    {
+      "name": "refusal-role-attributes",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "supabase_admin",
+        "-d",
+        "postgres"
+      ],
+      "nativeExit": 3,
+      "stdinSha256": "7f037c835b8e7120156d6a2d30aded376ee8d7417bdaee38f5366e31f2dc3795",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "41582868b832b23fb51de17702cf0d1fd3d6750f7c0b9f13ed511c8ce1da5412"
+    },
+    {
+      "name": "after-catalog",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 50224,
+      "nativeExit": 0,
+      "stdoutSha256": "962343a5d9a688c634c5f3fa8860ee65e59543afe91cc461cce298f4eaf41cb2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "f9ba411d8fe4863db057767a9660f4ca9472b3fce1f67f211d80f238256d9c4f"
+    },
+    {
+      "name": "after-functions",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 58492,
+      "nativeExit": 0,
+      "stdoutSha256": "3d6b4d5ff6cbfdff57d6487a2c52e1145d5a5cbc985e54ed4bf81c2a55f96004",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "f8e4d5b7ff1923ecb14fa6d697762872a3e73d66c76380ed8965a9c384f57617"
+    },
+    {
+      "name": "after-targets",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 52744,
+      "nativeExit": 0,
+      "stdoutSha256": "28e8047848f6bad49ff46c09f1bb4b26ec7225210e460baa784116b1693c0ea8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "4a0a1c4e85d3c788d70b7e14650aa96dbf5be58bfd1663cad8df448963e27662"
+    },
+    {
+      "name": "after-auth",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 45548,
+      "nativeExit": 0,
+      "stdoutSha256": "873de345fa7fa488729b4e9c20be98bd77f44fcdb240ce601463301a48eb2afe",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "41cfce0305cede41cda3aa5cdef9d4a323fa4bb3ec3ba628baa5a6a9a745aabb"
+    },
+    {
+      "name": "after-native",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 49712,
+      "nativeExit": 0,
+      "stdoutSha256": "7aa8dc2199195019889c4da34abe6233de1d87e67263f5bc5739eb0234921c16",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "b238fccb3fb7ac05e3894d5f5166b27712f059a226a4fd2fbffb140f7610fc71"
+    },
+    {
+      "name": "after-indexes",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 53828,
+      "nativeExit": 0,
+      "stdoutSha256": "d328ac8156c1d0e474e67e95afabe4fa72d8299459f1f78472d100f4c34fedb2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "1892ba65e530be4d8be90917ff4cb0c06699f610d97f42183468c6071479c439"
+    },
+    {
+      "name": "after-shape",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 12700,
+      "nativeExit": 0,
+      "stdoutSha256": "51bd93b87d2c16da10a44da74948861d8d9de3567cc68b1dd81c883debebf53b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "6fbb3446c54968143d23f9bee7e729f435cc367d8dbef3855db00b4d8b152ff1"
+    },
+    {
+      "name": "after-ledger-full",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 43068,
+      "nativeExit": 0,
+      "stdoutSha256": "77ada4615ecf333956bb89d2983794cb5cfe94a0776ae81ebe802a76996d295c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "0c147cfc45b5264fe16f92635357b1e36d9d4987829a8f0cd8047c89b32385b7"
+    },
+    {
+      "name": "after-sequences",
+      "argv": [
+        "docker",
+        "exec",
+        "-i",
+        "supabase_db_hkscda-task8-cold-201-20261007",
+        "psql",
+        "-X",
+        "-q",
+        "-A",
+        "-t",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres"
+      ],
+      "pid": 23500,
+      "nativeExit": 0,
+      "stdoutSha256": "4fd2fbf33d3bb0fc5427683731378b3731b0357f7ee33b63da31340a900c6abe",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": "c68b803f795ae52b0d59ae7fae206049ed043710259fe00d8e1f80396aff1d92"
+    },
+    {
+      "name": "after-identity-db",
+      "argv": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "--format",
+        "{\"id\":{{json .Id}},\"name\":{{json .Name}},\"imageId\":{{json .Image}},\"imageName\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"ports\":{{json .NetworkSettings.Ports}},\"mounts\":{{json .Mounts}}}",
+        "supabase_db_hkscda-task8-cold-201-20261007"
+      ],
+      "pid": 40952,
+      "nativeExit": 0,
+      "stdoutSha256": "cc9b57b3abddbf20e832b20d65547789f6c2ff700ca4546c924605b23970bd03",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": null
+    },
+    {
+      "name": "after-identity-auth",
+      "argv": [
+        "docker",
+        "inspect",
+        "--type",
+        "container",
+        "--format",
+        "{\"id\":{{json .Id}},\"name\":{{json .Name}},\"imageId\":{{json .Image}},\"imageName\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"ports\":{{json .NetworkSettings.Ports}},\"mounts\":{{json .Mounts}}}",
+        "supabase_auth_hkscda-task8-cold-201-20261007"
+      ],
+      "pid": 32776,
+      "nativeExit": 0,
+      "stdoutSha256": "a1a8e0459725362c22411f96d483df70e5c80ac01426b4be87ec607be7d0c27d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdinSha256": null
+    }
+  ],
+  "finalIgnoredReceiptPath": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338338126077500\\receipt.json",
+  "preservedHarnessFailures": [
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338070853693500\\receipt.json",
+      "rawSHA256": "090fc49dee5e124b7dd7f1a43a9a7767eb70ba58001985b046e4b54b7e778ed9",
+      "classification": "Harness setup refusal42501 for reserved authenticated role, not source55000 or passing refusal"
+    },
+    {
+      "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\task8-cold-201-capture-1791338134802750500\\receipt.json",
+      "rawSHA256": "54b4b6ed55c9094d54c28c1e20d4282968cc1871075bf9fa4f3c688a73dbb05c",
+      "classification": "Harness assertion mistakenly expected psql native1; actual expected source55000 with psql ON_ERROR_STOP native3. Original failure retained."
+    }
+  ],
+  "counts": {
+    "portableTests": 205,
+    "portableFailures": 0,
+    "actualSqlRefusalCases": 21,
+    "finalPreservationFlags": 8,
+    "predecessorMigrations": 186,
+    "publicTables": 6,
+    "fullScannerTablesIncludingAuth": 7,
+    "helperTuples": 75,
+    "targetTuples": 2,
+    "nativeFKTuples": 232,
+    "indexTuples": 31,
+    "relationShapeTuples": 7,
+    "ledgerTuples": 186,
+    "sequenceTuples": 3,
+    "portableExpectCalls": 206
+  },
+  "focusedLint": {
+    "nativeExit": 0,
+    "files": [
+      "task-8-generate.ts",
+      "task-8-cold-fix-1-profile.ts",
+      "task-8-cold-fix-1-profile.test.ts"
+    ],
+    "stdoutBytes": 0,
+    "stderrBytes": 0,
+    "ignoredFileWarnings": false
+  },
+  "binaryEvidence": {
+    "canonicalDigest": "raw SHA256 only; no LF digest or normalization for binary files",
+    "greenManifest": "task-8-cold-fix-1-green-manifest.json",
+    "greenManifestRawSHA256": "1e88866afb0b47ebef6380271e393cf4c33901c60538e3c7924807d71ee7db00",
+    "memberCount": 528,
+    "everyMemberRawBytesVerified": true
+  }
+}
