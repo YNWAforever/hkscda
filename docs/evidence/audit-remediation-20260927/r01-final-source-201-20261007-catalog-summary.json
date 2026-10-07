@@ -1,0 +1,41 @@
+{
+  "observedAtUtc": "2026-10-06T23:36:59.841841+00:00",
+  "serverVersionNum": "170006",
+  "tables": 158,
+  "functions": 353,
+  "ledgerCount": 112,
+  "ledgerMax": "20261001072505",
+  "controlColumnsPresent": 0,
+  "publicTablesWithoutRLS": [],
+  "scope": "catalog-only public/private tables/functions, no application rows",
+  "newR01LedgerVersions": [],
+  "admission": "metadata-only; full146checker/realroleJWT/typedrestore/provider NOT_RUN; source/schema admission not inferred",
+  "routineKindCounts": [
+    {
+      "count": 51,
+      "schema": "private",
+      "prokind": "f"
+    },
+    {
+      "count": 2,
+      "schema": "public",
+      "prokind": "a"
+    },
+    {
+      "count": 302,
+      "schema": "public",
+      "prokind": "f"
+    }
+  ],
+  "routineTotal": 355,
+  "functionKindF": 353,
+  "aggregateKindA": 2,
+  "countsQualification": "353 prokind=f plus two public citext1.6 aggregates =355 routines; different scope from older355 functions label; no DDL drift inferred",
+  "captureReceiptZip": "r01-final-source-201-20261007-catalog-receipts.zip",
+  "sourceHead": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+  "sourceTree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+  "sourcePR": 201,
+  "new15SQLProductionApproved": false,
+  "new15SQLProductionApplied": false,
+  "paymentDeliveryMediaEnabled": false
+}
