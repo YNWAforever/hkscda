@@ -1,0 +1,34 @@
+
+supabase\rls-tests\helpers\productionSchemaCloneAggregates.test.ts:
+126 | }
+127 | for (const name of ["min", "max"] as const) {
+128 |   test(`captured citext ${name} aggregate remains a pure fixture path`, async () => {
+129 |     await expect(
+130 |       assertSafeFixtureTables(catalogProbe(capturedAggregate(name)), ["synthetic"]),
+131 |     ).resolves.toBeUndefined();
+                     ^
+error: 
+
+Expected promise that resolves
+Received promise that rejected: Promise { <rejected> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\productionSchemaCloneAggregates.test.ts:131:16)
+(fail) captured citext min aggregate remains a pure fixture path [20.58ms]
+126 | }
+127 | for (const name of ["min", "max"] as const) {
+128 |   test(`captured citext ${name} aggregate remains a pure fixture path`, async () => {
+129 |     await expect(
+130 |       assertSafeFixtureTables(catalogProbe(capturedAggregate(name)), ["synthetic"]),
+131 |     ).resolves.toBeUndefined();
+                     ^
+error: 
+
+Expected promise that resolves
+Received promise that rejected: Promise { <rejected> }
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\audit-r01-adoption-upload-20261001\supabase\rls-tests\helpers\productionSchemaCloneAggregates.test.ts:131:16)
+(fail) captured citext max aggregate remains a pure fixture path [1.54ms]
+
+ 0 pass
+ 2 fail
+Ran 2 tests across 1 file. [152.00ms]
