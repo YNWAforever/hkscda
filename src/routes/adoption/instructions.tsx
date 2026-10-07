@@ -15,14 +15,17 @@ const loadAdoptionInstructions = createAdoptionInstructionsLoader(() =>
 );
 export const Route = createFileRoute("/adoption/instructions")({
   loader: loadAdoptionInstructions,
-  // The description is the CMS hero copy the page renders; when the loader failed
-  // there is none and the root default applies.
-  head: ({ loaderData }) =>
-    pageHead({
-      title: "領養流程",
-      description: loaderData?.status === "ok" ? loaderData.data.copy.hero.description : undefined,
+  // The title and description are the CMS hero copy the page renders as its h1 and
+  // intro. When the loader failed, or the CMS title is blank, the title falls back to
+  // the nav label and the description to the root default.
+  head: ({ loaderData }) => {
+    const hero = loaderData?.status === "ok" ? loaderData.data.copy.hero : undefined;
+    return pageHead({
+      title: hero?.title.trim() || "領養流程",
+      description: hero?.description,
       path: "/adoption/instructions",
-    }),
+    });
+  },
   component: InstructionsPage,
 });
 
