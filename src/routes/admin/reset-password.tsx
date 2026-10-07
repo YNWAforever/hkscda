@@ -129,7 +129,9 @@ export function AdminResetPasswordForm({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-2xl font-bold">HKSCDA</p>
-            <h1 className="text-sm text-[var(--color-text-muted)] mt-1">{copy.login.resetTitle}</h1>
+            <h1 className="text-sm font-normal tracking-normal text-[var(--color-text-muted)] mt-1">
+              {copy.login.resetTitle}
+            </h1>
           </div>
           <AdminLanguageToggle />
         </div>

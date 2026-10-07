@@ -7,11 +7,15 @@ import { describe, expect, test } from "bun:test";
  * page, error messages and form buttons on the old colours. This guard fails the
  * build when a palette class reappears under the admin routes or components.
  *
- * `bg-white` / `text-white` carry no scale number and are intentionally outside
- * the pattern, as are the palette names used without one (e.g. `text-red`).
+ * The pattern matches any utility (`bg-`, `border-t-`, `ring-offset-`, `caret-`,
+ * ...) followed by one of the 22 palette names and a scale number, with any
+ * variant prefix (`hover:`, `focus-visible:`), `!` important marker or opacity
+ * suffix (`/80`, `/[0.3]`) around it. `bg-white` / `text-white` carry no scale
+ * number and are intentionally outside it, as are palette names used without
+ * one (e.g. `text-red`).
  */
 const PALETTE_CLASS =
-  /\b(?:[a-z-]+:)*(?:bg|text|border|ring|outline|fill|stroke|from|via|to|divide|placeholder|accent|shadow|decoration)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d{2,3}\b/;
+  /\b(?:[a-z-]+:)*[a-z]+(?:-[a-z]+)*-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d{2,3}\b/;
 
 const ADMIN_SOURCE_GLOBS = ["src/routes/admin/**/*.{ts,tsx}", "src/components/admin/**/*.{ts,tsx}"];
 
@@ -45,8 +49,25 @@ describe("admin colour tokens", () => {
   });
 
   test("the matcher catches palette classes", () => {
-    expect(PALETTE_CLASS.test("hover:bg-slate-700")).toBe(true);
-    expect(PALETTE_CLASS.test("text-emerald-800")).toBe(true);
-    expect(PALETTE_CLASS.test("bg-[var(--color-panel)]")).toBe(false);
+    const palette = [
+      "hover:bg-slate-700",
+      "text-emerald-800",
+      "border-t-red-500",
+      "border-x-gray-200",
+      "ring-offset-red-500",
+      "caret-red-500",
+      "focus-visible:bg-red-500",
+      "bg-red-50/80",
+      "bg-red-500/[0.3]",
+      "!bg-red-500",
+    ];
+    for (const cls of palette) {
+      expect(PALETTE_CLASS.test(cls), cls).toBe(true);
+    }
+
+    const tokens = ["bg-white", "text-white", "bg-[var(--color-panel)]"];
+    for (const cls of tokens) {
+      expect(PALETTE_CLASS.test(cls), cls).toBe(false);
+    }
   });
 });

@@ -103,7 +103,7 @@ export function AdminLoginContent({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-2xl font-bold">HKSCDA</p>
-            <h1 className="text-sm text-[var(--color-text-muted)] mt-1">
+            <h1 className="text-sm font-normal tracking-normal text-[var(--color-text-muted)] mt-1">
               {mode === "request-reset" ? copy.login.resetTitle : copy.login.subtitle}
             </h1>
           </div>

@@ -40,6 +40,9 @@ describe("AdminResetPasswordForm", () => {
       const markup = render(status);
       expect((markup.match(/<h1[\s>]/g) ?? []).length).toBe(1);
       expect(markup).toMatch(/<h1[^>]*>[^<]*重設密碼[^<]*<\/h1>/);
+      // The subtitle was a normal-weight line; styles.css makes headings bold.
+      expect(markup).toMatch(/<h1[^>]*class="[^"]*\bfont-normal\b/);
+      expect(markup).toMatch(/<h1[^>]*class="[^"]*\btracking-normal\b/);
     }
   });
 
