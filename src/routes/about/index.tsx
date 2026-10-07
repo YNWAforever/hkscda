@@ -19,12 +19,15 @@ import { SectionHeading } from "../../components/site/SectionHeading";
 import heroImg from "@/assets/dog-smiling.jpg";
 
 export const Route = createFileRoute("/about/")({
-  // The description is the CMS hero copy the page renders; with no content (the
-  // loader returned null) the root default applies.
+  // The description is the hero copy the page renders: the CMS content, or the
+  // default hero when the CMS has none. With no loader data at all (a load
+  // failure) the page shows no hero, and the root default applies.
   head: ({ loaderData }) =>
     pageHead({
       title: "使命與歷史",
-      description: loaderData?.content?.hero.description,
+      description: loaderData
+        ? (loaderData.content ?? DEFAULT_ABOUT_CONTENT).hero.description
+        : undefined,
       path: "/about",
     }),
   // Server rendered: the figures arrive with the first response rather than after
