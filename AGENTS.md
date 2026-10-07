@@ -19,7 +19,7 @@ volunteer journey and a role-gated admin back office.
 
 - Dev: `bun run dev`
 - Build: `bun run build`
-- Test: `bun test` (~1090 tests, ~193 files, a few seconds)
+- Test: `bun run test` (adds `--isolate`, as CI does; ≈5,480 tests in 636 files, about two minutes). `supabase/rls-tests` run only when a local stack answers on port 55321; a stack shared with other worktrees gives false failures, so for a unit-only run set `SUPABASE_LOCAL_URL=http://127.0.0.1:1`.
 - Typecheck: `bunx tsc --noEmit` — **the build does NOT typecheck.** Run this
   before pushing; Vite transpiles without type checking, so type errors ship green.
 - Lint: `bun run lint` (~30s over the whole tree) — `bunx eslint <file>` for a

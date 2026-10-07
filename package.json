@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "nitro preview",
-    "test": "bun test",
+    "test": "bun test --isolate",
     "test:acceptance:db": "bun scripts/test-isolated-acceptance.ts",
     "test:acceptance:all": "bun scripts/test-isolated-acceptance.ts --all",
     "test:acceptance:rls": "bun scripts/test-isolated-acceptance.ts --rls",
