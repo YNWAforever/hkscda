@@ -96,12 +96,16 @@ this Windows machine on both Bun 1.3.14 and 1.4.2.
 
 ### T3 — Every public page has its own title (F-06)
 
-- New helper `src/lib/pageHead.ts`:
-  `pageHead({ title, description, path, robots? })` returns
-  `{ meta, links }` with `title`, `description`, `og:title`, `og:description`,
-  `twitter:title`, `twitter:description` and a canonical link built with the existing
-  `publicUrl(path)`. Pass `robots` (for example `"noindex, nofollow, noarchive"`) to
-  add a robots meta and omit the Open Graph and Twitter tags.
+- New helper `src/lib/pageHead.ts`, `pageHead(page)`, returning `{ meta, links }`.
+  It takes one of two page kinds:
+  - an indexable page, `{ title, description, path }`: emits `title`,
+    `description`, `og:title`, `og:description`, `twitter:title`,
+    `twitter:description` and a canonical link built with the existing
+    `publicUrl(path)`.
+  - a private page, `{ title, private: true }`: emits `title`,
+    `robots: noindex, nofollow, noarchive` and `referrer: no-referrer`, with no
+    canonical, Open Graph or Twitter tags. This is the meta the three token status
+    pages already set by hand.
 - Title format follows `/knowledge` and `/stories`:
   `<page name> · 香港拯救貓狗協會 HKSCDA`. The page name is the page's own visible
   `h1` wording, so no new copy is invented. Descriptions are one factual zh-HK
@@ -120,22 +124,25 @@ this Windows machine on both Bun 1.3.14 and 1.4.2.
 
 ### T4 — Admin uses design tokens; login and reset have an h1 (F-08)
 
-- Replace the 20 hardcoded palette classes (15 lines in 6 files:
-  `routes/admin/login.tsx`, `routes/admin/reset-password.tsx`,
-  `routes/admin/animals/$id.edit.tsx`, `components/admin/AnimalForm.tsx`,
-  `components/admin/volunteers/VolunteerPolicySources.tsx`,
-  `components/admin/volunteers/VolunteerPolicySimulation.tsx`) with `var(--color-*)`
-  tokens. On login and reset, the page background uses `--color-panel` (the admin
-  sidebar colour), and the submit button uses
+- Replace every hardcoded Tailwind palette class in admin with `var(--color-*)`
+  tokens: 44 occurrences on 32 lines in 11 files (`routes/admin/login.tsx`,
+  `routes/admin/reset-password.tsx`, `routes/admin/animals/$id.edit.tsx`,
+  `components/admin/AnimalForm.tsx`, `components/admin/sponsorship/AnimalPicker.tsx`,
+  `components/admin/content/{ContentEditor,FaqManagement,GovernanceManagement,PaymentMethodsManagement}.tsx`,
+  `components/admin/volunteers/{VolunteerPolicySources,VolunteerPolicySimulation}.tsx`).
+  The public site already has none. On login and reset, the page background uses
+  `--color-panel` (the admin sidebar colour), and the submit button uses
   `--color-primary` / `--color-primary-hover` / `--color-primary-foreground`.
-- Add one `<h1>` to the login form and one to the reset form. The text comes from
-  the existing admin copy table in `adminI18n.tsx`, with zh and en keys added if
-  missing. The EN toggle stays as it is.
+  Status colours map to the semantic `--color-{success,warning,error}` and
+  `-highlight` pairs.
+- Add one `<h1>` to the login form and one to the reset form. The existing subtitle
+  line (`copy.login.subtitle` 管理後台登入 / `copy.login.resetTitle` 重設密碼) becomes
+  the `h1`, so no new copy keys are needed. The EN toggle stays as it is.
 - Guard test `src/components/admin/adminTokenGuard.test.ts`: no non-test file under
   `src/routes/admin` or `src/components/admin` contains a Tailwind palette-scale class
-  for `slate|gray|zinc|neutral|stone`, with or without a variant prefix such as
-  `hover:`. Like `publicCopyGuard.test.ts`, it includes a self-check that the matcher
-  catches a sample string.
+  (any of the 22 named palettes, `slate` through `rose`), with or without a variant
+  prefix such as `hover:`. Like `publicCopyGuard.test.ts`, it includes a self-check
+  that the matcher catches a sample string.
 - Extend `routes/admin/login.test.tsx` and `reset-password.test.tsx`: exactly one
   `h1` is rendered.
 
@@ -148,17 +155,21 @@ this Windows machine on both Bun 1.3.14 and 1.4.2.
 
 ### T6 — Admin browser code does not query the database (F-07, corrected)
 
-- Two admin GET endpoints, layered like the rest of `adoptions`
-  (route → `-handlers.ts` → `http` → `service` → `repository.server`):
+- Three admin GET endpoints, one per browser query being replaced, so each
+  component's React Query key keeps a single fetch. They are layered like the rest of
+  `adoptions` (route → `-handlers.ts` → `http` → `service` → `repository.server`)
+  and authorise with `requireCoordinator` (staff and admin), the same check
+  `POST cases/{id}/matches` and `GET animals/pipeline` use:
   - `GET /api/admin/adoptions/animals/match-options` →
-    `{ animals: { id, name, name_en, type, status }[] }`, filtered by
-    `getMatchableAnimalStatuses()` and ordered by `type`, then `name`. It requires
-    the same roles as `POST cases/{id}/matches`.
-  - `GET /api/admin/adoptions/animals/lookups` →
-    `{ positions: AnimalPosition[], arrivalSources: ArrivalSource[] }` with the same
-    columns and ordering the browser queries use today. It requires the same roles
-    as `GET animals/pipeline`. The repository reuses the existing position and
-    arrival-source reads where they fit.
+    `{ animals: { id, name, name_en, type, status }[] }`, with status
+    `available` or `fostered` (the values `matchPanelLogic.ts` uses today), ordered by
+    `type`, then `name`.
+  - `GET /api/admin/adoptions/positions` → `{ positions: AnimalPosition[] }`.
+  - `GET /api/admin/adoptions/arrival-sources` →
+    `{ arrivalSources: ArrivalSource[] }`.
+
+  The last two return the same columns, in the same order, as the browser queries
+  they replace.
 - `MatchPanel` and `AnimalPipeline` call these with the existing `fetchAdminJson`
   helper. The React Query keys and the components' loading and error states are
   unchanged.
