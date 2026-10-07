@@ -9,6 +9,7 @@ import {
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
   groupAnimalPipelineRows,
+  readPipelineLookup,
   resolveAnimalPipelinePagination,
 } from "./animalPipelineLogic";
 
@@ -256,5 +257,51 @@ describe("hasUnsavedProfileChanges", () => {
     // "not yet checked". Collapsing them would hide a real edit.
     expect(hasUnsavedProfileChanges({ ...saved, has_chip: null }, saved)).toBe(true);
     expect(hasUnsavedProfileChanges({ ...saved, is_adoptable: false }, saved)).toBe(true);
+  });
+});
+
+describe("readPipelineLookup", () => {
+  test("returns the lookup value unchanged when the read succeeds", async () => {
+    await expect(readPipelineLookup("positions", async () => ["row"])).resolves.toEqual(["row"]);
+  });
+
+  test("prefixes a failed positions read with its lookup name", async () => {
+    await expect(
+      readPipelineLookup("positions", async () => {
+        throw new Error("Could not process coordinator request");
+      }),
+    ).rejects.toThrow("Positions could not load: Could not process coordinator request");
+  });
+
+  test("prefixes a failed arrival sources read with its lookup name", async () => {
+    await expect(
+      readPipelineLookup("arrivalSources", async () => {
+        throw new Error("Could not process coordinator request");
+      }),
+    ).rejects.toThrow("Arrival sources could not load: Could not process coordinator request");
+  });
+
+  test("keeps the two lookups distinguishable when they fail with the same cause", async () => {
+    // The pipeline banner keys its lines by message; identical text from both
+    // lookups used to collide and hid which read had failed.
+    const fail = async () => {
+      throw new Error("Forbidden");
+    };
+    const messages = await Promise.all(
+      (["positions", "arrivalSources"] as const).map((lookup) =>
+        readPipelineLookup(lookup, fail).catch((error: Error) => error.message),
+      ),
+    );
+
+    expect(messages).toEqual([
+      "Positions could not load: Forbidden",
+      "Arrival sources could not load: Forbidden",
+    ]);
+  });
+
+  test("falls back to String(error) for a non-Error rejection", async () => {
+    await expect(readPipelineLookup("positions", () => Promise.reject("offline"))).rejects.toThrow(
+      "Positions could not load: offline",
+    );
   });
 });

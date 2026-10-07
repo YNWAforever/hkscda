@@ -27,6 +27,29 @@ export type AnimalPipelineGroup = {
   rows: AnimalPipelineRow[];
 };
 
+const PIPELINE_LOOKUP_LABELS = {
+  positions: "Positions",
+  arrivalSources: "Arrival sources",
+} as const;
+
+/**
+ * Reads one pipeline reference lookup and, on failure, rethrows with the lookup's
+ * name in front of the cause. Positions and arrival sources go through the same
+ * API client, so a shared failure (expired session, 500) would otherwise read
+ * identically for both and the error banner could not say which one failed.
+ */
+export async function readPipelineLookup<T>(
+  lookup: keyof typeof PIPELINE_LOOKUP_LABELS,
+  read: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await read();
+  } catch (error) {
+    const cause = error instanceof Error ? error.message : String(error);
+    throw new Error(`${PIPELINE_LOOKUP_LABELS[lookup]} could not load: ${cause}`);
+  }
+}
+
 const STATUS_ORDER: AnimalStatus[] = ["available", "fostered", "adopted"];
 
 const STATUS_LABELS: Record<AnimalStatus, string> = {

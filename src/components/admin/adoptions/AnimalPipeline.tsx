@@ -35,6 +35,7 @@ import {
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
   hasUnsavedProfileChanges,
+  readPipelineLookup,
   resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
@@ -164,16 +165,22 @@ async function readAnimalPipeline(searchParams: URLSearchParams) {
   );
 }
 
-async function readPositions() {
-  const response = await fetchCoordinatorJson<PositionsResponse>("/api/admin/adoptions/positions");
-  return response.positions;
+function readPositions() {
+  return readPipelineLookup("positions", async () => {
+    const response = await fetchCoordinatorJson<PositionsResponse>(
+      "/api/admin/adoptions/positions",
+    );
+    return response.positions;
+  });
 }
 
-async function readArrivalSources() {
-  const response = await fetchCoordinatorJson<ArrivalSourcesResponse>(
-    "/api/admin/adoptions/arrival-sources",
-  );
-  return response.arrivalSources;
+function readArrivalSources() {
+  return readPipelineLookup("arrivalSources", async () => {
+    const response = await fetchCoordinatorJson<ArrivalSourcesResponse>(
+      "/api/admin/adoptions/arrival-sources",
+    );
+    return response.arrivalSources;
+  });
 }
 
 async function readCoordinatorStatuses() {
@@ -916,8 +923,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             className="space-y-1 border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
             role="alert"
           >
-            {readErrors.map((message) => (
-              <p key={message}>{message}</p>
+            {readErrors.map((message, index) => (
+              <p key={`${index}:${message}`}>{message}</p>
             ))}
           </div>
         )}
