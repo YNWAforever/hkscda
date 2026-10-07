@@ -1,0 +1,11 @@
+# Task8 CI layout contract fix1 · 2026-10-07
+
+Fresh source CI37560382010 on d8d8323d was **REJECTED**: verify/Test had exactly1 failure, the existing layout regex expected a single unpinned bunx supabase start. Typecheck succeeded; lint/build and all downstream RLS/brand/a11y/performance jobs were skipped. Nativefinance/group/document/volunteer **NOT_RUN**. Actualcheckout29f037082b2d7adb29a0dfba2cb083630e7769c7/tree110a423e0208c6c54a63178b99bdd46a71c50ffb; verify924725bytes/SHAa9da98bc877339d32701069ff3099c773afa520df2a279b320a8b8925ef5bb3a.
+
+Only the existing test regex changes: require pinned CLI2.120.0 --agent=no --version then --agent=no start, immediately followed by Task8. The prior native URL/opt-in/GitHub identity/required-vs-optional/no-softskip assertions remain; guard implementation and SQL unchanged. No database or provider was accessed.
+
+Actual command: C:/Users/laich/.bun/bin/bun.exe --no-env-file test --timeout15000 src/lib/volunteers/atomicForwardFixtureGuard.test.ts (argv tokenization in receipts). RED native1 -> GREEN native0,7pass/0fail/56expectcalls. The raw local test stream retains a nonfatal C:/Users/laich EPERM warning. Focused existing ESLint first native1 CouldntReadCurrentDirectory; identical argv/OS-onlyenv retry outside sandbox native0,stdout/stderr0bytes. Original failures retained. Wrapper uses OS-only keys plus placeholder generic+LOCAL Supabase URL127.0.0.1:59999/dummykeys, no CI/provider/fixture opts.
+
+[Every raw stream/launcher/failed CI metadata](task-8-ci-contract-fix-1-receipts.zip) and [member bytes/hash/exit manifest](task-8-ci-contract-fix-1-manifest.json) are independently byte-verified. CI collectorV3/V4 originally attempted unavailable skipped-job logs or validation; distinct V5 handles jobs that never ran without weakening all5/requiredstep/native acceptance. This is controller metadata handling, not a waived CI failure.
+
+Fresh final-head all5/requiredsteps/native4zeroSkip and final source review remain pending. Original current cold15 manifest, SQLcf6ee8a0,528-member rollback archive and dated reports unchanged. All15 formal SQL DO_NOT_APPLY; local4NOT_RUN/source driftUNKNOWN/original553UNKNOWN/fulltyped/hostedJWT/provider/UAT/UI/R11/operationalholds retained. Final actual acceptance is recorded in PR201.

@@ -1,0 +1,38 @@
+{
+  "scope": "Metadata-only; no application rows, DDL/DML or auth identities",
+  "nativeExit": "NOT_APPLICABLE: connector API isError=false",
+  "members": [
+    {
+      "original": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\production-catalog-query-20261007.sql",
+      "member": "production-catalog-query-20261007.sql",
+      "bytes": 2471,
+      "sha256": "d9652f717a7a39f2fda00568787098fdb02db904c2845f90e9f434747d0b2f12"
+    },
+    {
+      "original": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\production-catalog-response-20261007.json",
+      "member": "production-catalog-response-20261007.json",
+      "bytes": 225156,
+      "sha256": "cfb3fdcaefb91072d0c26e0d8663bfc6c801da61a3256bbebc2a16be26d254a4"
+    },
+    {
+      "original": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\production-catalog-parsed-20261007.json",
+      "member": "production-catalog-parsed-20261007.json",
+      "bytes": 219804,
+      "sha256": "58fc606ea9d7fe1dfb5d5a6c58e3f97b20c899600ba45e8fc8b133ed285c5591"
+    },
+    {
+      "original": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\production-catalog-summary-20261007.json",
+      "member": "production-catalog-summary-20261007.json",
+      "bytes": 482,
+      "sha256": "e5057ccc6bac7eb8132410f6b8cc83249c0e6f894a518641d14044ad9e2463e7"
+    },
+    {
+      "original": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\production-native-catalog-20261007.json",
+      "member": "production-native-catalog-20261007.json",
+      "bytes": 5425,
+      "sha256": "dbf65e431abd1410d238123f056266c0684b533703a7e709df46384b775dd240"
+    }
+  ],
+  "zipSha256": "191df42d820a29c0ff4ceedbc651b182ceed390548d99a03b88ed11499659b78",
+  "originalsPreserved": true
+}

@@ -1,0 +1,54 @@
+{
+  "run": 37556434962,
+  "accepted": false,
+  "allFive": false,
+  "sourceHead": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+  "actualCheckout": "0c46bba240b5a3caf4af7b3e6421229408f455f0",
+  "tree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+  "failure": "rls-matrix / Start local Supabase stack / actual55000 supporter",
+  "nativeFinanceGroupDocumentVolunteer": "NOT_RUN",
+  "members": [
+    {
+      "member": "a11y-verify-112584402189.log",
+      "bytes": 230775,
+      "sha256": "e4486cb97cc73cdb6cea9b6697da988dc32e0e7ad7e00af3c35fbfb0b0a43ba0"
+    },
+    {
+      "member": "actual-checkout.json",
+      "bytes": 2820,
+      "sha256": "725b45fc026123ea61cbaf7e889deb21049fe861aa445d217ea4d9f852c9f09c"
+    },
+    {
+      "member": "brand-verify-112584402263.log",
+      "bytes": 231037,
+      "sha256": "2c600ec6542811440aebb05a9ca9b5b42feeedd597435caf6604481b1e7df778"
+    },
+    {
+      "member": "completed-job-observation.json",
+      "bytes": 13180,
+      "sha256": "9204104b18b9d38e024d32a5b0dc0e195ff9a99b1ff0812058987822ee569076"
+    },
+    {
+      "member": "config.json",
+      "bytes": 428,
+      "sha256": "0020ae317a5319db2c80d25eed3da18486a4bba2d20d775b3e67a5402881e458"
+    },
+    {
+      "member": "performance-verify-112584402218.log",
+      "bytes": 232470,
+      "sha256": "b0748631c6b2e1f4ea1d17487ead43e23c080e48c5a24fbac1bcdbbda7490bb7"
+    },
+    {
+      "member": "rls-matrix-112584402272.log",
+      "bytes": 149811,
+      "sha256": "8d591ef9017f06f05f9bf7fcd915fc99d675f5121a7b06c15410ce58d3f33628"
+    },
+    {
+      "member": "verify-112583649753.log",
+      "bytes": 1083146,
+      "sha256": "864017a246db2ac3bba7e8203a4f65afc4fc36c27f322f42405adab24f40016b"
+    }
+  ],
+  "zipSHA256": "5b9a2e1627c9b23cc853e405c11a0b6a73dc755920ea52c2cc6861650948b4b1",
+  "originalsPreserved": true
+}

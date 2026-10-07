@@ -1,0 +1,32 @@
+{
+  "fixBase": "3a0f22d976e8e9a8206156bba980ff3fa77bbce0",
+  "repairCommit": "960e275f754fb0d7904ddc27afeeafbf52358088",
+  "rawReceipts": {
+    "red": "red-1791309225782/receipt.json",
+    "green": "green-1791309558162/receipt.json",
+    "hosted": "hosted-1791309475398/receipt.json",
+    "modern": "modern-1791309532983/receipt.json",
+    "checks": "checks-1791309560550415200/receipt.json",
+    "artifactAudit": "artifact-audit-1791309885468560200/receipt.json"
+  },
+  "redNativeExit": 1,
+  "redDirections": 2,
+  "greenNativeExit": 0,
+  "greenDirections55000": 2,
+  "ownedProfilesEach": "19pass/0fail/56assertions/14actual55000refusals",
+  "modernRegistrationFullTuplePreserved": true,
+  "allScopedPreservationFlags": true,
+  "typecheckExit": 0,
+  "lintExit": 0,
+  "baselineLintWarnings": 52,
+  "artifactAuditExit": 0,
+  "firstArtifactAssertionNotAccepted": true,
+  "originalArchiveAndManifestUnchanged": true,
+  "migrationSha256": "af8c834d95d38502d428dca95903e10d22cc57ed8df922f0a53cdb78d857ae9b",
+  "rpcBodiesChanged": false,
+  "admissionProfileWidened": false,
+  "locallyRehearsedEngine": "170006",
+  "coldExactHeadCi170011": "NOT_RUN",
+  "fullUnitsAndBuildFixRound": "NOT_RUN; controller requested DB covering acceptance, typecheck and lint",
+  "controllerScopedRereview": "REQUIRED"
+}

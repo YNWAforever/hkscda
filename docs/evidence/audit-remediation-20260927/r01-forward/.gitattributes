@@ -1,0 +1,5 @@
+task-8-raw-receipts.zip -text -diff
+task-8-fix-1-raw-receipts.zip -text -diff
+task-8-fix-1-raw-manifest.json -text
+task-8-controller-gates-20261007-raw-receipts.zip -text -diff
+task-8-controller-gates-20261007-raw-manifest.json -text

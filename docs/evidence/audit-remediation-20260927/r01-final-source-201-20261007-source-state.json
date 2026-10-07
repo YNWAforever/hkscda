@@ -1,0 +1,319 @@
+{
+  "snapshotBeforeFinalPRCI": true,
+  "preparedHead": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+  "preparedTree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+  "task8PR": 201,
+  "task8SourceCI": "PENDING; all5 and finance67/Group34/document1/Task8native19 zeroSkip required",
+  "task8SourceMerged": false,
+  "sources": {
+    "183": {
+      "merge_sha": "f1d8cf848d76ede90113d58f494b43af35a5beca",
+      "main_ci": 37480568915,
+      "main_gates_green": true,
+      "alias_id": null,
+      "exact_alias_ready": false,
+      "deployment_failure": "BLOCKED_PACKAGE",
+      "recovered_by_pr": 200,
+      "recovery_deployment_sha": "95ab6e7cb67d377960e3787d08ec670788a86c14"
+    },
+    "184": {
+      "merge_sha": "da8e8850944cb4198e0b4bb2730d5c01a1e27887",
+      "main_ci": 37488399449,
+      "main_gates_green": true,
+      "alias_id": "dpl_8dJwWDYoT6bArE5g3n9WSYz1Q2ZP",
+      "exact_alias_ready": true
+    },
+    "185": {
+      "merge_sha": "0b5e49997951bb5c3dcf6be861fbd1f4b2de2d0a",
+      "main_ci": 37490548409,
+      "main_gates_green": true,
+      "alias_id": "dpl_Cbt9DodEFjiou254a74pHyEKkBAi",
+      "exact_alias_ready": true
+    },
+    "186": {
+      "merge_sha": "82a47ef4f1d8695879f3b6c63ad4c42ae2a22f26",
+      "main_ci": 37492571276,
+      "main_gates_green": true,
+      "alias_id": "dpl_CKAiS2hiZBKKWiBNhxtDXurbpnZ2",
+      "exact_alias_ready": true
+    },
+    "187": {
+      "merge_sha": "c571a719077f242a062ec1b8d5b2de136614734b",
+      "main_ci": 37496751000,
+      "main_gates_green": true,
+      "alias_id": "dpl_5JJpYndFkbqqmSH8SXqNcTozJBEV",
+      "exact_alias_ready": true
+    },
+    "188": {
+      "merge_sha": "23089e6faa103e6857288560fa62f9349a45751a",
+      "main_ci": 37498550047,
+      "main_gates_green": true,
+      "alias_id": "dpl_9u78w9nkE3ubZm6bWwFygbXvoBGW",
+      "exact_alias_ready": true
+    },
+    "189": {
+      "merge_sha": "84ad4a9a2db2f146d6f6687866231414a9a23ca4",
+      "main_ci": 37500228059,
+      "main_gates_green": true,
+      "alias_id": "dpl_8Vook42twCqc11TWUMtFbuCFRfyN",
+      "exact_alias_ready": true
+    },
+    "190": {
+      "merge_sha": "5b2c226f8ba0a3a3d8fca76e77b812d4644cc578",
+      "main_ci": 37501995829,
+      "main_gates_green": true,
+      "alias_id": "dpl_9GtXzoMUM9SGozMq52fVgGzGEFdX",
+      "exact_alias_ready": true
+    },
+    "191": {
+      "merge_sha": "4a6e40b4c774acdd8d220d9d0f0599868da86668",
+      "main_ci": 37503886320,
+      "main_gates_green": true,
+      "alias_id": "dpl_9FJZZdvXE7hqCAMpvRQeVvp2Ww9X",
+      "exact_alias_ready": true
+    },
+    "192": {
+      "merge_sha": "6c1527646deb60c24489b827b815c8e1a1c98bdc",
+      "main_ci": 37506322945,
+      "main_gates_green": true,
+      "alias_id": "dpl_A3QJgt53aJfn6seRizkqLFxKdEDR",
+      "exact_alias_ready": true,
+      "status": "accepted; all5/requiredstepsSUCCESS/exactREADY before193"
+    },
+    "193": {
+      "merge_sha": "c2afedbe18e0fc41ecf3ad5dd7f23bcda9cd500a",
+      "main_ci": 37507888054,
+      "main_gates_green": true,
+      "alias_id": "dpl_2n8ew99CbU62CLNoboQZ8EtGfnVt",
+      "exact_alias_ready": true,
+      "status": "accepted main37507888054 all5/steps and exactREADYc2af",
+      "ci_checkout": "b214d72c5cf41df33b749cc2a4ddd5bf19ca2a7d",
+      "ci_tree": "c707ec104c59d969390434ca7d44de7ee96a8f34"
+    },
+    "194": {
+      "merge_sha": "09a5cde376a8a9fc012e3f551b7a1bd1b5b166ac",
+      "main_ci": 37538469537,
+      "main_gates_green": true,
+      "alias_id": "dpl_JAcNQbKdnJhBSZMievUx2xo2UE8A",
+      "exact_alias_ready": true,
+      "published_head": "0855a1bd8239258642eb360b7da120ef5cd514a2",
+      "source_ci": 37536812504,
+      "source_ci_green": true,
+      "status": "ACCEPTED source/main all5/requiredsteps and exactREADY09a5; historical execution incident remains UNKNOWN",
+      "ci_checkout": "767e9fbbb3743087129031ab0c09f040dd09a595",
+      "ci_tree": "03180cf43881660ff04b19e6db19a0c0e9ffd439",
+      "current_evidence": "r01-forward/task-11-cold-green-qualification-lf.json",
+      "native_finance_actual": {
+        "pass": 67,
+        "skip": 0,
+        "fail": 0,
+        "assertions": 238
+      },
+      "main_ci_acceptance": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006\\.superpowers\\sdd\\sequential-merge-20261006\\main194-37538469537\\controller-acceptance.json"
+    },
+    "195": {
+      "merge_sha": "1b501fa8103cd22183358f058d7f85f69c78e7a0",
+      "main_ci": 37542947233,
+      "main_gates_green": true,
+      "exact_alias_ready": true,
+      "published_head": "3ec969b1ed8f3c9f92f07b72dc2f5874b0a6d025",
+      "source_ci": 37541504672,
+      "source_ci_green": true,
+      "status": "ACCEPTED source/main all5/requiredsteps and exactREADY1b501fa8; historical preservationUNKNOWN remains",
+      "ci_checkout": "b47ed1abdcf8e8a8cb11868ef366dd5932952353",
+      "ci_tree": "de79454ba83e47e8b076aad86f0c6cbaca864ee4",
+      "current_evidence": "r01-forward/task-12-current-qualification-20261007-lf.json",
+      "current_profile_evidence": "r01-forward/task-12-current-source-freeze-20261007.json",
+      "reviewed_source": "72fedaa965bb8bd822bf34a05575d8d385042a8e",
+      "native_finance_actual": {
+        "pass": 67,
+        "skip": 0,
+        "assertions": 238
+      },
+      "native_group_actual": {
+        "pass": 34,
+        "skip": 0,
+        "assertions": 132
+      },
+      "source_ci_acceptance_sha256": "555d6db902f97e7004565cf96bda3a1a4f9a03fa1e948fdd8facc6e7ccd4b97b",
+      "productionApplied": false,
+      "alias_id": "dpl_HkWKtjEfYdfJ9F7r9p3n4C6PoTXn",
+      "main_ci_acceptance": ".superpowers\\sdd\\sequential-merge-20261006\\main195-37542947233\\controller-acceptance.json",
+      "main_ci_native_actual": {
+        "finance": {
+          "pass": 67,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 238,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        },
+        "group": {
+          "pass": 34,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 132,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        }
+      }
+    },
+    "196": {
+      "merge_sha": "1ff22d6516a05e3cc82a6d041e5d12a117ca83af",
+      "main_ci": 37545626481,
+      "main_gates_green": true,
+      "exact_alias_ready": true,
+      "published_head": "3892fe0dabd318d551ecb44ab4cc5aacb6ddaddb",
+      "source_ci": 37544330129,
+      "source_ci_green": true,
+      "status": "ACCEPTED source/main all5 requiredsteps, exactREADY1ff22d65; old historical preservationUNKNOWN retained",
+      "ci_checkout": "69a6c433eed7fc49604194c3c6283f128531d633",
+      "ci_tree": "275b62c8b77eca0035d82285d0dd87d78372b901",
+      "current_evidence": "current-integration-196-20261007.json",
+      "current_profile_evidence": "current-integration-196-release-qualification-20261007.json",
+      "reviewed_source": "e5a28c47b839fa12b770d1e639b0a74368021675; current15shippingfilesbyte-equalat8916e4c6",
+      "native_actual": {
+        "finance": {
+          "pass": 67,
+          "skip": 0,
+          "assertions": 238
+        },
+        "group": {
+          "pass": 34,
+          "skip": 0,
+          "assertions": 132
+        },
+        "document": {
+          "pass": 1,
+          "skip": 0,
+          "assertions": 36
+        }
+      },
+      "source_ci_acceptance_sha256": "55fcc659172c1abcb33ff79c143db9384a70db26118735cb31ccbf4570a6c605",
+      "productionApplied": false,
+      "alias_id": "dpl_6eqTvjA9hXHYvj8gpirksNiejbUy",
+      "main_ci_acceptance": ".superpowers/sdd/sequential-merge-20261006/main196-37545626481/controller-acceptance.json",
+      "main_ci_acceptance_sha256": "15abae6081206822feb0ebc2274b645d64230c11021c5a53942fa24050ce038e",
+      "main_ci_native_actual": {
+        "finance": {
+          "pass": 67,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 238,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        },
+        "group": {
+          "pass": 34,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 132,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        },
+        "document": {
+          "pass": 1,
+          "skip": 0,
+          "fail": 0,
+          "assertions": 36,
+          "image": "public.ecr.aws/supabase/postgres:17.11.0.004",
+          "serverVersionNum": "NOT_REPORTED"
+        }
+      }
+    },
+    "197": {
+      "source_head": "e809d1aede32bf273009ad36a8252110f2090f68",
+      "source_ci": 37548270471,
+      "source_proof_sha256": "bd481fbbf6d38a0450ef8a709ae9eec17293df5346b5bf060aa04492d124c090",
+      "merge_sha": "81f89a95bc201dd2a933fe69a356c9ae3c831b53",
+      "main_ci": 37549672237,
+      "main_gates_green": true,
+      "main_proof_sha256": "83d45e3f966a8d5f564c73ac30bcfbca634f692c430dd65031a30bdd53aa3a02",
+      "alias_id": "dpl_969NCjPM8HCkB2vXcDPUyMFVv5Nv",
+      "exact_alias_ready": true,
+      "schema_production_approved": false,
+      "schema_production_applied": false,
+      "operationally_enabled": false
+    },
+    "198": {
+      "source_head": "68a938b6adbbfd608f6cd5aa7b6719907e25cbc7",
+      "source_ci": 37550896668,
+      "source_proof_sha256": "2a49e94bfad16f04fb558ee1bd33634173ccbef00530d8e57d63e7680b8ee492",
+      "merge_sha": "559d8846f1c16d08ac5ef094f241e4d535122405",
+      "main_ci": 37552071050,
+      "main_gates_green": true,
+      "main_proof_sha256": "78beb563bd935741c4a46529c9d6a6478749b00df7faa47180c8fcb97fb0737f",
+      "alias_id": "dpl_FWf9gZ7dDyCf157Bs5wQnsuViCa8",
+      "exact_alias_ready": true,
+      "schema_production_approved": false,
+      "schema_production_applied": false,
+      "operationally_enabled": false
+    },
+    "199": {
+      "source_head": "3b220a42062f0d79f7e4ced9a22b03a635719c3c",
+      "source_ci": 37553296541,
+      "source_proof_sha256": "24930a9e01b496fcf0ec50635163529030585d004f83c4b5a10425683b3352ad",
+      "merge_sha": "33104d1034120c8e19e8332fea4fb8ebe2cc5d50",
+      "main_ci": 37554405418,
+      "main_gates_green": true,
+      "main_proof_sha256": "41eb7dc462478a28e02c2f8cf135648c55304eb60f217536c08859c2b4ec29f8",
+      "alias_id": "dpl_FxEnMGA4gBV6nRcJV1ydKMCNGePy",
+      "exact_alias_ready": true,
+      "schema_production_approved": false,
+      "schema_production_applied": false,
+      "operationally_enabled": false
+    }
+  },
+  "new15SQLDisposition": "DO_NOT_APPLY",
+  "productionApproved": false,
+  "productionApplied": false,
+  "operationallyEnabled": false,
+  "currentLocalFourGates": "NOT_RUN: floor met; first ConnectionClosed then full source hash mismatch f5b51515 to ace0b822; both pre-stages exited1 before four commands. No reset/reseed/repair/new baseline. Attribution UNKNOWN; historical141/671 not current acceptance",
+  "localHoldEvidence": "r01-final-source-201-20261007-local-hold-evidence.md",
+  "diskFreeBytesAtPacketCreation": 28768686080,
+  "historical553Preservation": "UNKNOWN",
+  "typedRestoreProviderHostedJWTFullUAT": "NOT_RUN or original failed/held; linked records retained",
+  "R11": "PARTIAL; no font/render change",
+  "files": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-manifest.csv",
+      "bytes": 26438,
+      "sha256": "9475864b60c45c6e5b8da7b28d43b37e1fda9f750e21281d927f86a0d5e6b487"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-catalog-receipts.zip",
+      "bytes": 55604,
+      "sha256": "191df42d820a29c0ff4ceedbc651b182ceed390548d99a03b88ed11499659b78"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-catalog-manifest.json",
+      "bytes": 2185,
+      "sha256": "969ef27ffe370f5d7f7a272aaebd327ed126e3deede02bb070858363dbfb366c"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-catalog-summary.json",
+      "bytes": 1315,
+      "sha256": "821e889a6acc708d33dd801d9b3495e9dcc6670a2bc6cbd1dd2080dc235a3077"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-source-review.md",
+      "bytes": 10006,
+      "sha256": "eb52af8fd5f7584cf2b50cc920ddf3536690fafe93d099bf33ec2aacbf6af3ce"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-local-hold-receipts.zip",
+      "bytes": 208248,
+      "sha256": "db6063f2525000c6df998402349b5c5789c45410c5b99e188c448f17214190b4"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-local-hold-manifest.json",
+      "bytes": 17951,
+      "sha256": "e9b6fa8181cbed8f77a0e812925fc43689b38bf6504048957d1e48892f961e9a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-final-source-201-20261007-local-hold-evidence.md",
+      "bytes": 2923,
+      "sha256": "cd9537c22a116c04aa4bd5d9570fc7a24dbb24fb0d8ce4e728cd2721536ca96e"
+    }
+  ]
+}

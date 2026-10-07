@@ -1,0 +1,467 @@
+{
+  "sourceHead": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+  "sourceTree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+  "scope": "Read-only complete source preservation pre-stage. No four commands ran; no fixture writes.",
+  "commandsNotRun": [
+    "bun --no-env-file run typecheck",
+    "bun --no-env-file test --isolate --timeout 30000",
+    "bun --no-env-file run lint",
+    "bun --no-env-file run build"
+  ],
+  "fixedFloorBytes": 2147483648,
+  "floorMet": true,
+  "expectedModern": "f5b51515bcf790adf7928168478ef94eabbf7331a84420fe744ab7f04e75028b",
+  "actualModern": "ace0b822ce94d1fc0a234e79d2341b349c63038b93b8b40ff1bf9cd7b0c6faa7",
+  "expectedTemplate": "c653c8e55cd609b04ca58f3c288549e57da84afe92fe559882c423139a46edb6",
+  "templateProbe": "NOT_RUN",
+  "sourceDriftAttribution": "UNKNOWN",
+  "original553Preservation": "UNKNOWN; not queried/reset/reconstructed",
+  "stages": [
+    {
+      "pointer": {
+        "folder": ".superpowers/sdd/sequential-merge-20261006/task8-current-local-gates-1791334854455279000",
+        "receipt": ".superpowers/sdd/sequential-merge-20261006/task8-current-local-gates-1791334854455279000/receipt.json",
+        "head": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+        "tree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+        "allFourGates": false,
+        "receiptSHA256": "206323378ccd9e86c552d5f75ea94445d143459befb153bdae9c2ac5c13a9d9f"
+      },
+      "receipt": {
+        "head": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+        "tree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+        "startedAtUtc": "2026-10-07T01:00:54.455713+00:00",
+        "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+        "freeBytesBefore": 29051949056,
+        "floorBytes": 2147483648,
+        "retainedOSKeys": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "OS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "placeholders": {
+          "VITE_SUPABASE_URL": "http://127.0.0.1:59999",
+          "SUPABASE_URL": "http://127.0.0.1:59999",
+          "SUPABASE_LOCAL_URL": "http://127.0.0.1:59999",
+          "LOCAL_SUPABASE_URL": "http://127.0.0.1:59999",
+          "VITE_SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+          "SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+          "LOCAL_SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+          "SUPABASE_SERVICE_ROLE_KEY": "ci-placeholder-service-role-key",
+          "LOCAL_SUPABASE_SERVICE_ROLE_KEY": "ci-placeholder-service-role-key"
+        },
+        "CI_GITHUB_ACTIONS_PROVIDER_FIXTURE_OPTINS": "OMITTED",
+        "commands": [
+          {
+            "name": "bun-version",
+            "argv": [
+              "C:/Users/laich/.bun/bin/bun.exe",
+              "--version"
+            ],
+            "pid": 5140,
+            "exit": 0,
+            "elapsedSeconds": 0.34,
+            "streams": [
+              {
+                "file": "bun-version.stdout",
+                "bytes": 7,
+                "sha256": "56b0485099b6c5427d3b68c042fd05b632d5e52e924c5064473389812227164c"
+              },
+              {
+                "file": "bun-version.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          },
+          {
+            "name": "node-version",
+            "argv": [
+              "C:/Program Files/nodejs/node.exe",
+              "--version"
+            ],
+            "pid": 2708,
+            "exit": 0,
+            "elapsedSeconds": 0.04,
+            "streams": [
+              {
+                "file": "node-version.stdout",
+                "bytes": 10,
+                "sha256": "b447734bea5971cc4beed4007192e4cf2e07a9f04fdaff5d9df3bb307e61987e"
+              },
+              {
+                "file": "node-version.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          },
+          {
+            "name": "python-version",
+            "argv": [
+              "C:\\Python314\\python.exe",
+              "--version"
+            ],
+            "pid": 33696,
+            "exit": 0,
+            "elapsedSeconds": 0.03,
+            "streams": [
+              {
+                "file": "python-version.stdout",
+                "bytes": 15,
+                "sha256": "2b095b05c4093ebca54b87bd2c6a6f557935e6b3f8f506a0c2e5e294a763f4ad"
+              },
+              {
+                "file": "python-version.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          },
+          {
+            "name": "modern-before",
+            "argv": [
+              "C:/Users/laich/.bun/bin/bun.exe",
+              "--no-env-file",
+              "-e",
+              "import {localSourceState} from \"./supabase/rls-tests/helpers/productionSchemaClone\";console.log(await localSourceState(\"postgresql://postgres:postgres@127.0.0.1:57322/postgres\"));"
+            ],
+            "pid": 58896,
+            "exit": 1,
+            "elapsedSeconds": 0.45,
+            "streams": [
+              {
+                "file": "modern-before.stdout",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "file": "modern-before.stderr",
+                "bytes": 561,
+                "sha256": "099bb0563e6174db8b7021fcddceb3d6906339d4eee0097bf2fbc19f198ee9bc"
+              }
+            ]
+          }
+        ],
+        "preservation": {},
+        "sourceOnly": true,
+        "productionApplied": false,
+        "nativeTask8Nineteen": "NOT_RUN: fresh CI remains mandatory",
+        "frozenSourceCount": 2081,
+        "errorType": "AssertionError",
+        "error": "('modern-before', 1)",
+        "allFourGates": false,
+        "completedAtUtc": "2026-10-07T01:01:20.024768+00:00",
+        "freeBytesAfter": 29092192256
+      },
+      "wrapperNativeExit": 1
+    },
+    {
+      "pointer": {
+        "folder": ".superpowers/sdd/sequential-merge-20261006/task8-current-local-gates-1791335202017232700",
+        "receipt": ".superpowers/sdd/sequential-merge-20261006/task8-current-local-gates-1791335202017232700/receipt.json",
+        "head": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+        "tree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+        "allFourGates": false,
+        "receiptSHA256": "da10dd144d04f18941e2c9851fdb1616901db39b31bff579cdce2a5b9884e3a4"
+      },
+      "receipt": {
+        "head": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+        "tree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+        "startedAtUtc": "2026-10-07T01:06:42.019316+00:00",
+        "cwd": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-sequential-merge-20261006",
+        "freeBytesBefore": 28602863616,
+        "floorBytes": 2147483648,
+        "retainedOSKeys": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "OS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "SYSTEMROOT",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "placeholders": {
+          "VITE_SUPABASE_URL": "http://127.0.0.1:59999",
+          "SUPABASE_URL": "http://127.0.0.1:59999",
+          "SUPABASE_LOCAL_URL": "http://127.0.0.1:59999",
+          "LOCAL_SUPABASE_URL": "http://127.0.0.1:59999",
+          "VITE_SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+          "SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+          "LOCAL_SUPABASE_ANON_KEY": "ci-placeholder-anon-key",
+          "SUPABASE_SERVICE_ROLE_KEY": "ci-placeholder-service-role-key",
+          "LOCAL_SUPABASE_SERVICE_ROLE_KEY": "ci-placeholder-service-role-key"
+        },
+        "CI_GITHUB_ACTIONS_PROVIDER_FIXTURE_OPTINS": "OMITTED",
+        "commands": [
+          {
+            "name": "bun-version",
+            "argv": [
+              "C:/Users/laich/.bun/bin/bun.exe",
+              "--version"
+            ],
+            "pid": 53352,
+            "exit": 0,
+            "elapsedSeconds": 0.42,
+            "streams": [
+              {
+                "file": "bun-version.stdout",
+                "bytes": 7,
+                "sha256": "56b0485099b6c5427d3b68c042fd05b632d5e52e924c5064473389812227164c"
+              },
+              {
+                "file": "bun-version.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          },
+          {
+            "name": "node-version",
+            "argv": [
+              "C:/Program Files/nodejs/node.exe",
+              "--version"
+            ],
+            "pid": 38208,
+            "exit": 0,
+            "elapsedSeconds": 0.3,
+            "streams": [
+              {
+                "file": "node-version.stdout",
+                "bytes": 10,
+                "sha256": "b447734bea5971cc4beed4007192e4cf2e07a9f04fdaff5d9df3bb307e61987e"
+              },
+              {
+                "file": "node-version.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          },
+          {
+            "name": "python-version",
+            "argv": [
+              "C:\\Python314\\python.exe",
+              "--version"
+            ],
+            "pid": 19772,
+            "exit": 0,
+            "elapsedSeconds": 0.97,
+            "streams": [
+              {
+                "file": "python-version.stdout",
+                "bytes": 15,
+                "sha256": "2b095b05c4093ebca54b87bd2c6a6f557935e6b3f8f506a0c2e5e294a763f4ad"
+              },
+              {
+                "file": "python-version.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          },
+          {
+            "name": "modern-before",
+            "argv": [
+              "C:/Users/laich/.bun/bin/bun.exe",
+              "--no-env-file",
+              "-e",
+              "import {localSourceState} from \"./supabase/rls-tests/helpers/productionSchemaClone\";console.log(await localSourceState(\"postgresql://postgres:postgres@127.0.0.1:57322/postgres\"));"
+            ],
+            "pid": 47844,
+            "exit": 0,
+            "elapsedSeconds": 1.52,
+            "streams": [
+              {
+                "file": "modern-before.stdout",
+                "bytes": 65,
+                "sha256": "6c7b2219f58431dabd4a817c78983a5bc286492f963e325d2eaf9a3386539fe7"
+              },
+              {
+                "file": "modern-before.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ]
+          }
+        ],
+        "preservation": {
+          "modern-before": "ace0b822ce94d1fc0a234e79d2341b349c63038b93b8b40ff1bf9cd7b0c6faa7"
+        },
+        "sourceOnly": true,
+        "productionApplied": false,
+        "nativeTask8Nineteen": "NOT_RUN: fresh CI remains mandatory",
+        "frozenSourceCount": 2081,
+        "retryOf": {
+          "folder": ".superpowers/sdd/sequential-merge-20261006/task8-current-local-gates-1791334854455279000",
+          "receipt": ".superpowers/sdd/sequential-merge-20261006/task8-current-local-gates-1791334854455279000/receipt.json",
+          "head": "ae0abf38443a93be6a9d7a34fbc8e24ec4fd60de",
+          "tree": "e5e5d5abe4da492b14b9a00fef6882fee4ef313c",
+          "allFourGates": false,
+          "receiptSHA256": "206323378ccd9e86c552d5f75ea94445d143459befb153bdae9c2ac5c13a9d9f"
+        },
+        "retryReason": "External readiness transition: failed ConnectionClosed/portFalse, then Docker containers recently up and portTrue; no root restart or mutation.",
+        "errorType": "AssertionError",
+        "error": "('modern-before', 'complete raw source hash differs', 'ace0b822ce94d1fc0a234e79d2341b349c63038b93b8b40ff1bf9cd7b0c6faa7', 'f5b51515bcf790adf7928168478ef94eabbf7331a84420fe744ab7f04e75028b')",
+        "allFourGates": false,
+        "completedAtUtc": "2026-10-07T01:07:10.121738+00:00",
+        "freeBytesAfter": 28597633024
+      },
+      "wrapperNativeExit": 1
+    }
+  ],
+  "members": [
+    {
+      "member": "task8-current-local-gates-20261007.py",
+      "bytes": 6705,
+      "sha256": "4ed74d51a7124b41de8ffd9727c83cb906de25786989399e4411c44b3706199f"
+    },
+    {
+      "member": "task8-current-local-gates-ready-20261007.py",
+      "bytes": 6979,
+      "sha256": "9294caebd62c51acd1523568b462bfcd5dff641ee81647715ab812aad8d6d146"
+    },
+    {
+      "member": "derive-task8-ready-retry-20261007.py",
+      "bytes": 1152,
+      "sha256": "993df46e1d02b28360bce2dd55f8d2df30d6d11d809a168d2249e4f528e4f9d4"
+    },
+    {
+      "member": "task8-current-local-gates-pointer-20261007.json",
+      "bytes": 445,
+      "sha256": "6c112102fd061db7f018783aeb3a6f0c34dcb0fe7f043f7f32f78d4d19621f0a"
+    },
+    {
+      "member": "task8-current-local-gates-pointer-ready-20261007.json",
+      "bytes": 445,
+      "sha256": "f6891ed4c66cbabdf026ad64aa56c7d64aa8b1ed36a62361013c9102dabe0a32"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/bun-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/bun-version.stdout",
+      "bytes": 7,
+      "sha256": "56b0485099b6c5427d3b68c042fd05b632d5e52e924c5064473389812227164c"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/frozen-inputs.json",
+      "bytes": 246049,
+      "sha256": "c195256d11d8aad9a1b9b961c5408e25c189bb732f36f8f4ced35d10342f9989"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/modern-before.stderr",
+      "bytes": 561,
+      "sha256": "099bb0563e6174db8b7021fcddceb3d6906339d4eee0097bf2fbc19f198ee9bc"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/modern-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/node-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/node-version.stdout",
+      "bytes": 10,
+      "sha256": "b447734bea5971cc4beed4007192e4cf2e07a9f04fdaff5d9df3bb307e61987e"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/python-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/python-version.stdout",
+      "bytes": 15,
+      "sha256": "2b095b05c4093ebca54b87bd2c6a6f557935e6b3f8f506a0c2e5e294a763f4ad"
+    },
+    {
+      "member": "task8-current-local-gates-1791334854455279000/receipt.json",
+      "bytes": 4119,
+      "sha256": "206323378ccd9e86c552d5f75ea94445d143459befb153bdae9c2ac5c13a9d9f"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/bun-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/bun-version.stdout",
+      "bytes": 7,
+      "sha256": "56b0485099b6c5427d3b68c042fd05b632d5e52e924c5064473389812227164c"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/frozen-inputs.json",
+      "bytes": 246049,
+      "sha256": "c195256d11d8aad9a1b9b961c5408e25c189bb732f36f8f4ced35d10342f9989"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/modern-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/modern-before.stdout",
+      "bytes": 65,
+      "sha256": "6c7b2219f58431dabd4a817c78983a5bc286492f963e325d2eaf9a3386539fe7"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/node-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/node-version.stdout",
+      "bytes": 10,
+      "sha256": "b447734bea5971cc4beed4007192e4cf2e07a9f04fdaff5d9df3bb307e61987e"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/python-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/python-version.stdout",
+      "bytes": 15,
+      "sha256": "2b095b05c4093ebca54b87bd2c6a6f557935e6b3f8f506a0c2e5e294a763f4ad"
+    },
+    {
+      "member": "task8-current-local-gates-1791335202017232700/receipt.json",
+      "bytes": 5016,
+      "sha256": "da10dd144d04f18941e2c9851fdb1616901db39b31bff579cdce2a5b9884e3a4"
+    }
+  ],
+  "zipSHA256": "db6063f2525000c6df998402349b5c5789c45410c5b99e188c448f17214190b4",
+  "originalRawFilesPreserved": true
+}
