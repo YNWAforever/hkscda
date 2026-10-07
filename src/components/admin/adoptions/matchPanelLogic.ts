@@ -1,4 +1,3 @@
-import { MATCHABLE_ANIMAL_STATUSES } from "../../../lib/adoptions/matchableAnimals";
 import type { CoordinatorStatus } from "../../../lib/adoptions/types";
 
 type AnimalOptionLabelInput = {
@@ -7,10 +6,6 @@ type AnimalOptionLabelInput = {
   type: string;
   status: string;
 };
-
-export function getMatchableAnimalStatuses() {
-  return [...MATCHABLE_ANIMAL_STATUSES];
-}
 
 export function formatAnimalOptionLabel(animal: AnimalOptionLabelInput) {
   const englishName = animal.name_en ? ` / ${animal.name_en}` : "";
