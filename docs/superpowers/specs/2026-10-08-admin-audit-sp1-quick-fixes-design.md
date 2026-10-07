@@ -180,8 +180,7 @@ this Windows machine on both Bun 1.3.14 and 1.4.2.
 - `CLAUDE.md`/`AGENTS.md`: rewrite the "Legacy exception" paragraph to say admin
   browser code no longer reads or writes tables directly. Keep the
   `log_animal_mutation` trigger and `*_with_audit` guidance, since that still governs
-  JWT writes. `AGENTS.md` currently shows the em dashes in that paragraph as `??`
-  mojibake; fix them while editing it.
+  JWT writes.
 - Handler tests follow the existing adoptions handler tests: role refusal, response
   shape, and the status filter passed to the repository.
 

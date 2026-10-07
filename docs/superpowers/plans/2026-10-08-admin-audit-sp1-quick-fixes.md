@@ -328,7 +328,7 @@ In `AnimalPipeline.tsx`, `readPositions` and `readArrivalSources` call `/api/adm
 
 In `CLAUDE.md` and `AGENTS.md`, replace the paragraph starting `**Legacy exception**` with:
 `**Animal audit trigger**: admin browser code no longer reads or writes tables directly — every admin surface goes through the API layer (\`adminBrowserDataGuard.test.ts\` enforces it). The \`log_animal_mutation\` trigger (migrations \`20260803120000\` + \`20260805120000\`) still audits any animal-table write that carries a real JWT (\`auth.uid()\` is set); service-role writes are skipped there and must write their own \`audit_log\` row at the app layer instead, so the same event is never logged twice with two different actors.`
-Then keep the existing sentences from "Write that row inside a `*_with_audit` RPC" through "enforces the pairing." unchanged. In `AGENTS.md`, this also replaces the `??` mojibake.
+Then keep the existing sentences from "Write that row inside a `*_with_audit` RPC" through "enforces the pairing." unchanged.
 
 - [ ] **Step 6: Verify**
 
