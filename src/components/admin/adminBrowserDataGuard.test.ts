@@ -9,11 +9,12 @@ import { describe, expect, test } from "bun:test";
  * reappears under the admin routes or components.
  *
  * The pattern is matched against the whole file, so a call split over lines
- * (`supabase\n  .from("animals")`) is caught. `supabase.auth.*` and
- * `supabase.storage.from(bucket)` are intentionally outside it: sign-in and signed
- * uploads are not table reads.
+ * (`supabase\n  .from("animals")`) is caught. It covers both ways admin code holds
+ * the browser client: the `supabase` identifier and a direct `getSupabaseClient()`
+ * call. `.auth.*` and `.storage.from(bucket)` are intentionally outside it: sign-in
+ * and signed uploads are not table reads.
  */
-const BROWSER_DATA_CALL = /\bsupabase\s*\.\s*(?:from|rpc)\s*\(/;
+const BROWSER_DATA_CALL = /\b(?:supabase|getSupabaseClient\(\))\s*\.\s*(?:from|rpc)\s*\(/;
 
 const ADMIN_SOURCE_GLOBS = ["src/routes/admin/**/*.{ts,tsx}", "src/components/admin/**/*.{ts,tsx}"];
 
@@ -46,8 +47,12 @@ describe("admin browser data access", () => {
   test("the matcher ignores auth and storage", () => {
     expect(BROWSER_DATA_CALL.test('supabase\n  .from("animals")')).toBe(true);
     expect(BROWSER_DATA_CALL.test('supabase.rpc("some_function")')).toBe(true);
+    expect(BROWSER_DATA_CALL.test('getSupabaseClient().from("animals")')).toBe(true);
+    expect(BROWSER_DATA_CALL.test('getSupabaseClient()\n  .rpc("x")')).toBe(true);
 
     expect(BROWSER_DATA_CALL.test("supabase.storage.from(bucket)")).toBe(false);
     expect(BROWSER_DATA_CALL.test("supabase.auth.getSession()")).toBe(false);
+    expect(BROWSER_DATA_CALL.test("getSupabaseClient().storage.from(bucket)")).toBe(false);
+    expect(BROWSER_DATA_CALL.test("getSupabaseClient().auth.getSession()")).toBe(false);
   });
 });
