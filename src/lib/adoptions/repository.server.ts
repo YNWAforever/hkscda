@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { latestConsentByChannel } from "../crm/consent";
 import type { ConsentChannel, ConsentHistoryRow, ConsentStatus } from "../crm/types";
 
+import { MATCHABLE_ANIMAL_STATUSES } from "./matchableAnimals";
 import type {
   AdoptionCoordinatorRepository,
   AdopterSearch,
@@ -27,7 +28,9 @@ import type {
   AnimalPipelineListResult,
   AnimalPipelineRow,
   AnimalPipelineSearch,
+  AnimalPositionRecord,
   AnimalMatchSummary,
+  ArrivalSourceRecord,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
   CoordinatorExportAuditRow,
@@ -39,6 +42,7 @@ import type {
   CoordinatorSuccessfulAdoptionExportRow,
   CoordinatorTaskExportRow,
   ManualCaseIdentityCandidate,
+  MatchableAnimalOption,
   PublicAdoptionAnimalPreference,
   PublicAdoptionDetail,
   PublicAdoptionPhoto,
@@ -1859,6 +1863,37 @@ export function createSupabaseAdoptionCoordinatorRepository(
         page: input.page,
         pageSize: input.pageSize,
       };
+    },
+
+    async listMatchableAnimals() {
+      const { data, error } = await client
+        .from("animals")
+        .select("id,name,name_en,type,status")
+        .in("status", [...MATCHABLE_ANIMAL_STATUSES])
+        .order("type")
+        .order("name", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as MatchableAnimalOption[];
+    },
+
+    async listAnimalPositions() {
+      const { data, error } = await client
+        .from("animal_position")
+        .select("id,name,type,for_cat,for_dog,address,contact_person,phone,email,is_active")
+        .order("is_active", { ascending: false })
+        .order("name", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as AnimalPositionRecord[];
+    },
+
+    async listArrivalSources() {
+      const { data, error } = await client
+        .from("arrival_source")
+        .select("id,name_zh,name_en,is_active")
+        .order("is_active", { ascending: false })
+        .order("name_zh", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as ArrivalSourceRecord[];
     },
 
     async listCases(input) {

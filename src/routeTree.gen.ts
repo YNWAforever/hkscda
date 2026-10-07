@@ -151,8 +151,10 @@ import { Route as ApiAdminAdoptionInstructionsPreviewRouteImport } from './route
 import { Route as ApiAdminAdoptionInstructionsPublishRouteImport } from './routes/api/admin/adoption-instructions/publish'
 import { Route as ApiAdminAdoptionInstructionsRestoreRouteImport } from './routes/api/admin/adoption-instructions/restore'
 import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admin/adoptions/adopters'
+import { Route as ApiAdminAdoptionsArrivalSourcesRouteImport } from './routes/api/admin/adoptions/arrival-sources'
 import { Route as ApiAdminAdoptionsAssignmentBulkRouteImport } from './routes/api/admin/adoptions/assignment-bulk'
 import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
+import { Route as ApiAdminAdoptionsPositionsRouteImport } from './routes/api/admin/adoptions/positions'
 import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
 import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
 import { Route as ApiAdminAnimalsListRouteImport } from './routes/api/admin/animals/list'
@@ -210,6 +212,7 @@ import { Route as ApiAdminAdoptionGuideReleasesIdSubmitRouteImport } from './rou
 import { Route as ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport } from './routes/api/admin/adoption-guide-releases/$id/withdraw'
 import { Route as ApiAdminAdoptionInstructionsRevisionsIdRouteImport } from './routes/api/admin/adoption-instructions/revisions/$id'
 import { Route as ApiAdminAdoptionsAdoptersIdRouteImport } from './routes/api/admin/adoptions/adopters/$id'
+import { Route as ApiAdminAdoptionsAnimalsMatchOptionsRouteImport } from './routes/api/admin/adoptions/animals/match-options'
 import { Route as ApiAdminAdoptionsAnimalsPipelineRouteImport } from './routes/api/admin/adoptions/animals/pipeline'
 import { Route as ApiAdminAdoptionsCasesIdRouteImport } from './routes/api/admin/adoptions/cases/$id'
 import { Route as ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport } from './routes/api/admin/adoptions/exports/adopters[.]csv'
@@ -1026,6 +1029,12 @@ const ApiAdminAdoptionsAdoptersRoute =
     path: '/api/admin/adoptions/adopters',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminAdoptionsArrivalSourcesRoute =
+  ApiAdminAdoptionsArrivalSourcesRouteImport.update({
+    id: '/api/admin/adoptions/arrival-sources',
+    path: '/api/admin/adoptions/arrival-sources',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsAssignmentBulkRoute =
   ApiAdminAdoptionsAssignmentBulkRouteImport.update({
     id: '/api/admin/adoptions/assignment-bulk',
@@ -1037,6 +1046,12 @@ const ApiAdminAdoptionsCasesRoute = ApiAdminAdoptionsCasesRouteImport.update({
   path: '/api/admin/adoptions/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAdoptionsPositionsRoute =
+  ApiAdminAdoptionsPositionsRouteImport.update({
+    id: '/api/admin/adoptions/positions',
+    path: '/api/admin/adoptions/positions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsStatusesRoute =
   ApiAdminAdoptionsStatusesRouteImport.update({
     id: '/api/admin/adoptions/statuses',
@@ -1364,6 +1379,12 @@ const ApiAdminAdoptionsAdoptersIdRoute =
     id: '/$id',
     path: '/$id',
     getParentRoute: () => ApiAdminAdoptionsAdoptersRoute,
+  } as any)
+const ApiAdminAdoptionsAnimalsMatchOptionsRoute =
+  ApiAdminAdoptionsAnimalsMatchOptionsRouteImport.update({
+    id: '/api/admin/adoptions/animals/match-options',
+    path: '/api/admin/adoptions/animals/match-options',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminAdoptionsAnimalsPipelineRoute =
   ApiAdminAdoptionsAnimalsPipelineRouteImport.update({
@@ -1967,8 +1988,10 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  '/api/admin/adoptions/arrival-sources': typeof ApiAdminAdoptionsArrivalSourcesRoute
   '/api/admin/adoptions/assignment-bulk': typeof ApiAdminAdoptionsAssignmentBulkRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
+  '/api/admin/adoptions/positions': typeof ApiAdminAdoptionsPositionsRoute
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/animals/list': typeof ApiAdminAnimalsListRoute
@@ -2026,6 +2049,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoption-guide-releases/$id/withdraw': typeof ApiAdminAdoptionGuideReleasesIdWithdrawRoute
   '/api/admin/adoption-instructions/revisions/$id': typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
+  '/api/admin/adoptions/animals/match-options': typeof ApiAdminAdoptionsAnimalsMatchOptionsRoute
   '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
   '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
@@ -2246,8 +2270,10 @@ export interface FileRoutesByTo {
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  '/api/admin/adoptions/arrival-sources': typeof ApiAdminAdoptionsArrivalSourcesRoute
   '/api/admin/adoptions/assignment-bulk': typeof ApiAdminAdoptionsAssignmentBulkRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
+  '/api/admin/adoptions/positions': typeof ApiAdminAdoptionsPositionsRoute
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/animals/list': typeof ApiAdminAnimalsListRoute
@@ -2305,6 +2331,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoption-guide-releases/$id/withdraw': typeof ApiAdminAdoptionGuideReleasesIdWithdrawRoute
   '/api/admin/adoption-instructions/revisions/$id': typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
+  '/api/admin/adoptions/animals/match-options': typeof ApiAdminAdoptionsAnimalsMatchOptionsRoute
   '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
   '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
@@ -2527,8 +2554,10 @@ export interface FileRoutesById {
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  '/api/admin/adoptions/arrival-sources': typeof ApiAdminAdoptionsArrivalSourcesRoute
   '/api/admin/adoptions/assignment-bulk': typeof ApiAdminAdoptionsAssignmentBulkRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
+  '/api/admin/adoptions/positions': typeof ApiAdminAdoptionsPositionsRoute
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/animals/list': typeof ApiAdminAnimalsListRoute
@@ -2586,6 +2615,7 @@ export interface FileRoutesById {
   '/api/admin/adoption-guide-releases/$id/withdraw': typeof ApiAdminAdoptionGuideReleasesIdWithdrawRoute
   '/api/admin/adoption-instructions/revisions/$id': typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
+  '/api/admin/adoptions/animals/match-options': typeof ApiAdminAdoptionsAnimalsMatchOptionsRoute
   '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
   '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
@@ -2809,8 +2839,10 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
     | '/api/admin/adoptions/adopters'
+    | '/api/admin/adoptions/arrival-sources'
     | '/api/admin/adoptions/assignment-bulk'
     | '/api/admin/adoptions/cases'
+    | '/api/admin/adoptions/positions'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
     | '/api/admin/animals/list'
@@ -2868,6 +2900,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-guide-releases/$id/withdraw'
     | '/api/admin/adoption-instructions/revisions/$id'
     | '/api/admin/adoptions/adopters/$id'
+    | '/api/admin/adoptions/animals/match-options'
     | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
     | '/api/admin/adoptions/exports/adopters.csv'
@@ -3088,8 +3121,10 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
     | '/api/admin/adoptions/adopters'
+    | '/api/admin/adoptions/arrival-sources'
     | '/api/admin/adoptions/assignment-bulk'
     | '/api/admin/adoptions/cases'
+    | '/api/admin/adoptions/positions'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
     | '/api/admin/animals/list'
@@ -3147,6 +3182,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-guide-releases/$id/withdraw'
     | '/api/admin/adoption-instructions/revisions/$id'
     | '/api/admin/adoptions/adopters/$id'
+    | '/api/admin/adoptions/animals/match-options'
     | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
     | '/api/admin/adoptions/exports/adopters.csv'
@@ -3368,8 +3404,10 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
     | '/api/admin/adoptions/adopters'
+    | '/api/admin/adoptions/arrival-sources'
     | '/api/admin/adoptions/assignment-bulk'
     | '/api/admin/adoptions/cases'
+    | '/api/admin/adoptions/positions'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
     | '/api/admin/animals/list'
@@ -3427,6 +3465,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-guide-releases/$id/withdraw'
     | '/api/admin/adoption-instructions/revisions/$id'
     | '/api/admin/adoptions/adopters/$id'
+    | '/api/admin/adoptions/animals/match-options'
     | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
     | '/api/admin/adoptions/exports/adopters.csv'
@@ -3610,8 +3649,10 @@ export interface RootRouteChildren {
   ApiAdminAccessInvitesRoute: typeof ApiAdminAccessInvitesRouteWithChildren
   ApiAdminAccessUsersRoute: typeof ApiAdminAccessUsersRouteWithChildren
   ApiAdminAdoptionsAdoptersRoute: typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  ApiAdminAdoptionsArrivalSourcesRoute: typeof ApiAdminAdoptionsArrivalSourcesRoute
   ApiAdminAdoptionsAssignmentBulkRoute: typeof ApiAdminAdoptionsAssignmentBulkRoute
   ApiAdminAdoptionsCasesRoute: typeof ApiAdminAdoptionsCasesRouteWithChildren
+  ApiAdminAdoptionsPositionsRoute: typeof ApiAdminAdoptionsPositionsRoute
   ApiAdminAdoptionsStatusesRoute: typeof ApiAdminAdoptionsStatusesRouteWithChildren
   ApiAdminAdoptionsTasksRoute: typeof ApiAdminAdoptionsTasksRouteWithChildren
   ApiAdminAnimalsListRoute: typeof ApiAdminAnimalsListRoute
@@ -3645,6 +3686,7 @@ export interface RootRouteChildren {
   ApiSponsorshipsStatusTokenRoute: typeof ApiSponsorshipsStatusTokenRoute
   ApiSupporterReceiptsReceiptIdRoute: typeof ApiSupporterReceiptsReceiptIdRoute
   ApiVolunteerStatusTokenRoute: typeof ApiVolunteerStatusTokenRoute
+  ApiAdminAdoptionsAnimalsMatchOptionsRoute: typeof ApiAdminAdoptionsAnimalsMatchOptionsRoute
   ApiAdminAdoptionsAnimalsPipelineRoute: typeof ApiAdminAdoptionsAnimalsPipelineRoute
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
@@ -4669,6 +4711,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionsAdoptersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/adoptions/arrival-sources': {
+      id: '/api/admin/adoptions/arrival-sources'
+      path: '/api/admin/adoptions/arrival-sources'
+      fullPath: '/api/admin/adoptions/arrival-sources'
+      preLoaderRoute: typeof ApiAdminAdoptionsArrivalSourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/adoptions/assignment-bulk': {
       id: '/api/admin/adoptions/assignment-bulk'
       path: '/api/admin/adoptions/assignment-bulk'
@@ -4681,6 +4730,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/adoptions/cases'
       fullPath: '/api/admin/adoptions/cases'
       preLoaderRoute: typeof ApiAdminAdoptionsCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/positions': {
+      id: '/api/admin/adoptions/positions'
+      path: '/api/admin/adoptions/positions'
+      fullPath: '/api/admin/adoptions/positions'
+      preLoaderRoute: typeof ApiAdminAdoptionsPositionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/adoptions/statuses': {
@@ -5081,6 +5137,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/adoptions/adopters/$id'
       preLoaderRoute: typeof ApiAdminAdoptionsAdoptersIdRouteImport
       parentRoute: typeof ApiAdminAdoptionsAdoptersRoute
+    }
+    '/api/admin/adoptions/animals/match-options': {
+      id: '/api/admin/adoptions/animals/match-options'
+      path: '/api/admin/adoptions/animals/match-options'
+      fullPath: '/api/admin/adoptions/animals/match-options'
+      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsMatchOptionsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/adoptions/animals/pipeline': {
       id: '/api/admin/adoptions/animals/pipeline'
@@ -6496,8 +6559,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAccessInvitesRoute: ApiAdminAccessInvitesRouteWithChildren,
   ApiAdminAccessUsersRoute: ApiAdminAccessUsersRouteWithChildren,
   ApiAdminAdoptionsAdoptersRoute: ApiAdminAdoptionsAdoptersRouteWithChildren,
+  ApiAdminAdoptionsArrivalSourcesRoute: ApiAdminAdoptionsArrivalSourcesRoute,
   ApiAdminAdoptionsAssignmentBulkRoute: ApiAdminAdoptionsAssignmentBulkRoute,
   ApiAdminAdoptionsCasesRoute: ApiAdminAdoptionsCasesRouteWithChildren,
+  ApiAdminAdoptionsPositionsRoute: ApiAdminAdoptionsPositionsRoute,
   ApiAdminAdoptionsStatusesRoute: ApiAdminAdoptionsStatusesRouteWithChildren,
   ApiAdminAdoptionsTasksRoute: ApiAdminAdoptionsTasksRouteWithChildren,
   ApiAdminAnimalsListRoute: ApiAdminAnimalsListRoute,
@@ -6537,6 +6602,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSponsorshipsStatusTokenRoute: ApiSponsorshipsStatusTokenRoute,
   ApiSupporterReceiptsReceiptIdRoute: ApiSupporterReceiptsReceiptIdRoute,
   ApiVolunteerStatusTokenRoute: ApiVolunteerStatusTokenRoute,
+  ApiAdminAdoptionsAnimalsMatchOptionsRoute:
+    ApiAdminAdoptionsAnimalsMatchOptionsRoute,
   ApiAdminAdoptionsAnimalsPipelineRoute: ApiAdminAdoptionsAnimalsPipelineRoute,
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute:
     ApiAdminAdoptionsExportsAdoptersDotcsvRoute,

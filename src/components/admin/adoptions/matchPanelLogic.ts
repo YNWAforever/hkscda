@@ -1,3 +1,4 @@
+import { MATCHABLE_ANIMAL_STATUSES } from "../../../lib/adoptions/matchableAnimals";
 import type { CoordinatorStatus } from "../../../lib/adoptions/types";
 
 type AnimalOptionLabelInput = {
@@ -6,8 +7,6 @@ type AnimalOptionLabelInput = {
   type: string;
   status: string;
 };
-
-const MATCHABLE_ANIMAL_STATUSES = ["available", "fostered"] as const;
 
 export function getMatchableAnimalStatuses() {
   return [...MATCHABLE_ANIMAL_STATUSES];

@@ -119,6 +119,26 @@ export type ArrivalSourceSummary = {
   name_en: string | null;
 };
 
+export type MatchableAnimalOption = {
+  id: string;
+  name: string;
+  name_en: string | null;
+  type: string;
+  status: string;
+};
+
+export type AnimalPositionRecord = AnimalPositionSummary & {
+  for_cat: boolean;
+  for_dog: boolean;
+  address: string | null;
+  contact_person: string | null;
+  phone: string | null;
+  email: string | null;
+  is_active: boolean;
+};
+
+export type ArrivalSourceRecord = ArrivalSourceSummary & { is_active: boolean };
+
 export type AnimalPipelineRow = Pick<
   Animal,
   "id" | "type" | "name" | "name_en" | "gender" | "age" | "status" | "image_url"
