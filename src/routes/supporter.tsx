@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { pageHead } from "@/lib/pageHead";
 
 import {
   getSupabaseClient,
@@ -14,6 +15,12 @@ import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileW
 import { SupporterPortal } from "../components/site/supporter/SupporterPortal";
 
 export const Route = createFileRoute("/supporter")({
+  head: () =>
+    pageHead({
+      title: "找回支持者紀錄",
+      description: "使用電郵驗證身份，以找回領養、助養及收條紀錄。",
+      path: "/supporter",
+    }),
   component: SupporterPage,
 });
 

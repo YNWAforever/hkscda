@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicFormFrame } from "../components/site/PublicFormFrame";
 import { PledgeWizard } from "../components/site/sponsorship/PledgeWizard";
 
 export const Route = createFileRoute("/sponsors_/pledge")({
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/sponsors/pledge") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "確認助養承諾",
+      description: "選擇想助養的動物及每月金額並提交承諾；本會職員會再聯絡你確認正式付款安排。",
+      path: "/sponsors/pledge",
+    }),
   component: PledgePage,
 });
 

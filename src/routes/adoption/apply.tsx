@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicFormFrame } from "../../components/site/PublicFormFrame";
 import { ApplicationWizard } from "../../components/site/adoption/ApplicationWizard";
 
 export const Route = createFileRoute("/adoption/apply")({
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/adoption/apply") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "領養申請",
+      description:
+        "開始前請準備聯絡及住屋資料、照顧安排、可探望日期，以及家居安全相片；相片請勿包含證件或門牌。",
+      path: "/adoption/apply",
+    }),
   component: ApplyPage,
 });
 

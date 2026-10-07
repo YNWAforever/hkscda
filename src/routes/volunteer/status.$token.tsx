@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { pageHead } from "@/lib/pageHead";
 import { PublicFormFrame } from "../../components/site/PublicFormFrame";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { AlertCircle, CalendarDays, CheckCircle2, Clock3, Loader2 } from "lucide-react";
@@ -15,12 +16,7 @@ type VolunteerStatus = {
 };
 
 export const Route = createFileRoute("/volunteer/status/$token")({
-  head: () => ({
-    meta: [
-      { name: "robots", content: "noindex, nofollow, noarchive" },
-      { name: "referrer", content: "no-referrer" },
-    ],
-  }),
+  head: () => pageHead({ title: "義工登記", private: true }),
   component: VolunteerStatusRoute,
 });
 

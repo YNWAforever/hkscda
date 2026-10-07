@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { z } from "zod";
 
 import { AnimalGrid } from "../components/site/AnimalGrid";
@@ -25,9 +25,12 @@ export const Route = createFileRoute("/sponsors")({
     getPublicSponsorListing({
       data: { page: deps.page, pageSize: PAGE_SIZE, ageFilter: deps.filter },
     }),
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/sponsors") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "每月助養",
+      description: "以每月支持分擔長期照護、膳食與醫療需要，讓仍在等待家庭的動物得到穩定照顧。",
+      path: "/sponsors",
+    }),
   pendingComponent: SponsorsPending,
   errorComponent: SponsorsError,
   component: SponsorsPage,
