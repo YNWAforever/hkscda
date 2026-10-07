@@ -1,0 +1,3201 @@
+{
+  "createdAtUtc": "2026-10-06T03:47:20.069542+00:00",
+  "baseSource": "e5a28c47b839fa12b770d1e639b0a74368021675",
+  "baseTree": "d3bc880b023b0108e5b532f24b6266228809428d",
+  "datedReleaseBaseline": {
+    "date": "2026-10-06",
+    "mainAndAlias": "4bbd4a4dffbd053328e92c03281a23d1d4ebe682",
+    "alias": "hkscda.vercel.app",
+    "deployment": "dpl_A8ceu6UWvoKj36FHDDGfGQkf26L8",
+    "state": "READY",
+    "mainRun": 36833019358,
+    "jobs": [
+      "verify",
+      "brand-verify",
+      "performance-verify",
+      "a11y-verify",
+      "rls-matrix"
+    ],
+    "conclusions": "all five SUCCESS; existing baseline only"
+  },
+  "drafts": [
+    {
+      "baseRefName": "main",
+      "headRefName": "codex/audit-r01-payment-columns-20261001",
+      "headRefOid": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+      "isDraft": true,
+      "number": 183,
+      "title": "fix(r01): stage payment schema and isolated compatibility tests",
+      "url": "https://github.com/YNWAforever/hkscda/pull/183"
+    },
+    {
+      "baseRefName": "codex/audit-r01-payment-columns-20261001",
+      "headRefName": "codex/audit-r01-adoption-upload-20261001",
+      "headRefOid": "66766c17f8c69d54fedd9d063b68949761e6047d",
+      "isDraft": true,
+      "number": 184,
+      "title": "fix(r01): restore adoption upload schema compatibility",
+      "url": "https://github.com/YNWAforever/hkscda/pull/184"
+    },
+    {
+      "baseRefName": "codex/audit-r01-adoption-upload-20261001",
+      "headRefName": "codex/audit-r01-core-scope-guard-20261002",
+      "headRefOid": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+      "isDraft": true,
+      "number": 185,
+      "title": "test: scope R01 clone fixture operators and fence dynamic execution",
+      "url": "https://github.com/YNWAforever/hkscda/pull/185"
+    },
+    {
+      "baseRefName": "codex/audit-r01-core-scope-guard-20261002",
+      "headRefName": "codex/audit-r01-animal-preference-record-fields-20261002",
+      "headRefOid": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+      "isDraft": true,
+      "number": 186,
+      "title": "fix: restore both animal preference trigger row contracts",
+      "url": "https://github.com/YNWAforever/hkscda/pull/186"
+    },
+    {
+      "baseRefName": "codex/audit-r01-animal-preference-record-fields-20261002",
+      "headRefName": "codex/audit-r01-sponsorship-submission-20261001",
+      "headRefOid": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+      "isDraft": true,
+      "number": 187,
+      "title": "fix: restore sponsorship submission intent contracts",
+      "url": "https://github.com/YNWAforever/hkscda/pull/187"
+    },
+    {
+      "baseRefName": "codex/audit-r01-sponsorship-submission-20261001",
+      "headRefName": "codex/audit-r01-internship-upload-20261002",
+      "headRefOid": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+      "isDraft": true,
+      "number": 188,
+      "title": "fix(db): restore internship attachment upload lifecycle",
+      "url": "https://github.com/YNWAforever/hkscda/pull/188"
+    },
+    {
+      "baseRefName": "codex/audit-r01-internship-upload-20261002",
+      "headRefName": "codex/audit-r01-animal-draft-upload-20261002",
+      "headRefOid": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+      "isDraft": true,
+      "number": 189,
+      "title": "fix: R01 animal draft upload and audited archive forward schema",
+      "url": "https://github.com/YNWAforever/hkscda/pull/189"
+    },
+    {
+      "baseRefName": "codex/audit-r01-animal-draft-upload-20261002",
+      "headRefName": "codex/audit-r01-crm-atomic-20261002",
+      "headRefOid": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+      "isDraft": true,
+      "number": 190,
+      "title": "fix(R01): restore CRM atomic commands with actor fencing",
+      "url": "https://github.com/YNWAforever/hkscda/pull/190"
+    },
+    {
+      "baseRefName": "codex/audit-r01-crm-atomic-20261002",
+      "headRefName": "codex/audit-r01-cms-atomic-20261002",
+      "headRefOid": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+      "isDraft": true,
+      "number": 191,
+      "title": "fix: restore R01 CMS audited commands and knowledge publication fences",
+      "url": "https://github.com/YNWAforever/hkscda/pull/191"
+    },
+    {
+      "baseRefName": "codex/audit-r01-cms-atomic-20261002",
+      "headRefName": "codex/audit-r01-adoption-atomic-20261002",
+      "headRefOid": "efeb25631cef34cff13f3820229d4462323efbf3",
+      "isDraft": true,
+      "number": 192,
+      "title": "fix(r01): restore atomic adoption coordinator and manual intake RPCs",
+      "url": "https://github.com/YNWAforever/hkscda/pull/192"
+    },
+    {
+      "baseRefName": "codex/audit-r01-adoption-atomic-20261002",
+      "headRefName": "codex/audit-r01-admin-atomic-20261002",
+      "headRefOid": "d45b849d300f76700efcf5450a9b426e32cc372f",
+      "isDraft": true,
+      "number": 193,
+      "title": "fix(r01): restore atomic admin access and inherited privilege guards",
+      "url": "https://github.com/YNWAforever/hkscda/pull/193"
+    },
+    {
+      "baseRefName": "codex/audit-r01-admin-atomic-20261002",
+      "headRefName": "codex/audit-r01-finance-callback-20261003",
+      "headRefOid": "f4e96e3484d135d179caea835d913552d96d2dcb",
+      "isDraft": true,
+      "number": 194,
+      "title": "fix(R01): restore guarded finance callbacks and atomic receipt commands",
+      "url": "https://github.com/YNWAforever/hkscda/pull/194"
+    },
+    {
+      "baseRefName": "codex/audit-r01-finance-callback-20261003",
+      "headRefName": "codex/audit-r01-group-enquiry-20261003",
+      "headRefOid": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+      "isDraft": true,
+      "number": 195,
+      "title": "fix(R01): restore atomic group enquiry commands with Auth fencing",
+      "url": "https://github.com/YNWAforever/hkscda/pull/195"
+    }
+  ],
+  "Task13": {
+    "localCommit": "e5a28c47b839fa12b770d1e639b0a74368021675",
+    "push": "SUCCESS_NATIVE_EXIT0_20261006",
+    "pullRequest": "https://github.com/YNWAforever/hkscda/pull/196",
+    "freshExactHeadCI": {
+      "run": 37413919942,
+      "attempt": 1,
+      "source": "e5a28c47b839fa12b770d1e639b0a74368021675",
+      "actualCheckout": "782a6e5f30663f6331b36fa05d80a3b72919cd05",
+      "sameSourceTree": true,
+      "fiveIndividualJobs": "SUCCESS",
+      "requiredDBSteps": "SUCCESS",
+      "documentStep": "1 pass / 0 fail / 36 assertions on actual PG17.11.0.002; no skipped document case",
+      "qualification": "stacked-base CI; not production readiness"
+    },
+    "independentStrengthening": {
+      "ruling": 268,
+      "nativeExit": 0,
+      "namedNoOpRows": 111,
+      "permissions": 17,
+      "business": 26,
+      "siteKnowledgeRaces": 12,
+      "annualRaces": 2,
+      "cleanup": "program completion/source finally flow/template check; no independent explicit cleanup receipt",
+      "noOpRaw": "in-memory not independently archived"
+    },
+    "native170011Modern": {
+      "restorationApplications": 2,
+      "namedRaw": "byteequal within each original capture group; backend1569/1660 distinct across groups",
+      "seededBaselineCounts": [
+        2,
+        2,
+        4,
+        0,
+        0,
+        0
+      ],
+      "seedRaw": "before/after byteequal; historical committed states preserved; not zero-data profile",
+      "cleanup": "four owned containers removed",
+      "notClaimed": "170011 strengthening/typed CI full role matrix/H1"
+    },
+    "strictRawRestoration": {
+      "nativeExit": 1,
+      "ruling": 265,
+      "catalogDifference": "pg_statistic;489 identities192changed",
+      "inventoryDifference": true,
+      "cause": "NOT_RECORDED",
+      "waiver": false
+    },
+    "ordinaryQualifications": {
+      "fullUnit": {
+        "pass": 4279,
+        "skip": 634,
+        "fail": 0,
+        "assertions": 12176,
+        "files": 628,
+        "tests": 4913,
+        "explicitOptionalApi": "UNAVAILABLE_LOOPBACK_59999"
+      },
+      "sloganFocused": {
+        "pass": 7,
+        "assertions": 38,
+        "sourceAndTimeoutUnchanged": true
+      },
+      "dedicated56322": "NOT_RUN_MISSING_LOCAL_CREDENTIALS",
+      "typed55322_170011": "NOT_RUN_LOCAL_ACTUAL_170006",
+      "strictRawRestoration": "FAILED_PG_STATISTIC_AND_INVENTORY_DRIFT",
+      "independentStrengthening": {
+        "ruling": 268,
+        "nativeExit": 0,
+        "NoOpRows": 111,
+        "actualResults": [
+          17,
+          26,
+          12,
+          2
+        ],
+        "restorationSubmitted": false,
+        "strictRawRestoration": "HELD"
+      },
+      "routeTree": "GIT_DIFF_EXIT0_C18C7B"
+    }
+  },
+  "ordinaryActualCommands": [
+    {
+      "name": "scripts-strict-noop-parameter",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-strict-noop-parameter.receipt.json",
+        "bytes": 1328,
+        "sha256": "5f38c6974e2061bbfcc83f427fc55d85786c26b3c09eda2264c3d5bbee241d99"
+      },
+      "pid": 52304,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\node_modules\\typescript\\bin\\tsc",
+        "--project",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-typecheck.json",
+        "--noEmit"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-strict-noop-parameter.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-strict-noop-parameter.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "full-typecheck-noop-parameter",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-typecheck-noop-parameter.receipt.json",
+        "bytes": 1106,
+        "sha256": "50f62d1149f063810b721afbf86eb92ce984dfd7a3d83d28dca2bf6fcd879243"
+      },
+      "pid": 41060,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\node_modules\\typescript\\bin\\tsc",
+        "--noEmit"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-typecheck-noop-parameter.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-typecheck-noop-parameter.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "full-lint-noop-parameter",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-lint-noop-parameter.receipt.json",
+        "bytes": 1157,
+        "sha256": "ec899d69e37aeb27b60ade51c8cf2828629664f3f38109a75e61179a85a42b09"
+      },
+      "pid": 34344,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\node_modules\\eslint\\bin\\eslint.js",
+        "src",
+        "eslint.config.js",
+        "vite.config.ts",
+        "supabase/rls-tests"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-lint-noop-parameter.stdout",
+          "bytes": 13632,
+          "sha256": "ba4174b45c7c45dbe7a664448662b428c26f9dab140d3bb9b0b5368bf8f82410"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-lint-noop-parameter.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "full-build-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-build-first.receipt.json",
+        "bytes": 234,
+        "sha256": "07e28b7f2773f9fa39c68abae52f3ff3f311bd7aee261384bc8eae9fdebd9872"
+      },
+      "pid": 37932,
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "full-tests-frozen-retry",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-tests-frozen-retry.receipt.json",
+        "bytes": 1069,
+        "sha256": "716ec711af252edf15070352cb7812b1ec671e36558f3fd6607fb382422c6f2b"
+      },
+      "pid": 31896,
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "test",
+        "--isolate"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-tests-frozen-retry.stdout",
+          "bytes": 2991,
+          "sha256": "9e2d0984e1a2622536c73a01da0a0660c89fb590e13ba857a844680667c94f14"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-tests-frozen-retry.stderr",
+          "bytes": 584940,
+          "sha256": "56aa70eb4998929cdd224b5c1b15bdea183c308b74ed842c20cdd2dcc8e27577"
+        }
+      ]
+    },
+    {
+      "name": "slogan-focused-once",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\slogan-focused-once.receipt.json",
+        "bytes": 1089,
+        "sha256": "ee19effce2529366888c54c33ed8f99915f280a8842d2f141bcf76ed44512a71"
+      },
+      "pid": 11356,
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "test",
+        "src/lib/content/serviceSloganCopy.test.ts"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\slogan-focused-once.stdout",
+          "bytes": 28,
+          "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\slogan-focused-once.stderr",
+          "bytes": 860,
+          "sha256": "2745325cb4ec1c7b7b880845edb010888dcb4300032d16e5c1561106779b19d1"
+        }
+      ]
+    },
+    {
+      "name": "verify-brand-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\verify-brand-first.receipt.json",
+        "bytes": 246,
+        "sha256": "54a296a85ad7aed72c25f0f8b975e889f8e43e7dbb77ae6cde747e1fd0f189cd"
+      },
+      "pid": 19552,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\scripts\\verify-public-brand.mjs"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "verify-a11y-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\verify-a11y-first.receipt.json",
+        "bytes": 245,
+        "sha256": "b04bd36ba50803cdcba3a0f3e445f7fc28ffe980d29a2f58767590ec1f159ede"
+      },
+      "pid": 38660,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\scripts\\verify-public-brand.mjs"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "verify-performance-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\verify-performance-first.receipt.json",
+        "bytes": 252,
+        "sha256": "34131b8fdeeb8c331ba61b6af026bb8fa524f3db7c0418703ce5a1f0ca105e57"
+      },
+      "pid": 58992,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\scripts\\verify-public-brand.mjs"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "dedicated-56322-acceptance-all-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\dedicated-56322-acceptance-all-first.receipt.json",
+        "bytes": 368,
+        "sha256": "8a3479ef3ec6ffa030ddd99ca750d3b4a28d4ccaa8ef5e19d1442a3f05257ff3"
+      },
+      "pid": 61268,
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\scripts\\test-isolated-acceptance.ts",
+        "--all"
+      ],
+      "exit": 1,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "full-tests-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-tests-first.receipt.json",
+        "bytes": 238,
+        "sha256": "55cca441a480dc95de3cb7efa84ba814b262c57ee9e2ffc17de06c795ee69a3b"
+      },
+      "pid": 9964,
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "test",
+        "--isolate"
+      ],
+      "exit": 1,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "portable-clone-first",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\portable-clone-first.receipt.json",
+        "bytes": 385,
+        "sha256": "5c625f0dadbc7698d6e74c1c63701b88ab99631ae9a6ad380b890e21d60075f0"
+      },
+      "pid": 55800,
+      "argv": [
+        "C:/Users/laich/.bun/bin/bun.exe",
+        "--no-env-file",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\scripts\\test-document-publication-guards.ts",
+        "--modern-local"
+      ],
+      "exit": 1,
+      "normalClose": true,
+      "streams": []
+    },
+    {
+      "name": "scripts-strict-text-cast",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-strict-text-cast.receipt.json",
+        "bytes": 1318,
+        "sha256": "e7ecca5de3a5aed54fc3fc14e707e65d8ee46d50250c5e3143cc8bac2f260722"
+      },
+      "pid": 8588,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\node_modules\\typescript\\bin\\tsc",
+        "--project",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-typecheck.json",
+        "--noEmit"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-strict-text-cast.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\scripts-strict-text-cast.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "full-typecheck-text-cast",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-typecheck-text-cast.receipt.json",
+        "bytes": 1097,
+        "sha256": "9f8560904ca75c89d89e2f750b9dbc305a9410288f4b30d192080b10dd162c2b"
+      },
+      "pid": 54736,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\node_modules\\typescript\\bin\\tsc",
+        "--noEmit"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-typecheck-text-cast.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-typecheck-text-cast.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "full-lint-text-cast",
+      "receipt": {
+        "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-lint-text-cast.receipt.json",
+        "bytes": 1148,
+        "sha256": "760fb43654786b4c03bf9e612a354f1225e390dedaacea9db777d47bdede390d"
+      },
+      "pid": 35428,
+      "argv": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\node_modules\\eslint\\bin\\eslint.js",
+        "src",
+        "eslint.config.js",
+        "vite.config.ts",
+        "supabase/rls-tests"
+      ],
+      "exit": 0,
+      "normalClose": true,
+      "streams": [
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-lint-text-cast.stdout",
+          "bytes": 13632,
+          "sha256": "ba4174b45c7c45dbe7a664448662b428c26f9dab140d3bb9b0b5368bf8f82410"
+        },
+        {
+          "path": "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\audit-r01-adoption-upload-20261001\\.superpowers\\sdd\\r01-forward-schema-plan-20261001\\task-13-r262-ordinary-gates\\full-lint-text-cast.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "forensicSourcePins": [
+    {
+      "source": "MASTER/ruling-271-task14-local-documentation-dispatch.md",
+      "bytes": 2454,
+      "sha256": "190f953459872bd7afe2111df0b140b4006c07d6b93c6f4cf5bc8be9b443e297",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-original48-merge-state-20261006.json",
+      "bytes": 14589,
+      "sha256": "26eebec6e1cc1fc63e52975348a96052e89a0fa21e9c0bba65808182a937b0c1",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/original46-final-pr-metadata-20261002.json",
+      "bytes": 25592,
+      "sha256": "46645dc132a87dc78c3e60da106451ac453e579b9da776e157cce4ae91a274cd",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-task13-current-main-and-open-pr-scope-20261006.json",
+      "bytes": 5533,
+      "sha256": "887cee80250016dcc3f98d70ec0e4cc512245128a12e53cefc38e36379a6f267",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-task13-current-production-alias-and-main-ci-20261006.json",
+      "bytes": 2371,
+      "sha256": "429ff09b3d1f11459f771f32ec27ea4a74911380ca4f9575e58c4f1f9448619e",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r257-unit32-strict-and-both-isolated-profiles-native0-binding.json",
+      "bytes": 28434,
+      "sha256": "b6a16a6e75100232d43817e76476747d03ae8b204241ac08209b1c8c530195cc",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r259-corrected-publication-strengthening-complete-finite-native0-binding.json",
+      "bytes": 42486,
+      "sha256": "aed2db478bb88eb4d811cc0857b020c1fd74379192d3cfd525cbafb3d97055da",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r261-native170011-modern-two-applications-and-known-seed-noop-binding.json",
+      "bytes": 11526,
+      "sha256": "62a683a1480c8246b21e4e5deae9bf14533b7a0b9e0e3be91f0e672ac2065c0d",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r265-owned-statistic-diagnostic-native1-binding.json",
+      "bytes": 59697,
+      "sha256": "8fa238b3a3c258c0a295e6f9ca112642a932d0e5f1b9744ab296adc356495eb4",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r268-native0-corrected-noop-and57cases-binding.json",
+      "bytes": 43917,
+      "sha256": "283dffa71e8a703ca29180def45153eaeab1678285b2e6b510e4c8d1b38efa8a",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r269-final16-source-and-existing-ordinary-gate-binding.json",
+      "bytes": 27733,
+      "sha256": "c31b1ceb06ebff574114e9fe058b7c7f03a2372b3706e953d7e2a7457ca9e9be",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    },
+    {
+      "source": "MASTER/controller-r270-actual16-local-commit-and-command-stream-binding.json",
+      "bytes": 3863,
+      "sha256": "02d4d515b8d646205d3c2a77a191665d334ea99343104c36d2ac636994939454",
+      "scope": "ignored original evidence pointer, not portable runtime dependency"
+    }
+  ],
+  "historicalRegistry": "r01-decision-chronology-20261006.md",
+  "notRun": [
+    "Task13 fresh exact-head CI/native17.11 document/role API steps",
+    "dedicated56322: missing credentials before tests",
+    "typed55322native170011: actual170006",
+    "hosted JWT/private file/export full journeys",
+    "provider sandbox/email/refund/checkout activation",
+    "two-geography30cold/warm",
+    "fullDB/off-machine/storage restore drill",
+    "production R01 migration/activation"
+  ],
+  "priorScopedSourceCI": {
+    "pointer": "r01-source-ci-disposition-20261006.csv",
+    "metadataSource": {
+      "path": "MASTER/controller-task-checkpoint.json",
+      "sha256": "ad7e78736098856b70fd78f249d53c51a94b59e9c2f84441aacfc818c5455adc"
+    },
+    "knownFailedRunsPreserved": [
+      "Task6 RLS first36942406286",
+      "Task9 aggregateSUCCESS36985370386/36978660763 with bootstrapFAILURE/skipped DB",
+      "Task12 first37099925422 failed"
+    ],
+    "Task11NativeCI": "PG17.11 finance67 nonSkipped",
+    "Task12NativeCI": {
+      "engine": "17.11.0.002",
+      "group": {
+        "actualCommand": "bun test --timeout 15000 src/lib/groupEnquiries/atomicForward.database.test.ts",
+        "pass": 34,
+        "skip": 0,
+        "fail": 0,
+        "stepExit": 0,
+        "rawLogSHA256": "d89415dcd85e4e3af2cbf8bc3cb0d92c85870d6085b2feabb2a3cebfda1dd871"
+      },
+      "finance": {
+        "pass": 67,
+        "skip": 0,
+        "fail": 0,
+        "stepExit": 0
+      },
+      "sourceHead": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+      "actualCheckout": "107915880339f2b7dc6a37b78261df2dbed42ac3"
+    },
+    "all13ExactHeadMetadata": {
+      "atUtc": "2026-10-05T19:53:01.980Z",
+      "source": "MASTER/controller-r222-draft-183-195-head-ci-metadata.json",
+      "bytes": 18525,
+      "sha256": "3f010fcd45564d61d501bdc9fdccff6680111fd5fe2476b76f81c4fee78e1f45",
+      "jobs": [
+        {
+          "pr": 183,
+          "source": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+          "run": "36869741408",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36869741408/job/110395052154",
+              "head_sha": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36869741408/job/110395052131",
+              "head_sha": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36869741408/job/110395052086",
+              "head_sha": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36869741408/job/110395052064",
+              "head_sha": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36869741408/job/110394141305",
+              "head_sha": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 184,
+          "source": "66766c17f8c69d54fedd9d063b68949761e6047d",
+          "run": "36879037008",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008/job/110426928300",
+              "head_sha": "66766c17f8c69d54fedd9d063b68949761e6047d",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008/job/110426928197",
+              "head_sha": "66766c17f8c69d54fedd9d063b68949761e6047d",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008/job/110426928190",
+              "head_sha": "66766c17f8c69d54fedd9d063b68949761e6047d",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008/job/110426928084",
+              "head_sha": "66766c17f8c69d54fedd9d063b68949761e6047d",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008/job/110425795694",
+              "head_sha": "66766c17f8c69d54fedd9d063b68949761e6047d",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 185,
+          "source": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+          "run": "36896838858",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896838858/job/110486620586",
+              "head_sha": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896838858/job/110486620535",
+              "head_sha": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896838858/job/110486620400",
+              "head_sha": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896838858/job/110486620369",
+              "head_sha": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896838858/job/110485834168",
+              "head_sha": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 186,
+          "source": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+          "run": "36896928567",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896928567/job/110499013176",
+              "head_sha": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896928567/job/110499012992",
+              "head_sha": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896928567/job/110499012720",
+              "head_sha": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896928567/job/110499011093",
+              "head_sha": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+              "name": "verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896928567/job/110499010954",
+              "head_sha": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+              "name": "brand-verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 187,
+          "source": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+          "run": "36900978204",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36900978204/job/110500723782",
+              "head_sha": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36900978204/job/110500723552",
+              "head_sha": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36900978204/job/110500723499",
+              "head_sha": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36900978204/job/110500723494",
+              "head_sha": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36900978204/job/110499767004",
+              "head_sha": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 188,
+          "source": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+          "run": "36913123561",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36913123561/job/110541557040",
+              "head_sha": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36913123561/job/110541557004",
+              "head_sha": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36913123561/job/110541556867",
+              "head_sha": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36913123561/job/110541556770",
+              "head_sha": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36913123561/job/110540440868",
+              "head_sha": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 189,
+          "source": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+          "run": "36928397189",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36928397189/job/110592265124",
+              "head_sha": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36928397189/job/110592264750",
+              "head_sha": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36928397189/job/110592264745",
+              "head_sha": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36928397189/job/110592264599",
+              "head_sha": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36928397189/job/110591310926",
+              "head_sha": "592bcebda2dc0154d20684a1a2240cfbdd8ae3d1",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 190,
+          "source": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+          "run": "36947861601",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36947861601/job/110654615070",
+              "head_sha": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36947861601/job/110654615062",
+              "head_sha": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36947861601/job/110654614968",
+              "head_sha": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36947861601/job/110654614957",
+              "head_sha": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36947861601/job/110653928093",
+              "head_sha": "5cd611721d5128f4a9f009ebe4b2646955d90db8",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 191,
+          "source": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+          "run": "36960650129",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36960650129/job/110693985415",
+              "head_sha": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36960650129/job/110693985268",
+              "head_sha": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36960650129/job/110693985235",
+              "head_sha": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36960650129/job/110693985208",
+              "head_sha": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36960650129/job/110693368246",
+              "head_sha": "d0403a1869ea6dead498e62aebe9723e95c3ec19",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 192,
+          "source": "efeb25631cef34cff13f3820229d4462323efbf3",
+          "run": "36995859256",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36995859256/job/110803085893",
+              "head_sha": "efeb25631cef34cff13f3820229d4462323efbf3",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36995859256/job/110803085880",
+              "head_sha": "efeb25631cef34cff13f3820229d4462323efbf3",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36995859256/job/110803085853",
+              "head_sha": "efeb25631cef34cff13f3820229d4462323efbf3",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36995859256/job/110803085851",
+              "head_sha": "efeb25631cef34cff13f3820229d4462323efbf3",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/36995859256/job/110802284261",
+              "head_sha": "efeb25631cef34cff13f3820229d4462323efbf3",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 193,
+          "source": "d45b849d300f76700efcf5450a9b426e32cc372f",
+          "run": "37033087893",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37033087893/job/110925623992",
+              "head_sha": "d45b849d300f76700efcf5450a9b426e32cc372f",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37033087893/job/110925623924",
+              "head_sha": "d45b849d300f76700efcf5450a9b426e32cc372f",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37033087893/job/110925623900",
+              "head_sha": "d45b849d300f76700efcf5450a9b426e32cc372f",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37033087893/job/110925623889",
+              "head_sha": "d45b849d300f76700efcf5450a9b426e32cc372f",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37033087893/job/110924515777",
+              "head_sha": "d45b849d300f76700efcf5450a9b426e32cc372f",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 194,
+          "source": "f4e96e3484d135d179caea835d913552d96d2dcb",
+          "run": "37081732926",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37081732926/job/111084071472",
+              "head_sha": "f4e96e3484d135d179caea835d913552d96d2dcb",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37081732926/job/111084071431",
+              "head_sha": "f4e96e3484d135d179caea835d913552d96d2dcb",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37081732926/job/111084071422",
+              "head_sha": "f4e96e3484d135d179caea835d913552d96d2dcb",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37081732926/job/111084071416",
+              "head_sha": "f4e96e3484d135d179caea835d913552d96d2dcb",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37081732926/job/111083517315",
+              "head_sha": "f4e96e3484d135d179caea835d913552d96d2dcb",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "pr": 195,
+          "source": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+          "run": "37102318095",
+          "jobs": [
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37102318095/job/111144556276",
+              "head_sha": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+              "name": "brand-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37102318095/job/111144556212",
+              "head_sha": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+              "name": "performance-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37102318095/job/111144556200",
+              "head_sha": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+              "name": "a11y-verify",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37102318095/job/111144556187",
+              "head_sha": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+              "name": "rls-matrix",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "details_url": "https://github.com/YNWAforever/hkscda/actions/runs/37102318095/job/111144116265",
+              "head_sha": "2e176ebdf8647a1d13ae92a57116a3e73fa437b0",
+              "name": "verify",
+              "status": "completed"
+            }
+          ]
+        }
+      ],
+      "qualification": "65 individual completed success checks for13 unchanged draft heads; checkout identity and underlying steps remain separately qualified"
+    },
+    "early13PriorRequiredStepMetadata": [
+      {
+        "source": "MASTER/controller-task14-existing-pr184-188-ci-readonly-metadata-20261006.json",
+        "rawBytes": 40602,
+        "rawSHA256": "d5daa4cf1dad7b2b2baf4d900e211ca13819dce4a1d8aac37a1dd392754d1261",
+        "publicExistingMetadata": {
+          "operation": "ROOT_READ_ONLY_EXISTING_EARLY_CI_HEADERS_AND_REQUIRED_STEP_METADATA",
+          "checkedAtUtc": "2026-10-06T03:54:26.372Z",
+          "rows": [
+            {
+              "kind": "header",
+              "run_id": 36879037008,
+              "result": {
+                "id": 36879037008,
+                "name": "CI",
+                "head_sha": "66766c17f8c69d54fedd9d063b68949761e6047d",
+                "head_branch": "codex/audit-r01-adoption-upload-20261001",
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "success",
+                "run_attempt": 1,
+                "created_at": "2026-10-01T14:46:51Z",
+                "updated_at": "2026-10-01T14:58:11Z",
+                "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36879037008"
+              }
+            },
+            {
+              "kind": "header",
+              "run_id": 36896838858,
+              "result": {
+                "id": 36896838858,
+                "name": "CI",
+                "head_sha": "3e869c56526b4d8f6ac827b088117cdc7e301cf5",
+                "head_branch": "codex/audit-r01-core-scope-guard-20261002",
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "success",
+                "run_attempt": 1,
+                "created_at": "2026-10-01T17:05:43Z",
+                "updated_at": "2026-10-01T17:19:59Z",
+                "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896838858"
+              }
+            },
+            {
+              "kind": "header",
+              "run_id": 36896928567,
+              "result": {
+                "id": 36896928567,
+                "name": "CI",
+                "head_sha": "459438b4034e3f859c4f6218cbac12bdf76d9f68",
+                "head_branch": "codex/audit-r01-animal-preference-record-fields-20261002",
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "success",
+                "run_attempt": 2,
+                "created_at": "2026-10-01T17:06:26Z",
+                "updated_at": "2026-10-01T17:54:29Z",
+                "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36896928567"
+              }
+            },
+            {
+              "kind": "header",
+              "run_id": 36900978204,
+              "result": {
+                "id": 36900978204,
+                "name": "CI",
+                "head_sha": "4fbbb477cba2b31c437c99d20c1af8e9a1ebbf69",
+                "head_branch": "codex/audit-r01-sponsorship-submission-20261001",
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "success",
+                "run_attempt": 1,
+                "created_at": "2026-10-01T17:39:24Z",
+                "updated_at": "2026-10-01T17:50:28Z",
+                "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36900978204"
+              }
+            },
+            {
+              "kind": "header",
+              "run_id": 36913123561,
+              "result": {
+                "id": 36913123561,
+                "name": "CI",
+                "head_sha": "4906493f60ea806eab9ec6c2d9e18f7b4c1a3463",
+                "head_branch": "codex/audit-r01-internship-upload-20261002",
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "success",
+                "run_attempt": 1,
+                "created_at": "2026-10-01T19:16:58Z",
+                "updated_at": "2026-10-01T19:29:15Z",
+                "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36913123561"
+              }
+            },
+            {
+              "kind": "jobs",
+              "run_id": 36896838858,
+              "result": {
+                "jobs": [
+                  {
+                    "id": 110485834168,
+                    "name": "verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Typecheck",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Test",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Lint",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Build",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Route tree is current",
+                        "completed",
+                        "success",
+                        9
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110486620369,
+                    "name": "a11y-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public a11y",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110486620400,
+                    "name": "rls-matrix",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Start local Supabase stack",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Run RLS behavioral tests",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Run database-backed transaction tests",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Run volunteer bulk database scenarios",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Run content publication eligibility database scenarios",
+                        "completed",
+                        "success",
+                        9
+                      ],
+                      [
+                        "Run media repair database scenarios",
+                        "completed",
+                        "success",
+                        10
+                      ],
+                      [
+                        "Run public listing database scenarios",
+                        "completed",
+                        "success",
+                        11
+                      ],
+                      [
+                        "Run supporter portal preference database scenarios",
+                        "completed",
+                        "success",
+                        12
+                      ],
+                      [
+                        "Run CRM tag bulk database scenarios",
+                        "completed",
+                        "success",
+                        13
+                      ],
+                      [
+                        "Run volunteer reviewer bulk database scenarios",
+                        "completed",
+                        "success",
+                        14
+                      ],
+                      [
+                        "Run adoption assignment bulk database scenarios",
+                        "completed",
+                        "success",
+                        15
+                      ],
+                      [
+                        "Run animal review bulk database scenarios",
+                        "completed",
+                        "success",
+                        16
+                      ],
+                      [
+                        "Run manual finance atomic database scenarios",
+                        "completed",
+                        "success",
+                        17
+                      ],
+                      [
+                        "Run CMS quality queue database scenarios",
+                        "completed",
+                        "success",
+                        18
+                      ],
+                      [
+                        "Run CMS review bulk database scenarios",
+                        "completed",
+                        "success",
+                        19
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110486620535,
+                    "name": "performance-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public performance",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110486620586,
+                    "name": "brand-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public brand",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "jobs",
+              "run_id": 36896928567,
+              "result": {
+                "jobs": [
+                  {
+                    "id": 110499010954,
+                    "name": "brand-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public brand",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110499011093,
+                    "name": "verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Typecheck",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Test",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Lint",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Build",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Route tree is current",
+                        "completed",
+                        "success",
+                        9
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110499012720,
+                    "name": "rls-matrix",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Start local Supabase stack",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Run RLS behavioral tests",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Run database-backed transaction tests",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Run volunteer bulk database scenarios",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Run content publication eligibility database scenarios",
+                        "completed",
+                        "success",
+                        9
+                      ],
+                      [
+                        "Run media repair database scenarios",
+                        "completed",
+                        "success",
+                        10
+                      ],
+                      [
+                        "Run public listing database scenarios",
+                        "completed",
+                        "success",
+                        11
+                      ],
+                      [
+                        "Run supporter portal preference database scenarios",
+                        "completed",
+                        "success",
+                        12
+                      ],
+                      [
+                        "Run CRM tag bulk database scenarios",
+                        "completed",
+                        "success",
+                        13
+                      ],
+                      [
+                        "Run volunteer reviewer bulk database scenarios",
+                        "completed",
+                        "success",
+                        14
+                      ],
+                      [
+                        "Run adoption assignment bulk database scenarios",
+                        "completed",
+                        "success",
+                        15
+                      ],
+                      [
+                        "Run animal review bulk database scenarios",
+                        "completed",
+                        "success",
+                        16
+                      ],
+                      [
+                        "Run manual finance atomic database scenarios",
+                        "completed",
+                        "success",
+                        17
+                      ],
+                      [
+                        "Run CMS quality queue database scenarios",
+                        "completed",
+                        "success",
+                        18
+                      ],
+                      [
+                        "Run CMS review bulk database scenarios",
+                        "completed",
+                        "success",
+                        19
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110499012992,
+                    "name": "performance-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public performance",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110499013176,
+                    "name": "a11y-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public a11y",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "jobs",
+              "run_id": 36900978204,
+              "result": {
+                "jobs": [
+                  {
+                    "id": 110499767004,
+                    "name": "verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Typecheck",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Test",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Lint",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Build",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Route tree is current",
+                        "completed",
+                        "success",
+                        9
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110500723494,
+                    "name": "brand-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public brand",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110500723499,
+                    "name": "performance-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public performance",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110500723552,
+                    "name": "a11y-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public a11y",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110500723782,
+                    "name": "rls-matrix",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Start local Supabase stack",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Run RLS behavioral tests",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Run database-backed transaction tests",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Run volunteer bulk database scenarios",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Run content publication eligibility database scenarios",
+                        "completed",
+                        "success",
+                        9
+                      ],
+                      [
+                        "Run media repair database scenarios",
+                        "completed",
+                        "success",
+                        10
+                      ],
+                      [
+                        "Run public listing database scenarios",
+                        "completed",
+                        "success",
+                        11
+                      ],
+                      [
+                        "Run supporter portal preference database scenarios",
+                        "completed",
+                        "success",
+                        12
+                      ],
+                      [
+                        "Run CRM tag bulk database scenarios",
+                        "completed",
+                        "success",
+                        13
+                      ],
+                      [
+                        "Run volunteer reviewer bulk database scenarios",
+                        "completed",
+                        "success",
+                        14
+                      ],
+                      [
+                        "Run adoption assignment bulk database scenarios",
+                        "completed",
+                        "success",
+                        15
+                      ],
+                      [
+                        "Run animal review bulk database scenarios",
+                        "completed",
+                        "success",
+                        16
+                      ],
+                      [
+                        "Run manual finance atomic database scenarios",
+                        "completed",
+                        "success",
+                        17
+                      ],
+                      [
+                        "Run CMS quality queue database scenarios",
+                        "completed",
+                        "success",
+                        18
+                      ],
+                      [
+                        "Run CMS review bulk database scenarios",
+                        "completed",
+                        "success",
+                        19
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "jobs",
+              "run_id": 36913123561,
+              "result": {
+                "jobs": [
+                  {
+                    "id": 110540440868,
+                    "name": "verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Typecheck",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Test",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Lint",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Build",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Route tree is current",
+                        "completed",
+                        "success",
+                        9
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110541556770,
+                    "name": "a11y-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public a11y",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110541556867,
+                    "name": "brand-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public brand",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110541557004,
+                    "name": "rls-matrix",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Start local Supabase stack",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Run RLS behavioral tests",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Run database-backed transaction tests",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Run volunteer bulk database scenarios",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Run content publication eligibility database scenarios",
+                        "completed",
+                        "success",
+                        9
+                      ],
+                      [
+                        "Run media repair database scenarios",
+                        "completed",
+                        "success",
+                        10
+                      ],
+                      [
+                        "Run public listing database scenarios",
+                        "completed",
+                        "success",
+                        11
+                      ],
+                      [
+                        "Run supporter portal preference database scenarios",
+                        "completed",
+                        "success",
+                        12
+                      ],
+                      [
+                        "Run CRM tag bulk database scenarios",
+                        "completed",
+                        "success",
+                        13
+                      ],
+                      [
+                        "Run volunteer reviewer bulk database scenarios",
+                        "completed",
+                        "success",
+                        14
+                      ],
+                      [
+                        "Run adoption assignment bulk database scenarios",
+                        "completed",
+                        "success",
+                        15
+                      ],
+                      [
+                        "Run animal review bulk database scenarios",
+                        "completed",
+                        "success",
+                        16
+                      ],
+                      [
+                        "Run manual finance atomic database scenarios",
+                        "completed",
+                        "success",
+                        17
+                      ],
+                      [
+                        "Run CMS quality queue database scenarios",
+                        "completed",
+                        "success",
+                        18
+                      ],
+                      [
+                        "Run CMS review bulk database scenarios",
+                        "completed",
+                        "success",
+                        19
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110541557040,
+                    "name": "performance-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public performance",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "jobs",
+              "run_id": 36879037008,
+              "result": {
+                "jobs": [
+                  {
+                    "id": 110425795694,
+                    "name": "verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Typecheck",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Test",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Lint",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Build",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Route tree is current",
+                        "completed",
+                        "success",
+                        9
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110426928084,
+                    "name": "rls-matrix",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Start local Supabase stack",
+                        "completed",
+                        "success",
+                        5
+                      ],
+                      [
+                        "Run RLS behavioral tests",
+                        "completed",
+                        "success",
+                        6
+                      ],
+                      [
+                        "Run database-backed transaction tests",
+                        "completed",
+                        "success",
+                        7
+                      ],
+                      [
+                        "Run volunteer bulk database scenarios",
+                        "completed",
+                        "success",
+                        8
+                      ],
+                      [
+                        "Run content publication eligibility database scenarios",
+                        "completed",
+                        "success",
+                        9
+                      ],
+                      [
+                        "Run media repair database scenarios",
+                        "completed",
+                        "success",
+                        10
+                      ],
+                      [
+                        "Run public listing database scenarios",
+                        "completed",
+                        "success",
+                        11
+                      ],
+                      [
+                        "Run supporter portal preference database scenarios",
+                        "completed",
+                        "success",
+                        12
+                      ],
+                      [
+                        "Run CRM tag bulk database scenarios",
+                        "completed",
+                        "success",
+                        13
+                      ],
+                      [
+                        "Run volunteer reviewer bulk database scenarios",
+                        "completed",
+                        "success",
+                        14
+                      ],
+                      [
+                        "Run adoption assignment bulk database scenarios",
+                        "completed",
+                        "success",
+                        15
+                      ],
+                      [
+                        "Run animal review bulk database scenarios",
+                        "completed",
+                        "success",
+                        16
+                      ],
+                      [
+                        "Run manual finance atomic database scenarios",
+                        "completed",
+                        "success",
+                        17
+                      ],
+                      [
+                        "Run CMS quality queue database scenarios",
+                        "completed",
+                        "success",
+                        18
+                      ],
+                      [
+                        "Run CMS review bulk database scenarios",
+                        "completed",
+                        "success",
+                        19
+                      ]
+                    ],
+                    "ancillarySkipped": []
+                  },
+                  {
+                    "id": 110426928190,
+                    "name": "a11y-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public a11y",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110426928197,
+                    "name": "brand-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public brand",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  },
+                  {
+                    "id": 110426928300,
+                    "name": "performance-verify",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "requiredSteps": [
+                      [
+                        "Run actions/checkout@v4",
+                        "completed",
+                        "success",
+                        2
+                      ],
+                      [
+                        "Run oven-sh/setup-bun@v2",
+                        "completed",
+                        "success",
+                        3
+                      ],
+                      [
+                        "Run bun install --frozen-lockfile",
+                        "completed",
+                        "success",
+                        4
+                      ],
+                      [
+                        "Verify public performance",
+                        "completed",
+                        "success",
+                        7
+                      ]
+                    ],
+                    "ancillarySkipped": [
+                      "Report unavailable artefacts"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "qualification": "Existing historical run metadata only, no CI rerun. Associated source SHA bound via headers. Actual checkout SHA/test counts not re-extracted. Prior full-payload archival CreateProcess rejected OS206 before native start; compact required-step metadata is saved, full tool responses remain in transcript/session store."
+        },
+        "qualification": "existing run metadata only; no workflow launch, actual checkout/test counts not re-extracted"
+      },
+      {
+        "source": "MASTER/controller-task14-existing-pr183-ci-readonly-metadata-20261006.json",
+        "rawBytes": 6353,
+        "rawSHA256": "e4580e4ea663a206cddd85fccdadc3384621a6b76bbeff94a9df4896a7b534a6",
+        "publicExistingMetadata": {
+          "checkedAtUTC": "2026-10-06T03:55:03.930Z",
+          "header": {
+            "id": 36869741408,
+            "name": "CI",
+            "head_sha": "e79537a191d8119b6d4eaa48833a5db8e200a03c",
+            "head_branch": "codex/audit-r01-payment-columns-20261001",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "created_at": "2026-10-01T13:35:01Z",
+            "updated_at": "2026-10-01T13:45:48Z",
+            "html_url": "https://github.com/YNWAforever/hkscda/actions/runs/36869741408"
+          },
+          "jobs": [
+            {
+              "id": 110394141305,
+              "name": "verify",
+              "status": "completed",
+              "conclusion": "success",
+              "requiredSteps": [
+                [
+                  "Run actions/checkout@v4",
+                  "completed",
+                  "success",
+                  2
+                ],
+                [
+                  "Run oven-sh/setup-bun@v2",
+                  "completed",
+                  "success",
+                  3
+                ],
+                [
+                  "Run bun install --frozen-lockfile",
+                  "completed",
+                  "success",
+                  4
+                ],
+                [
+                  "Typecheck",
+                  "completed",
+                  "success",
+                  5
+                ],
+                [
+                  "Test",
+                  "completed",
+                  "success",
+                  6
+                ],
+                [
+                  "Lint",
+                  "completed",
+                  "success",
+                  7
+                ],
+                [
+                  "Build",
+                  "completed",
+                  "success",
+                  8
+                ],
+                [
+                  "Route tree is current",
+                  "completed",
+                  "success",
+                  9
+                ]
+              ],
+              "ancillarySkipped": []
+            },
+            {
+              "id": 110395052064,
+              "name": "brand-verify",
+              "status": "completed",
+              "conclusion": "success",
+              "requiredSteps": [
+                [
+                  "Run actions/checkout@v4",
+                  "completed",
+                  "success",
+                  2
+                ],
+                [
+                  "Run oven-sh/setup-bun@v2",
+                  "completed",
+                  "success",
+                  3
+                ],
+                [
+                  "Run bun install --frozen-lockfile",
+                  "completed",
+                  "success",
+                  4
+                ],
+                [
+                  "Verify public brand",
+                  "completed",
+                  "success",
+                  7
+                ]
+              ],
+              "ancillarySkipped": [
+                "Report unavailable artefacts"
+              ]
+            },
+            {
+              "id": 110395052086,
+              "name": "performance-verify",
+              "status": "completed",
+              "conclusion": "success",
+              "requiredSteps": [
+                [
+                  "Run actions/checkout@v4",
+                  "completed",
+                  "success",
+                  2
+                ],
+                [
+                  "Run oven-sh/setup-bun@v2",
+                  "completed",
+                  "success",
+                  3
+                ],
+                [
+                  "Run bun install --frozen-lockfile",
+                  "completed",
+                  "success",
+                  4
+                ],
+                [
+                  "Verify public performance",
+                  "completed",
+                  "success",
+                  7
+                ]
+              ],
+              "ancillarySkipped": [
+                "Report unavailable artefacts"
+              ]
+            },
+            {
+              "id": 110395052131,
+              "name": "rls-matrix",
+              "status": "completed",
+              "conclusion": "success",
+              "requiredSteps": [
+                [
+                  "Run actions/checkout@v4",
+                  "completed",
+                  "success",
+                  2
+                ],
+                [
+                  "Run oven-sh/setup-bun@v2",
+                  "completed",
+                  "success",
+                  3
+                ],
+                [
+                  "Run bun install --frozen-lockfile",
+                  "completed",
+                  "success",
+                  4
+                ],
+                [
+                  "Start local Supabase stack",
+                  "completed",
+                  "success",
+                  5
+                ],
+                [
+                  "Run RLS behavioral tests",
+                  "completed",
+                  "success",
+                  6
+                ],
+                [
+                  "Run database-backed transaction tests",
+                  "completed",
+                  "success",
+                  7
+                ],
+                [
+                  "Run volunteer bulk database scenarios",
+                  "completed",
+                  "success",
+                  8
+                ],
+                [
+                  "Run content publication eligibility database scenarios",
+                  "completed",
+                  "success",
+                  9
+                ],
+                [
+                  "Run media repair database scenarios",
+                  "completed",
+                  "success",
+                  10
+                ],
+                [
+                  "Run public listing database scenarios",
+                  "completed",
+                  "success",
+                  11
+                ],
+                [
+                  "Run supporter portal preference database scenarios",
+                  "completed",
+                  "success",
+                  12
+                ],
+                [
+                  "Run CRM tag bulk database scenarios",
+                  "completed",
+                  "success",
+                  13
+                ],
+                [
+                  "Run volunteer reviewer bulk database scenarios",
+                  "completed",
+                  "success",
+                  14
+                ],
+                [
+                  "Run adoption assignment bulk database scenarios",
+                  "completed",
+                  "success",
+                  15
+                ],
+                [
+                  "Run animal review bulk database scenarios",
+                  "completed",
+                  "success",
+                  16
+                ],
+                [
+                  "Run manual finance atomic database scenarios",
+                  "completed",
+                  "success",
+                  17
+                ],
+                [
+                  "Run CMS quality queue database scenarios",
+                  "completed",
+                  "success",
+                  18
+                ],
+                [
+                  "Run CMS review bulk database scenarios",
+                  "completed",
+                  "success",
+                  19
+                ]
+              ],
+              "ancillarySkipped": []
+            },
+            {
+              "id": 110395052154,
+              "name": "a11y-verify",
+              "status": "completed",
+              "conclusion": "success",
+              "requiredSteps": [
+                [
+                  "Run actions/checkout@v4",
+                  "completed",
+                  "success",
+                  2
+                ],
+                [
+                  "Run oven-sh/setup-bun@v2",
+                  "completed",
+                  "success",
+                  3
+                ],
+                [
+                  "Run bun install --frozen-lockfile",
+                  "completed",
+                  "success",
+                  4
+                ],
+                [
+                  "Verify public a11y",
+                  "completed",
+                  "success",
+                  7
+                ]
+              ],
+              "ancillarySkipped": [
+                "Report unavailable artefacts"
+              ]
+            }
+          ],
+          "qualification": "Existing PR183 run only. No workflow launch/rerun; no actual checkout SHA/test counts extraction. Task1 source ACL hold remains despite CI metadata success."
+        },
+        "qualification": "existing run metadata only; no workflow launch, actual checkout/test counts not re-extracted"
+      }
+    ]
+  },
+  "latestBackupMetadata": {
+    "completedAtUtc": "2026-10-01T07:32:59Z",
+    "ciphertextBytes": 2065878,
+    "ciphertextSHA256": "95b31da9d86866392ec61008a42d57d2d201073f8161f691d97d9a09a0ebc61f",
+    "basename": "hkscda-before-next-approved-ddl-20261001T073259Z.dpapi",
+    "location": "restricted local storage, payload excluded from Git; exact metadata in current-operations-handoff-20261001.md",
+    "roundtrip": "restricted CurrentUser DPAPI/ACL/hash/decryption roundtrip recorded; no plaintext file",
+    "notRun": [
+      "full DB restore",
+      "off-machine recovery",
+      "Storage object bytes"
+    ]
+  },
+  "publicationBefore20261006": {
+    "localCommit": "e5a28c47b839fa12b770d1e639b0a74368021675",
+    "push": "NOT_STARTED_AUTO_REVIEW_REJECTED_TWICE",
+    "pullRequest": "NOT_CREATED",
+    "freshExactHeadCI": "NOT_RUN",
+    "independentStrengthening": {
+      "ruling": 268,
+      "nativeExit": 0,
+      "namedNoOpRows": 111,
+      "permissions": 17,
+      "business": 26,
+      "siteKnowledgeRaces": 12,
+      "annualRaces": 2,
+      "cleanup": "program completion/source finally flow/template check; no independent explicit cleanup receipt",
+      "noOpRaw": "in-memory not independently archived"
+    },
+    "native170011Modern": {
+      "restorationApplications": 2,
+      "namedRaw": "byteequal within each original capture group; backend1569/1660 distinct across groups",
+      "seededBaselineCounts": [
+        2,
+        2,
+        4,
+        0,
+        0,
+        0
+      ],
+      "seedRaw": "before/after byteequal; historical committed states preserved; not zero-data profile",
+      "cleanup": "four owned containers removed",
+      "notClaimed": "170011 strengthening/typed CI full role matrix/H1"
+    },
+    "strictRawRestoration": {
+      "nativeExit": 1,
+      "ruling": 265,
+      "catalogDifference": "pg_statistic;489 identities192changed",
+      "inventoryDifference": true,
+      "cause": "NOT_RECORDED",
+      "waiver": false
+    },
+    "ordinaryQualifications": {
+      "fullUnit": {
+        "pass": 4279,
+        "skip": 634,
+        "fail": 0,
+        "assertions": 12176,
+        "files": 628,
+        "tests": 4913,
+        "explicitOptionalApi": "UNAVAILABLE_LOOPBACK_59999"
+      },
+      "sloganFocused": {
+        "pass": 7,
+        "assertions": 38,
+        "sourceAndTimeoutUnchanged": true
+      },
+      "dedicated56322": "NOT_RUN_MISSING_LOCAL_CREDENTIALS",
+      "typed55322_170011": "NOT_RUN_LOCAL_ACTUAL_170006",
+      "strictRawRestoration": "FAILED_PG_STATISTIC_AND_INVENTORY_DRIFT",
+      "independentStrengthening": {
+        "ruling": 268,
+        "nativeExit": 0,
+        "NoOpRows": 111,
+        "actualResults": [
+          17,
+          26,
+          12,
+          2
+        ],
+        "restorationSubmitted": false,
+        "strictRawRestoration": "HELD"
+      },
+      "routeTree": "GIT_DIFF_EXIT0_C18C7B"
+    }
+  },
+  "freshPublicationReceipt": "conditional-merge-receipt-20261006.md",
+  "freshPublicationEvidence": "conditional-merge-evidence-20261006.json",
+  "rawPreservationFollowup": {
+    "testedSourceSha": "887a0c71a8b363dd6eb8c4f6742969d980c1d51c",
+    "evidence": "raw-preservation-followup-20261006.json",
+    "evidenceSha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce",
+    "receipt": "raw-preservation-followup-20261006.md",
+    "receiptSha256": "cdfca53b35383278eac09dec3c8bd558ef5a7abcf38f98ec551a156055ed2a2f",
+    "modern170006StrictRaw": "PASS after observed setup autoanalyze; zero exemptions",
+    "historicalR265": "FAIL retained",
+    "release": "HOLD #183 real actor RED / exact source approvals pending"
+  },
+  "latestBoundCI20261006": {
+    "sourceSha": "887a0c71a8b363dd6eb8c4f6742969d980c1d51c",
+    "run": 37415957277,
+    "attempt": 1,
+    "checkoutSha": "3ca4dc41d33b05ff83bc1ff87b5e1a952623f787",
+    "tree": "b5acddf0847fb0676350d4e94c13b094b7be6adc",
+    "fiveJobs": "SUCCESS",
+    "requiredSteps": "SUCCESS",
+    "evidence": "raw-preservation-followup-20261006.json",
+    "evidenceSha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce"
+  }
+}

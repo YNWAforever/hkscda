@@ -1,0 +1,150 @@
+{
+  "scope": "read-only full current14 raw/Git bindings + historical bytes + tracker preservation; no SQL execution",
+  "sourceSnapshot": "7b429402a06825e2af34f9916d6e4c676e630cb3",
+  "base": "3892fe0dabd318d551ecb44ab4cc5aacb6ddaddb",
+  "migrationBindings": [
+    {
+      "file": "supabase/migrations/20261001101333_r01_payment_idempotency_forward.sql",
+      "sha256": "90e3090f75cc8af43029f06ffb72c8bccb7aaa0913a4fe088514c69b7bcec35f",
+      "blob": "5592e8aacf0550db48bf3839fd6e80f4c0d77a39"
+    },
+    {
+      "file": "supabase/migrations/20261001134252_r01_adoption_upload_forward.sql",
+      "sha256": "ca4879d9c93d413941ccc5a13c17d4eba1f70b293169665583e4b23973d1a5f3",
+      "blob": "44cc24804a2f6934b9dea6b769744e530176d96e"
+    },
+    {
+      "file": "supabase/migrations/20261001150925_r01_sponsorship_submission_forward.sql",
+      "sha256": "ca11bb5f0ce73523c7f5734e4d032307665c2357f0fecaf15f8fc593394f857c",
+      "blob": "3fbfa7fbd0e2f6c96b896b9dab838e011c0728ce"
+    },
+    {
+      "file": "supabase/migrations/20261001154743_r01_animal_preference_record_fields.sql",
+      "sha256": "28a93d8679a222f89d193af055285c24e86df06f227a7c527df26829957e9867",
+      "blob": "e136673b7fa473605d62fe2eca7c4038d0987e4c"
+    },
+    {
+      "file": "supabase/migrations/20261001175310_r01_internship_upload_forward.sql",
+      "sha256": "e64124a1a1d0609b77dae4f41ff82d9166fd857f5d22a6934d761af8f80d4f41",
+      "blob": "aefaa92d6f8f10352313c31c30d9b762268ff41d"
+    },
+    {
+      "file": "supabase/migrations/20261001193722_r01_animal_draft_archive_forward.sql",
+      "sha256": "2e63db57af4071932da88d7fee29d66b0f8c5fb37e7a29428380b872450fe4ca",
+      "blob": "70d6bd5645cda79e76f99ab8ce8f0bd491ed0955"
+    },
+    {
+      "file": "supabase/migrations/20261001213914_r01_crm_atomic_forward.sql",
+      "sha256": "2b1282a33bd5f6aa67c42af56ee45404fd97ff21e75ea9f3228b4c49d7a4cdd0",
+      "blob": "1a4bfc49e44ebf71e8b6be3b4b0016a3ccfe0044"
+    },
+    {
+      "file": "supabase/migrations/20261002011249_r01_cms_atomic_forward.sql",
+      "sha256": "a98d17d3c28ed5b24ef3e681cf7b71d623cc6c35856be767799b428eb0fcd901",
+      "blob": "b65307664eadf821a41dc8dc3d9ed2f54661176c"
+    },
+    {
+      "file": "supabase/migrations/20261002045253_r01_adoption_atomic_forward.sql",
+      "sha256": "2fc84329a9e708694c03ffdc362e5c325c2c5d28d802d0170a6eb51667c1e9e3",
+      "blob": "0f3c42f2fc5be96a9aee52b0521b5cf6b5301d35"
+    },
+    {
+      "file": "supabase/migrations/20261002111418_r01_admin_access_atomic_forward.sql",
+      "sha256": "b2c90f0f06d2c4cd7abec4bba771748a95d20e33425cb6ee937c352cd55b262e",
+      "blob": "16ae2b4efe1084f76c54da16ca2d7e543ec4b704"
+    },
+    {
+      "file": "supabase/migrations/20261002170945_r01_finance_callback_forward.sql",
+      "sha256": "6bf3c277583ef5d792cd8b6c957fdf892354ca32f0d179cd2488252292d89889",
+      "blob": "50633029eb1647593d09f72baeac60096ca078b5"
+    },
+    {
+      "file": "supabase/migrations/20261003005322_r01_group_enquiry_forward.sql",
+      "sha256": "90d640da5f8359258b56b29a46043a3f82a25b8058bb8e7136236bd524d8720b",
+      "blob": "c7c7da6b9c5e0a315c90d5fcc248b603170cf23f"
+    },
+    {
+      "file": "supabase/migrations/20261003075753_r01_document_publication_guards_forward.sql",
+      "sha256": "9ed664a6fe3bf2d8f93e2a96f34e6cf6b556c8b97e2ea63eb0ed132d0074ce82",
+      "blob": "0bf26b69c0ba9905ef69b7c786df89306eb5fe1b"
+    },
+    {
+      "file": "supabase/migrations/20261006023123_r01_document_publication_fence.sql",
+      "sha256": "4e158fadbe754781c5b2424108767158ccbb64bde3945d98337bee139d08da4b",
+      "blob": "54173c06c6961bf653cf096f78314453191ccb3e"
+    }
+  ],
+  "all14SourceFilesUnapprovedUnappliedDisabled": true,
+  "historicalOriginalFilesUnchanged": [
+    {
+      "path": "docs/evidence/audit-remediation-20260927/conditional-merge-evidence-20261006.json",
+      "sha256": "1a81089823bdade2b0ca0746f566e5dc910c8436041a7316f00e952b4b9c0894"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/conditional-merge-receipt-20261006.md",
+      "sha256": "061c2df0408f7eea0f36139176697cba7f5d7784c214e9a1ce9c6c0b254bb1f9"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-decision-chronology-20261006.md",
+      "sha256": "e3b7e141f9f26d30842576b94d00d281533d582ef5ae8d3cec664bbe9dee090a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-forward-migration-manifest-20261006.csv",
+      "sha256": "790eea5cf4f2df16765a0cd90139644fa17d71f029b7fe04751be8f93ae22ba6"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-release-runbook-20261006.md",
+      "sha256": "2bc291d711fe55c8c4735e13ab0169028b26c8c95f24f6332408156c82e5d60b"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/r01-source-ci-disposition-20261006.csv",
+      "sha256": "203fe8b4a5e14118ced66c6f14b4c3a5a46c282530d1b6486333a22bd17687a6"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/raw-preservation-followup-20261006.json",
+      "sha256": "35f32b9586470ca33d70c22e0ff389ac9a790d9ff59ea55a61ac1de293d4a6ce"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/raw-preservation-followup-20261006.md",
+      "sha256": "cdfca53b35383278eac09dec3c8bd558ef5a7abcf38f98ec551a156055ed2a2f"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/release-evidence-20261006.json",
+      "sha256": "1f3207386249670a90ff0c5b2d5193a62012564589db1697e20e91a8e0cae88a"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/release-package-20261006.md",
+      "sha256": "acf27c780643073900df6eb102519a4259c4cf6d9f74933e92cb9eda1d2bf911"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/staff-handoff-20261006.md",
+      "sha256": "876ad2793a12bdd3b60b8d2101a5ab7d9062e98512fa1694b03189e081672aa2"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/tracker-history-20261006.json",
+      "sha256": "2a1dca6ed36121687f9816f04f51ee96f870ff40838e012eea77ec6c1e29b324"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/tracker-reconciliation-20261006.csv",
+      "sha256": "a613ed114873fa7288d1d7d30ce1ef6a4a07d1c5f32256c0924e9c60a9f59ef5"
+    },
+    {
+      "path": "docs/evidence/audit-remediation-20260927/ui-performance-handoff-20261006.md",
+      "sha256": "112c67a49a89c18393400f72dd6a27c0c59ec0b370cf4b7f0945a84144aa13fd"
+    }
+  ],
+  "exact8OwnedOriginalTrackerRowsPreserved": [
+    "ADMIN-04",
+    "ADOPT-02",
+    "OPS-01",
+    "PAY-04",
+    "PAY-05",
+    "SEC-01",
+    "SPON-01",
+    "SPON-02"
+  ],
+  "onlyAdditionalR01StatusUpdate": true,
+  "main196ProofSha256": "15abae6081206822feb0ebc2274b645d64230c11021c5a53942fa24050ce038e",
+  "historical553Preservation": "UNKNOWN",
+  "createdAtUtc": "2026-10-06T23:31:04.814063+00:00"
+}
