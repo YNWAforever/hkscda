@@ -1,0 +1,108 @@
+{
+  "failedCI": 37560382010,
+  "accepted": false,
+  "nativeFinanceGroupDocumentVolunteer": "NOT_RUN",
+  "candidateBeforeFix": "d8d8323da51bd437df59461bbb919d4277443c2b",
+  "actualCheckout": "29f037082b2d7adb29a0dfba2cb083630e7769c7",
+  "tree": "110a423e0208c6c54a63178b99bdd46a71c50ffb",
+  "fixtureGuardSourceUnchanged": true,
+  "task8SQLUnchanged": "cf6ee8a04d88469ada06b45dbd12b14a8293a29a6208d9ba05fa22dfe5f6ad8f",
+  "testRawSHA256": "47debf6f9fd2dfd45a339dfc21b3ce573e48d7431fe47e89a231e38e8c17ed3b",
+  "localREDNative": 1,
+  "localGREENNative": 0,
+  "localPureTests": 7,
+  "assertions": 56,
+  "focusedLintInitial": 1,
+  "focusedLintRetry": 0,
+  "localTestNonfatalWarning": "Cannot read directory C:/Users/laich/: EPERM; actual7pass/0fail/56assert/native0; preservedstderr",
+  "databaseProviderAccess": false,
+  "productionApplied": false,
+  "zipSHA256": "40af3e24a5df03d4b28f52bcd4e042cd6d48794eec55dfbead0a063a13f2e92b",
+  "members": [
+    {
+      "member": "run-task8-ci-contract-201-20261007.py",
+      "bytes": 2049,
+      "sha256": "fd92769e8120ffb778597125bd9b7601606d9f98dcb0e0f5eca9bff9645fe7f3"
+    },
+    {
+      "member": "task8-ci-contract-red-201-20261007/receipt.json",
+      "bytes": 3979,
+      "sha256": "a4ae4e1dd18de76b4ce63b540e3e62e31699bc40e50edf37c2264986f5efa8ce"
+    },
+    {
+      "member": "task8-ci-contract-red-201-20261007/stderr",
+      "bytes": 11882,
+      "sha256": "5c194a68ec5561fa04d79c60bbce0c0827ab175f878137341ce75338210b2eb4"
+    },
+    {
+      "member": "task8-ci-contract-red-201-20261007/stdout",
+      "bytes": 28,
+      "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+    },
+    {
+      "member": "task8-ci-contract-green-201-20261007/receipt.json",
+      "bytes": 3979,
+      "sha256": "8e5747ddcd570541deda7bb9d9fe74443365abf481e3c62495e0729727a9b7d7"
+    },
+    {
+      "member": "task8-ci-contract-green-201-20261007/stderr",
+      "bytes": 816,
+      "sha256": "3a058bd642b64031bdf2736b126db78271af74416e24a2d574803f5868ec76cf"
+    },
+    {
+      "member": "task8-ci-contract-green-201-20261007/stdout",
+      "bytes": 28,
+      "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+    },
+    {
+      "member": "task8-ci-contract-lint-201-20261007/receipt.json",
+      "bytes": 640,
+      "sha256": "9e537bcfcb5945322b9f4957dfc9c3c725d70d7acb70319fd22e59246a63f132"
+    },
+    {
+      "member": "task8-ci-contract-lint-201-20261007/stderr",
+      "bytes": 96,
+      "sha256": "22d1e13d061a6fcfab8ba0b7b0d8d250614c64998531616707c1d16c41165710"
+    },
+    {
+      "member": "task8-ci-contract-lint-201-20261007/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-ci-contract-lint-ready-201-20261007/receipt.json",
+      "bytes": 779,
+      "sha256": "d89369e0bf8982ab6037ea0106c40189d4f13a5e2b5d739e327a536444cc1404"
+    },
+    {
+      "member": "task8-ci-contract-lint-ready-201-20261007/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "task8-ci-contract-lint-ready-201-20261007/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "ci-201-cold-source-37560382010/actual-checkout.json",
+      "bytes": 2820,
+      "sha256": "4f680fbe6b0e571224f12bbc4478d42137579c7e09b67c64481a26f787400b90"
+    },
+    {
+      "member": "ci-201-cold-source-37560382010/completed-job-observation.json",
+      "bytes": 3124,
+      "sha256": "29bda7424e11c1562740b562f48302f61ad6ae45fb8b5f94a1b8e7ba0e776138"
+    },
+    {
+      "member": "ci-201-cold-source-37560382010/config.json",
+      "bytes": 428,
+      "sha256": "8d48aabc27ba4cb6120de9f3dfbf62f862c00a2e1bb0de29edb0be1de1014621"
+    },
+    {
+      "member": "ci-201-cold-source-37560382010/verify-112596048794.log",
+      "bytes": 924725,
+      "sha256": "a9da98bc877339d32701069ff3099c773afa520df2a279b320a8b8925ef5bb3a"
+    }
+  ]
+}

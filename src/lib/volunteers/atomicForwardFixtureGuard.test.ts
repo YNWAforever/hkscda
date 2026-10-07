@@ -95,6 +95,6 @@ test("CI requires Task8 immediately after fresh startup before other database su
   expect(step).toContain("R01_VOLUNTEER_TEST_DATABASE_URL: " + native);
   expect(step).not.toMatch(/continue-on-error:|skip|if:/);
   expect(matrix).toMatch(
-    /- name: Start local Supabase stack\r?\n {8}run: bunx supabase start\r?\n\r?\n {6}- name: Run Task8 volunteer atomic transaction tests/,
+    /- name: Start local Supabase stack\r?\n {8}run: \|\r?\n {10}bunx supabase@2\.120\.0 --agent=no --version\r?\n {10}bunx supabase@2\.120\.0 --agent=no start\r?\n\r?\n {6}- name: Run Task8 volunteer atomic transaction tests/,
   );
 });
