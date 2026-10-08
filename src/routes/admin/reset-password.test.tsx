@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AdminLanguageProvider } from "../../components/admin/adminI18n";
+import { renderAdminInEnglish } from "../../components/admin/i18n/testing";
 import { AdminResetPasswordForm } from "./reset-password";
 
 function render(status: "checking" | "ready" | "invalid", error: string | null = null) {
@@ -50,5 +51,21 @@ describe("AdminResetPasswordForm", () => {
     const markup = render("ready", "暫時未能更新密碼，請稍後再試。");
     expect(markup).toContain('role="alert"');
     expect(markup).not.toContain("AuthApiError");
+  });
+
+  test("declares the language of the page it shows", () => {
+    expect(render("ready")).toMatch(/<main[^>]*lang="zh-HK"/);
+
+    const english = renderAdminInEnglish(
+      <AdminResetPasswordForm
+        status="ready"
+        loading={false}
+        error={null}
+        onSubmit={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    expect(english).toMatch(/<main[^>]*lang="en"/);
+    expect(english).not.toContain('lang="zh-HK"');
   });
 });

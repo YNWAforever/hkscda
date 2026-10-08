@@ -44,7 +44,7 @@ export function AdminLoginContent({
   passwordResetSuccess: boolean;
   onSignedIn: () => void | Promise<void>;
 }) {
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverNotReady);
   const [mode, setMode] = useState<"sign-in" | "request-reset">("sign-in");
   const [email, setEmail] = useState("");
@@ -98,7 +98,10 @@ export function AdminLoginContent({
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4">
+    <main
+      className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4"
+      lang={language === "en" ? "en" : "zh-HK"}
+    >
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>

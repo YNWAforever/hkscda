@@ -189,7 +189,7 @@ export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
 function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const focusPageOnClose = useRef(false);
@@ -252,7 +252,7 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="flex min-h-dvh" lang={language === "en" ? "en" : "zh-HK"}>
       <aside
         className={cn(
           "hidden flex-shrink-0 flex-col bg-[var(--color-panel)] text-[var(--color-text-inverse)] transition-[width] duration-200 md:flex",

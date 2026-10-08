@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AdminLanguageProvider, adminCopy } from "../../components/admin/adminI18n";
+import { renderAdminInEnglish } from "../../components/admin/i18n/testing";
 import { AdminLoginContent } from "./login";
 
 describe("AdminLoginContent", () => {
@@ -46,5 +47,21 @@ describe("AdminLoginContent", () => {
       </AdminLanguageProvider>,
     );
     expect(markup).toContain("密碼已更新");
+  });
+
+  test("declares the language of the page it shows", () => {
+    const chinese = renderToStaticMarkup(
+      <AdminLanguageProvider>
+        <AdminLoginContent passwordResetSuccess={false} onSignedIn={() => {}} />
+      </AdminLanguageProvider>,
+    );
+    expect(chinese).toMatch(/<main[^>]*lang="zh-HK"/);
+
+    const english = renderAdminInEnglish(
+      <AdminLoginContent passwordResetSuccess={false} onSignedIn={() => {}} />,
+    );
+    expect(english).toMatch(/<main[^>]*lang="en"/);
+    expect(english).not.toContain('lang="zh-HK"');
+    expect(english).toMatch(/<h1[^>]*>[^<]*Admin sign in[^<]*<\/h1>/);
   });
 });

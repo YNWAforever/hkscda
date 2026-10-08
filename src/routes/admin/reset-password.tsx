@@ -114,7 +114,7 @@ export function AdminResetPasswordForm({
   onSubmit,
   onBack,
 }: AdminResetPasswordFormProps) {
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
 
@@ -124,7 +124,10 @@ export function AdminResetPasswordForm({
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4">
+    <main
+      className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4"
+      lang={language === "en" ? "en" : "zh-HK"}
+    >
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
