@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { buildTesterFaqs } from "../../../lib/faq/answerTester";
 import { FAQ_CTA_OPTIONS } from "../../../lib/faq/schemas";
-import type { FaqCategory, FaqEntry, FaqEntryInput } from "../../../lib/faq/types";
+import type { FaqCategory, FaqEntry, FaqEntryInput, FaqLanguage } from "../../../lib/faq/types";
 import { LoadFailure } from "../LoadFailure";
+import { FaqAnswerTester } from "./FaqAnswerTester";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
 
@@ -80,6 +82,9 @@ export function invalidateFaqQueries(client: {
 export function FaqManagement() {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<FaqDraft | null>(null);
+  // Held here, not in the tester, so the search-gap report can fill them in.
+  const [testerQuery, setTesterQuery] = useState("");
+  const [testerLanguage, setTesterLanguage] = useState<FaqLanguage>("zh-HK");
 
   const entriesQuery = useQuery({
     queryKey: ADMIN_FAQ_QUERY_KEY,
@@ -108,6 +113,10 @@ export function FaqManagement() {
   });
 
   const entries = entriesQuery.data ?? [];
+  const tester = useMemo(
+    () => buildTesterFaqs(entriesQuery.data ?? [], draft ? toInput(draft) : null),
+    [entriesQuery.data, draft],
+  );
 
   return (
     <div className="space-y-6">
@@ -130,6 +139,17 @@ export function FaqManagement() {
           error={entriesQuery.error}
           onRetry={() => void entriesQuery.refetch()}
           title="無法載入常見問題"
+        />
+      ) : null}
+
+      {!entriesQuery.isLoading && !entriesQuery.isError ? (
+        <FaqAnswerTester
+          faqs={tester.faqs}
+          draftHidden={tester.draftHidden}
+          query={testerQuery}
+          language={testerLanguage}
+          onQueryChange={setTesterQuery}
+          onLanguageChange={setTesterLanguage}
         />
       ) : null}
 

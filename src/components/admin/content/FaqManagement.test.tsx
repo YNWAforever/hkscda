@@ -27,6 +27,18 @@ describe("FaqManagement", () => {
     expect(markup).toContain("無法載入常見問題");
     expect(markup).toContain("重試");
     expect(markup).not.toContain("未能載入");
+    expect(markup).not.toContain("測試答案");
     entriesError = null;
+  });
+
+  test("shows the answer tester under the header and above the table", () => {
+    const markup = renderToStaticMarkup(<FaqManagement />);
+
+    const heading = markup.indexOf("常見問題</h1>");
+    const tester = markup.indexOf("測試答案");
+    const table = markup.indexOf("<table");
+    expect(heading).toBeGreaterThanOrEqual(0);
+    expect(tester).toBeGreaterThan(heading);
+    expect(table).toBeGreaterThan(tester);
   });
 });

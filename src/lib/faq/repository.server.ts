@@ -1,7 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import { faqCategorySchema, resolveFaqCta } from "./schemas";
+import { faqCategorySchema } from "./schemas";
+import { toHelpFaq } from "./toHelpFaq";
 import type { FaqEntry, FaqEntryInput, FaqRepository, HelpFaq } from "./types";
 
 const ROW_COLUMNS =
@@ -39,18 +40,6 @@ function mapRow(raw: unknown): FaqEntry | null {
     isActive: parsed.data.is_active,
     createdAt: parsed.data.created_at,
     updatedAt: parsed.data.updated_at,
-  };
-}
-
-function toHelpFaq(entry: FaqEntry): HelpFaq {
-  return {
-    id: entry.id,
-    category: entry.category,
-    question: entry.question,
-    answer: entry.answer,
-    keywords: entry.keywords,
-    cta: resolveFaqCta(entry.ctaKey),
-    sensitive: entry.sensitive,
   };
 }
 
