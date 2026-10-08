@@ -9,7 +9,10 @@ export type SanitizedHelpQuery =
   | { redacted: false; queryTopic: string };
 
 const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
-const hkPhonePattern = /(?:\+?852[\s-]?)?[569]\d{3}[\s-]?\d{4}\b/;
+// Every eight-digit Hong Kong number starts with 2-9 (landlines 2 and 3, mobiles
+// and other services 4-9). The digit guards stop it matching inside a longer
+// run of digits, which `longNumberPattern` handles, without a lookbehind.
+const hkPhonePattern = /(?:^|\D)(?:\+?852[\s-]?)?[2-9]\d{3}[\s-]?\d{4}(?!\d)/;
 const longNumberPattern = /\b\d[\d\s-]{7,}\d\b/;
 const addressPattern =
   /\b(?:address|addr|street|road|rd|avenue|ave|building|unit|flat|floor|estate|district|house|lane|room|block|hk|hong kong|hongkong)\b/i;

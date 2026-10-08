@@ -4,10 +4,10 @@ import { sanitizeHelpQuery } from "./sanitizeQuery";
 
 // Characters are written as escapes so the source file never contains an
 // invisible or direction-changing character.
-const ZERO_WIDTH_SPACE = "​";
-const ZERO_WIDTH_JOINER = "‍";
-const BYTE_ORDER_MARK = "﻿";
-const RIGHT_TO_LEFT_OVERRIDE = "‮";
+const ZERO_WIDTH_SPACE = "\u200B";
+const ZERO_WIDTH_JOINER = "\u200D";
+const BYTE_ORDER_MARK = "\uFEFF";
+const RIGHT_TO_LEFT_OVERRIDE = "\u202E";
 const NUL = "\u0000";
 
 // Postgres text cannot hold NUL, and a bidi control reorders what staff read.
@@ -18,7 +18,7 @@ describe("sanitizeHelpQuery control and format characters", () => {
     ["a zero-width space", ZERO_WIDTH_SPACE],
     ["a zero-width joiner", ZERO_WIDTH_JOINER],
     ["a byte order mark", BYTE_ORDER_MARK],
-    ["a soft hyphen", "­"],
+    ["a soft hyphen", "\u00AD"],
   ])("redacts a phone number split by %s", (_label, separator) => {
     expect(sanitizeHelpQuery(`call 9123${separator}4567`)).toEqual({ redacted: true });
   });
@@ -42,9 +42,9 @@ describe("sanitizeHelpQuery control and format characters", () => {
 
   test.each([
     ["U+202E right-to-left override", RIGHT_TO_LEFT_OVERRIDE],
-    ["U+202A left-to-right embedding", "‪"],
-    ["U+2066 left-to-right isolate", "⁦"],
-    ["U+2069 pop directional isolate", "⁩"],
+    ["U+202A left-to-right embedding", "\u202A"],
+    ["U+2066 left-to-right isolate", "\u2066"],
+    ["U+2069 pop directional isolate", "\u2069"],
   ])("keeps %s out of the topic", (_label, mark) => {
     const result = sanitizeHelpQuery(`${mark}evil`);
 
@@ -62,7 +62,7 @@ describe("sanitizeHelpQuery control and format characters", () => {
   });
 
   test("redacts a query made only of control and format characters", () => {
-    expect(sanitizeHelpQuery(`${NUL}${ZERO_WIDTH_SPACE}${RIGHT_TO_LEFT_OVERRIDE}⁦`)).toEqual({
+    expect(sanitizeHelpQuery(`${NUL}${ZERO_WIDTH_SPACE}${RIGHT_TO_LEFT_OVERRIDE}\u2066`)).toEqual({
       redacted: true,
     });
     expect(sanitizeHelpQuery(BYTE_ORDER_MARK)).toEqual({ redacted: true });
@@ -77,5 +77,34 @@ describe("sanitizeHelpQuery control and format characters", () => {
 
     expect(result.redacted).toBe(false);
     expect(result.queryTopic).toBe(`${"a".repeat(79)}b`);
+  });
+});
+
+describe("sanitizeHelpQuery Hong Kong phone numbers", () => {
+  // Every eight-digit Hong Kong number starts with 2-9: landlines with 2 or 3,
+  // mobiles and other services with 4-9. All of them are personal data here.
+  test.each([
+    ["a landline starting with 2", "電話 21234567"],
+    ["a landline starting with 3", "office 3123 4567"],
+    ["a number starting with 4", "call 41234567"],
+    ["a mobile starting with 5", "51234567"],
+    ["a mobile starting with 6", "6123-4567"],
+    ["a mobile starting with 7", "call 71234567"],
+    ["a number starting with 8", "81234567 please"],
+    ["a mobile starting with 9", "91234567"],
+    ["a landline with the +852 prefix", "+852 2123 4567"],
+    ["a landline with the 852 prefix", "852-31234567"],
+    ["a landline written straight after Chinese text", "電話21234567"],
+  ])("redacts %s", (_label, query) => {
+    expect(sanitizeHelpQuery(query)).toEqual({ redacted: true });
+  });
+
+  test.each([
+    ["a year", "2025年報", "2025年報"],
+    ["an amount", "捐款 100", "捐款 100"],
+    ["a short hotline number", "1823", "1823"],
+    ["seven digits", "1234567", "1234567"],
+  ])("keeps %s", (_label, query, topic) => {
+    expect(sanitizeHelpQuery(query)).toEqual({ redacted: false, queryTopic: topic });
   });
 });

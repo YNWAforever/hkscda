@@ -172,7 +172,7 @@ describe("createSearchGapService.record", () => {
     const { repo, record } = createRepo([]);
 
     await createSearchGapService({ repo }).record({
-      topic: "‮evil",
+      topic: "\u202Eevil",
       language: "en",
       confidence: "none",
     });
@@ -185,7 +185,7 @@ describe("createSearchGapService.record", () => {
     const { repo, record } = createRepo([]);
 
     const outcome = await createSearchGapService({ repo }).record({
-      topic: "call 9123​4567",
+      topic: "call 9123\u200B4567",
       language: "en",
       confidence: "none",
     });
@@ -198,7 +198,7 @@ describe("createSearchGapService.record", () => {
     const { repo, record } = createRepo([]);
 
     const outcome = await createSearchGapService({ repo }).record({
-      topic: "\u0000​‮",
+      topic: "\u0000\u200B\u202E",
       language: "en",
       confidence: "none",
     });
