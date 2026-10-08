@@ -55,6 +55,22 @@ other way round.
 | 工作     | task                 | One unit of follow-up work. 待辦總覽 is "Task overview".                    |
 | 分派     | assign               | Give a case or task to a staff member.                                      |
 | 報表紀錄 | reports              | Coordinator reports and their records.                                      |
+| 公開狀態 | publication status   | On the public website or not. 已公開 is "Published".                        |
+| 暫停公開 | unpublished          | Taken off the public site for now; the care record is unchanged.            |
+| 取消封存 | unarchive            | Bring an archived record back into the lists.                               |
+| 刊登範圍 | listed on            | Where an animal is shown: adoption page, sponsorship area or both.          |
+| 絕育     | neutered             | 已絕育 is "Neutered". Not "desexed".                                        |
+| 編號     | reference number     | An animal's number, such as C3761. 個案編號 is "case number".               |
+| 相片集   | gallery              | An animal's extra photos besides the main photo.                            |
+| 焦點     | focal point          | The part of a photo that stays in view when it is cropped.                  |
+| 不採用   | not used             | A gallery photo that will not be shown.                                     |
+| 助養用途 | sponsorship use      | What the sponsorship pays for. 近況 is "recent progress".                   |
+| 修復佇列 | repair queue         | Public photos waiting to be repaired before they can be shown.              |
+| 完成領養 | finalise adoption    | Record a successful adoption. The noun is "finalisation".                   |
+| 領養費   | adoption fee         | Shown as HK$ with two decimals.                                             |
+| 接領     | pickup               | The day the adopter collects the animal.                                    |
+| 最終結果 | final outcome        | The result that closes a case, such as "Adopted".                           |
+| 負責職員 | case owner           | The 負責人 of an adoption case. 批量分派 is "Bulk assign".                  |
 
 ## Sponsorship, donations and payments
 

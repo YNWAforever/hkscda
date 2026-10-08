@@ -1,13 +1,13 @@
 import { describe, expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+
+import { renderAdminInChinese } from "../i18n/testing";
 
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
 const realReactRouter = await import("@tanstack/react-router");
 const realReactQuery = await import("@tanstack/react-query");
-const realAdminPageCopy = await import("../adminPageCopy");
 
 type MockLinkProps = { children: ReactNode; className?: string; to: string };
 
@@ -18,11 +18,6 @@ mock.module("@tanstack/react-router", () => ({
       {children}
     </a>
   ),
-}));
-
-mock.module("../adminPageCopy", () => ({
-  ...realAdminPageCopy,
-  useAdminPageCopy: () => ({ language: "zh", pageCopy: realAdminPageCopy.adminPageCopy.zh }),
 }));
 
 let caseError: Error | null = null;
@@ -47,7 +42,7 @@ mock.module("@tanstack/react-query", () => ({
 
 const { CaseDetail } = await import("./CaseDetail");
 
-const render = () => renderToStaticMarkup(<CaseDetail caseId="case-1" />);
+const render = () => renderAdminInChinese(<CaseDetail caseId="case-1" />);
 
 describe("CaseDetail", () => {
   test("shows a retry control on the error path instead of leaving refetch unreachable", () => {

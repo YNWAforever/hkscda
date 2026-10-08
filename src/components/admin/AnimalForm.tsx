@@ -8,14 +8,18 @@ import { fetchAdminJson } from "../../lib/admin/http";
 import { AdminApiError } from "../../lib/admin/session";
 import {
   buildPublicProfile,
-  PUBLIC_PROFILE_LABELS,
+  isPublicProfileField,
+  publicProfileLabel,
   toPublicProfileFields,
   type PublicProfileFields,
 } from "../../lib/animals/publicProfileInput";
 import type { Animal } from "../../types/animal";
 import { AnimalGalleryEditor, type EditableGalleryItem } from "./AnimalGalleryEditor";
 import { useAdminLanguage } from "./adminI18n";
+import { animalFormCopy } from "./animalFormCopy";
 import { uploadAnimalPhoto } from "./animalPhotoUpload";
+import { useAdminCopy } from "./i18n/copy";
+import { localizedText } from "./i18n/localizedText";
 
 function buildAnimalSchema(messages: { name: string; age: string }) {
   return z.object({
@@ -54,7 +58,8 @@ interface AnimalFormProps {
 
 export function AnimalForm({ existing }: AnimalFormProps) {
   const navigate = useNavigate();
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
+  const formCopy = useAdminCopy(animalFormCopy);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gallery, setGallery] = useState<EditableGalleryItem[]>(() => existing?.gallery ?? []);
   const [saving, setSaving] = useState(false);
@@ -71,7 +76,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     setPreviewBody(null);
   };
   useBlocker({
-    shouldBlockFn: () => dirty && !window.confirm("離開會捨棄未儲存的內容，確定離開？"),
+    shouldBlockFn: () => dirty && !window.confirm(formCopy.leaveConfirm),
     enableBeforeUnload: dirty,
   });
   const [previewId, setPreviewId] = useState<string | null>(null);
@@ -138,6 +143,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   });
 
   const hasExisting = Boolean(existing);
+  // Read inside the effect without making a language change reload the draft.
+  const draftLoadError = useRef(formCopy.draft.loadError);
+  draftLoadError.current = formCopy.draft.loadError;
   useEffect(() => {
     if (!hasExisting) return;
     let cancelled = false;
@@ -181,7 +189,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       .catch(() => {
         if (cancelled) return;
         setDraftLoad("failed");
-        setError("未能載入已儲存草稿。");
+        setError(draftLoadError.current);
       });
     return () => {
       cancelled = true;
@@ -196,10 +204,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       });
       setDraftRevision(result.revision);
       setPreviewId(null);
-      setError("已複製版本為新草稿，請檢查及重新預覽。");
+      setError(formCopy.versions.copied);
       window.location.reload();
     } catch {
-      setError("未能複製版本。");
+      setError(formCopy.versions.copyFailed);
     }
   }
   function optionalText(value?: string) {
@@ -219,9 +227,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     const profileResult = buildPublicProfile(profileFields);
     if (!profileResult.ok) {
       setError(
-        `以下欄位不符合公開資料規則（不可包含網址、電郵、電話或 < > 符號）：${profileResult.rejected
-          .map((key) => PUBLIC_PROFILE_LABELS[key])
-          .join("、")}`,
+        formCopy.profileRejected(
+          ...profileResult.rejected.map((key) => publicProfileLabel(key, language)),
+        ),
       );
       setSaving(false);
       return;
@@ -259,7 +267,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       if (item.file) {
         const uploaded = await uploadAnimalPhoto({ animalId, file: item.file });
         if (!uploaded.ok) {
-          setError("相片集上載失敗。");
+          setError(formCopy.galleryUploadFailed);
           setSaving(false);
           return;
         }
@@ -321,7 +329,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         reset(values);
       }
       setPreviewId(null);
-      setError("草稿已儲存。請在發布前先預覽；公開資料尚未改動。");
+      setError(formCopy.draft.saved);
       setSaving(false);
       return;
     } catch {
@@ -344,9 +352,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       });
       setPreviewId(result.preview_id);
       setPreviewBody(result.body);
-      setError("預覽已建立；如再儲存草稿，必須重新預覽。");
+      setError(formCopy.publish.previewCreated);
     } catch {
-      setError("未能建立預覽。");
+      setError(formCopy.publish.previewFailed);
     }
   }
   async function publishDraft() {
@@ -366,18 +374,18 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       );
       if (result.media_pending) {
         setPreviewId(null);
-        setError("動物資料已發布，圖片仍在處理中；請稍後重新整理。");
+        setError(formCopy.publish.mediaPending);
         return;
       }
       navigate({ to: "/admin" });
     } catch (error) {
       if (error instanceof AdminApiError && [403, 404, 409, 422].includes(error.status)) {
-        setError("草稿已變更或發布失敗，請重新預覽。");
+        setError(formCopy.publish.conflict);
         setPreviewId(null);
       } else {
         // A lost HTTP response may follow a committed publish. Keep the
         // preview ID so the idempotent publish command can be retried.
-        setError("未能確認發布結果。請重試發布；不會建立重複版本。");
+        setError(formCopy.publish.unconfirmed);
       }
     }
   }
@@ -407,11 +415,11 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     return (
       <section aria-busy={draftLoad === "loading"} className="space-y-3 p-6">
         <p role={draftLoad === "failed" ? "alert" : "status"}>
-          {draftLoad === "loading" ? "正在載入已儲存草稿…" : "未能載入已儲存草稿，請重試後編輯。"}
+          {draftLoad === "loading" ? formCopy.draft.loading : formCopy.draft.loadFailed}
         </p>
         {draftLoad === "failed" && (
           <button type="button" onClick={() => window.location.reload()}>
-            重新載入草稿
+            {formCopy.draft.reload}
           </button>
         )}
       </section>
@@ -586,33 +594,31 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             claiming the animal was adopted or fostered. */}
         <div className="mt-4">
           <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
-            公開狀態
+            {formCopy.publication.label}
           </label>
           <select id="publication-state" {...register("publication_state")} className={selectField}>
             <option value="draft" style={optionStyle}>
-              草稿（未曾公開）
+              {formCopy.publication.draft}
             </option>
             <option value="published" style={optionStyle}>
-              已公開
+              {formCopy.publication.published}
             </option>
             <option value="unpublished" style={optionStyle}>
-              暫停公開
+              {formCopy.publication.unpublished}
             </option>
           </select>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            與上方的狀態（可領養／已領養／寄養中）獨立。暫停公開不會更改動物的照顧記錄。
-          </p>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">{formCopy.publication.hint}</p>
         </div>
 
         <div className="mt-4 space-y-2">
-          <span className="block text-sm font-medium">刊登範圍</span>
+          <span className="block text-sm font-medium">{formCopy.listing.label}</span>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
-            可供領養（顯示於領養頁面）
+            {formCopy.listing.adoption}
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
-            可供助養（顯示於助養區）
+            {formCopy.listing.sponsorship}
           </label>
         </div>
       </fieldset>
@@ -623,27 +629,25 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           brackets inside these ones, so contact details cannot leak into a
           public page through a free-text box. */}
       <fieldset className="space-y-4 rounded-lg border border-[var(--color-border)] p-4">
-        <legend className="px-1 text-sm font-semibold">公開資料</legend>
-        <p className="text-xs text-[var(--color-text-muted)]">
-          這些內容會直接在公開網站顯示。請勿填寫網址、電郵、電話或個人聯絡資料。
-        </p>
+        <legend className="px-1 text-sm font-semibold">{formCopy.profile.heading}</legend>
+        <p className="text-xs text-[var(--color-text-muted)]">{formCopy.profile.intro}</p>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium" htmlFor="profile-code">
-              編號
+              {formCopy.profile.code}
             </label>
             <input
               id="profile-code"
               className={field}
               value={profileFields.code}
               onChange={(e) => setProfileField("code", e.target.value)}
-              placeholder="例如 C3761"
+              placeholder={formCopy.profile.codePlaceholder}
             />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium" htmlFor="profile-birthday">
-              出生日期
+              {formCopy.profile.birthday}
             </label>
             <input
               id="profile-birthday"
@@ -655,12 +659,12 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             {/* Age is derived from this one source rather than kept as a second
                 copy that can disagree with it. */}
             <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-              填寫後，公開頁面會以此推算年齡。
+              {formCopy.profile.birthdayHint}
             </p>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium" htmlFor="profile-neutered">
-              絕育狀態
+              {formCopy.profile.neutered}
             </label>
             <select
               id="profile-neutered"
@@ -669,19 +673,19 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               onChange={(e) => setProfileField("neutered", e.target.value)}
             >
               <option value="" style={optionStyle}>
-                未有記錄
+                {formCopy.profile.notRecorded}
               </option>
               <option value="yes" style={optionStyle}>
-                已絕育
+                {formCopy.profile.neuteredYes}
               </option>
               <option value="no" style={optionStyle}>
-                未絕育
+                {formCopy.profile.neuteredNo}
               </option>
             </select>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium" htmlFor="profile-suitability">
-              適合的領養者
+              {formCopy.profile.suitability}
             </label>
             <select
               id="profile-suitability"
@@ -690,19 +694,19 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               onChange={(e) => setProfileField("suitability", e.target.value)}
             >
               <option value="" style={optionStyle}>
-                未有記錄
+                {formCopy.profile.notRecorded}
               </option>
               <option value="newbie" style={optionStyle}>
-                適合新手
+                {formCopy.profile.suitabilityNewbie}
               </option>
               <option value="experienced" style={optionStyle}>
-                適合有經驗者
+                {formCopy.profile.suitabilityExperienced}
               </option>
             </select>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium" htmlFor="profile-record-date">
-              記錄日期
+              {formCopy.profile.recordDate}
             </label>
             <input
               id="profile-record-date"
@@ -716,7 +720,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="profile-personality">
-            性格（最多 1000 字）
+            {formCopy.profile.personality}
           </label>
           <textarea
             id="profile-personality"
@@ -728,7 +732,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="profile-health">
-            照顧與健康需要（最多 2000 字）
+            {formCopy.profile.health}
           </label>
           <textarea
             id="profile-health"
@@ -740,14 +744,14 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           {/* Simplifying the public page must not drop what an applicant needs
               to know before applying. */}
           <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            申請人在提交申請前需要知道的照顧需要，請在此說明。
+            {formCopy.profile.healthHint}
           </p>
         </div>
         {watch("sponsorship_eligible") ? (
           <div className="grid gap-3 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium" htmlFor="profile-sponsor-use">
-                助養用途（經批准後公開）
+                {formCopy.profile.sponsorUse}
               </label>
               <textarea
                 id="profile-sponsor-use"
@@ -759,7 +763,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium" htmlFor="profile-recent-progress">
-                近況（經批准後公開）
+                {formCopy.profile.recentProgress}
               </label>
               <textarea
                 id="profile-recent-progress"
@@ -773,7 +777,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         ) : null}
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
-            牠的故事（最多 8000 字）
+            {formCopy.profile.story}
           </label>
           <textarea
             id="profile-story"
@@ -805,27 +809,14 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           className="text-sm"
         />
         {imageFile || gallery.some((item) => item.file) ? (
-          <div
-            role="status"
-            className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
-          >
-            <p className="font-semibold">上載前核對檔案 → 動物</p>
-            <p>
-              {existing?.public_profile?.code ? `#${existing.public_profile.code} · ` : ""}
-              {existing?.name ?? "新動物草稿"} · ID {animalId}
-            </p>
-            <ul className="mt-2 list-inside list-disc break-all">
-              {imageFile ? <li>{imageFile.name} → 主相片</li> : null}
-              {gallery
-                .filter((item) => item.file)
-                .map((item) => (
-                  <li key={item.id}>{item.file!.name} → 相片集</li>
-                ))}
-            </ul>
-            <p className="mt-2 text-[var(--color-text-muted)]">
-              先儲存草稿及預覽；只有已批准的相片在發布完成後公開。
-            </p>
-          </div>
+          <UploadCheckNotice
+            existing={existing}
+            animalId={animalId}
+            imageFileName={imageFile?.name ?? null}
+            galleryFiles={gallery.flatMap((item) =>
+              item.file ? [{ id: item.id, name: item.file.name }] : [],
+            )}
+          />
         ) : null}
         {existing?.image_url && !imageFile && (
           <img
@@ -838,7 +829,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
       {versions.length > 0 && (
         <section className="rounded-lg border p-3">
-          <h2 className="font-bold">已發布版本</h2>
+          <h2 className="font-bold">{formCopy.versions.heading}</h2>
           {versions.map((version) => (
             <button
               key={version.id}
@@ -846,7 +837,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
               onClick={() => copyVersion(version.id)}
             >
-              版本 {version.revision} · 複製為草稿
+              {formCopy.versions.duplicate(version.revision)}
             </button>
           ))}
         </section>
@@ -855,7 +846,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
       {draftRevision > 0 && (
         <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-          <h2 className="font-bold">預覽及發布</h2>
+          <h2 className="font-bold">{formCopy.publish.heading}</h2>
           <div onChange={(event) => event.stopPropagation()}>
             <ContentReviewPanel
               key={draftRevision}
@@ -865,66 +856,19 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               disabled={dirty || saving}
             />
           </div>
-          {dirty && <p role="status">內容已變更，請先儲存，再重新預覽。</p>}
-          {previewBody && (
-            <article
-              aria-label="已儲存版本預覽"
-              className="space-y-3 rounded-lg bg-[var(--color-surface)] p-4"
-            >
-              <p>已儲存版本 {draftRevision}</p>
-              <h3 className="text-2xl font-bold">{String(previewBody.name ?? "")}</h3>
-              {typeof previewBody.preview_image_url === "string" && (
-                <img
-                  src={previewBody.preview_image_url}
-                  alt={String(previewBody.name ?? "")}
-                  className="w-full max-h-96 rounded-lg object-contain"
-                />
-              )}
-              <p>{String(previewBody.age ?? "")}</p>
-              <p className="whitespace-pre-wrap">{String(previewBody.description ?? "")}</p>
-              <p className="whitespace-pre-wrap">{String(previewBody.notes ?? "")}</p>
-              {previewBody.public_profile && typeof previewBody.public_profile === "object"
-                ? Object.entries(previewBody.public_profile)
-                    .filter(([, value]) => value !== null && value !== "")
-                    .map(([key, value]) => (
-                      <p key={key}>
-                        {PUBLIC_PROFILE_LABELS[key as keyof PublicProfileFields] ?? key}：
-                        {String(value)}
-                      </p>
-                    ))
-                : null}
-              {Array.isArray(previewBody.gallery) && (
-                <div className="grid grid-cols-2 gap-3">
-                  {previewBody.gallery.map((item: Record<string, unknown>) =>
-                    typeof item.preview_url === "string" ? (
-                      <figure key={String(item.id)}>
-                        <img
-                          src={item.preview_url}
-                          alt={String(item.alt_zh ?? "")}
-                          className="w-full rounded-lg"
-                        />
-                        <figcaption>
-                          {String(item.alt_zh ?? "")}
-                          {item.review_status !== "approved" ? "（未核准，不會公開）" : ""}
-                        </figcaption>
-                      </figure>
-                    ) : null,
-                  )}
-                </div>
-              )}
-            </article>
-          )}
+          {dirty && <p role="status">{formCopy.publish.dirty}</p>}
+          {previewBody && <SavedVersionPreview body={previewBody} revision={draftRevision} />}
           <button
             type="button"
             onClick={previewDraft}
             disabled={dirty || saving}
             className="rounded-lg border px-4 py-2 text-sm"
           >
-            建立發布預覽
+            {formCopy.publish.createPreview}
           </button>
           <div>
             <label className="mb-1 block text-sm font-medium" htmlFor="animal-publish-reason">
-              發布原因
+              {formCopy.publish.reason}
             </label>
             <input
               id="animal-publish-reason"
@@ -939,7 +883,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             onClick={publishDraft}
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
           >
-            發布此版本
+            {formCopy.publish.publishVersion}
           </button>
         </section>
       )}
@@ -961,5 +905,113 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         </button>
       </div>
     </form>
+  );
+}
+
+/**
+ * The saved version of a draft as the public site would show it, from the body the preview
+ * request returned. In English each text shows its English column when it has one.
+ */
+export function SavedVersionPreview({
+  body,
+  revision,
+}: {
+  body: Record<string, unknown>;
+  revision: number;
+}) {
+  const { language } = useAdminLanguage();
+  const formCopy = useAdminCopy(animalFormCopy);
+  const text = (key: string) => String(body[key] ?? "");
+  const englishText = (key: string) => (typeof body[key] === "string" ? String(body[key]) : null);
+  const localized = (key: string) => localizedText(text(key), englishText(`${key}_en`), language);
+  return (
+    <article
+      aria-label={formCopy.publish.previewLabel}
+      className="space-y-3 rounded-lg bg-[var(--color-surface)] p-4"
+    >
+      <p>{formCopy.publish.savedVersion(revision)}</p>
+      <h3 className="text-2xl font-bold">{localized("name")}</h3>
+      {typeof body.preview_image_url === "string" && (
+        <img
+          src={body.preview_image_url}
+          alt={localized("name")}
+          className="w-full max-h-96 rounded-lg object-contain"
+        />
+      )}
+      <p>{localized("age")}</p>
+      <p className="whitespace-pre-wrap">{localized("description")}</p>
+      <p className="whitespace-pre-wrap">{localized("notes")}</p>
+      {body.public_profile && typeof body.public_profile === "object"
+        ? Object.entries(body.public_profile)
+            .filter(([, value]) => value !== null && value !== "")
+            .map(([key, value]) => (
+              <p key={key}>
+                {formCopy.publish.profileLine(
+                  isPublicProfileField(key) ? publicProfileLabel(key, language) : key,
+                  String(value),
+                )}
+              </p>
+            ))
+        : null}
+      {Array.isArray(body.gallery) && (
+        <div className="grid grid-cols-2 gap-3">
+          {body.gallery.map((item: Record<string, unknown>) => {
+            if (typeof item.preview_url !== "string") return null;
+            const alt = localizedText(
+              String(item.alt_zh ?? ""),
+              typeof item.alt_en === "string" ? item.alt_en : null,
+              language,
+            );
+            return (
+              <figure key={String(item.id)}>
+                <img src={item.preview_url} alt={alt} className="w-full rounded-lg" />
+                <figcaption>
+                  {alt}
+                  {item.review_status !== "approved" ? formCopy.publish.notApprovedSuffix : ""}
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
+      )}
+    </article>
+  );
+}
+
+/** Names the animal and the files before they are uploaded, so staff can check them first. */
+export function UploadCheckNotice({
+  existing,
+  animalId,
+  imageFileName,
+  galleryFiles,
+}: {
+  existing?: Animal;
+  animalId: string;
+  imageFileName: string | null;
+  galleryFiles: Array<{ id: string; name: string }>;
+}) {
+  const { language } = useAdminLanguage();
+  const formCopy = useAdminCopy(animalFormCopy);
+  return (
+    <div
+      role="status"
+      className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
+    >
+      <p className="font-semibold">{formCopy.upload.checkHeading}</p>
+      <p>
+        {existing?.public_profile?.code ? `#${existing.public_profile.code} · ` : ""}
+        {existing
+          ? localizedText(existing.name, existing.name_en, language)
+          : formCopy.upload.newAnimalDraft}{" "}
+        · ID {animalId}
+      </p>
+      <ul className="mt-2 list-inside list-disc break-all">
+        {imageFileName ? <li>{formCopy.upload.mainPhoto(imageFileName)}</li> : null}
+        {galleryFiles.map((file) => (
+          <li key={file.id}>{formCopy.upload.galleryPhoto(file.name)}</li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[var(--color-text-muted)]">{formCopy.upload.hint}</p>
+    </div>
   );
 }

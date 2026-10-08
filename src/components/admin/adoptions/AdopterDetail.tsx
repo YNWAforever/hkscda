@@ -11,10 +11,14 @@ import type {
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import type { AdminLanguage } from "../adminI18n";
 import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
+import { adopterDetailCopy } from "./adopterDetailCopy";
 import { fetchCoordinatorJson } from "./api";
-import { formatDate, formatFallback, formatHkdCents } from "./caseWorkflowLogic";
+import { formatFallback } from "./caseWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
 
 type AdopterCaseHistoryRow = AdopterDetailData["cases"][number];
@@ -34,133 +38,7 @@ type StatusesResponse = {
 
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
-const ADOPTER_DETAIL_COPY = {
-  zh: {
-    backToAdopters: "返回領養人",
-    notFound: "找不到領養人檔案",
-    refresh: "重新整理",
-    latestCase: "最新個案",
-    blacklisted: "黑名單",
-    clear: "正常",
-    optedIn: "已同意",
-    optedOut: "已拒絕",
-    noCaseHistory: "沒有個案紀錄",
-    noSuccessfulAdoptions: "沒有成功領養紀錄",
-    loadFollowupStatusesError: "無法載入跟進狀態",
-    followupStatusHint: "現有跟進工作如下。新增或編輯工作可能需要狀態設定。",
-    adopterFollowups: "領養人跟進工作",
-    linkedCases: (count: number) => `${formatAdminNumber(count, "zh")} 個相關個案`,
-    finalizedAdoptions: (count: number) => `${formatAdminNumber(count, "zh")} 個已完成領養`,
-    sections: {
-      profile: "檔案摘要",
-      activity: "活動",
-      household: "家庭資料",
-      caseHistory: "個案紀錄",
-      successfulAdoptions: "成功領養",
-    },
-    labels: {
-      applicant: "申請人",
-      requestedAnimal: "申請動物",
-      dates: "日期",
-      status: "狀態",
-      action: "操作",
-      openCase: "開啟個案",
-      caseNumber: "個案編號",
-      animal: "動物",
-      fee: "費用",
-      approval: "批核",
-      pickup: "接領",
-      created: "建立",
-      closed: "結束",
-      displayName: "顯示名稱",
-      chineseName: "中文名",
-      englishName: "英文名",
-      phone: "電話",
-      email: "電郵",
-      supporterId: "捐款人 ID",
-      livingArea: "居住地區",
-      blacklistStatus: "黑名單狀態",
-      emailConsent: "電郵同意",
-      whatsappConsent: "WhatsApp 同意",
-      latestCase: "最新個案",
-      blacklistReason: "黑名單原因",
-      openCases: "未完成個案",
-      successfulAdoptions: "成功領養",
-      openFollowups: "未完成跟進",
-      gender: "性別",
-      birthday: "生日",
-      occupation: "職業",
-      facebook: "Facebook",
-      householdSize: "家庭人數",
-      monthlyHouseholdIncome: "家庭月入",
-      floorArea: "單位面積",
-      address: "地址",
-    },
-  },
-  en: {
-    backToAdopters: "Back to adopters",
-    notFound: "Adopter profile not found",
-    refresh: "Refresh",
-    latestCase: "Latest case",
-    blacklisted: "Blacklisted",
-    clear: "Clear",
-    optedIn: "Opted in",
-    optedOut: "Opted out",
-    noCaseHistory: "No case history",
-    noSuccessfulAdoptions: "No successful adoptions recorded",
-    loadFollowupStatusesError: "Could not load follow-up statuses",
-    followupStatusHint:
-      "Existing follow-ups are shown below. Creating or editing tasks may need statuses.",
-    adopterFollowups: "Adopter follow-ups",
-    linkedCases: (count: number) => `${formatAdminNumber(count, "en")} linked cases`,
-    finalizedAdoptions: (count: number) => `${formatAdminNumber(count, "en")} finalized adoptions`,
-    sections: {
-      profile: "Profile summary",
-      activity: "Activity",
-      household: "Household details",
-      caseHistory: "Case history",
-      successfulAdoptions: "Successful adoptions",
-    },
-    labels: {
-      applicant: "Applicant",
-      requestedAnimal: "Requested animal",
-      dates: "Dates",
-      status: "Status",
-      action: "Action",
-      openCase: "Open case",
-      caseNumber: "Case number",
-      animal: "Animal",
-      fee: "Fee",
-      approval: "Approval",
-      pickup: "Pickup",
-      created: "Created",
-      closed: "Closed",
-      displayName: "Display name",
-      chineseName: "Chinese name",
-      englishName: "English name",
-      phone: "Phone",
-      email: "Email",
-      supporterId: "Supporter ID",
-      livingArea: "Living area",
-      blacklistStatus: "Blacklist status",
-      emailConsent: "Email consent",
-      whatsappConsent: "WhatsApp consent",
-      latestCase: "Latest case",
-      blacklistReason: "Blacklist reason",
-      openCases: "Open cases",
-      successfulAdoptions: "Successful adoptions",
-      openFollowups: "Open follow-ups",
-      gender: "Gender",
-      birthday: "Birthday",
-      occupation: "Occupation",
-      facebook: "Facebook",
-      householdSize: "Household size",
-      monthlyHouseholdIncome: "Monthly household income",
-      floorArea: "Floor area",
-      address: "Address",
-    },
-  },
-} as const;
+type AdopterDetailCopy = (typeof adopterDetailCopy)["zh"];
 
 const STATUS_DOT_CLASSES: Record<string, string> = {
   amber: "bg-[var(--color-warning)]",
@@ -178,14 +56,11 @@ function sectionClassName() {
   return "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]";
 }
 
-function formatCount(value: number, language: keyof typeof ADOPTER_DETAIL_COPY) {
+function formatCount(value: number, language: AdminLanguage) {
   return formatAdminNumber(value, language);
 }
 
-function formatConsentStatus(
-  status: AdopterDetailData["emailConsent"],
-  copy: (typeof ADOPTER_DETAIL_COPY)[keyof typeof ADOPTER_DETAIL_COPY],
-) {
+function formatConsentStatus(status: AdopterDetailData["emailConsent"], copy: AdopterDetailCopy) {
   if (status === "opt_in") return copy.optedIn;
   if (status === "opt_out") return copy.optedOut;
   return formatFallback(null);
@@ -193,7 +68,7 @@ function formatConsentStatus(
 
 function latestCaseStatusText(
   latestCase: AdopterDetailData["latestCase"],
-  language: keyof typeof ADOPTER_DETAIL_COPY,
+  language: AdminLanguage,
 ) {
   if (!latestCase) return null;
   return statusDisplayName(latestCase.status, language);
@@ -204,11 +79,12 @@ function LatestCaseLink({
   language,
 }: {
   latestCase: AdopterDetailData["latestCase"];
-  language: keyof typeof ADOPTER_DETAIL_COPY;
+  language: AdminLanguage;
 }) {
   const { pageCopy } = useAdminPageCopy();
+  const format = useAdminCopy(adoptionFormatCopy);
 
-  if (!latestCase) return formatDate(null);
+  if (!latestCase) return format.date(null);
 
   const animalType =
     pageCopy.animalTypes[latestCase.animalType as keyof typeof pageCopy.animalTypes] ??
@@ -221,7 +97,7 @@ function LatestCaseLink({
         params={{ id: latestCase.id }}
         className="font-medium text-[var(--color-primary)] hover:underline"
       >
-        {formatDate(latestCase.createdAt)}
+        {format.date(latestCase.createdAt)}
       </Link>
       <div className="text-xs text-[var(--color-text-muted)]">
         {latestCaseStatusText(latestCase, language)} · {animalType}
@@ -249,8 +125,7 @@ function StatusChip({ status }: { status: CoordinatorStatus }) {
 }
 
 function BlacklistBadge({ isBlacklisted }: { isBlacklisted: boolean }) {
-  const { language } = useAdminPageCopy();
-  const copy = ADOPTER_DETAIL_COPY[language];
+  const copy = useAdminCopy(adopterDetailCopy);
 
   if (isBlacklisted) {
     return (
@@ -331,7 +206,8 @@ function LoadingState() {
 
 export function AdopterDetail({ adopterId }: AdopterDetailProps) {
   const { language, pageCopy } = useAdminPageCopy();
-  const copy = ADOPTER_DETAIL_COPY[language];
+  const copy = useAdminCopy(adopterDetailCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
   const queryClient = useQueryClient();
   const adopterQueryKey = useMemo(() => ["adopter-profile", adopterId] as const, [adopterId]);
 
@@ -399,10 +275,10 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       cell: (c) => (
         <div className="text-xs text-[var(--color-text-muted)]">
           <div>
-            {copy.labels.created}: {formatDate(c.createdAt)}
+            {copy.labels.created}: {format.date(c.createdAt)}
           </div>
           <div>
-            {copy.labels.closed}: {formatDate(c.closedAt)}
+            {copy.labels.closed}: {format.date(c.closedAt)}
           </div>
         </div>
       ),
@@ -452,8 +328,8 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
           {formatFallback(c.requestedAnimalName)}
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          {copy.labels.created}: {formatDate(c.createdAt)} · {copy.labels.closed}:{" "}
-          {formatDate(c.closedAt)}
+          {copy.labels.created}: {format.date(c.createdAt)} · {copy.labels.closed}:{" "}
+          {format.date(c.closedAt)}
         </div>
       </div>
     );
@@ -484,7 +360,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       header: copy.labels.fee,
       className: "min-w-32",
       cell: (a) => (
-        <span className="text-[var(--color-panel)]">{formatHkdCents(a.adoptionFeeCents)}</span>
+        <span className="text-[var(--color-panel)]">{format.money(a.adoptionFeeCents)}</span>
       ),
     },
     {
@@ -492,7 +368,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       header: copy.labels.approval,
       className: "min-w-40",
       cell: (a) => (
-        <span className="text-[var(--color-text-muted)]">{formatDate(a.approvalDate)}</span>
+        <span className="text-[var(--color-text-muted)]">{format.date(a.approvalDate)}</span>
       ),
     },
     {
@@ -500,7 +376,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       header: copy.labels.pickup,
       className: "min-w-40",
       cell: (a) => (
-        <span className="text-[var(--color-text-muted)]">{formatDate(a.pickupDate)}</span>
+        <span className="text-[var(--color-text-muted)]">{format.date(a.pickupDate)}</span>
       ),
     },
   ];
@@ -511,13 +387,13 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
         <div className="flex items-center justify-between gap-2">
           <span className="font-semibold text-[var(--color-panel)]">{a.caseNumber}</span>
           <span className="text-sm text-[var(--color-panel)]">
-            {formatHkdCents(a.adoptionFeeCents)}
+            {format.money(a.adoptionFeeCents)}
           </span>
         </div>
         <div className="font-medium text-[var(--color-panel)]">{formatFallback(a.animalName)}</div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          {copy.labels.approval}: {formatDate(a.approvalDate)} · {copy.labels.pickup}:{" "}
-          {formatDate(a.pickupDate)}
+          {copy.labels.approval}: {format.date(a.approvalDate)} · {copy.labels.pickup}:{" "}
+          {format.date(a.pickupDate)}
         </div>
       </div>
     );
@@ -581,7 +457,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
             </div>
             <p className="text-sm text-[var(--color-text-muted)]">
               {formatFallback(adopter.livingArea)} · {copy.latestCase}{" "}
-              {formatDate(adopter.latestCaseAt)}
+              {format.date(adopter.latestCaseAt)}
             </p>
           </div>
         </div>
@@ -656,7 +532,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
         <DetailGrid
           items={[
             { label: copy.labels.gender, value: formatFallback(adopter.gender) },
-            { label: copy.labels.birthday, value: formatDate(adopter.birthday) },
+            { label: copy.labels.birthday, value: format.date(adopter.birthday) },
             { label: copy.labels.occupation, value: formatFallback(adopter.occupation) },
             { label: copy.labels.facebook, value: formatFallback(adopter.facebook) },
             { label: copy.labels.householdSize, value: formatFallback(adopter.householdSize) },
@@ -695,9 +571,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
 
       {statusesError && (
         <section className={sectionClassName()}>
-          <TaskPanelAsyncError
-            message={`${copy.loadFollowupStatusesError}: ${statusesError.message}`}
-          />
+          <TaskPanelAsyncError message={copy.loadFollowupStatusesError(statusesError.message)} />
           <div className="px-4 py-3 text-sm text-[var(--color-text-muted)]">
             {copy.followupStatusHint}
           </div>

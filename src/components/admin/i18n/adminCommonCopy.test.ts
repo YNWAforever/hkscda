@@ -4,13 +4,29 @@ import { adminCommonCopy } from "./adminCommonCopy";
 import { expectNoChineseInCopy } from "./testing";
 
 describe("adminCommonCopy", () => {
-  test("the shell sections have no Chinese in English, apart from the language toggle", () => {
-    // `form` is the animal form, which labels its Chinese-language fields in Chinese on
-    // purpose; the animal screens are converted with the animals area.
-    const { form, ...shell } = adminCommonCopy.en;
-    expect(Object.keys(form).length).toBeGreaterThan(0);
+  test("the shell and the animal form have no Chinese in English, apart from the language toggle", () => {
+    expect(Object.keys(adminCommonCopy.en.form).length).toBeGreaterThan(0);
     // The toggle names each language in its own language.
-    expectNoChineseInCopy(shell, { allow: ["中文"] });
+    expectNoChineseInCopy(adminCommonCopy.en, { allow: ["中文"] });
+  });
+
+  test("the animal form names its Chinese fields in English, and the zh wording is unchanged", () => {
+    const { form } = adminCommonCopy.en;
+    expect(form.chineseGroup).toBe("Chinese content");
+    expect(form.chineseName).toBe("Chinese name *");
+    expect(form.errors.name).toBe("Enter the Chinese name");
+    expect(adminCommonCopy.zh.form.chineseGroup).toBe("中文內容");
+    expect(adminCommonCopy.zh.form.chineseName).toBe("名字 *");
+    expect(adminCommonCopy.zh.form.namePlaceholder).toBe("如：蝦米");
+    expect(adminCommonCopy.zh.form.errors.age).toBe("請填寫年齡");
+  });
+
+  test("English animal copy lists items without a comma before and or or", () => {
+    for (const language of ["zh", "en"] as const) {
+      expect(adminCommonCopy[language].form.englishDescriptionPlaceholder).toBe(
+        "Write temperament, health notes or adoption details",
+      );
+    }
   });
 
   test("signs out and signs in with the same verb in both directions", () => {

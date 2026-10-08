@@ -18,19 +18,7 @@ import { findChineseRuns } from "./i18n/testing";
  */
 
 export const ADMIN_COPY_PENDING: readonly string[] = [
-  "src/components/admin/AnimalForm.tsx",
-  "src/components/admin/AnimalGalleryEditor.tsx",
-  "src/components/admin/AnimalsTable.tsx",
-  "src/components/admin/MediaRepairQueue.tsx",
   "src/components/admin/VolunteerAdminShell.tsx",
-  "src/components/admin/adoptions/AdopterDetail.tsx",
-  "src/components/admin/adoptions/AdoptionAssignmentBulkPanel.tsx",
-  "src/components/admin/adoptions/AnimalPipeline.tsx",
-  "src/components/admin/adoptions/CaseDetail.tsx",
-  "src/components/admin/adoptions/CaseList.tsx",
-  "src/components/admin/adoptions/FinalizationPanel.tsx",
-  "src/components/admin/adoptions/MatchPanel.tsx",
-  "src/components/admin/adoptions/intakeInboxLogic.ts",
   "src/components/admin/content/AboutPagesManagement.tsx",
   "src/components/admin/content/AdoptionGuideReleaseManagement.tsx",
   "src/components/admin/content/AdoptionInformationManagement.tsx",

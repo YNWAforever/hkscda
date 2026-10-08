@@ -8,21 +8,23 @@ import type {
   SuccessfulAdoption,
 } from "../../../lib/adoptions/types";
 import { Badge } from "../../ui/badge";
+import type { AdminLanguage } from "../adminI18n";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildFinalizationPayload,
   filterStatusesByCategory,
   findApprovedMatches,
   findDefaultAdoptedOutcomeStatus,
-  formatDate,
-  formatHkdCents,
 } from "./caseWorkflowLogic";
 import type { FinalizationFormState } from "./caseWorkflowLogic";
+import { finalizationCopy } from "./copy";
+import { adoptionFormatCopy } from "./formatCopy";
 
 type FinalizationPanelProps = {
   caseId: string;
@@ -55,55 +57,7 @@ function emptyForm(): FinalizationFormState {
   };
 }
 
-const FINALIZATION_COPY = {
-  zh: {
-    title: "完成領養",
-    subtitle: "需要已批核配對及已領養的最終結果。",
-    completeRequired: "請完成必填的完成領養欄位。",
-    caseNumber: "個案編號",
-    approvalDate: "批核日期",
-    pickupDate: "接領日期",
-    adoptionFee: "領養費",
-    recorded: "已記錄成功領養",
-    missingApprovedMatch: "完成前請先建立一個已批核配對狀態的配對。",
-    missingAdoptedOutcome: "完成前請建立一個 key 為 adopted 的啟用中最終結果狀態。",
-    invalidOutcome: "成功領養完成紀錄需要使用已領養結果狀態。",
-    approvedMatch: "已批核配對",
-    chooseApprovedMatch: "選擇已批核配對",
-    finalOutcome: "最終結果",
-    chooseOutcome: "選擇結果",
-    adoptionFeeHkd: "領養費 HKD",
-    optional: "選填",
-    finalize: "完成領養",
-    fillRequired: "請填寫必填欄位。費用可輸入元及角分。",
-    outcome: "結果",
-  },
-  en: {
-    title: "Finalization",
-    subtitle: "Requires an approved match and adopted final outcome.",
-    completeRequired: "Complete the required finalization fields.",
-    caseNumber: "Case number",
-    approvalDate: "Approval date",
-    pickupDate: "Pickup date",
-    adoptionFee: "Adoption fee",
-    recorded: "Successful adoption recorded",
-    missingApprovedMatch: "Create a match with an approved match status before finalizing.",
-    missingAdoptedOutcome:
-      "Create an active final outcome status with key adopted before finalizing.",
-    invalidOutcome: "Successful adoption finalization requires the adopted outcome status.",
-    approvedMatch: "Approved match",
-    chooseApprovedMatch: "Choose approved match",
-    finalOutcome: "Final outcome",
-    chooseOutcome: "Choose outcome",
-    adoptionFeeHkd: "Adoption fee HKD",
-    optional: "Optional",
-    finalize: "Finalize adoption",
-    fillRequired: "Fill the required fields. Fee accepts dollars and cents.",
-    outcome: "Outcome",
-  },
-} as const;
-
-function matchLabel(match: AnimalMatchSummary, language: keyof typeof FINALIZATION_COPY) {
+function matchLabel(match: AnimalMatchSummary, language: AdminLanguage) {
   return `${match.animalName || match.animalId} (${statusDisplayName(match.status, language)})`;
 }
 
@@ -115,7 +69,8 @@ export function FinalizationPanel({
   onChanged,
 }: FinalizationPanelProps) {
   const { language } = useAdminPageCopy();
-  const copy = FINALIZATION_COPY[language];
+  const copy = useAdminCopy(finalizationCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
   const [form, setForm] = useState<FinalizationFormState>(() => emptyForm());
 
   const approvedMatches = useMemo(() => findApprovedMatches(matches), [matches]);
@@ -202,19 +157,19 @@ export function FinalizationPanel({
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
             <div className="text-xs text-[var(--color-text-muted)]">{copy.approvalDate}</div>
             <div className="font-semibold text-[var(--color-panel)]">
-              {formatDate(successfulAdoption.approvalDate)}
+              {format.date(successfulAdoption.approvalDate)}
             </div>
           </div>
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
             <div className="text-xs text-[var(--color-text-muted)]">{copy.pickupDate}</div>
             <div className="font-semibold text-[var(--color-panel)]">
-              {formatDate(successfulAdoption.pickupDate)}
+              {format.date(successfulAdoption.pickupDate)}
             </div>
           </div>
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
             <div className="text-xs text-[var(--color-text-muted)]">{copy.adoptionFee}</div>
             <div className="font-semibold text-[var(--color-panel)]">
-              {formatHkdCents(successfulAdoption.adoptionFeeCents)}
+              {format.money(successfulAdoption.adoptionFeeCents)}
             </div>
           </div>
           <div className="md:col-span-2 xl:col-span-4">

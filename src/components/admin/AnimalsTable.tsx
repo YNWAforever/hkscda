@@ -15,6 +15,9 @@ import type { Animal, AnimalPublicationState } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
 import { useAdminLanguage } from "./adminI18n";
+import { animalListCopy } from "./animalListCopy";
+import { useAdminCopy } from "./i18n/copy";
+import { englishAlongside, localizedText } from "./i18n/localizedText";
 
 interface AnimalsTableProps {
   animals: Animal[];
@@ -39,12 +42,6 @@ function AnimalStatus({ status }: { status: string }) {
   return <StatusPill tone={statusTones[status] ?? "neutral"}>{label}</StatusPill>;
 }
 
-const publicationLabels: Record<AnimalPublicationState, string> = {
-  draft: "草稿",
-  published: "已公開",
-  unpublished: "暫停公開",
-};
-
 const publicationTones: Record<AnimalPublicationState, StatusTone> = {
   draft: "neutral",
   published: "success",
@@ -52,7 +49,8 @@ const publicationTones: Record<AnimalPublicationState, StatusTone> = {
 };
 
 function AnimalPublication({ state }: { state: AnimalPublicationState }) {
-  return <StatusPill tone={publicationTones[state]}>{publicationLabels[state]}</StatusPill>;
+  const labels = useAdminCopy(animalListCopy).publication;
+  return <StatusPill tone={publicationTones[state]}>{labels[state]}</StatusPill>;
 }
 
 function AnimalAvatar({ animal }: { animal: Animal }) {
@@ -83,36 +81,8 @@ export function AnimalsTable({
   state,
   onStateChange,
 }: AnimalsTableProps) {
-  const { copy } = useAdminLanguage();
-  const { language } = useAdminLanguage();
-  const text =
-    language === "zh"
-      ? {
-          search: "搜尋名稱或編號",
-          archived: "顯示已封存記錄",
-          all: "所有狀態",
-          clear: "清除篩選",
-          empty: "此分類尚未有動物記錄。",
-          noResults: "沒有符合篩選的動物。",
-          previous: "上一頁",
-          next: "下一頁",
-          page: "頁",
-          total: "筆記錄",
-          pagination: "動物列表分頁",
-        }
-      : {
-          search: "Search name or reference",
-          archived: "Include archived records",
-          all: "All statuses",
-          clear: "Clear filters",
-          empty: "No animal records in this category yet.",
-          noResults: "No animals match these filters.",
-          previous: "Previous",
-          next: "Next",
-          page: "Page",
-          total: "records",
-          pagination: "Animal list pagination",
-        };
+  const { copy, language } = useAdminLanguage();
+  const text = useAdminCopy(animalListCopy);
   const changeFilters = (filters: Partial<Omit<AnimalListState, "page">>) =>
     onStateChange(updateAnimalListFilters(state, filters));
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -166,7 +136,7 @@ export function AnimalsTable({
         body: JSON.stringify({ archived: !archived }),
       });
     } catch {
-      setActionError(archived ? "無法取消封存，請重試。" : "無法封存，請重試。");
+      setActionError(archived ? text.unarchiveFailed : text.archiveFailed);
       return;
     }
     setConfirmDelete(null);
@@ -196,7 +166,7 @@ export function AnimalsTable({
             onClick={() => handleArchive(animal.id, true)}
             className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-primary)] hover:underline"
           >
-            取消封存
+            {text.unarchive}
           </button>
         ) : confirmDelete === animal.id ? (
           <span className="flex flex-wrap items-center gap-2 text-xs">
@@ -220,9 +190,9 @@ export function AnimalsTable({
             type="button"
             onClick={() => setConfirmDelete(animal.id)}
             className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-error)] hover:underline"
-            title="封存後不會在公開網站或預設列表顯示，但所有領養、助養及內部記錄會保留。"
+            title={text.archiveHint}
           >
-            封存
+            {text.archive}
           </button>
         )}
       </div>
@@ -240,13 +210,13 @@ export function AnimalsTable({
       header: copy.table.name,
       cell: (animal) => (
         <span className="font-medium">
-          {animal.name}
+          {localizedText(animal.name, animal.name_en, language)}
           {(animal.code ?? animal.public_profile?.code) ? (
             <span className="ml-2 text-xs text-[var(--color-text-muted)]">
               #{animal.code ?? animal.public_profile?.code}
             </span>
           ) : null}
-          {animal.name_en && (
+          {englishAlongside(animal.name_en, language) && (
             <span className="ml-1 font-normal text-[var(--color-text-muted)]">
               {animal.name_en}
             </span>
@@ -262,7 +232,7 @@ export function AnimalsTable({
     {
       id: "age",
       header: copy.table.age,
-      cell: (animal) => animal.age,
+      cell: (animal) => localizedText(animal.age, animal.age_en, language),
     },
     {
       id: "status",
@@ -274,7 +244,7 @@ export function AnimalsTable({
       // see at a glance that a record is available but withheld, which the two
       // columns together say and either one alone cannot.
       id: "publication",
-      header: "公開狀態",
+      header: text.publicationHeader,
       cell: (animal) => <AnimalPublication state={animal.publication_state ?? "published"} />,
     },
     {
@@ -305,7 +275,7 @@ export function AnimalsTable({
           >
             {animalListStatuses.map((status) => (
               <option key={status} value={status}>
-                {status === "all" ? text.all : copy.animalStatus[status]}
+                {status === "all" ? text.allStatuses : copy.animalStatus[status]}
               </option>
             ))}
           </select>
@@ -316,7 +286,7 @@ export function AnimalsTable({
             onClick={() => onStateChange({ ...animalListDefaults })}
             className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]"
           >
-            {text.clear}
+            {text.clearFilters}
           </button>
         ) : null}
         {archivedCount > 0 || state.archived ? (
@@ -334,8 +304,7 @@ export function AnimalsTable({
 
       {needsSpeciesCount > 0 ? (
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm text-[var(--color-text-muted)]">
-          有 {needsSpeciesCount} 筆記錄的品種仍是舊有的「助養」值，需要人手確認為貓或狗。
-          更改品種不會影響領養／助養刊登範圍。
+          {text.needsSpecies(needsSpeciesCount)}
         </p>
       ) : null}
 
@@ -356,8 +325,8 @@ export function AnimalsTable({
             <div className="min-w-0 flex-1 space-y-1.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-medium">
-                  {animal.name}
-                  {animal.name_en && (
+                  {localizedText(animal.name, animal.name_en, language)}
+                  {englishAlongside(animal.name_en, language) && (
                     <span className="ml-1 font-normal text-[var(--color-text-muted)]">
                       {animal.name_en}
                     </span>
@@ -366,7 +335,7 @@ export function AnimalsTable({
                 <AnimalStatus status={animal.status} />
               </div>
               <p className="text-xs text-[var(--color-text-muted)]">
-                {copy.gender[animal.gender]} · {animal.age}
+                {copy.gender[animal.gender]} · {localizedText(animal.age, animal.age_en, language)}
               </p>
               <AnimalActions animal={animal} />
             </div>
@@ -378,9 +347,7 @@ export function AnimalsTable({
           aria-label={text.pagination}
           className="flex flex-wrap items-center justify-between gap-3 text-sm"
         >
-          <p aria-live="polite">
-            {list.total} {text.total} · {text.page} {list.page} / {list.pageCount}
-          </p>
+          <p aria-live="polite">{text.summary(list.total, list.page, list.pageCount)}</p>
           <div className="flex gap-2">
             <button
               type="button"

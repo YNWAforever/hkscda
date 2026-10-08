@@ -1,22 +1,13 @@
 import { describe, expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+
+import { renderAdminInChinese } from "../i18n/testing";
 
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
 const realReactRouter = await import("@tanstack/react-router");
 const realReactQuery = await import("@tanstack/react-query");
-const realAdminPageCopy = await import("../adminPageCopy");
-
-// mock.module patches the shared module registry for the whole process, not
-// just this file, so every consumer's language is pinned here explicitly
-// rather than left to whatever AdminLanguageProvider default happens to be
-// live when this file's imports run relative to any other test file's mocks.
-mock.module("../adminPageCopy", () => ({
-  ...realAdminPageCopy,
-  useAdminPageCopy: () => ({ language: "zh", pageCopy: realAdminPageCopy.adminPageCopy.zh }),
-}));
 
 type MockLinkProps = {
   children: ReactNode;
@@ -72,7 +63,8 @@ mock.module("@tanstack/react-query", () => ({
 
 const { CaseList } = await import("./CaseList");
 
-const render = () => renderToStaticMarkup(<CaseList />);
+// The language is pinned by rendering inside the provider, not by mocking the page copy.
+const render = () => renderAdminInChinese(<CaseList />);
 
 describe("CaseList", () => {
   test("renders the case queue", () => {
