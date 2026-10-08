@@ -75,7 +75,7 @@ export const accessCopy = defineAdminCopy({
     pending: "Invite pending",
     disabled: "Disabled",
     activeAdmins: "Active users",
-    pendingInvites: "Pending invites",
+    pendingInvites: "Invite pending",
     disabledUsers: "Disabled users",
     audit: "Recent history",
     noAudit: "No access management history yet.",

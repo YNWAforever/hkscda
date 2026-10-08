@@ -101,7 +101,7 @@ describe("access management in English", () => {
       "Manage admin users, invitations and recent access changes.",
       "Invite user",
       "Active users",
-      "Pending invites",
+      "Invite pending",
       "Disabled users",
       "Invite pending",
       "Disabled",

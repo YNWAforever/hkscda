@@ -193,20 +193,20 @@ other way round.
 
 ## Pages and bulk actions
 
-| zh-HK        | English             | Usage                                                                            |
-| ------------ | ------------------- | -------------------------------------------------------------------------------- |
-| 後台         | admin               | The back office, as in the breadcrumb root "Admin". 後台使用者 is "admin users". |
-| 麵包屑導覽   | breadcrumb          | The path shown above a page title.                                               |
-| 工作區       | workspace           | The page where a task is done. The link is "Open workspace".                     |
-| 步驟         | step                | A numbered suggestion on the task overview.                                      |
-| 錯誤編號     | error reference     | The short code shown with a load failure, so staff can quote it.                 |
-| 邀請         | invite              | Send an admin user a link to join. 待接受邀請 is "Invite pending".               |
-| 項目         | item                | One row of a bulk action or a list.                                              |
-| 原本／套用後 | before / after      | The value before and after a bulk action.                                        |
-| 成功         | succeeded           | The result of one item in a bulk action.                                         |
-| 略過         | skipped             | Left out of a bulk action on purpose.                                            |
-| 衝突         | conflict            | The record changed after the preview, so the bulk action left it alone.          |
-| 技術參考     | technical reference | The operation id of a bulk action, to quote when reporting a problem.            |
+| zh-HK        | English             | Usage                                                                                                |
+| ------------ | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| 後台         | admin               | The back office, as in the breadcrumb root "Admin". 後台使用者 is "admin users".                     |
+| 麵包屑導覽   | breadcrumb          | The path shown above a page title.                                                                   |
+| 工作區       | workspace           | The page where a task is done. The link is "Open workspace".                                         |
+| 步驟         | step                | A numbered suggestion on the task overview.                                                          |
+| 錯誤編號     | error reference     | The short code shown with a load failure, so staff can quote it.                                     |
+| 邀請         | invite              | Send an admin user a link to join. 待接受邀請 is "Invite pending" everywhere, in a badge or a count. |
+| 項目         | item                | One row of a bulk action or a list.                                                                  |
+| 原本／套用後 | before / after      | The value before and after a bulk action.                                                            |
+| 成功         | succeeded           | The result of one item in a bulk action.                                                             |
+| 略過         | skipped             | Left out of a bulk action on purpose.                                                                |
+| 衝突         | conflict            | The record changed after the preview, so the bulk action left it alone.                              |
+| 技術參考     | technical reference | The operation id of a bulk action, to quote when reporting a problem.                                |
 
 ## Style
 
@@ -216,6 +216,10 @@ The English follows these rules. They are the same rules the plan and every area
 - **Buttons are verbs:** Save, Publish, Archive, Void, Approve, Reject. Never "OK".
 - **Errors say what to do next.** For example "Could not save. Check the highlighted fields and try again."
 - **Terms** come from this glossary. A new term is added here before it is used.
+- **Spelling and commas:** British spelling, as in Hong Kong English (centre, colour, programme,
+  enquiry, finalise). No comma before "and" or "or" in a list: "a, b and c".
+- **Counts:** a count message uses the singular for one and the plural for every other number:
+  "1 conflict", "3 conflicts".
 - **Data:** show an English column where one exists (`label_en`, `name_en` and so on), and fall back
   to the zh-HK value when it is empty. Free text staff typed is shown as typed. Nothing is
   machine-translated.

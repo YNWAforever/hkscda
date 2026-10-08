@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminNumber } from "../i18n/format";
+import { formatAdminNumber, pluralCount } from "../i18n/format";
 
 /**
  * Page copy shared by several admin screens: common labels, animal types, priorities, contact
@@ -110,15 +110,15 @@ export const sharedPageCopy = defineAdminCopy({
       exportFailed: "Export failed",
       notSignedIn: "Not signed in",
       noContact: "No contact on file",
-      searchMatches: (count: number) => `${formatAdminNumber(count, "en")} matches`,
+      searchMatches: (count: number) => pluralCount(count, "match", "matches"),
       totalCount: (count: number) => `${formatAdminNumber(count, "en")} total`,
-      totalRecords: (count: number) => `${formatAdminNumber(count, "en")} records`,
-      totalSupporters: (count: number) => `${formatAdminNumber(count, "en")} total supporters`,
+      totalRecords: (count: number) => pluralCount(count, "record"),
+      totalSupporters: (count: number) => pluralCount(count, "total supporter"),
       scheduledOrCompleted: (count: number) =>
         `${formatAdminNumber(count, "en")} scheduled or completed`,
       pageOf: (page: number, totalPages: number) =>
         `Page ${formatAdminNumber(page, "en")} of ${formatAdminNumber(totalPages, "en")}`,
-      rowsCount: (count: number) => `${formatAdminNumber(count, "en")} rows`,
+      rowsCount: (count: number) => pluralCount(count, "row"),
     },
     animalTypes: {
       all: "All animals",

@@ -1,7 +1,7 @@
 import { defineAdminCopy } from "../i18n/copy";
 
 /**
- * Page copy for coordinator follow-up work: the task center and the task panel on a case.
+ * Page copy for coordinator follow-up work: the task centre and the task panel on a case.
  */
 export const taskPageCopy = defineAdminCopy({
   zh: {
@@ -77,10 +77,10 @@ export const taskPageCopy = defineAdminCopy({
   },
   en: {
     taskCenter: {
-      title: "Coordinator task center",
-      subtitle: "View, filter, and update follow-up work across adoption cases and animals.",
+      title: "Coordinator task centre",
+      subtitle: "View, filter and update follow-up work across adoption cases and animals.",
       searchLabel: "Search tasks",
-      searchPlaceholder: "Search title, outcome, or remarks",
+      searchPlaceholder: "Search title, outcome or remarks",
       dueLabel: "Filter by due date",
       priorityLabel: "Filter by priority",
       assignedToLabel: "Filter by assignee",

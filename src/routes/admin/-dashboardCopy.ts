@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../../components/admin/i18n/copy";
+import { pluralCount } from "../../components/admin/i18n/format";
 
 /** Copy for the admin dashboard route (`/admin`): the animal sections and the missing-photo filter. */
 export const dashboardCopy = defineAdminCopy({
@@ -25,11 +26,11 @@ export const dashboardCopy = defineAdminCopy({
     animalTabs: { cat: "Cats", dog: "Dogs", sponsor: "Sponsorship" },
     animalDescriptions: {
       sponsor: "Cats and dogs eligible for sponsorship; eligibility is independent of species.",
-      cat: "Find and manage cat records, care status, and public information.",
-      dog: "Find and manage dog records, care status, and public information.",
+      cat: "Find and manage cat records, care status and public information.",
+      dog: "Find and manage dog records, care status and public information.",
     },
     missingPhoto: "Needs photo",
     missingPhotoNotice: (total: number) =>
-      `Needs photo: ${total} records. Check each animal by its number, then open Edit and upload the photo to the draft. The current public photo is not replaced until you save, preview and approve publishing.`,
+      `Needs photo: ${pluralCount(total, "animal")}. Check each animal by its number, then open Edit and upload the photo to the draft. The current public photo is not replaced until you save, preview and approve publishing.`,
   },
 });

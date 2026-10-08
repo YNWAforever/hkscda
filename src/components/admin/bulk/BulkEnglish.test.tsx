@@ -42,8 +42,30 @@ describe("BulkResults", () => {
     const markup = renderAdminInEnglish(<BulkResults items={mixed} />);
     expectNoChineseText(markup);
     expect(markup).toContain('aria-label="Results by item"');
-    expect(markup).toContain("1 pending · 1 succeeded · 1 skipped · 1 conflicts · 1 failed");
+    expect(markup).toContain("1 pending · 1 succeeded · 1 skipped · 1 conflict · 1 failed");
     expect(markup).toContain("Download results by item (CSV)");
+  });
+
+  test("says conflict for one and conflicts for every other number", () => {
+    const withConflicts = (count: number): BulkItemResult[] =>
+      Array.from({ length: count }, (_, index) => ({
+        entityId: `id-${index}`,
+        status: "conflict",
+        reasonCode: null,
+        before: "a",
+        after: "b",
+      }));
+    expect(
+      bulkCopy.en.results.summary({ pending: 0, succeeded: 0, skipped: 0, conflict: 1, failed: 0 }),
+    ).toContain("1 conflict ·");
+    expect(renderAdminInEnglish(<BulkResults items={withConflicts(3)} />)).toContain("3 conflicts");
+    expect(renderAdminInEnglish(<BulkResults items={withConflicts(0)} />)).toContain("0 conflicts");
+    expect(renderAdminInEnglish(<BulkResults items={withConflicts(1)} />)).not.toContain(
+      "1 conflicts",
+    );
+    // Chinese has no plural: the count reads the same.
+    expect(renderAdminInChinese(<BulkResults items={withConflicts(1)} />)).toContain("衝突 1");
+    expect(renderAdminInChinese(<BulkResults items={withConflicts(3)} />)).toContain("衝突 3");
   });
 
   test("shows the counts and the download in Chinese, as before", () => {
@@ -89,7 +111,7 @@ describe("BulkReview", () => {
   });
 
   test("shows the busy label and the batch label in English", () => {
-    expect(renderAdminInEnglish(review({ busy: true }))).toContain("Processing…");
+    expect(renderAdminInEnglish(review({ busy: true }))).toContain("In progress…");
     const many: BulkItemResult[] = Array.from({ length: 30 }, (_, index) => ({
       entityId: `id-${index}`,
       status: "pending",

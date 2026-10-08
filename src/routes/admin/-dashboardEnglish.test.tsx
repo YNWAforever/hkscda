@@ -68,7 +68,7 @@ describe("admin dashboard in English", () => {
     for (const text of [
       'aria-label="Breadcrumb"',
       "Animal management",
-      "Find and manage cat records, care status, and public information.",
+      "Find and manage cat records, care status and public information.",
       'aria-label="Animal categories"',
       "Cats",
       "Dogs",
@@ -86,7 +86,7 @@ describe("admin dashboard in English", () => {
     animalsResult = { data: { animals: [], total: 0, page: 1 } };
     const dogs = renderAdminInEnglish(dashboard("dog"));
     expectNoChineseText(dogs);
-    expect(dogs).toContain("Find and manage dog records, care status, and public information.");
+    expect(dogs).toContain("Find and manage dog records, care status and public information.");
 
     const sponsors = renderAdminInEnglish(dashboard("sponsor"));
     expectNoChineseText(sponsors);
@@ -165,6 +165,12 @@ describe("admin dashboard in Chinese", () => {
     const applications = renderAdminInChinese(dashboard("applications"));
     expect(applications).toContain("領養申請已移至協調員工作流程");
     expect(applications).toContain("開啟領養個案");
+  });
+
+  test("counts the animals needing a photo with the right plural", () => {
+    expect(dashboardCopy.en.missingPhotoNotice(1)).toStartWith("Needs photo: 1 animal. ");
+    expect(dashboardCopy.en.missingPhotoNotice(3)).toStartWith("Needs photo: 3 animals. ");
+    expect(dashboardCopy.en.missingPhotoNotice(0)).toStartWith("Needs photo: 0 animals. ");
   });
 
   test("keeps the missing-photo notice word for word", () => {

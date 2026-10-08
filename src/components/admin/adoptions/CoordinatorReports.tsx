@@ -13,7 +13,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { formatAdminDateTime, formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
+import { formatAdminNumber, formatLegacyAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
@@ -229,7 +229,7 @@ export function CoordinatorReports() {
       id: "timestamp",
       header: copy.columns.timestamp,
       className: "min-w-44 px-4 font-medium text-[var(--color-panel)]",
-      cell: (row) => formatAdminDateTime(row.timestamp, language),
+      cell: (row) => formatLegacyAdminDateTime(row.timestamp, language),
     },
     {
       id: "actor",
@@ -295,7 +295,7 @@ export function CoordinatorReports() {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="font-medium text-[var(--color-panel)]">
-              {formatAdminDateTime(row.timestamp, language)}
+              {formatLegacyAdminDateTime(row.timestamp, language)}
             </div>
             <div className="truncate text-xs text-[var(--color-text-muted)]">{actorLabel(row)}</div>
           </div>

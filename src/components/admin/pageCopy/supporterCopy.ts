@@ -52,9 +52,9 @@ export const supporterPageCopy = defineAdminCopy({
   en: {
     supporters: {
       title: "Supporters",
-      subtitle: "Donor records, receipts, consent, and manual gifts.",
+      subtitle: "Donor records, receipts, consent and manual gifts.",
       searchLabel: "Search supporters",
-      searchPlaceholder: "Search name, email, phone, reference, or receipt",
+      searchPlaceholder: "Search name, email, phone, reference or receipt",
       roleFilterLabel: "Filter by role",
       allRoles: "All roles",
       loadError: "Could not load supporters",

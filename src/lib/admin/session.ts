@@ -26,7 +26,7 @@ export type AdminApiErrorFields = Record<string, string[]>;
 export type AdminSessionErrorCode = "not_signed_in" | "identity_changed";
 
 const SESSION_ERROR_TEXT: Record<AdminSessionErrorCode, Record<AdminLanguage, string>> = {
-  not_signed_in: { zh: "未登入", en: "Not signed in" },
+  not_signed_in: { zh: "未登入", en: "Not signed in. Sign in again." },
   identity_changed: {
     zh: "登入身份已變更，請重新載入頁面。",
     en: "Your signed-in account has changed. Reload the page.",

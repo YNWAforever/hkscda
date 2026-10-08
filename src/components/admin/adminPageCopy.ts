@@ -41,7 +41,16 @@ export function useAdminPageCopy() {
 
 const DATE_TIME_LOCALE: Record<AdminLanguage, string> = { zh: "zh-HK", en: "en-HK" };
 
-export function formatAdminDateTime(value: string | null | undefined, language: AdminLanguage) {
+/**
+ * The date and time format the coordinator and supporter screens have always used (the
+ * `Intl` medium date with a short time). Kept so their Chinese output does not change. New
+ * code uses `formatAdminDateTime` from `./i18n/format`; the area that owns each screen moves
+ * it over when it translates the screen.
+ */
+export function formatLegacyAdminDateTime(
+  value: string | null | undefined,
+  language: AdminLanguage,
+) {
   if (!value) return "-";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;

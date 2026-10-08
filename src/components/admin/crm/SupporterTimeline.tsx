@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import type { SupporterTimelineItem } from "../../../lib/crm/types";
-import { formatAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
+import { formatLegacyAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
 
 type SupporterTimelineProps = {
   items: SupporterTimelineItem[];
@@ -89,7 +89,7 @@ export function SupporterTimeline({ items }: SupporterTimelineProps) {
       {items.map((item) => (
         <li key={item.id} className="grid gap-3 p-4 sm:grid-cols-[10rem_1fr]">
           <time className="text-xs font-medium text-[var(--color-text-muted)]">
-            {formatAdminDateTime(item.at, language)}
+            {formatLegacyAdminDateTime(item.at, language)}
           </time>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { TaskCard } from "../../../lib/operations/taskOverview.server";
-import { taskCardText } from "../../../lib/operations/taskCardText";
+import { taskCardTextFor } from "../../../lib/operations/taskCardText";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
@@ -20,8 +20,9 @@ export function TaskOverviewView({ cards }: { cards: TaskCard[] }) {
       <p className="mt-1 text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       <ol className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map((card, index) => {
-          // The server sends zh-HK text; the card's key finds the text in the active language.
-          const text = taskCardText(card.key, language);
+          // The server sends zh-HK text; the card key finds the text in the active language, and an
+          // unknown key (version skew after a deploy) falls back to the server text.
+          const text = taskCardTextFor(card, language);
           return (
             <li key={card.key}>
               <article className="h-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">

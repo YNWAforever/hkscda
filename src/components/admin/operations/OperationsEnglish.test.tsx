@@ -1,6 +1,10 @@
 import { describe, expect, mock, test } from "bun:test";
 
-import { selectTaskDefinitions, type TaskCard } from "../../../lib/operations/taskOverview.server";
+import {
+  selectTaskDefinitions,
+  type TaskCard,
+  type TaskKey,
+} from "../../../lib/operations/taskOverview.server";
 import {
   expectNoChineseInCopy,
   expectNoChineseText,
@@ -55,6 +59,26 @@ describe("task overview in English", () => {
     expect(markup).toContain("Expired content");
     expect(markup).toContain("Public media repairs that failed");
     expect(markup).toContain("Check the expired content");
+  });
+
+  test("shows a card with a key it does not know using the server's own text", () => {
+    // A deploy can add a card before this page has loaded the code that knows it.
+    const skewed: TaskCard = {
+      key: "brand_new_task" as unknown as TaskKey,
+      label: "新工作",
+      guidance: "新的指引。",
+      href: "/admin/new",
+      metric: { state: "ready", count: 4, oldestAt: null },
+    };
+    const english = renderAdminInEnglish(
+      <TaskOverviewView cards={[skewed, ...cardsFor("treasurer")]} />,
+    );
+    expect(english).toContain("新工作");
+    expect(english).toContain("新的指引。");
+    expect(english).toContain('href="/admin/new"');
+    // The cards it does know are still in English.
+    expectNoChineseText(english, { allow: ["新工作", "新的指引。"] });
+    expect(english).toContain("Payments to reconcile");
   });
 
   test("shows the page heading and introduction in English", () => {
@@ -113,6 +137,20 @@ describe("task overview in Chinese", () => {
     expect(renderAdminInChinese(<TaskOverview />)).toContain("正在核對職員身份…");
     identity = { data: { admin: { authUserId: "a", role: "admin", status: "disabled" } } };
     expect(renderAdminInChinese(<TaskOverview />)).toContain("未能確認有效職員身份，請重新登入。");
+  });
+
+  test("shows a card with a key it does not know using the server's own text", () => {
+    const skewed: TaskCard = {
+      key: "brand_new_task" as unknown as TaskKey,
+      label: "新工作",
+      guidance: "新的指引。",
+      href: "/admin/new",
+      metric: { state: "unavailable" },
+    };
+    const markup = renderAdminInChinese(<TaskOverviewView cards={[skewed]} />);
+    expect(markup).toContain("新工作");
+    expect(markup).toContain("新的指引。");
+    expect(markup).toContain("未能讀取");
   });
 
   test("shows the server's own Chinese text for every card, and the legacy date", () => {

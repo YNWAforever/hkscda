@@ -88,6 +88,15 @@ export function formatAdminNumber(
 }
 
 /**
+ * An English count with its noun: one gets the singular, every other number (0 included) the
+ * plural. `pluralCount(1, "match", "matches")` is `1 match`; the plural defaults to the
+ * singular with an s. English only: Chinese has no plural, so zh copy does not use it.
+ */
+export function pluralCount(count: number, singular: string, plural = `${singular}s`): string {
+  return `${formatAdminNumber(count, "en")} ${count === 1 ? singular : plural}`;
+}
+
+/**
  * `HK$1,234.00`, the same in both languages. `language` is accepted so that callers pass
  * it the same way they do to the date formatters, and a per-language difference can be
  * added here later without touching them.

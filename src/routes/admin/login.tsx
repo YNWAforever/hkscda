@@ -24,7 +24,7 @@ export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
 });
 
-function AdminLoginPage() {
+export function AdminLoginPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
 

@@ -1,7 +1,7 @@
 import { CalendarDays, Languages, Mail, Phone, ShieldCheck, Tags } from "lucide-react";
 
 import type { SupporterDetail, SupporterRole } from "../../../lib/crm/types";
-import { formatAdminDateTime } from "../adminPageCopy";
+import { formatLegacyAdminDateTime } from "../adminPageCopy";
 
 type SupporterProfileSidebarProps = {
   supporter: SupporterDetail;
@@ -153,13 +153,13 @@ export function SupporterProfileSidebar({
           <div className="flex items-start justify-between gap-3">
             <dt className="text-[var(--color-text-muted)]">{copy.created}</dt>
             <dd className="text-right font-medium text-[var(--color-panel)]">
-              {formatAdminDateTime(supporter.createdAt, language)}
+              {formatLegacyAdminDateTime(supporter.createdAt, language)}
             </dd>
           </div>
           <div className="flex items-start justify-between gap-3">
             <dt className="text-[var(--color-text-muted)]">{copy.updated}</dt>
             <dd className="text-right font-medium text-[var(--color-panel)]">
-              {formatAdminDateTime(supporter.updatedAt, language)}
+              {formatLegacyAdminDateTime(supporter.updatedAt, language)}
             </dd>
           </div>
         </dl>
@@ -227,7 +227,7 @@ export function SupporterProfileSidebar({
             )}
             <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
               <CalendarDays className="h-3.5 w-3.5" />
-              <span>{formatAdminDateTime(primaryProfile.updatedAt, language)}</span>
+              <span>{formatLegacyAdminDateTime(primaryProfile.updatedAt, language)}</span>
             </div>
           </div>
         ) : (

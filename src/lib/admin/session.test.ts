@@ -262,7 +262,7 @@ describe("session errors", () => {
     const notSignedIn = new AdminSessionError("not_signed_in");
     expect(adminErrorMessage(notSignedIn)).toBe("未登入");
     expect(adminErrorMessage(notSignedIn, "zh")).toBe("未登入");
-    expect(adminErrorMessage(notSignedIn, "en")).toBe("Not signed in");
+    expect(adminErrorMessage(notSignedIn, "en")).toBe("Not signed in. Sign in again.");
     expect(adminErrorMessage(new AdminSessionError("identity_changed"), "en")).toBe(
       "Your signed-in account has changed. Reload the page.",
     );
@@ -275,6 +275,10 @@ describe("session errors", () => {
       expect(adminSessionErrorText(code, "en")).not.toMatch(/\p{Script=Han}/u);
     }
     expect(adminSessionErrorText("identity_changed", "en")).toContain("Reload");
+    expect(adminSessionErrorText("not_signed_in", "en")).toContain("Sign in again");
+    // ExportBar compares the zh message with this exact text.
+    expect(adminSessionErrorText("not_signed_in", "zh")).toBe("未登入");
+    expect(adminSessionErrorText("not_signed_in")).toBe("未登入");
   });
 });
 

@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminNumber } from "../i18n/format";
+import { formatAdminNumber, pluralCount } from "../i18n/format";
 
 /**
  * Page copy for the other coordinator screens: adopters, reports and statuses.
@@ -139,10 +139,10 @@ export const coordinatorPageCopy = defineAdminCopy({
   en: {
     adopters: {
       title: "Adopters",
-      subtitle: "Profiles, adoption history, blacklist status, and follow-up workload.",
+      subtitle: "Profiles, adoption history, blacklist status and follow-up workload.",
       exportCsv: "Export CSV",
       searchLabel: "Search adopters",
-      searchPlaceholder: "Search name, phone, or email",
+      searchPlaceholder: "Search name, phone or email",
       blacklistLabel: "Filter by blacklist status",
       blacklistPlaceholder: "Blacklist status",
       openCases: "Open cases",
@@ -213,7 +213,7 @@ export const coordinatorPageCopy = defineAdminCopy({
     statuses: {
       title: "Coordinator statuses",
       subtitle: (statuses: number, categories: number) =>
-        `${formatAdminNumber(statuses, "en")} statuses across ${formatAdminNumber(categories, "en")} categories`,
+        `${pluralCount(statuses, "status", "statuses")} across ${pluralCount(categories, "category", "categories")}`,
       newStatus: "New status",
       editStatus: "Edit status",
       systemKeyLocked: "System key locked",
@@ -241,7 +241,7 @@ export const coordinatorPageCopy = defineAdminCopy({
         chineseLabel: "Chinese label",
         englishLabel: "English label",
         sortOrder: "Sort order",
-        color: "Color",
+        color: "Colour",
         active: "Active",
         closing: "Closing",
         final: "Final",

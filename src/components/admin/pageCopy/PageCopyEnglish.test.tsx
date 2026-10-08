@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
+import * as pageCopyModule from "../adminPageCopy";
+
 import {
   adminPageCopy,
   bilingualStatusName,
-  formatAdminDateTime,
+  formatLegacyAdminDateTime,
   formatAdminNumber,
   statusDisplayName,
   useAdminPageCopy,
@@ -55,12 +57,12 @@ describe("adminPageCopy page headers", () => {
     expectNoChineseText(markup);
     for (const text of [
       "Adoption cases",
-      "Coordinator queue, matching, follow-up, and finalization.",
+      "Coordinator queue, matching, follow-up and finalisation.",
       "Pledge review",
       "Pledge details",
       "Application inbox",
-      "Manual case intake",
-      "Coordinator task center",
+      "Manual intake",
+      "Coordinator task centre",
       "Follow-ups",
       "Adopters",
       "Coordinator reports",
@@ -123,6 +125,19 @@ describe("adminPageCopy page headers", () => {
     expect(adminPageCopy.zh.common.searchMatches(1234)).toBe("1,234 個結果");
     expect(adminPageCopy.en.common.searchMatches(1234)).toBe("1,234 matches");
     expect(adminPageCopy.zh.common.pageOf(2, 5)).toBe("第 2 頁，共 5 頁");
+    expect(adminPageCopy.en.common.searchMatches(1)).toBe("1 match");
+    expect(adminPageCopy.en.common.searchMatches(3)).toBe("3 matches");
+    expect(adminPageCopy.en.common.totalRecords(1)).toBe("1 record");
+    expect(adminPageCopy.en.common.totalRecords(3)).toBe("3 records");
+    expect(adminPageCopy.en.common.totalSupporters(1)).toBe("1 total supporter");
+    expect(adminPageCopy.en.common.totalSupporters(3)).toBe("3 total supporters");
+    expect(adminPageCopy.en.common.rowsCount(1)).toBe("1 row");
+    expect(adminPageCopy.en.common.rowsCount(3)).toBe("3 rows");
+    expect(adminPageCopy.en.statuses.subtitle(1, 1)).toBe("1 status across 1 category");
+    expect(adminPageCopy.en.statuses.subtitle(3, 2)).toBe("3 statuses across 2 categories");
+    // Chinese has no plural, so one and many read the same.
+    expect(adminPageCopy.zh.common.searchMatches(1)).toBe("1 個結果");
+    expect(adminPageCopy.zh.statuses.subtitle(1, 1)).toBe("1 個狀態，分布於 1 個分類");
     expect(adminPageCopy.en.common.pageOf(2, 5)).toBe("Page 2 of 5");
     expect(adminPageCopy.zh.pledgeReview.totalCount(12)).toBe("共 12 項");
     expect(adminPageCopy.en.statuses.deleteConfirm("待處理", "Pending")).toBe(
@@ -139,9 +154,15 @@ describe("page copy helpers", () => {
     expect(formatAdminNumber(undefined, "zh")).toBe("0");
   });
 
-  test("formatAdminDateTime keeps its Hong Kong time output", () => {
-    expect(formatAdminDateTime(null, "zh")).toBe("-");
-    expect(formatAdminDateTime("not a date", "en")).toBe("not a date");
+  test("does not export a second formatAdminDateTime beside the Task 1 formatter", () => {
+    // New code imports formatAdminDateTime from i18n/format; the old format has its own name.
+    expect("formatAdminDateTime" in pageCopyModule).toBe(false);
+    expect("formatLegacyAdminDateTime" in pageCopyModule).toBe(true);
+  });
+
+  test("formatLegacyAdminDateTime keeps its Hong Kong time output", () => {
+    expect(formatLegacyAdminDateTime(null, "zh")).toBe("-");
+    expect(formatLegacyAdminDateTime("not a date", "en")).toBe("not a date");
     const value = "2026-10-01T02:30:00Z";
     const expected = (locale: string) =>
       new Intl.DateTimeFormat(locale, {
@@ -150,8 +171,8 @@ describe("page copy helpers", () => {
         hour12: false,
         timeZone: "Asia/Hong_Kong",
       }).format(new Date(value));
-    expect(formatAdminDateTime(value, "zh")).toBe(expected("zh-HK"));
-    expect(formatAdminDateTime(value, "en")).toBe(expected("en-HK"));
+    expect(formatLegacyAdminDateTime(value, "zh")).toBe(expected("zh-HK"));
+    expect(formatLegacyAdminDateTime(value, "en")).toBe(expected("en-HK"));
   });
 
   test("statusDisplayName shows the language's own label, then the other, then the key", () => {

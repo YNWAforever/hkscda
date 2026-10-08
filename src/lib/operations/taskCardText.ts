@@ -111,3 +111,22 @@ const TASK_CARD_TEXT: Record<TaskKey, Record<AdminLanguage, TaskCardText>> = {
 export function taskCardText(key: TaskKey, language: AdminLanguage = "zh"): TaskCardText {
   return TASK_CARD_TEXT[key][language];
 }
+
+/** True for a card key this build knows. A newer server can send a key an older page does not. */
+export function isTaskKey(key: string): key is TaskKey {
+  return Object.hasOwn(TASK_CARD_TEXT, key);
+}
+
+/**
+ * The text to show for a card the server sent. A key this page knows gets its text in
+ * `language`. An unknown key, such as one added by a deploy that this page has not loaded yet,
+ * shows the server's own label and guidance (zh-HK) in either language, rather than failing.
+ */
+export function taskCardTextFor(
+  card: { key: string; label: string; guidance: string },
+  language: AdminLanguage = "zh",
+): TaskCardText {
+  return isTaskKey(card.key)
+    ? taskCardText(card.key, language)
+    : { label: card.label, guidance: card.guidance };
+}

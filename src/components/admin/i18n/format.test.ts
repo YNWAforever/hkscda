@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatAdminDate, formatAdminDateTime, formatAdminMoney } from "./format";
+import { formatAdminDate, formatAdminDateTime, formatAdminMoney, pluralCount } from "./format";
 
 describe("formatAdminDate", () => {
   test("formats a date as year-month-day with the weekday in Chinese", () => {
@@ -74,5 +74,19 @@ describe("formatAdminMoney", () => {
 
   test("puts the minus sign before the currency for a negative amount", () => {
     expect(formatAdminMoney(-1234.5, "en")).toBe("-HK$1,234.50");
+  });
+});
+
+describe("pluralCount", () => {
+  test("uses the singular for one and the plural for every other number", () => {
+    expect(pluralCount(1, "conflict")).toBe("1 conflict");
+    expect(pluralCount(3, "conflict")).toBe("3 conflicts");
+    expect(pluralCount(0, "conflict")).toBe("0 conflicts");
+    expect(pluralCount(2, "match", "matches")).toBe("2 matches");
+    expect(pluralCount(1, "match", "matches")).toBe("1 match");
+  });
+
+  test("groups thousands like the other counts", () => {
+    expect(pluralCount(1234, "record")).toBe("1,234 records");
   });
 });

@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDateTime } from "../i18n/format";
+import { formatAdminDateTime, pluralCount } from "../i18n/format";
 
 /** Copy for the bulk preview and results panels. */
 export const bulkCopy = defineAdminCopy({
@@ -48,7 +48,7 @@ export const bulkCopy = defineAdminCopy({
         conflict: number;
         failed: number;
       }) =>
-        `${counts.pending} pending · ${counts.succeeded} succeeded · ${counts.skipped} skipped · ${counts.conflict} conflicts · ${counts.failed} failed`,
+        `${counts.pending} pending · ${counts.succeeded} succeeded · ${counts.skipped} skipped · ${pluralCount(counts.conflict, "conflict")} · ${counts.failed} failed`,
       download: "Download results by item (CSV)",
     },
     review: {
@@ -65,7 +65,7 @@ export const bulkCopy = defineAdminCopy({
       previous: "Previous",
       next: "Next",
       confirmChecked: "I have checked the selected items and the changes before and after",
-      busy: "Processing…",
+      busy: "In progress…",
       applyNextBatch: "Apply the next 25",
       applyPending: "Apply pending items",
       technicalReference: "Technical reference",

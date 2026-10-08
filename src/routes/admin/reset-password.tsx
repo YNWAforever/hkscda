@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin/reset-password")({
   component: AdminResetPasswordPage,
 });
 
-function AdminResetPasswordPage() {
+export function AdminResetPasswordPage() {
   const navigate = useNavigate();
 
   return (

@@ -144,9 +144,9 @@ export const casePageCopy = defineAdminCopy({
   en: {
     caseList: {
       title: "Adoption cases",
-      subtitle: "Coordinator queue, matching, follow-up, and finalization.",
+      subtitle: "Coordinator queue, matching, follow-up and finalisation.",
       searchLabel: "Search cases",
-      searchPlaceholder: "Search applicant, phone, or email",
+      searchPlaceholder: "Search applicant, phone or email",
       statusLabel: "Filter by case status",
       statusPlaceholder: "Case status",
       allStatuses: "All statuses",
@@ -167,7 +167,7 @@ export const casePageCopy = defineAdminCopy({
     },
     intakeInbox: {
       title: "Application inbox",
-      subtitle: "Review public adoption applications, photos, and visit follow-ups.",
+      subtitle: "Review public adoption applications, photos and visit follow-ups.",
       openOnly: "Open only",
       openOnlyLabel: "Show unresolved inbox items only",
       loadError: "Could not load inbox",
@@ -195,8 +195,8 @@ export const casePageCopy = defineAdminCopy({
       },
     },
     manualIntake: {
-      title: "Manual case intake",
-      subtitle: "Create adoption cases from phone, WhatsApp, or walk-in requests.",
+      title: "Manual intake",
+      subtitle: "Create adoption cases from phone, WhatsApp or walk-in requests.",
       createCase: "Create case",
       creating: "Creating...",
       loadCaseStatusesError: "Could not load adoption case statuses",
@@ -204,7 +204,7 @@ export const casePageCopy = defineAdminCopy({
       identity: "Identity",
       identitySubtitle:
         "Search existing adopters or supporters before creating a new supporter record.",
-      identitySearch: "Search name, phone, email, or address",
+      identitySearch: "Search name, phone, email or address",
       identityPlaceholder: "Type to search existing records",
       createNewSupporter: "Create new supporter",
       searchIdentitiesError: "Could not search identities",

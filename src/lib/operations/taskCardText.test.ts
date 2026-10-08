@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { findChineseRuns } from "../../components/admin/i18n/testing";
-import { taskCardText, type TaskKey } from "./taskCardText";
+import { isTaskKey, taskCardText, taskCardTextFor, type TaskKey } from "./taskCardText";
 import { readTaskOverview, selectTaskDefinitions } from "./taskOverview.server";
 
 // What the server sent before the cards had English text. The API still sends exactly this.
@@ -94,6 +94,29 @@ describe("taskCardText", () => {
       expect(label[0], key).toBe(label[0].toUpperCase());
       expect(guidance.endsWith("."), key).toBe(true);
     }
+  });
+});
+
+describe("a card key this page does not know", () => {
+  const unknown = { key: "brand_new_task", label: "新工作", guidance: "新的指引。" };
+
+  test("isTaskKey knows the eleven keys and nothing else", () => {
+    for (const key of KEYS) expect(isTaskKey(key), key).toBe(true);
+    for (const key of ["brand_new_task", "", "constructor", "__proto__", "toString"]) {
+      expect(isTaskKey(key), key).toBe(false);
+    }
+  });
+
+  test("shows the server's own text in either language instead of failing", () => {
+    expect(taskCardTextFor(unknown, "zh")).toEqual({ label: "新工作", guidance: "新的指引。" });
+    expect(taskCardTextFor(unknown, "en")).toEqual({ label: "新工作", guidance: "新的指引。" });
+    expect(taskCardTextFor(unknown)).toEqual({ label: "新工作", guidance: "新的指引。" });
+  });
+
+  test("a known key uses the table and ignores the text the server sent", () => {
+    const sent = { key: "content_expired", label: "server label", guidance: "server guidance" };
+    expect(taskCardTextFor(sent, "en")).toEqual(taskCardText("content_expired", "en"));
+    expect(taskCardTextFor(sent, "zh")).toEqual(taskCardText("content_expired", "zh"));
   });
 });
 

@@ -1,5 +1,5 @@
 import { useSharedAdminCopy } from "../i18n/copy";
-import { buildBulkResultsCsv, type BulkItemResult } from "./bulkResultsCsv";
+import { buildBulkResultsCsvBlob, type BulkItemResult } from "./bulkResultsCsv";
 import { bulkCopy } from "./copy";
 export type { BulkItemResult } from "./bulkResultsCsv";
 
@@ -13,10 +13,7 @@ export function BulkResults({ items }: { items: BulkItemResult[] }) {
     failed: items.filter((item) => item.status === "failed").length,
   };
   function download() {
-    const blob = new Blob(["﻿", buildBulkResultsCsv(items)], {
-      type: "text/csv;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(buildBulkResultsCsvBlob(items));
     const link = document.createElement("a");
     link.href = url;
     link.download = "bulk-results.csv";

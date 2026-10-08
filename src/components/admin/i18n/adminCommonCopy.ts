@@ -465,7 +465,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       supporters: "Supporter records",
       applicationsMovedTitle: "Adoption applications moved to coordinator workflow",
       applicationsMovedDescription:
-        "Use the coordinator case list for application review, status changes, animal matches, follow-ups, and finalization.",
+        "Use the coordinator case list for application review, status changes, animal matches, follow-ups and finalisation.",
       openAdoptionCases: "Open adoption cases",
       sponsorViewAnimals: "Animal list",
       sponsorViewPledges: "Pledge review",
