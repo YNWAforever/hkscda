@@ -27,7 +27,7 @@ The background jobs are seven scheduled tasks that Vercel runs by itself: they s
 ## Verify, and pause if needed
 
 - Within about an hour, Vercel runtime logs show no `CRON_SECRET is not set in production` error.
-- In Supabase (Table Editor), `volunteer_runtime_job_run` has a row for the current hour with status `complete`. A `failed` row means step 2 is wrong. Its result names `volunteer_job_actor_missing` when the UUID is not an active admin, or `invalid input syntax for type uuid` when the variable is empty or not a UUID.
+- In Supabase (Table Editor), `volunteer_runtime_job_run` has a row for the current hour with status `complete`. If the row is `failed`, read its result. `volunteer_job_actor_missing` means the UUID is not an active admin. `job_failed` is what an empty or malformed value records, but it is also the generic name for any other database error. Recheck step 2 first.
 - In Vercel, under Settings → Environment Variables, `SPONSORSHIP_JOB_ACTOR_ID` is set for Production. The sponsorships job answers 200 whether it ran or reported `disabled`, and its queue is empty, so there is nothing else to observe until a sponsorship delivery is queued.
 - In the admin, export a supporters or donations list that matches more than 5,000 rows. The admin then offers "Create background export", and the file becomes ready within about five minutes. If no list is that large, skip this check: smaller exports never use the job.
 - The next day, the three daily jobs show 200 responses in the Vercel logs. Check `public-media-repair` on day one in particular.
