@@ -25,6 +25,10 @@ export function reportSearchGap(
       method: "POST",
       // The page may navigate away straight after a search; keep the request alive.
       keepalive: true,
+      // The page path is never sent, so the request carries no cookies and no
+      // Referer header (which would hold the path of the page that searched).
+      credentials: "omit",
+      referrerPolicy: "no-referrer",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         topic: sanitized.queryTopic,

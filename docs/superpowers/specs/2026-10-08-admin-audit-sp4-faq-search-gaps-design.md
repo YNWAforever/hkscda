@@ -69,17 +69,15 @@ enforces unique versions.
   - `confidence text not null`, check `in ('none','low')`
   - `topic text not null`, check `char_length(topic) between 1 and 80`
   - `search_count integer not null default 1`, check `> 0`
-  - `last_seen_at timestamptz not null default now()`
   - Primary key `(day, language, confidence, topic)`
   - RLS enabled, with no policies.
   - `revoke all on table public.faq_search_gap from public, anon, authenticated`. Only the
     functions below touch the table.
 - **`public.purge_faq_search_gaps() returns integer`**
-  - Deletes rows whose `day` is more than 90 days before the HK day; returns the count.
+  - Deletes rows aged 90 days or more (`day` at least 90 days before the HK day); returns the count.
 - **`public.record_faq_search_gap(p_topic text, p_language text, p_confidence text) returns void`**
   - Calls the purge first.
-  - Then inserts the row for today, or on conflict adds 1 to `search_count` and sets
-    `last_seen_at = now()`.
+  - Then inserts the row for today, or on conflict adds 1 to `search_count`.
 - **`public.list_faq_search_gaps(p_days integer, p_limit integer)`**
   - Returns `table (topic text, language text, confidence text, search_count bigint, last_seen_day date)`.
   - Raises on `p_days` outside 1..90 or `p_limit` outside 1..500.
@@ -93,6 +91,9 @@ enforces unique versions.
 
 What is never stored: IP address, user agent, session, page path, a timestamp finer than
 the day in the key, or the raw query.
+
+`last_seen_at` was dropped during implementation: the privacy notice promises dates only,
+and nothing read it.
 
 ### 2. Collection: browser beacon and public endpoint
 
@@ -235,7 +236,7 @@ approves before merge:
   CI against a fresh stack, checks:
   - anon and authenticated can neither select nor insert;
   - `record_faq_search_gap` adds 1 to the same day's row;
-  - `purge_faq_search_gaps` deletes rows older than 90 days and keeps newer ones;
+  - `purge_faq_search_gaps` deletes rows aged 90 days or more and keeps newer ones;
   - `list_faq_search_gaps` sums, filters by window, orders and limits, and rejects
     out-of-range arguments.
 

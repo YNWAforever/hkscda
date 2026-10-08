@@ -263,12 +263,14 @@ describe.skipIf(!reachable)("RLS behavioral matrix: faq_search_gap", () => {
   });
 
   describe("purge", () => {
-    test("deletes rows older than 90 Hong Kong days and keeps the 90th", async () => {
-      const oldTopic = `${TOPIC_PREFIX}-purge-91`;
-      const keptTopic = `${TOPIC_PREFIX}-purge-90`;
+    // A row recorded on day D lives D..D+89 (90 days) and goes on D+90, which is
+    // what the privacy notice promises.
+    test("deletes rows aged 90 Hong Kong days or more and keeps the 89th day back", async () => {
+      const oldTopic = `${TOPIC_PREFIX}-purge-90`;
+      const keptTopic = `${TOPIC_PREFIX}-purge-89`;
       await seed([
-        { topic: oldTopic, day: hkDay(91) },
-        { topic: keptTopic, day: hkDay(90) },
+        { topic: oldTopic, day: hkDay(90) },
+        { topic: keptTopic, day: hkDay(89) },
       ]);
 
       const { data, error } = await svc().rpc("purge_faq_search_gaps");

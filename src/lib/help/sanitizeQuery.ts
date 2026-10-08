@@ -55,7 +55,19 @@ function hasPersonalData(rawQuery: string): boolean {
   );
 }
 
-export function sanitizeHelpQuery(query: string): SanitizedHelpQuery {
+// Format characters (zero-width spaces and joiners, byte order marks, bidi
+// overrides and isolates) are removed outright: they have no width, so removing
+// them rejoins digits that were split to hide a phone number, and they stop a
+// stored topic from reordering the text staff read. Control characters, NUL
+// included, become a space: Postgres text cannot hold NUL, and a control
+// character between two words should still separate them.
+function stripControlAndFormatCharacters(query: string): string {
+  return query.replace(/\p{Cf}/gu, "").replace(/\p{Cc}/gu, " ");
+}
+
+export function sanitizeHelpQuery(rawQuery: string): SanitizedHelpQuery {
+  const query = stripControlAndFormatCharacters(rawQuery);
+
   if (!query.trim()) {
     return { redacted: true };
   }

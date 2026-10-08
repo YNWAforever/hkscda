@@ -14,7 +14,7 @@ to a new rate-limited JSON endpoint. The endpoint re-sanitises the topic and cal
 - a report panel, fed by an aggregating RPC through a new admin GET route;
 - an in-browser answer tester that shares the public search's code.
 
-Rows older than 90 days are purged on every insert and by the existing daily
+Rows aged 90 days or more are purged on every insert and by the existing daily
 `/api/jobs/public-uploads` job.
 
 **Tech Stack:** TypeScript, TanStack Start file routes, React 19, TanStack Query, Supabase
@@ -190,16 +190,15 @@ Postgres (RLS, RPC), zod, Bun 1.3.14 (`bun:test`), Upstash rate limiting.
   - `confidence text not null check (confidence in ('none','low'))`
   - `topic text not null check (char_length(topic) between 1 and 80)`
   - `search_count integer not null default 1 check (search_count > 0)`
-  - `last_seen_at timestamptz not null default now()`
   - `primary key (day, language, confidence, topic)`
 
   Enable RLS and add no policies. Revoke all on the table from public, anon and
   authenticated. All three functions are `plpgsql`, `security definer`,
   `set search_path = public, pg_temp`, and use
   `v_today date := (now() at time zone 'Asia/Hong_Kong')::date`.
-  - **purge:** deletes rows where `day < v_today - 90` and returns the count.
+  - **purge:** deletes rows aged 90 days or more (`day < v_today - 89`) and returns the count.
   - **record:** runs `perform public.purge_faq_search_gaps();`, then
-    `insert … values (v_today, p_language, p_confidence, p_topic) on conflict (day, language, confidence, topic) do update set search_count = <alias>.search_count + 1, last_seen_at = now()`.
+    `insert … values (v_today, p_language, p_confidence, p_topic) on conflict (day, language, confidence, topic) do update set search_count = <alias>.search_count + 1`.
   - **list:**
     - raises `errcode '22023'` when `p_days` is outside 1..90 or `p_limit` is outside
       1..500;
@@ -243,8 +242,8 @@ Postgres (RLS, RPC), zod, Bun 1.3.14 (`bun:test`), Upstash rate limiting.
   - service `record` twice for one topic → one row with `search_count` 2;
   - the same topic recorded for `zh-HK`/`none`, `en`/`none` and `en`/`low` → three separate
     `list` rows (Review Focus 2);
-  - service inserts rows at HK today − 91 and today − 90; `purge` deletes the −91 row and
-    keeps the −90 row;
+  - service inserts rows at HK today − 90 and today − 89; `purge` deletes rows aged 90 days
+    or more, so the −90 row goes and the −89 row stays;
   - rows at today and today − 29 are summed by `list(30, …)`, but a row at today − 30 is
     not;
   - ordering is by total desc;

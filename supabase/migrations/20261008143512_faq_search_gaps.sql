@@ -21,7 +21,9 @@ alter table public.faq_search_gap enable row level security;
 revoke all on table public.faq_search_gap from public, anon, authenticated;
 grant select, insert, update, delete on table public.faq_search_gap to service_role;
 
--- Retention: keep 90 Hong Kong days. Returns the number of rows deleted.
+-- Retention: a row recorded on Hong Kong day D is kept for 90 days (D through
+-- D + 89) and deleted from D + 90, matching the 90 days the privacy notice
+-- promises. Returns the number of rows deleted.
 create or replace function public.purge_faq_search_gaps()
 returns integer
 language plpgsql
@@ -33,7 +35,7 @@ declare
   v_deleted integer;
 begin
   delete from public.faq_search_gap g
-  where g.day < v_today - 90;
+  where g.day < v_today - 89;
   get diagnostics v_deleted = row_count;
   return v_deleted;
 end;

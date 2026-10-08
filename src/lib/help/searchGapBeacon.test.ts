@@ -21,6 +21,9 @@ describe("reportSearchGap", () => {
     expect(url).toBe("/api/help/search-gap");
     expect(init?.method).toBe("POST");
     expect(init?.keepalive).toBe(true);
+    // No cookies, and no Referer header: the page path is never sent.
+    expect(init?.credentials).toBe("omit");
+    expect(init?.referrerPolicy).toBe("no-referrer");
     expect(new Headers(init?.headers).get("content-type")).toBe("application/json");
     expect(JSON.parse(String(init?.body))).toEqual({ topic: "visa", language: "en", confidence });
   });

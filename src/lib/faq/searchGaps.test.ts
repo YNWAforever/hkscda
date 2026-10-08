@@ -154,6 +154,59 @@ describe("createSearchGapService.record", () => {
     expect(record).not.toHaveBeenCalled();
   });
 
+  test("never records a NUL, which Postgres text cannot hold", async () => {
+    const { repo, record } = createRepo([]);
+
+    const outcome = await createSearchGapService({ repo }).record({
+      topic: "visa\u0000",
+      language: "en",
+      confidence: "none",
+    });
+
+    expect(outcome).toBe("recorded");
+    const [input] = record.mock.calls[0] ?? [];
+    expect(input?.topic).toBe("visa");
+  });
+
+  test("strips a bidi override so a report row cannot render backwards", async () => {
+    const { repo, record } = createRepo([]);
+
+    await createSearchGapService({ repo }).record({
+      topic: "‮evil",
+      language: "en",
+      confidence: "none",
+    });
+
+    const [input] = record.mock.calls[0] ?? [];
+    expect(input?.topic).toBe("evil");
+  });
+
+  test("does not let a zero-width space hide a phone number from the sanitiser", async () => {
+    const { repo, record } = createRepo([]);
+
+    const outcome = await createSearchGapService({ repo }).record({
+      topic: "call 9123​4567",
+      language: "en",
+      confidence: "none",
+    });
+
+    expect(outcome).toBe("dropped");
+    expect(record).not.toHaveBeenCalled();
+  });
+
+  test("drops a topic that is nothing but control and format characters", async () => {
+    const { repo, record } = createRepo([]);
+
+    const outcome = await createSearchGapService({ repo }).record({
+      topic: "\u0000​‮",
+      language: "en",
+      confidence: "none",
+    });
+
+    expect(outcome).toBe("dropped");
+    expect(record).not.toHaveBeenCalled();
+  });
+
   test("drops a topic that is nothing but a lone surrogate", async () => {
     const { repo, record } = createRepo([]);
 

@@ -38,6 +38,13 @@ describe("faq_search_gaps migration", () => {
     expect(sql).not.toMatch(/timestamp/i);
   });
 
+  // Day D is kept through D + 89 and purged from D + 90: 90 days, as the privacy
+  // notice says. `< today - 90` would keep a row for 91 days.
+  test("purges rows aged 90 days or more", () => {
+    expect(sql).toContain("where g.day < v_today - 89;");
+    expect(sql).not.toContain("v_today - 90");
+  });
+
   test("orders the report totally, so rows with equal totals never reshuffle", () => {
     expect(sql).toContain(
       "order by sum(g.search_count) desc, max(g.day) desc, g.topic, g.language, g.confidence",
