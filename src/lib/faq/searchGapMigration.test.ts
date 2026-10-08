@@ -31,6 +31,19 @@ describe("faq_search_gaps migration", () => {
     expect(sql).toContain("at time zone 'Asia/Hong_Kong'");
   });
 
+  // The privacy notice promises topic, language and date only: no column may
+  // record the time of a search.
+  test("stores a date and a count, never the time of a search", () => {
+    expect(sql).not.toContain("last_seen_at");
+    expect(sql).not.toMatch(/timestamp/i);
+  });
+
+  test("orders the report totally, so rows with equal totals never reshuffle", () => {
+    expect(sql).toContain(
+      "order by sum(g.search_count) desc, max(g.day) desc, g.topic, g.language, g.confidence",
+    );
+  });
+
   test("locks the table down: RLS on, no client access", () => {
     expect(sql).toContain("alter table public.faq_search_gap enable row level security");
     expect(sql).toContain(

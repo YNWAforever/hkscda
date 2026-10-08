@@ -55,6 +55,14 @@ const AUTHENTICATED_PASSWORD = "test-password-12345";
 const INVALID_PARAMETER_VALUE = "22023";
 // PostgREST's code for a role that lacks the table or function privilege.
 const INSUFFICIENT_PRIVILEGE = "42501";
+// Some PostgREST versions leave a function the role cannot execute out of the
+// schema cache, so a denied RPC answers "function not found" instead.
+const FUNCTION_NOT_FOUND = "PGRST202";
+
+function expectRpcDenied(error: { code?: string } | null) {
+  expect(error).not.toBeNull();
+  expect([INSUFFICIENT_PRIVILEGE, FUNCTION_NOT_FOUND]).toContain(error?.code ?? "");
+}
 
 // Same day arithmetic as the database: calendar days in Hong Kong time.
 function hkDay(daysAgo = 0): string {
@@ -197,13 +205,13 @@ describe.skipIf(!reachable)("RLS behavioral matrix: faq_search_gap", () => {
         p_language: "en",
         p_confidence: "none",
       });
-      expect(record.error?.code).toBe(INSUFFICIENT_PRIVILEGE);
+      expectRpcDenied(record.error);
 
       const list = await client().rpc("list_faq_search_gaps", { p_days: 30, p_limit: 10 });
-      expect(list.error?.code).toBe(INSUFFICIENT_PRIVILEGE);
+      expectRpcDenied(list.error);
 
       const purge = await client().rpc("purge_faq_search_gaps");
-      expect(purge.error?.code).toBe(INSUFFICIENT_PRIVILEGE);
+      expectRpcDenied(purge.error);
 
       // Nothing slipped through the denied record call.
       expect(
@@ -322,6 +330,22 @@ describe.skipIf(!reachable)("RLS behavioral matrix: faq_search_gap", () => {
         `${TOPIC_PREFIX}-tie-b-new`,
         `${TOPIC_PREFIX}-tie-b-old`,
       ]);
+    });
+
+    // The same topic and total in several buckets must come back in one fixed
+    // order, so the report cannot reshuffle between refreshes.
+    test("breaks the last ties by language, then confidence, in text order", async () => {
+      const topic = `${TOPIC_PREFIX}-sort-buckets`;
+      await seed([
+        { topic, day: hkDay(), search_count: 2, language: "zh-HK", confidence: "none" },
+        { topic, day: hkDay(), search_count: 2, language: "en", confidence: "none" },
+        { topic, day: hkDay(), search_count: 2, language: "en", confidence: "low" },
+      ]);
+
+      const buckets = (await listOurs())
+        .filter((row) => row.topic === topic)
+        .map((row) => `${row.language}/${row.confidence}`);
+      expect(buckets).toEqual(["en/low", "en/none", "zh-HK/none"]);
     });
 
     test.each([

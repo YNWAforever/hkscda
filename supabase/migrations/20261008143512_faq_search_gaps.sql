@@ -1,8 +1,9 @@
 -- FAQ search gaps: one row per (Hong Kong day, language, confidence, topic) with
 -- a running count. A "topic" is the sanitised phrase the help search could not
 -- answer well. The raw query, IP address, user agent and page path are never
--- stored here -- only counts of topics, so the report can show staff which
--- questions are missing from the FAQ.
+-- stored here, and neither is the time of a search: only the topic, its
+-- language and the Hong Kong date, with a count, so the report can show staff
+-- which questions are missing from the FAQ.
 
 create table public.faq_search_gap (
   day date not null,
@@ -10,7 +11,6 @@ create table public.faq_search_gap (
   confidence text not null check (confidence in ('none', 'low')),
   topic text not null check (char_length(topic) between 1 and 80),
   search_count integer not null default 1 check (search_count > 0),
-  last_seen_at timestamptz not null default now(),
   primary key (day, language, confidence, topic)
 );
 
@@ -62,8 +62,7 @@ begin
   insert into public.faq_search_gap as g (day, language, confidence, topic)
   values (v_today, p_language, p_confidence, p_topic)
   on conflict (day, language, confidence, topic) do update
-    set search_count = g.search_count + 1,
-        last_seen_at = now();
+    set search_count = g.search_count + 1;
 end;
 $$;
 
@@ -108,7 +107,7 @@ begin
   from public.faq_search_gap g
   where g.day > v_today - p_days
   group by g.topic, g.language, g.confidence
-  order by sum(g.search_count) desc, max(g.day) desc, g.topic
+  order by sum(g.search_count) desc, max(g.day) desc, g.topic, g.language, g.confidence
   limit p_limit;
 end;
 $$;
