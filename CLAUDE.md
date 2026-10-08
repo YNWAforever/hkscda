@@ -19,7 +19,7 @@ volunteer journey and a role-gated admin back office.
 
 - Dev: `bun run dev`
 - Build: `bun run build`
-- Test: `bun test` (~1090 tests, ~193 files, a few seconds)
+- Test: `bun run test` (adds `--isolate`, as CI does; ≈5,480 tests in 636 files, about two minutes). `supabase/rls-tests` run only when a local stack answers on port 55321; a stack shared with other worktrees gives false failures, so for a unit-only run set `SUPABASE_LOCAL_URL=http://127.0.0.1:1`.
 - Typecheck: `bunx tsc --noEmit` — **the build does NOT typecheck.** Run this
   before pushing; Vite transpiles without type checking, so type errors ship green.
 - Lint: `bun run lint` (~30s over the whole tree) — `bunx eslint <file>` for a
@@ -46,15 +46,13 @@ Handler factories take their dependencies as arguments (`requireAdmin`, `service
 Domains following this: `adoptions`, `crm`, `donations`, `volunteers`, `admin`,
 `publicAdoption`, `sponsorship`.
 
-**Legacy exception**: older admin animal surfaces (`AnimalForm`, `AnimalsTable`,
-`AnimalPipeline`, `MatchPanel`) write to Supabase directly from the browser with the
-anon client, guarded only by RLS. Do not copy this pattern — new mutations go through
-the API layer. Their audit trail comes from a database trigger
-(`log_animal_mutation`, migrations `20260803120000` + `20260805120000`) that fires only
-when the write carries a real JWT (`auth.uid()` is set) — service-role writes are
-skipped there and must write their own `audit_log` row at the app layer instead
-(matching the rule below), so the same event is never logged twice with two different
-actors. Write that row inside a `*_with_audit` RPC, not as a second PostgREST call:
+**Animal audit trigger**: admin browser code no longer reads or writes tables directly —
+every admin surface goes through the API layer (`adminBrowserDataGuard.test.ts` enforces
+it). The `log_animal_mutation` trigger (migrations `20260803120000` + `20260805120000`)
+still audits any animal-table write that carries a real JWT (`auth.uid()` is set);
+service-role writes are skipped there and must write their own `audit_log` row at the
+app layer instead, so the same event is never logged twice with two different actors.
+Write that row inside a `*_with_audit` RPC, not as a second PostgREST call:
 the mutation commits first, so a separate audit insert that fails leaves the change
 applied, unaudited, and reported to the caller as a 500. `adminRouteAuditing.test.ts`
 enforces the pairing.
@@ -101,9 +99,6 @@ enforces the pairing.
   the caller doesn't act on) is typed `Promise<unknown>`, never `Promise<void>` —
   TypeScript's void-return exemption does not apply through a `Promise<T>` type
   argument, so `Promise<void>` rejects the real implementation at the call site.
-  Landed independently three times (`volunteers/service.ts`,
-  `publicAdoption/submission.server.ts`, `sponsorship/submission.server.ts`)
-  before being written down here.
 - CSS theming: use `var(--color-*)` tokens from `styles.css`, never hardcoded colours
 - Tests: `*.test.ts` beside the source, `bun:test`, dependency-injected fakes
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)

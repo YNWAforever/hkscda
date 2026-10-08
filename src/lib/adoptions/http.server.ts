@@ -1,5 +1,6 @@
 import type { AdoptionCoordinatorService, CoordinatorAuthorizer } from "./http/shared.server";
 import { createAdopterHandlers } from "./http/adopterHandlers.server";
+import { createAnimalLookupHandlers } from "./http/animalLookupHandlers.server";
 import { createCaseHandlers } from "./http/caseHandlers.server";
 import { createReportingHandlers } from "./http/reportingHandlers.server";
 import { createStatusHandlers } from "./http/statusHandlers.server";
@@ -18,5 +19,6 @@ export function createAdoptionCoordinatorHandlers(args: CreateArgs) {
     ...createTaskHandlers(args),
     ...createReportingHandlers(args),
     ...createAdopterHandlers(args),
+    ...createAnimalLookupHandlers(args),
   };
 }

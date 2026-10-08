@@ -283,6 +283,52 @@ test("readiness accepts valid edited CMS headings rendered in the actual page", 
   ).toEqual({ state: "ready", releaseSha: "fixture" });
 });
 
+describe("adoption instructions route head", () => {
+  type HeadResult = { meta: Record<string, string>[] };
+  type HeadFixture = {
+    head: (context: { loaderData?: unknown }) => HeadResult;
+  };
+  const tabTitle = (result: HeadResult) => result.meta.find((entry) => "title" in entry)?.title;
+  const headFor = async (loaderData: unknown) => {
+    const { Route } = await import("./instructions");
+    return (Route as unknown as HeadFixture).head({ loaderData });
+  };
+  const withHeroTitle = (title: string): PublicAdoptionPageData => ({
+    ...data,
+    copy: {
+      ...initialAdoptionInstructionContent,
+      hero: { ...initialAdoptionInstructionContent.hero, title },
+    },
+  });
+
+  test("titles the tab with the CMS heading the page renders", async () => {
+    const result = await headFor({ status: "ok", data: withHeroTitle(" 領養須知 ") });
+    expect(tabTitle(result)).toBe("領養須知 · 香港拯救貓狗協會 HKSCDA");
+  });
+
+  test("uses the seeded CMS heading when it was not edited", async () => {
+    const result = await headFor({ status: "ok", data });
+    expect(tabTitle(result)).toBe(
+      initialAdoptionInstructionContent.hero.title + " · 香港拯救貓狗協會 HKSCDA",
+    );
+  });
+
+  test("falls back to the nav label when the CMS heading is blank", async () => {
+    const result = await headFor({ status: "ok", data: withHeroTitle("   ") });
+    expect(tabTitle(result)).toBe("領養流程 · 香港拯救貓狗協會 HKSCDA");
+  });
+
+  test("falls back to the nav label when the loader failed or has not run", async () => {
+    for (const loaderData of [
+      { status: "error", referenceId: "synthetic-server-reference" },
+      { status: "error", referenceId: null },
+      undefined,
+    ]) {
+      expect(tabTitle(await headFor(loaderData))).toBe("領養流程 · 香港拯救貓狗協會 HKSCDA");
+    }
+  });
+});
+
 test("a transport failure keeps a retry shell without inventing a private server reference", async () => {
   const loader = createAdoptionInstructionsLoader(async () => {
     throw new Error("network unavailable");

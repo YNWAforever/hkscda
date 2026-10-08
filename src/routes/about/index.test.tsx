@@ -1,6 +1,6 @@
 import { describe, expect, test, mock } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { AboutContent } from "./index";
+import { AboutContent, Route } from "./index";
 import type { AboutPageContent } from "../../lib/aboutPages/types";
 
 // AboutContent renders through PublicPageFrame, which uses router links.
@@ -60,6 +60,43 @@ const DEFAULT_ABOUT_CONTENT_FOR_TEST: AboutPageContent = {
   },
   closing: { title: "自訂結尾標題", description: "自訂結尾描述", buttonLabel: "自訂結尾按鈕" },
 };
+
+// The head function is called with just the loader data, the only input it reads.
+// `Route` is the real route (head under `.options`), or the bare options object when
+// a createFileRoute mock like the one above was already registered, as happens when
+// sibling route tests share a process without --isolate.
+type AboutHeadContext = { loaderData: { content: AboutPageContent | null } | undefined };
+type AboutHead = (ctx: AboutHeadContext) => { meta: object[] };
+const routeOptions = Route as unknown as { options?: { head: AboutHead }; head: AboutHead };
+const aboutHead = (routeOptions.options ?? routeOptions).head;
+
+describe("/about head", () => {
+  const DEFAULT_HERO_DESCRIPTION = "救援、醫療、絕育與負責任領養，以社區力量守護香港流浪貓狗。";
+
+  test("describes the CMS hero copy the page renders", () => {
+    const { meta } = aboutHead({ loaderData: { content: DEFAULT_ABOUT_CONTENT_FOR_TEST } });
+
+    expect(meta).toContainEqual({ name: "description", content: "自訂Hero描述" });
+    expect(meta).toContainEqual({ property: "og:description", content: "自訂Hero描述" });
+  });
+
+  test("describes the default hero when the CMS has no content, as the page does", () => {
+    const { meta } = aboutHead({ loaderData: { content: null } });
+    const markup = renderToStaticMarkup(<AboutContent impact={[]} content={null} />);
+
+    expect(markup).toContain(DEFAULT_HERO_DESCRIPTION);
+    expect(meta).toContainEqual({ name: "description", content: DEFAULT_HERO_DESCRIPTION });
+    expect(meta).toContainEqual({ property: "og:description", content: DEFAULT_HERO_DESCRIPTION });
+    expect(meta).toContainEqual({ name: "twitter:description", content: DEFAULT_HERO_DESCRIPTION });
+  });
+
+  test("leaves the description out when the loader gave the page nothing", () => {
+    const { meta } = aboutHead({ loaderData: undefined });
+
+    expect(meta).toContainEqual({ title: "使命與歷史 · 香港拯救貓狗協會 HKSCDA" });
+    expect(JSON.stringify(meta)).not.toContain("description");
+  });
+});
 
 describe("AboutContent", () => {
   test("renders the approved mission sequence without unverified legacy figures", () => {

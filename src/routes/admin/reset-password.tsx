@@ -124,25 +124,30 @@ export function AdminResetPasswordForm({
   }
 
   return (
-    <main className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <main className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="text-2xl font-bold">HKSCDA</div>
-            <div className="text-sm text-gray-500 mt-1">{copy.login.resetTitle}</div>
+            <p className="text-2xl font-bold">HKSCDA</p>
+            <h1 className="text-sm font-normal tracking-normal text-[var(--color-text-muted)] mt-1">
+              {copy.login.resetTitle}
+            </h1>
           </div>
           <AdminLanguageToggle />
         </div>
 
         {status === "checking" && (
-          <p role="status" className="text-sm text-gray-600">
+          <p role="status" className="text-sm text-[var(--color-text-muted)]">
             {copy.common.loading}
           </p>
         )}
 
         {status === "invalid" && (
           <div className="space-y-4">
-            <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-lg bg-[var(--color-error-highlight)] px-3 py-2 text-sm text-[var(--color-error)]"
+            >
               {copy.login.invalidRecoveryLink}
             </p>
             <button
@@ -188,14 +193,14 @@ export function AdminResetPasswordForm({
               />
             </div>
             {error && (
-              <p role="alert" className="text-red-600 text-sm">
+              <p role="alert" className="text-[var(--color-error)] text-sm">
                 {error}
               </p>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
+              className="w-full py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
             >
               {loading ? copy.login.updatingPassword : copy.login.updatePassword}
             </button>

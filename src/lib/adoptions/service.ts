@@ -36,6 +36,8 @@ import type {
   AdopterSummary,
   AnimalPipelineListResult,
   AnimalPipelineSearch,
+  AnimalPositionRecord,
+  ArrivalSourceRecord,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
   CoordinatorExportAuditRow,
@@ -48,6 +50,7 @@ import type {
   CoordinatorTaskExportRow,
   ManualCaseIdentityCandidate,
   ManualCaseIntakeResult,
+  MatchableAnimalOption,
 } from "./types";
 
 export type StatusInput = z.infer<typeof statusInputSchema>;
@@ -93,6 +96,9 @@ export type AdoptionCoordinatorRepository = {
   ): Promise<CoordinatorStatus>;
   deleteStatus(id: string, actorUserId?: string | null): Promise<void>;
   listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult>;
+  listMatchableAnimals(): Promise<MatchableAnimalOption[]>;
+  listAnimalPositions(): Promise<AnimalPositionRecord[]>;
+  listArrivalSources(): Promise<ArrivalSourceRecord[]>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   listIntakeItems(input: {
     lane?: AdoptionIntakeLane;
@@ -295,6 +301,18 @@ export function createAdoptionCoordinatorService({
 
     listAnimalPipeline(rawSearch: unknown) {
       return repo.listAnimalPipeline(animalPipelineSearchSchema.parse(rawSearch));
+    },
+
+    listMatchableAnimals() {
+      return repo.listMatchableAnimals();
+    },
+
+    listAnimalPositions() {
+      return repo.listAnimalPositions();
+    },
+
+    listArrivalSources() {
+      return repo.listArrivalSources();
     },
 
     listCases(rawSearch: unknown) {

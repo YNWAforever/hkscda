@@ -116,6 +116,18 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
       calls.push({ name: "listAnimalPipeline", payload: rawSearch });
       return { animals: [], total: 0, page: 2, pageSize: 10 };
     },
+    async listMatchableAnimals() {
+      calls.push({ name: "listMatchableAnimals" });
+      return [];
+    },
+    async listAnimalPositions() {
+      calls.push({ name: "listAnimalPositions" });
+      return [];
+    },
+    async listArrivalSources() {
+      calls.push({ name: "listArrivalSources" });
+      return [];
+    },
     async listCases(rawSearch) {
       calls.push({ name: "listCases", payload: rawSearch });
       return { cases: [], total: 0 };
@@ -255,9 +267,12 @@ describe("createAdoptionCoordinatorHandlers", () => {
         "getTask",
         "listAdopters",
         "listAnimalPipeline",
+        "listAnimalPositions",
+        "listArrivalSources",
         "listCases",
         "listCoordinatorExportHistory",
         "listIntakeItems",
+        "listMatchableAnimals",
         "listStatuses",
         "listTasks",
         "regenerateCoordinatorExport",

@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { z } from "zod";
 
 import {
@@ -39,9 +39,13 @@ export const Route = createFileRoute("/animals/dog")({
         suitability: deps.suitability,
       },
     }),
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/animals/dog") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "待領養狗狗",
+      description:
+        "查看目前可申請領養的狗狗，搜尋名字或編號，按生活需要縮窄結果，再了解牠們的需要。",
+      path: "/animals/dog",
+    }),
   pendingComponent: () => <AnimalListingPending species="dog" />,
   errorComponent: ListingError,
   component: ListingPage,

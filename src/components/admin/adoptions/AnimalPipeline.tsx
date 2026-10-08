@@ -5,10 +5,11 @@ import type { FormEvent } from "react";
 
 import type {
   AnimalPipelineListResult,
+  AnimalPositionRecord,
+  ArrivalSourceRecord,
   CoordinatorStatus,
   CoordinatorTask,
 } from "../../../lib/adoptions/types";
-import { supabase } from "../../../lib/supabase";
 import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -34,12 +35,11 @@ import {
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
   hasUnsavedProfileChanges,
+  readPipelineLookup,
   resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
   type AnimalPipelineRow,
-  type AnimalPositionSummary,
-  type ArrivalSourceSummary,
 } from "./animalPipelineLogic";
 import { ExportButton } from "./ExportButton";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
@@ -61,18 +61,12 @@ type TasksResponse = {
   total: number;
 };
 
-type AnimalPosition = AnimalPositionSummary & {
-  for_cat: boolean;
-  for_dog: boolean;
-  address: string | null;
-  contact_person: string | null;
-  phone: string | null;
-  email: string | null;
-  is_active: boolean;
+type PositionsResponse = {
+  positions: AnimalPositionRecord[];
 };
 
-type ArrivalSource = ArrivalSourceSummary & {
-  is_active: boolean;
+type ArrivalSourcesResponse = {
+  arrivalSources: ArrivalSourceRecord[];
 };
 
 const PIPELINE_QUERY_KEY = ["coordinator-animal-pipeline"] as const;
@@ -84,8 +78,8 @@ const ARRIVAL_SOURCES_QUERY_KEY = ["arrival-sources"] as const;
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 const animalTasksQueryKey = (animalId: string | null) => ["coordinator-animal-tasks", animalId];
 
-const EMPTY_POSITIONS: AnimalPosition[] = [];
-const EMPTY_ARRIVAL_SOURCES: ArrivalSource[] = [];
+const EMPTY_POSITIONS: AnimalPositionRecord[] = [];
+const EMPTY_ARRIVAL_SOURCES: ArrivalSourceRecord[] = [];
 const EMPTY_STATUSES: CoordinatorStatus[] = [];
 const EMPTY_TASKS: CoordinatorTask[] = [];
 const EMPTY_PIPELINE_ROWS: AnimalPipelineRow[] = [];
@@ -171,24 +165,22 @@ async function readAnimalPipeline(searchParams: URLSearchParams) {
   );
 }
 
-async function readPositions() {
-  const { data, error } = await supabase
-    .from("animal_position")
-    .select("id,name,type,for_cat,for_dog,address,contact_person,phone,email,is_active")
-    .order("is_active", { ascending: false })
-    .order("name", { ascending: true });
-  if (error) throw new Error(`Positions could not load: ${error.message}`);
-  return (data ?? []) as AnimalPosition[];
+function readPositions() {
+  return readPipelineLookup("positions", async () => {
+    const response = await fetchCoordinatorJson<PositionsResponse>(
+      "/api/admin/adoptions/positions",
+    );
+    return response.positions;
+  });
 }
 
-async function readArrivalSources() {
-  const { data, error } = await supabase
-    .from("arrival_source")
-    .select("id,name_zh,name_en,is_active")
-    .order("is_active", { ascending: false })
-    .order("name_zh", { ascending: true });
-  if (error) throw new Error(`Arrival sources could not load: ${error.message}`);
-  return (data ?? []) as ArrivalSource[];
+function readArrivalSources() {
+  return readPipelineLookup("arrivalSources", async () => {
+    const response = await fetchCoordinatorJson<ArrivalSourcesResponse>(
+      "/api/admin/adoptions/arrival-sources",
+    );
+    return response.arrivalSources;
+  });
 }
 
 async function readCoordinatorStatuses() {
@@ -286,12 +278,12 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     enabled: Boolean(initialAnimalParams),
     staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
   });
-  const positionsQuery = useQuery<AnimalPosition[], Error>({
+  const positionsQuery = useQuery<AnimalPositionRecord[], Error>({
     queryKey: POSITIONS_QUERY_KEY,
     queryFn: readPositions,
     staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
   });
-  const sourcesQuery = useQuery<ArrivalSource[], Error>({
+  const sourcesQuery = useQuery<ArrivalSourceRecord[], Error>({
     queryKey: ARRIVAL_SOURCES_QUERY_KEY,
     queryFn: readArrivalSources,
     staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
@@ -931,8 +923,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             className="space-y-1 border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
             role="alert"
           >
-            {readErrors.map((message) => (
-              <p key={message}>{message}</p>
+            {readErrors.map((message, index) => (
+              <p key={`${index}:${message}`}>{message}</p>
             ))}
           </div>
         )}

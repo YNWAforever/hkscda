@@ -118,6 +118,18 @@ function createRepo(
       calls.push({ name: "listAnimalPipeline", payload: input });
       return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
     },
+    async listMatchableAnimals() {
+      calls.push({ name: "listMatchableAnimals" });
+      return [];
+    },
+    async listAnimalPositions() {
+      calls.push({ name: "listAnimalPositions" });
+      return [];
+    },
+    async listArrivalSources() {
+      calls.push({ name: "listArrivalSources" });
+      return [];
+    },
     async listCases(input) {
       calls.push({ name: "listCases", payload: input });
       return { cases: [], total: 0 };
@@ -641,6 +653,58 @@ describe("createAdoptionCoordinatorService", () => {
         pageSize: 50,
       },
     });
+  });
+
+  test("passes the animal lookup reads through to the repository", async () => {
+    const matchable = {
+      id: animalId,
+      name: "Mochi",
+      name_en: "Mochi",
+      type: "cat",
+      status: "available",
+    };
+    const position = {
+      id: "12345678-aaaa-4333-8444-555555555555",
+      name: "Foster home",
+      type: "foster",
+      for_cat: true,
+      for_dog: false,
+      address: null,
+      contact_person: null,
+      phone: null,
+      email: null,
+      is_active: true,
+    };
+    const source = {
+      id: "87654321-bbbb-4333-8444-555555555555",
+      name_zh: "街頭救援",
+      name_en: null,
+      is_active: true,
+    };
+    const repo = createRepo({
+      async listMatchableAnimals() {
+        repo.calls.push({ name: "listMatchableAnimals" });
+        return [matchable];
+      },
+      async listAnimalPositions() {
+        repo.calls.push({ name: "listAnimalPositions" });
+        return [position];
+      },
+      async listArrivalSources() {
+        repo.calls.push({ name: "listArrivalSources" });
+        return [source];
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    expect(await service.listMatchableAnimals()).toEqual([matchable]);
+    expect(await service.listAnimalPositions()).toEqual([position]);
+    expect(await service.listArrivalSources()).toEqual([source]);
+    expect(repo.calls.map((call) => call.name)).toEqual([
+      "listMatchableAnimals",
+      "listAnimalPositions",
+      "listArrivalSources",
+    ]);
   });
 
   test("lists adopters with normalized filters", async () => {

@@ -1,15 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicFormFrame } from "../components/site/PublicFormFrame";
 import { PledgeStatusPage } from "../components/site/sponsorship/PledgeStatusPage";
 
 export const Route = createFileRoute("/sponsors_/status/$token")({
-  head: () => ({
-    meta: [
-      { name: "robots", content: "noindex, nofollow, noarchive" },
-      { name: "referrer", content: "no-referrer" },
-    ],
-  }),
+  head: () => pageHead({ title: "助養狀態", private: true }),
   component: SponsorshipStatusRoute,
 });
 

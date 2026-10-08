@@ -98,20 +98,23 @@ export function AdminLoginContent({
   }
 
   return (
-    <main className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <main className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="text-2xl font-bold">HKSCDA</div>
-            <div className="text-sm text-gray-500 mt-1">
+            <p className="text-2xl font-bold">HKSCDA</p>
+            <h1 className="text-sm font-normal tracking-normal text-[var(--color-text-muted)] mt-1">
               {mode === "request-reset" ? copy.login.resetTitle : copy.login.subtitle}
-            </div>
+            </h1>
           </div>
           <AdminLanguageToggle />
         </div>
 
         {passwordResetSuccess && mode === "sign-in" && (
-          <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <p
+            role="status"
+            className="rounded-lg bg-[var(--color-success-highlight)] px-3 py-2 text-sm text-[var(--color-success)]"
+          >
             {copy.login.passwordUpdated}
           </p>
         )}
@@ -121,7 +124,7 @@ export function AdminLoginContent({
             <div className="space-y-4">
               <p
                 role="status"
-                className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+                className="rounded-lg bg-[var(--color-success-highlight)] px-3 py-2 text-sm text-[var(--color-success)]"
               >
                 {copy.login.resetSent}
               </p>
@@ -135,7 +138,9 @@ export function AdminLoginContent({
             </div>
           ) : (
             <form onSubmit={handleResetRequest} className="space-y-4">
-              <p className="text-sm text-gray-600">{copy.login.resetInstructions}</p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                {copy.login.resetInstructions}
+              </p>
               <div>
                 <label className="block text-sm font-medium mb-1" htmlFor="admin-reset-email">
                   {copy.login.email}
@@ -151,14 +156,14 @@ export function AdminLoginContent({
                 />
               </div>
               {error && (
-                <p role="alert" className="text-red-600 text-sm">
+                <p role="alert" className="text-[var(--color-error)] text-sm">
                   {error}
                 </p>
               )}
               <button
                 type="submit"
                 disabled={!ready || loading}
-                className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
+                className="w-full py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
               >
                 {loading ? copy.login.sendingResetLink : copy.login.sendResetLink}
               </button>
@@ -212,14 +217,14 @@ export function AdminLoginContent({
               />
             </div>
             {error && (
-              <p role="alert" className="text-red-600 text-sm">
+              <p role="alert" className="text-[var(--color-error)] text-sm">
                 {error}
               </p>
             )}
             <button
               type="submit"
               disabled={!ready || loading}
-              className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
+              className="w-full py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
             >
               {loading ? copy.login.loading : copy.login.submit}
             </button>

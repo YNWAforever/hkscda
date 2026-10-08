@@ -2,8 +2,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import type { AnimalMatchSummary, CoordinatorStatus } from "../../../lib/adoptions/types";
-import { supabase } from "../../../lib/supabase";
+import type {
+  AnimalMatchSummary,
+  CoordinatorStatus,
+  MatchableAnimalOption,
+} from "../../../lib/adoptions/types";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
@@ -18,15 +21,7 @@ import {
 } from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
 import { filterStatusesByCategory, formatFallback } from "./caseWorkflowLogic";
-import { getDefaultMatchStatusId, getMatchableAnimalStatuses } from "./matchPanelLogic";
-
-type AnimalOption = {
-  id: string;
-  name: string;
-  name_en: string | null;
-  type: string;
-  status: string;
-};
+import { getDefaultMatchStatusId } from "./matchPanelLogic";
 
 type MatchPanelProps = {
   caseId: string;
@@ -125,7 +120,7 @@ function StatusChip({ status }: { status: CoordinatorStatus }) {
 }
 
 function animalOptionLabel(
-  animal: AnimalOption,
+  animal: MatchableAnimalOption,
   language: keyof typeof MATCH_PANEL_COPY,
   animalTypes: ReturnType<typeof useAdminPageCopy>["pageCopy"]["animalTypes"],
 ) {
@@ -151,18 +146,14 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
     data: animals = [],
     error: animalsError,
     isLoading: animalsLoading,
-  } = useQuery<AnimalOption[], Error>({
+  } = useQuery<MatchableAnimalOption[], Error>({
     queryKey: ["admin-active-animal-options"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("animals")
-        .select("id,name,name_en,type,status")
-        .in("status", getMatchableAnimalStatuses())
-        .order("type")
-        .order("name", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as AnimalOption[];
-    },
+    queryFn: async () =>
+      (
+        await fetchCoordinatorJson<{ animals: MatchableAnimalOption[] }>(
+          "/api/admin/adoptions/animals/match-options",
+        )
+      ).animals,
   });
 
   useEffect(() => {

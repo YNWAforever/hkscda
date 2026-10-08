@@ -7,12 +7,6 @@ type AnimalOptionLabelInput = {
   status: string;
 };
 
-const MATCHABLE_ANIMAL_STATUSES = ["available", "fostered"] as const;
-
-export function getMatchableAnimalStatuses() {
-  return [...MATCHABLE_ANIMAL_STATUSES];
-}
-
 export function formatAnimalOptionLabel(animal: AnimalOptionLabelInput) {
   const englishName = animal.name_en ? ` / ${animal.name_en}` : "";
   return `${animal.name}${englishName} (${animal.type} · ${animal.status})`;

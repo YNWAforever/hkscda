@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SectionHeading } from "../../components/site/SectionHeading";
@@ -15,9 +15,17 @@ const loadAdoptionInstructions = createAdoptionInstructionsLoader(() =>
 );
 export const Route = createFileRoute("/adoption/instructions")({
   loader: loadAdoptionInstructions,
-  head: () => ({
-    links: [{ rel: "canonical", href: publicUrl("/adoption/instructions") }],
-  }),
+  // The title and description are the CMS hero copy the page renders as its h1 and
+  // intro. When the loader failed, or the CMS title is blank, the title falls back to
+  // the nav label and the description to the root default.
+  head: ({ loaderData }) => {
+    const hero = loaderData?.status === "ok" ? loaderData.data.copy.hero : undefined;
+    return pageHead({
+      title: hero?.title.trim() || "領養流程",
+      description: hero?.description,
+      path: "/adoption/instructions",
+    });
+  },
   component: InstructionsPage,
 });
 

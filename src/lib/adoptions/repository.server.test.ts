@@ -519,6 +519,41 @@ function setupRepository(options: Parameters<typeof createFakeClient>[0] = {}) {
   };
 }
 
+function createLookupStubClient(result: { data: unknown; error: { message: string } | null }) {
+  const calls: QueryCall[] = [];
+  const client = {
+    from(table: string) {
+      calls.push({ table, method: "from" });
+      const query = {
+        select(columns: string) {
+          calls.push({ table, method: "select", payload: columns });
+          return query;
+        },
+        in(column: string, value: unknown) {
+          calls.push({ table, method: "in", payload: { column, value } });
+          return query;
+        },
+        order(column: string, options?: unknown) {
+          calls.push({ table, method: "order", payload: column, options });
+          return query;
+        },
+        then<TResult1 = unknown, TResult2 = never>(
+          onfulfilled?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | null,
+          onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
+        ) {
+          return Promise.resolve(result).then(onfulfilled, onrejected);
+        },
+      };
+      return query;
+    },
+  };
+
+  return {
+    repo: createSupabaseAdoptionCoordinatorRepository(client as unknown as SupabaseClient),
+    calls,
+  };
+}
+
 function publicCaseInput(overrides: Partial<CaseFromPublicApplicationInput> = {}) {
   return {
     publicApplicationId,
@@ -1990,6 +2025,105 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       payload: { from: 0, to: 24 },
     });
     expect(callsFor(calls, "animal_profile_internal", "select")).toHaveLength(1);
+  });
+
+  test("listMatchableAnimals reads available and fostered animals in type, then name order", async () => {
+    const { repo, calls } = setupRepository({
+      animalRows: [
+        animalRow({ id: animalId, status: "available" }),
+        animalRow({ id: "99999999-aaaa-4bbb-8ccc-dddddddddddd", name: "Boba", status: "fostered" }),
+        animalRow({ id: "88888888-aaaa-4bbb-8ccc-dddddddddddd", name: "Taro", status: "adopted" }),
+      ],
+    });
+
+    const result = await repo.listMatchableAnimals();
+
+    expect(result.map((animal) => animal.name)).toEqual(["Mochi", "Boba"]);
+    expect(calls.filter((call) => call.method !== "order")).toEqual([
+      { table: "animals", method: "from" },
+      {
+        table: "animals",
+        method: "select",
+        payload: "id,name,name_en,type,status",
+        options: undefined,
+      },
+      {
+        table: "animals",
+        method: "in",
+        payload: { column: "status", value: ["available", "fostered"] },
+      },
+    ]);
+    expect(callsFor(calls, "animals", "order").map((call) => [call.payload, call.options])).toEqual(
+      [
+        ["type", undefined],
+        ["name", { ascending: true }],
+      ],
+    );
+  });
+
+  test("listAnimalPositions reads active positions first, then by name", async () => {
+    const positionRow = {
+      id: animalPositionId,
+      name: "Foster home",
+      type: "foster",
+      for_cat: true,
+      for_dog: false,
+      address: null,
+      contact_person: "Ada",
+      phone: null,
+      email: null,
+      is_active: true,
+    };
+    const { repo, calls } = setupRepository({ animalPositionRows: [positionRow] });
+
+    expect(await repo.listAnimalPositions()).toEqual([positionRow]);
+    expect(callPayloads(calls, "animal_position", "select")).toEqual([
+      "id,name,type,for_cat,for_dog,address,contact_person,phone,email,is_active",
+    ]);
+    expect(
+      callsFor(calls, "animal_position", "order").map((call) => [call.payload, call.options]),
+    ).toEqual([
+      ["is_active", { ascending: false }],
+      ["name", { ascending: true }],
+    ]);
+  });
+
+  test("listArrivalSources reads active sources first, then by Chinese name", async () => {
+    const sourceRow = {
+      id: arrivalSourceId,
+      name_zh: "街頭救援",
+      name_en: "Street rescue",
+      is_active: true,
+    };
+    const { repo, calls } = setupRepository({ arrivalSourceRows: [sourceRow] });
+
+    expect(await repo.listArrivalSources()).toEqual([sourceRow]);
+    expect(callPayloads(calls, "arrival_source", "select")).toEqual([
+      "id,name_zh,name_en,is_active",
+    ]);
+    expect(
+      callsFor(calls, "arrival_source", "order").map((call) => [call.payload, call.options]),
+    ).toEqual([
+      ["is_active", { ascending: false }],
+      ["name_zh", { ascending: true }],
+    ]);
+  });
+
+  test("lookup reads return [] when Supabase returns null data", async () => {
+    const { repo } = createLookupStubClient({ data: null, error: null });
+
+    expect(await repo.listMatchableAnimals()).toEqual([]);
+    expect(await repo.listAnimalPositions()).toEqual([]);
+    expect(await repo.listArrivalSources()).toEqual([]);
+  });
+
+  test("lookup reads throw the Supabase error", async () => {
+    const failure = { message: "permission denied" };
+    const { repo } = createLookupStubClient({ data: null, error: failure });
+
+    await expect(repo.listMatchableAnimals()).rejects.toBe(failure);
+    await expect(repo.listAnimalPositions()).rejects.toBe(failure);
+    await expect(repo.listArrivalSources()).rejects.toBe(failure);
   });
 
   test("applies animal pipeline filters before paginating animal rows", async () => {

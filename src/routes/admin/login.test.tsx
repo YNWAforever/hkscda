@@ -21,6 +21,24 @@ describe("AdminLoginContent", () => {
     expect(adminCopy.zh.login.forgotPassword).toBe("忘記密碼？");
   });
 
+  test("renders exactly one h1 naming the sign-in page", () => {
+    const markup = renderToStaticMarkup(
+      <AdminLanguageProvider>
+        <AdminLoginContent passwordResetSuccess={false} onSignedIn={() => {}} />
+      </AdminLanguageProvider>,
+    );
+    expect((markup.match(/<h1[\s>]/g) ?? []).length).toBe(1);
+    expect(markup).toMatch(/<h1[^>]*>[^<]*管理後台登入[^<]*<\/h1>/);
+    // styles.css gives every heading bold weight and tight tracking; the subtitle
+    // was a normal-weight line, so the h1 must opt back out.
+    expect(markup).toMatch(/<h1[^>]*class="[^"]*\bfont-normal\b/);
+    expect(markup).toMatch(/<h1[^>]*class="[^"]*\btracking-normal\b/);
+    // AdminLanguageProvider always starts in zh, so the English heading is
+    // checked through the copy table that the h1 renders from.
+    expect(adminCopy.en.login.subtitle).toBe("Admin sign in");
+    expect(adminCopy.en.login.resetTitle).toBe("Reset password");
+  });
+
   test("shows the completed-reset message when redirected from recovery", () => {
     const markup = renderToStaticMarkup(
       <AdminLanguageProvider>

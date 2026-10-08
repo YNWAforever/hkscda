@@ -2,12 +2,9 @@ import { describe, expect, test } from "bun:test";
 import type { JSX } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { MATCHABLE_ANIMAL_STATUSES } from "../../../lib/adoptions/matchableAnimals";
 import type { CoordinatorStatus } from "../../../lib/adoptions/types";
-import {
-  formatAnimalOptionLabel,
-  getDefaultMatchStatusId,
-  getMatchableAnimalStatuses,
-} from "./matchPanelLogic";
+import { formatAnimalOptionLabel, getDefaultMatchStatusId } from "./matchPanelLogic";
 
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
@@ -36,8 +33,7 @@ function status(overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus {
 
 describe("MatchPanel helpers", () => {
   test("matches available and fostered animals", () => {
-    expect(typeof getMatchableAnimalStatuses).toBe("function");
-    expect(getMatchableAnimalStatuses?.()).toEqual(["available", "fostered"]);
+    expect(MATCHABLE_ANIMAL_STATUSES).toEqual(["available", "fostered"]);
   });
 
   test("includes the animal status in the selector label", () => {

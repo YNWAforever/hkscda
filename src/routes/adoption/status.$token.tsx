@@ -1,15 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicFormFrame } from "../../components/site/PublicFormFrame";
 import { StatusPage } from "../../components/site/adoption/StatusPage";
 
 export const Route = createFileRoute("/adoption/status/$token")({
-  head: () => ({
-    meta: [
-      { name: "robots", content: "noindex, nofollow, noarchive" },
-      { name: "referrer", content: "no-referrer" },
-    ],
-  }),
+  head: () => pageHead({ title: "申請狀態", private: true }),
   component: AdoptionStatusRoute,
 });
 
