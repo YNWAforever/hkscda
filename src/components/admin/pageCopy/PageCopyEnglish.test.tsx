@@ -191,12 +191,21 @@ describe("page copy helpers", () => {
     expect(statusDisplayName({}, "zh")).toBe("-");
   });
 
-  test("bilingualStatusName adds the other label unless it is missing or the same", () => {
+  test("bilingualStatusName lists both labels in Chinese and only the English label in English", () => {
     const status = { labelZh: "待處理", labelEn: "Pending" };
     expect(bilingualStatusName(status, "zh")).toBe("待處理 / Pending");
-    expect(bilingualStatusName(status, "en")).toBe("Pending / 待處理");
-    expect(bilingualStatusName({ labelZh: "完成", labelEn: "完成" }, "en")).toBe("完成");
+    // English shows no Chinese beside the English label.
+    expect(bilingualStatusName(status, "en")).toBe("Pending");
+    // An empty, null or missing English label falls back to the Chinese one.
+    expect(bilingualStatusName({ labelZh: "待處理", labelEn: "" }, "en")).toBe("待處理");
+    expect(bilingualStatusName({ labelZh: "待處理", labelEn: null }, "en")).toBe("待處理");
     expect(bilingualStatusName({ labelZh: "待處理" }, "en")).toBe("待處理");
+    expect(bilingualStatusName({ labelZh: "完成", labelEn: "完成" }, "en")).toBe("完成");
+    expect(bilingualStatusName({ key: "pending" }, "en")).toBe("pending");
+    // Chinese is unchanged: no second label when it is missing or the same.
+    expect(bilingualStatusName({ labelZh: "完成", labelEn: "完成" }, "zh")).toBe("完成");
+    expect(bilingualStatusName({ labelZh: "待處理" }, "zh")).toBe("待處理");
+    expect(bilingualStatusName({ labelZh: "待處理", labelEn: "" }, "zh")).toBe("待處理");
     expect(bilingualStatusName({ labelEn: "Pending" }, "zh")).toBe("Pending");
   });
 });

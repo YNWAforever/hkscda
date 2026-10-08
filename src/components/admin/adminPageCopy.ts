@@ -76,8 +76,14 @@ export function statusDisplayName(status: StatusLabels, language: AdminLanguage)
   return status[primary] || status[fallback] || status.key || "-";
 }
 
+/**
+ * The label of a status in a select or a list. Chinese lists both labels, the Chinese one
+ * first, as the Chinese admin always has. English lists only the English label (the Chinese
+ * label when the English one is empty), so no Chinese shows beside it.
+ */
 export function bilingualStatusName(status: StatusLabels, language: AdminLanguage) {
   const primary = statusDisplayName(status, language);
+  if (language === "en") return primary;
   const secondary = status[STATUS_LABEL_ORDER[language][1]];
   if (!secondary || secondary === primary) return primary;
   return `${primary} / ${secondary}`;

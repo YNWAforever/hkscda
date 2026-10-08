@@ -79,7 +79,7 @@ export const adopterDetailCopy = defineAdminCopy({
     loadFollowupStatusesError: (message: string) =>
       `Could not load follow-up statuses (${message}). Refresh the page to try again.`,
     followupStatusHint:
-      "Existing follow-ups are shown below. Creating or editing a task needs these statuses, so check the status settings.",
+      "Existing follow-ups are shown below. Creating or editing a task may need these statuses, so check the status settings.",
     adopterFollowups: "Adopter follow-ups",
     linkedCases: (count: number) => pluralCount(count, "linked case"),
     finalizedAdoptions: (count: number) => pluralCount(count, "finalised adoption"),

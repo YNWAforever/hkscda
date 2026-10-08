@@ -53,6 +53,8 @@ export const animalPipelineCopy = defineAdminCopy({
       profile: "Profile",
     },
     updateLifecycle: (name: string) => `Update ${name} lifecycle`,
+    // The Chinese screen has always listed the stored type key (cat, dog) here.
+    animalTypeLabels: { cat: "cat", dog: "dog", sponsor: "sponsor" },
     animalSubline: (nameEn: string, type: string, age: string) => `${nameEn} / ${type} / ${age}`,
     flags: {
       adoptable: "Adoptable",
@@ -162,6 +164,7 @@ export const animalPipelineCopy = defineAdminCopy({
       profile: "Profile",
     },
     updateLifecycle: (name: string) => `Update lifecycle for ${name}`,
+    animalTypeLabels: { cat: "Cat", dog: "Dog", sponsor: "Sponsor" },
     animalSubline: (_nameEn: string, type: string, age: string) => `${type} / ${age}`,
     flags: {
       adoptable: "Adoptable",

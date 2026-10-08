@@ -104,7 +104,7 @@ export const caseDetailCopy = defineAdminCopy({
     yes: "Yes",
     no: "No",
     notFinalized: "Not finalised",
-    auditSummary: "Audit summary",
+    auditSummary: "Review summary",
     auditSubtitle: "Summary from current case data",
     sections: {
       applicant: "Applicant",

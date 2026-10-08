@@ -478,7 +478,11 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               {animalName(row)}
             </div>
             <div className="truncate text-xs text-[var(--color-text-muted)]">
-              {copy.animalSubline(formatFallback(row.name_en), row.type, row.age)}
+              {copy.animalSubline(
+                formatFallback(row.name_en),
+                copy.animalTypeLabels[row.type],
+                row.age,
+              )}
             </div>
           </div>
         </div>
@@ -615,7 +619,11 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           <div className="min-w-0">
             <div className="font-semibold text-[var(--color-panel)]">{animalName(row)}</div>
             <div className="text-xs text-[var(--color-text-muted)]">
-              {copy.animalSubline(formatFallback(row.name_en), row.type, row.age)}
+              {copy.animalSubline(
+                formatFallback(row.name_en),
+                copy.animalTypeLabels[row.type],
+                row.age,
+              )}
             </div>
           </div>
         </div>

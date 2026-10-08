@@ -59,7 +59,7 @@ export const animalListCopy = defineAdminCopy({
     },
   },
   en: {
-    search: "Search name or reference",
+    search: "Search name or reference number",
     archived: "Include archived records",
     allStatuses: "All statuses",
     clearFilters: "Clear filters",

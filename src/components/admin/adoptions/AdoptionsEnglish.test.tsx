@@ -90,6 +90,7 @@ const { adopterDetailCopy } = await import("./adopterDetailCopy");
 const { animalPipelineCopy } = await import("./animalPipelineCopy");
 const { adoptionFormatCopy } = await import("./formatCopy");
 const { intakeUrgencyLabel } = await import("./intakeInboxLogic");
+const { bilingualStatusName } = await import("../adminPageCopy");
 
 const status = (overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus => ({
   id: "st-1",
@@ -488,7 +489,7 @@ describe("case detail in English", () => {
       "Status controls",
       ">Matches<",
       "Finalisation",
-      "Audit summary",
+      "Review summary",
       "1 Oct 2026 (Thu)",
       "2 Oct 2026 (Fri)",
       "HK$500.50",
@@ -709,6 +710,7 @@ describe("adopter detail in English", () => {
       "No successful adoptions recorded",
       "0 linked cases",
       "Could not load follow-up statuses (nope). Refresh the page to try again.",
+      "Creating or editing a task may need these statuses, so check the status settings.",
     ]) {
       expect(markup, text).toContain(text);
     }
@@ -965,6 +967,30 @@ describe("finalisation panel in English", () => {
   });
 });
 
+describe("status labels in selects", () => {
+  // Radix select items are not rendered in a static render, so the option label is tested directly.
+  test("Chinese lists both labels, as before, and English lists only the English label", () => {
+    const pending = status({ labelZh: "待處理", labelEn: "Pending" });
+    expect(bilingualStatusName(pending, "zh")).toBe("待處理 / Pending");
+    expect(bilingualStatusName(pending, "en")).toBe("Pending");
+  });
+
+  test("English falls back to the Chinese label when label_en is empty or missing", () => {
+    const noEnglish = status({ labelZh: "跟進中", labelEn: "" });
+    expect(bilingualStatusName(noEnglish, "en")).toBe("跟進中");
+    expect(bilingualStatusName(noEnglish, "zh")).toBe("跟進中");
+    expect(bilingualStatusName({ labelZh: "跟進中" }, "en")).toBe("跟進中");
+  });
+
+  test("no fixture status shows Chinese beside its English label in English", () => {
+    for (const item of statuses) {
+      const label = bilingualStatusName(item, "en");
+      expect(label).toBe(item.labelEn);
+      expect(label).not.toContain(" / ");
+    }
+  });
+});
+
 describe("date and fee formats", () => {
   test("English uses the Hong Kong date and the fee with two decimals", () => {
     const format = adoptionFormatCopy.en;
@@ -1069,6 +1095,8 @@ describe("animal pipeline in English", () => {
       ">Flags<",
       ">Arrival<",
       "Snowy",
+      "Cat / 6歲",
+      "Dog / 6歲",
       "Microchip: yes",
       "Neutered: no",
       "Microchip: unknown",
@@ -1120,6 +1148,7 @@ describe("animal pipeline in English", () => {
       ">Animal pipeline<",
       "Internal lifecycle, placement, support pool, and medical readiness.",
       "Chip Y",
+      "Snowy / cat / 6歲",
       "Desex N",
       "第 2 頁，共 5 頁",
       "上一頁",

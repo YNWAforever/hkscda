@@ -141,7 +141,7 @@ describe("animals table in English", () => {
     const markup = renderAdminInEnglish(table());
     expectNoChineseText(markup, { allow: FIXTURE_TEXT });
     for (const text of [
-      "Search name or reference",
+      "Search name or reference number",
       "Include archived records",
       "All statuses",
       ">Photo<",
@@ -338,7 +338,7 @@ describe("animal form in English", () => {
       "以下欄位不符合公開資料規則（不可包含網址、電郵、電話或 < > 符號）：編號、性格",
     );
     expect(animalFormCopy.en.profileRejected("Reference number", "Personality")).toBe(
-      "These fields break the public information rules (no web addresses, email addresses, phone numbers or < > symbols): Reference number, Personality",
+      "These fields break the public information rules (no web addresses, email addresses, phone numbers or < > symbols): Reference number, Personality. Remove the rejected text and save again.",
     );
   });
 
@@ -346,6 +346,9 @@ describe("animal form in English", () => {
     const { form } = adminCommonCopy.en;
     expect(form.saveError).toBe("Could not save. Check the form and try again.");
     expect(form.uploadError).toBe("Could not upload the image. Try again.");
+    expect(form.notFound).toBe(
+      "Animal not found. Go back to the animal list and choose another animal.",
+    );
     expect(animalFormCopy.en.publish.conflict).toContain("Preview the draft again");
     expect(animalFormCopy.en.versions.copyFailed).toContain("Try again");
   });

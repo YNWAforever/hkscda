@@ -482,7 +482,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
     form: {
       addTitle: "Add animal",
       editTitle: "Edit: ",
-      notFound: "Animal not found",
+      notFound: "Animal not found. Go back to the animal list and choose another animal.",
       chineseGroup: "Chinese content",
       englishGroup: "English content",
       adminGroup: "Admin details",

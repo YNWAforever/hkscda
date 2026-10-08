@@ -116,7 +116,7 @@ export const animalFormCopy = defineAdminCopy({
       copyFailed: "Could not duplicate the version. Try again.",
     },
     profileRejected: (...labels: string[]) =>
-      `These fields break the public information rules (no web addresses, email addresses, phone numbers or < > symbols): ${labels.join(", ")}`,
+      `These fields break the public information rules (no web addresses, email addresses, phone numbers or < > symbols): ${labels.join(", ")}. Remove the rejected text and save again.`,
     galleryUploadFailed: "Could not upload the gallery photos. Try again.",
     publication: {
       label: "Publication status",
