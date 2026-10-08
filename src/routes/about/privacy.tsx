@@ -26,7 +26,7 @@ function PrivacyPage() {
     >
       <section className="section">
         <div className="public-container narrow-container space-y-8">
-          <p className="text-[var(--color-text-muted)]">最後更新：2026年6月</p>
+          <p className="text-[var(--color-text-muted)]">最後更新：2026年10月</p>
 
           {[
             {
@@ -55,7 +55,12 @@ function PrivacyPage() {
                 "協會只會在達到收集目的所需的期限內保留您的個人資料，或根據適用法律規定的保留期限內保留。",
             },
             {
-              title: "6. 查閱及更正權利",
+              title: "6. 常見問題搜尋",
+              content:
+                "當您使用網站的常見問題搜尋而未找到合適答案時，我們會保存已移除個人資料的搜尋主題、所用語言及日期，以了解需要補充哪些答案。我們不會一併保存您的 IP 位址或任何可識別您身分的資料，並會在 90 日內刪除這些記錄。請勿在搜尋中輸入個人資料。",
+            },
+            {
+              title: "7. 查閱及更正權利",
               content: (
                 <>
                   根據《個人資料（私隱）條例》，您有權查閱及更正我們持有的您的個人資料。如需提出要求，請電郵至{" "}
