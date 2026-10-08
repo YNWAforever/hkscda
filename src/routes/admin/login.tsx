@@ -5,6 +5,7 @@ import {
   AdminLanguageToggle,
   useAdminLanguage,
 } from "../../components/admin/adminI18n";
+import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
 
@@ -100,7 +101,7 @@ export function AdminLoginContent({
   return (
     <main
       className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4"
-      lang={language === "en" ? "en" : "zh-HK"}
+      lang={adminLanguageTag(language)}
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">

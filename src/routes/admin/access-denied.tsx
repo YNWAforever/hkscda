@@ -2,25 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { AdminLayout } from "../../components/admin/AdminLayout";
-import { useAdminLanguage } from "../../components/admin/adminI18n";
+import { useAdminCopy } from "../../components/admin/i18n/copy";
 import {
   adminIdentityQueryOptions,
   firstAllowedAdminRouteForIdentity,
   requireSignedInAdminIdentity,
 } from "../../lib/admin/pageAccess";
-
-const deniedCopy = {
-  zh: {
-    title: "沒有權限",
-    reason: "你的管理員角色未能開啟此頁面。",
-    back: "返回可用管理頁面",
-  },
-  en: {
-    title: "Access denied",
-    reason: "Your admin role does not have access to this page.",
-    back: "Back to an available admin area",
-  },
-} as const;
+import { accessDeniedCopy } from "./-accessDeniedCopy";
 
 export const Route = createFileRoute("/admin/access-denied")({
   ssr: false,
@@ -38,9 +26,8 @@ function AdminAccessDeniedPage() {
   );
 }
 
-function AccessDeniedContent() {
-  const { language } = useAdminLanguage();
-  const t = deniedCopy[language];
+export function AccessDeniedContent() {
+  const t = useAdminCopy(accessDeniedCopy);
   const { data } = useQuery(adminIdentityQueryOptions());
   const backHref = firstAllowedAdminRouteForIdentity(data?.admin);
 

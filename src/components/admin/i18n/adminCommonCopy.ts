@@ -1,4 +1,5 @@
-import { defineAdminCopy } from "./defineCopy";
+import type { AdminNavGroup, AdminNavItemId } from "../adminNav";
+import { defineAdminCopy } from "./copyModule";
 
 /**
  * The shared admin copy: the shell, navigation, login and the animal forms and tables.
@@ -39,10 +40,12 @@ export interface AdminCopy {
     workflow: string;
   };
   nav: Record<AdminSection, string>;
-  navGroups: Record<string, string>;
-  navItems: Record<string, string>;
-  navDescriptions: Record<string, string>;
+  // Keyed by the unions in adminNav.ts, so a nav label missing in either language fails tsc.
+  navGroups: Record<AdminNavGroup, string>;
+  navItems: Record<AdminNavItemId, string>;
+  navDescriptions: Record<AdminNavGroup, string>;
   layout: {
+    taskOverview: string;
     collapseSidebar: string;
     expandSidebar: string;
     openMenu: string;
@@ -213,6 +216,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       "about-pages": "關於頁面",
     },
     layout: {
+      taskOverview: "待辦總覽",
       collapseSidebar: "收合側欄",
       expandSidebar: "展開側欄",
       openMenu: "開啟選單",
@@ -344,7 +348,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       save: "Save",
       saving: "Saving...",
       cancel: "Cancel",
-      logout: "Log out",
+      logout: "Sign out",
       edit: "Edit",
       delete: "Delete",
       confirm: "Confirm",
@@ -355,19 +359,19 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
     nav: {
       cat: "Cats",
       dog: "Dogs",
-      sponsor: "Sponsors",
+      sponsor: "Sponsorship",
       applications: "Applications",
       payments: "Payments",
       supporters: "Supporters",
       volunteers: "Volunteers",
       content: "Content",
-      access: "Access Management",
+      access: "Access management",
     },
     navGroups: {
       animals: "Animal management",
       adoptions: "Adoption management",
-      volunteers: "Volunteers & internships",
-      donations: "Donations & sponsorship",
+      volunteers: "Volunteers and internships",
+      donations: "Donations and sponsorship",
       promotion: "Website content",
       system: "System settings",
     },
@@ -384,7 +388,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       internships: "Internships",
       cat: "Cats",
       dog: "Dogs",
-      sponsor: "Sponsors",
+      sponsor: "Sponsorship",
       applications: "Applications",
       "coordinator-inbox": "Inbox",
       "coordinator-intake": "Manual intake",
@@ -400,13 +404,14 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       supporters: "Supporters",
       content: "Content",
       "adoption-information": "Adoption information",
-      knowledge: "Knowledge hub",
-      governance: "Team & Governance",
-      "access-management": "Access Management",
+      knowledge: "Knowledge base",
+      governance: "Team and governance",
+      "access-management": "Access management",
       faq: "FAQ",
-      "about-pages": "About Pages",
+      "about-pages": "About pages",
     },
     layout: {
+      taskOverview: "Task overview",
       collapseSidebar: "Collapse sidebar",
       expandSidebar: "Expand sidebar",
       openMenu: "Open menu",
@@ -443,13 +448,13 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       title: {
         cat: "Cats",
         dog: "Dogs",
-        sponsor: "Sponsor animals",
+        sponsor: "Sponsorship animals",
         applications: "Adoption applications",
         payments: "Payment records",
         supporters: "Supporters",
         volunteers: "Volunteer activities",
         content: "Content",
-        access: "Access Management",
+        access: "Access management",
       },
       addNew: "Add new",
       applicant: "Applicant",

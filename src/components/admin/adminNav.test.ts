@@ -125,17 +125,34 @@ describe("admin nav active state", () => {
   });
 
   test("uses the approved Traditional Chinese adoption information label", () => {
-    const item = ADMIN_NAV_ITEMS.find((candidate) => candidate.id === "adoption-information");
-
-    expect(item?.label).toBe("領養資訊");
     expect(adminCopy.zh.navItems["adoption-information"]).toBe("領養資訊");
-    expect(item?.label).not.toContain("?");
+    expect(adminCopy.zh.navItems["adoption-information"]).not.toContain("?");
   });
 
   test("has bilingual labels for every nav item", () => {
     for (const item of ADMIN_NAV_ITEMS) {
       expect(adminCopy.zh.navItems[item.id], `zh nav label for ${item.id}`).toBeString();
       expect(adminCopy.en.navItems[item.id], `en nav label for ${item.id}`).toBeString();
+    }
+  });
+
+  test("has a nav item for every label in the copy, and the same labels in both languages", () => {
+    // tsc keys the copy by AdminNavItemId, so a missing label already fails to compile; this
+    // catches the other direction, a label for an item that no longer exists.
+    const ids = ADMIN_NAV_ITEMS.map((item) => item.id).sort();
+    expect(Object.keys(adminCopy.zh.navItems).sort()).toEqual(ids);
+    expect(Object.keys(adminCopy.en.navItems).sort()).toEqual(ids);
+    const groups = ADMIN_NAV_GROUPS.map((group) => group.id).sort();
+    for (const language of ["zh", "en"] as const) {
+      expect(Object.keys(adminCopy[language].navGroups).sort()).toEqual(groups);
+      expect(Object.keys(adminCopy[language].navDescriptions).sort()).toEqual(groups);
+    }
+  });
+
+  test("every group's entry item is one of its own items", () => {
+    for (const group of ADMIN_NAV_GROUPS) {
+      const entry = ADMIN_NAV_ITEMS.find((item) => item.id === group.defaultItemId);
+      expect(entry?.group, `entry item of ${group.id}`).toBe(group.id);
     }
   });
 });

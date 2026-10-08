@@ -15,7 +15,8 @@ export const adminListSearchSchema = z.object({
     z.number().int().positive().max(Number.MAX_SAFE_INTEGER).catch(1),
   ),
 });
-export type AnimalListState = Omit<z.output<typeof adminListSearchSchema>, "section">;
+export type AdminListSearch = z.output<typeof adminListSearchSchema>;
+export type AnimalListState = Omit<AdminListSearch, "section">;
 export type AnimalTabMemory = Partial<Record<AdminAnimalSection, AnimalListState>>;
 export function rememberAnimalTab(
   memory: AnimalTabMemory,

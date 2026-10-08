@@ -18,17 +18,11 @@ import { findChineseRuns } from "./i18n/testing";
  */
 
 export const ADMIN_COPY_PENDING: readonly string[] = [
-  "src/components/admin/AdminLayout.tsx",
   "src/components/admin/AnimalForm.tsx",
   "src/components/admin/AnimalGalleryEditor.tsx",
   "src/components/admin/AnimalsTable.tsx",
-  "src/components/admin/DataTable.tsx",
-  "src/components/admin/LoadFailure.tsx",
   "src/components/admin/MediaRepairQueue.tsx",
-  "src/components/admin/TablePager.tsx",
   "src/components/admin/VolunteerAdminShell.tsx",
-  "src/components/admin/access/AccessManagement.tsx",
-  "src/components/admin/adminNav.ts",
   "src/components/admin/adoptions/AdopterDetail.tsx",
   "src/components/admin/adoptions/AdoptionAssignmentBulkPanel.tsx",
   "src/components/admin/adoptions/AnimalPipeline.tsx",
@@ -37,8 +31,6 @@ export const ADMIN_COPY_PENDING: readonly string[] = [
   "src/components/admin/adoptions/FinalizationPanel.tsx",
   "src/components/admin/adoptions/MatchPanel.tsx",
   "src/components/admin/adoptions/intakeInboxLogic.ts",
-  "src/components/admin/bulk/BulkResults.tsx",
-  "src/components/admin/bulk/BulkReview.tsx",
   "src/components/admin/content/AboutPagesManagement.tsx",
   "src/components/admin/content/AdoptionGuideReleaseManagement.tsx",
   "src/components/admin/content/AdoptionInformationManagement.tsx",
@@ -93,7 +85,6 @@ export const ADMIN_COPY_PENDING: readonly string[] = [
   "src/components/admin/donations/ReconcileDialog.tsx",
   "src/components/admin/donations/paymentsReconcileLogic.ts",
   "src/components/admin/internships/InternshipManagement.tsx",
-  "src/components/admin/operations/TaskOverview.tsx",
   "src/components/admin/sponsorship/AnimalPicker.tsx",
   "src/components/admin/sponsorship/FinancePanel.tsx",
   "src/components/admin/sponsorship/PledgeDetailDrawer.tsx",
@@ -129,11 +120,8 @@ export const ADMIN_COPY_PENDING: readonly string[] = [
   "src/components/admin/volunteers/groupEnquiryAdminLogic.ts",
   "src/components/admin/volunteers/useUnsavedVolunteerDraft.ts",
   "src/components/admin/volunteers/volunteerAdminLogic.ts",
-  "src/routes/admin/access-denied.tsx",
   "src/routes/admin/content/adoption-preview.tsx",
-  "src/routes/admin/index.tsx",
   "src/routes/admin/sponsorships.tsx",
-  "src/routes/admin/tasks.tsx",
   "src/routes/admin/volunteers/assessments.tsx",
   "src/routes/admin/volunteers/people.tsx",
   "src/routes/admin/volunteers/people/$id.tsx",
@@ -155,10 +143,27 @@ function isTestFile(path: string): boolean {
   return path.includes(".test.");
 }
 
+/**
+ * Files named like a copy module that hold helpers, not copy. `i18n/copy.ts` is the
+ * entry point for `defineAdminCopy` and the hooks, so the guard scans it like any other
+ * file and it needs no `defineAdminCopy(` call.
+ */
+const COPY_HELPER_FILES: ReadonlySet<string> = new Set(["src/components/admin/i18n/copy.ts"]);
+
 /** Copy modules are where both languages are meant to be written out. */
 export function isCopyModule(path: string): boolean {
+  if (COPY_HELPER_FILES.has(path)) return false;
   const name = fileName(path);
   return name === "copy.ts" || name.endsWith("Copy.ts");
+}
+
+/**
+ * True when `text` calls `defineAdminCopy`, with or without type arguments. Comments are
+ * removed first, so a mention in a comment does not count, and so does an `import`.
+ */
+export function callsDefineAdminCopy(text: string): boolean {
+  const code = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+  return /\bdefineAdminCopy\s*(?:<[^()]*>)?\s*\(/.test(code);
 }
 
 /** A file the guard checks: admin source that is neither a test nor a copy module. */
@@ -240,6 +245,19 @@ describe("admin copy guard", () => {
     expect(
       stale,
       "These files are on ADMIN_COPY_PENDING but no longer need to be. Delete them from the list.",
+    ).toEqual([]);
+  });
+
+  test("every copy module is built with defineAdminCopy", async () => {
+    // The guard does not read copy modules, so a plain-object `Copy.ts` would escape both
+    // the guard and the tsc check that the two languages have the same keys.
+    const modules = (await adminSourceFiles()).filter(
+      (file) => !isTestFile(file.path) && isCopyModule(file.path),
+    );
+    expect(modules.length).toBeGreaterThanOrEqual(2);
+    expect(
+      modules.filter((file) => !callsDefineAdminCopy(file.text)).map((file) => file.path),
+      "These copy modules do not call defineAdminCopy(), so tsc cannot check that en matches zh. Build them with defineAdminCopy({ zh, en }).",
     ).toEqual([]);
   });
 
@@ -344,6 +362,35 @@ describe("findUncoveredChinese", () => {
       { path: "src/components/admin/crm/Copy.tsx", text: withChinese },
     ];
     expect(findUncoveredChinese(files, [])).toHaveLength(2);
+  });
+
+  test("scans the copy helpers and the copy-module helper files", () => {
+    expect(isCopyModule("src/components/admin/i18n/copy.ts")).toBe(false);
+    expect(isCopyModule("src/components/admin/i18n/copyModule.ts")).toBe(false);
+    expect(isCopyModule("src/components/admin/i18n/adminCommonCopy.ts")).toBe(true);
+    expect(isCopyModule("src/components/admin/adminPageCopy.ts")).toBe(true);
+    expect(isCopyModule("src/components/admin/crm/copy.ts")).toBe(true);
+    const files: SourceFile[] = [{ path: "src/components/admin/i18n/copy.ts", text: withChinese }];
+    expect(findUncoveredChinese(files, [])).toEqual(["src/components/admin/i18n/copy.ts:1"]);
+  });
+});
+
+describe("callsDefineAdminCopy", () => {
+  test("accepts a plain call and a call with type arguments", () => {
+    expect(callsDefineAdminCopy("export const a = defineAdminCopy({ zh: {}, en: {} });")).toBe(
+      true,
+    );
+    expect(callsDefineAdminCopy("export const a = defineAdminCopy<Copy>({ zh, en });")).toBe(true);
+    expect(callsDefineAdminCopy("defineAdminCopy<Record<A, B>>(\n  { zh, en })")).toBe(true);
+  });
+
+  test("rejects a plain object, an import and a mention in a comment", () => {
+    expect(callsDefineAdminCopy("export const a = { zh: {}, en: {} } as const;")).toBe(false);
+    expect(callsDefineAdminCopy('import { defineAdminCopy } from "./copy";')).toBe(false);
+    expect(
+      callsDefineAdminCopy("// build this with defineAdminCopy(...)\nexport const a = {};"),
+    ).toBe(false);
+    expect(callsDefineAdminCopy("/* defineAdminCopy( */ export const a = {};")).toBe(false);
   });
 });
 

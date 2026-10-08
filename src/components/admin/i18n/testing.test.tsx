@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { AdminLanguageToggle, useAdminLanguage } from "../adminI18n";
-import { expectNoChineseText, renderAdminInChinese, renderAdminInEnglish } from "./testing";
+import {
+  collectCopyStrings,
+  expectNoChineseInCopy,
+  expectNoChineseText,
+  renderAdminInChinese,
+  renderAdminInEnglish,
+} from "./testing";
 
 function LanguageProbe() {
   const { language } = useAdminLanguage();
@@ -53,5 +59,47 @@ describe("renderAdminInEnglish and renderAdminInChinese", () => {
 
     const chinese = renderAdminInChinese(<AdminLanguageToggle />);
     expect(chinese).toMatch(/aria-pressed="true"[^>]*>中文</);
+  });
+});
+
+describe("collectCopyStrings and expectNoChineseInCopy", () => {
+  const half = {
+    title: "Title",
+    nested: { hint: "Hint", list: ["one", "two"] },
+    count: (n: number) => `${n} items`,
+    when: (iso: string) => `On ${iso.slice(0, 4)}`,
+    summary: (counts: { failed: number }) => `${counts.failed} failed`,
+    plain: 42,
+  };
+
+  test("collects every string, calling functions with sample arguments", () => {
+    expect(collectCopyStrings(half)).toEqual([
+      "Title",
+      "Hint",
+      "one",
+      "two",
+      "7 items",
+      "On 2026",
+      "undefined failed",
+    ]);
+  });
+
+  test("names the entry it could not call", () => {
+    const boom = () => {
+      throw new Error("nope");
+    };
+    expect(() => collectCopyStrings({ boom })).toThrow(/copy.boom.*nope/);
+  });
+
+  test("passes when no string has Chinese and throws when one does", () => {
+    expect(() => expectNoChineseInCopy(half)).not.toThrow();
+    expect(() => expectNoChineseInCopy({ ...half, extra: { label: "儲存" } })).toThrow(/儲存/);
+    expect(() => expectNoChineseInCopy({ ...half, count: (n: number) => `${n} 項` })).toThrow(/項/);
+  });
+
+  test("allows text written on purpose in Chinese, such as a language name", () => {
+    expect(() =>
+      expectNoChineseInCopy({ ...half, chinese: "繁體中文" }, { allow: ["繁體中文"] }),
+    ).not.toThrow();
   });
 });

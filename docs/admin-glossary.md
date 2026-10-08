@@ -28,6 +28,7 @@ other way round.
 | 司庫   | treasurer     | The finance role.                                                                                  |
 | 負責人 | owner         | The person responsible for a case, task or piece of content. The action that sets one is "Assign". |
 | 實習   | internship    | The student placement programme and its applications. 獸醫學生 is "veterinary student".            |
+| 使用者 | admin user    | A person who can sign in to the admin. "User" is fine in a short label.                            |
 
 ## Animals and adoption
 
@@ -38,6 +39,9 @@ other way round.
 | 個案     | case                 | An adoption case handled by a coordinator. Not "ticket" or "file".          |
 | 配對     | match                | Linking an adopter to an animal. The verb is "match".                       |
 | 動物     | animal               | The record of a cat or dog.                                                 |
+| 名字     | name                 | An animal's name. 姓名 is "name" for a person.                              |
+| 照片     | photo                | The photo column or field. 相片 means the same: write "photo".              |
+| 待補相片 | needs photo          | Filter for animals whose public photo is missing.                           |
 | 貓貓     | cats                 | List and navigation label. One animal is "cat".                             |
 | 狗狗     | dogs                 | List and navigation label. One animal is "dog".                             |
 | 可領養   | available            | Animal status: ready to be adopted.                                         |
@@ -63,6 +67,7 @@ other way round.
 | 收款     | payments           | Money received, as on the Payments page. 收款紀錄 is "Payment records".                  |
 | 付款     | payment            | The payer's side: 付款方式 is "payment method", 付款參考 is "payment reference".         |
 | 金額     | amount             | Always shown as HK$ with two decimals.                                                   |
+| 憑證     | proof              | Evidence of a payment. 付款證明 is the same: "payment proof".                            |
 | 收據     | receipt            | The receipt HKSCDA issues for a payment. 收條 is the same thing: always write "receipt". |
 | 發收條   | issue a receipt    | The action that creates a receipt.                                                       |
 | 作廢     | void               | Cancel a receipt or record so it no longer counts. The record stays; it is not deleted.  |
@@ -185,6 +190,23 @@ other way round.
 | 無法載入 | Could not load | Follow with what to do: "Could not load cases. Refresh the page or try again later." |
 | 沒有結果 | No results     |                                                                                      |
 | 香港時間 | Hong Kong time | All admin times use it.                                                              |
+
+## Pages and bulk actions
+
+| zh-HK        | English             | Usage                                                                            |
+| ------------ | ------------------- | -------------------------------------------------------------------------------- |
+| 後台         | admin               | The back office, as in the breadcrumb root "Admin". 後台使用者 is "admin users". |
+| 麵包屑導覽   | breadcrumb          | The path shown above a page title.                                               |
+| 工作區       | workspace           | The page where a task is done. The link is "Open workspace".                     |
+| 步驟         | step                | A numbered suggestion on the task overview.                                      |
+| 錯誤編號     | error reference     | The short code shown with a load failure, so staff can quote it.                 |
+| 邀請         | invite              | Send an admin user a link to join. 待接受邀請 is "Invite pending".               |
+| 項目         | item                | One row of a bulk action or a list.                                              |
+| 原本／套用後 | before / after      | The value before and after a bulk action.                                        |
+| 成功         | succeeded           | The result of one item in a bulk action.                                         |
+| 略過         | skipped             | Left out of a bulk action on purpose.                                            |
+| 衝突         | conflict            | The record changed after the preview, so the bulk action left it alone.          |
+| 技術參考     | technical reference | The operation id of a bulk action, to quote when reporting a problem.            |
 
 ## Style
 

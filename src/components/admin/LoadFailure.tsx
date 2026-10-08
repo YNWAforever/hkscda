@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
 import { Button } from "../ui/button";
+import { useSharedAdminCopy } from "./i18n/copy";
+import { sharedUiCopy } from "./sharedUiCopy";
 
 /**
  * Shared failure state for admin lists, panels and KPI tiles.
@@ -64,7 +66,7 @@ export type LoadFailureProps = {
   error: unknown;
   /** Re-runs the failed query. Omit only when no retry is possible. */
   onRetry?: () => void;
-  /** Overrides the default 「無法載入」 heading with something more specific. */
+  /** Overrides the default "Could not load" heading with something more specific. */
   title?: ReactNode;
   /** True while the retry is in flight, so the control cannot be double-fired. */
   retrying?: boolean;
@@ -74,10 +76,11 @@ export type LoadFailureProps = {
 export function LoadFailure({
   error,
   onRetry,
-  title = "無法載入",
+  title,
   retrying = false,
   className,
 }: LoadFailureProps) {
+  const copy = useSharedAdminCopy(sharedUiCopy).loadFailure;
   const reference = errorReference(error);
   return (
     <div
@@ -87,13 +90,15 @@ export function LoadFailure({
         className,
       )}
     >
-      <p className="text-sm font-medium text-[var(--color-text)]">{title}</p>
+      <p className="text-sm font-medium text-[var(--color-text)]">
+        {title === undefined ? copy.title : title}
+      </p>
       <p className="text-xs text-[var(--color-text-muted)]">
-        請重試。若問題持續，請提供錯誤編號 <span className="font-mono">{reference}</span>
+        {copy.guidance} <span className="font-mono">{reference}</span>
       </p>
       {onRetry ? (
         <Button type="button" variant="outline" size="sm" onClick={onRetry} disabled={retrying}>
-          {retrying ? "重試中…" : "重試"}
+          {retrying ? copy.retrying : copy.retry}
         </Button>
       ) : null}
     </div>
@@ -117,6 +122,7 @@ export function StatFigure({
   failed: boolean;
   loading?: boolean;
 }) {
+  const copy = useSharedAdminCopy(sharedUiCopy).loadFailure;
   if (loading) {
     return (
       <span className="inline-block h-6 w-12 animate-pulse rounded bg-[var(--color-surface-2)]" />
@@ -124,7 +130,7 @@ export function StatFigure({
   }
   if (failed) {
     return (
-      <span className="text-[var(--color-text-muted)]" title="無法載入">
+      <span className="text-[var(--color-text-muted)]" title={copy.title}>
         {STAT_UNAVAILABLE}
       </span>
     );

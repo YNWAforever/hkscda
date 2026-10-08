@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AdminLanguage } from "../../lib/admin/language";
 import { adminCommonCopy, type AdminCopy } from "./i18n/adminCommonCopy";
+import { AdminLanguageContext } from "./i18n/languageContext";
+import { setAdminDocumentLanguage } from "./i18n/pageLanguage";
 
 export type { AdminLanguage } from "../../lib/admin/language";
 
@@ -9,24 +11,11 @@ const STORAGE_KEY = "hkscda-admin-language";
 /** The shared copy in both languages. The copy for each area lives in its own module. */
 export const adminCopy: Record<AdminLanguage, AdminCopy> = adminCommonCopy;
 
-interface AdminLanguageContextValue {
-  copy: AdminCopy;
-  language: AdminLanguage;
-  setLanguage: (language: AdminLanguage) => void;
-}
-
-const AdminLanguageContext = createContext<AdminLanguageContextValue | null>(null);
-
 function isAdminLanguage(value: string | null): value is AdminLanguage {
   return value === "zh" || value === "en";
 }
 
-/**
- * `initialLanguage` fixes the starting language and skips the stored preference. Tests
- * use it to render a screen in either language. Without it, the language starts as `zh`,
- * the same on the server and on first paint, and the stored choice is read in an effect.
- */
-export function AdminLanguageProvider({
+function AdminLanguageRoot({
   children,
   initialLanguage,
 }: {
@@ -41,6 +30,8 @@ export function AdminLanguageProvider({
     if (isAdminLanguage(stored)) setLanguageState(stored);
   }, [initialLanguage]);
 
+  useEffect(() => setAdminDocumentLanguage(document.documentElement, language), [language]);
+
   const setLanguage = (nextLanguage: AdminLanguage) => {
     setLanguageState(nextLanguage);
     window.localStorage.setItem(STORAGE_KEY, nextLanguage);
@@ -49,6 +40,31 @@ export function AdminLanguageProvider({
   const value = useMemo(() => ({ copy: adminCopy[language], language, setLanguage }), [language]);
 
   return <AdminLanguageContext.Provider value={value}>{children}</AdminLanguageContext.Provider>;
+}
+
+/**
+ * `initialLanguage` fixes the starting language and skips the stored preference. Tests
+ * use it to render a screen in either language. Without it, the language starts as `zh`,
+ * the same on the server and on first paint, and the stored choice is read in an effect.
+ *
+ * While it is mounted, the provider also sets `lang` on the `<html>` element, so portaled
+ * content (the mobile menu, dialogs) is announced in the right language.
+ *
+ * A provider inside another provider does nothing: its children share the outer
+ * language. Every admin page mounts its own provider, and this lets a test put one
+ * provider around a whole page (`renderAdminInEnglish(<AdminLayout />)`) to choose the
+ * language. In the running app nothing is nested, so this has no effect there.
+ */
+export function AdminLanguageProvider({
+  children,
+  initialLanguage,
+}: {
+  children: ReactNode;
+  initialLanguage?: AdminLanguage;
+}) {
+  const outer = useContext(AdminLanguageContext);
+  if (outer) return <>{children}</>;
+  return <AdminLanguageRoot initialLanguage={initialLanguage}>{children}</AdminLanguageRoot>;
 }
 
 export function useAdminLanguage() {

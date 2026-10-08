@@ -52,3 +52,46 @@ export function expectNoChineseText(markup: string, options: { allow?: string[] 
       .join(", ")}`,
   );
 }
+
+/** Sample arguments for the functions in a copy module (counts, dates, names). */
+const SAMPLE_ARGUMENT_SETS: unknown[][] = [
+  [7, 3, 2],
+  ["2026-10-01T02:30:00Z", "Sample", "Other"],
+  [{ pending: 1, succeeded: 2, skipped: 3, conflict: 4, failed: 5 }, 2, 3],
+];
+
+/**
+ * Every string in one language's half of a copy module, in order. A function entry (a
+ * message with a count or a name in it) is called with sample arguments and its result is
+ * included. This reaches text a render test cannot, such as a dialog that is closed or an
+ * error message that only shows after a failure.
+ */
+export function collectCopyStrings(copyHalf: unknown, path = "copy"): string[] {
+  if (typeof copyHalf === "string") return [copyHalf];
+  if (typeof copyHalf === "function") {
+    const failures: string[] = [];
+    for (const args of SAMPLE_ARGUMENT_SETS) {
+      try {
+        const result = (copyHalf as (...sample: unknown[]) => unknown)(...args);
+        return typeof result === "string" ? [result] : collectCopyStrings(result, `${path}()`);
+      } catch (error) {
+        failures.push(String(error));
+      }
+    }
+    throw new Error(`Could not call ${path} with the sample arguments: ${failures.join("; ")}`);
+  }
+  if (copyHalf && typeof copyHalf === "object") {
+    return Object.entries(copyHalf).flatMap(([key, value]) =>
+      collectCopyStrings(value, `${path}.${key}`),
+    );
+  }
+  return [];
+}
+
+/**
+ * Throws when any string in `copyHalf` (see `collectCopyStrings`) contains Chinese, apart
+ * from `allow`, such as a language name that is written in its own language.
+ */
+export function expectNoChineseInCopy(copyHalf: unknown, options: { allow?: string[] } = {}): void {
+  expectNoChineseText(collectCopyStrings(copyHalf).join("\n"), options);
+}

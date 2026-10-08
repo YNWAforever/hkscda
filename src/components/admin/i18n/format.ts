@@ -74,6 +74,19 @@ export function formatAdminDateTime(value: Date | string, language: AdminLanguag
   return `${dateText(date, parts, language)} ${parts.hour}:${parts.minute}`;
 }
 
+const NUMBER_LOCALE: Record<AdminLanguage, string> = { zh: "zh-HK", en: "en-US" };
+
+/**
+ * A number with thousands separators (`1,234` in both languages); `null` and `undefined`
+ * show as 0. The count helper the page copy uses inside its messages.
+ */
+export function formatAdminNumber(
+  value: number | null | undefined,
+  language: AdminLanguage,
+): string {
+  return (value ?? 0).toLocaleString(NUMBER_LOCALE[language]);
+}
+
 /**
  * `HK$1,234.00`, the same in both languages. `language` is accepted so that callers pass
  * it the same way they do to the date formatters, and a per-language difference can be

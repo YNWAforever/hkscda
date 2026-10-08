@@ -5,6 +5,7 @@ import {
   adminListSearchSchema,
   animalListDefaults,
   rememberAnimalTab,
+  type AdminListSearch,
   type AnimalTabMemory,
   type AnimalListState,
 } from "../../lib/animals/adminListState";
@@ -16,14 +17,16 @@ import { LoadFailure } from "../../components/admin/LoadFailure";
 import { fetchAdminJson } from "../../lib/admin/http";
 import type { Animal } from "../../types/animal";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
+import { useAdminCopy } from "../../components/admin/i18n/copy";
 import { PaymentsReconcile } from "../../components/admin/donations/PaymentsReconcile";
 import { PledgeReviewLane } from "../../components/admin/sponsorship/PledgeReviewLane";
-import type { AdminSection } from "../../components/admin/adminNav";
 import { canRoleAccessAdminArea, getAdminAreaForLocation } from "../../lib/admin/access";
 import { adminIdentityQueryOptions } from "../../lib/admin/identity";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
+import { dashboardCopy } from "./-dashboardCopy";
 
-type DashboardSection = Exclude<AdminSection, "supporters" | "access" | "tasks">;
+/** The sections the dashboard route accepts in its search string. */
+type DashboardSection = AdminListSearch["section"];
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: adminListSearchSchema,
@@ -38,29 +41,43 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const { section } = Route.useSearch();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
 
   return (
-    <AdminLayout activeSection={section}>
-      <AdminDashboardContent section={section} />
+    <AdminLayout activeSection={search.section}>
+      <AdminDashboardContent
+        section={search.section}
+        search={search}
+        onSearchChange={(next) => void navigate({ search: next })}
+      />
     </AdminLayout>
   );
 }
 
-function AdminDashboardContent({ section }: { section: DashboardSection }) {
+export function AdminDashboardContent({
+  section,
+  search,
+  onSearchChange,
+}: {
+  section: DashboardSection;
+  search: AdminListSearch;
+  onSearchChange: (search: AdminListSearch) => void;
+}) {
   const queryClient = useQueryClient();
-  const { copy, language } = useAdminLanguage();
-  const search = Route.useSearch();
-  const navigate = Route.useNavigate();
+  const { copy } = useAdminLanguage();
+  const page = useAdminCopy(dashboardCopy);
   const [tabMemory, setTabMemory] = useState<AnimalTabMemory>({});
-  const isAnimalSection = section === "cat" || section === "dog" || section === "sponsor";
+  const animalSection =
+    section === "cat" || section === "dog" || section === "sponsor" ? section : null;
+  const isAnimalSection = animalSection !== null;
   useEffect(() => {
     if (section === "cat" || section === "dog" || section === "sponsor") {
       setTabMemory((memory) => rememberAnimalTab(memory, section, search));
     }
   }, [section, search]);
   const changeListState = (state: AnimalListState) => {
-    void navigate({ search: { section, ...state } });
+    onSearchChange({ section, ...state });
   };
   const { data: identity } = useQuery(adminIdentityQueryOptions());
   const canViewSupporters =
@@ -81,20 +98,17 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
   });
 
   // A failed query also yields no rows, so `?? []` alone would render an outage
-  // as "沒有結果" -- telling the operator this section is empty when in fact
-  // nothing was read.
+  // as the "No results" empty state -- telling the operator this section is empty
+  // when in fact nothing was read.
   const animals = animalsQuery.data?.animals ?? [];
   const isLoading = identity == null || animalsQuery.isLoading;
 
   return (
     <div className="min-w-0 space-y-4 p-4 sm:p-6">
-      {isAnimalSection ? (
-        <nav
-          aria-label={language === "zh" ? "麵包屑導覽" : "Breadcrumb"}
-          className="text-sm text-[var(--color-text-muted)]"
-        >
+      {animalSection ? (
+        <nav aria-label={page.breadcrumbLabel} className="text-sm text-[var(--color-text-muted)]">
           <ol className="flex flex-wrap items-center gap-2">
-            <li>{language === "zh" ? "後台" : "Admin"}</li>
+            <li>{page.breadcrumbRoot}</li>
             <li aria-hidden="true">/</li>
             <li>
               <Link
@@ -102,25 +116,17 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
                 search={{ section: "cat", ...(tabMemory.cat ?? animalListDefaults) }}
                 className="hover:text-[var(--color-primary)] hover:underline"
               >
-                {language === "zh" ? "動物管理" : "Animal management"}
+                {page.animalManagement}
               </Link>
             </li>
             <li aria-hidden="true">/</li>
-            <li aria-current="page">
-              {language === "zh"
-                ? { cat: "貓貓", dog: "狗狗", sponsor: "助養" }[section]
-                : { cat: "Cats", dog: "Dogs", sponsor: "Sponsorship" }[section]}
-            </li>
+            <li aria-current="page">{page.animalTabs[animalSection]}</li>
           </ol>
         </nav>
       ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 tabIndex={-1} className="text-xl font-bold">
-          {isAnimalSection
-            ? language === "zh"
-              ? "動物管理"
-              : "Animal management"
-            : copy.dashboard.title[section]}
+          {isAnimalSection ? page.animalManagement : copy.dashboard.title[section]}
         </h1>
         {section === "payments" ? (
           canViewSupporters ? (
@@ -140,23 +146,13 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
           </Link>
         ) : null}
       </div>
-      {isAnimalSection ? (
+      {animalSection ? (
         <>
           <p className="max-w-2xl text-sm text-[var(--color-text-muted)]">
-            {language === "zh"
-              ? section === "sponsor"
-                ? "列出可供助養的貓狗；助養資格並非品種。"
-                : section === "cat"
-                  ? "搜尋及管理貓貓記錄、照顧狀態與公開資料。"
-                  : "搜尋及管理狗狗記錄、照顧狀態與公開資料。"
-              : section === "sponsor"
-                ? "Cats and dogs eligible for sponsorship; eligibility is independent of species."
-                : section === "cat"
-                  ? "Find and manage cat records, care status, and public information."
-                  : "Find and manage dog records, care status, and public information."}
+            {page.animalDescriptions[animalSection]}
           </p>
           <nav
-            aria-label={language === "zh" ? "動物分類" : "Animal categories"}
+            aria-label={page.animalCategories}
             className="flex max-w-full gap-2 overflow-x-auto border-b border-[var(--color-border)] pb-2"
           >
             {(["cat", "dog", "sponsor"] as const).map((tab) => (
@@ -170,9 +166,7 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
                 aria-current={section === tab ? "page" : undefined}
                 className={`inline-flex min-h-11 shrink-0 items-center rounded-lg px-4 py-2 text-sm font-medium ${section === tab ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"}`}
               >
-                {language === "zh"
-                  ? { cat: "貓貓", dog: "狗狗", sponsor: "助養" }[tab]
-                  : { cat: "Cats", dog: "Dogs", sponsor: "Sponsorship" }[tab]}
+                {page.animalTabs[tab]}
               </Link>
             ))}
           </nav>
@@ -247,15 +241,14 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
                 changeListState({ ...search, page: 1 });
               }}
             />{" "}
-            待補相片
+            {page.missingPhoto}
           </label>
           {missingPhoto ? (
             <p
               role="status"
               className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-[var(--color-panel)]"
             >
-              待補相片：{animalsQuery.data?.total ?? 0}{" "}
-              筆。按編號核對動物，再進入「編輯」上載到草稿；儲存、預覽及批准發布前，原公開相片不會被替換。
+              {page.missingPhotoNotice(animalsQuery.data?.total ?? 0)}
             </p>
           ) : null}
           <AnimalsTable

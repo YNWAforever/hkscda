@@ -19,6 +19,9 @@ mock.module("../supabase", () => ({
 
 const {
   AdminApiError,
+  AdminSessionError,
+  adminErrorMessage,
+  adminSessionErrorText,
   fetchAdminIdentity,
   fetchAdminJson,
   getAdminAccessToken,
@@ -225,6 +228,53 @@ describe("admin browser session", () => {
         headers: expect.objectContaining({ authorization: "Bearer session-token" }),
       }),
     );
+  });
+});
+
+describe("session errors", () => {
+  beforeEach(() => {
+    getSession.mockResolvedValue({ data: { session: null } });
+  });
+
+  afterEach(() => {
+    getSession.mockClear();
+  });
+
+  test("a missing session keeps its zh-HK message and carries a code", async () => {
+    const error = await getAdminAccessToken().catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(AdminSessionError);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("not_signed_in");
+    expect((error as Error).message).toBe("未登入");
+  });
+
+  test("a changed account keeps its zh-HK message and carries a code", async () => {
+    getSession.mockResolvedValue({
+      data: { session: { access_token: "token-b", user: { id: "auth-b" } } },
+    });
+    const error = await getAdminAccessToken("auth-a").catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(AdminSessionError);
+    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("identity_changed");
+    expect((error as Error).message).toBe("登入身份已變更，請重新載入頁面。");
+  });
+
+  test("adminErrorMessage translates a session error and leaves other messages as sent", () => {
+    const notSignedIn = new AdminSessionError("not_signed_in");
+    expect(adminErrorMessage(notSignedIn)).toBe("未登入");
+    expect(adminErrorMessage(notSignedIn, "zh")).toBe("未登入");
+    expect(adminErrorMessage(notSignedIn, "en")).toBe("Not signed in");
+    expect(adminErrorMessage(new AdminSessionError("identity_changed"), "en")).toBe(
+      "Your signed-in account has changed. Reload the page.",
+    );
+    expect(adminErrorMessage(new Error("Invalid JSON body"), "en")).toBe("Invalid JSON body");
+    expect(adminErrorMessage("not an error", "en")).toBeNull();
+  });
+
+  test("the English session text has no Chinese and tells the user what to do", () => {
+    for (const code of ["not_signed_in", "identity_changed"] as const) {
+      expect(adminSessionErrorText(code, "en")).not.toMatch(/\p{Script=Han}/u);
+    }
+    expect(adminSessionErrorText("identity_changed", "en")).toContain("Reload");
   });
 });
 
