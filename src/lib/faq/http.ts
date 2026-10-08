@@ -3,6 +3,7 @@ import { readAdminJsonObject } from "../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminUser } from "../donations/supabase.server";
+import type { SearchGapReport } from "./searchGaps";
 import type { createFaqService } from "./service";
 
 type HandlerContext = { request: Request };
@@ -11,6 +12,11 @@ type FaqService = ReturnType<typeof createFaqService>;
 type CreateAdminFaqHandlersArgs = {
   requireFaqAdmin: (request: Request) => Promise<AdminUser>;
   service: Pick<FaqService, "listAdmin" | "upsert" | "deactivate">;
+};
+
+type CreateAdminFaqSearchGapHandlerArgs = {
+  requireFaqAdmin: (request: Request) => Promise<AdminUser>;
+  service: { listReport(): Promise<SearchGapReport> };
 };
 
 function jsonNoStore(body: unknown, init: ResponseInit = {}) {
@@ -71,5 +77,18 @@ export function createAdminFaqHandlers({ requireFaqAdmin, service }: CreateAdmin
         return jsonNoStore({ ok: true });
       });
     },
+  };
+}
+
+/** GET handler for the staff-only report of recent zero-result search topics. */
+export function createAdminFaqSearchGapHandler({
+  requireFaqAdmin,
+  service,
+}: CreateAdminFaqSearchGapHandlerArgs) {
+  return function listSearchGaps({ request }: HandlerContext) {
+    return withFaqErrors(async () => {
+      await requireFaqAdmin(request);
+      return jsonNoStore(await service.listReport());
+    });
   };
 }

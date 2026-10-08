@@ -7,6 +7,7 @@ import { FAQ_CTA_OPTIONS } from "../../../lib/faq/schemas";
 import type { FaqCategory, FaqEntry, FaqEntryInput, FaqLanguage } from "../../../lib/faq/types";
 import { LoadFailure } from "../LoadFailure";
 import { FaqAnswerTester } from "./FaqAnswerTester";
+import { FaqSearchGapsReport } from "./FaqSearchGapsReport";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
 
@@ -130,6 +131,20 @@ export function FaqManagement() {
           新增問題
         </button>
       </div>
+
+      {/* Fetches on its own, so it shows whatever state the FAQ list is in. */}
+      <FaqSearchGapsReport
+        onTest={(topic, language) => {
+          setTesterQuery(topic);
+          setTesterLanguage(language);
+        }}
+        onCreate={(topic, language) =>
+          setDraft({
+            ...draftFromEntry(),
+            [language === "en" ? "questionEn" : "questionZh"]: topic,
+          })
+        }
+      />
 
       {entriesQuery.isLoading ? (
         <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>

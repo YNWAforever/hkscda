@@ -172,6 +172,7 @@ import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api
 import { Route as ApiAdminExportsJobsRouteImport } from './routes/api/admin/exports/jobs'
 import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
+import { Route as ApiAdminFaqSearchGapsRouteImport } from './routes/api/admin/faq/search-gaps'
 import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
 import { Route as ApiAdminFinanceBankMatchOperationsRouteImport } from './routes/api/admin/finance/bank-match-operations'
 import { Route as ApiAdminFinanceBankStatementPreviewRouteImport } from './routes/api/admin/finance/bank-statement-preview'
@@ -1147,6 +1148,11 @@ const ApiAdminExportsSupportersDotcsvRoute =
     path: '/api/admin/exports/supporters.csv',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminFaqSearchGapsRoute = ApiAdminFaqSearchGapsRouteImport.update({
+  id: '/search-gaps',
+  path: '/search-gaps',
+  getParentRoute: () => ApiAdminFaqRoute,
+} as any)
 const ApiAdminFinanceActivityRoute = ApiAdminFinanceActivityRouteImport.update({
   id: '/api/admin/finance/activity',
   path: '/api/admin/finance/activity',
@@ -1939,7 +1945,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/content-review': typeof ApiAdminContentReviewRoute
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
-  '/api/admin/faq': typeof ApiAdminFaqRoute
+  '/api/admin/faq': typeof ApiAdminFaqRouteWithChildren
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
@@ -2015,6 +2021,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/jobs': typeof ApiAdminExportsJobsRouteWithChildren
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
+  '/api/admin/faq/search-gaps': typeof ApiAdminFaqSearchGapsRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/finance/bank-match-operations': typeof ApiAdminFinanceBankMatchOperationsRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
@@ -2222,7 +2229,7 @@ export interface FileRoutesByTo {
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/content-review': typeof ApiAdminContentReviewRoute
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
-  '/api/admin/faq': typeof ApiAdminFaqRoute
+  '/api/admin/faq': typeof ApiAdminFaqRouteWithChildren
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
@@ -2298,6 +2305,7 @@ export interface FileRoutesByTo {
   '/api/admin/exports/jobs': typeof ApiAdminExportsJobsRouteWithChildren
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
+  '/api/admin/faq/search-gaps': typeof ApiAdminFaqSearchGapsRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/finance/bank-match-operations': typeof ApiAdminFinanceBankMatchOperationsRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
@@ -2507,7 +2515,7 @@ export interface FileRoutesById {
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/content-review': typeof ApiAdminContentReviewRoute
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
-  '/api/admin/faq': typeof ApiAdminFaqRoute
+  '/api/admin/faq': typeof ApiAdminFaqRouteWithChildren
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
@@ -2583,6 +2591,7 @@ export interface FileRoutesById {
   '/api/admin/exports/jobs': typeof ApiAdminExportsJobsRouteWithChildren
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
+  '/api/admin/faq/search-gaps': typeof ApiAdminFaqSearchGapsRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/finance/bank-match-operations': typeof ApiAdminFinanceBankMatchOperationsRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
@@ -2869,6 +2878,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/jobs'
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
+    | '/api/admin/faq/search-gaps'
     | '/api/admin/finance/activity'
     | '/api/admin/finance/bank-match-operations'
     | '/api/admin/finance/bank-statement-preview'
@@ -3152,6 +3162,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/jobs'
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
+    | '/api/admin/faq/search-gaps'
     | '/api/admin/finance/activity'
     | '/api/admin/finance/bank-match-operations'
     | '/api/admin/finance/bank-statement-preview'
@@ -3436,6 +3447,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/jobs'
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
+    | '/api/admin/faq/search-gaps'
     | '/api/admin/finance/activity'
     | '/api/admin/finance/bank-match-operations'
     | '/api/admin/finance/bank-statement-preview'
@@ -3619,7 +3631,7 @@ export interface RootRouteChildren {
   ApiAdminContentRoute: typeof ApiAdminContentRouteWithChildren
   ApiAdminContentReviewRoute: typeof ApiAdminContentReviewRoute
   ApiAdminDocumentsRoute: typeof ApiAdminDocumentsRouteWithChildren
-  ApiAdminFaqRoute: typeof ApiAdminFaqRoute
+  ApiAdminFaqRoute: typeof ApiAdminFaqRouteWithChildren
   ApiAdminGovernanceRoute: typeof ApiAdminGovernanceRoute
   ApiAdminInternshipsRoute: typeof ApiAdminInternshipsRoute
   ApiAdminKnowledgeRoute: typeof ApiAdminKnowledgeRoute
@@ -4871,6 +4883,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminExportsSupportersDotcsvRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/faq/search-gaps': {
+      id: '/api/admin/faq/search-gaps'
+      path: '/search-gaps'
+      fullPath: '/api/admin/faq/search-gaps'
+      preLoaderRoute: typeof ApiAdminFaqSearchGapsRouteImport
+      parentRoute: typeof ApiAdminFaqRoute
+    }
     '/api/admin/finance/activity': {
       id: '/api/admin/finance/activity'
       path: '/api/admin/finance/activity'
@@ -6073,6 +6092,18 @@ const ApiAdminDocumentsRouteChildren: ApiAdminDocumentsRouteChildren = {
 const ApiAdminDocumentsRouteWithChildren =
   ApiAdminDocumentsRoute._addFileChildren(ApiAdminDocumentsRouteChildren)
 
+interface ApiAdminFaqRouteChildren {
+  ApiAdminFaqSearchGapsRoute: typeof ApiAdminFaqSearchGapsRoute
+}
+
+const ApiAdminFaqRouteChildren: ApiAdminFaqRouteChildren = {
+  ApiAdminFaqSearchGapsRoute: ApiAdminFaqSearchGapsRoute,
+}
+
+const ApiAdminFaqRouteWithChildren = ApiAdminFaqRoute._addFileChildren(
+  ApiAdminFaqRouteChildren,
+)
+
 interface ApiAdminPaymentMethodsIdRouteChildren {
   ApiAdminPaymentMethodsIdPublishRoute: typeof ApiAdminPaymentMethodsIdPublishRoute
   ApiAdminPaymentMethodsIdReturnToDraftRoute: typeof ApiAdminPaymentMethodsIdReturnToDraftRoute
@@ -6537,7 +6568,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminContentRoute: ApiAdminContentRouteWithChildren,
   ApiAdminContentReviewRoute: ApiAdminContentReviewRoute,
   ApiAdminDocumentsRoute: ApiAdminDocumentsRouteWithChildren,
-  ApiAdminFaqRoute: ApiAdminFaqRoute,
+  ApiAdminFaqRoute: ApiAdminFaqRouteWithChildren,
   ApiAdminGovernanceRoute: ApiAdminGovernanceRoute,
   ApiAdminInternshipsRoute: ApiAdminInternshipsRoute,
   ApiAdminKnowledgeRoute: ApiAdminKnowledgeRoute,
