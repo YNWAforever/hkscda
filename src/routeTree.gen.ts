@@ -109,6 +109,7 @@ import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipt
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
 import { Route as ApiAdminTaskOverviewRouteImport } from './routes/api/admin/task-overview'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
+import { Route as ApiHelpSearchGapRouteImport } from './routes/api/help/search-gap'
 import { Route as ApiInternalReadinessRouteImport } from './routes/api/internal/readiness'
 import { Route as ApiInternshipsIndexRouteImport } from './routes/api/internships/index'
 import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
@@ -804,6 +805,11 @@ const ApiAdminTaskOverviewRoute = ApiAdminTaskOverviewRouteImport.update({
 const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
   id: '/api/adoption/applications',
   path: '/api/adoption/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHelpSearchGapRoute = ApiHelpSearchGapRouteImport.update({
+  id: '/api/help/search-gap',
+  path: '/api/help/search-gap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiInternalReadinessRoute = ApiInternalReadinessRouteImport.update({
@@ -1945,6 +1951,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/help/search-gap': typeof ApiHelpSearchGapRoute
   '/api/internal/readiness': typeof ApiInternalReadinessRoute
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
@@ -2227,6 +2234,7 @@ export interface FileRoutesByTo {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/help/search-gap': typeof ApiHelpSearchGapRoute
   '/api/internal/readiness': typeof ApiInternalReadinessRoute
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
@@ -2511,6 +2519,7 @@ export interface FileRoutesById {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/help/search-gap': typeof ApiHelpSearchGapRoute
   '/api/internal/readiness': typeof ApiInternalReadinessRoute
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
@@ -2796,6 +2805,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/admin/task-overview'
     | '/api/adoption/applications'
+    | '/api/help/search-gap'
     | '/api/internal/readiness'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
@@ -3078,6 +3088,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/admin/task-overview'
     | '/api/adoption/applications'
+    | '/api/help/search-gap'
     | '/api/internal/readiness'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
@@ -3361,6 +3372,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/admin/task-overview'
     | '/api/adoption/applications'
+    | '/api/help/search-gap'
     | '/api/internal/readiness'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
@@ -3619,6 +3631,7 @@ export interface RootRouteChildren {
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
   ApiAdminTaskOverviewRoute: typeof ApiAdminTaskOverviewRoute
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
+  ApiHelpSearchGapRoute: typeof ApiHelpSearchGapRoute
   ApiInternalReadinessRoute: typeof ApiInternalReadinessRoute
   ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
   ApiJobsAdoptionUploadsRoute: typeof ApiJobsAdoptionUploadsRoute
@@ -4415,6 +4428,13 @@ declare module '@tanstack/react-router' {
       path: '/api/adoption/applications'
       fullPath: '/api/adoption/applications'
       preLoaderRoute: typeof ApiAdoptionApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/help/search-gap': {
+      id: '/api/help/search-gap'
+      path: '/api/help/search-gap'
+      fullPath: '/api/help/search-gap'
+      preLoaderRoute: typeof ApiHelpSearchGapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/internal/readiness': {
@@ -6529,6 +6549,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
   ApiAdminTaskOverviewRoute: ApiAdminTaskOverviewRoute,
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
+  ApiHelpSearchGapRoute: ApiHelpSearchGapRoute,
   ApiInternalReadinessRoute: ApiInternalReadinessRoute,
   ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
   ApiJobsAdoptionUploadsRoute: ApiJobsAdoptionUploadsRoute,

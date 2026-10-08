@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
-import { trackHelpEvent } from "../../../lib/help/analytics";
 import {
   helpCategoryLabels,
   type HelpCategory,
   type HelpFaq,
   type HelpLanguage,
 } from "../../../lib/help/faq";
+import { recordHelpSearch } from "../../../lib/help/recordSearch";
 import { requiresStaffContact, searchHelpFaqs } from "../../../lib/help/search";
 import { ContactFallback } from "./ContactFallback";
 import { FaqResultCard } from "./FaqResultCard";
@@ -72,12 +72,7 @@ export function HelpSearch({
     }
 
     const nextResponse = searchHelpFaqs(nextQuery, faqs, { language, limit: resultLimit });
-    trackHelpEvent("help_search", {
-      language,
-      resultCount: nextResponse.results.length,
-      confidenceBucket: nextResponse.confidence,
-      query: nextQuery,
-    });
+    recordHelpSearch({ query: nextQuery, language, response: nextResponse });
   }
 
   function handleTopicClick(category: HelpCategory) {

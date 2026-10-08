@@ -96,6 +96,16 @@ export const upsertFaqEntrySchema = z.object({
 
 export const deactivateFaqEntrySchema = z.object({ id: faqEntryIdSchema });
 
+// The public search-gap beacon body. Strict: the browser sends exactly these
+// three fields, so anything else is not from our page.
+export const searchGapBeaconSchema = z
+  .object({
+    topic: z.string().min(1).max(80),
+    language: z.enum(["zh-HK", "en"]),
+    confidence: z.enum(["none", "low"]),
+  })
+  .strict();
+
 export type UpsertFaqEntryInput = z.infer<typeof upsertFaqEntrySchema>;
 
 export function resolveFaqCta(ctaKey: string | null): FaqCta | undefined {
