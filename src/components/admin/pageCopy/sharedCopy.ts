@@ -108,7 +108,7 @@ export const sharedPageCopy = defineAdminCopy({
       downloading: "Downloading...",
       downloadFailed: "Download failed",
       exportFailed: "Export failed",
-      notSignedIn: "Not signed in",
+      notSignedIn: "Not signed in. Sign in again.",
       noContact: "No contact on file",
       searchMatches: (count: number) => pluralCount(count, "match", "matches"),
       totalCount: (count: number) => `${formatAdminNumber(count, "en")} total`,

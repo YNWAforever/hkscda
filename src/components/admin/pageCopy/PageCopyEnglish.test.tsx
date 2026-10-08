@@ -121,6 +121,12 @@ describe("adminPageCopy page headers", () => {
     ]);
   });
 
+  test("the not-signed-in message says what to do next, and the zh text is unchanged", () => {
+    // The export buttons throw this as an error message that staff see in an alert.
+    expect(adminPageCopy.en.common.notSignedIn).toBe("Not signed in. Sign in again.");
+    expect(adminPageCopy.zh.common.notSignedIn).toBe("未登入");
+  });
+
   test("counts read the same way in each language", () => {
     expect(adminPageCopy.zh.common.searchMatches(1234)).toBe("1,234 個結果");
     expect(adminPageCopy.en.common.searchMatches(1234)).toBe("1,234 matches");
