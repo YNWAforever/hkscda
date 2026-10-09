@@ -333,6 +333,24 @@ other way round.
 | 領養須知     | adoption instructions        | The public page of what adopters need to know; 領養需知 is the same. Its editor is "Page content".                 |
 | 職銜         | position                     | A board member's job title. 在任 is "In office"; 卸任 is "Mark as stepped down" (a button), 已卸任 "Stepped down". |
 
+## Load failures, confirm dialogs and volunteer groups
+
+Added by SP-5b-1. A "—" in the zh-HK column means no zh is shipped yet: the zh line is a draft on the owner review list (`docs/superpowers/plans/2026-10-10-admin-audit-sp5b-owner-review.md`), and the English is used until it is approved. "Session" here is the staff sign-in session, not a volunteer 場次 ("session" in "Volunteers and internships").
+
+| zh-HK    | English            | Usage                                                                                                                                                                         |
+| -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 人員     | People             | A volunteer sidebar group (people, qualifications). Sentence case, one word.                                                                                                  |
+| 日常     | Daily work         | A volunteer sidebar group (the pages used every day).                                                                                                                         |
+| 政策     | Policy             | The volunteer sidebar group for the rules pages. The term itself is "policy" in "Volunteers and internships".                                                                 |
+| 原因     | Reason             | The label of the reason field in a confirm dialog.                                                                                                                            |
+| 處理中…  | Working…           | The confirm button while a request runs. The only "Working…" in the admin; other busy states say what is being done ("Saving…").                                              |
+| 放棄更改 | Discard changes    | The confirm button when unsaved edits would be lost. Name what happens next where the owner approves the longer form (owner list DL-3).                                       |
+| —        | session ended      | A 401 load failure: "Your session has ended." with the link "Sign in again." A 401 is never "no access".                                                                      |
+| —        | no access          | A 403 load failure: "You don't have access to this." The link reads "Go to a page your role can open."                                                                        |
+| —        | record not found   | A 404 load failure: "This record could not be found. Go back to the list and check it still exists."                                                                          |
+| —        | server problem     | A 5xx load failure: "The server had a problem. Try again in a moment."                                                                                                        |
+| —        | connection problem | A request that got no response: "Could not reach the server. Check your connection and try again." Every load failure also offers Retry (重試) and shows the error reference. |
+
 ## Style
 
 The English follows these rules. They are the same rules the plan and every area task use.
@@ -354,3 +372,5 @@ The English follows these rules. They are the same rules the plan and every area
   - dates: zh-HK `2026年10月7日 (三)`, English `7 Oct 2026 (Wed)`;
   - date-times add `HH:mm` in 24-hour time;
   - money: `HK$1,234.00` in both languages.
+- **Status badges** use one of five tones, named in code: success, warning, danger, info and
+  neutral. A status never relies on colour alone: the badge always shows the status name.
