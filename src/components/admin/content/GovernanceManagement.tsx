@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -108,17 +109,22 @@ export function GovernanceManagement() {
                   {member.isActive ? copy.table.inOffice : copy.table.steppedDown}
                 </td>
                 <td className="py-2">
-                  <button type="button" onClick={() => setDraft(draftFromMember(member))}>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => setDraft(draftFromMember(member))}
+                  >
                     {copy.table.edit}
-                  </button>
+                  </Button>
                   {member.isActive ? (
-                    <button
+                    <Button
+                      variant="outline"
                       type="button"
                       onClick={() => deactivateMutation.mutate(member.id)}
                       disabled={deactivateMutation.isPending}
                     >
                       {copy.table.stepDown}
-                    </button>
+                    </Button>
                   ) : null}
                 </td>
               </tr>

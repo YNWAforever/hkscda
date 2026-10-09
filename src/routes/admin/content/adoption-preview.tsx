@@ -58,7 +58,11 @@ function AdoptionInstructionsPreview() {
   }
 
   if (!preview.data) {
-    return <p className="p-6 text-[var(--color-danger)]">{copy.failed}</p>;
+    return (
+      <p role="alert" className="p-6 text-[var(--color-danger)]">
+        {copy.failed}
+      </p>
+    );
   }
 
   return <AdoptionInstructionsContent data={preview.data} />;

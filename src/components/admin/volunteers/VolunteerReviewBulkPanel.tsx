@@ -172,7 +172,9 @@ export function VolunteerReviewBulkPanel({
           title={copy.listFailed}
         />
       )}
-      <p className="text-sm">{copy.selected(selectedIds.length)}</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selected(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { AnimalGalleryItem } from "../../types/animal";
 import { animalFormCopy } from "./animalFormCopy";
 import { useAdminCopy } from "./i18n/copy";
@@ -52,17 +53,24 @@ export function AnimalGalleryEditor({
         <article key={item.id} className="space-y-2 rounded border p-3">
           <div className="flex flex-wrap items-center gap-2">
             <strong>{copy.photoNumber(index + 1)}</strong>
-            <button type="button" onClick={() => move(index, -1)} disabled={index === 0}>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => move(index, -1)}
+              disabled={index === 0}
+            >
               {copy.moveUp}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               type="button"
               onClick={() => move(index, 1)}
               disabled={index === items.length - 1}
             >
               {copy.moveDown}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               type="button"
               onClick={() =>
                 onChange(
@@ -73,7 +81,7 @@ export function AnimalGalleryEditor({
               }
             >
               {copy.remove}
-            </button>
+            </Button>
           </div>
           <label className="block text-sm">
             {copy.altZh}

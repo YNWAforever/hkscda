@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -498,21 +499,23 @@ export function AdoptionGuideReleaseManagementView({
               aria-label={copy.list.pagerLabel}
               className="flex items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-3 text-sm"
             >
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={locked || page <= 1}
                 onClick={() => onPageChange?.(page - 1)}
               >
                 {copy.list.previous}
-              </button>
+              </Button>
               <span>{copy.list.pageOf(page, Math.max(1, Math.ceil(total / pageSize)))}</span>
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={locked || page >= Math.ceil(total / pageSize)}
                 onClick={() => onPageChange?.(page + 1)}
               >
                 {copy.list.next}
-              </button>
+              </Button>
             </nav>
           ) : null}
         </section>
@@ -657,14 +660,17 @@ export function AdoptionGuideReleaseManagementView({
                   />
                 </div>
                 {readiness && !readiness.ready ? (
-                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]">
+                  <ul
+                    role="alert"
+                    className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]"
+                  >
                     {readiness.issues.map((issue) => (
                       <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
                     ))}
                   </ul>
                 ) : null}
                 {workflow?.blocker ? (
-                  <p className="mt-3 text-sm text-[var(--color-error)]">
+                  <p role="alert" className="mt-3 text-sm text-[var(--color-error)]">
                     {copy.blockers[workflow.blocker]}
                   </p>
                 ) : null}
@@ -766,7 +772,7 @@ function EditorSection({
     <section className="space-y-3">
       <h2 className="font-bold">{title}</h2>
       {issues.map((issue) => (
-        <p key={issue.message} className="text-sm text-[var(--color-error)]">
+        <p key={issue.message} role="alert" className="text-sm text-[var(--color-error)]">
           {issue.message}
         </p>
       ))}

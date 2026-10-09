@@ -460,7 +460,11 @@ export function CoordinatorReports() {
             <h2 className="text-base font-semibold text-[var(--color-panel)]">
               {copy.exportHistory}
             </h2>
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-xs text-[var(--color-text-muted)]"
+            >
               {historyQuery.isLoading
                 ? pageCopy.common.loading
                 : pageCopy.common.totalRecords(total)}

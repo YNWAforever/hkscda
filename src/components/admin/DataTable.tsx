@@ -40,6 +40,12 @@ type DataTableBaseProps<T> = {
   failureTitle?: ReactNode;
   /** Names a keyboard-focusable table inside its horizontal scroll container. */
   accessibleLabel?: string;
+  /**
+   * The result count ("12 supporters"). It sits in a polite, atomic live region so a screen
+   * reader hears the whole phrase when a filter or page changes it. Leave it out when the
+   * screen shows its count elsewhere.
+   */
+  resultCount?: ReactNode;
 };
 
 /**
@@ -80,6 +86,7 @@ export function DataTable<T>({
   renderMobileCard,
   className,
   accessibleLabel,
+  resultCount,
 }: DataTableProps<T>) {
   const copy = useSharedAdminCopy(sharedUiCopy).dataTable;
   const empty = emptyProp === undefined ? copy.empty : emptyProp;
@@ -173,8 +180,24 @@ export function DataTable<T>({
     </Table>
   );
 
+  const count =
+    resultCount === undefined ? null : (
+      <p
+        aria-live="polite"
+        aria-atomic="true"
+        className="px-3 py-2 text-xs text-[var(--color-text-muted)]"
+      >
+        {resultCount}
+      </p>
+    );
+
   if (!renderMobileCard) {
-    return table;
+    return (
+      <>
+        {table}
+        {count}
+      </>
+    );
   }
 
   return (
@@ -209,6 +232,7 @@ export function DataTable<T>({
           ))
         )}
       </div>
+      {count}
     </>
   );
 }

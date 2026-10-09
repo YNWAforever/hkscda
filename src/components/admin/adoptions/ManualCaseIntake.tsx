@@ -515,7 +515,11 @@ export function ManualCaseIntake() {
               <div className="text-sm font-medium text-[var(--color-panel)]">
                 {copy.searchResults}
               </div>
-              <div className="text-xs text-[var(--color-text-muted)]">
+              <div
+                aria-live="polite"
+                aria-atomic="true"
+                className="text-xs text-[var(--color-text-muted)]"
+              >
                 {identitySearchQuery.isFetching
                   ? copy.searching
                   : pageCopy.common.searchMatches(identitySearchQuery.data?.total ?? 0)}

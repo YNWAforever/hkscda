@@ -228,7 +228,7 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
               />
             </label>
             {mutation.error && (
-              <p className="text-sm text-[var(--color-destructive)]">
+              <p role="alert" className="text-sm text-[var(--color-destructive)]">
                 {adminErrorMessage(mutation.error, language)}
               </p>
             )}

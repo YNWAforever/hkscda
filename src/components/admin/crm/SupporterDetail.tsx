@@ -225,7 +225,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
               ))}
             </div>
             {issueReceiptMutation.error && (
-              <p className="mt-3 text-sm text-[var(--color-destructive)]">
+              <p role="alert" className="mt-3 text-sm text-[var(--color-destructive)]">
                 {adminErrorMessage(issueReceiptMutation.error, language)}
               </p>
             )}
@@ -269,7 +269,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
               ))}
             </div>
             {voidReceiptMutation.error && (
-              <p className="mt-3 text-sm text-[var(--color-destructive)]">
+              <p role="alert" className="mt-3 text-sm text-[var(--color-destructive)]">
                 {adminErrorMessage(voidReceiptMutation.error, language)}
               </p>
             )}

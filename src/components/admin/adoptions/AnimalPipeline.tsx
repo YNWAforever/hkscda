@@ -838,7 +838,11 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]"
+          >
             <Badge
               variant="outline"
               className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"

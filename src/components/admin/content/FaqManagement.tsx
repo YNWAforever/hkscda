@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useRef, useState, type Ref } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -215,17 +216,22 @@ export function FaqManagement() {
                 <td className="py-2">{entry.sortOrder}</td>
                 <td className="py-2">{entry.isActive ? copy.shown : copy.disabled}</td>
                 <td className="py-2">
-                  <button type="button" onClick={() => openDraft(draftFromEntry(entry))}>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => openDraft(draftFromEntry(entry))}
+                  >
                     {copy.edit}
-                  </button>
+                  </Button>
                   {entry.isActive ? (
-                    <button
+                    <Button
+                      variant="outline"
                       type="button"
                       onClick={() => deactivateMutation.mutate(entry.id)}
                       disabled={deactivateMutation.isPending}
                     >
                       {copy.disable}
-                    </button>
+                    </Button>
                   ) : null}
                 </td>
               </tr>

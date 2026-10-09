@@ -292,7 +292,11 @@ export function StatusAdmin() {
               <h2 className="text-base font-semibold text-[var(--color-panel)]">
                 {selectedCategoryLabel}
               </h2>
-              <p className="text-xs text-[var(--color-text-muted)]">
+              <p
+                aria-live="polite"
+                aria-atomic="true"
+                className="text-xs text-[var(--color-text-muted)]"
+              >
                 {pageCopy.common.rowsCount(visibleStatuses.length)}
               </p>
             </div>

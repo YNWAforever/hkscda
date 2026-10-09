@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   AdoptionInstructionsManagement,
   type AdoptionInstructionEditorHandle,
@@ -271,12 +272,22 @@ function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: Adop
           <AlertDialogCancel disabled={leaving} onClick={() => cancelLeave()}>
             {copy.leave.cancel}
           </AlertDialogCancel>
-          <button type="button" disabled={leaving} onClick={() => void decideLeave("discard")}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={leaving}
+            onClick={() => void decideLeave("discard")}
+          >
             {copy.leave.discard}
-          </button>
-          <button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={leaving}
+            onClick={() => void decideLeave("save")}
+          >
             {copy.leave.save}
-          </button>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -648,25 +659,32 @@ function FeeEditor({
           className={inputClass}
         />
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="outline"
             type="button"
             aria-label={copy.moveUp}
             disabled={pending || dirty || conflict}
             onClick={() => onMove?.(draft, -1)}
           >
             <ChevronUp className="h-4 w-4" /> {copy.moveUp}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             type="button"
             aria-label={copy.moveDown}
             disabled={pending || dirty || conflict}
             onClick={() => onMove?.(draft, 1)}
           >
             <ChevronDown className="h-4 w-4" /> {copy.moveDown}
-          </button>
-          <button type="button" disabled={pending || conflict} onClick={() => void save()}>
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={pending || conflict}
+            onClick={() => void save()}
+          >
             {copy.save}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -822,7 +840,8 @@ export function EstateEditor({
         />
       </div>
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={pending || conflict || !draft.estateName.trim() || !draft.district.trim()}
           onClick={() => void save()}
@@ -834,19 +853,25 @@ export function EstateEditor({
               <Plus className="inline h-4 w-4" /> {copy.add}
             </>
           )}
-        </button>
+        </Button>
         {estate ? (
           <>
-            <button
+            <Button
+              variant="outline"
               type="button"
               disabled={pending || dirty || conflict}
               onClick={() => void togglePublication()}
             >
               {published ? copy.unpublish : copy.publish}
-            </button>
-            <button type="button" disabled={pending} onClick={() => onDelete?.(estate.id)}>
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              disabled={pending}
+              onClick={() => onDelete?.(estate.id)}
+            >
               <Trash2 className="inline h-4 w-4" /> {copy.delete}
-            </button>
+            </Button>
           </>
         ) : null}
       </div>

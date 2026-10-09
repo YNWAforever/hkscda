@@ -307,7 +307,10 @@ export function AccessManagement() {
       </div>
 
       {error && (
-        <div className="rounded-md border border-[var(--color-error)] bg-white px-3 py-2 text-sm text-[var(--color-error)]">
+        <div
+          role="alert"
+          className="rounded-md border border-[var(--color-error)] bg-white px-3 py-2 text-sm text-[var(--color-error)]"
+        >
           {error}
         </div>
       )}
@@ -356,19 +359,21 @@ export function AccessManagement() {
           />
         )}
         <nav aria-label={t.auditPagerLabel} className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             disabled={auditPage === 1 || auditQuery.isFetching}
             onClick={() => setAuditPage((page) => page - 1)}
           >
             {t.previous}
-          </button>
+          </Button>
           <span>{t.auditPage(auditPage)}</span>
-          <button
+          <Button
+            variant="outline"
             disabled={!auditQuery.data?.hasMore || auditQuery.isFetching}
             onClick={() => setAuditPage((page) => page + 1)}
           >
             {t.next}
-          </button>
+          </Button>
         </nav>
         <div className="mt-3 space-y-2">
           {(auditQuery.data?.audit ?? []).length === 0 ? (

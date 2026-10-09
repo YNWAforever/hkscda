@@ -1,9 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { ContentReviewPanel } from "./content/ContentReview";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchAdminJson } from "../../lib/admin/http";
 import { AdminApiError } from "../../lib/admin/session";
 import {
@@ -83,7 +84,13 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     Array<{ id: string; revision: number; created_at: string }>
   >([]);
   const [animalId] = useState(() => existing?.id ?? crypto.randomUUID());
-  const [error, setError] = useState<string | null>(null);
+  // One message at a time: a failure is announced as an alert in the error colour, a success as a status in the success colour.
+  const [message, setMessage] = useState<{ tone: "error" | "status"; text: string } | null>(null);
+  const setError = useCallback(
+    (text: string | null) => setMessage(text === null ? null : { tone: "error", text }),
+    [],
+  );
+  const setNotice = useCallback((text: string) => setMessage({ tone: "status", text }), []);
   const [draftLoad, setDraftLoad] = useState<"loading" | "ready" | "failed">(
     existing ? "loading" : "ready",
   );
@@ -192,7 +199,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     return () => {
       cancelled = true;
     };
-  }, [animalId, hasExisting, reset]);
+  }, [animalId, hasExisting, reset, setError]);
 
   async function copyVersion(versionId: string) {
     try {
@@ -202,7 +209,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       });
       setDraftRevision(result.revision);
       setPreviewId(null);
-      setError(formCopy.versions.copied);
+      setNotice(formCopy.versions.copied);
       window.location.reload();
     } catch {
       setError(formCopy.versions.copyFailed);
@@ -327,7 +334,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         reset(values);
       }
       setPreviewId(null);
-      setError(formCopy.draft.saved);
+      setNotice(formCopy.draft.saved);
       setSaving(false);
       return;
     } catch {
@@ -350,7 +357,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       });
       setPreviewId(result.preview_id);
       setPreviewBody(result.body);
-      setError(formCopy.publish.previewCreated);
+      setNotice(formCopy.publish.previewCreated);
     } catch {
       setError(formCopy.publish.previewFailed);
     }
@@ -416,9 +423,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           {draftLoad === "loading" ? formCopy.draft.loading : formCopy.draft.loadFailed}
         </p>
         {draftLoad === "failed" && (
-          <button type="button" onClick={() => window.location.reload()}>
+          <Button variant="outline" type="button" onClick={() => window.location.reload()}>
             {formCopy.draft.reload}
-          </button>
+          </Button>
         )}
       </section>
     );
@@ -447,7 +454,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
                 className={field}
               />
               {errors.name && (
-                <p className="text-[var(--color-error)] text-xs mt-1">{errors.name.message}</p>
+                <p role="alert" className="text-[var(--color-error)] text-xs mt-1">
+                  {errors.name.message}
+                </p>
               )}
             </div>
             <div>
@@ -459,7 +468,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
                 className={field}
               />
               {errors.age && (
-                <p className="text-[var(--color-error)] text-xs mt-1">{errors.age.message}</p>
+                <p role="alert" className="text-[var(--color-error)] text-xs mt-1">
+                  {errors.age.message}
+                </p>
               )}
             </div>
             <div>
@@ -852,7 +863,16 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             ))}
           </section>
         )}
-        {error && <p className="text-[var(--color-error)] text-sm">{error}</p>}
+        {message?.tone === "error" && (
+          <p role="alert" className="text-[var(--color-error)] text-sm">
+            {message.text}
+          </p>
+        )}
+        {message?.tone === "status" && (
+          <p role="status" className="text-[var(--color-success)] text-sm">
+            {message.text}
+          </p>
+        )}
 
         {draftRevision > 0 && (
           <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">

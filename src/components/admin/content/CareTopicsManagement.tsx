@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { AdoptionContentTab } from "./AdoptionInformationManagement";
 import { TablePager } from "../TablePager";
 import { useState } from "react";
@@ -157,9 +158,13 @@ export function CareTopicsManagement({
                   {localizedText(topic.label["zh-HK"], topic.label.en, language)}
                   {topic.isPublished ? null : common.list.disabledSuffix}
                 </span>
-                <button type="button" onClick={() => setDraft(draftFromTopic(species, topic))}>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setDraft(draftFromTopic(species, topic))}
+                >
                   {common.list.edit}
-                </button>
+                </Button>
               </li>
             ))}
           {topics.length === 0 ? (

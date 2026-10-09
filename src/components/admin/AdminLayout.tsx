@@ -17,6 +17,7 @@ import { BreadcrumbRecordContext } from "./adminBreadcrumbRecord";
 import { getAdminNavigation, getActiveAdminNavItemIds } from "./adminNav";
 import type { AdminNavigationGroup, AdminSection } from "./adminNav";
 import { adminLanguageTag } from "./i18n/pageLanguage";
+import { focusPageHeading } from "./focusPageHeading";
 import { useSessionExpiryRedirect } from "./useSessionExpiryRedirect";
 
 const COLLAPSE_KEY = "hkscda-admin-sidebar-collapsed";
@@ -256,13 +257,7 @@ function AdminLayoutShell({ children, activeSection, recordName }: AdminLayoutPr
     if (window.location.href === before && new URL(to, before).href !== before) return;
     focusPageOnClose.current = true;
     setMobileOpen(false);
-    requestAnimationFrame(() => {
-      const heading = document.querySelector<HTMLElement>("main h1");
-      if (heading) {
-        heading.tabIndex = -1;
-        heading.focus();
-      }
-    });
+    requestAnimationFrame(() => focusPageHeading(document));
   }
 
   return (

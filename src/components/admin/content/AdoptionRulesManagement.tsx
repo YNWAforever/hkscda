@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { AdoptionContentTab } from "./AdoptionInformationManagement";
 import { TablePager } from "../TablePager";
 import { useState } from "react";
@@ -126,9 +127,13 @@ export function AdoptionRulesManagement({
                   {localizedText(rule.content["zh-HK"], rule.content.en, language)}
                   {rule.isPublished ? null : common.list.disabledSuffix}
                 </span>
-                <button type="button" onClick={() => setDraft(draftFromRule(rule))}>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setDraft(draftFromRule(rule))}
+                >
                   {common.list.edit}
-                </button>
+                </Button>
               </li>
             ))}
           {rules.length === 0 ? (

@@ -515,7 +515,11 @@ export function CaseList() {
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.tableTitle}</h2>
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-xs text-[var(--color-text-muted)]"
+            >
               {isLoading
                 ? pageCopy.common.loading
                 : error

@@ -432,14 +432,18 @@ export function PaymentsReconcile() {
             {pageCopy.common.exportCsv}
           </Button>
           {exportFailure && (
-            <p className="text-xs text-[var(--color-error)]">
+            <p role="alert" className="text-xs text-[var(--color-error)]">
               {adminErrorMessage(exportFailure.cause, language) ?? copy.exportFailed}
             </p>
           )}
         </div>
       </section>
 
-      {actionError && <p className="text-sm text-[var(--color-error)]">{actionError}</p>}
+      {actionError && (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {actionError}
+        </p>
+      )}
 
       <DataTable
         columns={columns}

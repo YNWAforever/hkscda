@@ -491,7 +491,11 @@ export function TaskPanel({
           <h2 className="text-base font-semibold text-[var(--color-panel)]">
             {title ?? copy.defaultTitle}
           </h2>
-          <p className="text-xs text-[var(--color-text-muted)]">
+          <p
+            aria-live="polite"
+            aria-atomic="true"
+            className="text-xs text-[var(--color-text-muted)]"
+          >
             {subtitle ?? pageCopy.common.scheduledOrCompleted(tasks.length)}
           </p>
         </div>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
@@ -347,7 +348,8 @@ export function AdoptionInstructionsManagementView(props: Props) {
               </dl>
             </details>
           )}
-          <button
+          <Button
+            variant="outline"
             type="button"
             disabled={pending}
             onClick={async () => {
@@ -362,11 +364,12 @@ export function AdoptionInstructionsManagementView(props: Props) {
             }}
           >
             {copy.conflict.useServer}
-          </button>
+          </Button>
         </div>
       )}
       {!draft && canEdit && (
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={pending}
           onClick={() =>
@@ -374,7 +377,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
           }
         >
           {copy.createDraft}
-        </button>
+        </Button>
       )}
       <fieldset disabled={blocked} className="grid gap-4 md:grid-cols-2">
         <legend className="sr-only">{copy.fieldsLegend}</legend>
@@ -406,13 +409,14 @@ export function AdoptionInstructionsManagementView(props: Props) {
         ))}
       </fieldset>
       <div className="flex flex-wrap gap-3">
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={blocked || !valid || !dirty}
           onClick={() => void run({ action: "save", expectedVersion: revision.version, content })}
         >
           {copy.saveDraft}
-        </button>
+        </Button>
         <a
           href="/admin/content/adoption-preview"
           target="_blank"
@@ -425,7 +429,8 @@ export function AdoptionInstructionsManagementView(props: Props) {
           {copy.previewDraft}
         </a>
         {props.role === "admin" && (
-          <button
+          <Button
+            variant="outline"
             type="button"
             disabled={blocked || !valid || dirty}
             onClick={() => {
@@ -438,20 +443,22 @@ export function AdoptionInstructionsManagementView(props: Props) {
             }}
           >
             {copy.publish}
-          </button>
+          </Button>
         )}
       </div>
       {props.role === "admin" && draft && (
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={pending || conflict || dirty}
           onClick={() => void run({ action: "archive", expectedVersion: revision.version })}
         >
           {copy.archiveDraft}
-        </button>
+        </Button>
       )}
       {dirty && (
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={pending}
           onClick={() => {
@@ -462,7 +469,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
           }}
         >
           {copy.discardChanges}
-        </button>
+        </Button>
       )}
       <h3 className="font-bold">{copy.history.heading}</h3>
       {draft && props.role === "admin" && <p>{copy.history.restoreBlocked}</p>}
@@ -476,30 +483,37 @@ export function AdoptionInstructionsManagementView(props: Props) {
                 item.state === "published" ? "published" : "archived",
                 item.publishedAt,
               )}
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={detailPending}
                 onClick={() => void openRevision(item.id)}
               >
                 {copy.history.view}
-              </button>
+              </Button>
               {props.role === "admin" && (
-                <button
+                <Button
+                  variant="outline"
                   type="button"
                   disabled={pending || draft || dirty || conflict}
                   onClick={() => void run({ action: "restore", revisionId: item.id })}
                 >
                   {copy.history.restore}
-                </button>
+                </Button>
               )}
             </li>
           ))}
       </ul>
       {historyProblemText && <p role="alert">{historyProblemText}</p>}
       {nextHistoryCursor && props.onLoadHistory && (
-        <button type="button" disabled={historyPending} onClick={() => void loadMoreHistory()}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={historyPending}
+          onClick={() => void loadMoreHistory()}
+        >
           {historyPending ? copy.history.loading : copy.history.more}
-        </button>
+        </Button>
       )}
       {selectedRevision && (
         <section

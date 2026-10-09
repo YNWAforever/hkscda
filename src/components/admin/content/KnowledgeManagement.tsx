@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -531,17 +532,23 @@ function EditableKnowledgeEditor({
         </label>
       </div>
       <div className="flex gap-2">
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={pending || !draft.title.trim() || !draft.shortIntro.trim()}
           onClick={() => onSave?.(draft)}
         >
           {copy.save}
-        </button>
+        </Button>
         {post ? (
-          <button type="button" disabled={pending} onClick={() => onDelete?.(post.id)}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={pending}
+            onClick={() => onDelete?.(post.id)}
+          >
             {copy.delete}
-          </button>
+          </Button>
         ) : null}
       </div>
     </section>

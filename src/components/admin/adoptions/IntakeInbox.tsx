@@ -155,7 +155,9 @@ export function IntakeInbox() {
         <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)]">
             <Inbox className="h-4 w-4" />
-            <span>{error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(total)}</span>
+            <span aria-live="polite" aria-atomic="true">
+              {error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(total)}
+            </span>
           </div>
           {isFetching && (
             <span className="text-xs text-[var(--color-text-muted)]">

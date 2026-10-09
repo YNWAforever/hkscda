@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -76,16 +77,22 @@ export function ContentRevisionPanel({
         ))}
       </div>
       <div className="flex gap-3">
-        <button type="button" disabled={cursor === undefined} onClick={() => setCursor(undefined)}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={cursor === undefined}
+          onClick={() => setCursor(undefined)}
+        >
           {copy.latest}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           type="button"
           disabled={history.data?.nextBeforeVersion == null}
           onClick={() => setCursor(history.data?.nextBeforeVersion ?? undefined)}
         >
           {copy.earlier}
-        </button>
+        </Button>
       </div>
       {saved ? (
         <>

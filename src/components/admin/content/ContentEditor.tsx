@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ContentReviewPanel } from "./ContentReview";
 import {
   createContext,
@@ -560,7 +561,8 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       {conflict ? (
         <div role="alert" className="rounded border border-[var(--color-warning)] p-3">
           <p>{copy.conflict.message}</p>
-          <button
+          <Button
+            variant="outline"
             type="button"
             onClick={async () =>
               setComparison(
@@ -570,10 +572,10 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             }
           >
             {copy.conflict.compare}
-          </button>
-          <button type="button" onClick={() => void requestReload()}>
+          </Button>
+          <Button variant="outline" type="button" onClick={() => void requestReload()}>
             {copy.conflict.reload}
-          </button>
+          </Button>
         </div>
       ) : null}
       {comparison ? (
@@ -585,21 +587,23 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         </details>
       ) : null}
       <nav aria-label={copy.history.label} className="flex items-center gap-3">
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={historyPage === 1 || hasDirty || editorActionPending}
           onClick={() => setHistoryPage((page) => page - 1)}
         >
           {copy.history.previous}
-        </button>
+        </Button>
         <span>{copy.history.page(content.history?.page ?? historyPage)}</span>
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={!content.history?.hasMore || hasDirty || editorActionPending}
           onClick={() => setHistoryPage((page) => page + 1)}
         >
           {copy.history.next}
-        </button>
+        </Button>
       </nav>
       <StoryUpdateDraftNotice notice={formatAdopterDraftNotice(updateDraftNotice, language)} />
       {content.revisionId && (
@@ -1745,7 +1749,10 @@ export function ActionErrors({ errors }: { errors: unknown[] }) {
   if (visibleErrors.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
+    <div
+      role="alert"
+      className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
+    >
       {visibleErrors.map((error) => {
         const failure = contentFailure(error);
         const message = failure.code

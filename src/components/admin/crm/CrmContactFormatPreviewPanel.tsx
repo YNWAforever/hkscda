@@ -94,7 +94,9 @@ export function CrmContactFormatPreviewPanel({
         <h2 className="text-lg font-bold">{copy.heading}</h2>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
-      <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"

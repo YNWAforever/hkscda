@@ -407,6 +407,7 @@ export function SupporterList() {
           onRetry={() => void refetch()}
           failureTitle={copy.loadError}
           renderMobileCard={renderSupporterCard}
+          resultCount={visibleData ? pageCopy.common.totalSupporters(visibleData.total) : undefined}
         />
       </div>
       {visibleData && (
@@ -418,11 +419,6 @@ export function SupporterList() {
           busy={isFetching || listState.isDebouncing}
           label={listCopy.pagerLabel}
         />
-      )}
-      {visibleData && (
-        <p className="text-xs text-[var(--color-text-muted)]">
-          {pageCopy.common.totalSupporters(visibleData.total)}
-        </p>
       )}
     </div>
   );

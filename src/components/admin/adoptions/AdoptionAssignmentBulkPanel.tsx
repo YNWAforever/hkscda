@@ -208,7 +208,9 @@ export function AdoptionAssignmentBulkPanel({
         />
       </label>
       {!statusEligible && <p role="status">{copy.needStage}</p>}
-      <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"
