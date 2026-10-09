@@ -391,6 +391,14 @@ Owner questions: 級別評核 (assessments) sits under 政策 because it is admi
 
 Owner question: for the three animal tabs the draft makes the heading the tab name (貓貓 / 狗狗 / 助養). If you prefer to keep 動物管理 as the page heading in Chinese, the English would still need to follow the tab label, because the navigation says Cats / Dogs / Sponsorship.
 
+**Already changed on this branch (not a draft).** This zh heading was replaced, not kept, so it is listed for review rather than for adoption. To restore the old wording, put it back as the heading in that state.
+
+| ID    | Where (file:line, current)                                                                                                                                                               | Was (before this branch)                                                        | Now (shipped on this branch) | English now reads            |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------- | ---------------------------- |
+| PH-25 | `volunteers/VolunteerRegistrationDetail.tsx:61` `DestinationHeading` (registration page `h1` while loading or failed), text from `volunteerWorkspaceCopy.ts:53` `pages.activities.label` | 報名詳情 (`volunteerWorkspaceCopy.ts` `detailTitles.registration`, now removed) | 活動與報名                   | Activities and registrations |
+
+The person page kept its heading 義工個人詳情, so only the registration page changed.
+
 ## 8. Chinese that appears for the first time, from existing wording (Task 4)
 
 No new wording is written. These are for the owner to know about, not to decide.
