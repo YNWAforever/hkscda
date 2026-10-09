@@ -1,6 +1,70 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminDateTime } from "../i18n/format";
 
+/** The name of each part of the page content in a field's label, by the key in its path. */
+const ZH_FIELD_LABELS: Record<string, string> = {
+  hero: "頁首",
+  fees: "領養費用",
+  estates: "可養狗屋苑",
+  guides: "領養後指南",
+  rules: "領養規則",
+  care: "動物照顧須知",
+  eyebrow: "引題",
+  title: "標題",
+  description: "簡介",
+  sectionTitle: "章節標題",
+  dogTitle: "狗隻標題",
+  catTitle: "貓隻標題",
+  itemLabel: "項目欄名",
+  amountLabel: "費用欄名",
+  notice: "費用備註",
+  introduction: "介紹",
+  estateLabel: "屋苑欄名",
+  districtLabel: "地區欄名",
+  notesLabel: "備註欄名",
+  emptyState: "無資料提示（後接聯絡我們連結）",
+  generalTitle: "一般指南標題",
+  zhHkActionLabel: "中文下載按鈕",
+  enActionLabel: "英文下載按鈕",
+  cat: "貓隻",
+  dog: "狗隻",
+};
+
+const EN_FIELD_LABELS: Record<string, string> = {
+  hero: "Page header",
+  fees: "Adoption fees",
+  estates: "Dog-friendly estates",
+  guides: "Post-adoption guides",
+  rules: "Adoption rules",
+  care: "Animal care guidelines",
+  eyebrow: "Lead-in",
+  title: "Title",
+  description: "Short description",
+  sectionTitle: "Section title",
+  dogTitle: "Dogs title",
+  catTitle: "Cats title",
+  itemLabel: "Item column heading",
+  amountLabel: "Amount column heading",
+  notice: "Fee note",
+  introduction: "Introduction",
+  estateLabel: "Estate column heading",
+  districtLabel: "District column heading",
+  notesLabel: "Note column heading",
+  emptyState: "No-data message (followed by the contact us link)",
+  generalTitle: "General guide title",
+  zhHkActionLabel: "Chinese download button",
+  enActionLabel: "English download button",
+  cat: "Cats",
+  dog: "Dogs",
+};
+
+function labelPath(labels: Record<string, string>, path: string): string {
+  return String(path)
+    .split(".")
+    .map((key) => labels[key] ?? key)
+    .join(" / ");
+}
+
 /**
  * Copy for the adoption instructions page editor (the "Page content" tab of the adoption
  * information screen): the field names, the draft and revision workflow and its messages.
@@ -58,33 +122,10 @@ export const adoptionInstructionsCopy = defineAdminCopy({
       revision_failed: "未能載入版本內容。",
     },
     /** The name of each part of the page content in a field's label, by the key in its path. */
-    fieldLabels: {
-      hero: "頁首",
-      fees: "領養費用",
-      estates: "可養狗屋苑",
-      guides: "領養後指南",
-      rules: "領養規則",
-      care: "動物照顧須知",
-      eyebrow: "引題",
-      title: "標題",
-      description: "簡介",
-      sectionTitle: "章節標題",
-      dogTitle: "狗隻標題",
-      catTitle: "貓隻標題",
-      itemLabel: "項目欄名",
-      amountLabel: "費用欄名",
-      notice: "費用備註",
-      introduction: "介紹",
-      estateLabel: "屋苑欄名",
-      districtLabel: "地區欄名",
-      notesLabel: "備註欄名",
-      emptyState: "無資料提示（後接聯絡我們連結）",
-      generalTitle: "一般指南標題",
-      zhHkActionLabel: "中文下載按鈕",
-      enActionLabel: "英文下載按鈕",
-      cat: "貓隻",
-      dog: "狗隻",
-    } as Record<string, string>,
+    fieldLabels: ZH_FIELD_LABELS,
+    fieldLabel: (path: string) => labelPath(ZH_FIELD_LABELS, path),
+    /** Chinese has always shown the path itself where a field is named in a message or a list. */
+    fieldPath: (path: string) => String(path),
   },
   en: {
     loading: "Loading page content…",
@@ -112,7 +153,8 @@ export const adoptionInstructionsCopy = defineAdminCopy({
     createDraft: "Create draft",
     fieldsLegend: "Chinese page text",
     invalidText: "Enter valid plain text within the length limit.",
-    issueLine: (path: string, messages: string) => `${path}: ${messages}`,
+    issueLine: (path: string, messages: string) =>
+      `${labelPath(EN_FIELD_LABELS, path)}: ${messages}`,
     saveDraft: "Save draft",
     previewDraft: "Preview saved draft",
     publish: "Publish page",
@@ -123,8 +165,8 @@ export const adoptionInstructionsCopy = defineAdminCopy({
       restoreBlocked:
         "Archive or publish the current draft before you restore an earlier version as a new draft.",
       item: (revisionNumber: number, state: "published" | "archived", publishedAt: string | null) =>
-        `Revision ${revisionNumber} · ${state === "published" ? "Published" : "Archived"} · ${
-          publishedAt === null ? "" : formatAdminDateTime(publishedAt, "en")
+        `Revision ${revisionNumber} · ${state === "published" ? "Published" : "Archived"}${
+          publishedAt === null ? "" : ` · ${formatAdminDateTime(publishedAt, "en")}`
         }`,
       view: "View content",
       restore: "Restore this version",
@@ -140,32 +182,10 @@ export const adoptionInstructionsCopy = defineAdminCopy({
       history_failed: "Could not load more revisions. Try again.",
       revision_failed: "Could not load the revision content. Try again.",
     },
-    fieldLabels: {
-      hero: "Page header",
-      fees: "Adoption fees",
-      estates: "Dog-friendly estates",
-      guides: "Post-adoption guides",
-      rules: "Adoption rules",
-      care: "Animal care guidelines",
-      eyebrow: "Lead-in",
-      title: "Title",
-      description: "Short description",
-      sectionTitle: "Section title",
-      dogTitle: "Dogs title",
-      catTitle: "Cats title",
-      itemLabel: "Item column heading",
-      amountLabel: "Amount column heading",
-      notice: "Fee note",
-      introduction: "Introduction",
-      estateLabel: "Estate column heading",
-      districtLabel: "District column heading",
-      notesLabel: "Note column heading",
-      emptyState: "No-data message (followed by the contact us link)",
-      generalTitle: "General guide title",
-      zhHkActionLabel: "Chinese download button",
-      enActionLabel: "English download button",
-      cat: "Cats",
-      dog: "Dogs",
-    } as Record<string, string>,
+    fieldLabels: EN_FIELD_LABELS,
+    /** A field's label: the names of the parts of its path, joined. */
+    fieldLabel: (path: string) => labelPath(EN_FIELD_LABELS, path),
+    /** A field named where its path would show: in English by its label, never the raw path. */
+    fieldPath: (path: string) => labelPath(EN_FIELD_LABELS, path),
   },
 });

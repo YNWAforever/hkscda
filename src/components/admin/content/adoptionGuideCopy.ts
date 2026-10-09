@@ -2,6 +2,8 @@ import type { AdoptionGuideSpecies } from "../../../lib/adoptionGuideReleases/ty
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminDateTime, formatAdminNumber } from "../i18n/format";
 
+const EN_SPECIES = { cat: "Cat", dog: "Dog", general: "General" } as const;
+
 /**
  * Copy for the post-adoption guide releases screen (`AdoptionGuideReleaseManagement`) and the
  * messages of its logic module (`adoptionGuideReleaseLogic`): the five editor steps, why a release
@@ -112,7 +114,7 @@ export const adoptionGuideCopy = defineAdminCopy({
     intro:
       "Manage the Chinese and English PDFs, the knowledge base content and the publishing workflow.",
     add: "Add guide",
-    species: { cat: "Cat", dog: "Dog", general: "General" },
+    species: EN_SPECIES,
     filters: {
       label: "Filter post-adoption guides",
       search: "Search",
@@ -124,8 +126,7 @@ export const adoptionGuideCopy = defineAdminCopy({
       heading: "Guide list",
       loading: "Loading...",
       empty: "No post-adoption guides yet",
-      meta: (species: AdoptionGuideSpecies, state: string) =>
-        `${{ cat: "Cat", dog: "Dog", general: "General" }[species]} · ${state}`,
+      meta: (species: AdoptionGuideSpecies, state: string) => `${EN_SPECIES[species]} · ${state}`,
       pagerLabel: "Release pages",
       previous: "Previous",
       next: "Next",

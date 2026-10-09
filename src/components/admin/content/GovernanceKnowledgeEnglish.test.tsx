@@ -264,7 +264,7 @@ describe("team and governance in English", () => {
       ">In office</td>",
       ">Stepped down</td>",
       ">Edit</button>",
-      ">Step down</button>",
+      ">Mark as stepped down</button>",
     ]);
   });
 
@@ -386,7 +386,7 @@ describe("the knowledge base in English", () => {
       "Delete</button>",
       "Knowledge articles pagination",
       // a post a release manages
-      "Managed in adoption guide releases",
+      "Managed in post-adoption guide releases",
       "Chinese asset ID",
       "English asset ID",
     ]);
@@ -525,7 +525,7 @@ describe("payment method settings in English", () => {
     expectAll(markup, [
       ">Payment method settings</h1>",
       "Faster Payment System",
-      "(fps)",
+      "(FPS)",
       ">In review</span>",
       ">Withdraw</button>",
       ">Approve and publish</button>",
@@ -552,6 +552,24 @@ describe("payment method settings in English", () => {
       const markup = renderAdminInEnglish(view(treasurerTwo, [{ ...config, state: stateName }]));
       expect(markup).toContain(`>${label}</span>`);
     }
+  });
+
+  test("names the method behind each setting in English, and shows its stored code in Chinese", () => {
+    const methods = [
+      ["stripe", "Stripe card"],
+      ["payme", "PayMe"],
+      ["fps", "FPS"],
+      ["paypal", "PayPal"],
+      ["alipayhk", "AlipayHK"],
+    ] as const;
+    for (const [code, name] of methods) {
+      const configs = [{ ...config, method: code }];
+      expect(renderAdminInEnglish(view(treasurerOne, configs))).toContain(`(${name})</span>`);
+      expect(renderAdminInChinese(view(treasurerOne, configs))).toContain(`(${code})</span>`);
+    }
+    // A method the screen does not know shows its code.
+    expect(paymentMethodsCopy.en.method("new_method")).toBe("new_method");
+    expect(paymentMethodsCopy.zh.method("fps")).toBe("fps");
   });
 
   test("shows an empty list and an error in English", () => {

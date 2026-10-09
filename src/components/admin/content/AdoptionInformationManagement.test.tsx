@@ -16,7 +16,7 @@ const fees: AdminAdoptionInformationPage = {
     {
       id: "11111111-2222-4333-8444-555555555555",
       animalType: "dog",
-      itemName: "Typical Species ????",
+      itemName: "Typical Species 一般品種",
       priceHkd: "HK$1,500",
       sortOrder: 0,
       isPublished: true,
@@ -34,9 +34,9 @@ const estates: AdminAdoptionInformationPage = {
     {
       id: "66666666-7777-4888-9999-000000000000",
       version: 1,
-      estateName: "????",
-      district: "??",
-      notes: "????????",
+      estateName: "美孚新邨",
+      district: "荔枝角",
+      notes: "需預約，狗隻須繫繩",
       sortOrder: 0,
       isPublished: false,
     },
@@ -52,15 +52,18 @@ describe("AdoptionInformationManagement", () => {
       <AdoptionInformationManagement initialData={{ fees, estates }} />,
     );
 
-    expect(markup).toContain("????");
-    expect(markup).toContain("Typical Species ????");
+    expect(markup).toContain("領養費用");
+    expect(markup).toContain("Typical Species 一般品種");
     expect(markup).toContain("頁面內容");
     expect(markup).toContain('value="HK$1,500"');
-    expect(markup).toContain("??");
-    expect(markup).toContain("??");
-    expect(markup).toContain("??");
+    expect(markup).toContain("狗隻");
+    expect(markup).toContain("貓隻");
+    // The dog fee has move buttons; the cat section has no fee yet.
+    expect(markup).toContain("上移");
+    expect(markup).toContain("下移");
+    expect(markup).toContain("沒有領養費用資料");
     expect(markup).toContain('href="/admin/content/adoption-guides"');
-    expect(markup).toContain("\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c");
+    expect(markup).toContain("領養後指南版本");
   });
 
   test("supports estate create, edit, publish, and delete controls", () => {
@@ -68,12 +71,32 @@ describe("AdoptionInformationManagement", () => {
       <AdoptionInformationManagementView activeTab="estates" data={estates} query="" />,
     );
 
-    expect(markup).toContain("?????");
-    expect(markup).toContain("????");
-    expect(markup).toContain("????");
-    expect(markup).toContain("??");
-    expect(markup).toContain("??");
-    expect(markup).toContain("??");
+    expect(markup).toContain("可養狗屋苑");
+    expect(markup).toContain("新增屋苑");
+    expect(markup).toContain("編輯屋苑");
+    expect(markup).toContain('value="美孚新邨"');
+    expect(markup).toContain('value="荔枝角"');
+    expect(markup).toContain('value="需預約，狗隻須繫繩"');
+    expect(markup).toContain('aria-label="屋苑名稱"');
+    // The estate is not published yet, so it offers to publish it; every estate can be deleted.
+    expect(markup).toContain(">發佈</button>");
+    expect(markup).not.toContain("取消發佈");
+    expect(markup).toContain("刪除</button>");
+    expect(markup).toContain(">編輯</button>");
+  });
+
+  test("offers to unpublish an estate that is published", () => {
+    const published: AdminAdoptionInformationPage = {
+      ...estates,
+      items: estates.items.map((item) => ({ ...item, isPublished: true })),
+    };
+    const markup = renderAdminInChinese(
+      <AdoptionInformationManagementView activeTab="estates" data={published} query="" />,
+    );
+
+    expect(markup).toContain(">取消發佈</button>");
+    expect(markup).not.toContain(">發佈</button>");
+    expect(markup).toContain("刪除</button>");
   });
 
   test("announces loading, error, and empty states", () => {

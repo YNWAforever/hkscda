@@ -28,6 +28,8 @@ export const adoptionInformationCopy = defineAdminCopy({
       empty: "沒有領養費用資料",
       conflict: "領養費用已由其他人更新。請檢查最新版本後重新輸入。",
       staleHint: "最新資料暫未載入，請重新整理頁面。",
+      /** Put between the conflict sentence and the stale-data hint, which follows it directly. */
+      hintSeparator: "",
       loadLatest: "載入最新費用",
       itemLabel: "費用項目",
       priceLabel: "價格",
@@ -43,6 +45,8 @@ export const adoptionInformationCopy = defineAdminCopy({
       addHeading: "新增屋苑",
       conflict: "此屋苑已由其他人更新。請先檢查最新版本，再重新輸入你的修改。",
       staleHint: "最新資料暫未載入，請重新整理頁面。",
+      /** Put between the conflict sentence and the stale-data hint, which follows it directly. */
+      hintSeparator: "",
       loadLatest: "載入最新版本",
       nameLabel: "屋苑名稱",
       districtLabel: "地區",
@@ -92,6 +96,7 @@ export const adoptionInformationCopy = defineAdminCopy({
       conflict:
         "Someone else has updated this adoption fee. Check the latest version, then enter your changes again.",
       staleHint: "The latest data has not loaded yet. Refresh the page.",
+      hintSeparator: " ",
       loadLatest: "Load latest fee",
       itemLabel: "Fee item",
       priceLabel: "Price",
@@ -108,6 +113,7 @@ export const adoptionInformationCopy = defineAdminCopy({
       conflict:
         "Someone else has updated this estate. Check the latest version, then enter your changes again.",
       staleHint: "The latest data has not loaded yet. Refresh the page.",
+      hintSeparator: " ",
       loadLatest: "Load latest version",
       nameLabel: "Estate name",
       districtLabel: "District",

@@ -68,7 +68,9 @@ export function PaymentMethodsManagementView({
                 <span className="font-bold">
                   {localizedText(config.displayLabelZh, config.displayLabelEn, language)}
                 </span>{" "}
-                <span className="text-[var(--color-text-muted)]">({config.method})</span>{" "}
+                <span className="text-[var(--color-text-muted)]">
+                  ({copy.method(config.method)})
+                </span>{" "}
                 <span className="text-xs text-[var(--color-text-muted)]">
                   {states[config.state]}
                 </span>

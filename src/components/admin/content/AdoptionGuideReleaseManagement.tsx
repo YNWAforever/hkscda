@@ -213,8 +213,7 @@ export function AdoptionGuideReleaseManagement({
     documentErrorMessage(releasesQuery.error, language) ??
     documentErrorMessage(linkedReleaseQuery.error, language) ??
     documentErrorMessage(assetsQuery.error, language) ??
-    documentErrorMessage(previewQuery.error, language) ??
-    undefined;
+    documentErrorMessage(previewQuery.error, language);
 
   const actorRole = identityQuery.data?.admin.role === "admin" ? "admin" : "staff";
 
@@ -292,7 +291,7 @@ export type AdoptionGuideReleaseManagementViewProps = {
   page?: number;
   pageSize?: number;
   loading?: boolean;
-  error?: string;
+  error?: string | null;
   pendingAction?: string;
   onSelect?: (id: string) => void;
   onCreate?: () => void;

@@ -79,7 +79,7 @@ export const knowledgeCopy = defineAdminCopy({
     empty: "No knowledge base articles yet.",
     pager: "Knowledge articles",
     managed: {
-      byReleases: "Managed in adoption guide releases",
+      byReleases: "Managed in post-adoption guide releases",
       readOnly: "This bilingual post is read-only here. Update it through the release workflow.",
       chineseAsset: "Chinese asset ID",
       englishAsset: "English asset ID",

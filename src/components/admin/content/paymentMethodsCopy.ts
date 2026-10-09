@@ -1,5 +1,14 @@
 import { defineAdminCopy } from "../i18n/copy";
 
+/** What each payment method code stands for, in English (`PaymentPublicConfigMethod`). */
+const EN_METHOD_NAMES: Record<string, string> = {
+  stripe: "Stripe card",
+  payme: "PayMe",
+  fps: "FPS",
+  paypal: "PayPal",
+  alipayhk: "AlipayHK",
+};
+
 /**
  * Copy for the payment method settings screen. The state names (draft, in review and so on) are in
  * `cmsStateCopy`. The two errors of a failed save have always been English in the Chinese screen
@@ -11,6 +20,8 @@ export const paymentMethodsCopy = defineAdminCopy({
     loading: "載入付款方式設定中...",
     empty: "尚未建立任何付款方式設定",
     notPublic: "未公開",
+    /** The method behind a setting, shown after its name: the stored code in Chinese, as before. */
+    method: (code: string) => String(code),
     submit: "提交審批",
     withdraw: "撤回",
     approveAndPublish: "核准並發佈",
@@ -27,6 +38,7 @@ export const paymentMethodsCopy = defineAdminCopy({
     loading: "Loading payment method settings...",
     empty: "No payment methods have been set up yet",
     notPublic: "Not public",
+    method: (code: string) => EN_METHOD_NAMES[code] ?? String(code),
     submit: "Submit for approval",
     withdraw: "Withdraw",
     approveAndPublish: "Approve and publish",

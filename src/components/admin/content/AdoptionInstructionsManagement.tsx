@@ -315,7 +315,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
                   )
                   .map(([path, value]) => (
                     <div key={path} className="my-2 border-b pb-2">
-                      <dt>{path}</dt>
+                      <dt>{copy.fieldPath(path)}</dt>
                       <dd>
                         {copy.conflict.local}
                         {value}
@@ -362,12 +362,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
         <legend className="sr-only">{copy.fieldsLegend}</legend>
         {fields(content).map(([path, value]) => (
           <label key={path} className="grid gap-1 text-sm">
-            <span>
-              {path
-                .split(".")
-                .map((key) => copy.fieldLabels[key] ?? key)
-                .join(" / ")}
-            </span>
+            <span>{copy.fieldLabel(path)}</span>
             <textarea
               name={path}
               value={value}
@@ -499,7 +494,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
           <dl className="space-y-2">
             {fields(selectedRevision.content).map(([path, value]) => (
               <div key={path}>
-                <dt className="font-semibold">{path}</dt>
+                <dt className="font-semibold">{copy.fieldPath(path)}</dt>
                 <dd className="whitespace-pre-wrap">{value}</dd>
               </div>
             ))}

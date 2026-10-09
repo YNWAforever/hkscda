@@ -381,7 +381,7 @@ describe("about pages in English", () => {
       ">TNR</button>",
       ">Main banner</legend>",
       ">Our mission</legend>",
-      ">Public data</legend>",
+      ">Public information</legend>",
       ">Four key steps</legend>",
       ">TNR banner</legend>",
       ">TNR card</p>",
@@ -392,10 +392,10 @@ describe("about pages in English", () => {
       "Title<",
       "Description<",
       "Body<",
-      "Side label<",
-      "Side body<",
+      "Sidebar label<",
+      "Sidebar text<",
       "Link text<",
-      "Side title<",
+      "Sidebar title<",
       "Button text<",
       "Step 1 title<",
       "Step 4 description<",
@@ -632,6 +632,23 @@ describe("adoption information in English", () => {
     expect(english.fees.staleHint).toBe("The latest data has not loaded yet. Refresh the page.");
   });
 
+  test("puts a space between the conflict sentence and the stale-data hint in English only", () => {
+    for (const part of ["fees", "estates"] as const) {
+      const english = adoptionInformationCopy.en[part];
+      const chinese = adoptionInformationCopy.zh[part];
+      const englishPanel = english.conflict + english.hintSeparator + english.staleHint;
+      expect(englishPanel).toContain(
+        "enter your changes again. The latest data has not loaded yet.",
+      );
+      expect(englishPanel).not.toContain("again.The");
+      // Chinese runs the two together, exactly as it always has.
+      expect(chinese.hintSeparator).toBe("");
+      expect(chinese.conflict + chinese.hintSeparator + chinese.staleHint).toBe(
+        `${chinese.conflict}最新資料暫未載入，請重新整理頁面。`,
+      );
+    }
+  });
+
   test("names the five tabs in both languages", () => {
     const markup = renderAdminInEnglish(
       <AdoptionContentTabs activeTab="rules" onTabChange={noop} />,
@@ -861,7 +878,7 @@ describe("the adoption instructions page editor in English", () => {
       ">Revision history</h3>",
       "Archive or publish the current draft before you restore an earlier version as a new draft.",
       "Revision 1 · Published · 26 Sep 2026 (Sat) 08:00",
-      "Revision 0 · Archived · ",
+      "Revision 0 · Archived<",
       ">View content</button>",
       ">Restore this version</button>",
       ">Show more revisions</button>",
@@ -897,7 +914,10 @@ describe("the adoption instructions page editor in English", () => {
     const markup = renderAdminInEnglish(
       <AdoptionInstructionsManagementView data={invalid} role="admin" />,
     );
-    expect(markup).toContain("hero.title: Enter valid plain text within the length limit.");
+    expect(markup).toContain(
+      "Page header / Title: Enter valid plain text within the length limit.",
+    );
+    expect(markup).not.toContain("hero.title: ");
     expect(markup).toContain('aria-invalid="true"');
   });
 
@@ -942,6 +962,37 @@ describe("the adoption instructions page editor in English", () => {
       "伺服器草稿版本 —。請比較本機與伺服器內容，再決定是否採用。",
     );
     expect(english.history.revisionContent(3)).toBe("Revision 3 content");
+  });
+
+  test("names a field by its label in English wherever its path would show, and by the path in Chinese", () => {
+    const english = adoptionInstructionsCopy.en;
+    const chinese = adoptionInstructionsCopy.zh;
+    expect(english.fieldPath("hero.title")).toBe("Page header / Title");
+    expect(english.fieldPath("care.cat.title")).toBe("Animal care guidelines / Cats / Title");
+    expect(english.fieldPath("fees.unknownKey")).toBe("Adoption fees / unknownKey");
+    expect(english.fieldLabel("hero.title")).toBe(english.fieldPath("hero.title"));
+    expect(english.issueLine("hero.title", "Enter valid plain text within the length limit.")).toBe(
+      "Page header / Title: Enter valid plain text within the length limit.",
+    );
+    // Chinese keeps the path in the message and the list, and the label on the field.
+    expect(chinese.fieldPath("hero.title")).toBe("hero.title");
+    expect(chinese.fieldLabel("hero.title")).toBe("頁首 / 標題");
+    expect(chinese.issueLine("hero.title", "請填寫有效的純文字，並遵守字數限制。")).toBe(
+      "hero.title：請填寫有效的純文字，並遵守字數限制。",
+    );
+  });
+
+  test("ends a revision line at its state when it has no date, in English only", () => {
+    const english = adoptionInstructionsCopy.en.history.item;
+    const chinese = adoptionInstructionsCopy.zh.history.item;
+    expect(english(0, "archived", null)).toBe("Revision 0 · Archived");
+    expect(english(1, "published", "2026-09-26T00:00:00Z")).toBe(
+      "Revision 1 · Published · 26 Sep 2026 (Sat) 08:00",
+    );
+    expect(chinese(0, "archived", null)).toBe("修訂 0 · 已封存 · ");
+    expect(chinese(1, "published", "2026-09-26T00:00:00Z")).toBe(
+      "修訂 1 · 已發布 · 2026-09-26T00:00:00Z",
+    );
   });
 
   test("keeps the Chinese editor as it was", () => {

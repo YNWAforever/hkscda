@@ -333,7 +333,7 @@ describe("documents in English", () => {
       ">Size</th>",
       ">Status</th>",
       ">Actions</th>",
-      "Managed in adoption guide releases",
+      "Managed in post-adoption guide releases",
       ">Not published</td>",
       ">Published</td>",
       ">Publish</button>",

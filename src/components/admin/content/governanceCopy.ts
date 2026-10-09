@@ -46,7 +46,7 @@ export const governanceCopy = defineAdminCopy({
       inOffice: "In office",
       steppedDown: "Stepped down",
       edit: "Edit",
-      stepDown: "Step down",
+      stepDown: "Mark as stepped down",
       date: (value: string) => formatAdminDate(value, "en"),
     },
     stepDownFailed: "Could not mark the member as stepped down. Try again.",

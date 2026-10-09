@@ -386,32 +386,32 @@ describe("the FAQ answer tester in English", () => {
     expect(text).toContain("Direct answer");
     expect(text).toContain("Matched questions:");
     expect(text).toContain(ZH_QUESTION);
-    expect(text).not.toContain("Refer to staff");
+    expect(text).not.toContain("Staff referral");
   });
 
   test("names a weaker match, its related answers and the staff fallback in English", () => {
     const text = textOf(render({ query: "photo", language: "en" }));
     expect(text).toContain("Match level: Low");
     expect(text).toContain("Related answers");
-    expect(text).toContain("Refer to staff");
+    expect(text).toContain("Staff referral");
     expect(text).toContain("When can I visit the shelter?");
     expect(textOf(render({ query: "appointments", language: "en" }))).toContain(
       "Match level: Medium",
     );
     expect(textOf(render({ query: "appointments", language: "en" }))).not.toContain(
-      "Refer to staff",
+      "Staff referral",
     );
   });
 
   test("names a query with no match, and a private-status query, in English", () => {
     const none = textOf(render({ query: "parking discount coupon", language: "en" }));
     expect(none).toContain("Match level: None");
-    expect(none).toContain("Refer to staff");
+    expect(none).toContain("Staff referral");
     expect(none).not.toContain("Direct answer");
     expect(none).not.toContain("Related answers");
     const privateQuery = textOf(render({ query: "my application status", language: "en" }));
     expect(privateQuery).toContain("Direct answer");
-    expect(privateQuery).toContain("Refer to staff");
+    expect(privateQuery).toContain("Staff referral");
     expect(privateQuery).toContain("Visitors will be advised to contact staff about this question");
   });
 
@@ -420,7 +420,7 @@ describe("the FAQ answer tester in English", () => {
       const text = textOf(render({ query }));
       expect(text).not.toContain("Match level");
       expect(text).not.toContain("Direct answer");
-      expect(text).not.toContain("Refer to staff");
+      expect(text).not.toContain("Staff referral");
     }
   });
 
@@ -523,9 +523,9 @@ describe("the search-gap report in English", () => {
     expect(render({ loading: true }).english).toContain("Loading…");
     const failed = render({ failed: true }).english;
     expectAll(failed, ["Could not load the search topics report", "Retry"]);
-    expect(failed).not.toContain("No visitor searched without finding an answer");
+    expect(failed).not.toContain("No searches went unanswered");
     const empty = render({ empty: true }).english;
-    expect(empty).toContain("No visitor searched without finding an answer in the last 30 days.");
+    expect(empty).toContain("No searches went unanswered in the last 30 days.");
     expect(empty).not.toContain("<table");
   });
 
@@ -578,7 +578,7 @@ describe("the copy module", () => {
       faqCopy.en.tester.direct,
       faqCopy.en.tester.related,
       faqCopy.en.tester.referToStaff,
-    ]).toEqual(["Direct answer", "Related answers", "Refer to staff"]);
+    ]).toEqual(["Direct answer", "Related answers", "Staff referral"]);
     expect([
       faqCopy.zh.tester.direct,
       faqCopy.zh.tester.related,

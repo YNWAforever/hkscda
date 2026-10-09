@@ -554,7 +554,7 @@ function FeeEditor({
       {conflict ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {copy.conflict}
-          {fee.version <= knownVersion.current ? copy.staleHint : null}
+          {fee.version <= knownVersion.current ? copy.hintSeparator + copy.staleHint : null}
           <button
             type="button"
             disabled={fee.version <= knownVersion.current}
@@ -713,7 +713,7 @@ export function EstateEditor({
       {conflict && estate ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {copy.conflict}
-          {estate.version <= knownVersion.current ? copy.staleHint : null}
+          {estate.version <= knownVersion.current ? copy.hintSeparator + copy.staleHint : null}
           <button
             type="button"
             disabled={estate.version <= knownVersion.current}

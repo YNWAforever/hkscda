@@ -31,9 +31,14 @@ export type PaymentMethodPublishAttempt = {
   payload: { expectedVersion: number; idempotencyKey: string };
 };
 
+/**
+ * Why a submit, withdraw or publish failed. The text is written when the screen renders (see
+ * `paymentMethodSaveFailureText`), so it follows the admin's language. `cause` is the error the
+ * server or the browser gave, kept only when it has a message to show.
+ */
 export type PaymentMethodMutationError<T> =
-  | { kind: "conflict"; message: string; preservedDraft: T }
-  | { kind: "error"; message: string };
+  | { kind: "conflict"; preservedDraft: T }
+  | { kind: "error"; cause?: unknown };
 
 export function buildPaymentMethodSearchParams(input: PaymentMethodFilters = {}) {
   const params = new URLSearchParams();
@@ -99,21 +104,9 @@ export function resolveMutationError<T>(
       ? error.status === 409 && error.code === "conflict"
       : hasStructuredConflict(error);
 
-  if (isConflict) {
-    return {
-      kind: "conflict",
-      message: "This configuration changed elsewhere. Reload before saving again.",
-      preservedDraft: localDraft,
-    };
-  }
+  if (isConflict) return { kind: "conflict", preservedDraft: localDraft };
 
-  return {
-    kind: "error",
-    message:
-      error instanceof Error && error.message
-        ? error.message
-        : "Unable to save this configuration.",
-  };
+  return { kind: "error", cause: error instanceof Error && error.message ? error : undefined };
 }
 
 export type PaymentMethodSaveErrorCode = "conflict" | "save_failed";
@@ -127,11 +120,10 @@ export type PaymentMethodSaveFailure = { code: PaymentMethodSaveErrorCode; cause
 
 /** The failure to keep for a caught error: a version conflict, or the error with a message to show. */
 export function paymentMethodSaveFailure(error: unknown): PaymentMethodSaveFailure {
-  if (resolveMutationError(error, null).kind === "conflict") return { code: "conflict" };
-  return {
-    code: "save_failed",
-    cause: error instanceof Error && error.message ? error : undefined,
-  };
+  const resolved = resolveMutationError(error, null);
+  return resolved.kind === "conflict"
+    ? { code: "conflict" }
+    : { code: "save_failed", cause: resolved.cause };
 }
 
 /**

@@ -11,6 +11,9 @@ import { describe, expect, test } from "bun:test";
  * and the message needs a code on the client, a zh-HK text identical to the server's, an English
  * text that says what to do next, and a test that drives the real route through `fetchAdminJson`.
  *
+ * The same goes for the database: no migration raises a Chinese message, apart from the two content
+ * review ones listed below, which these screens cannot reach.
+ *
  * Two files hold Chinese that is not a message, and are left out on purpose:
  * - `lib/adoptionInstructions/content.ts`: the page text the adoption page starts with, which staff
  *   then edit (data, shown as stored);
@@ -54,9 +57,41 @@ const ROUTE_NAMES = [
   "payment-methods",
 ];
 
-/** Migrations of these areas, by the words in their file names. */
-const MIGRATION_WORDS =
-  /faq|guide|payment_public|governance|knowledge|about_page|document|instruction|adoption_info|estate|adoption_rules|search_gap|adoption_fee/;
+/**
+ * The only two `raise` statements in the migrations that carry Chinese. Both come from the trigger
+ * that refuses to publish content or an animal version that has no approved source review (errcode
+ * 22023), which these screens never show. They are keyed by file and by the line the `raise` starts
+ * on.
+ */
+const KNOWN_CONTENT_REVIEW_RAISES = new Set([
+  "supabase/migrations/20260914161341_admin_content_quality_review.sql:60",
+  "supabase/migrations/20260914162305_animal_nonpublic_review_transition.sql:12",
+]);
+
+/**
+ * Every `raise` statement in some SQL, from the word `raise` to its closing semicolon, so that a
+ * message on a later line, or after `using message =`, is part of it. A semicolon inside a quoted
+ * string does not end the statement. `line` is where the statement starts.
+ */
+export function raiseStatements(sql: string): Array<{ line: number; text: string }> {
+  const found: Array<{ line: number; text: string }> = [];
+  const word = /\braise\b/gi;
+  for (let match = word.exec(sql); match; match = word.exec(sql)) {
+    let end = match.index + match[0].length;
+    let quoted = false;
+    for (; end < sql.length; end += 1) {
+      const char = sql[end];
+      if (char === "'") quoted = !quoted;
+      else if (char === ";" && !quoted) break;
+    }
+    found.push({
+      line: sql.slice(0, match.index).split("\n").length,
+      text: sql.slice(match.index, end + 1),
+    });
+    word.lastIndex = end;
+  }
+  return found;
+}
 
 async function scan(pattern: string): Promise<string[]> {
   const paths = await Array.fromAsync(new Bun.Glob(pattern).scan("."));
@@ -119,23 +154,53 @@ describe("the server code behind the content pages", () => {
     expect(await linesWithChinese(paths)).toEqual([]);
   });
 
-  test("raises no Chinese exception in the migrations of these areas", async () => {
-    const paths = (await scan("supabase/migrations/*.sql")).filter((path) =>
-      MIGRATION_WORDS.test(path.slice(path.lastIndexOf("/") + 1)),
-    );
-    expect(paths.length).toBeGreaterThan(10);
-    const raises: string[] = [];
+  test("raises no Chinese in any migration, apart from the two content review ones", async () => {
+    const paths = await scan("supabase/migrations/*.sql");
+    expect(paths.length).toBeGreaterThan(150);
+    let statements = 0;
+    const withChinese: string[] = [];
     for (const path of paths) {
-      const lines = (await Bun.file(path).text()).split(/\r?\n/);
-      lines.forEach((line, index) => {
-        if (
-          /raise\s+(exception|warning|notice)|using\s+(message|hint|detail)/i.test(line) &&
-          HAS_CHINESE.test(line)
-        ) {
-          raises.push(`${path}:${index + 1}`);
-        }
-      });
+      for (const statement of raiseStatements(await Bun.file(path).text())) {
+        statements += 1;
+        if (HAS_CHINESE.test(statement.text)) withChinese.push(`${path}:${statement.line}`);
+      }
     }
-    expect(raises).toEqual([]);
+    // The scan reads the raise statements it is meant to: there are over a thousand, and the two
+    // known ones are among those it flags.
+    expect(statements).toBeGreaterThan(1000);
+    expect(withChinese.filter((hit) => KNOWN_CONTENT_REVIEW_RAISES.has(hit))).toHaveLength(2);
+    expect(withChinese.filter((hit) => !KNOWN_CONTENT_REVIEW_RAISES.has(hit))).toEqual([]);
+  });
+});
+
+describe("raiseStatements", () => {
+  test("reads a message on a later line and one after `using message`", () => {
+    const sql = [
+      "begin;",
+      "  raise exception",
+      "    '無法儲存'",
+      "    using errcode = '22023';",
+      "  raise using message = '無法發佈', errcode = 'P0001';",
+      "end;",
+    ].join("\n");
+    const found = raiseStatements(sql);
+    expect(found.map((statement) => statement.line)).toEqual([2, 5]);
+    expect(found.every((statement) => HAS_CHINESE.test(statement.text))).toBe(true);
+  });
+
+  test("keeps a semicolon inside a quoted message in the statement", () => {
+    const [statement] = raiseStatements("raise exception 'a; 無法儲存' using errcode = '22023';");
+    expect(HAS_CHINESE.test(statement.text)).toBe(true);
+  });
+
+  test("does not flag an English raise, or Chinese outside a raise", () => {
+    const sql = [
+      "-- 備註：這是註解",
+      "insert into t values ('中文');",
+      "raise exception 'Could not save' using errcode = '22023';",
+    ].join("\n");
+    const found = raiseStatements(sql);
+    expect(found).toHaveLength(1);
+    expect(HAS_CHINESE.test(found[0].text)).toBe(false);
   });
 });

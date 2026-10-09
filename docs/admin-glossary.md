@@ -258,22 +258,22 @@ other way round.
 
 ## Information pages, FAQ and team
 
-| zh-HK        | English                 | Usage                                                                                               |
-| ------------ | ----------------------- | --------------------------------------------------------------------------------------------------- |
-| 領養須知     | adoption instructions   | The public page of what adopters need to know; 領養需知 is the same. Its editor is "Page content".  |
-| 動物照顧須知 | animal care guidelines  | The care advice for cats and dogs. 照顧須知 is "care guidelines"; one entry is a "topic" (主題).    |
-| 屋苑         | estate                  | A housing estate. 可養狗屋苑 is "dog-friendly estates": estates that allow dogs.                    |
-| 領養指南版本 | adoption guide releases | The same screen as 領養後指南版本, "Post-adoption guide releases". The zh-HK uses both names.       |
-| 婚宴回禮     | wedding favour          | 婚宴回禮表格 is "Wedding favour form", a kind of document.                                          |
-| 引言         | lead-in                 | The small line above a heading. 引題 is the same.                                                   |
-| 主視覺       | main banner             | The large opening section of a page. 橫幅 is "banner".                                              |
-| 行動呼籲     | call to action          | A section that asks visitors to act. 行動按鈕 is "action button": the button under an FAQ answer.   |
-| 按鈕文字     | button text             | 連結文字 is "link text".                                                                            |
-| 提交審批     | submit for approval     | For a payment method setting. 核准並發佈 is "Approve and publish". 提交審閱 is "Submit for review". |
-| 配對程度     | match level             | How well a visitor's FAQ search matched: high, medium, low or none.                                 |
-| 沒有答案     | no answer               | A search with no match. 配對較弱 is "Weak match".                                                   |
-| 直接答案     | direct answer           | The one answer shown alone. 相關答案 is "Related answers"; 轉介職員 is "Refer to staff".            |
-| 職銜         | position                | A board member's job title. 在任 is "In office"; 卸任 is "Step down", 已卸任 "Stepped down".        |
+| zh-HK        | English                      | Usage                                                                                                              |
+| ------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 領養須知     | adoption instructions        | The public page of what adopters need to know; 領養需知 is the same. Its editor is "Page content".                 |
+| 動物照顧須知 | animal care guidelines       | The care advice for cats and dogs. 照顧須知 is "care guidelines"; one entry is a "topic" (主題).                   |
+| 屋苑         | estate                       | A housing estate. 可養狗屋苑 is "dog-friendly estates": estates that allow dogs.                                   |
+| 領養指南版本 | post-adoption guide releases | The screen titled "Post-adoption guide". 領養後指南版本 is the same: write one name.                               |
+| 婚宴回禮     | wedding favour               | 婚宴回禮表格 is "Wedding favour form", a kind of document.                                                         |
+| 引言         | lead-in                      | The small line above a heading. 引題 is the same.                                                                  |
+| 主視覺       | main banner                  | The large opening section of a page. 橫幅 is "banner".                                                             |
+| 行動呼籲     | call to action               | A section that asks visitors to act. 行動按鈕 is "action button": the button under an FAQ answer.                  |
+| 按鈕文字     | button text                  | 連結文字 is "link text".                                                                                           |
+| 提交審批     | submit for approval          | For a payment method setting. 核准並發佈 is "Approve and publish". 提交審閱 is "Submit for review".                |
+| 配對程度     | match level                  | How well a visitor's FAQ search matched: high, medium, low or none.                                                |
+| 沒有答案     | no answer                    | A search with no match. 配對較弱 is "Weak match".                                                                  |
+| 直接答案     | direct answer                | The one answer shown alone. 相關答案 is "Related answers"; 轉介職員 is "Staff referral".                           |
+| 職銜         | position                     | A board member's job title. 在任 is "In office"; 卸任 is "Mark as stepped down" (a button), 已卸任 "Stepped down". |
 
 ## Style
 

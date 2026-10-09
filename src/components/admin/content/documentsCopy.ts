@@ -144,7 +144,7 @@ export const documentsCopy = defineAdminCopy({
         actions: "Actions",
         loading: "Loading...",
         empty: "No documents",
-        managedByReleases: "Managed in adoption guide releases",
+        managedByReleases: "Managed in post-adoption guide releases",
         published: "Published",
         notPublished: "Not published",
         publish: "Publish",

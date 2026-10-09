@@ -159,6 +159,9 @@ describe("resolveMutationError", () => {
 
   test("maps any other error to a generic error result", () => {
     const result = resolveMutationError(new Error("network down"), { draft: true });
-    expect(result).toEqual({ kind: "error", message: "network down" });
+    // The error is kept as the cause, so the screen shows the server's own message.
+    expect(result.kind).toBe("error");
+    if (result.kind === "error") expect((result.cause as Error).message).toBe("network down");
+    expect("message" in result).toBe(false);
   });
 });
