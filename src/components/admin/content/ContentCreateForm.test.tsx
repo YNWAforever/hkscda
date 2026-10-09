@@ -1,8 +1,8 @@
 import { afterAll, describe, expect, mock, test } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderToStaticMarkup } from "react-dom/server";
 
 import { AdminApiError } from "../../../lib/admin/session";
+import { renderAdminInChinese } from "../i18n/testing";
 import { contentOptionalFieldLabels } from "./contentAdminLogic";
 
 // `mock.module` mocks are process-global in Bun's test runner and outlive this
@@ -22,7 +22,7 @@ afterAll(() => {
 describe("ContentCreateForm", () => {
   test("renders the required fields and every optional label", async () => {
     const { ContentCreateForm } = await import("./ContentCreateForm");
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <QueryClientProvider client={new QueryClient()}>
         <ContentCreateForm />
       </QueryClientProvider>,

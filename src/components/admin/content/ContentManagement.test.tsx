@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactNode } from "react";
 
+import { renderAdminInChinese } from "../i18n/testing";
 import type { ContentListResponse } from "./ContentManagement";
 
 const realReactRouter = await import("@tanstack/react-router");
@@ -47,7 +47,7 @@ mock.module("@tanstack/react-query", () => ({
 
 async function renderContentManagement(initialData: ContentListResponse) {
   const { ContentManagement } = await import("./ContentManagement");
-  return renderToStaticMarkup(<ContentManagement initialData={initialData} />);
+  return renderAdminInChinese(<ContentManagement initialData={initialData} />);
 }
 
 describe("ContentManagement", () => {
@@ -165,7 +165,7 @@ describe("ContentManagement", () => {
     // right next to it, with nothing to say a fetch had actually failed.
     contentError = new Error("boom");
     const { ContentManagement } = await import("./ContentManagement");
-    const markup = renderToStaticMarkup(<ContentManagement />);
+    const markup = renderAdminInChinese(<ContentManagement />);
     expect(markup).toContain("無法載入");
     expect(markup).not.toContain("沒有宣傳內容");
     expect((markup.match(/—/g) ?? []).length).toBe(4);

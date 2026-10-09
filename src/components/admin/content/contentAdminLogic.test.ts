@@ -50,6 +50,13 @@ describe("contentAdminLogic", () => {
     expect(formatContentTypeLabel("report", "en")).toBe("Report");
   });
 
+  test("writes the content type in the admin's language, in sentence case in English", () => {
+    expect(formatContentTypeLabel("rescue_story", "zh")).toBe("救援故事");
+    expect(formatContentTypeLabel("event", "zh")).toBe("活動");
+    expect(formatContentTypeLabel("rescue_story", "en")).toBe("Rescue story");
+    expect(formatContentTypeLabel("charity_market", "en")).toBe("Charity market");
+  });
+
   test("summarizes content rows", () => {
     expect(
       summarizeContentRows([

@@ -138,34 +138,47 @@ other way round.
 
 ## Content and publishing
 
-| zh-HK      | English             | Usage                                                                                        |
-| ---------- | ------------------- | -------------------------------------------------------------------------------------------- |
-| 草稿       | draft               | Saved work that is not public.                                                               |
-| 預覽       | preview             | Shows the result before it is published or applied. The verb is "preview".                   |
-| 發佈       | publish             | Make a version public. 發布 means the same: always write "publish". 已發佈 is "Published".   |
-| 取消發佈   | unpublish           | Make a published version non-public again.                                                   |
-| 公開       | public              | Visible on the website.                                                                      |
-| 內部       | internal            | Visible to staff only.                                                                       |
-| 版本       | version             | One saved state of a record. 新版本 is "new version".                                        |
-| 修訂       | revision            | A numbered change to a page. 已發布修訂 is "Published revision".                             |
-| 封存       | archive             | Hide a record from lists without deleting it. 已封存 is "Archived".                          |
-| 退回草稿   | return to draft     | Send a reviewed item back for more work.                                                     |
-| 審核       | review              | Check an item before a decision. The noun and the verb are both "review".                    |
-| 批核       | approve             | Decide yes. 批准, 核准 and 審批 mean the same: always write "approve". 已批核 is "Approved". |
-| 拒絕       | reject              | Decide no. 已拒絕 is "Rejected". 不批准 is "Not approved".                                   |
-| 核實       | verify              | Confirm against evidence. 已核實 is "Verified". Not the same as approve.                     |
-| 核對       | check               | Compare against a source. In finance screens use "reconcile" (對帳).                         |
-| 差異       | changes             | What differs between two versions.                                                           |
-| 生效日期   | effective date      | The date a published change starts to apply.                                                 |
-| 模板       | template            | A reusable starting text.                                                                    |
-| 標籤       | tag                 | A label used to group records.                                                               |
-| 相片       | photo               | A picture of an animal. 圖片 is "image", for any other picture.                              |
-| 替代文字   | alt text            | The text read out for an image.                                                              |
-| 知識庫     | knowledge base      | Reference content behind the help search.                                                    |
-| 常見問題   | FAQ                 | Question-and-answer content.                                                                 |
-| 年度報告   | annual report       | The yearly report page and its documents.                                                    |
-| 團隊與管治 | team and governance | The team profiles and governance documents.                                                  |
-| 宣傳內容   | content             | The content area of the navigation. Not "promotion".                                         |
+| zh-HK        | English               | Usage                                                                                                   |
+| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------- |
+| 草稿         | draft                 | Saved work that is not public.                                                                          |
+| 預覽         | preview               | Shows the result before it is published or applied. The verb is "preview".                              |
+| 發佈         | publish               | Make a version public. 發布 means the same: always write "publish". 已發佈 is "Published".              |
+| 取消發佈     | unpublish             | Make a published version non-public again.                                                              |
+| 公開         | public                | Visible on the website.                                                                                 |
+| 內部         | internal              | Visible to staff only.                                                                                  |
+| 版本         | version               | One saved state of a record. 新版本 is "new version".                                                   |
+| 修訂         | revision              | A numbered change to a page. 已發布修訂 is "Published revision".                                        |
+| 封存         | archive               | Hide a record from lists without deleting it. 已封存 is "Archived".                                     |
+| 退回草稿     | return to draft       | Send a reviewed item back for more work.                                                                |
+| 審核         | review                | Check an item before a decision. The noun and the verb are both "review".                               |
+| 批核         | approve               | Decide yes. 批准, 核准 and 審批 mean the same: always write "approve". 已批核 is "Approved".            |
+| 拒絕         | reject                | Decide no. 已拒絕 is "Rejected". 不批准 is "Not approved".                                              |
+| 核實         | verify                | Confirm against evidence. 已核實 is "Verified". Not the same as approve.                                |
+| 核對         | check                 | Compare against a source. In finance screens use "reconcile" (對帳).                                    |
+| 差異         | changes               | What differs between two versions.                                                                      |
+| 生效日期     | effective date        | The date a published change starts to apply.                                                            |
+| 模板         | template              | A reusable starting text.                                                                               |
+| 標籤         | tag                   | A label used to group records.                                                                          |
+| 相片         | photo                 | A picture of an animal. 圖片 is "image", for any other picture.                                         |
+| 替代文字     | alt text              | The text read out for an image.                                                                         |
+| 知識庫       | knowledge base        | Reference content behind the help search.                                                               |
+| 常見問題     | FAQ                   | Question-and-answer content.                                                                            |
+| 年度報告     | annual report         | The yearly report page and its documents.                                                               |
+| 團隊與管治   | team and governance   | The team profiles and governance documents.                                                             |
+| 宣傳內容     | content               | The content area of the navigation. Not "promotion".                                                    |
+| 救援故事     | rescue story          | A content type: the story of one rescue. 故事更新 is "story update", 故事牆 is "story wall".            |
+| 救援地區     | rescue region         | Where the animal was rescued. 公開狀態 on a story is "Public status": rescued, medical care and so on.  |
+| 慈善市集     | charity market        | A content type.                                                                                         |
+| 關聯紀錄     | linked record         | A record (animal, application, supporter or activity) that a piece of content points to.                |
+| 社交平台文案 | social media copy     | Ready-made text for one social media platform. A tag on a post is a "hashtag".                          |
+| 通知草稿     | notification draft    | A message staff send to an adopter or supporter by hand. 略過 is "Dismiss"; the status is "Dismissed".  |
+| 來源審核     | source review         | Checking where content comes from before it can be published. 示範資料 is "demo data": not publishable. |
+| 待核實       | awaiting verification | Not verified yet. 已核實 is "Verified".                                                                 |
+| 封面         | cover                 | The main image of a piece of content.                                                                   |
+| 還原         | restore               | Start a new draft from an earlier version. The public version does not change.                          |
+| 領養後指南   | post-adoption guide   | The guide for adopters after an adoption. 領養後指南版本 is "Post-adoption guide releases".             |
+| 摘要         | summary               | The short text under a title.                                                                           |
+| 正文         | body                  | The main text of a page or story update. 內文 is "body" too.                                            |
 
 ## Status and workflow
 

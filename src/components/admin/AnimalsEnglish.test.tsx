@@ -60,6 +60,7 @@ mock.module("@tanstack/react-query", () => ({
 const { AnimalsTable } = await import("./AnimalsTable");
 const { AnimalForm, SavedVersionPreview, UploadCheckNotice } = await import("./AnimalForm");
 const { AnimalGalleryEditor } = await import("./AnimalGalleryEditor");
+const { ContentReviewPanel } = await import("./content/ContentReview");
 const { MediaRepairQueue } = await import("./MediaRepairQueue");
 const { animalFormCopy } = await import("./animalFormCopy");
 const { animalListCopy } = await import("./animalListCopy");
@@ -305,6 +306,23 @@ describe("animal form in English", () => {
     const markup = renderAdminInEnglish(<AnimalForm existing={animal() as never} />);
     expectNoChineseText(markup);
     expect(markup).toContain("Loading the saved draft...");
+  });
+
+  test("the source review panel the form shows for a saved draft is in English too", () => {
+    // The form shows this panel only after a saved draft has loaded, which a static render of
+    // the form does not reach, so the panel is rendered as the form renders it.
+    const markup = renderAdminInEnglish(
+      <ContentReviewPanel kind="animal" id="a-1" revision="3" disabled />,
+    );
+    expectNoChineseText(markup);
+    for (const text of [
+      "Source review of this saved version",
+      ">Awaiting verification</option>",
+      "Verified source and reason",
+      ">Record review of this version</button>",
+    ]) {
+      expect(markup, text).toContain(text);
+    }
   });
 
   test("keeps the Chinese form as it was", () => {

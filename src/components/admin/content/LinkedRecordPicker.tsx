@@ -2,8 +2,12 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import type { ContentLinkType } from "../../../lib/content/types";
+import { contentServerMessage } from "../../../lib/content/serverMessages";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { useDebouncedValue } from "../../../lib/useDebouncedValue";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { editorPanelsCopy } from "./editorPanelsCopy";
 
 export type LinkSearchResult = {
   id: string;
@@ -49,9 +53,14 @@ export function LinkedRecordPicker({
   onChange: (pick: { id: string; label: string }) => void;
   disabled?: boolean;
 }) {
+  const copy = useAdminCopy(editorPanelsCopy).picker;
+  const { language } = useAdminLanguage();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, LINK_SEARCH_DEBOUNCE_MS);
   const search = useLinkSearch(linkedType, debouncedQuery);
+  // The search labels a record that has no name with a stand-in in zh-HK; every other label is
+  // the record's own name and is shown as stored.
+  const shown = (text: string) => contentServerMessage(text, language);
 
   return (
     <div className="space-y-2">
@@ -60,19 +69,19 @@ export function LinkedRecordPicker({
         maxLength={100}
         value={query}
         disabled={disabled}
-        placeholder="搜尋名稱或編號"
-        aria-label="搜尋關聯紀錄"
+        placeholder={copy.placeholder}
+        aria-label={copy.label}
         onChange={(event) => setQuery(event.target.value)}
         className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
       />
       {value ? (
         <p className="text-xs text-[var(--color-text-muted)]">
-          已選擇：{label?.trim() ? label : value}
+          {copy.selected(label?.trim() ? shown(label) : value)}
         </p>
       ) : null}
       {search.isError ? (
         <p role="alert" className="text-xs font-semibold text-[var(--color-error)]">
-          未能載入關聯紀錄，請重試。
+          {copy.failed}
         </p>
       ) : null}
       {search.data && search.data.length > 0 ? (
@@ -90,9 +99,11 @@ export function LinkedRecordPicker({
                   : "border-[var(--color-border)] bg-[var(--color-background)]"
               }`}
             >
-              <span className="font-semibold text-[var(--color-panel)]">{option.label}</span>
+              <span className="font-semibold text-[var(--color-panel)]">{shown(option.label)}</span>
               {option.sublabel ? (
-                <span className="text-xs text-[var(--color-text-muted)]">{option.sublabel}</span>
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  {copy.detail(linkedType, option.sublabel)}
+                </span>
               ) : null}
             </button>
           ))}

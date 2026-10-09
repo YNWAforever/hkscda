@@ -5,7 +5,7 @@ import { Button } from "../../ui/button";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import type { AdminIdentity } from "../../../lib/admin/access";
 import type { PaymentPublicConfig } from "../../../lib/paymentPublicConfig/types";
-import { CMS_STATE_LABELS } from "./cmsStateLabels";
+import { cmsStateCopy } from "./cmsStateCopy";
 import {
   canPublish,
   createPaymentMethodPublishAttempt,
@@ -59,7 +59,7 @@ export function PaymentMethodsManagementView({
                 <span className="font-bold">{config.displayLabelZh}</span>{" "}
                 <span className="text-[var(--color-text-muted)]">({config.method})</span>{" "}
                 <span className="text-xs text-[var(--color-text-muted)]">
-                  {CMS_STATE_LABELS[config.state]}
+                  {cmsStateCopy.zh[config.state]}
                 </span>
                 {config.isPubliclyVisible ? null : (
                   <span className="ml-2 text-xs text-[var(--color-text-muted)]">未公開</span>

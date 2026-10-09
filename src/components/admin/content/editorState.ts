@@ -1,3 +1,5 @@
+import { ContentAdminError } from "./contentErrors";
+
 export type EditorState = {
   version: number | undefined;
   revisionId: string | undefined;
@@ -39,9 +41,7 @@ export function createEditorOperationGate() {
   let operation: string | undefined;
   return (key: string, work: () => Promise<unknown>) => {
     if (pending)
-      return key === operation
-        ? pending
-        : Promise.reject(new Error("另一個面板正在儲存，請稍後重試。"));
+      return key === operation ? pending : Promise.reject(new ContentAdminError("operation_busy"));
     operation = key;
     pending = Promise.resolve()
       .then(work)
