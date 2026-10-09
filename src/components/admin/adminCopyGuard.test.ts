@@ -8,9 +8,9 @@ import { findChineseRuns } from "./i18n/testing";
  * anywhere else under `src/components/admin` or `src/routes/admin`.
  *
  * It is a ratchet. `ADMIN_COPY_PENDING` lists the files that have not been migrated yet.
- * Each area task of the English-admin project deletes its own files from the list; a
- * file that no longer has Chinese must leave the list, so it only ever shrinks. New files
- * are not allowed on it.
+ * Each area task of the English-admin project deleted its own files from the list; a
+ * file that no longer has Chinese must leave the list, so it only ever shrank. It is now
+ * empty and must stay empty: new files are not allowed on it.
  *
  * Chinese that is not interface text, such as a parsing pattern or a data constant, is
  * allowed on a line that carries `admin-copy-exempt: <reason>` in a comment, and on the
@@ -130,6 +130,12 @@ describe("admin copy guard", () => {
       "Move this text into a bilingual copy module (copy.ts or *Copy.ts, using defineAdminCopy), " +
         "or mark text that is not interface text with `// admin-copy-exempt: <reason>`.",
     ).toEqual([]);
+  });
+
+  test("no admin file is pending English", () => {
+    // The English admin is complete, so the list that let a file wait for its translation is
+    // closed. A new file with Chinese in it fails the first test above instead of being added here.
+    expect([...ADMIN_COPY_PENDING]).toEqual([]);
   });
 
   test("every pending file still contains Chinese", async () => {
