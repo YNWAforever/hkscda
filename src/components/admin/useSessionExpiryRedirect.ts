@@ -51,7 +51,10 @@ export function watchSessionExpiry(deps: SessionExpiryDeps): SessionExpiryWatche
     const path = deps.getPath();
     if (onAuthPage(path)) return;
     done = true;
-    deps.navigate(loginUrlFor(path));
+    const target = loginUrlFor(path);
+    // The next person to sign in on this tab must not see the last one's cached data.
+    deps.queryClient.clear();
+    deps.navigate(target);
   }
 
   const stopQueries = deps.queryClient.getQueryCache().subscribe((event) => {

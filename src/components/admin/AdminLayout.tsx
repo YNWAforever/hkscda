@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ReactNode, type MouseEvent } from "re
 
 import { supabase } from "../../lib/supabase";
 import { getFirstAllowedAdminRoute } from "../../lib/admin/access";
+import { signOutAndLeave } from "../../lib/admin/signInFlow";
 import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { cn } from "../../lib/utils";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
@@ -217,12 +218,14 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   }
 
   async function handleLogout() {
-    suppressSessionExpiry();
-    await supabase.auth.signOut();
-    // Otherwise the next admin to sign in on this tab reads the previous one's
-    // cached identity.
-    queryClient.clear();
-    navigate({ to: "/admin/login" });
+    await signOutAndLeave({
+      suppressSessionExpiry,
+      signOut: () => supabase.auth.signOut(),
+      queryClient,
+      push: () => {
+        void navigate({ to: "/admin/login" });
+      },
+    });
   }
 
   const { groups, activeGroupId } = getAdminNavigation(adminRole, pathname, activeSection);

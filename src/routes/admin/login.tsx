@@ -7,8 +7,8 @@ import {
   useAdminLanguage,
 } from "../../components/admin/adminI18n";
 import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
-import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "../../lib/admin/identity";
-import { postSignInDestination, safeAdminRedirect } from "../../lib/admin/loginRedirect";
+import { safeAdminRedirect } from "../../lib/admin/loginRedirect";
+import { completeSignIn } from "../../lib/admin/signInFlow";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
 
@@ -34,14 +34,12 @@ export function AdminLoginPage() {
   const queryClient = useQueryClient();
   const search = Route.useSearch();
 
-  async function goAfterSignIn() {
-    // The cache may hold the previous account's identity; the new one decides the landing page.
-    queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
-    const admin = await queryClient
-      .fetchQuery(adminIdentityQueryOptions())
-      .then((result) => result.admin)
-      .catch(() => null);
-    router.history.push(postSignInDestination(search.redirect, admin));
+  function goAfterSignIn() {
+    return completeSignIn({
+      queryClient,
+      redirectParam: search.redirect,
+      push: (path) => router.history.push(path),
+    });
   }
 
   return (

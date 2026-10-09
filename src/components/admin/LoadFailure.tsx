@@ -1,6 +1,7 @@
 import { useRouter } from "@tanstack/react-router";
 import { useContext, type MouseEvent, type ReactNode } from "react";
 
+import { loginUrlFor } from "../../lib/admin/loginRedirect";
 import { cn } from "../../lib/utils";
 import { AdminHomeRouteContext } from "./adminHomeRoute";
 import { Button } from "../ui/button";
@@ -151,13 +152,19 @@ function InAppLink({ href, children }: { href: string; children: ReactNode }) {
  */
 function useClassLine(failure: FailureClass): ReactNode {
   const lines = useSharedAdminCopy(sharedUiCopy).loadFailure.classLines;
+  // Sign-in returns to this page. With no router (a static render) it is plain sign-in.
+  const router = useRouter({ warn: false });
+  const here = router
+    ? router.state.location.pathname + (router.state.location.searchStr ?? "")
+    : null;
+  const signInHref = here === null ? "/admin/login" : loginUrlFor(here);
   const homeRoute = useContext(AdminHomeRouteContext);
   switch (failure) {
     case "session":
       if (!lines.session) return null;
       return lines.sessionAction ? (
         <>
-          {lines.session} <InAppLink href="/admin/login">{lines.sessionAction}</InAppLink>
+          {lines.session} <InAppLink href={signInHref}>{lines.sessionAction}</InAppLink>
         </>
       ) : (
         lines.session

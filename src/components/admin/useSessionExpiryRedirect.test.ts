@@ -53,6 +53,18 @@ describe("watchSessionExpiry", () => {
     );
   });
 
+  test("clears the cached data before it navigates, so the next person sees none of it", async () => {
+    const { queryClient, navigate } = setup();
+    queryClient.setQueryData(["supporters"], ["private"]);
+    let cachedAtNavigation: unknown = "unset";
+    navigate.mockImplementation(() => {
+      cachedAtNavigation = queryClient.getQueryData(["supporters"]);
+    });
+    await failQuery(queryClient, "a", new AdminSessionError("not_signed_in"));
+    expect(navigate).toHaveBeenCalledTimes(1);
+    expect(cachedAtNavigation).toBeUndefined();
+  });
+
   test("ignores failures that are not a lapsed session", async () => {
     const { queryClient, navigate } = setup();
     await failQuery(queryClient, "a", new AdminHttpError("nope", 403));

@@ -38,6 +38,15 @@ describe("safeAdminRedirect", () => {
     "/admin/login#x",
     "/admin/reset-password",
     "/admin/reset-password?token=1",
+    "/admin/../..",
+    "/admin/../../evil",
+    "/admin/%2e%2e/login",
+    "/admin/%2E%2E/x",
+    "/admin/./../x",
+    "/admin/./x",
+    "/admin/..",
+    "/admin/.%2e/x",
+    "/admin/x/..?y=1",
     "/admin/animals\n/admin",
     "/admin/an imals",
     "",
@@ -66,9 +75,13 @@ describe("loginUrlFor", () => {
   });
 });
 
+const staff: AdminIdentity = { ...admin, id: "a2", authUserId: "u2", role: "staff" };
+
 describe("postSignInDestination", () => {
-  test("returns to the requested page", () => {
-    expect(postSignInDestination("/admin/animals?page=2", admin)).toBe("/admin/animals?page=2");
+  test("returns to the requested page when the role can open it", () => {
+    expect(postSignInDestination("/admin/animals?page=2", staff)).toBe("/admin/animals?page=2");
+    expect(postSignInDestination("/admin/supporters/s1", admin)).toBe("/admin/supporters/s1");
+    expect(postSignInDestination("/admin?section=payments", admin)).toBe("/admin?section=payments");
   });
 
   test("uses the role's first allowed page when there is no safe redirect", () => {
@@ -76,9 +89,23 @@ describe("postSignInDestination", () => {
     expect(postSignInDestination("//evil.example", admin)).toBe(
       getFirstAllowedAdminRoute("treasurer"),
     );
+    expect(postSignInDestination("/admin/../../evil", staff)).toBe(
+      getFirstAllowedAdminRoute("staff"),
+    );
   });
 
-  test("falls back to /admin when the identity could not be read", () => {
+  test("uses the first allowed page when the role cannot open the requested one", () => {
+    // /admin/supporters is a treasurer page that staff cannot open; animals is the reverse.
+    expect(postSignInDestination("/admin/supporters", staff)).toBe(
+      getFirstAllowedAdminRoute("staff"),
+    );
+    expect(postSignInDestination("/admin/animals", admin)).toBe(
+      getFirstAllowedAdminRoute("treasurer"),
+    );
+  });
+
+  test("keeps a safe redirect when the identity could not be read, else /admin", () => {
+    expect(postSignInDestination("/admin/animals", null)).toBe("/admin/animals");
     expect(postSignInDestination(undefined, null)).toBe("/admin");
   });
 });
