@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /**
  * Copy for the activity workspace's list and filters (`VolunteerActivityWorkspace`), the table and
@@ -9,6 +10,8 @@ import { formatAdminNumber, pluralCount } from "../i18n/format";
 export const activityWorkspaceCopy = defineAdminCopy({
   zh: {
     title: "義工活動工作台",
+    /** The calendar route's `h1`. Chinese keeps the one heading both routes have always had. */
+    calendarTitle: "義工活動工作台",
     intro: "按香港時間管理場次、報名及出席紀錄。",
     policyLink: "政策設定及待確認規則",
     /** The status of an activity or of one step of a bulk operation. */
@@ -136,7 +139,8 @@ export const activityWorkspaceCopy = defineAdminCopy({
     },
   },
   en: {
-    title: "Volunteer activity workspace",
+    title: volunteerWorkspaceCopy.en.pages.activities.label,
+    calendarTitle: volunteerWorkspaceCopy.en.pages.calendar.label,
     intro: "Manage sessions, registrations and attendance records in Hong Kong time.",
     policyLink: "Policy settings and rules awaiting confirmation",
     states: {

@@ -2,6 +2,7 @@ import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerTasksCopy } from "./volunteerTasksCopy";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /** What the page last did, as a code. The page writes it when it renders, so it follows the language. */
 export type AssessmentMessage =
@@ -108,7 +109,7 @@ export const assessmentsCopy = defineAdminCopy({
     unreadable: "",
   },
   en: {
-    title: "Monthly volunteer tier assessment",
+    title: volunteerWorkspaceCopy.en.pages.assessments.label,
     sections: {
       settings: "Assessment settings",
       run: "Run the assessment",

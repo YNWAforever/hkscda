@@ -136,7 +136,7 @@ describe("the daily volunteer quota in English", () => {
     const markup = screen("en", { preview });
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Daily volunteer quota",
+      ">Daily quota</h1>",
       "Sessions in the same scope and on the same date share one quota.",
       "Back to volunteer policy settings",
       'aria-label="Steps on this page"',

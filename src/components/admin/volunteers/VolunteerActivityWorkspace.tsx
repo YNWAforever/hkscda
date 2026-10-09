@@ -384,7 +384,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{copy.title}</h1>
+          <h1 className="text-2xl font-bold">
+            {initialView === "calendar" ? copy.calendarTitle : copy.title}
+          </h1>
           <p>{copy.intro}</p>
         </div>
         <a className={button} href="/admin/volunteers/settings">

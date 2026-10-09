@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 
 /**
  * Page copy for the other coordinator screens: adopters, reports and statuses.
@@ -173,7 +174,7 @@ export const coordinatorPageCopy = defineAdminCopy({
       },
     },
     reports: {
-      title: "Coordinator reports",
+      title: adminCommonCopy.en.navItems["coordinator-reports"],
       subtitle: "Monthly intake summary and regenerated CSV export history.",
       loadSummaryError: "Could not load monthly summary",
       loadHistoryError: "Could not load export history",
@@ -211,7 +212,7 @@ export const coordinatorPageCopy = defineAdminCopy({
       },
     },
     statuses: {
-      title: "Coordinator statuses",
+      title: adminCommonCopy.en.navItems["coordinator-statuses"],
       subtitle: (statuses: number, categories: number) =>
         `${pluralCount(statuses, "status", "statuses")} across ${pluralCount(categories, "category", "categories")}`,
       newStatus: "New status",

@@ -59,16 +59,25 @@ describe("the volunteer shell in English", () => {
     kit.state.role = "admin";
   });
 
-  test("names the detail pages and keeps the page that opens them in the breadcrumb", () => {
+  test("draws one breadcrumb, the layout's, and ends it at the page that opens a detail page", () => {
     kit.state.role = "admin";
     const person = renderAdminInEnglish(shell("/admin/volunteers/people/abc"));
     expectNoChineseText(person, { allow: [TOGGLE_WORD] });
-    expect(person).toContain('<span aria-current="page">Volunteer details</span>');
-    expect(person).toContain(">Volunteer directory</a>");
+    // The record has not loaded, so the trail stops at the directory instead of naming a person.
+    expect(person.match(/aria-label="Breadcrumb"/g)).toHaveLength(1);
+    expect(person).toContain('<span class="break-words">Volunteer directory</span>');
     const registration = renderAdminInEnglish(shell("/admin/volunteers/registrations/xyz"));
     expectNoChineseText(registration, { allow: [TOGGLE_WORD] });
-    expect(registration).toContain('<span aria-current="page">Registration details</span>');
-    expect(registration).toContain(">Activities and registrations</a>");
+    expect(registration.match(/aria-label="Breadcrumb"/g)).toHaveLength(1);
+    expect(registration).toContain('<span class="break-words">Activities and registrations</span>');
+  });
+
+  test("gives the shell's pages one h1 at most: the shell writes it only when the page asks", () => {
+    kit.state.role = "admin";
+    const plain = renderAdminInEnglish(shell("/admin/volunteers/tasks"));
+    expect(plain).not.toContain("<h1");
+    const asked = renderAdminInEnglish(shell("/admin/volunteers/people", { intro: "people" }));
+    expect(asked.match(/<h1/g)).toHaveLength(1);
   });
 
   test("writes the heading and the line of the directory and the person page itself", () => {
@@ -121,16 +130,15 @@ describe("the volunteer shell in English", () => {
       "日常營運",
       "管理員設定",
       "工作區導覽 · 義工名冊",
-      "麵包屑",
+      "導覽路徑",
       "<h1>義工名冊</h1>",
       "<p>查找義工身份、核實資格，並查看報名與服務紀錄。</p>",
     ]) {
       expect(markup, text).toContain(text);
     }
-    expect(renderAdminInChinese(shell("/admin/volunteers/registrations/xyz"))).toContain(
-      "報名詳情",
-    );
-    expect(renderAdminInChinese(shell("/admin/volunteers/people/abc"))).toContain("義工個人詳情");
+    expect(
+      renderAdminInChinese(shell("/admin/volunteers/people/abc", { intro: "person" })),
+    ).toContain("<h1>義工個人詳情</h1>");
     kit.state.role = "staff";
     expect(renderAdminInChinese(shell("/admin/volunteers"))).toContain("職員工作區");
     kit.state.role = "admin";
@@ -228,7 +236,7 @@ describe("the volunteer overview in English", () => {
       expectNoChineseText(markup, { allow: FIXTURE_ALLOW });
       for (const text of [
         "9 Oct 2026 (Fri) · Hong Kong time",
-        "Volunteer operations overview",
+        ">Volunteer operations</h1>",
         "Find a volunteer",
         "Volunteers awaiting verification",
         "Registrations awaiting approval",

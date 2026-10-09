@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 
 /**
  * Copy for the adoption information screen: its five tabs, the adoption fees and the dog-friendly
@@ -75,7 +76,7 @@ export const adoptionInformationCopy = defineAdminCopy({
   },
   en: {
     eyebrow: "Adoption",
-    title: "Adoption information management",
+    title: adminCommonCopy.en.navItems["adoption-information"],
     intro: "Manage the public adoption fees and the reference list of dog-friendly estates.",
     guideReleases: "Post-adoption guide releases",
     tabs: {

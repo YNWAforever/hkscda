@@ -58,6 +58,8 @@ import { ContentTimeline } from "./ContentTimeline";
 import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel, type SocialCopyPatch } from "./SocialCopyPanel";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
 import { LoadFailure } from "../LoadFailure";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { useLeaveConfirm } from "../useLeaveConfirm";
@@ -182,6 +184,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const content = contentQuery.data?.content;
+  useBreadcrumbRecordName(content?.title);
   currentVersion.current = content?.version;
   useEffect(() => {
     if (content)
@@ -441,7 +444,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   );
   const publishAllowed = canPublish({ ...editor, pending: editorActionPending, conflict });
   if (contentQuery.isLoading) {
-    return <div className="p-6 text-sm text-[var(--color-text-muted)]">{copy.loading}</div>;
+    return (
+      <div className="space-y-3 p-6">
+        <DestinationHeading id="content" />
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.loading}</p>
+      </div>
+    );
   }
 
   if (!content) {
@@ -454,6 +462,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <ArrowLeft className="h-4 w-4" />
           {copy.back}
         </Link>
+        <DestinationHeading id="content" />
         {contentQuery.error ? (
           // A failed read is not a missing item: say which it was, and offer the retry.
           <LoadFailure error={contentQuery.error} onRetry={() => void contentQuery.refetch()} />

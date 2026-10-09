@@ -8,6 +8,8 @@ import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors"
 import { volunteerRegistrationStatusLabel } from "../../../lib/volunteers/labels";
 import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
 import { useAdminLanguage } from "../adminI18n";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
 import { pickAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
@@ -15,6 +17,7 @@ import { availableRegistrationTransitions, isDestructiveTransition } from "./vol
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 type RegistrationResponse = {
   registration: VolunteerRegistrationDetailType;
@@ -52,6 +55,13 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     queryFn: () =>
       fetchAdminJson<RegistrationResponse>(`/api/admin/volunteers/registrations/${registrationId}`),
   });
+  useBreadcrumbRecordName(data?.registration?.contactName);
+  // A registration belongs to the activities page; that is the heading until it loads.
+  const destination = (
+    <DestinationHeading
+      label={pickAdminCopy(volunteerWorkspaceCopy, language).pages.activities.label}
+    />
+  );
 
   const correctionEnabled =
     isCorrection &&
@@ -92,17 +102,26 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   if (isLoading)
     return (
-      <div className="p-6 text-sm text-[var(--color-text-muted)]">{shared.common.loading}</div>
+      <div className="space-y-3 p-6">
+        {destination}
+        <p className="text-sm text-[var(--color-text-muted)]">{shared.common.loading}</p>
+      </div>
     );
   if (error) {
     return (
-      <div className="p-6">
+      <div className="space-y-3 p-6">
+        {destination}
         <LoadFailure error={error} onRetry={() => void refetch()} />
       </div>
     );
   }
   if (!data?.registration) {
-    return <div className="p-6 text-sm text-[var(--color-primary)]">{text.notFound}</div>;
+    return (
+      <div className="space-y-3 p-6">
+        {destination}
+        <p className="text-sm text-[var(--color-primary)]">{text.notFound}</p>
+      </div>
+    );
   }
 
   const registration = data.registration;

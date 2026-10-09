@@ -83,17 +83,33 @@ function AboutPagesManagementRuntime() {
     },
   });
 
-  if (pagesQuery.isLoading) return <p aria-live="polite">{copy.loading}</p>;
+  const heading = <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>;
+  if (pagesQuery.isLoading)
+    return (
+      <div className="space-y-3 p-6">
+        {heading}
+        <p aria-live="polite">{copy.loading}</p>
+      </div>
+    );
   if (pagesQuery.isError || !pagesQuery.data) {
     return (
-      <LoadFailure
-        error={pagesQuery.error}
-        onRetry={() => void pagesQuery.refetch()}
-        title={copy.loadFailed}
-      />
+      <div className="space-y-3 p-6">
+        {heading}
+        <LoadFailure
+          error={pagesQuery.error}
+          onRetry={() => void pagesQuery.refetch()}
+          title={copy.loadFailed}
+        />
+      </div>
     );
   }
-  if (!drafts) return <p aria-live="polite">{copy.loading}</p>;
+  if (!drafts)
+    return (
+      <div className="space-y-3 p-6">
+        {heading}
+        <p aria-live="polite">{copy.loading}</p>
+      </div>
+    );
 
   return (
     <AboutPagesManagementView

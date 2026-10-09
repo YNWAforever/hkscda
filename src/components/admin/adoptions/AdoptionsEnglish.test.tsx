@@ -312,7 +312,7 @@ describe("case list in English", () => {
     const markup = renderAdminInEnglish(<CaseList />);
     expectNoChineseText(markup, { allow: allowed });
     for (const text of [
-      "Adoption cases",
+      ">Applications</h1>",
       "Coordinator queue, matching, follow-up and finalisation.",
       "Show open cases only",
       ">Applicant<",

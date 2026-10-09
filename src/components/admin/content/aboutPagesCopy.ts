@@ -1,3 +1,4 @@
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 import { defineAdminCopy } from "../i18n/copy";
 
 /**
@@ -57,7 +58,7 @@ export const aboutPagesCopy = defineAdminCopy({
   },
   en: {
     eyebrow: "Website content",
-    title: "About pages management",
+    title: adminCommonCopy.en.navItems["about-pages"],
     tabs: { about: "About us", tnr: "TNR" },
     loading: "Loading page content…",
     loadFailed: "Could not load the page content",

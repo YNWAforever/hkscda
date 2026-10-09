@@ -94,7 +94,7 @@ describe("the qualification verification in English", () => {
     const markup = qualifications("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Volunteer profile and qualification verification",
+      ">Identity and qualification verification</h1>",
       "Tiers and course qualifications are only set from verified evidence.",
       "A Remark that a volunteer fills in themselves does not grant a skill.",
       "Back to the volunteer directory",
@@ -317,7 +317,7 @@ describe("the monthly tier assessment in English", () => {
     const markup = assessments("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Monthly volunteer tier assessment",
+      ">Tier assessment</h1>",
       ">Assessment settings</a>",
       ">Run the assessment</a>",
       ">Approve candidates</a>",
@@ -408,7 +408,7 @@ describe("the monthly tier assessment in English", () => {
     expectNoChineseText(markup, { allow: ["溫馨提示", "關懷"] });
     expect(markup).toContain(">溫馨提示</textarea>");
     expect(markup).toContain(">關懷</textarea>");
-    expect(markup).toContain("Monthly volunteer tier assessment");
+    expect(markup).toContain(">Tier assessment</h1>");
     expect(markup).toContain("Undecided");
     expect(markup).toContain('value="2026-10-09"');
     expect(rawKeysIn(markup)).toEqual([]);

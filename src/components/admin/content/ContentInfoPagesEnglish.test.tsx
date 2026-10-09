@@ -376,7 +376,7 @@ describe("about pages in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
       ">Website content</p>",
-      ">About pages management</h1>",
+      ">About pages</h1>",
       ">About us</button>",
       ">TNR</button>",
       ">Main banner</legend>",
@@ -475,7 +475,7 @@ describe("adoption information in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
       ">Adoption</p>",
-      ">Adoption information management</h1>",
+      ">Adoption information</h1>",
       "Manage the public adoption fees and the reference list of dog-friendly estates.",
       ">Post-adoption guide releases</a>",
       'href="/admin/content/adoption-guides"',
@@ -716,7 +716,7 @@ describe("adoption rules and care guidelines in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
       ">Adoption</p>",
-      ">Adoption rules management</h1>",
+      ">Adoption information</h1>",
       ">Adoption rules</h2>",
       "Add rule",
       "1. Keep the animal safe",
@@ -793,7 +793,7 @@ describe("adoption rules and care guidelines in English", () => {
     );
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      ">Animal care guidelines management</h1>",
+      ">Adoption information</h1>",
       'aria-label="Species"',
       ">Cats</button>",
       ">Dogs</button>",

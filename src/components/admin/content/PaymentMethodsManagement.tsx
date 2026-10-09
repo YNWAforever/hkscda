@@ -193,7 +193,12 @@ export function PaymentMethodsManagement() {
   }
 
   if (listQuery.isLoading || identityQuery.isLoading) {
-    return <p>{copy.loading}</p>;
+    return (
+      <div className="space-y-6">
+        <h1 className="text-xl font-bold">{copy.title}</h1>
+        <p>{copy.loading}</p>
+      </div>
+    );
   }
 
   // A failed load is shown as a failure on its own: the list below it would only be empty

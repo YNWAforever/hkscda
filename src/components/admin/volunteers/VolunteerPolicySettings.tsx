@@ -202,11 +202,18 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     });
   if (q.isError)
     return (
-      <div className="p-6">
+      <div className="space-y-3 p-6">
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
         <LoadFailure error={q.error} onRetry={() => void q.refetch()} title={copy.loadFailed} />
       </div>
     );
-  if (q.isLoading || !draft || !q.data) return <p className="p-6">{copy.loading}</p>;
+  if (q.isLoading || !draft || !q.data)
+    return (
+      <div className="space-y-3 p-6">
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p>{copy.loading}</p>
+      </div>
+    );
   const activities = q.data.activities.filter(
       (x) => x.template_key === key || x.template_key === null,
     ),

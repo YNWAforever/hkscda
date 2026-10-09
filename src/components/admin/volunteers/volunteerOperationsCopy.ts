@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /** A figure the preview may not have: blank when the server sent none, grouped like the rest. */
 const figure = (value: number | undefined) =>
@@ -84,7 +85,7 @@ export const volunteerOperationsCopy = defineAdminCopy({
     },
   },
   en: {
-    title: "Group requests and volunteer rescheduling",
+    title: volunteerWorkspaceCopy.en.pages.operations.label,
     checkingSignIn: "Checking your sign-in…",
     intro:
       "All times are Hong Kong time. A group enquiry is not a confirmed group. Confirming and rescheduling both check the current policy and list again.",

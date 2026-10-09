@@ -23,6 +23,8 @@ import {
   statusDisplayName,
   useAdminPageCopy,
 } from "../adminPageCopy";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
@@ -507,6 +509,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
   });
 
   const adoptionCase = caseData?.case;
+  useBreadcrumbRecordName(adoptionCase?.applicantName);
   const statuses = useMemo(() => statusesData?.statuses ?? [], [statusesData?.statuses]);
 
   useEffect(() => {
@@ -550,7 +553,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
   if (caseLoading) {
     return (
       <div className="space-y-5 p-6">
-        <div className="h-8 w-52 rounded bg-[var(--color-lavender)]" />
+        <DestinationHeading id="applications" />
         <section className={sectionClassName()}>
           <div className="h-14 border-b border-[var(--color-border)]" />
           <div className="grid gap-3 p-4 md:grid-cols-3">
@@ -573,6 +576,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToCases}
         </Link>
+        <DestinationHeading id="applications" />
         <section className={sectionClassName()}>
           <LoadFailure error={caseError} onRetry={() => void refetch()} className="border-0" />
         </section>
@@ -590,6 +594,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToCases}
         </Link>
+        <DestinationHeading id="applications" />
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
             {copy.notFound}

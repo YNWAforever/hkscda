@@ -41,7 +41,7 @@ describe("the activity workspace in English", () => {
       const markup = renderAdminInEnglish(<VolunteerActivityWorkspace />);
       expectNoChineseText(markup, { allow: ALLOW });
       for (const text of [
-        "Volunteer activity workspace",
+        ">Activities and registrations</h1>",
         "Manage sessions, registrations and attendance records in Hong Kong time.",
         "Policy settings and rules awaiting confirmation",
         "Create draft",

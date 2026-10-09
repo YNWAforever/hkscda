@@ -4,6 +4,7 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DirectoryDetail } from "../../../lib/volunteers/directory/types";
 import { volunteerRegistrationStatusLabelsFor } from "../../../lib/volunteers/labels";
 import { useAdminLanguage } from "../adminI18n";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { pickAdminCopy } from "../i18n/copy";
 import { directoryQuery, type DirectorySearch } from "./directorySearch";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
@@ -292,6 +293,8 @@ export function VolunteerPersonDetail({
         `/api/admin/volunteers/people?profile_id=${encodeURIComponent(profileId)}`,
       ),
   });
+  // The shell's `h1` ("Volunteer details") stands in every state; the breadcrumb names the person.
+  useBreadcrumbRecordName(query.data?.profile.display_name);
   if (query.isPending) return <p role="status">{copy.loading}</p>;
   if (query.isError)
     return (

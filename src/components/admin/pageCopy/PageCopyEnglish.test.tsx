@@ -56,17 +56,17 @@ describe("adminPageCopy page headers", () => {
     const markup = renderAdminInEnglish(<PageHeaders />);
     expectNoChineseText(markup);
     for (const text of [
-      "Adoption cases",
+      ">Applications</h1>",
       "Coordinator queue, matching, follow-up and finalisation.",
       "Pledge review",
       "Pledge details",
-      "Application inbox",
+      ">Inbox</h1>",
       "Manual intake",
-      "Coordinator task centre",
+      ">Tasks</h1>",
       "Follow-ups",
       "Adopters",
-      "Coordinator reports",
-      "Coordinator statuses",
+      ">Reports</h1>",
+      ">Status settings</h1>",
       "12 statuses across 5 categories",
       "Supporters",
     ]) {

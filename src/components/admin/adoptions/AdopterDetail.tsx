@@ -14,6 +14,8 @@ import { Button } from "../../ui/button";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import type { AdminLanguage } from "../adminI18n";
 import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { adopterDetailCopy } from "./adopterDetailCopy";
@@ -192,7 +194,7 @@ function DetailGrid({ items }: { items: Array<{ label: string; value: ReactNode 
 function LoadingState() {
   return (
     <div className="space-y-5 p-6">
-      <div className="h-8 w-56 rounded bg-[var(--color-lavender)]" />
+      <DestinationHeading id="coordinator-adopters" />
       <section className={sectionClassName()}>
         <div className="h-14 border-b border-[var(--color-border)]" />
         <div className="grid gap-3 p-4 md:grid-cols-3">
@@ -236,6 +238,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
   });
 
   const adopter = adopterData?.adopter;
+  useBreadcrumbRecordName(adopter?.displayName);
   const statuses = useMemo(() => statusesData?.statuses ?? [], [statusesData?.statuses]);
 
   async function invalidateAdopter() {
@@ -416,6 +419,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToAdopters}
         </Link>
+        <DestinationHeading id="coordinator-adopters" />
         <section className={sectionClassName()}>
           <LoadFailure error={adopterError} onRetry={() => void refetch()} className="border-0" />
         </section>
@@ -433,6 +437,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToAdopters}
         </Link>
+        <DestinationHeading id="coordinator-adopters" />
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
             {copy.notFound}

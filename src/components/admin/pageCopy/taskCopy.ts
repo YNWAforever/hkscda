@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 
 /**
  * Page copy for coordinator follow-up work: the task centre and the task panel on a case.
@@ -77,7 +78,7 @@ export const taskPageCopy = defineAdminCopy({
   },
   en: {
     taskCenter: {
-      title: "Coordinator task centre",
+      title: adminCommonCopy.en.navItems["coordinator-tasks"],
       subtitle: "View, filter and update follow-up work across adoption cases and animals.",
       searchLabel: "Search tasks",
       searchPlaceholder: "Search title, outcome or remarks",

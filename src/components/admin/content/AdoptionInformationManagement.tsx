@@ -79,11 +79,18 @@ export function invalidateAdoptionInformationQueries(client: {
   return client.invalidateQueries({ queryKey: ADOPTION_INFORMATION_QUERY_KEY });
 }
 
-export function AdoptionInformationManagement({ initialData }: { initialData?: InitialData }) {
+export function AdoptionInformationManagement({
+  initialData,
+  initialTab = "fees",
+}: {
+  initialData?: InitialData;
+  /** The tab shown first. The route leaves it at the first tab; tests open the others. */
+  initialTab?: AdoptionContentTab;
+}) {
   if (initialData) {
     return <AdoptionInformationManagementView activeTab="fees" data={initialData.fees} query="" />;
   }
-  return <AdoptionInformationManagementRuntime />;
+  return <AdoptionInformationManagementRuntime initialTab={initialTab} />;
 }
 
 export function AdoptionContentTabs({
@@ -120,11 +127,11 @@ type MutationInput =
   | { action: "delete-estate"; id: string }
   | { action: "move-fees"; input: ReorderFeesInput };
 
-function AdoptionInformationManagementRuntime() {
+function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: AdoptionContentTab }) {
   const copy = useAdminCopy(adoptionInformationCopy);
   const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<AdoptionContentTab>("fees");
+  const [activeTab, setActiveTab] = useState<AdoptionContentTab>(initialTab);
   const [pageDirty, setPageDirty] = useState(false);
   const [pendingTab, setPendingTab] = useState<AdoptionContentTab | null>(null);
   const [leaving, setLeaving] = useState(false);
@@ -278,6 +285,10 @@ function AdoptionInformationManagementRuntime() {
   if (activeTab === "page") {
     return (
       <div>
+        {/* This tab's editor has no heading of its own; the other tabs head their page. */}
+        <div className="px-6 pt-6">
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        </div>
         <AdoptionContentTabs activeTab={activeTab} onTabChange={handleTabChange} />
         <AdoptionInstructionsManagement onDirtyChange={setPageDirty} editorRef={editorRef} />
         {leaveDialog}

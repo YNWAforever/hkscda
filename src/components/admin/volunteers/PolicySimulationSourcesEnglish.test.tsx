@@ -273,7 +273,7 @@ describe("the shared sources, venues and qualifications in English", () => {
     const markup = sources("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Shared sources, venues and qualifications",
+      ">Venues and qualifications</h1>",
       ">Venues and qualifications</a>",
       ">Publish a source</a>",
       "Shared default → venue → template.",

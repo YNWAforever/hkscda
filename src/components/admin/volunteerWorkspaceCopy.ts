@@ -31,15 +31,9 @@ export const volunteerWorkspaceCopy = defineAdminCopy({
     navigationToggle: (label: string) => `工作區導覽 · ${label}`,
     currentPage: "目前頁面",
     navigationLabel: "義工工作區",
-    breadcrumb: "麵包屑",
     groups: {
       operations: "日常營運",
       settings: "管理員設定",
-    },
-    /** The title of a detail page, when the page that opens it gives none. */
-    detailTitles: {
-      person: "義工個人詳情",
-      registration: "報名詳情",
     },
     /** The heading and the line under it for the pages whose route asks for them. */
     intros: {
@@ -100,14 +94,9 @@ export const volunteerWorkspaceCopy = defineAdminCopy({
     navigationToggle: (label: string) => `Workspace navigation · ${label}`,
     currentPage: "Current page",
     navigationLabel: "Volunteer workspace",
-    breadcrumb: "Breadcrumb",
     groups: {
       operations: "Daily operations",
       settings: "Administrator settings",
-    },
-    detailTitles: {
-      person: "Volunteer details",
-      registration: "Registration details",
     },
     intros: {
       people: {

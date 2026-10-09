@@ -152,6 +152,71 @@ describe("AdminLayout", () => {
       expect(unknown).not.toContain('href="/admin?section=');
     });
 
+    test("draws one breadcrumb: group, destination and the record the page names", () => {
+      role = "admin";
+      pathname = "/admin/supporters/abc";
+      const named = renderAdminInEnglish(
+        <AdminLayout activeSection="supporters" recordName="Chan Tai Man">
+          <p>page</p>
+        </AdminLayout>,
+      );
+      expect(named.match(/aria-label="Breadcrumb"/g)).toHaveLength(1);
+      expect(named).toContain('<a href="/admin?section=payments">Donations and sponsorship</a>');
+      expect(named).toContain('<a href="/admin/supporters">Supporters</a>');
+      expect(named).toContain(
+        '<li aria-current="page"><span aria-hidden="true"> / </span><span class="break-words">Chan Tai Man</span></li>',
+      );
+    });
+
+    test("ends the breadcrumb at the destination when the record has no name", () => {
+      role = "admin";
+      pathname = "/admin/supporters/abc";
+      for (const recordName of [undefined, null, "", "   "]) {
+        const markup = renderAdminInEnglish(
+          <AdminLayout activeSection="supporters" recordName={recordName}>
+            <p>page</p>
+          </AdminLayout>,
+        );
+        expect(markup, String(recordName)).toContain(
+          '<li aria-current="page"><span aria-hidden="true"> / </span><span class="break-words">Supporters</span></li>',
+        );
+        expect(markup).not.toContain("undefined");
+      }
+    });
+
+    test("shows the breadcrumb in Chinese with the same trail", () => {
+      role = "admin";
+      pathname = "/admin/supporters/abc";
+      const markup = renderAdminInChinese(
+        <AdminLayout activeSection="supporters" recordName="陳大文">
+          <p>page</p>
+        </AdminLayout>,
+      );
+      expect(markup).toContain('aria-label="導覽路徑"');
+      expect(markup).toContain('<span class="break-words">陳大文</span>');
+      expect(markup).toContain(">支持者</a>");
+    });
+
+    test("names the group without a link while the role is unknown", () => {
+      role = null;
+      pathname = "/admin/supporters/abc";
+      const markup = renderAdminInEnglish(
+        <AdminLayout activeSection="supporters">
+          <p>page</p>
+        </AdminLayout>,
+      );
+      expect(markup).toContain("<span");
+      expect(markup).toContain("Donations and sponsorship</span>");
+      expect(markup).not.toContain('href="/admin?section=payments"');
+    });
+
+    test("owns the page's only main landmark", () => {
+      role = "admin";
+      pathname = "/admin/applications";
+      const markup = renderAdminInEnglish(layout("applications"));
+      expect(markup.match(/<main/g)).toHaveLength(1);
+    });
+
     test("shows a signed-out shell without Chinese", () => {
       role = null;
       pathname = "/admin";
