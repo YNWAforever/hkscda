@@ -183,6 +183,18 @@ describe("admin browser session", () => {
     expect((error as { status?: unknown }).status).toBeNull();
   });
 
+  test("wraps a network error whose own status cannot be redefined, without throwing", async () => {
+    globalThis.fetch = mock(async () => {
+      const error = new TypeError("Failed to fetch");
+      Object.defineProperty(error, "status", { value: 0, configurable: false, writable: false });
+      throw error;
+    }) as unknown as typeof fetch;
+    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe("Failed to fetch");
+    expect((error as { status?: unknown }).status).toBeNull();
+  });
+
   test("wraps a network error that cannot carry a status, with the same message", async () => {
     globalThis.fetch = mock(async () => {
       throw Object.freeze(new TypeError("Failed to fetch"));

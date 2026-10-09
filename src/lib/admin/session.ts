@@ -107,6 +107,18 @@ export async function getAdminAccessToken(expectedActorUserId?: string) {
   return session.access_token;
 }
 
+/** Puts `status` on `error` if it can; `false`, never a throw, when it cannot. */
+function attachStatus(error: Error, status: number | null): boolean {
+  // defineProperty throws on a frozen or non-extensible error and on a non-configurable own
+  // `status`; any of those means the error keeps what it has.
+  try {
+    Object.defineProperty(error, "status", { value: status, configurable: true });
+  } catch {
+    return false;
+  }
+  return (error as { status?: unknown }).status === status;
+}
+
 export async function fetchAdminJson<T>(
   path: string,
   init?: RequestInit,
@@ -125,11 +137,9 @@ export async function fetchAdminJson<T>(
     // A request that never got a response has no status. The error is rethrown as it was, so
     // its message and class are unchanged.
     if (!(error instanceof Error) || error.name === "AbortError") throw error;
-    if (Object.isExtensible(error)) {
-      Object.defineProperty(error, "status", { value: null, configurable: true });
-      throw error;
-    }
-    // A frozen error cannot carry a status, so it is wrapped with the same message.
+    if (attachStatus(error, null)) throw error;
+    // A frozen error, or one whose own `status` cannot be redefined, cannot carry this status,
+    // so it is wrapped with the same message.
     throw new AdminHttpError(error.message, null);
   });
 

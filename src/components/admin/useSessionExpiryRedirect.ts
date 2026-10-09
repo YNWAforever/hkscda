@@ -2,11 +2,9 @@ import type { QueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
-import { loginUrlFor } from "../../lib/admin/loginRedirect";
-import { AdminSessionError } from "../../lib/admin/session";
+import { isAdminAuthPath, loginUrlFor } from "../../lib/admin/loginRedirect";
 import { supabase } from "../../lib/supabase";
-
-const AUTH_PAGE_PREFIXES = ["/admin/login", "/admin/reset-password"];
+import { isLapsedSession } from "./failureClass";
 
 export type SessionExpiryDeps = {
   queryClient: QueryClient;
@@ -24,18 +22,28 @@ export type SessionExpiryWatcher = {
   stop: () => void;
 };
 
-function isLapsedSession(error: unknown): boolean {
-  if (error instanceof AdminSessionError) return true;
-  return (
-    typeof error === "object" && error !== null && (error as { status?: unknown }).status === 401
-  );
+function onAuthPage(path: string): boolean {
+  return isAdminAuthPath(path.split(/[?#]/, 1)[0]);
 }
 
-function onAuthPage(path: string): boolean {
-  const pathname = path.split(/[?#]/, 1)[0];
-  return AUTH_PAGE_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
+/** The part of the router `expiryNavigate` uses. */
+export type ExpiryRouter = {
+  navigate: (options: { href: string; ignoreBlocker: boolean }) => Promise<void>;
+};
+
+/**
+ * The `navigate` for `watchSessionExpiry`. It passes every navigation blocker: a lapsed session
+ * cannot save, so a dirty form's "Discard and leave" dialog must not hold staff on a page whose
+ * data has just been cleared. Without a router it falls back to a full page load.
+ */
+export function expiryNavigate(
+  router: ExpiryRouter | null | undefined,
+  assign: (url: string) => void = (url) => window.location.assign(url),
+): (url: string) => void {
+  return (url) => {
+    if (router) void router.navigate({ href: url, ignoreBlocker: true });
+    else assign(url);
+  };
 }
 
 /**
@@ -102,10 +110,7 @@ export function useSessionExpiryRedirect(
   useEffect(() => {
     const watcher = watchSessionExpiry({
       queryClient,
-      navigate: (url) => {
-        if (router) router.history.push(url);
-        else window.location.assign(url);
-      },
+      navigate: expiryNavigate(router),
       getPath: () => window.location.pathname + window.location.search,
       onAuthStateChange,
     });

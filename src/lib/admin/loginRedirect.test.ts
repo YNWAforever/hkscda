@@ -67,6 +67,43 @@ describe("safeAdminRedirect", () => {
     expect(safeAdminRedirect(value)).toBeNull();
   });
 
+  // The router matches routes case-insensitively and decodes `%6C`, so each of these would
+  // render a sign-in page after sign-in.
+  test.each([
+    "/admin/%6Cogin",
+    "/admin/%6cogin",
+    "/admin/%6Cogin/",
+    "/admin/Login",
+    "/admin/LOGIN",
+    "/admin/LOGIN?x=1",
+    "/admin/Login/",
+    "/admin/login//",
+    "/admin/reset-%70assword",
+    "/admin/Reset-Password",
+    "/admin/RESET-PASSWORD/?token=1",
+  ])("rejects the sign-in alias %j", (value) => {
+    expect(safeAdminRedirect(value)).toBeNull();
+  });
+
+  test.each([
+    "/admin/x%00",
+    "/admin/x%01y",
+    "/admin/x%0a",
+    "/admin/x%0D%0A",
+    "/admin/x%1f",
+    "/admin/x%7f",
+    "/admin/x?y=%00",
+  ])("rejects the encoded control character in %j", (value) => {
+    expect(safeAdminRedirect(value)).toBeNull();
+  });
+
+  test("still accepts encoded text that is not a control character", () => {
+    expect(safeAdminRedirect("/admin/supporters?q=%E9%99%B3")).toBe(
+      "/admin/supporters?q=%E9%99%B3",
+    );
+    expect(safeAdminRedirect("/admin/Animals")).toBe("/admin/Animals");
+  });
+
   test("rejects non-strings", () => {
     for (const value of [null, undefined, 42, {}, ["/admin"], true]) {
       expect(safeAdminRedirect(value)).toBeNull();
@@ -104,6 +141,12 @@ describe("postSignInDestination", () => {
     expect(postSignInDestination("/admin/../../evil", staff)).toBe(
       getFirstAllowedAdminRoute("staff"),
     );
+  });
+
+  test("never returns staff to a sign-in page through case or percent-encoding", () => {
+    for (const alias of ["/admin/%6Cogin", "/admin/Login", "/admin/reset-%70assword"]) {
+      expect(postSignInDestination(alias, staff)).toBe(getFirstAllowedAdminRoute("staff"));
+    }
   });
 
   test("uses the first allowed page when the role cannot open the requested one", () => {

@@ -15,6 +15,34 @@ const NON_DESTINATION_PATHS = new Set([ADMIN_LOGIN_PATH, "/admin/reset-password"
 /** A `.` or `..` segment, in any `%2e` spelling: it would resolve out of `/admin/`. */
 const DOT_SEGMENT = /(?:^|\/)(?:\.|%2e){1,2}(?:\/|[?#]|$)/i;
 
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/;
+
+/**
+ * `pathname` as the router matches it: percent-decoded, lower-cased (routes match
+ * case-insensitively) and without a trailing slash, so `/admin/%6Cogin/` and `/admin/Login`
+ * both read as `/admin/login`. `null` when it is not valid percent-encoding.
+ */
+export function routeMatchPath(pathname: string): string | null {
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    return null;
+  }
+  return decoded.toLowerCase().replace(/\/+$/, "");
+}
+
+/** Whether `pathname` is, or is under, one of the sign-in pages, however it is spelled. */
+export function isAdminAuthPath(pathname: string): boolean {
+  const path = routeMatchPath(pathname);
+  if (path === null) return false;
+  for (const authPath of NON_DESTINATION_PATHS) {
+    if (path === authPath || path.startsWith(`${authPath}/`)) return true;
+  }
+  return false;
+}
+
 /**
  * The page to return to after sign-in, or `null` when `value` is not a safe in-app admin
  * path. `redirect` comes from the URL, so anything that could leave the origin (a second
@@ -38,6 +66,8 @@ export function safeAdminRedirect(value: unknown): string | null {
     return null;
   }
   if (DOT_SEGMENT.test(decoded)) return null;
+  // `%00` and its kind are refused as firmly as the raw characters above.
+  if (CONTROL_CHARACTER.test(decoded)) return null;
   let resolved: URL;
   try {
     resolved = new URL(value, "http://x");
@@ -46,8 +76,9 @@ export function safeAdminRedirect(value: unknown): string | null {
   }
   // Belt and braces: whatever the browser would resolve it to must still be inside /admin.
   if (resolved.origin !== "http://x" || !ADMIN_SCOPE.test(resolved.pathname)) return null;
-  const path = resolved.pathname.replace(/\/+$/, "");
-  if (NON_DESTINATION_PATHS.has(path)) return null;
+  // Compared as the router matches it, so no spelling of a sign-in page gets through.
+  const path = routeMatchPath(resolved.pathname);
+  if (path === null || NON_DESTINATION_PATHS.has(path)) return null;
   return value;
 }
 

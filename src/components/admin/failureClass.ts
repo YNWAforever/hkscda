@@ -28,3 +28,22 @@ export function failureClass(error: unknown): FailureClass {
   }
   return "unknown";
 }
+
+/**
+ * Whether `error` itself says the session has lapsed: an `AdminSessionError` or anything else
+ * carrying status 401. The expiry redirect and the query retry policy share this one rule.
+ */
+export function isLapsedSession(error: unknown): boolean {
+  return classOfStatus(error) === "session";
+}
+
+/** React Query's own default number of query retries in the browser. */
+const QUERY_RETRIES = 3;
+
+/**
+ * The query retry policy: up to three retries as React Query would do by default, but none for
+ * a lapsed session, which a retry cannot fix and which only delays the sign-in redirect.
+ */
+export function shouldRetryQuery(failureCount: number, error: unknown): boolean {
+  return failureCount < QUERY_RETRIES && !isLapsedSession(error);
+}
