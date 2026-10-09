@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AdminApiError } from "../../../lib/admin/session";
 import { renderAdminInChinese } from "../i18n/testing";
-import { contentOptionalFieldLabels } from "./contentAdminLogic";
+import { contentCommonCopy } from "./contentCommonCopy";
 
 // `mock.module` mocks are process-global in Bun's test runner and outlive this
 // file, so capture the real module first and put it back in `afterAll` (the
@@ -32,7 +32,7 @@ describe("ContentCreateForm", () => {
     expect(markup).toContain("標題");
     expect(markup).toContain("網址 slug");
     expect(markup).toContain("摘要");
-    for (const label of Object.values(contentOptionalFieldLabels)) {
+    for (const label of Object.values(contentCommonCopy.zh.optionalFields)) {
       expect(markup).toContain(label);
     }
   });

@@ -50,10 +50,27 @@ describe("the review queue's selection errors", () => {
     );
     expect(selectionErrorText(refused, zhQueue, "zh")).toBe("最多只能選取 1000 筆動物草稿");
 
-    const failed = selectionErrorFrom(new Error("Preview expired"), "content", "collect_failed");
-    // The reason the server gave is shown as it came, in both languages.
-    expect(selectionErrorText(failed, queue, "en")).toBe("Preview expired");
-    expect(selectionErrorText(failed, zhQueue, "zh")).toBe("Preview expired");
+    // An English reason the content review route can send is shown as it came, in both languages.
+    const failed = selectionErrorFrom(
+      new Error("Request body too large"),
+      "content",
+      "collect_failed",
+    );
+    expect(selectionErrorText(failed, queue, "en")).toBe("Request body too large");
+    expect(selectionErrorText(failed, zhQueue, "zh")).toBe("Request body too large");
+
+    // The zh-HK text the route sends for every other failure is written in the admin's language.
+    const routeFailed = selectionErrorFrom(
+      new Error("未能完成內容審核，請檢查資料及版本後重試。"),
+      "content",
+      "collect_failed",
+    );
+    expect(selectionErrorText(routeFailed, queue, "en")).toBe(
+      "Could not complete the review request. Reload the page, check the details and the version, then try again.",
+    );
+    expect(selectionErrorText(routeFailed, zhQueue, "zh")).toBe(
+      "未能完成內容審核，請檢查資料及版本後重試。",
+    );
 
     // Something that is not an error gets the message for the code.
     const unknown = selectionErrorFrom("nope", "content", "select_failed");

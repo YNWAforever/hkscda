@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
+import { formatAdminNumber } from "../i18n/format";
 
 /**
  * Copy for the content list (`ContentManagement`, with its quick "add content" form) and for the
@@ -23,6 +24,8 @@ export const managementCopy = defineAdminCopy({
       published: "本頁已發布",
       drafts: "本頁草稿",
       rescueStories: "本頁救援故事",
+      /** The figure on a card: the plain number, as Chinese has always shown it. */
+      count: (value: number) => String(value),
     },
     eligibility: {
       heading: "本頁內容資格待核對",
@@ -102,7 +105,7 @@ export const managementCopy = defineAdminCopy({
     },
   },
   en: {
-    eyebrow: "Content",
+    eyebrow: "Website content",
     title: "Content",
     intro: "Manage story, event, market and report pages.",
     actions: {
@@ -118,6 +121,7 @@ export const managementCopy = defineAdminCopy({
       published: "Published on this page",
       drafts: "Drafts on this page",
       rescueStories: "Rescue stories on this page",
+      count: (value: number) => formatAdminNumber(value, "en"),
     },
     eligibility: {
       heading: "Content on this page that needs an eligibility check",
@@ -183,7 +187,7 @@ export const managementCopy = defineAdminCopy({
       busy: "Creating…",
     },
     createForm: {
-      eyebrow: "Content",
+      eyebrow: "Website content",
       title: "Add content",
       type: "Type",
       titleLabel: "Title",

@@ -683,7 +683,7 @@ describe("content list in English", () => {
     const markup = renderAdminInEnglish(view);
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      ">Content</p>",
+      ">Website content</p>",
       ">Content</h1>",
       "Manage story, event, market and report pages.",
       ">Create content</a>",
@@ -783,6 +783,20 @@ describe("content list in English", () => {
     expectAll(markup, ["No content", "Nothing on this page needs checking."]);
   });
 
+  test("groups the thousands of a card's figure in English, and leaves the Chinese figure plain", () => {
+    reset();
+    const list = (
+      <ContentManagement
+        initialData={{
+          content: [],
+          pagination: { page: 1, pageSize: 25, total: 1234, pageCount: 50 },
+        }}
+      />
+    );
+    expect(renderAdminInEnglish(list)).toContain(">1,234</p>");
+    expect(renderAdminInChinese(list)).toContain(">1234</p>");
+  });
+
   test("tells staff what to do when the quick form fails", () => {
     const failed = renderAdminInEnglish(
       <CreateContentDraft onCreate={async () => undefined} busy={false} failed />,
@@ -829,6 +843,7 @@ describe("create content form in English", () => {
     const markup = renderAdminInEnglish(<ContentCreateForm />);
     expectNoChineseText(markup);
     expectAll(markup, [
+      ">Website content</p>",
       ">Add content</h1>",
       "URL slug (lowercase letters, numbers and hyphens)",
       "Body (can be added later)",
@@ -1568,8 +1583,8 @@ describe("version history in English", () => {
       ">Version 5 · Saved content · Was published</button>",
       ">Version 4 · Created</button>",
       ">Version 3 · Other change</button>",
-      ">Latest versions</button>",
-      ">Earlier versions</button>",
+      ">Show latest versions</button>",
+      ">Show earlier versions</button>",
       ">Field</th>",
       ">Currently saved</th>",
       ">Selected version</th>",

@@ -668,11 +668,12 @@ function ContentManagementView({
 }
 
 function SummaryCard({ label, value, failed }: { label: string; value: number; failed?: boolean }) {
+  const copy = useAdminCopy(managementCopy).cards;
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <p className="text-sm font-semibold text-[var(--color-text-muted)]">{label}</p>
       <p className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
-        {failed ? STAT_UNAVAILABLE : value}
+        {failed ? STAT_UNAVAILABLE : copy.count(value)}
       </p>
     </div>
   );

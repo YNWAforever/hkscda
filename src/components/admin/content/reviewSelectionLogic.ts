@@ -2,6 +2,10 @@ import { adminErrorMessage } from "../../../lib/admin/session";
 import type { AdminLanguage } from "../../../lib/admin/language";
 import { AnimalReviewSelectionError } from "../../../lib/contentReview/animalBulkSelection";
 import { CmsReviewSelectionError } from "../../../lib/contentReview/cmsBulkSelection";
+import {
+  contentReviewServerErrorCode,
+  contentReviewServerErrorText,
+} from "../../../lib/contentReview/serverErrors";
 import type { reviewCopy } from "./reviewCopy";
 
 export type ReviewKind = "animal" | "content";
@@ -35,12 +39,18 @@ export function selectionErrorFrom(
 
 type QueueCopy = (typeof reviewCopy)["zh"]["queue"];
 
-/** The message for a selection error in `language`, from the queue's copy. */
+/**
+ * The message for a selection error in `language`, from the queue's copy. A caught error whose message
+ * is the zh-HK text the content review route sends is written from its code; any other reason is
+ * shown as it came.
+ */
 export function selectionErrorText(
   error: SelectionError,
   copy: QueueCopy,
   language: AdminLanguage,
 ): string {
   if ("kind" in error) return copy.selectionErrors[error.kind][error.code];
+  const routeError = contentReviewServerErrorCode(error.cause);
+  if (routeError) return contentReviewServerErrorText(routeError, language);
   return adminErrorMessage(error.cause, language) ?? copy.selectionErrors[error.code];
 }

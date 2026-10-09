@@ -165,7 +165,7 @@ other way round.
 | 常見問題     | FAQ                   | Question-and-answer content.                                                                            |
 | 年度報告     | annual report         | The yearly report page and its documents.                                                               |
 | 團隊與管治   | team and governance   | The team profiles and governance documents.                                                             |
-| 宣傳內容     | content               | The content area of the navigation. Not "promotion".                                                    |
+| 宣傳內容     | content               | The content area of the navigation. Not "promotion". 宣傳 alone is "Website content".                   |
 | 救援故事     | rescue story          | A content type: the story of one rescue. 故事更新 is "story update", 故事牆 is "story wall".            |
 | 救援地區     | rescue region         | Where the animal was rescued. 公開狀態 on a story is "Public status": rescued, medical care and so on.  |
 | 慈善市集     | charity market        | A content type.                                                                                         |

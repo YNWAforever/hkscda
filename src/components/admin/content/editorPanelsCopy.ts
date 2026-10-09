@@ -199,8 +199,8 @@ export const editorPanelsCopy = defineAdminCopy({
       operation: (operation: string) => REVISION_OPERATION_NAMES[operation] ?? "Other change",
       version: (version: number, operation: string, published: boolean) =>
         `Version ${formatAdminNumber(version, "en")} · ${operation}${published ? " · Was published" : ""}`,
-      latest: "Latest versions",
-      earlier: "Earlier versions",
+      latest: "Show latest versions",
+      earlier: "Show earlier versions",
       columns: { field: "Field", saved: "Currently saved", selected: "Selected version" },
       fields: { title: "Title", slug: "URL", summary: "Summary", body: "Body" },
       details: "Story wall settings, updates and media in the selected version",

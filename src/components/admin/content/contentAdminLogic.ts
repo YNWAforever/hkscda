@@ -6,9 +6,6 @@ import type {
 } from "../../../lib/content/types";
 import { contentCommonCopy } from "./contentCommonCopy";
 
-/** The create form's optional fields, labelled in zh-HK. `contentCommonCopy` has both languages. */
-export const contentOptionalFieldLabels = contentCommonCopy.zh.optionalFields;
-
 export type ContentSearchInput = {
   q?: string;
   type?: ContentType | "all";
