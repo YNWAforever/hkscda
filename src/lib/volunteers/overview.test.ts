@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { hongKongDayRange, createOverviewHandler } from "./overview";
+import { volunteerServerErrorText } from "./serverErrors";
 describe("volunteer overview", () => {
   test("uses Hong Kong day boundaries across UTC month end", () => {
     expect(hongKongDayRange(new Date("2026-09-30T18:00:00Z"))).toEqual({
@@ -79,5 +80,24 @@ describe("volunteer overview", () => {
       date: "2026-10-01",
       counts: { pendingProfiles: null, pendingRegistrations: 0, todayActivities: 4 },
     });
+  });
+});
+
+describe("the overview's messages", () => {
+  test("still answer in Chinese, word for word, from the table that also gives the English", async () => {
+    const handler = createOverviewHandler({
+      authorize: async () => {},
+      read: async () => {
+        throw new Error("down");
+      },
+    });
+    const invalid = await handler(new Request("https://example.invalid?centre=NOT%20VALID"));
+    expect(invalid.status).toBe(400);
+    expect(await invalid.json()).toEqual({ error: "服務地點無效" });
+    const failed = await handler(new Request("https://example.invalid"));
+    expect(failed.status).toBe(500);
+    expect(await failed.json()).toEqual({ error: "未能載入營運總覽，請重試。" });
+    expect(volunteerServerErrorText("overview_invalid_centre")).toBe("服務地點無效");
+    expect(volunteerServerErrorText("overview_load_failed")).toBe("未能載入營運總覽，請重試。");
   });
 });

@@ -9,16 +9,16 @@ import type {
   GroupEnquirySummary,
 } from "../../../lib/groupEnquiries/types";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import {
   availableEnquiryTransitions,
   buildGroupEnquirySearchParams,
   GROUP_ENQUIRY_PAGE_SIZE,
-  groupEnquiryActivityLabels,
-  groupEnquiryNotificationLabels,
-  groupEnquiryStatusLabels,
 } from "./groupEnquiryAdminLogic";
+import { groupEnquiryCopy } from "./groupEnquiryCopy";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
 
 type GroupEnquiryListResponse = { enquiries: GroupEnquirySummary[]; total: number };
 
@@ -39,7 +39,14 @@ function statusClass(status: GroupEnquiryStatus) {
   return "bg-[var(--color-surface-offset)] text-[var(--color-panel)]";
 }
 
+/** Why the update of an enquiry failed: another staff member changed it first, or anything else. */
+function updateFailure(error: unknown): "conflict" | "failed" {
+  return (error as { status?: number } | null)?.status === 409 ? "conflict" : "failed";
+}
+
 export function GroupEnquiryManagement() {
+  const copy = useAdminCopy(groupEnquiryCopy);
+  const format = useAdminCopy(volunteerFormatCopy);
   const queryClient = useQueryClient();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<GroupEnquiryStatus | "all">("all");
@@ -87,7 +94,7 @@ export function GroupEnquiryManagement() {
   const columns: DataTableColumn<GroupEnquirySummary>[] = [
     {
       id: "organisation",
-      header: "團體",
+      header: copy.columns.organisation,
       cell: (row) => (
         <div>
           <button
@@ -103,15 +110,13 @@ export function GroupEnquiryManagement() {
     },
     {
       id: "activity",
-      header: "活動類型",
+      header: copy.columns.activity,
       cell: (row) => (
         <div className="text-sm">
-          <p className="text-[var(--color-panel)]">
-            {groupEnquiryActivityLabels[row.activityType]}
-          </p>
+          <p className="text-[var(--color-panel)]">{copy.activityTypes[row.activityType]}</p>
           {row.participantCount !== null ? (
             <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-              約 {row.participantCount} 人
+              {copy.about(row.participantCount)}
             </p>
           ) : null}
         </div>
@@ -119,16 +124,16 @@ export function GroupEnquiryManagement() {
     },
     {
       id: "status",
-      header: "狀態",
+      header: copy.columns.status,
       cell: (row) => (
         <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass(row.status)}`}>
-          {groupEnquiryStatusLabels[row.status]}
+          {copy.statuses[row.status]}
         </span>
       ),
     },
     {
       id: "notification",
-      header: "通知",
+      header: copy.columns.notification,
       cell: (row) => (
         <span
           className={`text-xs ${
@@ -137,16 +142,16 @@ export function GroupEnquiryManagement() {
               : "text-[var(--color-text-muted)]"
           }`}
         >
-          {groupEnquiryNotificationLabels[row.notificationStatus]}
+          {copy.notifications[row.notificationStatus]}
         </span>
       ),
     },
     {
       id: "created",
-      header: "查詢日期",
+      header: copy.columns.created,
       cell: (row) => (
         <span className="text-xs tabular-nums text-[var(--color-text-muted)]">
-          {new Date(row.createdAt).toLocaleDateString("zh-HK", { dateStyle: "medium" })}
+          {format.enquiryDate(row.createdAt)}
         </span>
       ),
     },
@@ -156,10 +161,8 @@ export function GroupEnquiryManagement() {
     <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">團體查詢</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            管理團體活動查詢、內部備註、狀態及失敗通知重試。
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
         <button
           type="button"
@@ -167,22 +170,26 @@ export function GroupEnquiryManagement() {
           className={`${buttonBase} min-h-11 border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-surface-offset)]`}
         >
           <RefreshCw className="h-4 w-4" />
-          重新整理
+          {copy.refresh}
         </button>
       </div>
 
       <div className="flex flex-wrap gap-3">
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-[var(--color-panel)]">搜尋</span>
+          <span className="text-xs font-semibold text-[var(--color-panel)]">
+            {copy.filters.search}
+          </span>
           <input
             value={q}
             onChange={(event) => applyFilter(() => setQ(event.target.value))}
-            placeholder="團體名稱或聯絡人"
+            placeholder={copy.filters.searchPlaceholder}
             className={inputClass}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-[var(--color-panel)]">狀態</span>
+          <span className="text-xs font-semibold text-[var(--color-panel)]">
+            {copy.filters.status}
+          </span>
           <select
             value={status}
             onChange={(event) =>
@@ -190,8 +197,8 @@ export function GroupEnquiryManagement() {
             }
             className={inputClass}
           >
-            <option value="all">全部狀態</option>
-            {Object.entries(groupEnquiryStatusLabels).map(([value, label]) => (
+            <option value="all">{copy.filters.allStatuses}</option>
+            {Object.entries(copy.statuses).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
@@ -206,7 +213,7 @@ export function GroupEnquiryManagement() {
           rows={enquiriesQuery.data?.enquiries ?? []}
           getRowKey={(row) => row.id}
           loading={enquiriesQuery.isLoading}
-          empty="沒有符合條件的團體查詢。"
+          empty={copy.empty}
           error={enquiriesQuery.error}
           onRetry={() => void enquiriesQuery.refetch()}
         />
@@ -216,7 +223,7 @@ export function GroupEnquiryManagement() {
           total={enquiriesQuery.data?.total}
           onPageChange={setPage}
           busy={enquiriesQuery.isFetching}
-          label="團體查詢"
+          label={copy.pagerLabel}
           failed={enquiriesQuery.isError}
         />
       </div>
@@ -228,13 +235,7 @@ export function GroupEnquiryManagement() {
           key={detail.id}
           detail={detail}
           pending={patch.isPending}
-          failed={
-            patch.isError
-              ? (patch.error as { status?: number } | null)?.status === 409
-                ? "資料已被其他職員更新，請重新整理頁面後再試。"
-                : "更新失敗，請稍後再試。"
-              : null
-          }
+          failed={patch.isError ? updateFailure(patch.error) : null}
           onPatch={(body) => patch.mutate(body)}
         />
       ) : null}
@@ -259,9 +260,10 @@ function EnquiryDetailPanel({
 }: {
   detail: GroupEnquiry;
   pending: boolean;
-  failed: string | null;
+  failed: "conflict" | "failed" | null;
   onPatch: (body: Record<string, unknown>) => void;
 }) {
+  const copy = useAdminCopy(groupEnquiryCopy);
   const [adminNotes, setAdminNotes] = useState(detail.adminNotes ?? "");
 
   return (
@@ -274,7 +276,7 @@ function EnquiryDetailPanel({
           </p>
         </div>
         <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass(detail.status)}`}>
-          {groupEnquiryStatusLabels[detail.status]}
+          {copy.statuses[detail.status]}
         </span>
       </div>
 
@@ -282,28 +284,30 @@ function EnquiryDetailPanel({
               the group actually asked for. */}
       <dl className="grid gap-3 text-sm sm:grid-cols-2">
         <div>
-          <dt className="text-xs text-[var(--color-text-muted)]">活動類型</dt>
+          <dt className="text-xs text-[var(--color-text-muted)]">{copy.detail.activityType}</dt>
           <dd className="text-[var(--color-panel)]">
-            {groupEnquiryActivityLabels[detail.activityType]}
-            {detail.otherActivityDescription ? `（${detail.otherActivityDescription}）` : ""}
+            {copy.activityTypes[detail.activityType]}
+            {detail.otherActivityDescription
+              ? copy.detail.otherDescription(detail.otherActivityDescription)
+              : ""}
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-[var(--color-text-muted)]">人數</dt>
+          <dt className="text-xs text-[var(--color-text-muted)]">{copy.detail.participants}</dt>
           <dd className="tabular-nums text-[var(--color-panel)]">
-            {detail.participantCount ?? "未提供"}
+            {detail.participantCount ?? copy.detail.notProvided}
             {detail.participantAgeProfile ? ` · ${detail.participantAgeProfile}` : ""}
           </dd>
         </div>
         {detail.preferredDateNotes ? (
           <div className="sm:col-span-2">
-            <dt className="text-xs text-[var(--color-text-muted)]">期望日期</dt>
+            <dt className="text-xs text-[var(--color-text-muted)]">{copy.detail.preferredDates}</dt>
             <dd className="text-[var(--color-panel)]">{detail.preferredDateNotes}</dd>
           </div>
         ) : null}
         {detail.message ? (
           <div className="sm:col-span-2">
-            <dt className="text-xs text-[var(--color-text-muted)]">查詢內容</dt>
+            <dt className="text-xs text-[var(--color-text-muted)]">{copy.detail.message}</dt>
             <dd className="whitespace-pre-wrap text-[var(--color-panel)]">{detail.message}</dd>
           </div>
         ) : null}
@@ -314,22 +318,22 @@ function EnquiryDetailPanel({
           role="alert"
           className="rounded-md border border-[var(--color-error)] bg-[var(--color-primary-highlight)] p-3 text-sm font-semibold text-[var(--color-error)]"
         >
-          通知發送失敗：{detail.notificationError ?? "未提供錯誤訊息"}
+          {copy.detail.notificationFailed(detail.notificationError)}
         </p>
       ) : null}
 
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold text-[var(--color-panel)]">內部備註</span>
+        <span className="text-xs font-semibold text-[var(--color-panel)]">{copy.detail.notes}</span>
         <textarea
           value={adminNotes}
           onChange={(event) => setAdminNotes(event.target.value)}
-          placeholder="只有職員看到，例如跟進安排或聯絡紀錄"
+          placeholder={copy.detail.notesPlaceholder}
           className="min-h-24 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
         />
       </label>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
-        <span className="text-xs text-[var(--color-text-muted)]">更新狀態並儲存備註：</span>
+        <span className="text-xs text-[var(--color-text-muted)]">{copy.detail.updateStatus}</span>
         {availableEnquiryTransitions(detail.status).map((next) => (
           <button
             key={next}
@@ -345,7 +349,7 @@ function EnquiryDetailPanel({
             }
             className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
           >
-            {groupEnquiryStatusLabels[next]}
+            {copy.statuses[next]}
           </button>
         ))}
         {detail.notificationStatus === "failed" ? (
@@ -356,13 +360,13 @@ function EnquiryDetailPanel({
             className={`${buttonBase} bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90`}
           >
             <Send className="h-3.5 w-3.5" />
-            重新發送通知
+            {copy.detail.resend}
           </button>
         ) : null}
       </div>
       {failed ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {failed}
+          {copy.updateErrors[failed]}
         </p>
       ) : null}
     </section>

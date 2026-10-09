@@ -1,3 +1,4 @@
+import { volunteerServerErrorText } from "./serverErrors";
 import type { SessionCoverage } from "./sessionCoverage";
 export type OverviewCounts = {
   pendingProfiles: number | null;
@@ -49,7 +50,10 @@ export function createOverviewHandler(
       const range = hongKongDayRange(snapshot);
       const centre = new URL(request.url).searchParams.get("centre") ?? "all";
       if (centre !== "all" && !/^[a-z][a-z0-9_-]{0,79}$/.test(centre))
-        return Response.json({ error: "服務地點無效" }, { status: 400, headers });
+        return Response.json(
+          { error: volunteerServerErrorText("overview_invalid_centre") },
+          { status: 400, headers },
+        );
       const [counts, coverage] = await Promise.all([
         deps.read(range),
         deps.readCoverage
@@ -66,7 +70,10 @@ export function createOverviewHandler(
           status: error.status,
           headers: { ...Object.fromEntries(error.headers), ...headers },
         });
-      return Response.json({ error: "未能載入營運總覽，請重試。" }, { status: 500, headers });
+      return Response.json(
+        { error: volunteerServerErrorText("overview_load_failed") },
+        { status: 500, headers },
+      );
     }
   };
 }

@@ -1,76 +1,28 @@
 import { WorkflowSections } from "./WorkflowSections";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSupabaseClient } from "../../../lib/supabase";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import { TurnstileWidget, turnstileEnabled } from "../../site/TurnstileWidget";
 import { VerifiedEmailSignIn, useCommandKey } from "../../site/volunteer/VerifiedEmailSignIn";
 import type { OperationCommand } from "../../../lib/volunteers/policy/operations";
-type Activity = {
-  id: string;
-  title: string;
-  starts_at: string;
-  capacity: number;
-  group_headcount: number;
-  roles: { key: string; label: string }[];
-};
-type Group = {
-  id: string;
-  activity_id: string;
-  headcount: number;
-  status: "pending" | "confirmed" | "cancelled";
-  revision: number;
-  contact_snapshot: {
-    organisation: string;
-    contact_name: string;
-    contact_email: string;
-    contact_phone: string;
-  };
-};
-type Registration = {
-  id: string;
-  activity_id: string;
-  contact_name: string;
-  status: string;
-  duty_role: string;
-  updated_at: string;
-};
-type Listing = {
-  staff: boolean;
-  activities: Activity[];
-  enquiries: {
-    id: string;
-    organisation: string;
-    contact_name: string;
-    participant_count: number | null;
-  }[];
-  requests: Group[];
-  registrations: Registration[];
-};
-type Preview = {
-  terms_version_id?: string;
-  destination_policy_version_id?: string;
-  terms_body?: string;
-  consent_required?: boolean;
-  preview_id: string;
-  apply_action: "group_apply" | "move_apply";
-  manifest: {
-    volunteer_capacity?: number;
-    group_headcount?: number;
-    scenario?: string;
-    capacity?: number;
-    remaining?: number;
-  };
-  late?: boolean;
-  contact_snapshot?: Group["contact_snapshot"];
-};
+import { useAdminLanguageOrDefault } from "../i18n/languageContext";
+import { pickAdminCopy } from "../i18n/copy";
+import { OperationPreview } from "./OperationPreview";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { volunteerOperationsCopy } from "./volunteerOperationsCopy";
+import type {
+  OperationGroup,
+  OperationListing,
+  OperationPreviewData,
+} from "./volunteerOperationsTypes";
+
 const input =
   "min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2";
 const button =
   "min-h-11 rounded-md border border-[var(--color-border)] px-4 py-2 font-semibold disabled:opacity-50";
-const time = (date: string) =>
-  new Date(date).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong", hour12: false });
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block space-y-1">
       <span className="text-sm font-semibold">{label}</span>
@@ -78,10 +30,26 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+
+/**
+ * What the notice under the heading says. The screen keeps a code, never a sentence, so a notice
+ * shown in Chinese reads in English after the language is changed.
+ */
+type Notice = "previewReady" | "requested" | "applied";
+
+/**
+ * This screen is also the public page for volunteers, so `publicMode` always shows Chinese; the
+ * admin shows the admin's language.
+ */
+function useOperationsLanguage(publicMode: boolean) {
+  const adminLanguage = useAdminLanguageOrDefault();
+  return publicMode ? "zh" : adminLanguage;
+}
+
 export function VolunteerOperations({ publicMode = false }: { publicMode?: boolean }) {
+  const language = useOperationsLanguage(publicMode);
+  const copy = pickAdminCopy(volunteerOperationsCopy, language);
   const [session, setSession] = useState<{ token: string; userId: string }>();
-  const qc = useQueryClient();
-  const commandKey = useCommandKey();
   useEffect(() => {
     const client = getSupabaseClient();
     void client.auth
@@ -98,11 +66,34 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
     );
     return () => data.subscription.unsubscribe();
   }, []);
+  if (!session)
+    return (
+      <div className="space-y-4 p-4">
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        {publicMode ? <VerifiedEmailSignIn /> : <p role="status">{copy.checkingSignIn}</p>}
+      </div>
+    );
+  return <OperationsWorkspace publicMode={publicMode} userId={session.userId} />;
+}
+
+/** The signed-in screen: the group requests, the rescheduling and the impact preview. */
+export function OperationsWorkspace({
+  publicMode = false,
+  userId,
+}: {
+  publicMode?: boolean;
+  userId: string;
+}) {
+  const language = useOperationsLanguage(publicMode);
+  const copy = pickAdminCopy(volunteerOperationsCopy, language);
+  const format = pickAdminCopy(volunteerFormatCopy, language);
+  const qc = useQueryClient();
+  const commandKey = useCommandKey();
   const [captcha, setCaptcha] = useState("");
   const [reset, setReset] = useState(0);
-  const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [destinationAccepted, setDestinationAccepted] = useState(false);
-  const [preview, setPreview] = useState<Preview>();
+  const [preview, setPreview] = useState<OperationPreviewData>();
   const [reason, setReason] = useState("");
   const [enquiryId, setEnquiryId] = useState("");
   const [activityId, setActivityId] = useState("");
@@ -123,9 +114,8 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
       ),
     });
   const listing = useQuery({
-    queryKey: ["volunteer-operations", publicMode, session?.userId],
-    enabled: !!session,
-    queryFn: () => api<Listing>({ action: "list" }),
+    queryKey: ["volunteer-operations", publicMode, userId],
+    queryFn: () => api<OperationListing>({ action: "list" }),
   });
   const data = listing.data;
   const mutate = useMutation({
@@ -137,9 +127,9 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
         terms_body?: string;
         consent_required?: boolean;
         preview_id?: string;
-        manifest?: Preview["manifest"];
+        manifest?: OperationPreviewData["manifest"];
         late?: boolean;
-        contact_snapshot?: Group["contact_snapshot"];
+        contact_snapshot?: OperationGroup["contact_snapshot"];
       }>(command),
     onSuccess: (result, command) => {
       if (result.kind === "preview" && result.preview_id) {
@@ -155,14 +145,10 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
           late: result.late,
           contact_snapshot: result.contact_snapshot,
         });
-        setMessage("預覽完成；請核對下方資料後確認。");
+        setNotice("previewReady");
       } else {
         setPreview(undefined);
-        setMessage(
-          result.kind === "requested"
-            ? "團體申請已建立，尚未計入已確認人數。"
-            : "變更已完成，名單及場次資料已更新。",
-        );
+        setNotice(result.kind === "requested" ? "requested" : "applied");
         void qc.invalidateQueries({ queryKey: ["volunteer-operations"] });
         void qc.invalidateQueries({ queryKey: ["volunteer-calendar"] });
         void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
@@ -185,50 +171,46 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
   const destination = data?.activities.find((a) => a.id === destinationId);
   const busy = mutate.isPending;
   const protectedReady = !publicMode || !turnstileEnabled || !!captcha;
-  const error = listing.error ?? mutate.error;
+  const failure = listing.error ?? mutate.error;
   const activityLabel = (id: string) => {
     const a = data?.activities.find((a) => a.id === id);
-    return a ? `${a.title} · ${time(a.starts_at)}` : "原場次";
+    return a ? `${a.title} · ${format.operationsTime(a.starts_at)}` : copy.records.originalSession;
   };
-  if (!session)
-    return (
-      <div className="space-y-4 p-4">
-        <h1 className="text-2xl font-bold">團體申請及義工改期</h1>
-        <VerifiedEmailSignIn />
-      </div>
-    );
   return (
     <div className="space-y-6 p-4 md:p-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold">團體申請及義工改期</h1>
-        <p>所有時間為香港時間。團體查詢不等於已確認團體；確認及改期均重新檢查當前政策和名單。</p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p>{copy.intro}</p>
         <a className="underline" href={publicMode ? "/volunteer" : "/admin/volunteers/calendar"}>
-          {publicMode ? "返回義工服務" : "返回義工月曆"}
+          {publicMode ? copy.backPublic : copy.backAdmin}
         </a>
       </header>
       <WorkflowSections
+        label={copy.stepsLabel}
         sections={[
-          { id: "operations-create", label: "團體加入場次" },
-          { id: "operations-records", label: "團體記錄" },
-          { id: "operations-reschedule", label: "個人改期" },
+          { id: "operations-create", label: copy.steps.create },
+          { id: "operations-records", label: copy.steps.records },
+          { id: "operations-reschedule", label: copy.steps.reschedule },
         ]}
       />
-      {listing.isLoading && <p>讀取資料中…</p>}
-      {error && (
-        <p role="alert">{error instanceof Error ? error.message : "操作未完成，請重新檢查。"}</p>
+      {listing.isLoading && <p>{copy.loading}</p>}
+      {failure && (
+        <p role="alert">
+          {failure instanceof Error ? volunteerAdminErrorMessage(failure, language) : copy.notDone}
+        </p>
       )}
-      {message && <p role="status">{message}</p>}
+      {notice && <p role="status">{copy.notices[notice]}</p>}
       {data && (
         <>
           <section className="space-y-4 rounded-lg border p-4">
             <h2 id="operations-create" className="text-lg font-bold">
-              把團體查詢加入指定場次
+              {copy.create.title}
             </h2>
-            <p className="text-sm">我們會保存本次提交的聯絡資料。提交後仍待職員核實。</p>
+            <p className="text-sm">{copy.create.note}</p>
             <div className="grid gap-4 md:grid-cols-3">
-              <Field label="已有團體查詢">
+              <Field label={copy.create.enquiry}>
                 <select
-                  aria-label="已有團體查詢"
+                  aria-label={copy.create.enquiry}
                   className={input}
                   value={enquiryId}
                   onChange={(e) => {
@@ -238,7 +220,7 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                     );
                   }}
                 >
-                  <option value="">請選擇</option>
+                  <option value="">{copy.create.choose}</option>
                   {data.enquiries.map((e) => (
                     <option key={e.id} value={e.id}>
                       {e.organisation} · {e.contact_name}
@@ -246,22 +228,22 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                   ))}
                 </select>
               </Field>
-              <Field label="希望參加的場次">
+              <Field label={copy.create.session}>
                 <select
-                  aria-label="希望參加的場次"
+                  aria-label={copy.create.session}
                   className={input}
                   value={activityId}
                   onChange={(e) => setActivityId(e.target.value)}
                 >
-                  <option value="">請選擇</option>
+                  <option value="">{copy.create.choose}</option>
                   {data.activities.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.title} · {time(a.starts_at)}
+                      {a.title} · {format.operationsTime(a.starts_at)}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field label="團體人數">
+              <Field label={copy.create.size}>
                 <input
                   className={input}
                   type="number"
@@ -285,32 +267,33 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                 mutate.mutate({ ...body, idempotency_key: commandKey(body) });
               }}
             >
-              提交待確認團體
+              {copy.create.submit}
             </button>
-            {data.enquiries.length === 0 && (
-              <p>未有與此已驗證電郵相符的團體查詢。請先提交團體查詢，或聯絡職員協助。</p>
-            )}
+            {data.enquiries.length === 0 && <p>{copy.create.noEnquiries}</p>}
           </section>
           <section className="space-y-3 rounded-lg border p-4">
             <h2 id="operations-records" className="text-lg font-bold">
-              團體申請記錄
+              {copy.records.title}
             </h2>
             {data.requests.map((r) => (
               <p key={r.id}>
-                {r.contact_snapshot.organisation} · {r.headcount} 人 ·{" "}
-                {{ pending: "待確認", confirmed: "已確認", cancelled: "已取消" }[r.status]} ·{" "}
-                {activityLabel(r.activity_id)}
+                {copy.records.line(
+                  r.contact_snapshot.organisation,
+                  r.headcount,
+                  copy.records.statuses[r.status],
+                  activityLabel(r.activity_id),
+                )}
               </p>
             ))}
-            {data.requests.length === 0 && <p>尚未有團體申請。</p>}
+            {data.requests.length === 0 && <p>{copy.records.none}</p>}
           </section>
           {data.staff && !publicMode && (
             <section className="space-y-4 rounded-lg border p-4">
-              <h2 className="text-lg font-bold">確認團體、調整人數或取消</h2>
+              <h2 className="text-lg font-bold">{copy.staff.title}</h2>
               <div className="grid gap-4 md:grid-cols-3">
-                <Field label="團體申請">
+                <Field label={copy.staff.request}>
                   <select
-                    aria-label="團體申請"
+                    aria-label={copy.staff.request}
                     className={input}
                     value={requestId}
                     onChange={(e) => {
@@ -320,7 +303,7 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                       );
                     }}
                   >
-                    <option value="">請選擇</option>
+                    <option value="">{copy.create.choose}</option>
                     {data.requests
                       .filter((r) => r.status !== "cancelled")
                       .map((r) => (
@@ -330,20 +313,20 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                       ))}
                   </select>
                 </Field>
-                <Field label="操作">
+                <Field label={copy.staff.action}>
                   <select
-                    aria-label="操作"
+                    aria-label={copy.staff.action}
                     className={input}
                     value={operation}
                     onChange={(e) =>
                       setOperation(e.target.value === "cancel" ? "cancel" : "confirm")
                     }
                   >
-                    <option value="confirm">確認／調整人數</option>
-                    <option value="cancel">取消團體</option>
+                    <option value="confirm">{copy.staff.confirm}</option>
+                    <option value="cancel">{copy.staff.cancel}</option>
                   </select>
                 </Field>
-                <Field label="確認人數">
+                <Field label={copy.staff.size}>
                   <input
                     className={input}
                     type="number"
@@ -360,7 +343,7 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                   checked={lateAck}
                   onChange={(e) => setLateAck(e.target.checked)}
                 />
-                如已過團體凍結截點，確認已人工核對此臨時變更
+                {copy.staff.lateAck}
               </label>
               <button
                 className={button}
@@ -377,26 +360,24 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                   })
                 }
               >
-                預覽團體影響
+                {copy.staff.preview}
               </button>
             </section>
           )}
           <section className="space-y-4 rounded-lg border p-4">
             <h2 id="operations-reschedule" className="text-lg font-bold">
-              義工改期
+              {copy.reschedule.title}
             </h2>
-            <p className="text-sm">
-              確認改期前會保留原有預約。我們會再次核對目的場次的資格、名額及條款；未能改期時，原有預約不受影響。
-            </p>
+            <p className="text-sm">{copy.reschedule.note}</p>
             <div className="grid gap-4 md:grid-cols-3">
-              <Field label="現有報名">
+              <Field label={copy.reschedule.registration}>
                 <select
-                  aria-label="現有報名"
+                  aria-label={copy.reschedule.registration}
                   className={input}
                   value={registrationId}
                   onChange={(e) => setRegistrationId(e.target.value)}
                 >
-                  <option value="">請選擇</option>
+                  <option value="">{copy.create.choose}</option>
                   {data.registrations.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.contact_name} · {activityLabel(r.activity_id)}
@@ -404,9 +385,9 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                   ))}
                 </select>
               </Field>
-              <Field label="目的場次">
+              <Field label={copy.reschedule.destination}>
                 <select
-                  aria-label="目的場次"
+                  aria-label={copy.reschedule.destination}
                   className={input}
                   value={destinationId}
                   onChange={(e) => {
@@ -417,19 +398,19 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                     );
                   }}
                 >
-                  <option value="">請選擇</option>
+                  <option value="">{copy.create.choose}</option>
                   {data.activities
                     .filter((a) => a.id !== registration?.activity_id)
                     .map((a) => (
                       <option key={a.id} value={a.id}>
-                        {a.title} · {time(a.starts_at)}
+                        {a.title} · {format.operationsTime(a.starts_at)}
                       </option>
                     ))}
                 </select>
               </Field>
-              <Field label="目的職務">
+              <Field label={copy.reschedule.role}>
                 <select
-                  aria-label="目的職務"
+                  aria-label={copy.reschedule.role}
                   className={input}
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
@@ -456,100 +437,43 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                 })
               }
             >
-              預覽改期影響
+              {copy.reschedule.preview}
             </button>
           </section>
           {preview && (
-            <section className="space-y-4 rounded-lg border p-4">
-              <h2 className="text-lg font-bold">確認此變更</h2>
-              {preview.apply_action === "group_apply" ? (
-                <>
-                  <p>
-                    團體總人數：{preview.manifest.group_headcount}；可供義工使用的總位：
-                    {preview.manifest.volunteer_capacity}；情況：
-                    {preview.manifest.scenario === "confirmed_group" ? "A 有團體" : "B 無團體"}。
-                  </p>
-                  {preview.contact_snapshot && (
-                    <p>
-                      {preview.contact_snapshot.organisation} ·{" "}
-                      {preview.contact_snapshot.contact_name} ·{" "}
-                      {preview.contact_snapshot.contact_phone}
-                    </p>
-                  )}
-                  {preview.late && <p>這是凍結截點後的人工核對變更。</p>}
-                </>
-              ) : (
-                <p>
-                  目的場次總位 {preview.manifest.capacity}，目前剩餘 {preview.manifest.remaining}
-                  。確認前伺服器會再次檢查。
-                </p>
+            <OperationPreview
+              preview={preview}
+              copy={copy.preview}
+              publicMode={publicMode}
+              destinationAccepted={destinationAccepted}
+              onAccept={setDestinationAccepted}
+              reason={reason}
+              onReason={setReason}
+              applyDisabled={Boolean(
+                !reason.trim() ||
+                busy ||
+                !protectedReady ||
+                (preview.apply_action === "move_apply" &&
+                  (publicMode ? !destinationAccepted : preview.consent_required)),
               )}
-              {preview.apply_action === "move_apply" && (
-                <div className="space-y-3">
-                  <h3>目的場次條款</h3>
-                  <div
-                    className="max-h-64 overflow-auto whitespace-pre-wrap rounded border p-3"
-                    tabIndex={0}
-                  >
-                    {preview.terms_body}
-                  </div>
-                  {publicMode ? (
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={destinationAccepted}
-                        onChange={(event) => setDestinationAccepted(event.target.checked)}
-                      />
-                      我已閱讀並同意目的場次條款
-                    </label>
-                  ) : (
-                    preview.consent_required && (
-                      <p role="alert">
-                        請義工本人登入改期頁面閱讀及同意目的場次條款，職員不能代為同意。
-                      </p>
-                    )
-                  )}
-                </div>
-              )}
-              <Field label="變更原因">
-                <textarea
-                  aria-label="變更原因"
-                  className={input}
-                  maxLength={1000}
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                />
-              </Field>
-              <button
-                className={button}
-                disabled={
-                  !reason.trim() ||
-                  busy ||
-                  !protectedReady ||
-                  (preview.apply_action === "move_apply" &&
-                    (publicMode ? !destinationAccepted : preview.consent_required))
-                }
-                onClick={() => {
-                  const body = {
-                    action: preview.apply_action,
-                    preview_id: preview.preview_id,
-                    reason,
-                    ...(preview.apply_action === "move_apply"
-                      ? {
-                          destination_policy_version_id: preview.destination_policy_version_id,
-                          terms_version_id: preview.terms_version_id,
-                          ...(publicMode && destinationAccepted
-                            ? { accept_terms: true as const }
-                            : {}),
-                        }
-                      : {}),
-                  };
-                  mutate.mutate({ ...body, idempotency_key: commandKey(body) });
-                }}
-              >
-                確認套用變更
-              </button>
-            </section>
+              onApply={() => {
+                const body = {
+                  action: preview.apply_action,
+                  preview_id: preview.preview_id,
+                  reason,
+                  ...(preview.apply_action === "move_apply"
+                    ? {
+                        destination_policy_version_id: preview.destination_policy_version_id,
+                        terms_version_id: preview.terms_version_id,
+                        ...(publicMode && destinationAccepted
+                          ? { accept_terms: true as const }
+                          : {}),
+                      }
+                    : {}),
+                };
+                mutate.mutate({ ...body, idempotency_key: commandKey(body) });
+              }}
+            />
           )}
         </>
       )}

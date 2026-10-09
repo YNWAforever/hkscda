@@ -16,10 +16,7 @@ function PeoplePage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   if (pathname.replace(/\/$/, "") !== "/admin/volunteers/people") return <Outlet />;
   return (
-    <VolunteerAdminShell
-      title="義工名冊"
-      description="查找義工身份、核實資格，並查看報名與服務紀錄。"
-    >
+    <VolunteerAdminShell intro="people">
       <VolunteerDirectory search={search} />
     </VolunteerAdminShell>
   );

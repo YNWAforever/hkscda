@@ -6,10 +6,12 @@ import {
   buildRegistrationSearchParams,
   canMarkAttendance,
   isDestructiveTransition,
-  registrationStatusLabels,
   summarizeActivityCapacity,
   volunteerStatusTone,
 } from "./volunteerAdminLogic";
+import { volunteerRegistrationStatusLabelsFor } from "../../../lib/volunteers/labels";
+
+const registrationStatusLabels = volunteerRegistrationStatusLabelsFor("zh");
 
 describe("volunteer admin logic", () => {
   test("builds bounded activity search params", () => {

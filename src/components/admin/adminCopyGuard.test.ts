@@ -18,38 +18,15 @@ import { findChineseRuns } from "./i18n/testing";
  */
 
 export const ADMIN_COPY_PENDING: readonly string[] = [
-  "src/components/admin/VolunteerAdminShell.tsx",
-  "src/components/admin/volunteerWorkspace.ts",
-  "src/components/admin/volunteers/ActivitySchedule.tsx",
-  "src/components/admin/volunteers/GroupEnquiryManagement.tsx",
   "src/components/admin/volunteers/PolicyAdvancedFields.tsx",
   "src/components/admin/volunteers/PolicyChangeSummary.tsx",
   "src/components/admin/volunteers/PolicySourceFields.tsx",
-  "src/components/admin/volunteers/QualificationProfileSearch.tsx",
-  "src/components/admin/volunteers/VolunteerActivityWorkspace.tsx",
   "src/components/admin/volunteers/VolunteerDailySettings.tsx",
-  "src/components/admin/volunteers/VolunteerDirectory.tsx",
-  "src/components/admin/volunteers/VolunteerDraftForm.tsx",
-  "src/components/admin/volunteers/VolunteerLegacyReconciliation.tsx",
-  "src/components/admin/volunteers/VolunteerManagement.tsx",
-  "src/components/admin/volunteers/VolunteerOperations.tsx",
-  "src/components/admin/volunteers/VolunteerOverview.tsx",
-  "src/components/admin/volunteers/VolunteerPersonDetail.tsx",
   "src/components/admin/volunteers/VolunteerPolicySettings.tsx",
   "src/components/admin/volunteers/VolunteerPolicySimulation.tsx",
   "src/components/admin/volunteers/VolunteerPolicySources.tsx",
   "src/components/admin/volunteers/VolunteerQualifications.tsx",
-  "src/components/admin/volunteers/VolunteerRegistrationDetail.tsx",
-  "src/components/admin/volunteers/VolunteerReviewBulkPanel.tsx",
-  "src/components/admin/volunteers/VolunteerTasks.tsx",
-  "src/components/admin/volunteers/WorkflowSections.tsx",
-  "src/components/admin/volunteers/directorySearch.ts",
-  "src/components/admin/volunteers/groupEnquiryAdminLogic.ts",
-  "src/components/admin/volunteers/useUnsavedVolunteerDraft.ts",
-  "src/components/admin/volunteers/volunteerAdminLogic.ts",
   "src/routes/admin/volunteers/assessments.tsx",
-  "src/routes/admin/volunteers/people.tsx",
-  "src/routes/admin/volunteers/people/$id.tsx",
 ];
 
 const EXEMPTION_MARKER = /admin-copy-exempt:\s*\S/;

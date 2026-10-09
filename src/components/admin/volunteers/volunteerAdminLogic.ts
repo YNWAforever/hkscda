@@ -1,12 +1,9 @@
-import { volunteerRegistrationStatusLabels } from "../../../lib/volunteers/labels";
-
 import type {
   VolunteerActivityStatus,
   VolunteerActivitySummary,
   VolunteerActivityType,
   VolunteerAttendanceStatus,
   VolunteerRegistrationStatus,
-  VolunteerRegistrationType,
 } from "../../../lib/volunteers/types";
 
 export const VOLUNTEER_ADMIN_PAGE_SIZE = 25;
@@ -31,38 +28,15 @@ function addTrimmed(params: URLSearchParams, key: string, value: string) {
   if (trimmed) params.set(key, trimmed);
 }
 
-export const registrationStatusLabels = volunteerRegistrationStatusLabels;
-
-export const attendanceStatusLabels: Record<VolunteerAttendanceStatus, string> = {
-  not_marked: "未記錄",
-  attended: "已出席",
-  completed: "已完成",
-  no_show: "缺席",
-};
-
-export const registrationTypeLabels: Record<VolunteerRegistrationType, string> = {
-  individual: "個人",
-  group: "團體",
-};
-
-export const activityStatusLabels: Record<VolunteerActivityStatus, string> = {
-  draft: "草稿",
-  published: "已發布",
-  closed: "已關閉",
-  cancelled: "已取消",
-};
-
-export const activityTypeLabels: Record<VolunteerActivityType, string> = {
-  volunteer_shift: "義工時段",
-  group_activity: "團體活動",
-  cleaning_day: "清潔日",
-};
+// The labels of the registration statuses are in `lib/volunteers/labels`, and those of the attendance
+// statuses, registration types, activity statuses and activity types are in `volunteerCommonCopy`, so
+// they can be shown in either language.
 
 /**
  * Status transitions worth offering from the registration's current state.
  *
- * The old UI rendered all three buttons unconditionally, so "批准" showed on an
- * already-approved row and "拒絕" showed on one the volunteer had themselves
+ * The old UI rendered all three buttons unconditionally, so "approve" showed on an
+ * already-approved row and "reject" showed on one the volunteer had themselves
  * cancelled. Offering a transition that is a no-op — or that silently overrides
  * the volunteer's own decision — is what made the action bar unreadable.
  */

@@ -113,28 +113,42 @@ other way round.
 
 ## Volunteers and internships
 
-| zh-HK    | English        | Usage                                                                                            |
-| -------- | -------------- | ------------------------------------------------------------------------------------------------ |
-| 活動     | activity       | A volunteer activity. It has sessions.                                                           |
-| 場次     | session        | One scheduled time of an activity.                                                               |
-| 場地     | venue          | Where an activity takes place.                                                                   |
-| 報名     | registration   | A person's sign-up for a session. The verb is "register".                                        |
-| 出席     | attendance     | Whether a registered person came.                                                                |
-| 名額     | places         | The number of spaces in a session. 義工名額 is "volunteer places".                               |
-| 配額     | quota          | A limit set by policy for a tier or a day. 全日配額 is "Daily quota".                            |
-| 補位     | late release   | Rules that open unfilled places to other tiers close to the start. 晚期補位 is "Late release".   |
-| 級別     | tier           | A volunteer's level: newcomer, regular or senior.                                                |
-| 新手     | newcomer       | Tier `newcomer`.                                                                                 |
-| 恆常     | regular        | Tier `regular`. One screen says 普通 for the same tier; the English is still "regular".          |
-| 資深     | senior         | Tier `senior`.                                                                                   |
-| 資格     | qualification  | A recorded permission or certificate to do a duty.                                               |
-| 評核     | assessment     | The monthly review that can change a volunteer's tier.                                           |
-| 職務     | volunteer role | A duty in a session, such as 職務名額 "volunteer role places". Not the staff access role (角色). |
-| 政策     | policy         | The rules for sessions, quotas and tiers. 義工政策設定 is "Volunteer policy settings".           |
-| 團體查詢 | group enquiry  | An enquiry from a group that wants to volunteer together.                                        |
-| 模擬     | simulation     | Tries a scenario without publishing or changing the policy.                                      |
-| 收生     | intake         | Opening and closing internship applications. 收生設定 is "intake settings".                      |
-| 貓舍     | cat shelter    | A venue for an internship (服務場地 is "Venues"). 狗舍 is "dog shelter".                         |
+| zh-HK    | English               | Usage                                                                                                  |
+| -------- | --------------------- | ------------------------------------------------------------------------------------------------------ |
+| 活動     | activity              | A volunteer activity. It has sessions.                                                                 |
+| 場次     | session               | One scheduled time of an activity.                                                                     |
+| 場地     | venue                 | Where an activity takes place.                                                                         |
+| 報名     | registration          | A person's sign-up for a session. The verb is "register".                                              |
+| 出席     | attendance            | Whether a registered person came.                                                                      |
+| 名額     | places                | The number of spaces in a session. 義工名額 is "volunteer places".                                     |
+| 配額     | quota                 | A limit set by policy for a tier or a day. 全日配額 is "Daily quota".                                  |
+| 補位     | late release          | Rules that open unfilled places to other tiers close to the start. 晚期補位 is "Late release".         |
+| 級別     | tier                  | A volunteer's level: newcomer, regular or senior.                                                      |
+| 新手     | newcomer              | Tier `newcomer`.                                                                                       |
+| 恆常     | regular               | Tier `regular`. One screen says 普通 for the same tier; the English is still "regular".                |
+| 資深     | senior                | Tier `senior`.                                                                                         |
+| 資格     | qualification         | A recorded permission or certificate to do a duty.                                                     |
+| 評核     | assessment            | The monthly review that can change a volunteer's tier.                                                 |
+| 職務     | volunteer role        | A duty in a session, such as 職務名額 "volunteer role places". Not the staff access role (角色).       |
+| 政策     | policy                | The rules for sessions, quotas and tiers. 義工政策設定 is "Volunteer policy settings".                 |
+| 團體查詢 | group enquiry         | An enquiry from a group that wants to volunteer together.                                              |
+| 模擬     | simulation            | Tries a scenario without publishing or changing the policy.                                            |
+| 收生     | intake                | Opening and closing internship applications. 收生設定 is "intake settings".                            |
+| 貓舍     | cat shelter           | A venue for an internship (服務場地 is "Venues"). 狗舍 is "dog shelter".                               |
+| 名冊     | directory             | 義工名冊 is "Volunteer directory": every volunteer profile, registered for a session or not.           |
+| 身份     | profile               | A volunteer's identity record: 義工身份 is "volunteer profile". Not the supporter 身份, "role".        |
+| 身份核實 | identity verification | Staff confirm a profile against evidence. 待核實 is "Awaiting verification".                           |
+| 覆蓋     | coverage              | Whether the sessions the approved policy calls for exist. 應開場次 is "scheduled sessions".            |
+| 休息日   | rest day              | A day when no service runs.                                                                            |
+| 候補     | waitlist              | 候補中 is "Waitlisted". 補位聯絡 is "waitlist contact": telling a waitlisted volunteer a place opened. |
+| 組       | batch                 | One transaction of a bulk operation on sessions. A group of people is 團體, "group".                   |
+| 鎖定     | lock                  | Fix a selection of sessions so that sessions added later do not join it.                               |
+| 改期     | reschedule            | Move a registration to another session. 團體安排與改期 is "Group arrangements and rescheduling".       |
+| 條款     | terms                 | The terms a volunteer agrees to for a session.                                                         |
+| 凍結截點 | freeze cut-off        | The time after which a group's size is fixed. A later change is a "late change".                       |
+| 出席事實 | attendance record     | A recorded fact of whether and how long someone served. 出席更正 is "attendance correction".           |
+| 服務時數 | service hours         | The hours a volunteer served, only as recorded.                                                        |
+| 收容所   | shelter               | A session's venue key: cat shelter, dog shelter or adoption day (領養日).                              |
 
 ## Content and publishing
 

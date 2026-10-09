@@ -26,5 +26,6 @@ export function directoryQuery(search: DirectorySearch) {
   if (search.tier) params.set("tier", search.tier);
   return params.toString();
 }
-export const directoryTiers = { newcomer: "新手義工", regular: "恆常義工", senior: "資深義工" };
-export const directoryStatuses = { pending: "待核實", active: "已啟用", suspended: "已暫停" };
+/** The values a directory filter can take, in the order the selects list them. */
+export const directoryTierValues = ["newcomer", "regular", "senior"] as const;
+export const directoryStatusValues = ["pending", "active", "suspended"] as const;

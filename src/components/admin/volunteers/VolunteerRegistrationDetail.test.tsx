@@ -1,7 +1,11 @@
 import { expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 import type { ReactNode } from "react";
-import { attendanceStatusLabels, registrationStatusLabels } from "./volunteerAdminLogic";
+import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
+
+// The Chinese buttons are labelled with a status, so the status labels name the buttons.
+const registrationStatusLabels = volunteerRegistrationCopy.zh.transitions;
+const attendanceStatusLabels = volunteerRegistrationCopy.zh.attendanceActions;
 const query = await import("@tanstack/react-query");
 const router = await import("@tanstack/react-router");
 const mutations: Array<{
@@ -66,7 +70,7 @@ test("status callback sends reviewed version and refreshes capacity after a reje
   mutations.length = 0;
   requests.length = 0;
   invalidated.length = 0;
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).toContain('role="alert"');
@@ -87,7 +91,7 @@ test("shows a retry control instead of reporting a load failure as a deleted reg
   // and a genuinely deleted registration both read as "找不到義工報名。",
   // with no way to retry either way.
   registrationError = new Error("boom");
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).toContain("無法載入");
@@ -101,7 +105,7 @@ test("attendance callback carries reviewed version and exposes factual correctio
   requests.length = 0;
   registration.status = "approved";
   registration.attendanceStatus = "attended";
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).toContain("更正出席事實");
@@ -118,7 +122,7 @@ test("attendance callback carries reviewed version and exposes factual correctio
 test("pending registration offers only valid localized status actions", () => {
   registration.status = "pending";
   registration.attendanceStatus = "not_marked";
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).toContain(">" + registrationStatusLabels.approved + "</button>");
@@ -132,7 +136,7 @@ test("pending registration offers only valid localized status actions", () => {
 test("approved registration offers factual attendance after the activity ends", () => {
   registration.status = "approved";
   registration.attendanceStatus = "not_marked";
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).toContain(">" + attendanceStatusLabels.attended + "</button>");
@@ -146,7 +150,7 @@ test("approved registration offers factual attendance after the activity ends", 
 test("cancelled registration has no staff transition or attendance action", () => {
   registration.status = "cancelled";
   registration.attendanceStatus = "not_marked";
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).not.toContain(">" + registrationStatusLabels.approved + "</button>");
@@ -161,7 +165,7 @@ test("approved future booking cannot be marked attended early", () => {
   const previousEnd = registration.activity.endsAt;
   registration.activity.startsAt = "2099-01-01T00:00:00Z";
   registration.activity.endsAt = "2099-01-01T02:00:00Z";
-  const markup = renderToStaticMarkup(
+  const markup = renderAdminInChinese(
     <VolunteerRegistrationDetail registrationId="registration-1" />,
   );
   expect(markup).not.toContain(">" + attendanceStatusLabels.attended + "</button>");
