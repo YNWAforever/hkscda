@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { AdoptionGuideReleaseManagement } from "../../../components/admin/content/AdoptionGuideReleaseManagement";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
@@ -17,5 +18,9 @@ export const Route = createFileRoute("/admin/content/adoption-guides")({
 
 function AdminAdoptionGuideReleasesPage() {
   const { releaseId } = Route.useSearch();
-  return <AdoptionGuideReleaseManagement initialReleaseId={releaseId} />;
+  return (
+    <AdminLayout activeSection="content">
+      <AdoptionGuideReleaseManagement initialReleaseId={releaseId} />
+    </AdminLayout>
+  );
 }
