@@ -280,12 +280,7 @@ function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: Adop
           >
             {copy.leave.discard}
           </Button>
-          <Button
-            variant="outline"
-            type="button"
-            disabled={leaving}
-            onClick={() => void decideLeave("save")}
-          >
+          <Button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
             {copy.leave.save}
           </Button>
         </AlertDialogFooter>
@@ -677,12 +672,7 @@ function FeeEditor({
           >
             <ChevronDown className="h-4 w-4" /> {copy.moveDown}
           </Button>
-          <Button
-            variant="outline"
-            type="button"
-            disabled={pending || conflict}
-            onClick={() => void save()}
-          >
+          <Button type="button" disabled={pending || conflict} onClick={() => void save()}>
             {copy.save}
           </Button>
         </div>
@@ -841,7 +831,6 @@ export function EstateEditor({
       </div>
       <div className="flex flex-wrap gap-2">
         <Button
-          variant="outline"
           type="button"
           disabled={pending || conflict || !draft.estateName.trim() || !draft.district.trim()}
           onClick={() => void save()}

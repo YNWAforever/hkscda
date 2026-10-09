@@ -190,18 +190,9 @@ const ALERT_SITES: TagSite[] = [
   { file: `${ADMIN}access/AccessManagement.tsx`, after: /\{error && \(\s*/ },
   { file: `${ADMIN}content/NotificationDraftPanel.tsx`, before: /common\.clipboardFailed\(/ },
   { file: `${ADMIN}content/SocialCopyPanel.tsx`, before: /common\.clipboardFailed\(/ },
-  { file: `${ADMIN}volunteers/VolunteerPolicySettings.tsx`, before: /copy\.publish\.issueLine\(/ },
   {
-    file: `${ADMIN}content/AdoptionGuideReleaseManagement.tsx`,
-    before: /copy\.blockers\[workflow\.blocker\]/,
-  },
-  {
-    file: `${ADMIN}content/AdoptionGuideReleaseManagement.tsx`,
-    before: /\{issue\.message\}\s*<\/p>/,
-  },
-  {
-    file: `${ADMIN}content/AdoptionGuideReleaseManagement.tsx`,
-    after: /readiness && !readiness\.ready \? \(\s*/,
+    file: `${ADMIN}volunteers/VolunteerPolicySettings.tsx`,
+    after: /\{preview\.issues\.length > 0 && \(\s*/,
   },
   {
     file: `${ADMIN}content/ContentEditor.tsx`,
@@ -210,7 +201,7 @@ const ALERT_SITES: TagSite[] = [
 ];
 
 const STATUS_SITES: TagSite[] = [
-  { file: `${ADMIN}AnimalForm.tsx`, after: /message\?\.tone === "status" && \(\s*/ },
+  { file: `${ADMIN}AnimalForm.tsx`, before: /message\?\.tone === "status" \? message\.text/ },
 ];
 
 describe("announcements on the admin screens", () => {
@@ -318,5 +309,98 @@ describe("focusPageHeading", () => {
   test("does nothing and reports it when the page has no h1", () => {
     const { doc } = fakeDocument(null);
     expect(focusPageHeading(doc)).toBe(false);
+  });
+});
+
+describe("fix round 1", () => {
+  test("adoption guide readiness is a polite status, never an alert", async () => {
+    const path = `${ADMIN}content/AdoptionGuideReleaseManagement.tsx`;
+    const source = await Bun.file(path).text();
+    const from = source.indexOf("copy.sections.preview");
+    const previewSection = source.slice(from, source.indexOf("</EditorSection>", from));
+    expect(previewSection).not.toContain('role="alert"');
+    const editorSection = source.slice(source.indexOf("function EditorSection"));
+    expect(editorSection.slice(0, editorSection.indexOf("</section>"))).not.toContain(
+      'role="alert"',
+    );
+    const wrapper = await tagAt({ file: path, before: /readiness && !readiness\.ready \? \(/ });
+    expect(wrapper).toContain('role="status"');
+    const list = await tagAt({ file: path, after: /readiness && !readiness\.ready \? \(\s*/ });
+    expect(list).toStartWith("<ul");
+    expect(list).not.toContain("role=");
+    // The blocker and the summary list sit inside the one status wrapper.
+    const block = /<div role="status"[^>]*>([\s\S]*?)\n\s*<\/div>\s*<\/EditorSection>/.exec(source);
+    expect(block?.[1]).toContain("readiness.issues.map");
+    expect(block?.[1]).toContain("workflow.blocker");
+  });
+
+  test("no source file references the undefined --color-danger token", async () => {
+    const hits: string[] = [];
+    for (const path of await Array.fromAsync(new Bun.Glob("src/**/*.{ts,tsx,css}").scan("."))) {
+      if (path.includes(".test.")) continue;
+      if ((await Bun.file(path).text()).includes("var(--color-danger)")) hits.push(path);
+    }
+    expect(hits).toEqual([]);
+  });
+
+  test("the animal form status region is always mounted and separate from the alert", async () => {
+    const source = await Bun.file(`${ADMIN}AnimalForm.tsx`).text();
+    expect(source).toContain('message?.tone === "status" ? message.text : ""');
+    const status = await tagAt({
+      file: `${ADMIN}AnimalForm.tsx`,
+      before: /message\?\.tone === "status" \? message\.text/,
+    });
+    expect(status).toContain('role="status"');
+    // A repeat preview clears the message first, so the same text is announced again.
+    expect(source).toMatch(
+      /async function previewDraft\(\) \{\s*if \(dirty \|\| saving\) return;[\s\S]*?setMessage\(null\);/,
+    );
+  });
+
+  test("the policy publish issues share one alert container", async () => {
+    const source = await Bun.file(`${ADMIN}volunteers/VolunteerPolicySettings.tsx`).text();
+    const from = source.indexOf("preview.issues.length > 0");
+    const block = source.slice(from, source.indexOf("PolicyChangeSummary", from));
+    expect(block.match(/role="alert"/g)?.length).toBe(1);
+    const issue = await tagAt({
+      file: `${ADMIN}volunteers/VolunteerPolicySettings.tsx`,
+      before: /copy\.publish\.issueLine\(/,
+    });
+    expect(issue).not.toContain("role=");
+  });
+
+  test("touching button rows have a gap", async () => {
+    for (const [file, anchor] of [
+      [`${ADMIN}content/FaqManagement.tsx`, /\{copy\.edit\}\s*<\/Button>/],
+      [`${ADMIN}content/GovernanceManagement.tsx`, /\{copy\.table\.edit\}\s*<\/Button>/],
+      [`${ADMIN}content/ContentEditor.tsx`, /\{copy\.conflict\.compare\}\s*<\/Button>/],
+    ] as const) {
+      const source = await Bun.file(file).text();
+      const before = source.slice(0, anchor.exec(source)?.index ?? 0);
+      const wrapper = /<div className="([^"]*)">(?![\s\S]*<div )/.exec(before.slice(-700));
+      expect(wrapper?.[1], file).toContain("gap-2");
+    }
+  });
+
+  test("main actions use the primary Button variant", async () => {
+    for (const [file, label] of [
+      [`${ADMIN}content/AdoptionInstructionsManagement.tsx`, "{copy.saveDraft}"],
+      [`${ADMIN}content/AdoptionInstructionsManagement.tsx`, "{copy.publish}"],
+      [`${ADMIN}content/AdoptionInformationManagement.tsx`, "{copy.leave.save}"],
+      [`${ADMIN}content/KnowledgeManagement.tsx`, "{copy.save}"],
+    ] as const) {
+      const source = await Bun.file(file).text();
+      const at = source.indexOf(label);
+      const open = source.lastIndexOf("<Button", at);
+      expect(source.slice(open, at), `${file} ${label}`).not.toContain('variant="outline"');
+    }
+  });
+
+  test("handleMobileNavigate focuses the page heading after closing the drawer", async () => {
+    const source = await Bun.file(`${ADMIN}AdminLayout.tsx`).text();
+    expect(source).toContain('import { focusPageHeading } from "./focusPageHeading";');
+    expect(source).toMatch(
+      /if \(window\.location\.href === before && new URL\(to, before\)\.href !== before\) return;\s*focusPageOnClose\.current = true;\s*setMobileOpen\(false\);\s*requestAnimationFrame\(\(\) => focusPageHeading\(document\)\);/,
+    );
   });
 });

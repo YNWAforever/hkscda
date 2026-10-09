@@ -659,21 +659,22 @@ export function AdoptionGuideReleaseManagementView({
                     enUrl={preview?.knowledgeCard.enUrl}
                   />
                 </div>
-                {readiness && !readiness.ready ? (
-                  <ul
-                    role="alert"
-                    className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]"
-                  >
-                    {readiness.issues.map((issue) => (
-                      <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
-                    ))}
-                  </ul>
-                ) : null}
-                {workflow?.blocker ? (
-                  <p role="alert" className="mt-3 text-sm text-[var(--color-error)]">
-                    {copy.blockers[workflow.blocker]}
-                  </p>
-                ) : null}
+                {/* Derived from the loaded release, not from something the editor just did, so it is
+                    a polite status, never an alert. The wrapper is always mounted. */}
+                <div role="status" data-testid="readiness-status">
+                  {readiness && !readiness.ready ? (
+                    <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]">
+                      {readiness.issues.map((issue) => (
+                        <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {workflow?.blocker ? (
+                    <p className="mt-3 text-sm text-[var(--color-error)]">
+                      {copy.blockers[workflow.blocker]}
+                    </p>
+                  ) : null}
+                </div>
               </EditorSection>
 
               <section
@@ -772,7 +773,7 @@ function EditorSection({
     <section className="space-y-3">
       <h2 className="font-bold">{title}</h2>
       {issues.map((issue) => (
-        <p key={issue.message} role="alert" className="text-sm text-[var(--color-error)]">
+        <p key={issue.message} className="text-sm text-[var(--color-error)]">
           {issue.message}
         </p>
       ))}

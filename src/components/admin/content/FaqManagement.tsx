@@ -216,23 +216,25 @@ export function FaqManagement() {
                 <td className="py-2">{entry.sortOrder}</td>
                 <td className="py-2">{entry.isActive ? copy.shown : copy.disabled}</td>
                 <td className="py-2">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    onClick={() => openDraft(draftFromEntry(entry))}
-                  >
-                    {copy.edit}
-                  </Button>
-                  {entry.isActive ? (
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       type="button"
-                      onClick={() => deactivateMutation.mutate(entry.id)}
-                      disabled={deactivateMutation.isPending}
+                      onClick={() => openDraft(draftFromEntry(entry))}
                     >
-                      {copy.disable}
+                      {copy.edit}
                     </Button>
-                  ) : null}
+                    {entry.isActive ? (
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => deactivateMutation.mutate(entry.id)}
+                        disabled={deactivateMutation.isPending}
+                      >
+                        {copy.disable}
+                      </Button>
+                    ) : null}
+                  </div>
                 </td>
               </tr>
             ))}

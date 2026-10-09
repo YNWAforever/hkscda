@@ -109,23 +109,25 @@ export function GovernanceManagement() {
                   {member.isActive ? copy.table.inOffice : copy.table.steppedDown}
                 </td>
                 <td className="py-2">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    onClick={() => setDraft(draftFromMember(member))}
-                  >
-                    {copy.table.edit}
-                  </Button>
-                  {member.isActive ? (
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       type="button"
-                      onClick={() => deactivateMutation.mutate(member.id)}
-                      disabled={deactivateMutation.isPending}
+                      onClick={() => setDraft(draftFromMember(member))}
                     >
-                      {copy.table.stepDown}
+                      {copy.table.edit}
                     </Button>
-                  ) : null}
+                    {member.isActive ? (
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => deactivateMutation.mutate(member.id)}
+                        disabled={deactivateMutation.isPending}
+                      >
+                        {copy.table.stepDown}
+                      </Button>
+                    ) : null}
+                  </div>
                 </td>
               </tr>
             ))}

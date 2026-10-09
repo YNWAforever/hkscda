@@ -346,6 +346,8 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
   async function previewDraft() {
     if (dirty || saving) return;
+    // Clear first so the same text is announced again on a repeat.
+    setMessage(null);
     try {
       const result = await fetchAdminJson<{
         preview_id: string;
@@ -868,11 +870,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             {message.text}
           </p>
         )}
-        {message?.tone === "status" && (
-          <p role="status" className="text-[var(--color-success)] text-sm">
-            {message.text}
-          </p>
-        )}
+        {/* Always mounted, so a polite announcement fires when the text arrives. */}
+        <p role="status" className="text-[var(--color-success)] text-sm">
+          {message?.tone === "status" ? message.text : ""}
+        </p>
 
         {draftRevision > 0 && (
           <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">

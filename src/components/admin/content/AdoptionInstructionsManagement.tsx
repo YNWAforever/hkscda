@@ -410,7 +410,6 @@ export function AdoptionInstructionsManagementView(props: Props) {
       </fieldset>
       <div className="flex flex-wrap gap-3">
         <Button
-          variant="outline"
           type="button"
           disabled={blocked || !valid || !dirty}
           onClick={() => void run({ action: "save", expectedVersion: revision.version, content })}
@@ -430,7 +429,6 @@ export function AdoptionInstructionsManagementView(props: Props) {
         </a>
         {props.role === "admin" && (
           <Button
-            variant="outline"
             type="button"
             disabled={blocked || !valid || dirty}
             onClick={() => {

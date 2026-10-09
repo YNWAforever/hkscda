@@ -533,7 +533,6 @@ function EditableKnowledgeEditor({
       </div>
       <div className="flex gap-2">
         <Button
-          variant="outline"
           type="button"
           disabled={pending || !draft.title.trim() || !draft.shortIntro.trim()}
           onClick={() => onSave?.(draft)}

@@ -648,11 +648,15 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         {preview ? (
           <div className="rounded bg-[var(--color-surface-offset)] p-3 text-sm">
             <b>{copy.publish.previewTitle(preview.previous?.name, preview.candidate.name)}</b>
-            {preview.issues.map((x, i) => (
-              <p key={i} role="alert" className="text-[var(--color-error)]">
-                {copy.publish.issueLine(x)}
-              </p>
-            ))}
+            {preview.issues.length > 0 && (
+              <div role="alert">
+                {preview.issues.map((x, i) => (
+                  <p key={i} className="text-[var(--color-error)]">
+                    {copy.publish.issueLine(x)}
+                  </p>
+                ))}
+              </div>
+            )}
             <PolicyChangeSummary
               before={preview.previous}
               after={preview.candidate}

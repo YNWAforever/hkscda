@@ -561,21 +561,23 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       {conflict ? (
         <div role="alert" className="rounded border border-[var(--color-warning)] p-3">
           <p>{copy.conflict.message}</p>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={async () =>
-              setComparison(
-                (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
-                  .content,
-              )
-            }
-          >
-            {copy.conflict.compare}
-          </Button>
-          <Button variant="outline" type="button" onClick={() => void requestReload()}>
-            {copy.conflict.reload}
-          </Button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={async () =>
+                setComparison(
+                  (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
+                    .content,
+                )
+              }
+            >
+              {copy.conflict.compare}
+            </Button>
+            <Button variant="outline" type="button" onClick={() => void requestReload()}>
+              {copy.conflict.reload}
+            </Button>
+          </div>
         </div>
       ) : null}
       {comparison ? (
