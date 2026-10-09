@@ -2,13 +2,22 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
 import { initialPolicyCatalogue } from "../../../lib/volunteers/policy/catalogue";
+import { policyReason, type PolicyReasonCode } from "../../../lib/volunteers/policy/messages";
 import type { PolicyDraft } from "../../../lib/volunteers/policy/schemas";
+import { useAdminCopy } from "../i18n/copy";
+import { policyAdvancedCopy } from "./policyAdvancedCopy";
+import { policyCommonCopy } from "./policyCommonCopy";
 const input =
   "min-h-10 w-full rounded-md border border-[var(--color-border)] bg-white px-2 py-1.5 text-sm";
 const tiers = ["newcomer", "regular", "senior"] as const,
-  days = ["日", "一", "二", "三", "四", "五", "六"];
+  days = [0, 1, 2, 3, 4, 5, 6];
 type Limit = PolicyDraft["capacity"]["volunteers"];
 type Window = PolicyDraft["booking"]["individual_open"];
+/** A setting left undecided: the reason is the stored zh-HK text, which the screen names in either language. */
+const undecided = (code: PolicyReasonCode = "pending_admin") => ({
+  state: "unresolved" as const,
+  reason: policyReason(code),
+});
 function F({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="space-y-1">
@@ -24,6 +33,7 @@ function Tier({
   value: PolicyDraft["eligibility"]["allowed_tiers"];
   set: (v: PolicyDraft["eligibility"]["allowed_tiers"]) => void;
 }) {
+  const common = useAdminCopy(policyCommonCopy);
   return (
     <div>
       {tiers.map((t) => (
@@ -33,29 +43,31 @@ function Tier({
             checked={value.includes(t)}
             onChange={(e) => set(e.target.checked ? [...value, t] : value.filter((x) => x !== t))}
           />{" "}
-          {{ newcomer: "新手", regular: "恆常", senior: "資深" }[t]}
+          {common.tiers[t]}
         </label>
       ))}
     </div>
   );
 }
 function Days({ value, set }: { value: number[]; set: (v: number[]) => void }) {
+  const common = useAdminCopy(policyCommonCopy);
   return (
     <div>
-      {days.map((d, i) => (
+      {days.map((i) => (
         <label key={i} className="mr-2 text-xs">
           <input
             type="checkbox"
             checked={value.includes(i)}
             onChange={(e) => set(e.target.checked ? [...value, i] : value.filter((x) => x !== i))}
           />{" "}
-          週{d}
+          {common.weekday(i)}
         </label>
       ))}
     </div>
   );
 }
 function Lim({ value, set }: { value: Limit; set: (v: Limit) => void }) {
+  const copy = useAdminCopy(policyAdvancedCopy);
   const n = value.state === "value" ? value.value : 0;
   return (
     <div className="grid grid-cols-[1fr_6rem] gap-2">
@@ -70,14 +82,14 @@ function Lim({ value, set }: { value: Limit; set: (v: Limit) => void }) {
                 ? { state: "unlimited" }
                 : e.target.value === "inherit"
                   ? { state: "inherit" }
-                  : { state: "unresolved", reason: "待管理員設定" },
+                  : undecided(),
           )
         }
       >
-        <option value="value">指定數量</option>
-        <option value="unlimited">不限</option>
-        <option value="inherit">沿用</option>
-        <option value="unresolved">未決定</option>
+        <option value="value">{copy.limit.value}</option>
+        <option value="unlimited">{copy.limit.unlimited}</option>
+        <option value="inherit">{copy.limit.inherit}</option>
+        <option value="unresolved">{copy.limit.unresolved}</option>
       </select>
       <input
         className={input}
@@ -97,6 +109,7 @@ function Cred({
   value: PolicyDraft["eligibility"]["credentials"];
   set: (v: PolicyDraft["eligibility"]["credentials"]) => void;
 }) {
+  const copy = useAdminCopy(policyAdvancedCopy).credentials;
   const registry = useQuery({
     queryKey: ["volunteer-policy-sources"],
     queryFn: () =>
@@ -112,8 +125,8 @@ function Cred({
         value={value.mode}
         onChange={(e) => set({ ...value, mode: e.target.value as "all" | "any" })}
       >
-        <option value="all">全部資格 AND</option>
-        <option value="any">任何資格 OR</option>
+        <option value="all">{copy.all}</option>
+        <option value="any">{copy.any}</option>
       </select>
       <div className="space-y-1">
         {registry.data?.credentials.map((c) => (
@@ -134,13 +147,14 @@ function Cred({
           </label>
         ))}
         <a className="text-xs underline" href="/admin/volunteers/sources">
-          新增資格名稱
+          {copy.add}
         </a>
       </div>
     </div>
   );
 }
 function Win({ value, set }: { value: Window; set: (v: Window) => void }) {
+  const copy = useAdminCopy(policyAdvancedCopy).window;
   const state = "mode" in value ? value.mode : value.state,
     n = "value" in value ? value.value : 0;
   return (
@@ -159,16 +173,16 @@ function Win({ value, set }: { value: Window; set: (v: Window) => void }) {
                   ? { mode: m }
                   : m === "inherit"
                     ? { state: "inherit" }
-                    : { state: "unresolved", reason: "待管理員設定" },
+                    : undecided(),
           );
         }}
       >
-        <option value="hours_before">活動前小時</option>
-        <option value="calendar_days_before">香港日曆日前</option>
-        <option value="unrestricted">不限制</option>
-        <option value="disabled">停用</option>
-        <option value="inherit">沿用</option>
-        <option value="unresolved">未決定</option>
+        <option value="hours_before">{copy.hours_before}</option>
+        <option value="calendar_days_before">{copy.calendar_days_before}</option>
+        <option value="unrestricted">{copy.unrestricted}</option>
+        <option value="disabled">{copy.disabled}</option>
+        <option value="inherit">{copy.inherit}</option>
+        <option value="unresolved">{copy.unresolved}</option>
       </select>
       <input
         className={input}
@@ -208,6 +222,7 @@ function ConfigBool({
   value: PolicyDraft["capacity"]["group_in_shared_total"];
   set: (v: PolicyDraft["capacity"]["group_in_shared_total"]) => void;
 }) {
+  const copy = useAdminCopy(policyAdvancedCopy).flag;
   const state = typeof value === "boolean" ? String(value) : value.state;
   return (
     <select
@@ -221,14 +236,14 @@ function ConfigBool({
               ? false
               : e.target.value === "inherit"
                 ? { state: "inherit" }
-                : { state: "unresolved", reason: "待管理員設定" },
+                : undecided(),
         )
       }
     >
-      <option value="true">是</option>
-      <option value="false">否</option>
-      <option value="inherit">沿用</option>
-      <option value="unresolved">未決定</option>
+      <option value="true">{copy.true}</option>
+      <option value="false">{copy.false}</option>
+      <option value="inherit">{copy.inherit}</option>
+      <option value="unresolved">{copy.unresolved}</option>
     </select>
   );
 }
@@ -239,11 +254,12 @@ export function PolicyAdvancedFields({
   policy: PolicyDraft;
   onChange: (fn: (p: PolicyDraft) => void) => void;
 }) {
+  const copy = useAdminCopy(policyAdvancedCopy);
   const addRole = () =>
     onChange((p) =>
       p.roles.push({
         key: "new_role",
-        label: "新職務",
+        label: copy.newRole,
         minimum: 0,
         reserved: 0,
         maximum: { state: "unlimited" },
@@ -287,8 +303,8 @@ export function PolicyAdvancedFields({
   return (
     <div className="space-y-6">
       <section className="grid gap-4 rounded-lg border bg-white p-4 md:grid-cols-3">
-        <h2 className="text-lg font-bold md:col-span-3">完整名額設定</h2>
-        <F label="義工名額">
+        <h2 className="text-lg font-bold md:col-span-3">{copy.capacity.title}</h2>
+        <F label={copy.capacity.volunteers}>
           <Lim
             value={policy.capacity.volunteers}
             set={(v) =>
@@ -298,7 +314,7 @@ export function PolicyAdvancedFields({
             }
           />
         </F>
-        <F label="訪客名額">
+        <F label={copy.capacity.visitors}>
           <Lim
             value={policy.capacity.visitors}
             set={(v) =>
@@ -308,7 +324,7 @@ export function PolicyAdvancedFields({
             }
           />
         </F>
-        <F label="共用總名額">
+        <F label={copy.capacity.sharedTotal}>
           <Lim
             value={policy.capacity.shared_total}
             set={(v) =>
@@ -318,7 +334,7 @@ export function PolicyAdvancedFields({
             }
           />
         </F>
-        <F label="團體計入共用總數">
+        <F label={copy.capacity.groupInSharedTotal}>
           <ConfigBool
             value={policy.capacity.group_in_shared_total}
             set={(v) =>
@@ -328,7 +344,7 @@ export function PolicyAdvancedFields({
             }
           />
         </F>
-        <F label="團體人數模式">
+        <F label={copy.capacity.groupSizeMode}>
           <select
             className={input}
             value={
@@ -341,18 +357,18 @@ export function PolicyAdvancedFields({
                     ? { minimum: 0, maximum: 0 }
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : { state: "unresolved", reason: "待管理員設定" };
+                      : undecided();
               })
             }
           >
-            <option value="value">指定範圍</option>
-            <option value="inherit">沿用</option>
-            <option value="unresolved">未決定</option>
+            <option value="value">{copy.capacity.groupSizeOptions.value}</option>
+            <option value="inherit">{copy.capacity.groupSizeOptions.inherit}</option>
+            <option value="unresolved">{copy.capacity.groupSizeOptions.unresolved}</option>
           </select>
         </F>
         {"state" in policy.capacity.group_size ? null : (
           <>
-            <F label="團體最少人數">
+            <F label={copy.capacity.groupMinimum}>
               <input
                 className={input}
                 type="number"
@@ -366,7 +382,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="團體最多人數">
+            <F label={copy.capacity.groupMaximum}>
               <input
                 className={input}
                 type="number"
@@ -382,7 +398,7 @@ export function PolicyAdvancedFields({
             </F>
           </>
         )}
-        <F label="領隊計算方式">
+        <F label={copy.capacity.roleCounting}>
           <select
             className={input}
             value={
@@ -397,19 +413,23 @@ export function PolicyAdvancedFields({
                     ? e.target.value
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : { state: "unresolved", reason: "待管理員設定" };
+                      : undecided();
               })
             }
           >
-            <option value="leader_separate">領隊另計</option>
-            <option value="leader_in_assistants">領隊包括在助手</option>
-            <option value="inherit">沿用</option>
-            <option value="unresolved">未決定</option>
+            <option value="leader_separate">
+              {copy.capacity.roleCountingOptions.leader_separate}
+            </option>
+            <option value="leader_in_assistants">
+              {copy.capacity.roleCountingOptions.leader_in_assistants}
+            </option>
+            <option value="inherit">{copy.capacity.roleCountingOptions.inherit}</option>
+            <option value="unresolved">{copy.capacity.roleCountingOptions.unresolved}</option>
           </select>
         </F>
       </section>
       <section className="grid gap-4 rounded-lg border bg-white p-4 md:grid-cols-2">
-        <h2 className="text-lg font-bold md:col-span-2">報名及取消窗口</h2>
+        <h2 className="text-lg font-bold md:col-span-2">{copy.booking.title}</h2>
         {(
           [
             "individual_open",
@@ -419,18 +439,7 @@ export function PolicyAdvancedFields({
             "cancellation_close",
           ] as const
         ).map((k) => (
-          <F
-            key={k}
-            label={
-              {
-                individual_open: "個人開放",
-                individual_close: "個人截止",
-                group_open: "團體開放",
-                group_close: "團體截止",
-                cancellation_close: "取消截止",
-              }[k]
-            }
-          >
+          <F key={k} label={copy.booking.windows[k]}>
             <Win
               value={policy.booking[k]}
               set={(v) =>
@@ -441,7 +450,7 @@ export function PolicyAdvancedFields({
             />
           </F>
         ))}
-        <F label="團體情景">
+        <F label={copy.booking.scenario}>
           <select
             className={input}
             value={policy.booking.scenario}
@@ -451,9 +460,11 @@ export function PolicyAdvancedFields({
               })
             }
           >
-            <option value="none">不適用</option>
-            <option value="confirmed_group">有確認團體</option>
-            <option value="no_confirmed_group">沒有確認團體</option>
+            <option value="none">{copy.booking.scenarioOptions.none}</option>
+            <option value="confirmed_group">{copy.booking.scenarioOptions.confirmed_group}</option>
+            <option value="no_confirmed_group">
+              {copy.booking.scenarioOptions.no_confirmed_group}
+            </option>
           </select>
         </F>
         {policy.booking.scenario !== "none" &&
@@ -464,12 +475,7 @@ export function PolicyAdvancedFields({
                 ? (mapping[field] as string)
                 : "";
             return (
-              <F
-                key={field}
-                label={
-                  field === "with_group" ? "有團體時採用的已發布模板" : "無團體時採用的已發布模板"
-                }
-              >
+              <F key={field} label={copy.booking.templateLabels[field]}>
                 <select
                   className={input}
                   value={selected}
@@ -480,24 +486,15 @@ export function PolicyAdvancedFields({
                         prior && !("state" in prior)
                           ? prior
                           : {
-                              with_group: {
-                                state: "unresolved" as const,
-                                reason: "請選擇有團體模板",
-                              },
-                              without_group: {
-                                state: "unresolved" as const,
-                                reason: "請選擇無團體模板",
-                              },
+                              with_group: undecided("pick_with_group_template"),
+                              without_group: undecided("pick_without_group_template"),
                             };
-                      next[field] = e.target.value || {
-                        state: "unresolved",
-                        reason: "請選擇配對模板",
-                      };
+                      next[field] = e.target.value || undecided("pick_paired_template");
                       p.booking.scenario_templates = next;
                     })
                   }
                 >
-                  <option value="">未決定</option>
+                  <option value="">{copy.booking.undecided}</option>
                   {initialPolicyCatalogue
                     .filter(
                       (p) =>
@@ -512,12 +509,12 @@ export function PolicyAdvancedFields({
                     ))}
                 </select>
                 <span className="block text-xs text-[var(--color-text-muted)]">
-                  確認團體時按活動日期讀取此模板的已發布版本；未完成或未發布的模板不能套用。
+                  {copy.booking.templateNote}
                 </span>
               </F>
             );
           })}
-        <F label="團體名額凍結">
+        <F label={copy.booking.freeze}>
           <select
             className={input}
             value={
@@ -532,17 +529,17 @@ export function PolicyAdvancedFields({
                     ? e.target.value
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : { state: "unresolved", reason: "待管理員設定" };
+                      : undecided();
               })
             }
           >
-            <option value="at_group_close">團體截止時</option>
-            <option value="at_session_start">活動開始時</option>
-            <option value="inherit">沿用</option>
-            <option value="unresolved">未決定</option>
+            <option value="at_group_close">{copy.booking.freezeOptions.at_group_close}</option>
+            <option value="at_session_start">{copy.booking.freezeOptions.at_session_start}</option>
+            <option value="inherit">{copy.booking.freezeOptions.inherit}</option>
+            <option value="unresolved">{copy.booking.freezeOptions.unresolved}</option>
           </select>
         </F>
-        <F label="遲來團體變更">
+        <F label={copy.booking.lateChange}>
           <select
             className={input}
             value={
@@ -557,17 +554,17 @@ export function PolicyAdvancedFields({
                     ? e.target.value
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : { state: "unresolved", reason: "待管理員設定" };
+                      : undecided();
               })
             }
           >
-            <option value="revalidate">重新驗證</option>
-            <option value="manual_review">人手審核</option>
-            <option value="inherit">沿用</option>
-            <option value="unresolved">未決定</option>
+            <option value="revalidate">{copy.booking.lateChangeOptions.revalidate}</option>
+            <option value="manual_review">{copy.booking.lateChangeOptions.manual_review}</option>
+            <option value="inherit">{copy.booking.lateChangeOptions.inherit}</option>
+            <option value="unresolved">{copy.booking.lateChangeOptions.unresolved}</option>
           </select>
         </F>
-        <F label="候補上限">
+        <F label={copy.booking.waitlistLimit}>
           <Lim
             value={policy.booking.waitlist_limit}
             set={(v) =>
@@ -588,7 +585,7 @@ export function PolicyAdvancedFields({
                 })
               }
             />{" "}
-            自動批准
+            {copy.booking.autoApprove}
           </label>
           <label>
             <input
@@ -600,20 +597,20 @@ export function PolicyAdvancedFields({
                 })
               }
             />{" "}
-            容許候補
+            {copy.booking.allowWaitlist}
           </label>
         </div>
       </section>
       <section className="space-y-3 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
-          <h2 className="text-lg font-bold">職務名額</h2>
+          <h2 className="text-lg font-bold">{copy.roles.title}</h2>
           <button type="button" className="rounded border px-3 py-1 text-sm" onClick={addRole}>
-            新增職務
+            {copy.roles.add}
           </button>
         </div>
         {policy.roles.map((r, i) => (
           <div key={i} className="grid gap-2 rounded border p-3 md:grid-cols-4">
-            <F label="識別碼">
+            <F label={copy.roles.key}>
               <input
                 className={input}
                 value={r.key}
@@ -624,7 +621,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="顯示名稱">
+            <F label={copy.roles.label}>
               <input
                 className={input}
                 value={r.label}
@@ -635,7 +632,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="最低人數">
+            <F label={copy.roles.minimum}>
               <input
                 className={input}
                 type="number"
@@ -648,7 +645,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="保留名額">
+            <F label={copy.roles.reserved}>
               <input
                 className={input}
                 type="number"
@@ -661,7 +658,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="最高人數">
+            <F label={copy.roles.maximum}>
               <Lim
                 value={r.maximum}
                 set={(v) =>
@@ -671,7 +668,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="可用級別">
+            <F label={copy.roles.tiers}>
               <Tier
                 value={r.allowed_tiers}
                 set={(v) =>
@@ -681,7 +678,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="職務資格">
+            <F label={copy.roles.credentials}>
               <Cred
                 value={r.credentials}
                 set={(v) =>
@@ -700,21 +697,21 @@ export function PolicyAdvancedFields({
                 })
               }
             >
-              刪除職務
+              {copy.roles.remove}
             </button>
           </div>
         ))}
       </section>
       <section className="space-y-3 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
-          <h2 className="text-lg font-bold">級別配額</h2>
+          <h2 className="text-lg font-bold">{copy.quotas.title}</h2>
           <button type="button" className="rounded border px-3 py-1 text-sm" onClick={addQuota}>
-            新增配額
+            {copy.quotas.add}
           </button>
         </div>
         {policy.tier_quotas.map((q, i) => (
           <div key={i} className="grid gap-2 rounded border p-3 md:grid-cols-3">
-            <F label="識別碼">
+            <F label={copy.quotas.key}>
               <input
                 className={input}
                 value={q.key}
@@ -725,7 +722,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="級別">
+            <F label={copy.quotas.tiers}>
               <Tier
                 value={q.tiers}
                 set={(v) =>
@@ -735,7 +732,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="上限">
+            <F label={copy.quotas.maximum}>
               <Lim
                 value={q.maximum}
                 set={(v) =>
@@ -745,7 +742,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="適用星期">
+            <F label={copy.quotas.weekdays}>
               {Array.isArray(q.weekdays) ? (
                 <Days
                   value={q.weekdays}
@@ -765,7 +762,7 @@ export function PolicyAdvancedFields({
                     })
                   }
                 >
-                  解析星期設定
+                  {copy.quotas.resolveWeekdays}
                 </button>
               )}
             </F>
@@ -778,21 +775,21 @@ export function PolicyAdvancedFields({
                 })
               }
             >
-              刪除配額
+              {copy.quotas.remove}
             </button>
           </div>
         ))}
       </section>
       <section className="space-y-3 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
-          <h2 className="text-lg font-bold">每日限制</h2>
+          <h2 className="text-lg font-bold">{copy.daily.title}</h2>
           <button type="button" className="rounded border px-3 py-1 text-sm" onClick={addDaily}>
-            新增限制
+            {copy.daily.add}
           </button>
         </div>
         {policy.daily_limits.map((q, i) => (
           <div key={i} className="grid gap-2 rounded border p-3 md:grid-cols-4">
-            <F label="識別碼">
+            <F label={copy.daily.key}>
               <input
                 className={input}
                 value={q.key}
@@ -803,7 +800,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="級別">
+            <F label={copy.daily.tiers}>
               <Tier
                 value={q.tiers}
                 set={(v) =>
@@ -813,7 +810,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="上限">
+            <F label={copy.daily.maximum}>
               <Lim
                 value={q.maximum}
                 set={(v) =>
@@ -823,7 +820,7 @@ export function PolicyAdvancedFields({
                 }
               />
             </F>
-            <F label="範圍">
+            <F label={copy.daily.scope}>
               <select
                 className={input}
                 value={q.scope}
@@ -833,11 +830,11 @@ export function PolicyAdvancedFields({
                   })
                 }
               >
-                <option value="shelter_day">同一舍全日</option>
-                <option value="all_shelters_day">所有場地全日</option>
+                <option value="shelter_day">{copy.daily.scopeOptions.shelter_day}</option>
+                <option value="all_shelters_day">{copy.daily.scopeOptions.all_shelters_day}</option>
               </select>
             </F>
-            <F label="計算方式">
+            <F label={copy.daily.countMode}>
               <select
                 className={input}
                 value={typeof q.count_mode === "string" ? q.count_mode : q.count_mode.state}
@@ -848,17 +845,17 @@ export function PolicyAdvancedFields({
                         ? e.target.value
                         : e.target.value === "inherit"
                           ? { state: "inherit" }
-                          : { state: "unresolved", reason: "待管理員設定" };
+                          : undecided();
                   })
                 }
               >
-                <option value="distinct_people">不同人士</option>
-                <option value="attendances">出席人次</option>
-                <option value="inherit">沿用</option>
-                <option value="unresolved">未決定</option>
+                <option value="distinct_people">{copy.daily.countOptions.distinct_people}</option>
+                <option value="attendances">{copy.daily.countOptions.attendances}</option>
+                <option value="inherit">{copy.daily.countOptions.inherit}</option>
+                <option value="unresolved">{copy.daily.countOptions.unresolved}</option>
               </select>
             </F>
-            <F label="包括團體訪客">
+            <F label={copy.daily.includeGroupVisitors}>
               <ConfigBool
                 value={q.include_group_visitors}
                 set={(v) =>
@@ -877,23 +874,24 @@ export function PolicyAdvancedFields({
                 })
               }
             >
-              刪除限制
+              {copy.daily.remove}
             </button>
           </div>
         ))}
       </section>
       <section className="space-y-3 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
-          <h2 className="text-lg font-bold">遲段補位規則</h2>
+          <h2 className="text-lg font-bold">{copy.release.title}</h2>
           <button type="button" className="rounded border px-3 py-1 text-sm" onClick={addRelease}>
-            新增規則
+            {copy.release.add}
           </button>
         </div>
         {policy.release_rules.map((r, i) =>
           "state" in r ? (
             <div key={i} className="rounded border p-3 text-sm">
-              <b>未解析：</b>
-              {r.reason}
+              <b>{copy.release.unresolved}</b>
+              {copy.release.reasonText(r.reason)}
+              {copy.release.afterReason}
               <button
                 type="button"
                 className="ml-3 rounded border px-2 py-1"
@@ -903,12 +901,12 @@ export function PolicyAdvancedFields({
                   })
                 }
               >
-                移除
+                {copy.release.remove}
               </button>
             </div>
           ) : (
             <div key={i} className="grid gap-2 rounded border p-3 md:grid-cols-4">
-              <F label="識別碼">
+              <F label={copy.release.key}>
                 <input
                   className={input}
                   value={r.key}
@@ -920,7 +918,7 @@ export function PolicyAdvancedFields({
                   }
                 />
               </F>
-              <F label="釋放方式">
+              <F label={copy.release.semantics}>
                 <select
                   className={input}
                   value={typeof r.semantics === "string" ? r.semantics : ""}
@@ -933,16 +931,16 @@ export function PolicyAdvancedFields({
                             ? "once"
                             : e.target.value === "dynamic"
                               ? "dynamic"
-                              : { state: "unresolved", reason: "請選擇釋放方式" };
+                              : undecided("pick_release_semantics");
                     })
                   }
                 >
-                  <option value="">待設定</option>
-                  <option value="dynamic">動態：條件改變即重新計算</option>
-                  <option value="once">一次：觸發後不收回釋放</option>
+                  <option value="">{copy.release.semanticsOptions.notSet}</option>
+                  <option value="dynamic">{copy.release.semanticsOptions.dynamic}</option>
+                  <option value="once">{copy.release.semanticsOptions.once}</option>
                 </select>
               </F>
-              <F label="優先次序">
+              <F label={copy.release.priority}>
                 <input
                   className={input}
                   type="number"
@@ -956,7 +954,7 @@ export function PolicyAdvancedFields({
                   }
                 />
               </F>
-              <F label="活動前小時">
+              <F label={copy.release.withinHours}>
                 <input
                   className={input}
                   type="number"
@@ -970,7 +968,7 @@ export function PolicyAdvancedFields({
                   }
                 />
               </F>
-              <F label="門檻比較">
+              <F label={copy.release.operator}>
                 <select
                   className={input}
                   value={r.condition.operator}
@@ -981,11 +979,11 @@ export function PolicyAdvancedFields({
                     })
                   }
                 >
-                  <option value="lt">少於</option>
-                  <option value="lte">不多於</option>
+                  <option value="lt">{copy.release.operatorOptions.lt}</option>
+                  <option value="lte">{copy.release.operatorOptions.lte}</option>
                 </select>
               </F>
-              <F label="門檻">
+              <F label={copy.release.threshold}>
                 <input
                   className={input}
                   type="number"
@@ -999,7 +997,7 @@ export function PolicyAdvancedFields({
                   }
                 />
               </F>
-              <F label="動作">
+              <F label={copy.release.action}>
                 <select
                   className={input}
                   value={r.action.type}
@@ -1024,13 +1022,15 @@ export function PolicyAdvancedFields({
                     })
                   }
                 >
-                  <option value="release_reserved">釋放職務保留位</option>
-                  <option value="relax_quota">放寬配額</option>
+                  <option value="release_reserved">
+                    {copy.release.actionOptions.release_reserved}
+                  </option>
+                  <option value="relax_quota">{copy.release.actionOptions.relax_quota}</option>
                 </select>
               </F>
               {r.action.type === "release_reserved" ? (
                 <>
-                  <F label="保留池">
+                  <F label={copy.release.pool}>
                     <select
                       className={input}
                       value={r.action.pool}
@@ -1049,7 +1049,7 @@ export function PolicyAdvancedFields({
                       ))}
                     </select>
                   </F>
-                  <F label="釋放數量">
+                  <F label={copy.release.quantity}>
                     <input
                       className={input}
                       type="number"
@@ -1067,7 +1067,7 @@ export function PolicyAdvancedFields({
                 </>
               ) : (
                 <>
-                  <F label="配額">
+                  <F label={copy.release.quota}>
                     <select
                       className={input}
                       value={r.action.quota}
@@ -1079,14 +1079,17 @@ export function PolicyAdvancedFields({
                         })
                       }
                     >
-                      {[...policy.tier_quotas, ...policy.daily_limits].map((x) => (
+                      {[
+                        ...policy.tier_quotas.map((x) => ({ kind: "tier" as const, key: x.key })),
+                        ...policy.daily_limits.map((x) => ({ kind: "daily" as const, key: x.key })),
+                      ].map((x) => (
                         <option key={x.key} value={x.key}>
-                          {x.key}
+                          {copy.release.quotaOption(x.kind, x.key)}
                         </option>
                       ))}
                     </select>
                   </F>
-                  <F label="配額作用範圍">
+                  <F label={copy.release.quotaScope}>
                     <select
                       className={input}
                       value={r.action.scope}
@@ -1102,13 +1105,17 @@ export function PolicyAdvancedFields({
                         })
                       }
                     >
-                      <option value="session">單場</option>
-                      <option value="shelter_day">此場地全日</option>
-                      <option value="all_shelters_day">跨場地全日</option>
+                      <option value="session">{copy.release.quotaScopeOptions.session}</option>
+                      <option value="shelter_day">
+                        {copy.release.quotaScopeOptions.shelter_day}
+                      </option>
+                      <option value="all_shelters_day">
+                        {copy.release.quotaScopeOptions.all_shelters_day}
+                      </option>
                     </select>
                   </F>
                   {r.action.scope !== "session" && (
-                    <F label="每日補位時間基準（須明選）">
+                    <F label={copy.release.anchor}>
                       <select
                         className={input}
                         value={
@@ -1124,21 +1131,25 @@ export function PolicyAdvancedFields({
                                 e.target.value === "first_session" ||
                                 e.target.value === "last_session"
                                   ? e.target.value
-                                  : { state: "unresolved", reason: "待選全日首場或末場時間基準" };
+                                  : undecided("pick_daily_anchor_pending");
                             }
                           })
                         }
                       >
-                        <option value="unresolved">未決定</option>
-                        <option value="first_session">同一範圍當日首場開始時間</option>
-                        <option value="last_session">同一範圍當日末場開始時間</option>
+                        <option value="unresolved">{copy.release.anchorOptions.unresolved}</option>
+                        <option value="first_session">
+                          {copy.release.anchorOptions.first_session}
+                        </option>
+                        <option value="last_session">
+                          {copy.release.anchorOptions.last_session}
+                        </option>
                       </select>
                       <span className="block text-xs text-[var(--color-text-muted)]">
-                        熟手門檻按同一範圍全日已確認人數計算；所有場次共用當日配額。
+                        {copy.release.anchorNote}
                       </span>
                     </F>
                   )}
-                  <F label="新上限">
+                  <F label={copy.release.newMaximum}>
                     <input
                       className={input}
                       type="number"
@@ -1155,7 +1166,7 @@ export function PolicyAdvancedFields({
                   </F>
                 </>
               )}
-              <F label="可接收級別">
+              <F label={copy.release.receivingTiers}>
                 <Tier
                   value={r.allowed_tiers}
                   set={(v) =>
@@ -1166,7 +1177,7 @@ export function PolicyAdvancedFields({
                   }
                 />
               </F>
-              <F label="資格">
+              <F label={copy.release.credentials}>
                 <Cred
                   value={r.credentials}
                   set={(v) =>
@@ -1186,14 +1197,14 @@ export function PolicyAdvancedFields({
                   })
                 }
               >
-                刪除規則
+                {copy.release.removeRule}
               </button>
             </div>
           ),
         )}
       </section>
       <section className="rounded-lg border bg-white p-4">
-        <h2 className="font-bold">政策來源</h2>
+        <h2 className="font-bold">{copy.source}</h2>
         <p className="mt-1 text-sm text-[var(--color-text-muted)]">{policy.source}</p>
       </section>
     </div>

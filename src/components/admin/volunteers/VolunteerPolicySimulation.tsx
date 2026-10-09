@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { policySimulationCopy } from "./policySimulationCopy";
+import { policyFormatCopy } from "./policyFormatCopy";
 type Listing = {
   drafts: {
     template_key: string;
@@ -22,40 +26,31 @@ type Simulation = {
     next_boundary?: string;
   };
 };
+/** Where the form starts, for a test or a preview of the screen. In the browser it starts empty. */
+export type PolicySimulationInitial = {
+  template?: string;
+  activity?: string;
+  profile?: string;
+  role?: string;
+  time?: string;
+};
 const endpoint = "/api/admin/volunteers/simulation/";
 const send = <T,>(body: unknown) =>
   fetchAdminJson<T>(endpoint, { method: "POST", body: JSON.stringify(body) });
 const input = "min-h-11 min-w-0 w-full rounded border px-3 py-2";
-const reasons: Record<string, string> = {
-  available: "可以報名",
-  capacity_full: "總容量已滿",
-  role_full: "職務上限已滿",
-  tier_quota_full: "級別配額已滿",
-  daily_quota_full: "全日配額已滿",
-  reserved_for_core_role: "保留核心職務名額",
-  credentials_required: "缺少所需資格",
-  role_not_allowed: "未符合此職務資格",
-  tier_not_allowed: "未符合級別限制",
-  tier_weekday_not_allowed: "級別不適用於當日",
-  date_closed: "當日不開放",
-  activity_closed: "場次已關閉或模擬時間已過開場",
-  registration_not_open: "尚未開放報名",
-  registration_closed: "已過截止",
-  group_scenario_mismatch: "團體狀態與 A／B 政策不符",
-  daily_scope_requires_review: "此草稿改動全日政策，請先使用全日設定預覽",
-  minimum_age_not_met: "未符合最低年齡",
-  overlapping_duty: "當值時間重疊",
-};
-export function VolunteerPolicySimulation() {
+export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulationInitial } = {}) {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(policySimulationCopy, language);
+  const format = pickAdminCopy(policyFormatCopy, language);
   const listing = useQuery({
     queryKey: ["volunteer-policy-simulation"],
     queryFn: () => send<Listing>({ action: "list" }),
   });
-  const [template, setTemplate] = useState("");
-  const [activity, setActivity] = useState("");
-  const [profile, setProfile] = useState("");
-  const [role, setRole] = useState("volunteer");
-  const [time, setTime] = useState("");
+  const [template, setTemplate] = useState(initial?.template ?? "");
+  const [activity, setActivity] = useState(initial?.activity ?? "");
+  const [profile, setProfile] = useState(initial?.profile ?? "");
+  const [role, setRole] = useState(initial?.role ?? "volunteer");
+  const [time, setTime] = useState(initial?.time ?? "");
   const draft = listing.data?.drafts.find((d) => d.template_key === template);
   const simulate = useMutation({
     mutationFn: () =>
@@ -75,14 +70,12 @@ export function VolunteerPolicySimulation() {
   };
   return (
     <section className="space-y-5 p-4 md:p-6">
-      <h1 className="text-2xl font-bold">政策模擬</h1>
-      <p>
-        選擇已儲存草稿、現有場次、已核實義工和香港時間，使用與報名相同的規則試算。模擬不會報名、發布、釋放一次名額或發送通知。
-      </p>
+      <h1 className="text-2xl font-bold">{copy.title}</h1>
+      <p>{copy.intro}</p>
       <a className="underline" href="/admin/volunteers/settings">
-        返回政策設定
+        {copy.back}
       </a>
-      {listing.error && <p role="alert">未能載入模擬資料</p>}
+      {listing.error && <p role="alert">{copy.loadFailed}</p>}
       <form
         className="grid gap-4 md:grid-cols-2"
         onSubmit={(e) => {
@@ -91,9 +84,9 @@ export function VolunteerPolicySimulation() {
         }}
       >
         <label className="grid min-w-0 gap-1">
-          已儲存草稿
+          {copy.fields.draft}
           <select
-            aria-label="已儲存草稿"
+            aria-label={copy.fields.draft}
             required
             className={input}
             value={template}
@@ -105,59 +98,52 @@ export function VolunteerPolicySimulation() {
               );
             }}
           >
-            <option value="">請選擇</option>
+            <option value="">{copy.choose}</option>
             {listing.data?.drafts.map((d) => (
               <option key={d.template_key} value={d.template_key}>
-                {d.name}（草稿版本 {d.revision}）
+                {copy.draftOption(d.name, d.revision)}
               </option>
             ))}
           </select>
         </label>
         <label className="grid min-w-0 gap-1">
-          場次日期
+          {copy.fields.session}
           <select
-            aria-label="場次日期"
+            aria-label={copy.fields.session}
             required
             className={input}
             value={activity}
             onChange={(e) => change(setActivity, e.target.value)}
           >
-            <option value="">請選擇</option>
+            <option value="">{copy.choose}</option>
             {listing.data?.activities.map((a) => (
               <option key={a.id} value={a.id}>
-                {new Date(a.starts_at).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })} ·{" "}
-                {a.title}
+                {format.simulationDateTime(a.starts_at)} · {a.title}
               </option>
             ))}
           </select>
         </label>
         <label className="grid min-w-0 gap-1">
-          已核實義工
+          {copy.fields.volunteer}
           <select
-            aria-label="已核實義工"
+            aria-label={copy.fields.volunteer}
             required
             className={input}
             value={profile}
             onChange={(e) => change(setProfile, e.target.value)}
           >
-            <option value="">請選擇</option>
+            <option value="">{copy.choose}</option>
             {listing.data?.profiles.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.name}（
-                {
-                  ({ newcomer: "新手", regular: "普通", senior: "資深" } as Record<string, string>)[
-                    p.tier
-                  ]
-                }
-                ）
+                {copy.volunteerOption(p.name, copy.tier(p.tier))}
               </option>
             ))}
           </select>
         </label>
         <label className="grid min-w-0 gap-1">
-          職務
+          {copy.fields.role}
           <select
-            aria-label="職務"
+            aria-label={copy.fields.role}
             required
             className={input}
             value={role}
@@ -165,13 +151,13 @@ export function VolunteerPolicySimulation() {
           >
             {draft?.roles.map((r) => (
               <option key={r.key} value={r.key}>
-                {r.label}
+                {copy.roleName(r.key, r.label)}
               </option>
             ))}
           </select>
         </label>
         <label className="grid min-w-0 gap-1">
-          模擬香港時間
+          {copy.fields.time}
           <input
             required
             type="datetime-local"
@@ -184,34 +170,28 @@ export function VolunteerPolicySimulation() {
           className="min-h-11 rounded bg-[var(--color-panel)] px-4 py-2 text-[var(--color-text-inverse)] disabled:opacity-50"
           disabled={simulate.isPending || !draft}
         >
-          執行模擬
+          {copy.run}
         </button>
       </form>
-      {simulate.error && (
-        <p role="alert">未能模擬：請先確認草稿所有待設定欄位，並重新載入最新版本。</p>
-      )}
+      {simulate.error && <p role="alert">{copy.failed}</p>}
       {simulate.data && (
         <section aria-live="polite" className="space-y-2 rounded border p-4">
-          <h2 className="font-bold">
-            模擬結果：{simulate.data.evaluation.allowed ? "可以報名" : "不符合條件"}
-          </h2>
+          <h2 className="font-bold">{copy.result(simulate.data.evaluation.allowed)}</h2>
+          <p>{copy.reason(simulate.data.evaluation.reason)}</p>
           <p>
-            {reasons[simulate.data.evaluation.reason] ?? "未符合此草稿規則，請核對場次及資格設定。"}
-          </p>
-          <p>
-            有效容量 {simulate.data.evaluation.capacity ?? "—"} · 已確認{" "}
-            {simulate.data.evaluation.confirmed ?? "—"} · 餘額{" "}
-            {simulate.data.evaluation.remaining ?? "—"}
+            {copy.figures(
+              simulate.data.evaluation.capacity,
+              simulate.data.evaluation.confirmed,
+              simulate.data.evaluation.remaining,
+            )}
           </p>
           {simulate.data.evaluation.next_boundary && (
             <p>
-              下一規則邊界：
-              {new Date(simulate.data.evaluation.next_boundary).toLocaleString("zh-HK", {
-                timeZone: "Asia/Hong_Kong",
-              })}
+              {copy.boundary}
+              {format.simulationDateTime(simulate.data.evaluation.next_boundary)}
             </p>
           )}
-          <p className="text-sm">結果只對本次模擬時間及資料有效，實際報名會重新檢查。</p>
+          <p className="text-sm">{copy.note}</p>
         </section>
       )}
     </section>

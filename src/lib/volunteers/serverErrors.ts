@@ -113,6 +113,23 @@ const VOLUNTEER_SERVER_TEXT = {
     zh: "未能更新資格，請重新整理後重試",
     en: "Could not update the qualification. Refresh the page and try again.",
   },
+  // /api/admin/volunteers/assessments (lib/volunteers/assessment/http.server.ts)
+  assessments_invalid_request: {
+    zh: "無效要求",
+    en: "The request could not be read. Reload the page and try again.",
+  },
+  assessments_invalid: {
+    zh: "請檢查每月評核設定",
+    en: "Check the monthly assessment settings and try again.",
+  },
+  assessments_forbidden: {
+    zh: "沒有此操作權限",
+    en: "You do not have permission to change the monthly assessment. Ask an administrator for access.",
+  },
+  assessments_failed: {
+    zh: "未能處理每月評核",
+    en: "Could not process the monthly assessment. Reload the page and try again.",
+  },
   // A booking rule the database refused, by its code (lib/volunteers/policy/errors.ts). The rules
   // that `apiResult` also has a message for are not here: that message is what arrives.
   policy_current_terms_required: {

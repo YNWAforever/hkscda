@@ -11,9 +11,10 @@
  *
  * The screens read their data with `useQuery` and change it with `useMutation`. The mocks answer
  * `useQuery` from `kit.state.queries`, keyed by the first part of the query key, and give every
- * `useMutation` the error in `kit.state.mutationError` (`null` for none). Nothing is numbered by
- * call order, so a screen can gain or lose a hook without breaking a test. A key with no answer
- * shows as loading.
+ * `useMutation` the error in `kit.state.mutationError` (`null` for none) and the result in
+ * `kit.state.mutationData` (`undefined` for none, which also means it has not succeeded). Nothing is
+ * numbered by call order, so a screen can gain or lose a hook without breaking a test. A key with no
+ * answer shows as loading.
  */
 import { mock } from "bun:test";
 import type { ReactNode } from "react";
@@ -27,6 +28,7 @@ export const state = {
   role: "admin" as TestRole,
   queries: {} as Record<string, unknown>,
   mutationError: null as unknown,
+  mutationData: undefined as unknown,
 };
 
 /** Text as it appears in rendered markup, where React escapes quotes, ampersands and angle brackets. */
@@ -58,6 +60,17 @@ export function withMutationError(error: unknown, work: () => void) {
     work();
   } finally {
     state.mutationError = previous;
+  }
+}
+
+/** Runs `work` with every mutation having succeeded with `data`. */
+export function withMutationData(data: unknown, work: () => void) {
+  const previous = state.mutationData;
+  state.mutationData = data;
+  try {
+    work();
+  } finally {
+    state.mutationData = previous;
   }
 }
 
@@ -99,6 +112,8 @@ mock.module("@tanstack/react-query", () => ({
     isPending: false,
     isError: state.mutationError !== null,
     error: state.mutationError,
+    data: state.mutationData,
+    isSuccess: state.mutationData !== undefined,
     reset: () => {},
   }),
   useQuery: ({ queryKey }: { queryKey: unknown[] }) => {

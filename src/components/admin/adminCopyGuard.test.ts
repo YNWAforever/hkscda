@@ -17,17 +17,7 @@ import { findChineseRuns } from "./i18n/testing";
  * line below a comment-only line that carries it. The reason is required.
  */
 
-export const ADMIN_COPY_PENDING: readonly string[] = [
-  "src/components/admin/volunteers/PolicyAdvancedFields.tsx",
-  "src/components/admin/volunteers/PolicyChangeSummary.tsx",
-  "src/components/admin/volunteers/PolicySourceFields.tsx",
-  "src/components/admin/volunteers/VolunteerDailySettings.tsx",
-  "src/components/admin/volunteers/VolunteerPolicySettings.tsx",
-  "src/components/admin/volunteers/VolunteerPolicySimulation.tsx",
-  "src/components/admin/volunteers/VolunteerPolicySources.tsx",
-  "src/components/admin/volunteers/VolunteerQualifications.tsx",
-  "src/routes/admin/volunteers/assessments.tsx",
-];
+export const ADMIN_COPY_PENDING: readonly string[] = [];
 
 const EXEMPTION_MARKER = /admin-copy-exempt:\s*\S/;
 /** A line that is only a comment, so a marker on it can cover the line below. */

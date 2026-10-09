@@ -149,6 +149,26 @@ other way round.
 | 出席事實 | attendance record     | A recorded fact of whether and how long someone served. 出席更正 is "attendance correction".           |
 | 服務時數 | service hours         | The hours a volunteer served, only as recorded.                                                        |
 | 收容所   | shelter               | A session's venue key: cat shelter, dog shelter, adoption day (領養日); any other is "Other venue".    |
+| 沿用     | inherit               | Takes its value from the venue or the shared default. 回復繼承 is "Revert to inherited".               |
+| 未決定   | undecided             | A setting nobody has chosen yet; it blocks publishing. 待設定 is "not set yet".                        |
+| 無上限   | unlimited             | No limit. 不限 means the same: write "unlimited".                                                      |
+| 政策來源 | policy source         | Where a setting comes from: shared default (共用預設), venue or template.                              |
+| 有效值   | effective value       | The value a setting ends up with after inheritance.                                                    |
+| 保留名額 | reserved places       | Places of a volunteer role that are held back for it. 保留位 means the same.                           |
+| 熟手     | experienced volunteer | A regular or a senior volunteer.                                                                       |
+| 門檻     | threshold             | The number a late release condition compares with.                                                     |
+| 領隊     | leader                | The senior volunteer who leads a group session. 輔助 is "assistant".                                   |
+| 識別碼   | identifier            | A short code staff type to tell one role, quota or limit from another.                                 |
+| 時段     | time slot             | One slot of a service day.                                                                             |
+| 撤銷資格 | revoke                | End a qualification record; it stays in the history. 撤銷 for a sponsorship allocation is "reverse".   |
+| 到期日   | expiry date           | The day a qualification stops being valid.                                                             |
+| 證據     | evidence              | What shows that a profile or a qualification is real.                                                  |
+| 佇列     | queue                 | 通知佇列 is "notification queue". 重新排隊 is "Queue again".                                           |
+| 測試模式 | test mode             | Builds the notification queue and sends nothing.                                                       |
+| 晉升     | promotion             | Moving up a tier. 降級 is "demotion" and 年資 is "years of service".                                   |
+| 報名窗口 | registration window   | The time when registration is open: from its opening to its closing.                                   |
+| 團體情景 | group situation       | Whether the session has a confirmed group. 配對政策 is "paired policies".                              |
+| 時間基準 | time basis            | The first or the last session of the day that a daily late release counts from.                        |
 
 ## Content and publishing
 
