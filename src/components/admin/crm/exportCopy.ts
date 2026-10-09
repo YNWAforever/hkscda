@@ -60,7 +60,7 @@ export const exportCopy = defineAdminCopy({
     downloadComplete: "Download full CSV",
     cancel: "Cancel",
     progress: (processed: number, total: number, ready: boolean) =>
-      `Background export: ${processed} of ${pluralCount(total, "row")}. ${
+      `Background export: ${formatAdminNumber(processed, "en")} of ${pluralCount(total, "row")}. ${
         ready ? "Ready to download." : "Processing."
       }`,
     failure: (failure: ExportFailure): string => {
@@ -68,7 +68,7 @@ export const exportCopy = defineAdminCopy({
         case "session_expired":
           return "Your sign-in has expired. Sign in again, then retry the export.";
         case "forbidden":
-          return "You do not have permission to export this data.";
+          return "You do not have permission to export this data. Ask an administrator to check your role.";
         case "background_limit":
           return "A background export can hold up to 20,000 rows. Narrow the filters and try again.";
         case "immediate_limit":

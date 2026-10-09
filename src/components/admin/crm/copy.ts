@@ -1,4 +1,5 @@
 import type { ConsentStatus } from "../../../lib/crm/types";
+import { DONATION_PURPOSE_NAMES_EN } from "../donations/copy";
 import { defineAdminCopy } from "../i18n/copy";
 
 /**
@@ -49,11 +50,6 @@ const ZH_PURPOSES: Record<string, string> = {
   general: "一般捐款",
   medical: "醫療",
   sponsor: "助養",
-};
-const EN_PURPOSES: Record<string, string> = {
-  general: "General",
-  medical: "Medical",
-  sponsor: "Sponsorship",
 };
 const ZH_METHODS: Record<string, string> = {
   manual: "手動",
@@ -111,7 +107,7 @@ export const crmLabelCopy = defineAdminCopy({
     status: (value: string) => ZH_STATUSES[value] ?? value,
   },
   en: {
-    purpose: (value: string) => EN_PURPOSES[value] ?? humanise(value),
+    purpose: (value: string) => DONATION_PURPOSE_NAMES_EN[value] ?? humanise(value),
     method: (value: string) => EN_METHODS[value] ?? humanise(value),
     status: (value: string) => EN_STATUSES[value] ?? humanise(value),
   },
@@ -140,7 +136,7 @@ export const supporterDetailCopy = defineAdminCopy({
   },
   en: {
     loading: "Loading supporter...",
-    loadError: "Could not load supporter.",
+    loadError: "Could not load the supporter. Refresh the page or try again.",
     back: "Supporters",
     donations: "Donations",
     donationsSubtitle: "Donation history and receipt actions.",

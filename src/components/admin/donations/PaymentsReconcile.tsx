@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import {
   PAYMENT_RECONCILE_PAGE_SIZE,
   type AdminPaymentListResult,
@@ -15,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { useAdminCopy } from "../i18n/copy";
-import { errorTextCopy } from "../i18n/errorTextCopy";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
@@ -66,10 +66,9 @@ const PROVIDER_VALUES: PaymentFilters["provider"][] = [
 export function PaymentsReconcile() {
   const liveActor = useLiveAdminActor();
   const queryClient = useQueryClient();
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = useAdminCopy(paymentsCopy);
   const format = useAdminCopy(donationFormatCopy);
-  const errorText = useAdminCopy(errorTextCopy);
   const [filters, setFilters] = useState<PaymentFilters>({
     status: "all",
     provider: "all",
@@ -194,7 +193,7 @@ export function PaymentsReconcile() {
   }
 
   const actionFailure = issueReceipt.error ?? voidReceipt.error;
-  const actionError = actionFailure ? errorText.describe(actionFailure, "") : "";
+  const actionError = actionFailure ? (adminErrorMessage(actionFailure, language) ?? "") : "";
 
   function rowActions(payment: AdminPaymentRow) {
     const issued = findIssuedReceipt(payment.donation.id, receipts);
@@ -420,7 +419,7 @@ export function PaymentsReconcile() {
           </Button>
           {exportFailure && (
             <p className="text-xs text-[var(--color-error)]">
-              {errorText.describe(exportFailure.cause, copy.exportFailed)}
+              {adminErrorMessage(exportFailure.cause, language) ?? copy.exportFailed}
             </p>
           )}
         </div>

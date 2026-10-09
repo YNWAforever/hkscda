@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { expectNoChineseText } from "../../components/admin/i18n/testing";
 import { deliveryLabel } from "./deliveryLabel";
 
 const STATES = ["delivered", "bounced", "failed", "complained", "delivery_delayed"] as const;
@@ -27,7 +28,7 @@ describe("deliveryLabel", () => {
     expect(deliveryLabel("bounced", "en")).toBe("Bounced: follow up");
     expect(deliveryLabel("something_new", "en")).toBe("Delivery status not yet verified");
     for (const state of [...STATES, "something_new"]) {
-      expect(deliveryLabel(state, "en")).not.toMatch(/[\p{Script=Han}＀-￯]/u);
+      expectNoChineseText(deliveryLabel(state, "en") ?? "");
     }
   });
 });

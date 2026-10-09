@@ -692,6 +692,31 @@ describe("the payments copy modules", () => {
     expect(paymentsCopy.en.range(26, 50, 1234)).toBe("26-50 of 1,234");
   });
 
+  test("write the status a retried job reports as a word, not as its code", () => {
+    const status = deliveryWorklistCopy.en.latestStatus;
+    expect(status("attention_required")).toBe(
+      "Latest job status: needs manual action. The payment will not be credited again.",
+    );
+    expect(status("complete")).toBe(
+      "Latest job status: complete. The payment will not be credited again.",
+    );
+    expect(status("retryable")).toContain("can be retried");
+    // A status this screen does not know still reads as plain words.
+    expect(status("on_hold")).toContain("on hold");
+    // Chinese prints the code the server sent, as it always has.
+    expect(deliveryWorklistCopy.zh.latestStatus("attention_required")).toBe(
+      "工作最新狀態：attention_required。付款記錄不會重複入帳。",
+    );
+  });
+
+  test("share one set of English purpose names with the supporter pages", async () => {
+    const { crmLabelCopy } = await import("../crm/copy");
+    for (const purpose of ["general", "medical", "sponsor"]) {
+      expect(crmLabelCopy.en.purpose(purpose)).toBe(paymentsCopy.en.purposeLabel(purpose));
+    }
+    expect(paymentsCopy.en.purposeLabel("sponsor")).toBe("Sponsorship");
+  });
+
   test("format amounts and times as each language always has", () => {
     const zh = donationFormatCopy.zh;
     const en = donationFormatCopy.en;

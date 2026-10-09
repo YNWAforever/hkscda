@@ -41,7 +41,7 @@ describe("SupporterDetail", () => {
 
   test("shows the load failure in English", () => {
     const markup = renderAdminInEnglish(<SupporterDetail supporterId="supporter-1" />);
-    expect(markup).toContain("Could not load supporter.");
+    expect(markup).toContain("Could not load the supporter. Refresh the page or try again.");
     expect(markup).toContain("Retry");
   });
 });

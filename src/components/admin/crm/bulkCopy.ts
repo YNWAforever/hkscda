@@ -19,10 +19,13 @@ export const tagBulkCopy = defineAdminCopy({
     processing: "處理中…",
     preview: "建立預覽",
     reload: "重新讀取結果",
-    savedOperationFailed: "未能讀取已保存的操作，請重新讀取結果。",
-    reloadFailed: "未能讀取已保存的操作，請稍後重新讀取結果。",
-    previewFailed: "無法建立預覽",
-    applyFailed: "無法套用；請重新讀取結果",
+    /** The message for each way the panel can fail, by the code the panel keeps. */
+    errors: {
+      restore_failed: "未能讀取已保存的操作，請重新讀取結果。",
+      reload_failed: "未能讀取已保存的操作，請稍後重新讀取結果。",
+      preview_failed: "無法建立預覽",
+      apply_failed: "無法套用；請重新讀取結果",
+    },
     reviewTitle: (tag: string, count: number) => `標籤：${tag} · ${count} 筆`,
     joinTags: (tags: string[]) => tags.join("、"),
   },
@@ -37,10 +40,13 @@ export const tagBulkCopy = defineAdminCopy({
     processing: "Processing…",
     preview: "Preview changes",
     reload: "Reload result",
-    savedOperationFailed: "Could not load the saved operation. Select Reload result to try again.",
-    reloadFailed: "Could not load the saved operation. Wait a moment, then select Reload result.",
-    previewFailed: "Could not create the preview. Try again.",
-    applyFailed: "Could not apply the tag. Select Reload result to check the current state.",
+    errors: {
+      restore_failed: "Could not load the saved operation. Select Reload result to try again.",
+      reload_failed:
+        "Could not load the saved operation. Wait a moment, then select Reload result.",
+      preview_failed: "Could not create the preview. Try again.",
+      apply_failed: "Could not apply the tag. Select Reload result to check the current state.",
+    },
     reviewTitle: (tag: string, count: number) => `Tag: ${tag} · ${pluralCount(count, "supporter")}`,
     joinTags: (tags: string[]) => tags.join(", "),
   },
@@ -63,11 +69,14 @@ export const supporterAssignmentCopy = defineAdminCopy({
     reload: "重新讀取結果",
     unassigned: "未指派",
     pickerFailed: "無法載入可指派的職員",
-    savedOperationFailed: "未能讀取已保存的操作，請重新讀取結果。",
-    reloadFailed: "未能讀取結果；保留操作參考，請稍後再讀取。",
-    previewFailed: "無法建立預覽",
-    applyUnconfirmed: "操作回應未確認；先重新讀取已保存結果。",
-    applyResultUnconfirmed: "操作結果未確認；保留操作參考，重新讀取成功前暫停套用。",
+    /** The message for each way the panel can fail, by the code the panel keeps. */
+    errors: {
+      restore_failed: "未能讀取已保存的操作，請重新讀取結果。",
+      reload_failed: "未能讀取結果；保留操作參考，請稍後再讀取。",
+      preview_failed: "無法建立預覽",
+      apply_unconfirmed: "操作回應未確認；先重新讀取已保存結果。",
+      apply_result_unconfirmed: "操作結果未確認；保留操作參考，重新讀取成功前暫停套用。",
+    },
     reviewTitle: (assignee: string, count: number) => `指派給：${assignee} · ${count} 筆`,
   },
   en: {
@@ -85,13 +94,15 @@ export const supporterAssignmentCopy = defineAdminCopy({
     reload: "Reload result",
     unassigned: "Unassigned",
     pickerFailed: "Could not load the staff list. Try again.",
-    savedOperationFailed: "Could not load the saved operation. Select Reload result to try again.",
-    reloadFailed:
-      "Could not load the result. The operation reference is kept, so wait a moment, then select Reload result.",
-    previewFailed: "Could not create the preview. Try again.",
-    applyUnconfirmed: "The reply was not confirmed. Reload the saved result first.",
-    applyResultUnconfirmed:
-      "The result was not confirmed. The operation reference is kept, and Apply stays paused until Reload result works.",
+    errors: {
+      restore_failed: "Could not load the saved operation. Select Reload result to try again.",
+      reload_failed:
+        "Could not load the result. The operation reference is kept, so wait a moment, then select Reload result.",
+      preview_failed: "Could not create the preview. Try again.",
+      apply_unconfirmed: "The reply was not confirmed. Reload the saved result first.",
+      apply_result_unconfirmed:
+        "The result was not confirmed. The operation reference is kept, and Apply stays paused until Reload result works.",
+    },
     reviewTitle: (assignee: string, count: number) =>
       `Assigned to: ${assignee} · ${pluralCount(count, "supporter")}`,
   },

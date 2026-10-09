@@ -35,11 +35,15 @@ mock.module("react", () => ({
     }
   },
 }));
-// The copy hook reads React context, which this test does not mount, so it reads the Chinese copy.
-const realCopy = await import("../i18n/copy");
-mock.module("../i18n/copy", () => ({
-  ...realCopy,
-  useAdminCopy: <T,>(copy: { zh: T }) => copy.zh,
+// The language hook reads React context, which this test does not mount, so it answers Chinese.
+const realLanguage = await import("../adminI18n");
+mock.module("../adminI18n", () => ({
+  ...realLanguage,
+  useAdminLanguage: () => ({
+    language: "zh" as const,
+    copy: realLanguage.adminCopy.zh,
+    setLanguage: () => {},
+  }),
 }));
 let fetcher: (url: string, options?: { method?: string; body?: string }) => Promise<unknown>;
 mock.module("./api", () => ({

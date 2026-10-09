@@ -4,12 +4,13 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
-import { errorTextCopy } from "../i18n/errorTextCopy";
 import { reconcileDialogCopy } from "./copy";
 
 type ReconcileDialogProps = {
@@ -26,7 +27,7 @@ export function ReconcileDialog({
   onReconciled,
 }: ReconcileDialogProps) {
   const copy = useAdminCopy(reconcileDialogCopy);
-  const errorText = useAdminCopy(errorTextCopy);
+  const { language } = useAdminLanguage();
   const [open, setOpen] = useState(false);
   const [bankReference, setBankReference] = useState("");
   const [deliveryJobId, setDeliveryJobId] = useState<string | null>(null);
@@ -110,7 +111,7 @@ export function ReconcileDialog({
           </div>
           {mutation.error && (
             <p className="text-sm text-[var(--color-error)]">
-              {errorText.describe(mutation.error, "")}
+              {adminErrorMessage(mutation.error, language)}
             </p>
           )}
           {deliveryJobId && (
@@ -120,7 +121,7 @@ export function ReconcileDialog({
           )}
           {retryDelivery.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {errorText.describe(retryDelivery.error, "")}
+              {adminErrorMessage(retryDelivery.error, language)}
             </p>
           )}
           <div className="flex justify-end gap-2">

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { ContactFormatPreviewResponse } from "../../../lib/crm/contactFormatPreview";
+import { adminErrorMessage } from "../../../lib/admin/session";
+import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
-import { errorTextCopy } from "../i18n/errorTextCopy";
 import { fetchAdminJson } from "./api";
 import { contactFormatCopy } from "./bulkCopy";
 
@@ -21,7 +22,7 @@ export function CrmContactFormatPreviewPanel({
   selectionDisabled: boolean;
 }) {
   const copy = useAdminCopy(contactFormatCopy);
-  const errorText = useAdminCopy(errorTextCopy);
+  const { language } = useAdminLanguage();
   const selectionKey = JSON.stringify([query, roleFilter, selectedIds]);
   const selectionKeyRef = useRef(selectionKey);
   const requestGeneration = useRef(0);
@@ -106,7 +107,7 @@ export function CrmContactFormatPreviewPanel({
       </button>
       {failure && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {errorText.describe(failure.cause, copy.previewFailed)}
+          {adminErrorMessage(failure.cause, language) ?? copy.previewFailed}
         </p>
       )}
       {previewResult && (

@@ -17,10 +17,24 @@ const EN_FINANCE_ACTIONS: Record<string, string> = {
   "receipt.issue": "Receipt issued",
   "receipt.void": "Receipt voided",
 };
-const EN_PURPOSES: Record<string, string> = {
+/**
+ * The English names of the donation purposes, shared with the supporter pages, which show the
+ * same purposes. Chinese names them differently on each page, so only English shares this.
+ */
+export const DONATION_PURPOSE_NAMES_EN: Record<string, string> = {
   general: "General",
   medical: "Medical",
   sponsor: "Sponsorship",
+};
+
+/** The English for the status a delivery job reports after a retry. */
+const EN_JOB_STATUSES: Record<string, string> = {
+  pending: "pending",
+  processing: "processing",
+  retryable: "can be retried",
+  attention_required: "needs manual action",
+  complete: "complete",
+  not_required: "not required",
 };
 
 /** The payments page. */
@@ -116,9 +130,9 @@ export const paymentsCopy = defineAdminCopy({
       actions: "Actions",
     },
     refundedLine: (refunded: string, net: string) => `Refunded ${refunded} · Net received ${net}`,
-    purposeLabel: (purpose: string) => EN_PURPOSES[purpose] ?? purpose,
+    purposeLabel: (purpose: string) => DONATION_PURPOSE_NAMES_EN[purpose] ?? purpose,
     purposeWithNote: (purpose: string, note: string) =>
-      `${EN_PURPOSES[purpose] ?? purpose} · Other purpose: ${note}`,
+      `${DONATION_PURPOSE_NAMES_EN[purpose] ?? purpose} · Other purpose: ${note}`,
     receiptIssued: (receiptNo: string) => `Issued ${receiptNo}`,
     receiptAwaiting: "Receipt to issue",
     receiptVoided: "Voided",
@@ -229,7 +243,7 @@ export const deliveryWorklistCopy = defineAdminCopy({
     next: "Next",
     pageOf: (page: number, totalPages: number) => `Page ${page} of ${totalPages}`,
     latestStatus: (status: string) =>
-      `Latest job status: ${status}. The payment will not be credited again.`,
+      `Latest job status: ${EN_JOB_STATUSES[status] ?? status.replaceAll("_", " ")}. The payment will not be credited again.`,
     retryUnconfirmed:
       "Could not confirm the retry result. Check the latest list, and do not assume the job did not run.",
     confirmRetry:

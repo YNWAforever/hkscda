@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 
 import { BulkReview } from "../bulk/BulkReview";
 import type { CrmTagBulkOperation } from "../../../routes/api/admin/supporters/tag-bulk";
+import { adminErrorMessage } from "../../../lib/admin/session";
+import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
-import { errorTextCopy } from "../i18n/errorTextCopy";
 import { fetchAdminJson } from "./api";
 import { tagBulkCopy } from "./bulkCopy";
 
@@ -11,14 +12,13 @@ const endpoint = "/api/admin/supporters/tag-bulk";
 const savedOperationKey = "crm-tag-bulk-operation";
 
 /**
- * Why the panel shows an error. It is kept as a code, with the caught error where the message
- * comes from the server, and written from the copy when the panel renders.
+ * Why the panel shows an error. It is kept as a code (the key of `copy.errors`), with the caught
+ * error where the server may have given a reason, and written when the panel renders.
  */
-type PanelError =
-  | { code: "restore_failed" }
-  | { code: "reload_failed" }
-  | { code: "preview_failed"; cause: unknown }
-  | { code: "apply_failed"; cause: unknown };
+type PanelError = {
+  code: "restore_failed" | "reload_failed" | "preview_failed" | "apply_failed";
+  cause?: unknown;
+};
 
 export function CrmTagBulkPanel({
   selectedIds,
@@ -32,7 +32,7 @@ export function CrmTagBulkPanel({
   selectionDisabled: boolean;
 }) {
   const copy = useAdminCopy(tagBulkCopy);
-  const errorText = useAdminCopy(errorTextCopy);
+  const { language } = useAdminLanguage();
   const [tag, setTag] = useState("");
   const [operation, setOperation] = useState<CrmTagBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
@@ -129,14 +129,10 @@ export function CrmTagBulkPanel({
     }
   }
 
+  // A reason the server gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? error.code === "restore_failed"
-      ? copy.savedOperationFailed
-      : error.code === "reload_failed"
-        ? copy.reloadFailed
-        : error.code === "preview_failed"
-          ? errorText.describe(error.cause, copy.previewFailed)
-          : errorText.describe(error.cause, copy.applyFailed)
+    ? ((error.cause === undefined ? null : adminErrorMessage(error.cause, language)) ??
+      copy.errors[error.code])
     : "";
 
   return (

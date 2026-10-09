@@ -111,7 +111,7 @@ const summaries: SupporterSummary[] = [
     email: "chan@example.org",
     phone: "9123 4567",
     language: "zh-HK",
-    tags: ["義工"],
+    tags: ["旺角街站"],
     roles: ["donor", "adopter"],
     deletedAt: null,
     lastGiftAt: "2026-10-01T02:30:00Z",
@@ -144,7 +144,7 @@ const summaries: SupporterSummary[] = [
 const detail: SupporterDetailData = {
   ...summaries[0]!,
   roles: ["donor", "adopter", "foster"],
-  tags: ["義工", "VIP"],
+  tags: ["旺角街站", "VIP"],
   source: "admin_manual",
   createdAt: "2026-06-01T10:00:00Z",
   updatedAt: "2026-10-01T02:30:00Z",
@@ -283,7 +283,7 @@ const detail: SupporterDetailData = {
 };
 
 // Names, tags and notes that staff or supporters typed are data, so they stay as they were.
-const FIXTURE_TEXT = ["陳大文", "義工", "婚宴回禮", "清潔日", "九龍", "退信：需要跟進"];
+const FIXTURE_TEXT = ["陳大文", "旺角街站", "婚宴回禮", "清潔日", "九龍"];
 
 describe("supporter list in English", () => {
   const load = (total = 2, role = "admin") => {
@@ -826,6 +826,14 @@ describe("the export bar in English", () => {
     expect(exportCopy.en.progress(3, 10, false)).toBe(
       "Background export: 3 of 10 rows. Processing.",
     );
+    // Both counts group thousands the same way.
+    expect(exportCopy.en.progress(12000, 15000, false)).toBe(
+      "Background export: 12,000 of 15,000 rows. Processing.",
+    );
+    // A refusal says what to do next.
+    expect(exportCopy.en.failure({ code: "forbidden" })).toBe(
+      "You do not have permission to export this data. Ask an administrator to check your role.",
+    );
     expect(exportCopy.en.progress(1, 1, true)).toBe(
       "Background export: 1 of 1 row. Ready to download.",
     );
@@ -878,6 +886,27 @@ describe("the supporter copy modules", () => {
       "只更新 CRM 跟進負責人。先固定範圍並逐筆預覽，套用時重新核對職員權限及支持者版本；不會發送通知。",
     );
     expect(contactFormatCopy.zh.pageOf(2, 5)).toBe("第 2 / 5 頁");
+  });
+
+  test("give each bulk panel failure a message by its code, in both languages", () => {
+    // The panels keep one of these codes (with the caught error, where the server gave a
+    // reason) and look the message up when they render.
+    expect(tagBulkCopy.zh.errors).toEqual({
+      restore_failed: "未能讀取已保存的操作，請重新讀取結果。",
+      reload_failed: "未能讀取已保存的操作，請稍後重新讀取結果。",
+      preview_failed: "無法建立預覽",
+      apply_failed: "無法套用；請重新讀取結果",
+    });
+    expect(supporterAssignmentCopy.zh.errors).toEqual({
+      restore_failed: "未能讀取已保存的操作，請重新讀取結果。",
+      reload_failed: "未能讀取結果；保留操作參考，請稍後再讀取。",
+      preview_failed: "無法建立預覽",
+      apply_unconfirmed: "操作回應未確認；先重新讀取已保存結果。",
+      apply_result_unconfirmed: "操作結果未確認；保留操作參考，重新讀取成功前暫停套用。",
+    });
+    for (const messages of [tagBulkCopy.en.errors, supporterAssignmentCopy.en.errors]) {
+      for (const message of Object.values(messages)) expect(message.length).toBeGreaterThan(20);
+    }
   });
 
   test("write counts with a singular for one and a plural for the rest", () => {

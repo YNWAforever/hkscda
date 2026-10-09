@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { BulkReview } from "../bulk/BulkReview";
 import type { CrmAssignmentBulkOperation } from "../../../routes/api/admin/supporters/assignment-bulk";
 import type { CrmAssignmentAssignee } from "../../../routes/api/admin/supporters/assignment-assignees";
+import { adminErrorMessage } from "../../../lib/admin/session";
+import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
-import { errorTextCopy } from "../i18n/errorTextCopy";
 import { fetchAdminJson } from "./api";
 import { supporterAssignmentCopy } from "./bulkCopy";
 
@@ -12,15 +13,18 @@ const endpoint = "/api/admin/supporters/assignment-bulk";
 const savedOperationPrefix = "crm-assignment-bulk-operation";
 
 /**
- * Why the panel shows an error. It is kept as a code, with the caught error where the message
- * comes from the server, and written from the copy when the panel renders.
+ * Why the panel shows an error. It is kept as a code (the key of `copy.errors`), with the caught
+ * error where the server may have given a reason, and written when the panel renders.
  */
-type PanelError =
-  | { code: "restore_failed" }
-  | { code: "reload_failed" }
-  | { code: "preview_failed"; cause: unknown }
-  | { code: "apply_unconfirmed" }
-  | { code: "apply_result_unconfirmed" };
+type PanelError = {
+  code:
+    | "restore_failed"
+    | "reload_failed"
+    | "preview_failed"
+    | "apply_unconfirmed"
+    | "apply_result_unconfirmed";
+  cause?: unknown;
+};
 
 export function CrmAssignmentBulkPanel({
   actorUserId,
@@ -36,7 +40,7 @@ export function CrmAssignmentBulkPanel({
   selectionDisabled: boolean;
 }) {
   const copy = useAdminCopy(supporterAssignmentCopy);
-  const errorText = useAdminCopy(errorTextCopy);
+  const { language } = useAdminLanguage();
   const [assignees, setAssignees] = useState<CrmAssignmentAssignee[]>([]);
   const [assigneeUserId, setAssigneeUserId] = useState("");
   const [operation, setOperation] = useState<CrmAssignmentBulkOperation | null>(null);
@@ -218,16 +222,10 @@ export function CrmAssignmentBulkPanel({
 
   const assigneeLabel = (id: string | null) =>
     id ? (assignees.find((person) => person.authUserId === id)?.email ?? id) : copy.unassigned;
+  // A reason the server gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? error.code === "restore_failed"
-      ? copy.savedOperationFailed
-      : error.code === "reload_failed"
-        ? copy.reloadFailed
-        : error.code === "preview_failed"
-          ? errorText.describe(error.cause, copy.previewFailed)
-          : error.code === "apply_unconfirmed"
-            ? copy.applyUnconfirmed
-            : copy.applyResultUnconfirmed
+    ? ((error.cause === undefined ? null : adminErrorMessage(error.cause, language)) ??
+      copy.errors[error.code])
     : "";
   return (
     <section
