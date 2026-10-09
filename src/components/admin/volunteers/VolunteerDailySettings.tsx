@@ -4,7 +4,15 @@ import { WorkflowSections } from "./WorkflowSections";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import { undecidedSetting } from "../../../lib/volunteers/policy/messages";
 import { getPolicyReadiness, type PolicyDraft } from "../../../lib/volunteers/policy/schemas";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { dailySettingsCopy, scopeVenue, type DailyNotice } from "./dailySettingsCopy";
+import { policyCommonCopy } from "./policyCommonCopy";
+import { policyFormatCopy } from "./policyFormatCopy";
+import { isNamedShelter } from "./volunteerCommonCopy";
 type Daily = PolicyDraft["daily_limits"][number];
 type Binding = {
   scope_key: string;
@@ -17,12 +25,23 @@ type Binding = {
   activities: { id: string; title: string; starts_at: string }[];
 };
 type Listing = { bindings: Binding[]; credentials: { key: string; label: string }[] };
-type Preview = {
+export type DailyPreview = {
   preview_id: string;
   occupied: number;
   before: Daily;
   after: Daily;
   activity_ids: string[];
+};
+/**
+ * Where the screen starts, for a test or a preview of the screen. In the browser the screen starts
+ * with nothing chosen and fills itself from the date the staff member picks, so nothing passes this.
+ */
+export type DailySettingsInitial = {
+  selection?: string;
+  draft?: PolicyDraft;
+  dirty?: boolean;
+  preview?: DailyPreview;
+  notice?: DailyNotice;
 };
 const api = <T,>(body: object) =>
   fetchAdminJson<T>("/api/admin/volunteers/daily-settings", {
@@ -34,10 +53,7 @@ const input =
 const button =
   "min-h-11 rounded-md border border-[var(--color-border)] px-4 py-2 text-sm font-semibold disabled:opacity-50";
 const tiers = ["newcomer", "regular", "senior"] as const;
-const tierName = { newcomer: "新手", regular: "恆常", senior: "資深" };
-const days = ["日", "一", "二", "三", "四", "五", "六"];
-const limitText = (v: Daily["maximum"]) =>
-  v.state === "value" ? String(v.value) : v.state === "unlimited" ? "無上限" : "未決定";
+const days = [0, 1, 2, 3, 4, 5, 6];
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1">
@@ -46,19 +62,23 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
-export function VolunteerDailySettings() {
+export function VolunteerDailySettings({ initial }: { initial?: DailySettingsInitial } = {}) {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(dailySettingsCopy, language);
+  const common = pickAdminCopy(policyCommonCopy, language);
+  const format = pickAdminCopy(policyFormatCopy, language);
   const qc = useQueryClient();
   const listing = useQuery({
     queryKey: ["volunteer-daily-settings"],
     queryFn: () => api<Listing>({ action: "list" }),
   });
-  const [selection, setSelection] = useState("");
-  const [draft, setDraft] = useState<PolicyDraft>();
-  const [dirty, setDirty] = useState(false);
-  const [preview, setPreview] = useState<Preview>();
+  const [selection, setSelection] = useState(initial?.selection ?? "");
+  const [draft, setDraft] = useState<PolicyDraft | undefined>(initial?.draft);
+  const [dirty, setDirty] = useState(initial?.dirty ?? false);
+  const [preview, setPreview] = useState<DailyPreview | undefined>(initial?.preview);
   const [publishKey, setPublishKey] = useState("");
   const [reason, setReason] = useState("");
-  const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState<DailyNotice | undefined>(initial?.notice);
   const binding = listing.data?.bindings.find(
     (b) => `${b.scope_key}|${b.service_date}` === selection,
   );
@@ -79,17 +99,17 @@ export function VolunteerDailySettings() {
     setDraft(next);
     setDirty(true);
     setPreview(undefined);
-    setMessage("");
+    setNotice(undefined);
   };
   const editQuota = (change: (q: Daily) => void) =>
     edit((p) => {
       const q = p.daily_limits.find((q) => q.key === binding?.body.key);
       if (q) change(q);
     });
-  const readiness = draft ? getPolicyReadiness(draft) : undefined;
+  const readiness = draft ? getPolicyReadiness(draft, language) : undefined;
   const pre = useMutation({
     mutationFn: () =>
-      api<Preview>({
+      api<DailyPreview>({
         action: "preview",
         scope_key: binding!.scope_key,
         service_date: binding!.service_date,
@@ -99,7 +119,7 @@ export function VolunteerDailySettings() {
     onSuccess: (p) => {
       setPreview(p);
       setPublishKey(crypto.randomUUID());
-      setMessage("全日影響預覽已更新；請核對後發布。");
+      setNotice("preview_updated");
     },
   });
   const publish = useMutation({
@@ -113,7 +133,7 @@ export function VolunteerDailySettings() {
     onSuccess: () => {
       setDirty(false);
       setPreview(undefined);
-      setMessage("全日配額已發布；同一天所有場次立即使用同一修訂。");
+      setNotice("published");
       void qc.invalidateQueries({ queryKey: ["volunteer-daily-settings"] });
       void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
       void qc.invalidateQueries({ queryKey: ["volunteer-calendar"] });
@@ -121,70 +141,80 @@ export function VolunteerDailySettings() {
     onError: () => setPreview(undefined),
   });
   const error = listing.error ?? pre.error ?? publish.error;
+  const lookups = {
+    credentials: Object.fromEntries((listing.data?.credentials ?? []).map((c) => [c.key, c.label])),
+  };
+  // The venues English has no name for, once each, so the list of dates can tell them apart.
+  const unnamedVenues = [
+    ...new Set(
+      (listing.data?.bindings ?? [])
+        .filter((b) => !b.scope_key.startsWith("all:"))
+        .map((b) => scopeVenue(b.scope_key))
+        .filter((key) => !isNamedShelter(key)),
+    ),
+  ];
+  const scopeLabel = (scopeKey: string) =>
+    copy.scopeName(scopeKey, {
+      position: unnamedVenues.indexOf(scopeVenue(scopeKey)) + 1,
+      total: unnamedVenues.length,
+    });
   return (
     <div className="space-y-6 p-4 md:p-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold">全日義工配額</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          同一範圍及日期的場次共用同一配額。先預覽全日名單影響，再發布；不會自動取消已有報名。
-        </p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         <a className="underline" href="/admin/volunteers/settings">
-          返回義工政策設定
+          {copy.back}
         </a>
       </header>
       <WorkflowSections
         sections={[
-          { id: "daily-quota", label: "全日配額" },
-          { id: "daily-release", label: "晚期補位" },
-          { id: "daily-publish", label: "發布核對" },
+          { id: "daily-quota", label: copy.sections.quota },
+          { id: "daily-release", label: copy.sections.release },
+          { id: "daily-publish", label: copy.sections.publish },
         ]}
       />
-      {listing.isLoading && <p>讀取全日設定中…</p>}
-      {error && (
-        <p role="alert">{error instanceof Error ? error.message : "未能處理設定，請重試。"}</p>
-      )}
-      {message && <p role="status">{message}</p>}
+      {listing.isLoading && <p>{copy.loading}</p>}
+      {error && <p role="alert">{volunteerAdminErrorMessage(error, language) ?? copy.failed}</p>}
+      {notice && <p role="status">{copy.notices[notice]}</p>}
       <span id="daily-quota" />
-      <Field label="選擇日期及配額">
+      <Field label={copy.choose}>
         <select
           className={input}
           value={selection}
           disabled={dirty || publish.isPending}
           onChange={(e) => setSelection(e.target.value)}
         >
-          <option value="">請選擇</option>
+          <option value="">{copy.pleaseChoose}</option>
           {listing.data?.bindings.map((b) => (
             <option
               key={`${b.scope_key}|${b.service_date}`}
               value={`${b.scope_key}|${b.service_date}`}
             >
-              {b.service_date} ·{" "}
-              {b.scope_key.startsWith("all:")
-                ? "跨場地"
-                : b.scope_key.startsWith("dog:")
-                  ? "狗舍"
-                  : "貓舍"}{" "}
-              · {b.body.tiers.map((t) => tierName[t]).join("／")}每日配額
+              {copy.option(
+                format.day(b.service_date),
+                scopeLabel(b.scope_key),
+                b.body.tiers.map((t) => common.tiers[t]).join(copy.tierSeparator),
+              )}
             </option>
           ))}
         </select>
       </Field>
-      {listing.data?.bindings.length === 0 && (
-        <p>尚未生成設有每日配額的場次。請先在義工政策設定發布政策及建立場次。</p>
-      )}
+      {listing.data?.bindings.length === 0 && <p>{copy.none}</p>}
       {binding && quota && draft && (
         <>
           <section className="space-y-4 rounded-lg border bg-white p-4">
             <h2 className="text-lg font-bold">
-              {binding.service_date} · 修訂 {binding.revision}
-              {dirty ? "（尚未發布）" : ""}
+              {copy.heading(format.day(binding.service_date), binding.revision, dirty)}
             </h2>
             <p>
-              目前每日上限：{limitText(binding.body.maximum)}。共有 {binding.activities.length}{" "}
-              場受同一配額影響。
+              {copy.current(
+                copy.limit(binding.body.maximum.state, valueOf(binding.body.maximum)),
+                binding.activities.length,
+              )}
             </p>
             <div className="grid gap-4 md:grid-cols-3">
-              <Field label="每日名額模式">
+              <Field label={copy.fields.mode}>
                 <select
                   className={input}
                   value={quota.maximum.state}
@@ -200,11 +230,11 @@ export function VolunteerDailySettings() {
                     })
                   }
                 >
-                  <option value="value">指定數量</option>
-                  <option value="unlimited">無上限</option>
+                  <option value="value">{copy.fields.modeOptions.value}</option>
+                  <option value="unlimited">{copy.fields.modeOptions.unlimited}</option>
                 </select>
               </Field>
-              <Field label="每日名額">
+              <Field label={copy.fields.places}>
                 <input
                   className={input}
                   type="number"
@@ -219,7 +249,7 @@ export function VolunteerDailySettings() {
                   }
                 />
               </Field>
-              <Field label="計數方式">
+              <Field label={copy.fields.counting}>
                 <select
                   className={input}
                   value={typeof quota.count_mode === "string" ? quota.count_mode : "unresolved"}
@@ -231,15 +261,17 @@ export function VolunteerDailySettings() {
                   }
                 >
                   <option value="unresolved" disabled>
-                    未決定
+                    {copy.fields.countingOptions.undecided}
                   </option>
-                  <option value="distinct_people">同一人全日計一次</option>
-                  <option value="attendances">每個確認時段計一次</option>
+                  <option value="distinct_people">
+                    {copy.fields.countingOptions.distinct_people}
+                  </option>
+                  <option value="attendances">{copy.fields.countingOptions.attendances}</option>
                 </select>
               </Field>
             </div>
             <fieldset>
-              <legend className="text-sm font-semibold">受配額限制的級別</legend>
+              <legend className="text-sm font-semibold">{copy.fields.tiers}</legend>
               {tiers.map((t) => (
                 <label className="mr-4 inline-flex min-h-11 items-center gap-2" key={t}>
                   <input
@@ -253,7 +285,7 @@ export function VolunteerDailySettings() {
                       })
                     }
                   />
-                  {tierName[t]}
+                  {common.tiers[t]}
                 </label>
               ))}
             </fieldset>
@@ -267,16 +299,14 @@ export function VolunteerDailySettings() {
                   })
                 }
               />
-              計入團體訪客人次（未有訪客身份時不可按不同人計數）
+              {copy.fields.groupVisitors}
             </label>
           </section>
           <section className="space-y-4 rounded-lg border bg-white p-4">
             <h2 id="daily-release" className="text-lg font-bold">
-              每日晚期補位
+              {copy.release.title}
             </h2>
-            <p className="text-sm">
-              只放寬每日分項；各場總容量、必要資格及報名截止仍然適用。門檻按同一範圍全日已確認人次計算。
-            </p>
+            <p className="text-sm">{copy.release.text}</p>
             {draft.release_rules.map((r, i) =>
               !("state" in r) &&
               r.action.type === "relax_quota" &&
@@ -284,7 +314,7 @@ export function VolunteerDailySettings() {
               r.action.quota === quota.key ? (
                 <div key={r.key} className="space-y-3 rounded-md border p-3">
                   <div className="grid gap-3 md:grid-cols-4">
-                    <Field label="釋放方式">
+                    <Field label={copy.release.semantics}>
                       <select
                         className={input}
                         value={typeof r.semantics === "string" ? r.semantics : ""}
@@ -297,16 +327,16 @@ export function VolunteerDailySettings() {
                                   ? "once"
                                   : e.target.value === "dynamic"
                                     ? "dynamic"
-                                    : { state: "unresolved", reason: "請選擇釋放方式" };
+                                    : undecidedSetting("pick_release_semantics");
                           })
                         }
                       >
-                        <option value="">待設定</option>
-                        <option value="dynamic">動態重新計算</option>
-                        <option value="once">一次釋放後不收回</option>
+                        <option value="">{copy.release.semanticsOptions.notSet}</option>
+                        <option value="dynamic">{copy.release.semanticsOptions.dynamic}</option>
+                        <option value="once">{copy.release.semanticsOptions.once}</option>
                       </select>
                     </Field>
-                    <Field label="開始前小時">
+                    <Field label={copy.release.hours}>
                       <input
                         className={input}
                         type="number"
@@ -320,7 +350,7 @@ export function VolunteerDailySettings() {
                         }
                       />
                     </Field>
-                    <Field label="全日時段基準">
+                    <Field label={copy.release.anchor}>
                       <select
                         className={input}
                         value={
@@ -336,16 +366,20 @@ export function VolunteerDailySettings() {
                                 e.target.value === "first_session" ||
                                 e.target.value === "last_session"
                                   ? e.target.value
-                                  : { state: "unresolved", reason: "請選擇全日時間基準" };
+                                  : undecidedSetting("pick_daily_anchor");
                           })
                         }
                       >
-                        <option value="unresolved">未決定</option>
-                        <option value="first_session">當日首場</option>
-                        <option value="last_session">當日末場</option>
+                        <option value="unresolved">{copy.release.anchorOptions.unresolved}</option>
+                        <option value="first_session">
+                          {copy.release.anchorOptions.first_session}
+                        </option>
+                        <option value="last_session">
+                          {copy.release.anchorOptions.last_session}
+                        </option>
                       </select>
                     </Field>
-                    <Field label="門檻比較">
+                    <Field label={copy.release.operator}>
                       <select
                         className={input}
                         value={r.condition.operator}
@@ -357,11 +391,11 @@ export function VolunteerDailySettings() {
                           })
                         }
                       >
-                        <option value="lt">少於</option>
-                        <option value="lte">不多於</option>
+                        <option value="lt">{copy.release.operatorOptions.lt}</option>
+                        <option value="lte">{copy.release.operatorOptions.lte}</option>
                       </select>
                     </Field>
-                    <Field label="已確認人次門檻">
+                    <Field label={copy.release.threshold}>
                       <input
                         className={input}
                         type="number"
@@ -379,7 +413,7 @@ export function VolunteerDailySettings() {
                     </Field>
                   </div>
                   <fieldset>
-                    <legend>門檻計算的級別</legend>
+                    <legend>{copy.release.thresholdTiers}</legend>
                     {tiers.map((t) => (
                       <label key={t} className="mr-4 inline-flex min-h-11 items-center gap-2">
                         <input
@@ -395,11 +429,11 @@ export function VolunteerDailySettings() {
                             })
                           }
                         />
-                        {tierName[t]}
+                        {common.tiers[t]}
                       </label>
                     ))}
                   </fieldset>
-                  <Field label="補位後每日上限">
+                  <Field label={copy.release.newMaximum}>
                     <input
                       className={input}
                       type="number"
@@ -416,7 +450,7 @@ export function VolunteerDailySettings() {
                     />
                   </Field>
                   <fieldset>
-                    <legend>可補位級別</legend>
+                    <legend>{copy.release.receivingTiers}</legend>
                     {quota.tiers.map((t) => (
                       <label key={t} className="mr-4 inline-flex min-h-11 items-center gap-2">
                         <input
@@ -432,11 +466,11 @@ export function VolunteerDailySettings() {
                             })
                           }
                         />
-                        {tierName[t]}
+                        {common.tiers[t]}
                       </label>
                     ))}
                   </fieldset>
-                  <Field label="補位資格組合">
+                  <Field label={copy.release.credentialMode}>
                     <select
                       className={input}
                       value={r.credentials.mode}
@@ -448,12 +482,12 @@ export function VolunteerDailySettings() {
                         })
                       }
                     >
-                      <option value="all">全部所選資格</option>
-                      <option value="any">任何所選資格</option>
+                      <option value="all">{copy.release.credentialModeOptions.all}</option>
+                      <option value="any">{copy.release.credentialModeOptions.any}</option>
                     </select>
                   </Field>
                   <fieldset>
-                    <legend>必要補位資格</legend>
+                    <legend>{copy.release.credentials}</legend>
                     {listing.data?.credentials.map((c) => (
                       <label key={c.key} className="mr-4 inline-flex min-h-11 items-center gap-2">
                         <input
@@ -473,7 +507,7 @@ export function VolunteerDailySettings() {
                       </label>
                     ))}
                   </fieldset>
-                  <Field label="星期限制">
+                  <Field label={copy.release.weekdayMode}>
                     <select
                       className={input}
                       value={Array.isArray(r.weekdays) ? "override" : "preserve"}
@@ -486,15 +520,15 @@ export function VolunteerDailySettings() {
                         })
                       }
                     >
-                      <option value="preserve">保留原有星期限制</option>
-                      <option value="override">按以下補位星期</option>
+                      <option value="preserve">{copy.release.weekdayModeOptions.preserve}</option>
+                      <option value="override">{copy.release.weekdayModeOptions.override}</option>
                     </select>
                   </Field>
                   {Array.isArray(r.weekdays) && (
                     <fieldset>
-                      <legend>補位星期</legend>
-                      {days.map((d, n) => (
-                        <label key={d} className="mr-3 inline-flex min-h-11 items-center gap-2">
+                      <legend>{copy.release.weekdays}</legend>
+                      {days.map((n) => (
+                        <label key={n} className="mr-3 inline-flex min-h-11 items-center gap-2">
                           <input
                             type="checkbox"
                             checked={Array.isArray(r.weekdays) && r.weekdays.includes(n)}
@@ -508,7 +542,7 @@ export function VolunteerDailySettings() {
                               })
                             }
                           />
-                          週{d}
+                          {common.weekday(n)}
                         </label>
                       ))}
                     </fieldset>
@@ -521,7 +555,7 @@ export function VolunteerDailySettings() {
                       })
                     }
                   >
-                    移除此補位規則
+                    {copy.release.remove}
                   </button>
                 </div>
               ) : null,
@@ -539,7 +573,7 @@ export function VolunteerDailySettings() {
                     condition: {
                       tiers: ["regular", "senior"],
                       operator: "lt",
-                      threshold: { state: "unresolved", reason: "請填寫熟手不足門檻" },
+                      threshold: undecidedSetting("enter_experienced_threshold"),
                     },
                     action: {
                       type: "relax_quota",
@@ -547,7 +581,7 @@ export function VolunteerDailySettings() {
                       scope: quota.scope,
                       new_maximum:
                         p.capacity.volunteers.state === "value" ? p.capacity.volunteers.value : 1,
-                      daily_anchor: { state: "unresolved", reason: "請選擇首場或末場" },
+                      daily_anchor: undecidedSetting("pick_first_or_last"),
                     },
                     allowed_tiers: [...quota.tiers],
                     credentials: { mode: "all", keys: [] },
@@ -556,13 +590,13 @@ export function VolunteerDailySettings() {
                 })
               }
             >
-              新增每日補位規則
+              {copy.release.add}
             </button>
           </section>
           {readiness && !readiness.ready && (
             <ul role="alert">
-              {readiness.issues.map((x) => (
-                <li key={x.path}>{x.message}</li>
+              {readiness.issues.map((x, i) => (
+                <li key={`${i}:${x.path}`}>{x.message}</li>
               ))}
             </ul>
           )}
@@ -572,7 +606,7 @@ export function VolunteerDailySettings() {
               disabled={!readiness?.ready || pre.isPending || publish.isPending}
               onClick={() => pre.mutate()}
             >
-              預覽全日影響
+              {copy.preview}
             </button>
             <button
               className={button}
@@ -583,35 +617,37 @@ export function VolunteerDailySettings() {
                 setPreview(undefined);
               }}
             >
-              放棄未發布變更
+              {copy.discard}
             </button>
           </div>
           {preview && (
             <section className="space-y-4 rounded-lg border bg-white p-4">
               <h2 id="daily-publish" className="text-lg font-bold">
-                發布前核對
+                {copy.publish.title}
               </h2>
-              <PolicyChangeSummary before={preview.before} after={preview.after} />
+              <PolicyChangeSummary
+                before={preview.before}
+                after={preview.after}
+                lookups={lookups}
+              />
               <p>
-                每日名額由 {limitText(preview.before.maximum)} 改為{" "}
-                {limitText(preview.after.maximum)}；目前已計 {preview.occupied}，適用全日{" "}
-                {preview.activity_ids.length} 場。以上補位設定亦會取代當日版本。
+                {copy.publish.summary(
+                  copy.limit(preview.before.maximum.state, valueOf(preview.before.maximum)),
+                  copy.limit(preview.after.maximum.state, valueOf(preview.after.maximum)),
+                  preview.occupied,
+                  preview.activity_ids.length,
+                )}
               </p>
               <ul>
                 {binding.activities
                   .filter((a) => preview.activity_ids.includes(a.id))
                   .map((a) => (
                     <li key={a.id}>
-                      {a.title} ·{" "}
-                      {new Date(a.starts_at).toLocaleTimeString("zh-HK", {
-                        timeZone: binding.timezone,
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {a.title} · {format.dailyClock(a.starts_at, binding.timezone)}
                     </li>
                   ))}
               </ul>
-              <Field label="發布原因">
+              <Field label={copy.publish.reason}>
                 <textarea
                   className={input}
                   maxLength={1000}
@@ -624,7 +660,7 @@ export function VolunteerDailySettings() {
                 disabled={!reason.trim() || publish.isPending}
                 onClick={() => publish.mutate()}
               >
-                確認發布全日配額
+                {copy.publish.confirm}
               </button>
             </section>
           )}
@@ -632,4 +668,8 @@ export function VolunteerDailySettings() {
       )}
     </div>
   );
+}
+/** The number in a limit that has one. */
+function valueOf(limit: Daily["maximum"]): number | undefined {
+  return limit.state === "value" ? limit.value : undefined;
 }

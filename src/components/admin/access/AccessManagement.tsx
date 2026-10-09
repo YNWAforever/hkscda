@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import type { AdminRole, AdminStatus } from "../../../lib/admin/access";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -20,6 +21,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatFigure } from "../LoadFailure";
 import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { accessCopy } from "./copy";
 
 type AdminAccessUser = {
   id: string;
@@ -54,103 +57,7 @@ type AccessAuditResponse = {
   hasMore: boolean;
 };
 
-const copy = {
-  zh: {
-    title: "權限管理",
-    subtitle: "管理後台使用者、邀請及最近權限變更紀錄。",
-    invite: "邀請使用者",
-    inviteDescription: "Supabase 會向此電郵發送管理後台邀請。",
-    email: "電郵",
-    role: "角色",
-    status: "狀態",
-    invited: "邀請時間",
-    updated: "更新時間",
-    actions: "操作",
-    active: "啟用",
-    pending: "待接受邀請",
-    disabled: "已停用",
-    activeAdmins: "啟用使用者",
-    pendingInvites: "待接受邀請",
-    disabledUsers: "已停用使用者",
-    audit: "最近紀錄",
-    noAudit: "未有權限管理紀錄。",
-    noUsers: "沒有管理員紀錄",
-    submitInvite: "發送邀請",
-    sending: "發送中...",
-    resend: "重發",
-    disable: "停用",
-    reactivate: "重新啟用",
-    currentUser: "你",
-    genericError: "操作失敗，請稍後再試。",
-    roles: {
-      staff: "職員",
-      treasurer: "司庫",
-      admin: "管理員",
-    },
-    actionLabels: {
-      "admin_user.invite": "邀請",
-      "admin_user.invite_resend": "重發邀請",
-      "admin_user.role_update": "更新角色",
-      "admin_user.disable": "停用",
-      "admin_user.reactivate": "重新啟用",
-      "admin_user.activate_from_invite": "接受邀請",
-      "admin_user.update": "更新",
-    },
-  },
-  en: {
-    title: "Access Management",
-    subtitle: "Manage admin users, invitations, and recent access changes.",
-    invite: "Invite user",
-    inviteDescription: "Supabase will send an admin-panel invitation to this email.",
-    email: "Email",
-    role: "Role",
-    status: "Status",
-    invited: "Invited",
-    updated: "Updated",
-    actions: "Actions",
-    active: "Active",
-    pending: "Pending invite",
-    disabled: "Disabled",
-    activeAdmins: "Active users",
-    pendingInvites: "Pending invites",
-    disabledUsers: "Disabled users",
-    audit: "Recent history",
-    noAudit: "No access-management history yet.",
-    noUsers: "No admin users found",
-    submitInvite: "Send invite",
-    sending: "Sending...",
-    resend: "Resend",
-    disable: "Disable",
-    reactivate: "Reactivate",
-    currentUser: "You",
-    genericError: "The action failed. Please try again.",
-    roles: {
-      staff: "Staff",
-      treasurer: "Treasurer",
-      admin: "Admin",
-    },
-    actionLabels: {
-      "admin_user.invite": "Invited",
-      "admin_user.invite_resend": "Resent invite",
-      "admin_user.role_update": "Changed role",
-      "admin_user.disable": "Disabled",
-      "admin_user.reactivate": "Reactivated",
-      "admin_user.activate_from_invite": "Accepted invite",
-      "admin_user.update": "Updated",
-    },
-  },
-} as const;
-
 const roles: AdminRole[] = ["staff", "treasurer", "admin"];
-
-function formatDateTime(value: string | null, locale: "zh" | "en") {
-  if (!value) return "—";
-  return new Intl.DateTimeFormat(locale === "zh" ? "zh-HK" : "en-HK", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Hong_Kong",
-  }).format(new Date(value));
-}
 
 function statusTone(status: AdminStatus) {
   if (status === "active") return "bg-[var(--color-success-highlight)] text-[var(--color-success)]";
@@ -165,7 +72,7 @@ function actionLabel(action: string, labels: Record<string, string>) {
 
 export function AccessManagement() {
   const { language } = useAdminLanguage();
-  const t = copy[language];
+  const t = pickAdminCopy(accessCopy, language);
   const queryClient = useQueryClient();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -205,7 +112,7 @@ export function AccessManagement() {
       await invalidate();
     },
     onError: (mutationError) =>
-      setError(mutationError instanceof Error ? mutationError.message : t.genericError),
+      setError(adminErrorMessage(mutationError, language) ?? t.genericError),
   });
 
   const updateMutation = useMutation({
@@ -222,7 +129,7 @@ export function AccessManagement() {
       }),
     onSuccess: invalidate,
     onError: (mutationError) =>
-      setError(mutationError instanceof Error ? mutationError.message : t.genericError),
+      setError(adminErrorMessage(mutationError, language) ?? t.genericError),
   });
 
   const resendMutation = useMutation({
@@ -232,7 +139,7 @@ export function AccessManagement() {
       }),
     onSuccess: invalidate,
     onError: (mutationError) =>
-      setError(mutationError instanceof Error ? mutationError.message : t.genericError),
+      setError(adminErrorMessage(mutationError, language) ?? t.genericError),
   });
 
   const users = usersQuery.data?.users ?? [];
@@ -287,12 +194,12 @@ export function AccessManagement() {
     {
       id: "invited",
       header: t.invited,
-      cell: (user) => formatDateTime(user.inviteSentAt ?? user.invitedAt, language),
+      cell: (user) => t.dateTime(user.inviteSentAt ?? user.invitedAt),
     },
     {
       id: "updated",
       header: t.updated,
-      cell: (user) => formatDateTime(user.updatedAt, language),
+      cell: (user) => t.dateTime(user.updatedAt),
     },
     {
       id: "actions",
@@ -444,22 +351,23 @@ export function AccessManagement() {
         <h2 className="text-base font-semibold text-[var(--color-panel)]">{t.audit}</h2>
         {auditQuery.error && (
           <p role="alert">
-            未能載入紀錄。<button onClick={() => void auditQuery.refetch()}>重試</button>
+            {t.auditLoadError}
+            <button onClick={() => void auditQuery.refetch()}>{t.retry}</button>
           </p>
         )}
-        <nav aria-label="權限紀錄分頁" className="flex gap-3">
+        <nav aria-label={t.auditPagerLabel} className="flex gap-3">
           <button
             disabled={auditPage === 1 || auditQuery.isFetching}
             onClick={() => setAuditPage((page) => page - 1)}
           >
-            上一頁
+            {t.previous}
           </button>
-          <span>第 {auditPage} 頁</span>
+          <span>{t.auditPage(auditPage)}</span>
           <button
             disabled={!auditQuery.data?.hasMore || auditQuery.isFetching}
             onClick={() => setAuditPage((page) => page + 1)}
           >
-            下一頁
+            {t.next}
           </button>
         </nav>
         <div className="mt-3 space-y-2">
@@ -475,8 +383,7 @@ export function AccessManagement() {
                   {actionLabel(row.action, t.actionLabels)}
                 </span>
                 <span className="text-[var(--color-text-muted)]">
-                  {String(row.detail.targetEmail ?? row.entityId)} ·{" "}
-                  {formatDateTime(row.timestamp, language)}
+                  {String(row.detail.targetEmail ?? row.entityId)} · {t.dateTime(row.timestamp)}
                 </span>
               </div>
             ))

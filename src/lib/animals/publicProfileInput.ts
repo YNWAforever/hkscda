@@ -1,3 +1,4 @@
+import type { AdminLanguage } from "../admin/language";
 import type { AnimalPublicProfile } from "../../types/animal";
 import { parsePublicAnimalProfile } from "./publicProfile";
 
@@ -106,16 +107,32 @@ export function buildPublicProfile(fields: PublicProfileFields): PublicProfileBu
   return rejected.length > 0 ? { ok: false, rejected } : { ok: true, profile: candidate };
 }
 
-/** Field labels for the rejection message, in the product's primary language. */
-export const PUBLIC_PROFILE_LABELS: Record<keyof PublicProfileFields, string> = {
-  code: "編號",
-  birthday: "出生日期",
-  neutered: "絕育狀態",
-  suitability: "適合的領養者",
-  recordDate: "記錄日期",
-  personality: "性格",
-  health: "照顧與健康需要",
-  sponsorUse: "助養用途",
-  recentProgress: "近況",
-  story: "牠的故事",
+/**
+ * Field labels for the rejection message and the saved-version preview, keyed by field.
+ * Chinese is the product's primary language and the default.
+ */
+const PUBLIC_PROFILE_LABELS: Record<keyof PublicProfileFields, Record<AdminLanguage, string>> = {
+  code: { zh: "編號", en: "Reference number" },
+  birthday: { zh: "出生日期", en: "Date of birth" },
+  neutered: { zh: "絕育狀態", en: "Neutered status" },
+  suitability: { zh: "適合的領養者", en: "Suitable adopter" },
+  recordDate: { zh: "記錄日期", en: "Record date" },
+  personality: { zh: "性格", en: "Personality" },
+  health: { zh: "照顧與健康需要", en: "Care and health needs" },
+  sponsorUse: { zh: "助養用途", en: "Sponsorship use" },
+  recentProgress: { zh: "近況", en: "Recent progress" },
+  story: { zh: "牠的故事", en: "Story" },
 };
+
+/** The label of one public profile field in the admin's language (Chinese by default). */
+export function publicProfileLabel(
+  key: keyof PublicProfileFields,
+  language: AdminLanguage = "zh",
+): string {
+  return PUBLIC_PROFILE_LABELS[key][language];
+}
+
+/** Whether `key` names a public profile field, for keys that arrive from stored JSON. */
+export function isPublicProfileField(key: string): key is keyof PublicProfileFields {
+  return Object.hasOwn(PUBLIC_PROFILE_LABELS, key);
+}

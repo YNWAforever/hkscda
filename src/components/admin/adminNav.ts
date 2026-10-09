@@ -43,11 +43,42 @@ export type AdminNavGroup =
   | "promotion"
   | "system";
 
+/**
+ * Every navigation item id. The shared copy (`adminCommonCopy.navItems`) is keyed by this
+ * union, so `tsc` fails when an item has no label in either language. Item and group names
+ * are copy, not data: they are read from there, never stored on the item.
+ */
+export type AdminNavItemId =
+  | "sponsorship-pledges"
+  | "internships"
+  | "cat"
+  | "dog"
+  | "sponsor"
+  | "applications"
+  | "coordinator-inbox"
+  | "coordinator-intake"
+  | "coordinator-tasks"
+  | "coordinator-adopters"
+  | "coordinator-reports"
+  | "coordinator-statuses"
+  | "volunteers"
+  | "volunteer-settings"
+  | "volunteer-group-enquiries"
+  | "payments"
+  | "payment-methods"
+  | "supporters"
+  | "content"
+  | "adoption-information"
+  | "knowledge"
+  | "governance"
+  | "faq"
+  | "about-pages"
+  | "access-management";
+
 export type AdminNavItem = {
-  id: string;
+  id: AdminNavItemId;
   section: AdminSection;
   group: AdminNavGroup;
-  label: string;
   icon: LucideIcon;
   to: string;
   activePath?: string;
@@ -55,16 +86,15 @@ export type AdminNavItem = {
 
 export const ADMIN_NAV_GROUPS: {
   id: AdminNavGroup;
-  label: string;
   icon: LucideIcon;
-  defaultItemId: string;
+  defaultItemId: AdminNavItemId;
 }[] = [
-  { id: "animals", label: "動物管理", icon: Cat, defaultItemId: "cat" },
-  { id: "adoptions", label: "領養管理", icon: ClipboardList, defaultItemId: "applications" },
-  { id: "volunteers", label: "義工與實習", icon: CalendarDays, defaultItemId: "volunteers" },
-  { id: "donations", label: "捐款與助養", icon: HandCoins, defaultItemId: "payments" },
-  { id: "promotion", label: "網站內容", icon: Megaphone, defaultItemId: "content" },
-  { id: "system", label: "系統設定", icon: Settings2, defaultItemId: "access-management" },
+  { id: "animals", icon: Cat, defaultItemId: "cat" },
+  { id: "adoptions", icon: ClipboardList, defaultItemId: "applications" },
+  { id: "volunteers", icon: CalendarDays, defaultItemId: "volunteers" },
+  { id: "donations", icon: HandCoins, defaultItemId: "payments" },
+  { id: "promotion", icon: Megaphone, defaultItemId: "content" },
+  { id: "system", icon: Settings2, defaultItemId: "access-management" },
 ];
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
@@ -72,7 +102,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "sponsorship-pledges",
     section: "payments",
     group: "donations",
-    label: "助養收款及配對",
     icon: HandCoins,
     to: "/admin/sponsorships",
     activePath: "/admin/sponsorships",
@@ -81,7 +110,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "internships",
     section: "volunteers",
     group: "volunteers",
-    label: "實習申請",
     icon: ClipboardList,
     to: "/admin/internships",
     activePath: "/admin/internships",
@@ -90,7 +118,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "cat",
     section: "cat",
     group: "animals",
-    label: "貓貓",
     icon: Cat,
     to: "/admin?section=cat",
   },
@@ -98,7 +125,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "dog",
     section: "dog",
     group: "animals",
-    label: "狗狗",
     icon: Dog,
     to: "/admin?section=dog",
   },
@@ -106,7 +132,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "sponsor",
     section: "sponsor",
     group: "animals",
-    label: "助養",
     icon: Heart,
     to: "/admin?section=sponsor",
   },
@@ -114,7 +139,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "applications",
     section: "applications",
     group: "adoptions",
-    label: "申請",
     icon: ClipboardList,
     to: "/admin/applications",
   },
@@ -122,7 +146,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "coordinator-inbox",
     section: "applications",
     group: "adoptions",
-    label: "收件箱",
     icon: Inbox,
     to: "/admin/coordinator/inbox",
     activePath: "/admin/coordinator/inbox",
@@ -131,7 +154,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "coordinator-intake",
     section: "applications",
     group: "adoptions",
-    label: "手動建案",
     icon: FilePlus2,
     to: "/admin/coordinator/intake",
     activePath: "/admin/coordinator/intake",
@@ -140,7 +162,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "coordinator-tasks",
     section: "applications",
     group: "adoptions",
-    label: "工作跟進",
     icon: ListTodo,
     to: "/admin/coordinator/tasks",
     activePath: "/admin/coordinator/tasks",
@@ -149,7 +170,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "coordinator-adopters",
     section: "applications",
     group: "adoptions",
-    label: "領養人",
     icon: Users,
     to: "/admin/coordinator/adopters",
     activePath: "/admin/coordinator/adopters",
@@ -158,7 +178,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "coordinator-reports",
     section: "applications",
     group: "adoptions",
-    label: "報表紀錄",
     icon: BarChart3,
     to: "/admin/coordinator/reports",
     activePath: "/admin/coordinator/reports",
@@ -167,7 +186,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "coordinator-statuses",
     section: "applications",
     group: "system",
-    label: "狀態設定",
     icon: Settings2,
     to: "/admin/coordinator/statuses",
     activePath: "/admin/coordinator/statuses",
@@ -176,7 +194,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "volunteers",
     section: "volunteers",
     group: "volunteers",
-    label: "義工",
     icon: CalendarDays,
     to: "/admin/volunteers",
     activePath: "/admin/volunteers",
@@ -185,7 +202,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "volunteer-settings",
     section: "volunteers",
     group: "volunteers",
-    label: "義工政策設定",
     icon: Settings2,
     to: "/admin/volunteers/settings",
     activePath: "/admin/volunteers/settings",
@@ -194,7 +210,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "volunteer-group-enquiries",
     section: "volunteers",
     group: "volunteers",
-    label: "團體查詢",
     icon: ClipboardPenLine,
     to: "/admin/volunteers/group-enquiries",
     activePath: "/admin/volunteers/group-enquiries",
@@ -203,7 +218,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "payments",
     section: "payments",
     group: "donations",
-    label: "收款",
     icon: Banknote,
     to: "/admin?section=payments",
   },
@@ -211,7 +225,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "payment-methods",
     section: "payments",
     group: "system",
-    label: "付款方式設定",
     icon: Settings2,
     to: "/admin/payment-methods",
     activePath: "/admin/payment-methods",
@@ -220,7 +233,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "supporters",
     section: "supporters",
     group: "donations",
-    label: "支持者",
     icon: HandCoins,
     to: "/admin/supporters",
   },
@@ -228,7 +240,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "content",
     section: "content",
     group: "promotion",
-    label: "宣傳內容",
     icon: Megaphone,
     to: "/admin/content",
   },
@@ -236,7 +247,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "adoption-information",
     section: "content",
     group: "promotion",
-    label: "領養資訊",
     icon: ClipboardPenLine,
     to: "/admin/content/adoption",
     activePath: "/admin/content/adoption",
@@ -245,7 +255,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "knowledge",
     section: "content",
     group: "promotion",
-    label: "知識庫",
     icon: ClipboardPenLine,
     to: "/admin/content/knowledge",
     activePath: "/admin/content/knowledge",
@@ -254,7 +263,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "governance",
     section: "content",
     group: "promotion",
-    label: "團隊與管治",
     icon: Users,
     to: "/admin/governance",
     activePath: "/admin/governance",
@@ -263,7 +271,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "faq",
     section: "content",
     group: "promotion",
-    label: "常見問題",
     icon: HelpCircle,
     to: "/admin/faq",
     activePath: "/admin/faq",
@@ -272,7 +279,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "about-pages",
     section: "content",
     group: "promotion",
-    label: "關於頁面",
     icon: FileText,
     to: "/admin/content/about",
     activePath: "/admin/content/about",
@@ -281,7 +287,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "access-management",
     section: "access",
     group: "system",
-    label: "權限管理",
     icon: ShieldCheck,
     to: "/admin/access",
     activePath: "/admin/access",
@@ -304,7 +309,6 @@ export function getActiveAdminNavItemIds(
 
 export type AdminNavigationGroup = {
   id: AdminNavGroup;
-  label: string;
   icon: LucideIcon;
   to: string;
   items: AdminNavItem[];
@@ -320,9 +324,7 @@ export function getAdminNavigation(
   const groups = ADMIN_NAV_GROUPS.flatMap((group) => {
     const items = allowed.filter((item) => item.group === group.id);
     const destination = items.find((item) => item.id === group.defaultItemId) ?? items[0];
-    return destination
-      ? [{ id: group.id, label: group.label, icon: group.icon, to: destination.to, items }]
-      : [];
+    return destination ? [{ id: group.id, icon: group.icon, to: destination.to, items }] : [];
   });
   const activeId = getActiveAdminNavItemIds(allowed, pathname, activeSection)[0];
   return { groups, activeGroupId: allowed.find((item) => item.id === activeId)?.group ?? null };

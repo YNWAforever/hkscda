@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { fetchAdminJson } from "../../lib/admin/http";
+import { animalListCopy } from "./animalListCopy";
+import { useAdminCopy } from "./i18n/copy";
 
 type RepairItem = {
   kind: "animal" | "content";
@@ -22,6 +24,7 @@ type Backlog = {
 };
 
 export function MediaRepairQueue() {
+  const copy = useAdminCopy(animalListCopy).mediaRepair;
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -51,27 +54,29 @@ export function MediaRepairQueue() {
   const backlog = queue.data;
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-      <h2 className="text-lg font-bold text-[var(--color-panel)]">公開相片修復佇列</h2>
-      <p className="text-sm text-[var(--color-text-muted)]">
-        顯示貓狗與內容相片的待處理、處理中及失敗數。失敗項須先修復原因，才可寫入稽核理由並重試。
-      </p>
-      {queue.isLoading ? <p role="status">正在載入佇列…</p> : null}
+      <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
+      <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
+      {queue.isLoading ? <p role="status">{copy.loading}</p> : null}
       {queue.isError ? (
         <div role="alert">
-          <p>無法讀取修復佇列。</p>
+          <p>{copy.loadFailed}</p>
           <button type="button" onClick={() => void queue.refetch()} className="underline">
-            重試讀取
+            {copy.retryLoad}
           </button>
         </div>
       ) : null}
       {backlog ? (
         <>
           <p role="status" className="text-sm">
-            待處理 {backlog.pending} · 處理中 {backlog.claimed} · 需人工覆核 {backlog.failed} ·
-            最早等待 {Math.floor(backlog.oldestAgeSeconds / 60)} 分鐘
+            {copy.summary(
+              backlog.pending,
+              backlog.claimed,
+              backlog.failed,
+              Math.floor(backlog.oldestAgeSeconds / 60),
+            )}
           </p>
           {backlog.items.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-muted)]">目前沒有待修復相片。</p>
+            <p className="text-sm text-[var(--color-text-muted)]">{copy.none}</p>
           ) : (
             <ul className="space-y-2">
               {backlog.items.map((item) => {
@@ -79,27 +84,14 @@ export function MediaRepairQueue() {
                 return (
                   <li key={key} className="rounded border border-[var(--color-border)] p-3 text-sm">
                     <div className="break-all font-medium">
-                      {item.kind === "animal" ? "動物" : "內容"} · {item.entityId}
+                      {copy.kind[item.kind]} · {item.entityId}
                     </div>
                     <div className="text-[var(--color-text-muted)]">
-                      {{ pending: "待處理", claimed: "處理中", failed: "需人工覆核" }[item.status]}{" "}
-                      · 第 {item.attempts} 次 · 原因碼：
-                      {item.lastErrorCode ?? "未記錄"}
+                      {copy.status[item.status]} {copy.attempt(item.attempts, item.lastErrorCode)}
                     </div>
                     <div className="text-[var(--color-text-muted)]">
-                      建立：
-                      {new Date(item.createdAt).toLocaleString("zh-HK", {
-                        timeZone: "Asia/Hong_Kong",
-                      })}
-                      {item.nextRetryAt ? (
-                        <>
-                          {" "}
-                          · 下次處理：
-                          {new Date(item.nextRetryAt).toLocaleString("zh-HK", {
-                            timeZone: "Asia/Hong_Kong",
-                          })}
-                        </>
-                      ) : null}
+                      {copy.created(item.createdAt)}
+                      {item.nextRetryAt ? <> {copy.nextRetry(item.nextRetryAt)}</> : null}
                     </div>
                     {item.status === "failed" ? (
                       <button
@@ -113,7 +105,7 @@ export function MediaRepairQueue() {
                         }}
                         className="mt-2 min-h-11 rounded border border-[var(--color-border)] px-3"
                       >
-                        覆核並重試
+                        {copy.review}
                       </button>
                     ) : null}
                     {selected === key ? (
@@ -129,7 +121,7 @@ export function MediaRepairQueue() {
                         }}
                       >
                         <label className="block">
-                          已修復原因及重試理由
+                          {copy.reasonLabel}
                           <textarea
                             disabled={retry.isPending}
                             value={reason}
@@ -148,17 +140,15 @@ export function MediaRepairQueue() {
                             onChange={(event) => setCorrected(event.target.checked)}
                             required
                           />
-                          我已核對並修復失敗原因
+                          {copy.confirmFixed}
                         </label>
-                        {retry.isError ? (
-                          <p role="alert">無法重試；請重新載入佇列並核對狀態。</p>
-                        ) : null}
+                        {retry.isError ? <p role="alert">{copy.retryFailed}</p> : null}
                         <button
                           type="submit"
                           disabled={!corrected || reason.trim().length < 10 || retry.isPending}
                           className="min-h-11 rounded bg-[var(--color-primary)] px-3 text-white disabled:opacity-50"
                         >
-                          {retry.isPending ? "提交中…" : "記錄理由並重試"}
+                          {retry.isPending ? copy.submitting : copy.submit}
                         </button>
                       </form>
                     ) : null}

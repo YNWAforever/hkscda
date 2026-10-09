@@ -1,4 +1,10 @@
 import { z } from "zod";
+import type { AdminLanguage } from "../../admin/language";
+import {
+  localisePolicyReason,
+  policyValidationMessage,
+  type PolicyValidationCode,
+} from "./messages";
 import { policySourcePaths } from "./sourcePaths";
 
 const count = z.number().int().min(0).max(100000);
@@ -24,24 +30,27 @@ const tiers = z
   .array(tierSchema)
   .min(1)
   .max(3)
-  .refine((v) => new Set(v).size === v.length, "級別不可重複");
+  .refine((v) => new Set(v).size === v.length, policyValidationMessage("tiers_duplicate"));
 const weekdays = z
   .array(z.number().int().min(0).max(6))
   .min(1)
   .max(7)
-  .refine((v) => new Set(v).size === v.length, "星期不可重複");
+  .refine((v) => new Set(v).size === v.length, policyValidationMessage("weekdays_duplicate"));
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 const date = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine(
     (v) => !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0, 10) === v,
-    "日期無效",
+    policyValidationMessage("date_invalid"),
   );
 export const credentialsSchema = z
   .object({ mode: z.enum(["all", "any"]), keys: z.array(key).max(20) })
   .strict()
-  .refine((v) => v.mode === "all" || v.keys.length > 0, "OR 資格不可留空");
+  .refine(
+    (v) => v.mode === "all" || v.keys.length > 0,
+    policyValidationMessage("credentials_any_empty"),
+  );
 export const windowSchema = z.union([
   z.object({ mode: z.literal("hours_before"), value: count }).strict(),
   z.object({ mode: z.literal("calendar_days_before"), value: count, at: time }).strict(),
@@ -105,7 +114,7 @@ export const policyDraftSchema = z
         } catch {
           return false;
         }
-      }, "IANA 時區無效"),
+      }, policyValidationMessage("timezone_invalid")),
     schedule: z
       .object({
         start_time: configurable(time),
@@ -199,23 +208,23 @@ export const policyDraftSchema = z
   .strict()
   .superRefine((p, ctx) => {
     if (p.inheritance?.length) return; // Cross-field checks run on the resolved snapshot.
-    const issue = (path: (string | number)[], message: string) =>
-      ctx.addIssue({ code: "custom", path, message });
+    const issue = (path: (string | number)[], code: PolicyValidationCode) =>
+      ctx.addIssue({ code: "custom", path, message: policyValidationMessage(code) });
     if (
       typeof p.schedule.start_time === "string" &&
       typeof p.schedule.end_time === "string" &&
       p.schedule.start_time >= p.schedule.end_time
     )
-      issue(["schedule", "end_time"], "結束時間必須晚於開始時間");
+      issue(["schedule", "end_time"], "end_before_start");
     if (
       p.schedule.effective_from &&
       p.schedule.effective_until &&
       p.schedule.effective_from > p.schedule.effective_until
     )
-      issue(["schedule", "effective_until"], "生效日期範圍無效");
+      issue(["schedule", "effective_until"], "effective_range_invalid");
     for (const name of ["roles", "tier_quotas", "daily_limits"] as const) {
       const keys = p[name].map((v) => v.key);
-      if (new Set(keys).size !== keys.length) issue([name], "識別碼不可重複");
+      if (new Set(keys).size !== keys.length) issue([name], "keys_duplicate");
     }
     for (const audience of ["individual", "group"] as const) {
       const open = p.booking[`${audience}_open`];
@@ -226,18 +235,18 @@ export const policyDraftSchema = z
           close.mode === "hours_before" &&
           open.value < close.value
         )
-          issue(["booking", `${audience}_open`], "開放時間不可晚於截止時間");
+          issue(["booking", `${audience}_open`], "window_order");
         if (
           open.mode === "calendar_days_before" &&
           close.mode === "calendar_days_before" &&
           (open.value < close.value || (open.value === close.value && open.at > close.at))
         )
-          issue(["booking", `${audience}_open`], "開放時間不可晚於截止時間");
+          issue(["booking", `${audience}_open`], "window_order");
       }
     }
     const group = p.capacity.group_size;
     if ("minimum" in group && group.minimum > group.maximum)
-      issue(["capacity", "group_size"], "團體最低人數不可高於上限");
+      issue(["capacity", "group_size"], "group_size_order");
     if (p.capacity.role_count_model === "leader_in_assistants") {
       const leader = p.roles.find((r) => r.key === "leader");
       const assistant = p.roles.find((r) => r.key === "assistant");
@@ -247,7 +256,7 @@ export const policyDraftSchema = z
         leader.minimum > assistant.minimum ||
         leader.reserved > assistant.reserved
       )
-        issue(["capacity", "role_count_model"], "包含領隊模型需要足夠輔助名額涵蓋領隊");
+        issue(["capacity", "role_count_model"], "leader_model");
     }
     const cap = p.capacity.volunteers;
     if (cap.state === "value") {
@@ -258,7 +267,7 @@ export const policyDraftSchema = z
             : 0) >
         cap.value
       )
-        issue(["roles"], "保留位超出義工總容量");
+        issue(["roles"], "reserved_over_capacity");
       if (
         p.roles.reduce((n, r) => n + r.minimum, 0) -
           (p.capacity.role_count_model === "leader_in_assistants"
@@ -266,27 +275,27 @@ export const policyDraftSchema = z
             : 0) >
         cap.value
       )
-        issue(["roles"], "最低職務人數超出義工總容量");
+        issue(["roles"], "minimum_over_capacity");
     }
     p.roles.forEach((r, i) => {
       if (
         r.maximum.state === "value" &&
         (r.minimum > r.maximum.value || r.reserved > r.maximum.value)
       )
-        issue(["roles", i], "最低或保留位超出職務上限");
+        issue(["roles", i], "role_over_maximum");
     });
     const pools = new Set<string>();
     const priorities = new Set<number>();
     p.release_rules.forEach((r, i) => {
       if ("state" in r) return;
-      if (priorities.has(r.priority)) issue(["release_rules", i], "補位優先次序不可重複");
+      if (priorities.has(r.priority)) issue(["release_rules", i], "priority_duplicate");
       priorities.add(r.priority);
       if (r.action.type === "release_reserved") {
         const action = r.action;
         const role = p.roles.find((role) => role.key === action.pool);
         if (!role || r.action.quantity > role.reserved)
-          issue(["release_rules", i], "釋放池不存在或釋放數超出保留位");
-        if (pools.has(r.action.pool)) issue(["release_rules", i], "不可重複釋放同一保留池");
+          issue(["release_rules", i], "release_pool_invalid");
+        if (pools.has(r.action.pool)) issue(["release_rules", i], "release_pool_duplicate");
         pools.add(r.action.pool);
       } else {
         const a = r.action;
@@ -294,26 +303,34 @@ export const policyDraftSchema = z
           a.scope === "session"
             ? p.tier_quotas.find((q) => q.key === a.quota)
             : p.daily_limits.find((q) => q.key === a.quota && q.scope === a.scope);
-        if (!quota) issue(["release_rules", i], "放寬配額或作用域不存在");
+        if (!quota) issue(["release_rules", i], "quota_missing");
       }
     });
   });
 export type PolicyDraft = z.infer<typeof policyDraftSchema>;
-export function getPolicyReadiness(policy: PolicyDraft): {
+/**
+ * What still has to be decided before a policy can be published. The messages are in `language`
+ * (zh-HK unless the admin asks for English); the `path` is the field path either way.
+ */
+export function getPolicyReadiness(
+  policy: PolicyDraft,
+  language: AdminLanguage = "zh",
+): {
   ready: boolean;
   issues: { path: string; message: string }[];
 } {
+  const text = (code: PolicyValidationCode) => policyValidationMessage(code, language);
   const issues: { path: string; message: string }[] = [];
+  /** Why a setting that is still open is not ready: it inherits, or it says why it is unresolved. */
+  function openMessage(value: object & { state: unknown }): string {
+    if (value.state === "inherit") return text("inherit_unresolved");
+    if ("reason" in value) return localisePolicyReason(String(value.reason), language);
+    return text("setting_incomplete");
+  }
   function visit(value: unknown, path: string) {
     if (!value || typeof value !== "object") return;
     if ("state" in value && (value.state === "unresolved" || value.state === "inherit")) {
-      issues.push({
-        path,
-        message:
-          value.state === "inherit"
-            ? "需要解析繼承值"
-            : String("reason" in value ? value.reason : "未完成設定"),
-      });
+      issues.push({ path, message: openMessage(value) });
       return;
     }
     for (const [k, v] of Object.entries(value)) visit(v, path ? `${path}.${k}` : k);
@@ -322,12 +339,12 @@ export function getPolicyReadiness(policy: PolicyDraft): {
     policy.capacity.volunteers.state === "unlimited" ||
     (policy.capacity.volunteers.state === "value" && policy.capacity.volunteers.value === 0)
   )
-    issues.push({ path: "capacity.volunteers", message: "啟用模板需要有限正數義工容量" });
+    issues.push({ path: "capacity.volunteers", message: text("capacity_finite") });
   policy.release_rules.forEach((rule, index) => {
     if (!("state" in rule) && typeof rule.semantics !== "string")
       issues.push({
         path: `release_rules.${index}.semantics`,
-        message: "補位需要明選動態或一次釋放",
+        message: text("release_semantics"),
       });
     if (
       !("state" in rule) &&
@@ -337,11 +354,11 @@ export function getPolicyReadiness(policy: PolicyDraft): {
     )
       issues.push({
         path: `release_rules.${index}.action.daily_anchor`,
-        message: "每日補位需要明選首場或末場作時間基準",
+        message: text("release_anchor"),
       });
   });
   if (policy.inheritance?.length)
-    issues.push({ path: "inheritance", message: "請預覽解析共用／場地來源後發布" });
+    issues.push({ path: "inheritance", message: text("inheritance_preview") });
   visit(policy, "");
   return { ready: issues.length === 0, issues };
 }

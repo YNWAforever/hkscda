@@ -3,26 +3,100 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { intakeSchema } from "../../../lib/internships/service";
-import {
-  internshipStatuses,
-  type InternshipApplication,
-  type IntakeBody,
-} from "../../site/InternshipForm";
+import { adminErrorMessage } from "../../../lib/admin/session";
+import { internshipErrorCode, intakeSchema } from "../../../lib/internships/service";
+import type { InternshipApplication, IntakeBody } from "../../site/InternshipForm";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { INTERNSHIP_STATUS_KEYS, internshipCopy } from "./copy";
 const field = "block w-full rounded border border-[var(--color-border)] p-2";
 const post = <T,>(body: object) =>
   fetchAdminJson<T>("/api/admin/internships", { method: "POST", body: JSON.stringify(body) });
-function IntakeSettings() {
+
+/**
+ * Why a screen shows an error. It is kept as a code (the key of the copy's `errors`), with the
+ * caught error where the screen does not know how to write it in both languages, and written
+ * when the screen renders.
+ */
+type ScreenError = { code: keyof typeof internshipCopy.zh.errors; cause?: unknown };
+
+/** The error to keep for a failed action: a code the screens know, or the caught error. */
+function failure(
+  cause: unknown,
+  fallback: "settings_failed" | "review_failed" | "attachment_failed",
+): ScreenError {
+  const code = internshipErrorCode(cause);
+  return code ? { code } : { code: fallback, cause };
+}
+
+type IntakePreviewData = {
+  preview_id: string;
+  before: IntakeBody;
+  after: IntakeBody;
+  existing_applications_preserved: number;
+};
+
+/** The before-and-after of an intake change, with the reason and the publish button. */
+export function IntakePublishPreview({
+  preview,
+  reason,
+  busy,
+  onReasonChange,
+  onPublish,
+}: {
+  preview: IntakePreviewData;
+  reason: string;
+  busy: boolean;
+  onReasonChange: (reason: string) => void;
+  onPublish: () => void;
+}) {
+  const copy = useAdminCopy(internshipCopy);
+  const settings = copy.settings;
+  return (
+    <div className="space-y-3 rounded border p-4">
+      <h3>{settings.beforeAfter}</h3>
+      <p>
+        {preview.before.name} → {preview.after.name}
+      </p>
+      <p>
+        {preview.before.enabled ? settings.open : settings.paused} →{" "}
+        {preview.after.enabled ? settings.open : settings.paused}
+      </p>
+      <p>
+        {settings.venuesLine(
+          preview.after.shelters.map((s) => (s === "cat" ? copy.shelters.cat : copy.shelters.dog)),
+        )}
+      </p>
+      <p>{settings.preserved(preview.existing_applications_preserved)}</p>
+      <label>
+        {settings.publishReason}
+        <textarea
+          className={field}
+          value={reason}
+          maxLength={1000}
+          onChange={(e) => onReasonChange(e.target.value)}
+        />
+      </label>
+      <button
+        disabled={busy || !reason.trim()}
+        className="rounded border px-4 py-2"
+        onClick={onPublish}
+      >
+        {settings.publish}
+      </button>
+    </div>
+  );
+}
+
+export function IntakeSettings() {
+  const copy = useAdminCopy(internshipCopy);
+  const { language } = useAdminLanguage();
+  const settings = copy.settings;
   const [body, setBody] = useState<IntakeBody>();
-  const [preview, setPreview] = useState<{
-    preview_id: string;
-    before: IntakeBody;
-    after: IntakeBody;
-    existing_applications_preserved: number;
-  }>();
+  const [preview, setPreview] = useState<IntakePreviewData>();
   const [reason, setReason] = useState("");
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  const [error, setError] = useState<ScreenError | null>(null);
+  const [notice, setNotice] = useState<keyof typeof copy.notices | null>(null);
   const [busy, setBusy] = useState(false);
   const q = useQuery({
     queryKey: ["internship-settings"],
@@ -36,7 +110,7 @@ function IntakeSettings() {
   const value = body ?? q.data?.draft.body;
   const act = async (action: "save_intake" | "preview_intake" | "publish_intake") => {
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       if (action === "save_intake") {
         await post({
@@ -47,7 +121,7 @@ function IntakeSettings() {
         setBody(undefined);
         setPreview(undefined);
         await q.refetch();
-        setNotice("草稿已儲存，未影響目前申請。");
+        setNotice("draft_saved");
       } else if (action === "preview_intake") {
         setPreview(await post({ action, expected_revision: q.data?.draft.revision }));
       } else {
@@ -59,23 +133,25 @@ function IntakeSettings() {
         });
         setPreview(undefined);
         await q.refetch();
-        setNotice("新版本已發布；既有申請及核實證據保留。");
+        setNotice("published");
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "設定未能儲存");
+      setError(failure(e, "settings_failed"));
     } finally {
       setBusy(false);
     }
   };
-  if (!value) return <p>載入實習收生設定…</p>;
+  if (!value) return <p>{settings.loading}</p>;
+  // A reason the caught error gave is shown as it came; otherwise the message for the code.
+  const errorMessage = error
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    : "";
   return (
     <details className="space-y-4 rounded border p-4">
-      <summary className="cursor-pointer font-semibold">管理員收生設定與版本</summary>
-      <p>
-        目前：{q.data?.current.body.enabled ? "接受新申請" : "暫停新申請"}。先儲存草稿，再預覽發布。
-      </p>
+      <summary className="cursor-pointer font-semibold">{settings.summary}</summary>
+      <p>{settings.current(Boolean(q.data?.current.body.enabled))}</p>
       <label className="block">
-        標題
+        {settings.titleLabel}
         <input
           className={field}
           maxLength={150}
@@ -95,11 +171,11 @@ function IntakeSettings() {
             setPreview(undefined);
           }}
         />
-        接受新申請
+        {settings.enabled}
       </label>
       <fieldset>
-        <legend>服務場地</legend>
-        {["cat", "dog"].map((key) => (
+        <legend>{settings.venuesLegend}</legend>
+        {(["cat", "dog"] as const).map((key) => (
           <label key={key} className="mr-4">
             <input
               type="checkbox"
@@ -114,13 +190,14 @@ function IntakeSettings() {
                 setPreview(undefined);
               }}
             />
-            {key === "cat" ? "貓舍" : "狗舍"}
+            {copy.shelters[key]}
           </label>
         ))}
       </fieldset>
       {(["opens_at", "closes_at"] as const).map((key) => (
         <label className="block" key={key}>
-          {key === "opens_at" ? "開放時間" : "截止時間"}（香港時間，留空不設限制）
+          {key === "opens_at" ? settings.opensAt : settings.closesAt}
+          {settings.timeHint}
           <input
             type="datetime-local"
             className={field}
@@ -137,7 +214,7 @@ function IntakeSettings() {
         </label>
       ))}
       <label className="block">
-        申請指引
+        {settings.instructions}
         <textarea
           className={field}
           maxLength={3000}
@@ -154,48 +231,26 @@ function IntakeSettings() {
           className="rounded border px-4 py-2"
           onClick={() => act("save_intake")}
         >
-          儲存草稿
+          {settings.saveDraft}
         </button>
         <button
           disabled={busy || Boolean(body)}
           className="rounded border px-4 py-2"
           onClick={() => act("preview_intake")}
         >
-          預覽發布
+          {settings.preview}
         </button>
       </div>
       {preview && (
-        <div className="space-y-3 rounded border p-4">
-          <h3>發布前後</h3>
-          <p>
-            {preview.before.name} → {preview.after.name}
-          </p>
-          <p>
-            {preview.before.enabled ? "開放" : "暫停"} → {preview.after.enabled ? "開放" : "暫停"}
-          </p>
-          <p>
-            場地：{preview.after.shelters.map((s) => (s === "cat" ? "貓舍" : "狗舍")).join("、")}
-          </p>
-          <p>保留{preview.existing_applications_preserved}份既有申請，已提交資料不重寫。</p>
-          <label>
-            發布理由
-            <textarea
-              className={field}
-              value={reason}
-              maxLength={1000}
-              onChange={(e) => setReason(e.target.value)}
-            />
-          </label>
-          <button
-            disabled={busy || !reason.trim()}
-            className="rounded border px-4 py-2"
-            onClick={() => act("publish_intake")}
-          >
-            確認發布新版本
-          </button>
-        </div>
+        <IntakePublishPreview
+          preview={preview}
+          reason={reason}
+          busy={busy}
+          onReasonChange={setReason}
+          onPublish={() => act("publish_intake")}
+        />
       )}
-      <h3>版本歷史</h3>
+      <h3>{settings.history}</h3>
       {q.data?.history.map((v) => (
         <p key={v.id}>
           {v.body.name} · {v.reason}{" "}
@@ -206,16 +261,18 @@ function IntakeSettings() {
               setPreview(undefined);
             }}
           >
-            複製為新草稿
+            {settings.duplicate}
           </button>
         </p>
       ))}
-      {error && <p role="alert">{error}</p>}
-      {notice && <p role="status">{notice}</p>}
+      {errorMessage && <p role="alert">{errorMessage}</p>}
+      {notice && <p role="status">{copy.notices[notice]}</p>}
     </details>
   );
 }
 export function InternshipManagement() {
+  const copy = useAdminCopy(internshipCopy);
+  const { language } = useAdminLanguage();
   const identity = useQuery(adminIdentityQueryOptions());
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
@@ -240,7 +297,7 @@ export function InternshipManagement() {
   const [reason, setReason] = useState("");
   const [verified, setVerified] = useState(false);
   const [evidence, setEvidence] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<ScreenError | null>(null);
   const [busy, setBusy] = useState(false);
   const detail = useQuery({
     queryKey: ["internships", "detail", selected],
@@ -249,13 +306,19 @@ export function InternshipManagement() {
     enabled: Boolean(selected),
   });
   const app = detail.data?.application;
+  const statusNames: Record<string, string> = copy.statuses;
+  const statusName = (code: string) => statusNames[code] ?? code;
+  // A reason the caught error gave is shown as it came; otherwise the message for the code.
+  const errorMessage = error
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    : "";
   return (
     <section className="space-y-5">
-      <h1 className="text-2xl font-bold">獸醫學生實習申請</h1>
-      <p>獨立於一般義工級別及時段名額。請按學生證明及申請資料核實身份。</p>
+      <h1 className="text-2xl font-bold">{copy.title}</h1>
+      <p>{copy.intro}</p>
       {identity.data?.admin?.role === "admin" && <IntakeSettings />}
       <label className="block">
-        搜尋申請人
+        {copy.searchLabel}
         <input
           className={field}
           value={query}
@@ -266,7 +329,7 @@ export function InternshipManagement() {
         />
       </label>
       <label className="block">
-        申請狀態
+        {copy.statusFilterLabel}
         <select
           className={field}
           value={filterStatus}
@@ -275,19 +338,19 @@ export function InternshipManagement() {
             setPage(1);
           }}
         >
-          <option value="">全部</option>
-          {Object.entries(internshipStatuses).map(([key, label]) => (
+          <option value="">{copy.allStatuses}</option>
+          {INTERNSHIP_STATUS_KEYS.map((key) => (
             <option key={key} value={key}>
-              {label}
+              {copy.statuses[key]}
             </option>
           ))}
         </select>
       </label>
       <label className="block">
-        申請人
+        {copy.applicantLabel}
         <select
           className={field}
-          aria-label="申請人"
+          aria-label={copy.applicantLabel}
           value={selected}
           onChange={(e) => {
             setSelected(e.target.value);
@@ -296,10 +359,10 @@ export function InternshipManagement() {
             setEvidence("");
           }}
         >
-          <option value="">選擇申請</option>
+          <option value="">{copy.chooseApplication}</option>
           {q.data?.applications.map((a) => (
             <option key={a.id} value={a.id}>
-              {a.name} · {a.institution} · {internshipStatuses[a.status]}
+              {a.name} · {a.institution} · {statusName(a.status)}
             </option>
           ))}
         </select>
@@ -310,27 +373,28 @@ export function InternshipManagement() {
           pageSize={25}
           total={q.data.total}
           onPageChange={setPage}
-          label="實習申請"
+          label={copy.pagerLabel}
         />
       )}
       {detail.error && (
         <p role="alert">
-          未能載入申請詳情，請重試。<button onClick={() => void detail.refetch()}>重試</button>
+          {copy.detailFailed}
+          <button onClick={() => void detail.refetch()}>{copy.retry}</button>
         </p>
       )}
-      {q.isLoading && <p>載入中…</p>}
-      {q.error && <p role="alert">未能載入實習申請</p>}
+      {q.isLoading && <p>{copy.loading}</p>}
+      {q.error && <p role="alert">{copy.listFailed}</p>}
       {app && (
         <article className="space-y-4 rounded border p-4">
           <h2 className="font-semibold">
-            {app.contact_snapshot.name} · {internshipStatuses[app.status]}
+            {app.contact_snapshot.name} · {statusName(app.status)}
           </h2>
           <p>
             {app.contact_snapshot.email} · {app.contact_snapshot.phone}
           </p>
           <p>
             {app.student_snapshot.institution} · {app.student_snapshot.course} ·{" "}
-            {app.shelter === "cat" ? "貓舍" : "狗舍"}
+            {app.shelter === "cat" ? copy.shelters.cat : copy.shelters.dog}
           </p>
           <p className="whitespace-pre-wrap">{app.student_snapshot.statement}</p>
           <ul>
@@ -345,7 +409,7 @@ export function InternshipManagement() {
                       );
                       window.open(data.url, "_blank", "noopener,noreferrer");
                     } catch {
-                      setError("未能開啟私人附件");
+                      setError({ code: "attachment_failed" });
                     }
                   }}
                 >
@@ -354,10 +418,10 @@ export function InternshipManagement() {
               </li>
             ))}
           </ul>
-          <h3>審核及補充紀錄</h3>
+          <h3>{copy.reviewHistory}</h3>
           {app.events.map((e) => (
             <p key={e.id}>
-              {e.detail.reason ?? e.detail.statement ?? "資料已記錄"}
+              {e.detail.reason ?? e.detail.statement ?? copy.recorded}
               {e.detail.evidence && ` · ${e.detail.evidence}`}
             </p>
           ))}
@@ -367,7 +431,7 @@ export function InternshipManagement() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 setBusy(true);
-                setError("");
+                setError(null);
                 try {
                   await post({
                     action: "review",
@@ -381,26 +445,26 @@ export function InternshipManagement() {
                   });
                   await qc.invalidateQueries({ queryKey: ["internships"] });
                 } catch (e) {
-                  setError(e instanceof Error ? e.message : "未能完成審核");
+                  setError(failure(e, "review_failed"));
                 } finally {
                   setBusy(false);
                 }
               }}
             >
               <label>
-                處理結果
+                {copy.review.outcome}
                 <select
                   className={field}
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                 >
-                  <option value="needs_information">要求補充資料</option>
-                  <option value="approved">批准</option>
-                  <option value="rejected">不批准</option>
+                  <option value="needs_information">{copy.review.needsInformation}</option>
+                  <option value="approved">{copy.review.approve}</option>
+                  <option value="rejected">{copy.review.reject}</option>
                 </select>
               </label>
               <label className="block">
-                審核理由
+                {copy.review.reason}
                 <textarea
                   required
                   className={field}
@@ -415,10 +479,10 @@ export function InternshipManagement() {
                   checked={verified}
                   onChange={(e) => setVerified(e.target.checked)}
                 />
-                已核實獸醫學生身份及所屬院校／課程
+                {copy.review.verified}
               </label>
               <label className="block">
-                核實證據來源
+                {copy.review.evidence}
                 <textarea
                   className={field}
                   required={status === "approved"}
@@ -431,13 +495,13 @@ export function InternshipManagement() {
                 className="rounded border px-4 py-2"
                 disabled={busy || (status === "approved" && !verified)}
               >
-                保存審核決定
+                {copy.review.save}
               </button>
             </form>
           )}
         </article>
       )}
-      {error && <p role="alert">{error}</p>}
+      {errorMessage && <p role="alert">{errorMessage}</p>}
     </section>
   );
 }

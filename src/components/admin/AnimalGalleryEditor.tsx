@@ -1,4 +1,6 @@
 import type { AnimalGalleryItem } from "../../types/animal";
+import { animalFormCopy } from "./animalFormCopy";
+import { useAdminCopy } from "./i18n/copy";
 
 export type EditableGalleryItem = AnimalGalleryItem & { file?: File };
 
@@ -9,6 +11,7 @@ export function AnimalGalleryEditor({
   items: EditableGalleryItem[];
   onChange: (items: EditableGalleryItem[]) => void;
 }) {
+  const copy = useAdminCopy(animalFormCopy).gallery;
   const update = (index: number, patch: Partial<EditableGalleryItem>) =>
     onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const move = (index: number, offset: number) => {
@@ -20,12 +23,10 @@ export function AnimalGalleryEditor({
   };
   return (
     <fieldset className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-      <legend className="px-1 text-sm font-semibold">相片集及審核資料</legend>
-      <p className="text-xs text-[var(--color-text-muted)]">
-        只有已批准並已發布的相片會公開。請設定排序、焦點、雙語替代文字及來源。
-      </p>
+      <legend className="px-1 text-sm font-semibold">{copy.legend}</legend>
+      <p className="text-xs text-[var(--color-text-muted)]">{copy.hint}</p>
       <input
-        aria-label="新增相片集相片"
+        aria-label={copy.addLabel}
         type="file"
         accept="image/*"
         multiple
@@ -50,16 +51,16 @@ export function AnimalGalleryEditor({
       {items.map((item, index) => (
         <article key={item.id} className="space-y-2 rounded border p-3">
           <div className="flex flex-wrap items-center gap-2">
-            <strong>相片 {index + 1}</strong>
+            <strong>{copy.photoNumber(index + 1)}</strong>
             <button type="button" onClick={() => move(index, -1)} disabled={index === 0}>
-              上移
+              {copy.moveUp}
             </button>
             <button
               type="button"
               onClick={() => move(index, 1)}
               disabled={index === items.length - 1}
             >
-              下移
+              {copy.moveDown}
             </button>
             <button
               type="button"
@@ -71,11 +72,11 @@ export function AnimalGalleryEditor({
                 )
               }
             >
-              移除
+              {copy.remove}
             </button>
           </div>
           <label className="block text-sm">
-            中文替代文字
+            {copy.altZh}
             <input
               className="mt-1 w-full rounded border px-2 py-1"
               value={item.alt_zh}
@@ -83,7 +84,7 @@ export function AnimalGalleryEditor({
             />
           </label>
           <label className="block text-sm">
-            英文替代文字
+            {copy.altEn}
             <input
               className="mt-1 w-full rounded border px-2 py-1"
               value={item.alt_en ?? ""}
@@ -91,7 +92,7 @@ export function AnimalGalleryEditor({
             />
           </label>
           <label className="block text-sm">
-            相片來源
+            {copy.source}
             <input
               className="mt-1 w-full rounded border px-2 py-1"
               value={item.source}
@@ -100,7 +101,7 @@ export function AnimalGalleryEditor({
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="text-sm">
-              水平焦點 {item.focal_x}%
+              {copy.focalX(item.focal_x)}
               <input
                 className="w-full"
                 type="range"
@@ -111,7 +112,7 @@ export function AnimalGalleryEditor({
               />
             </label>
             <label className="text-sm">
-              垂直焦點 {item.focal_y}%
+              {copy.focalY(item.focal_y)}
               <input
                 className="w-full"
                 type="range"
@@ -123,7 +124,7 @@ export function AnimalGalleryEditor({
             </label>
           </div>
           <label className="block text-sm">
-            審核狀態
+            {copy.reviewStatus}
             <select
               className="ml-2 rounded border px-2 py-1"
               value={item.review_status}
@@ -133,9 +134,9 @@ export function AnimalGalleryEditor({
                 })
               }
             >
-              <option value="pending">待審核</option>
-              <option value="approved">已批准</option>
-              <option value="rejected">不採用</option>
+              <option value="pending">{copy.pending}</option>
+              <option value="approved">{copy.approved}</option>
+              <option value="rejected">{copy.rejected}</option>
             </select>
           </label>
         </article>

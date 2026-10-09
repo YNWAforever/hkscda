@@ -4,6 +4,7 @@ import { ListChecks, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import {
   addCaseSelection,
   collectMatchingCaseIds,
@@ -16,6 +17,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { bilingualStatusName, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { useAdminCopy } from "../i18n/copy";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { StatusBadge } from "../StatusBadge";
 import { TablePager } from "../TablePager";
@@ -23,10 +25,11 @@ import { fetchCoordinatorJson } from "./api";
 import {
   buildCaseListSearchParams,
   filterStatusesByCategory,
-  formatDate,
   formatFallback,
 } from "./caseWorkflowLogic";
+import { caseSelectionCopy } from "./copy";
 import { ExportButton } from "./ExportButton";
+import { adoptionFormatCopy } from "./formatCopy";
 import { AdoptionAssignmentBulkPanel } from "./AdoptionAssignmentBulkPanel";
 import {
   parseListPage,
@@ -102,6 +105,8 @@ const CASE_ROUTE: ListRouteState<CaseFilters> = {
 export function CaseList() {
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.caseList;
+  const selection = useAdminCopy(caseSelectionCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
   const listState = useListQueryState({
     key: "adoption-cases",
     initialFilters: {
@@ -179,10 +184,10 @@ export function CaseList() {
       setSelectedIds(
         effectiveSelectedIds.includes(id)
           ? effectiveSelectedIds.filter((item) => item !== id)
-          : addCaseSelection(effectiveSelectedIds, [id]),
+          : addCaseSelection(effectiveSelectedIds, [id], language),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+      setSelectionError(adminErrorMessage(cause, language) ?? selection.cannotSelect);
     }
   }
   function selectVisible() {
@@ -194,10 +199,11 @@ export function CaseList() {
         addCaseSelection(
           effectiveSelectedIds,
           cases.map((item) => item.id),
+          language,
         ),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+      setSelectionError(adminErrorMessage(cause, language) ?? selection.cannotSelect);
     }
   }
   async function selectAllMatching() {
@@ -206,22 +212,27 @@ export function CaseList() {
     setSelectionBusy(true);
     setSelectionError("");
     try {
-      const ids = await collectMatchingCaseIds(total, async (nextPage, limit) => {
-        const params = buildCaseListSearchParams({
-          q: query,
-          statusId,
-          animalType,
-          openOnly,
-          page: nextPage,
-          pageSize: limit,
-        });
-        return fetchCoordinatorJson<CaseListResponse>("/api/admin/adoptions/cases?" + params);
-      });
-      if (filterKeyRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      const ids = await collectMatchingCaseIds(
+        total,
+        async (nextPage, limit) => {
+          const params = buildCaseListSearchParams({
+            q: query,
+            statusId,
+            animalType,
+            openOnly,
+            page: nextPage,
+            pageSize: limit,
+          });
+          return fetchCoordinatorJson<CaseListResponse>("/api/admin/adoptions/cases?" + params);
+        },
+        undefined,
+        language,
+      );
+      if (filterKeyRef.current !== scope) throw new Error(selection.filtersChanged);
       setSelectedScope(scope);
       setSelectedIds(ids);
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+      setSelectionError(adminErrorMessage(cause, language) ?? selection.cannotLockSelection);
     } finally {
       setSelectionBusy(false);
     }
@@ -237,12 +248,12 @@ export function CaseList() {
 
   const selectionColumn: DataTableColumn<AdoptionCaseSummary> = {
     id: "bulk-select",
-    header: "選取",
+    header: selection.select,
     cell: (item) => (
       <label className="inline-flex min-h-11 min-w-11 items-center justify-center">
         <input
           type="checkbox"
-          aria-label={"選取 " + item.applicantName}
+          aria-label={selection.selectCase(item.applicantName)}
           checked={effectiveSelectedIds.includes(item.id)}
           disabled={selectionDisabled || !statusEligible}
           onChange={() => toggleSelected(item.id)}
@@ -296,7 +307,7 @@ export function CaseList() {
       id: "created",
       header: copy.columns.created,
       cell: (c) => (
-        <span className="text-[var(--color-text-muted)]">{formatDate(c.createdAt)}</span>
+        <span className="text-[var(--color-text-muted)]">{format.date(c.createdAt)}</span>
       ),
     },
     {
@@ -317,7 +328,7 @@ export function CaseList() {
               disabled={selectionDisabled || !statusEligible}
               onChange={() => toggleSelected(c.id)}
             />
-            選取此個案
+            {selection.selectThisCase}
           </label>
         )}
         <div className="flex items-start justify-between gap-2">
@@ -339,7 +350,7 @@ export function CaseList() {
           {formatFallback(c.requestedAnimalName)} · {animalTypeLabel(c.animalType)}
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          {formatFallback(c.applicantPhone)} · {formatDate(c.createdAt)}
+          {formatFallback(c.applicantPhone)} · {format.date(c.createdAt)}
         </div>
       </div>
     );
@@ -427,7 +438,10 @@ export function CaseList() {
           </label>
         </div>
         {statusesError && (
-          <CaseListStatusFilterError label={copy.filterError} message={statusesError.message} />
+          <CaseListStatusFilterError
+            label={copy.filterError}
+            message={adminErrorMessage(statusesError, language) ?? ""}
+          />
         )}
       </section>
 
@@ -440,7 +454,7 @@ export function CaseList() {
               onClick={selectVisible}
               disabled={selectionDisabled || !statusEligible || cases.length === 0}
             >
-              選取本頁
+              {selection.selectPage}
             </Button>
             <Button
               type="button"
@@ -448,7 +462,7 @@ export function CaseList() {
               onClick={selectAllMatching}
               disabled={selectionDisabled || !statusEligible || total < 1 || total > 1000}
             >
-              選取全部符合條件（最多 1000 筆）
+              {selection.selectAllMatching}
             </Button>
             <Button
               type="button"
@@ -456,10 +470,10 @@ export function CaseList() {
               onClick={() => setSelectedIds([])}
               disabled={selectionBusy || effectiveSelectedIds.length === 0}
             >
-              清除選取
+              {selection.clearSelection}
             </Button>
           </div>
-          {selectionBusy && <p role="status">正在固定選取範圍…</p>}
+          {selectionBusy && <p role="status">{selection.lockingSelection}</p>}
           {selectionError && (
             <p role="alert" className="text-[var(--color-error)]">
               {selectionError}

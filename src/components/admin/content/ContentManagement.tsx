@@ -11,12 +11,15 @@ import type {
   NotificationDraftStatus,
 } from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import {
   parseListPage,
   useListQueryState,
   type ListRouteState,
 } from "../../../lib/admin/useListQueryState";
+import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { useAdminCopy } from "../i18n/copy";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { StatusPill, type StatusTone } from "../StatusBadge";
@@ -26,6 +29,8 @@ import {
   formatContentTypeLabel,
   summarizeContentRows,
 } from "./contentAdminLogic";
+import { contentCommonCopy } from "./contentCommonCopy";
+import { managementCopy } from "./managementCopy";
 
 export type ContentListResponse = {
   content: ContentSummary[];
@@ -59,12 +64,6 @@ const contentStatusOptions: Array<ContentStatus | "all"> = [
   "published",
   "archived",
 ];
-
-const statusLabels: Record<ContentStatus, string> = {
-  draft: "草稿",
-  published: "已發布",
-  archived: "已封存",
-};
 
 const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
   success: "success",
@@ -149,13 +148,14 @@ function ContentManagementRuntime() {
     qualityParam === "demo" || qualityParam === "expired" || qualityParam === "missing_source"
       ? qualityParam
       : "all";
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [createError, setCreateError] = useState("");
+  const [createFailed, setCreateFailed] = useState(false);
   const [creating, setCreating] = useState(false);
   async function createDraft(input: { type: ContentType; title: string; summary: string }) {
     setCreating(true);
-    setCreateError("");
+    setCreateFailed(false);
     try {
       const result = await fetchAdminJson<{ id: string }>("/api/admin/content", {
         method: "POST",
@@ -167,7 +167,7 @@ function ContentManagementRuntime() {
       });
       await navigate({ to: "/admin/content/$id", params: { id: result.id } });
     } catch {
-      setCreateError("未能建立草稿，請檢查資料後重試。");
+      setCreateFailed(true);
     } finally {
       setCreating(false);
     }
@@ -241,7 +241,7 @@ function ContentManagementRuntime() {
   return (
     <>
       <ContentReviewQueue key={initialQuality} initialQuality={initialQuality} />
-      <CreateContentDraft onCreate={createDraft} busy={creating} error={createError} />
+      <CreateContentDraft onCreate={createDraft} busy={creating} failed={createFailed} />
       <ContentManagementView
         data={contentQuery.data}
         loading={contentQuery.isLoading || !listState.hydrated}
@@ -255,7 +255,7 @@ function ContentManagementRuntime() {
         mapVisibility={mapVisibility}
         hasUpdate={hasUpdate}
         draftState={draftState}
-        error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
+        error={adminErrorMessage(contentQuery.error, language)}
         onQueryChange={undefined}
         onTypeChange={(value) => changeFilter({ type: value })}
         onStatusChange={(value) => changeFilter({ status: value })}
@@ -328,6 +328,9 @@ function ContentManagementView({
   fetching,
   onRefresh,
 }: ContentManagementViewProps) {
+  const copy = useAdminCopy(managementCopy);
+  const common = useAdminCopy(contentCommonCopy);
+  const { language } = useAdminLanguage();
   const rows = data?.content ?? [];
   const summary = summarizeContentRows(rows);
   // A rejected query leaves `data` (and so `rows`) empty, and summary counts
@@ -338,7 +341,7 @@ function ContentManagementView({
     () => [
       {
         id: "title",
-        header: "標題",
+        header: copy.table.title,
         cell: (item) => (
           <div className="min-w-[14rem]">
             <p className="font-semibold text-[var(--color-panel)]">{item.title}</p>
@@ -348,31 +351,32 @@ function ContentManagementView({
       },
       {
         id: "type",
-        header: "類型",
-        cell: (item) => formatContentTypeLabel(item.type, "zh"),
+        header: copy.table.type,
+        cell: (item) => formatContentTypeLabel(item.type, language),
       },
       {
         id: "status",
-        header: "狀態",
+        header: copy.table.status,
         cell: (item) => (
           <StatusPill tone={toneMap[contentStatusTone(item.status)]}>
-            {statusLabels[item.status]}
+            {common.statuses[item.status]}
           </StatusPill>
         ),
       },
       {
         id: "publishedAt",
-        header: "發布日期",
-        cell: (item) => (item.publishedAt ? formatDate(item.publishedAt) : "未發布"),
+        header: copy.table.publishedAt,
+        cell: (item) =>
+          item.publishedAt ? common.date(item.publishedAt) : copy.table.notPublished,
       },
       {
         id: "rescueRegion",
-        header: "救援地區",
-        cell: (item) => item.storyProfile?.rescueRegion ?? "不適用",
+        header: copy.table.rescueRegion,
+        cell: (item) => item.storyProfile?.rescueRegion ?? copy.table.notApplicable,
       },
       {
         id: "actions",
-        header: "操作",
+        header: copy.table.actions,
         cell: (item) => (
           <Link
             to="/admin/content/$id"
@@ -380,52 +384,52 @@ function ContentManagementView({
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-primary)] hover:underline"
           >
             <Edit3 className="h-3 w-3" />
-            編輯
+            {copy.table.edit}
           </Link>
         ),
       },
     ],
-    [],
+    [copy, common, language],
   );
 
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳</p>
-          <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">宣傳內容</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">管理故事、活動、市集與報告頁面。</p>
+          <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.eyebrow}</p>
+          <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to="/admin/content/new"
             className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)]"
           >
-            建立內容
+            {copy.actions.create}
           </Link>
           <Link
             to="/admin/content/adoption"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >
-            領養資訊
+            {copy.actions.adoptionInformation}
           </Link>
           <Link
             to="/admin/content/adoption-guides"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >
-            {"\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c"}
+            {copy.actions.guideReleases}
           </Link>
           <Link
             to="/admin/content/documents"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >
-            文件
+            {copy.actions.documents}
           </Link>
           <Link
             to="/admin/content/annual-reports"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >
-            年度報告
+            {copy.actions.annualReports}
           </Link>
           {onRefresh ? (
             <button
@@ -434,7 +438,7 @@ function ContentManagementView({
               className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
             >
               <RefreshCw className="h-4 w-4" />
-              重新整理
+              {copy.actions.refresh}
             </button>
           ) : null}
         </div>
@@ -442,13 +446,17 @@ function ContentManagementView({
 
       <div className="grid gap-3 md:grid-cols-4">
         <SummaryCard
-          label="全部內容"
+          label={copy.cards.all}
           value={data?.pagination.total ?? summary.total}
           failed={failed}
         />
-        <SummaryCard label="本頁已發布" value={summary.published} failed={failed} />
-        <SummaryCard label="本頁草稿" value={summary.drafts} failed={failed} />
-        <SummaryCard label="本頁救援故事" value={summary.rescueStories} failed={failed} />
+        <SummaryCard label={copy.cards.published} value={summary.published} failed={failed} />
+        <SummaryCard label={copy.cards.drafts} value={summary.drafts} failed={failed} />
+        <SummaryCard
+          label={copy.cards.rescueStories}
+          value={summary.rescueStories}
+          failed={failed}
+        />
       </div>
 
       <section
@@ -456,14 +464,12 @@ function ContentManagementView({
         aria-labelledby="content-eligibility-queue"
       >
         <h2 id="content-eligibility-queue" className="font-semibold text-[var(--color-panel)]">
-          本頁內容資格待核對
+          {copy.eligibility.heading}
         </h2>
-        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-          只讀清單；未分類內容保持現有公開狀態。正式下架或補上文案前，請逐項取得內容批准。
-        </p>
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">{copy.eligibility.intro}</p>
         {failed ? (
           <p role="alert" className="mt-3 text-sm">
-            無法載入待核對清單。
+            {copy.eligibility.failed}
           </p>
         ) : (
           <ul className="mt-3 space-y-2">
@@ -480,15 +486,21 @@ function ContentManagementView({
                 >
                   <div className="min-w-0">
                     <p className="font-semibold">
-                      {item.title} · {item.contentClass === "demo" ? "示範" : "待核實"}
+                      {item.title} ·{" "}
+                      {item.contentClass === "demo"
+                        ? copy.eligibility.demo
+                        : copy.eligibility.unverified}
                     </p>
                     <p className="break-all text-xs text-[var(--color-text-muted)]">
-                      ID {item.id} · 公開位置 /stories/{item.slug}
-                      {item.storyProfile?.isFeatured ? " · 精選候選" : ""}
-                      {item.storyProfile?.showOnMap ? " · 地圖候選" : ""}
+                      {copy.eligibility.detail(
+                        item.id,
+                        item.slug,
+                        Boolean(item.storyProfile?.isFeatured),
+                        Boolean(item.storyProfile?.showOnMap),
+                      )}
                     </p>
                     <p className="text-xs text-[var(--color-text-muted)]">
-                      建議：核對資料來源、負責人與生效日期，記錄批准後再更改分類。
+                      {copy.eligibility.suggestion}
                     </p>
                   </div>
                   <Link
@@ -496,7 +508,7 @@ function ContentManagementView({
                     params={{ id: item.id }}
                     className="shrink-0 font-semibold text-[var(--color-primary)] underline"
                   >
-                    檢視
+                    {copy.eligibility.view}
                   </Link>
                 </li>
               ))}
@@ -505,7 +517,7 @@ function ContentManagementView({
                 item.contentClass !== "demo" &&
                 (item.status !== "published" || item.contentClass === "verified"),
             ) ? (
-              <li className="text-sm text-[var(--color-text-muted)]">本頁沒有待核對內容。</li>
+              <li className="text-sm text-[var(--color-text-muted)]">{copy.eligibility.none}</li>
             ) : null}
           </ul>
         )}
@@ -516,7 +528,7 @@ function ContentManagementView({
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
             <span className="inline-flex items-center gap-2">
               <Search className="h-4 w-4" />
-              搜尋
+              {copy.filters.search}
             </span>
             <input
               {...(queryInput ?? {
@@ -524,14 +536,14 @@ function ContentManagementView({
                 onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
                   onQueryChange?.(event.target.value),
               })}
-              placeholder="標題、摘要或 slug"
+              placeholder={copy.filters.searchPlaceholder}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm font-normal"
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
             <span className="inline-flex items-center gap-2">
               <Filter className="h-4 w-4" />
-              類型
+              {copy.filters.type}
             </span>
             <select
               value={type}
@@ -540,13 +552,15 @@ function ContentManagementView({
             >
               {contentTypeOptions.map((option) => (
                 <option key={option} value={option}>
-                  {option === "all" ? "全部類型" : formatContentTypeLabel(option, "zh")}
+                  {option === "all"
+                    ? copy.filters.allTypes
+                    : formatContentTypeLabel(option, language)}
                 </option>
               ))}
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            狀態
+            {copy.filters.status}
             <select
               value={status}
               onChange={(event) => onStatusChange?.(event.target.value as ContentStatus | "all")}
@@ -554,17 +568,17 @@ function ContentManagementView({
             >
               {contentStatusOptions.map((option) => (
                 <option key={option} value={option}>
-                  {option === "all" ? "全部狀態" : statusLabels[option]}
+                  {option === "all" ? copy.filters.allStatuses : common.statuses[option]}
                 </option>
               ))}
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            救援地區
+            {copy.filters.rescueRegion}
             <input
               value={rescueRegion}
               onChange={(event) => onRescueRegionChange?.(event.target.value)}
-              placeholder="例如：灣仔"
+              placeholder={copy.filters.rescueRegionPlaceholder}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm font-normal"
             />
           </label>
@@ -572,7 +586,7 @@ function ContentManagementView({
 
         <div className="grid gap-3 md:grid-cols-2">
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            發布日期（起）
+            {copy.filters.publishedFrom}
             <input
               type="date"
               value={publishedFrom}
@@ -581,7 +595,7 @@ function ContentManagementView({
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            發布日期（迄）
+            {copy.filters.publishedTo}
             <input
               type="date"
               value={publishedTo}
@@ -590,31 +604,31 @@ function ContentManagementView({
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            地圖顯示
+            {copy.filters.mapVisibility}
             <select
               value={mapVisibility}
               onChange={(e) => onMapVisibilityChange?.(e.target.value as "all" | "on" | "off")}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              <option value="all">全部</option>
-              <option value="on">顯示</option>
-              <option value="off">不顯示</option>
+              <option value="all">{copy.filters.all}</option>
+              <option value="on">{copy.filters.mapOn}</option>
+              <option value="off">{copy.filters.mapOff}</option>
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            更新記錄
+            {copy.filters.updates}
             <select
               value={hasUpdate}
               onChange={(e) => onHasUpdateChange?.(e.target.value as "all" | "yes" | "no")}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              <option value="all">全部</option>
-              <option value="yes">有更新</option>
-              <option value="no">沒有更新</option>
+              <option value="all">{copy.filters.all}</option>
+              <option value="yes">{copy.filters.withUpdates}</option>
+              <option value="no">{copy.filters.withoutUpdates}</option>
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-            通知草稿
+            {copy.filters.drafts}
             <select
               value={draftState}
               onChange={(e) =>
@@ -622,11 +636,11 @@ function ContentManagementView({
               }
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              <option value="all">全部</option>
-              <option value="draft">草稿</option>
-              <option value="copied">已複製</option>
-              <option value="sent_manually">已手動發送</option>
-              <option value="dismissed">已略過</option>
+              <option value="all">{copy.filters.all}</option>
+              <option value="draft">{copy.filters.draftStates.draft}</option>
+              <option value="copied">{copy.filters.draftStates.copied}</option>
+              <option value="sent_manually">{copy.filters.draftStates.sent_manually}</option>
+              <option value="dismissed">{copy.filters.draftStates.dismissed}</option>
             </select>
           </label>
         </div>
@@ -636,7 +650,7 @@ function ContentManagementView({
           rows={rows}
           getRowKey={(item) => item.id}
           loading={loading}
-          empty="沒有宣傳內容"
+          empty={copy.table.empty}
           error={error}
           onRetry={onRefresh}
         />
@@ -647,7 +661,7 @@ function ContentManagementView({
             total={data.pagination.total}
             onPageChange={onPageChange}
             busy={fetching}
-            label="內容"
+            label={copy.table.pager}
           />
         ) : null}
       </section>
@@ -656,11 +670,12 @@ function ContentManagementView({
 }
 
 function SummaryCard({ label, value, failed }: { label: string; value: number; failed?: boolean }) {
+  const copy = useAdminCopy(managementCopy).cards;
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <p className="text-sm font-semibold text-[var(--color-text-muted)]">{label}</p>
       <p className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
-        {failed ? STAT_UNAVAILABLE : value}
+        {failed ? STAT_UNAVAILABLE : copy.count(value)}
       </p>
     </div>
   );
@@ -684,25 +699,24 @@ function normalizeListResponse(
   };
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium" }).format(new Date(value));
-}
-
-function CreateContentDraft({
+/** The quick "add content" form above the list. `failed` is set when the last attempt failed. */
+export function CreateContentDraft({
   onCreate,
   busy,
-  error,
+  failed,
 }: {
   onCreate: (input: { type: ContentType; title: string; summary: string }) => Promise<void>;
   busy: boolean;
-  error: string;
+  failed: boolean;
 }) {
+  const copy = useAdminCopy(managementCopy).draftForm;
+  const { language } = useAdminLanguage();
   const [type, setType] = useState<ContentType>("rescue_story");
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   return (
     <details className="m-6 rounded-lg border p-4">
-      <summary className="cursor-pointer font-semibold">新增內容</summary>
+      <summary className="cursor-pointer font-semibold">{copy.summary}</summary>
       <form
         className="mt-4 space-y-3"
         onSubmit={(event) => {
@@ -711,7 +725,7 @@ function CreateContentDraft({
         }}
       >
         <label className="block">
-          內容類型
+          {copy.type}
           <select
             className="ml-2 border p-2"
             value={type}
@@ -721,13 +735,13 @@ function CreateContentDraft({
               .filter((option): option is ContentType => option !== "all")
               .map((option) => (
                 <option key={option} value={option}>
-                  {formatContentTypeLabel(option, "zh")}
+                  {formatContentTypeLabel(option, language)}
                 </option>
               ))}
           </select>
         </label>
         <label className="block">
-          標題
+          {copy.title}
           <input
             required
             maxLength={180}
@@ -737,7 +751,7 @@ function CreateContentDraft({
           />
         </label>
         <label className="block">
-          摘要
+          {copy.summaryLabel}
           <textarea
             required
             maxLength={320}
@@ -746,10 +760,10 @@ function CreateContentDraft({
             onChange={(event) => setSummary(event.target.value)}
           />
         </label>
-        <p>建立後會開啟草稿編輯器。請補齊相片、來源及類型所需資料，再檢查及發布。</p>
-        {error && <p role="alert">{error}</p>}
+        <p>{copy.note}</p>
+        {failed && <p role="alert">{copy.failed}</p>}
         <button type="submit" disabled={busy} className="btn-primary min-h-11 px-4">
-          {busy ? "建立中…" : "建立草稿"}
+          {busy ? copy.busy : copy.submit}
         </button>
       </form>
     </details>

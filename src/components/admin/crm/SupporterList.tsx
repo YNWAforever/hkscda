@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 
 import { supporterRoles, type SupporterRole, type SupporterSummary } from "../../../lib/crm/types";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { collectMatchingSupporterIds } from "../../../lib/crm/tagBulkSelection";
 import {
   parseListPage,
@@ -17,8 +18,11 @@ import { Input } from "../../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "./api";
+import { supporterListCopy } from "./copy";
 import { ExportBar } from "./ExportBar";
+import { crmFormatCopy } from "./formatCopy";
 import { SupporterFormDialog } from "./SupporterFormDialog";
 import { CrmTagBulkPanel } from "./CrmTagBulkPanel";
 import { CrmAssignmentBulkPanel } from "./CrmAssignmentBulkPanel";
@@ -29,17 +33,8 @@ type SupporterListResponse = {
   total: number;
 };
 
-function formatHkd(
-  amountCents: number | null,
-  language: ReturnType<typeof useAdminPageCopy>["language"],
-) {
-  if (amountCents === null) return "-";
-  return new Intl.NumberFormat(language === "zh" ? "zh-HK" : "en-HK", {
-    style: "currency",
-    currency: "HKD",
-    maximumFractionDigits: 0,
-  }).format(amountCents / 100);
-}
+/** Why the last "select all matching" did not finish, kept as a code so it reads in the current language. */
+type SelectionError = { code: "filters_changed" } | { code: "lock_failed"; cause: unknown };
 
 type SupporterFilters = { roleFilter: SupporterRole | "all" };
 
@@ -69,6 +64,8 @@ export function SupporterList() {
   const { data: identity, isError: identityError } = useQuery(adminIdentityQueryOptions());
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.supporters;
+  const listCopy = useAdminCopy(supporterListCopy);
+  const format = useAdminCopy(crmFormatCopy);
   const listState = useListQueryState({
     key: "supporters",
     initialFilters: { roleFilter: "all" as SupporterRole | "all" },
@@ -79,7 +76,7 @@ export function SupporterList() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedScope, setSelectedScope] = useState("");
   const [selectionBusy, setSelectionBusy] = useState(false);
-  const [selectionError, setSelectionError] = useState("");
+  const [selectionError, setSelectionError] = useState<SelectionError | null>(null);
   const selectionScope = JSON.stringify([query, roleFilter]);
   const effectiveSelectedIds = selectedScope === selectionScope ? selectedIds : [];
   const selectionScopeRef = useRef(selectionScope);
@@ -87,7 +84,7 @@ export function SupporterList() {
   useEffect(() => {
     setSelectedIds([]);
     setSelectedScope(selectionScope);
-    setSelectionError("");
+    setSelectionError(null);
   }, [selectionScope]);
   const search = new URLSearchParams({ page: String(page), pageSize: "25" });
   if (query) search.set("q", query);
@@ -139,7 +136,7 @@ export function SupporterList() {
     if (!visibleData || selectionDisabled) return;
     const scope = selectionScope;
     setSelectionBusy(true);
-    setSelectionError("");
+    setSelectionError(null);
     try {
       const ids = await collectMatchingSupporterIds(
         visibleData.total,
@@ -153,11 +150,14 @@ export function SupporterList() {
           return fetchAdminJson<SupporterListResponse>("/api/admin/supporters?" + params);
         },
       );
-      if (selectionScopeRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      if (selectionScopeRef.current !== scope) {
+        setSelectionError({ code: "filters_changed" });
+        return;
+      }
       setSelectedScope(scope);
       setSelectedIds(ids);
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+      setSelectionError({ code: "lock_failed", cause });
     } finally {
       setSelectionBusy(false);
     }
@@ -166,11 +166,11 @@ export function SupporterList() {
   const supporterColumns: DataTableColumn<SupporterSummary>[] = [
     {
       id: "select",
-      header: "選取",
+      header: listCopy.select,
       cell: (supporter) => (
         <input
           type="checkbox"
-          aria-label={"選取 " + supporter.name}
+          aria-label={listCopy.selectSupporter(supporter.name)}
           checked={effectiveSelectedIds.includes(supporter.id)}
           disabled={selectionDisabled}
           onChange={() => toggleSelected(supporter.id)}
@@ -198,7 +198,8 @@ export function SupporterList() {
       header: copy.columns.consent,
       cell: (s) => (
         <span className="text-xs">
-          {copy.email} {s.emailConsent ?? "-"} / {copy.whatsapp} {s.whatsappConsent ?? "-"}
+          {copy.email} {listCopy.consentStatus(s.emailConsent)} / {copy.whatsapp}{" "}
+          {listCopy.consentStatus(s.whatsappConsent)}
         </span>
       ),
     },
@@ -210,12 +211,12 @@ export function SupporterList() {
     {
       id: "lifetime",
       header: copy.columns.lifetime,
-      cell: (s) => formatHkd(s.lifetimeAmountCents, language),
+      cell: (s) => format.money(s.lifetimeAmountCents),
     },
     {
       id: "lastGift",
       header: copy.columns.lastGift,
-      cell: (s) => formatHkd(s.lastGiftAmountCents, language),
+      cell: (s) => format.money(s.lastGiftAmountCents),
     },
     {
       id: "receipts",
@@ -243,7 +244,7 @@ export function SupporterList() {
         <div className="flex items-start justify-between gap-2">
           <input
             type="checkbox"
-            aria-label={"選取 " + s.name}
+            aria-label={listCopy.selectSupporter(s.name)}
             checked={effectiveSelectedIds.includes(s.id)}
             disabled={selectionDisabled}
             onChange={() => toggleSelected(s.id)}
@@ -259,12 +260,13 @@ export function SupporterList() {
             <div className="text-xs text-[var(--color-text-muted)]">{s.email}</div>
           </div>
           <div className="text-right text-sm font-medium text-[var(--color-panel)]">
-            {formatHkd(s.lifetimeAmountCents, language)}
+            {format.money(s.lifetimeAmountCents)}
           </div>
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          {copy.lastGift}: {formatHkd(s.lastGiftAmountCents, language)} · {copy.email}{" "}
-          {s.emailConsent ?? "-"} / {copy.whatsapp} {s.whatsappConsent ?? "-"}
+          {copy.lastGift}: {format.money(s.lastGiftAmountCents)} · {copy.email}{" "}
+          {listCopy.consentStatus(s.emailConsent)} / {copy.whatsapp}{" "}
+          {listCopy.consentStatus(s.whatsappConsent)}
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
           {copy.receipts}: {s.receiptNeeded ? copy.needsReview : copy.clear}
@@ -328,7 +330,7 @@ export function SupporterList() {
 
       {(isFetching || listState.isDebouncing) && data && (
         <p role="status" className="text-xs text-[var(--color-text-muted)]">
-          {language === "zh" ? "正在更新搜尋結果…" : "Refreshing results…"}
+          {listCopy.refreshing}
         </p>
       )}
       {error && (
@@ -347,7 +349,7 @@ export function SupporterList() {
           disabled={selectionDisabled || !visibleData?.supporters.length}
           onClick={selectVisible}
         >
-          選取本頁
+          {listCopy.selectPage}
         </button>
         <button
           type="button"
@@ -357,7 +359,7 @@ export function SupporterList() {
           }
           onClick={selectAllMatching}
         >
-          選取全部符合條件（最多 1000 筆）
+          {listCopy.selectAllMatching}
         </button>
         <button
           type="button"
@@ -365,12 +367,14 @@ export function SupporterList() {
           disabled={selectionBusy || effectiveSelectedIds.length === 0}
           onClick={() => setSelectedIds([])}
         >
-          清除選取
+          {listCopy.clearSelection}
         </button>
-        {selectionBusy && <span role="status">正在固定選取範圍…</span>}
+        {selectionBusy && <span role="status">{listCopy.lockingSelection}</span>}
         {selectionError && (
           <span role="alert" className="text-[var(--color-error)]">
-            {selectionError}
+            {selectionError.code === "filters_changed"
+              ? listCopy.filtersChanged
+              : (adminErrorMessage(selectionError.cause, language) ?? listCopy.lockFailed)}
           </span>
         )}
       </div>
@@ -417,7 +421,7 @@ export function SupporterList() {
           total={visibleData.total}
           onPageChange={setPage}
           busy={isFetching || listState.isDebouncing}
-          label="支持者"
+          label={listCopy.pagerLabel}
         />
       )}
       {visibleData && (

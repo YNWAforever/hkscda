@@ -2,41 +2,72 @@ import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DirectoryDetail } from "../../../lib/volunteers/directory/types";
-import {
-  directoryQuery,
-  directoryStatuses,
-  directoryTiers,
-  type DirectorySearch,
-} from "./directorySearch";
-import { attendanceStatusLabels, registrationStatusLabels } from "./volunteerAdminLogic";
+import { volunteerRegistrationStatusLabelsFor } from "../../../lib/volunteers/labels";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { directoryQuery, type DirectorySearch } from "./directorySearch";
+import { volunteerCommonCopy } from "./volunteerCommonCopy";
+import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { volunteerPersonCopy } from "./volunteerPersonCopy";
 const card =
   "min-w-0 space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5";
 const action =
   "inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--color-border)] px-4 py-2 font-medium text-[var(--color-primary)] focus-visible:outline-2";
-function date(value: string | null) {
-  if (!value) return "未記錄";
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime())
-    ? value
-    : new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium", timeZone: "Asia/Hong_Kong" }).format(
-        parsed,
-      );
+
+/** The copy of the page in the admin's language, with the date and status helpers it needs. */
+function usePersonText() {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(volunteerPersonCopy, language);
+  const common = pickAdminCopy(volunteerCommonCopy, language);
+  const format = pickAdminCopy(volunteerFormatCopy, language);
+  const registrationLabels: Record<string, string> = volunteerRegistrationStatusLabelsFor(language);
+  /** A date, or "not recorded" when there is none. */
+  const date = (value: string | null) => (value ? format.profileDate(value) : copy.notRecorded);
+  /** The label of a stored status, or "other status" when the page has no label for it. */
+  const label = (labels: Record<string, string>, value: string) =>
+    labels[value] || copy.otherStatus(value);
+  return {
+    language,
+    copy,
+    directory: pickAdminCopy(volunteerDirectoryCopy, language),
+    attendanceLabels: common.attendance as Record<string, string>,
+    registrationLabels,
+    date,
+    label,
+  };
 }
-function label(labels: Record<string, string>, value: string) {
-  return labels[value] || `其他狀態（${value}）`;
-}
+
 function AttendanceFact({ fact }: { fact: Record<string, unknown> }) {
+  const { copy, attendanceLabels, label } = usePersonText();
   return (
     <span>
       {typeof fact.attendanceStatus === "string"
-        ? label(attendanceStatusLabels, fact.attendanceStatus)
-        : "未記錄出席狀態"}
-      {typeof fact.volunteerHours === "number"
-        ? ` · ${fact.volunteerHours} 小時`
-        : " · 服務時數未記錄"}
+        ? label(attendanceLabels, fact.attendanceStatus)
+        : copy.attendance.statusNotRecorded}
+      {copy.attendance.hours(typeof fact.volunteerHours === "number" ? fact.volunteerHours : null)}
     </span>
   );
 }
+
+/** Whether the account is linked, and if so whether its email is verified. */
+function emailStateOf(profile: DirectoryDetail["profile"]): "unlinked" | "verified" | "unverified" {
+  if (!profile.account_linked) return "unlinked";
+  return profile.email_verified ? "verified" : "unverified";
+}
+
+/** What the header says about the account email and the staff verification. */
+function accountLine(
+  profile: DirectoryDetail["profile"],
+  text: ReturnType<typeof usePersonText>,
+): string {
+  const { copy, date } = text;
+  const verification = profile.verified_at
+    ? copy.verification.verified(date(profile.verified_at))
+    : copy.verification.awaiting;
+  return copy.accountLine(copy.emailState[emailStateOf(profile)], verification);
+}
+
 export function PersonRecords({
   data,
   search,
@@ -46,115 +77,106 @@ export function PersonRecords({
   search: DirectorySearch;
   initialTab?: string;
 }) {
+  const text = usePersonText();
+  const { copy, directory, attendanceLabels, registrationLabels, date, label } = text;
   const { profile, coverage } = data;
   return (
     <div className="min-w-0 space-y-6">
       <div className="flex flex-wrap gap-3">
         <a className={action} href={`/admin/volunteers/people?${directoryQuery(search)}`}>
-          返回名冊
+          {copy.back}
         </a>
         <a
           className={`${action} bg-[var(--color-primary)] text-[var(--color-primary-foreground)]`}
           href={`/admin/volunteers/qualifications?profile_id=${encodeURIComponent(profile.id)}`}
         >
-          核實身份與資格
+          {copy.verifyLink}
         </a>
       </div>
       <header className={card}>
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="break-words text-2xl font-semibold">
-            {profile.display_name || "未填姓名"}
+            {profile.display_name || copy.unnamed}
           </h2>
           <span className="rounded-full bg-[var(--color-muted)] px-3 py-1 text-sm">
-            {directoryStatuses[profile.status]}
+            {directory.statuses[profile.status]}
           </span>
-          <span className="text-sm">{directoryTiers[profile.tier]}</span>
+          <span className="text-sm">{directory.tiers[profile.tier]}</span>
         </div>
         <p className="break-all">
-          {profile.account_linked ? profile.linked_email || "未提供電郵" : "帳戶未連結"}
+          {profile.account_linked ? profile.linked_email || copy.noEmail : copy.notLinked}
         </p>
-        <p>
-          帳戶電郵：
-          {!profile.account_linked
-            ? "未連結"
-            : profile.email_verified
-              ? "電郵已驗證"
-              : "電郵未驗證"}{" "}
-          · 職員身份核實：
-          {profile.verified_at ? `已核實（${date(profile.verified_at)}）` : "待核實"}
-        </p>
+        <p>{accountLine(profile, text)}</p>
         <p className="break-all text-xs text-[var(--color-muted-foreground)]">
-          身份編號：{profile.id}
+          {copy.profileId(profile.id)}
         </p>
       </header>
       <aside className="rounded-xl bg-[var(--color-muted)] p-4 text-sm">
-        <p className="font-medium">紀錄覆蓋範圍</p>
+        <p className="font-medium">{copy.coverage.title}</p>
         <p className="mt-1">
-          {coverage.history_coverage_start
-            ? `歷史覆蓋起點：${date(coverage.history_coverage_start)}`
-            : "未設定歷史覆蓋起點"}
-          。只顯示已連結此身份的紀錄；未連結的舊資料不會按姓名推測合併。每類最多顯示{" "}
-          {coverage.records_limit} 筆；缺少紀錄不代表沒有服務或資格。
+          {copy.coverage.text(
+            coverage.history_coverage_start ? date(coverage.history_coverage_start) : null,
+            coverage.records_limit,
+          )}
         </p>
       </aside>
       <Tabs defaultValue={initialTab} className="min-w-0">
         <TabsList
           className="grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-4"
-          aria-label="個人紀錄分類"
+          aria-label={copy.tabsLabel}
         >
-          {[
-            ["identity", "身份與資格"],
-            ["registrations", "報名"],
-            ["attendance", "出席與服務紀錄"],
-            ["audit", "核實紀錄"],
-          ].map(([value, text]) => (
+          {(["identity", "registrations", "attendance", "audit"] as const).map((value) => (
             <TabsTrigger
               key={value}
               value={value}
               className="min-h-11 whitespace-normal motion-reduce:transition-none"
             >
-              {text}
+              {copy.tabs[value]}
             </TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value="identity" className="mt-4 space-y-4">
           <section className={card}>
-            <h3 className="text-lg font-semibold">身份資料</h3>
+            <h3 className="text-lg font-semibold">{copy.identity.title}</h3>
             <dl className="grid gap-4 sm:grid-cols-2">
               <div>
-                <dt className="text-sm text-[var(--color-muted-foreground)]">出生日期</dt>
+                <dt className="text-sm text-[var(--color-muted-foreground)]">
+                  {copy.identity.birthDate}
+                </dt>
                 <dd>{date(profile.birth_date)}</dd>
               </div>
               <div>
-                <dt className="text-sm text-[var(--color-muted-foreground)]">加入日期</dt>
+                <dt className="text-sm text-[var(--color-muted-foreground)]">
+                  {copy.identity.joinedOn}
+                </dt>
                 <dd>{date(profile.joined_on)}</dd>
               </div>
             </dl>
-            <p className="text-sm">
-              電郵驗證與職員身份核實分開處理；更改身份及資格請使用核實工作區並提供證據。
-            </p>
+            <p className="text-sm">{copy.identity.note}</p>
           </section>
           <section className={card}>
-            <h3 className="text-lg font-semibold">資格證據</h3>
+            <h3 className="text-lg font-semibold">{copy.identity.evidenceTitle}</h3>
             <p className="text-sm">
-              顯示 {data.credentials.length} / {coverage.credential_total} 筆
+              {copy.identity.showing(data.credentials.length, coverage.credential_total)}
             </p>
             {data.credentials.length === 0 ? (
-              <p>沒有已記錄的資格證據。</p>
+              <p>{copy.identity.none}</p>
             ) : (
               <ul className="space-y-4">
                 {data.credentials.map((item) => (
                   <li key={item.id} className="border-t border-[var(--color-border)] pt-3">
                     <h4 className="font-semibold">
-                      {item.label} {item.revoked_at && "· 已撤銷"}
+                      {item.label} {item.revoked_at && copy.identity.revoked}
                     </h4>
                     <p>
-                      有效期間：{date(item.valid_from)} 至{" "}
-                      {item.valid_until ? date(item.valid_until) : "未設定到期日"}
+                      {copy.identity.validity(
+                        date(item.valid_from),
+                        item.valid_until ? date(item.valid_until) : null,
+                      )}
                     </p>
-                    {item.revoked_at && <p>撤銷日期：{date(item.revoked_at)}</p>}
+                    {item.revoked_at && <p>{copy.identity.revokedOn(date(item.revoked_at))}</p>}
                     <p className="whitespace-pre-wrap break-words">
-                      證據：{item.evidence || "未提供"}
+                      {copy.identity.evidence(item.evidence)}
                     </p>
                   </li>
                 ))}
@@ -164,26 +186,28 @@ export function PersonRecords({
         </TabsContent>
         <TabsContent value="registrations" className="mt-4 space-y-4">
           <p>
-            顯示 {data.registrations.length} / {coverage.registration_total} 筆報名
+            {copy.registrations.showing(data.registrations.length, coverage.registration_total)}
           </p>
           {data.registrations.length === 0 ? (
-            <p className={card}>尚未有已連結的報名。此義工仍可在名冊中查閱及核實。</p>
+            <p className={card}>{copy.registrations.none}</p>
           ) : (
             data.registrations.map((item) => (
               <article key={item.id} className={card}>
                 <h3 className="font-semibold">{item.title}</h3>
                 <p>
-                  {date(item.starts_at)} · {label(registrationStatusLabels, item.status)}
+                  {date(item.starts_at)} · {label(registrationLabels, item.status)}
                 </p>
                 <p>
-                  出席：{label(attendanceStatusLabels, item.attendance_status)} · 服務時數：
-                  {item.volunteer_hours === null ? "未記錄" : `${item.volunteer_hours} 小時`}
+                  {copy.registrations.attendanceLine(
+                    label(attendanceLabels, item.attendance_status),
+                    item.volunteer_hours,
+                  )}
                 </p>
                 <a
                   className={action}
                   href={`/admin/volunteers/registrations/${encodeURIComponent(item.id)}`}
                 >
-                  查看報名及處理
+                  {copy.registrations.view}
                 </a>
               </article>
             ))
@@ -191,33 +215,36 @@ export function PersonRecords({
         </TabsContent>
         <TabsContent value="attendance" className="mt-4 space-y-4">
           <p>
-            顯示 {data.attendance_events.length} / {coverage.attendance_event_total}{" "}
-            筆出席事實紀錄；時數只取已記錄數值，不由場次長度推算。
+            {copy.attendance.showing(
+              data.attendance_events.length,
+              coverage.attendance_event_total,
+            )}
           </p>
           {data.attendance_events.length === 0 ? (
-            <p className={card}>沒有已連結的出席事實紀錄。不能據此推算服務年資或時數。</p>
+            <p className={card}>{copy.attendance.none}</p>
           ) : (
             data.attendance_events.map((item) => (
               <article key={item.id} className={card}>
                 <h3 className="font-semibold">
-                  {item.command === "correct" ? "出席更正" : "出席紀錄"} · {date(item.recorded_at)}
+                  {item.command === "correct" ? copy.attendance.correction : copy.attendance.record}{" "}
+                  · {date(item.recorded_at)}
                 </h3>
                 <p>
-                  更改前：
+                  {copy.attendance.before}
                   <AttendanceFact fact={item.before_fact} />
                 </p>
                 <p>
-                  更改後：
+                  {copy.attendance.after}
                   <AttendanceFact fact={item.after_fact} />
                 </p>
                 <p className="whitespace-pre-wrap break-words">
-                  原因：{item.reason || "未記錄原因"}
+                  {copy.attendance.reason(item.reason)}
                 </p>
                 <a
                   className={action}
                   href={`/admin/volunteers/registrations/${encodeURIComponent(item.registration_id)}`}
                 >
-                  查看相關報名
+                  {copy.attendance.related}
                 </a>
               </article>
             ))
@@ -225,29 +252,22 @@ export function PersonRecords({
         </TabsContent>
         <TabsContent value="audit" className="mt-4 space-y-4">
           <p>
-            顯示 {data.verification_history.length} / {coverage.verification_event_total} 筆核實紀錄
+            {copy.audit.showing(
+              data.verification_history.length,
+              coverage.verification_event_total,
+            )}
           </p>
           {data.verification_history.length === 0 ? (
-            <p className={card}>沒有已連結的核實紀錄。請以現有身份資料及證據核對。</p>
+            <p className={card}>{copy.audit.none}</p>
           ) : (
             data.verification_history.map((item) => (
               <article key={item.id} className={card}>
                 <h3 className="font-semibold">{date(item.created_at)}</h3>
-                <p>
-                  {label(
-                    {
-                      claim: "帳戶連結",
-                      verify: "身份核實",
-                      suspend: "身份暫停",
-                      credential: "資格授予",
-                      revoke: "資格撤銷",
-                      update_profile: "身份更新",
-                    },
-                    item.event_type,
-                  )}
+                <p>{label(copy.audit.events, item.event_type)}</p>
+                <p className="whitespace-pre-wrap break-words">
+                  {item.reason || copy.audit.noReason}
                 </p>
-                <p className="whitespace-pre-wrap break-words">{item.reason || "未記錄原因"}</p>
-                <p className="break-all text-xs">處理職員：{item.actor_user_id}</p>
+                <p className="break-all text-xs">{copy.audit.handledBy(item.actor_user_id)}</p>
               </article>
             ))
           )}
@@ -263,6 +283,7 @@ export function VolunteerPersonDetail({
   profileId: string;
   search: DirectorySearch;
 }) {
+  const { copy } = usePersonText();
   const query = useQuery({
     queryKey: ["volunteer-directory", "person", profileId],
     queryFn: () =>
@@ -270,16 +291,16 @@ export function VolunteerPersonDetail({
         `/api/admin/volunteers/people?profile_id=${encodeURIComponent(profileId)}`,
       ),
   });
-  if (query.isPending) return <p role="status">正在載入個人紀錄…</p>;
+  if (query.isPending) return <p role="status">{copy.loading}</p>;
   if (query.isError)
     return (
       <div role="alert" className={card}>
-        <p>未能載入個人紀錄。身份可能不存在，或目前未能連線。</p>
+        <p>{copy.loadFailed}</p>
         <button className={action} onClick={() => void query.refetch()}>
-          重新載入
+          {copy.reload}
         </button>
         <a className={action} href={`/admin/volunteers/people?${directoryQuery(search)}`}>
-          返回名冊
+          {copy.back}
         </a>
       </div>
     );

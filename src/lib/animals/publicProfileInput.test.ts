@@ -3,6 +3,8 @@ import { describe, expect, test } from "bun:test";
 import {
   buildPublicProfile,
   EMPTY_PUBLIC_PROFILE_FIELDS,
+  isPublicProfileField,
+  publicProfileLabel,
   toPublicProfileFields,
   type PublicProfileFields,
 } from "./publicProfileInput";
@@ -131,4 +133,31 @@ test("sponsor facts round-trip through the approved profile writer", () => {
 test("sponsor text with a bare at-sign is rejected before the database constraint", () => {
   const result = buildPublicProfile(fields({ sponsorUse: "use @ vet" }));
   expect(result.ok).toBe(false);
+});
+
+describe("publicProfileLabel", () => {
+  test("defaults to the Chinese labels the admin has always shown", () => {
+    expect(publicProfileLabel("code")).toBe("編號");
+    expect(publicProfileLabel("neutered", "zh")).toBe("絕育狀態");
+    expect(publicProfileLabel("story", "zh")).toBe("牠的故事");
+  });
+
+  test("has an English label for every public profile field, with no Chinese", () => {
+    const keys = Object.keys(EMPTY_PUBLIC_PROFILE_FIELDS) as (keyof PublicProfileFields)[];
+    expect(keys).toHaveLength(10);
+    for (const key of keys) {
+      expect(publicProfileLabel(key, "zh")).not.toBe("");
+      const english = publicProfileLabel(key, "en");
+      expect(english, key).toMatch(/^[A-Za-z ]+$/);
+    }
+    expect(publicProfileLabel("birthday", "en")).toBe("Date of birth");
+    expect(publicProfileLabel("health", "en")).toBe("Care and health needs");
+  });
+
+  test("tells a profile field from any other stored key", () => {
+    expect(isPublicProfileField("story")).toBe(true);
+    expect(isPublicProfileField("sponsorUse")).toBe(true);
+    expect(isPublicProfileField("unknownKey")).toBe(false);
+    expect(isPublicProfileField("toString")).toBe(false);
+  });
 });

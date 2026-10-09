@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { AdminLanguageProvider, AdminLanguageToggle, useAdminLanguage } from "./adminI18n";
 import { getAdminNavigation, getActiveAdminNavItemIds } from "./adminNav";
 import type { AdminNavigationGroup, AdminSection } from "./adminNav";
+import { adminLanguageTag } from "./i18n/pageLanguage";
 
 const COLLAPSE_KEY = "hkscda-admin-sidebar-collapsed";
 
@@ -29,7 +30,7 @@ function NavList({
   collapsed: boolean;
   onNavigate?: (event: MouseEvent<HTMLAnchorElement>, to: string) => void;
 }) {
-  const { copy, language } = useAdminLanguage();
+  const { copy } = useAdminLanguage();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <nav
@@ -39,7 +40,7 @@ function NavList({
       <Link
         to="/admin/tasks"
         onClick={onNavigate ? (event) => onNavigate(event, "/admin/tasks") : undefined}
-        aria-label={language === "zh" ? "待辦總覽" : "Task overview"}
+        aria-label={copy.layout.taskOverview}
         aria-current={pathname === "/admin/tasks" ? "page" : undefined}
         className={cn(
           "mb-2 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--color-text-inverse)] hover:bg-[var(--color-panel-2)]",
@@ -47,9 +48,7 @@ function NavList({
         )}
       >
         <ListTodo className="h-[18px] w-[18px] shrink-0" aria-hidden />
-        <span className={cn(collapsed && "md:hidden")}>
-          {language === "zh" ? "待辦總覽" : "Task overview"}
-        </span>
+        <span className={cn(collapsed && "md:hidden")}>{copy.layout.taskOverview}</span>
       </Link>
       {groups.map((group) => {
         const Icon = group.icon;
@@ -189,7 +188,7 @@ export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
 function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const focusPageOnClose = useRef(false);
@@ -252,7 +251,7 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="flex min-h-dvh" lang={adminLanguageTag(language)}>
       <aside
         className={cn(
           "hidden flex-shrink-0 flex-col bg-[var(--color-panel)] text-[var(--color-text-inverse)] transition-[width] duration-200 md:flex",

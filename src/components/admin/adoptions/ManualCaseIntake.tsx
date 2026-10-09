@@ -8,6 +8,7 @@ import type {
   CoordinatorTaskPriority,
   ManualCaseIdentityCandidate,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
@@ -447,7 +448,7 @@ export function ManualCaseIntake() {
     identityMode === "new_supporter"
       ? supporterForm.name.trim() || copy.newSupporter
       : selectedCandidate?.displayName || copy.existingIdentity;
-  const submitFailure = submitError ?? createCaseMutation.error?.message;
+  const submitFailure = submitError ?? adminErrorMessage(createCaseMutation.error, language);
   const isSubmitting = createCaseMutation.isPending;
 
   return (
@@ -464,12 +465,13 @@ export function ManualCaseIntake() {
 
       {caseStatusesQuery.error && (
         <InlineAlert>
-          {copy.loadCaseStatusesError}: {caseStatusesQuery.error.message}
+          {copy.loadCaseStatusesError}: {adminErrorMessage(caseStatusesQuery.error, language) ?? ""}
         </InlineAlert>
       )}
       {followupStatusesQuery.error && initialTask.enabled && (
         <InlineAlert>
-          {copy.loadFollowupStatusesError}: {followupStatusesQuery.error.message}
+          {copy.loadFollowupStatusesError}:{" "}
+          {adminErrorMessage(followupStatusesQuery.error, language) ?? ""}
         </InlineAlert>
       )}
       {submitFailure && <InlineAlert>{submitFailure}</InlineAlert>}
@@ -497,7 +499,8 @@ export function ManualCaseIntake() {
 
         {identitySearchQuery.error && searchText && (
           <InlineAlert>
-            {copy.searchIdentitiesError}: {identitySearchQuery.error.message}
+            {copy.searchIdentitiesError}:{" "}
+            {adminErrorMessage(identitySearchQuery.error, language) ?? ""}
           </InlineAlert>
         )}
 

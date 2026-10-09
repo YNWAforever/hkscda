@@ -2,10 +2,14 @@ import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCoordinatorJson } from "../adoptions/api";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import { centsToHkd } from "../../../lib/donations/domain";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { financeCopy } from "./financeCopy";
+import { sponsorshipFormatCopy } from "./formatCopy";
 type FinanceData = {
   canRefund: boolean;
   receipts: Array<{ proof_id: string; receipt_no: string; status: string }>;
@@ -27,14 +31,27 @@ type FinanceData = {
     delivery_state?: string | null;
   }>;
 };
+
+/**
+ * Why the panel shows an error. It is kept as a code (the key of `copy.errors`), with the caught
+ * error where the server may have given a reason, and written when the panel renders.
+ */
+type PanelError = { code: "command_failed" | "retry_failed"; cause?: unknown };
+
 export function FinancePanel({
   pledge,
   onChanged,
+  initialProofId = "",
 }: {
   pledge: PledgeDetail;
   onChanged: () => Promise<void>;
+  /** The payment that starts selected. The drawer leaves it empty; a test sets it. */
+  initialProofId?: string;
 }) {
-  const [proofId, setProofId] = useState("");
+  const copy = useAdminCopy(financeCopy);
+  const format = useAdminCopy(sponsorshipFormatCopy);
+  const { language } = useAdminLanguage();
+  const [proofId, setProofId] = useState(initialProofId);
   const [paymentId, setPaymentId] = useState("");
   const [reason, setReason] = useState("");
   const [reference, setReference] = useState("");
@@ -44,7 +61,7 @@ export function FinancePanel({
   const [allocationAmount, setAllocationAmount] = useState("");
   const allocationRetry = useRef<{ fingerprint: string; key: string } | null>(null);
   const [allocationId, setAllocationId] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<PanelError | null>(null);
   const [busy, setBusy] = useState(false);
   const endpoint = `/api/admin/sponsorships/pledges/${pledge.id}/finance`;
   const query = useQuery({
@@ -70,22 +87,26 @@ export function FinancePanel({
       await fetchCoordinatorJson(endpoint, { method: "POST", body: JSON.stringify(input) });
       await query.refetch();
       await onChanged();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "未能完成操作");
+    } catch (cause) {
+      setError({ code: "command_failed", cause });
     } finally {
       setBusy(false);
     }
   }
+  // A reason the caught error gave is shown as it came; otherwise the message for the code.
+  const errorMessage = error
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    : null;
   return (
     <section className="space-y-3 rounded-lg border p-4">
-      <h3 className="font-semibold">收款、月份及通知</h3>
-      <p className="text-sm">月份分配只分攤已核實的收款，不另計收入。未付款月份只供服務跟進。</p>
+      <h3 className="font-semibold">{copy.heading}</h3>
+      <p className="text-sm">{copy.intro}</p>
       <div className="flex flex-wrap gap-3 text-sm">
         <a className="underline" href={`/admin/supporters/${pledge.supporterId}`}>
-          聯絡人收款及收據紀錄
+          {copy.supporterRecords}
         </a>
         <a className="underline" href="/admin">
-          財務核對及收據
+          {copy.reconcileLink}
         </a>
       </div>
       <Button
@@ -96,47 +117,47 @@ export function FinancePanel({
         }
         onClick={() => command({ action: "open_months" })}
       >
-        建立截至本月的跟進月份
+        {copy.openMonths}
       </Button>
-      {(query.isError || error) && <p role="alert">{error ?? "未能載入財務資料"}</p>}
+      {(query.isError || error) && <p role="alert">{errorMessage ?? copy.loadFailed}</p>}
       {pledge.contactSubmission && (
         <div className="space-y-2 rounded border p-3">
-          <h4 className="font-medium">提交時的聯絡資料（保留原始版本）</h4>
+          <h4 className="font-medium">{copy.submitted.heading}</h4>
           <p>
             {pledge.contactSubmission.supporterName} · {pledge.contactSubmission.email} ·{" "}
             {pledge.contactSubmission.phone}
           </p>
-          <p className="text-xs">來源：公開助養申請。提交資料不會自行覆寫聯絡人主檔。</p>
+          <p className="text-xs">{copy.submitted.note}</p>
           {query.data?.canRefund && (
             <>
               <label>
-                核實方法及原因
+                {copy.submitted.reasonLabel}
                 <Input value={reason} onChange={(e) => setReason(e.target.value)} />
               </label>
               <Button
                 disabled={busy || reason.trim().length < 5}
                 onClick={() => command({ action: "verify_contact", reason })}
               >
-                已核實，更新聯絡人主檔
+                {copy.submitted.verify}
               </Button>
             </>
           )}
         </div>
       )}
       <label className="block">
-        已核實付款
+        {copy.verifiedPayments}
         <select
           className="block w-full rounded border p-2"
           value={proofId}
           onChange={(e) => setProofId(e.target.value)}
         >
-          <option value="">選擇付款</option>
+          <option value="">{copy.choosePayment}</option>
           {pledge.proofHistory
             .filter((p) => p.reviewStatus === "approved")
             .map((p) => (
               <option key={p.id} value={p.id}>
-                {p.paymentDate} · {centsToHkd(p.amountCents)} ·{" "}
-                {p.reference || p.fileName || "人手記錄"}
+                {format.day(p.paymentDate)} · {format.money(p.amountCents)} ·{" "}
+                {p.reference || p.fileName || copy.manualRecord}
               </option>
             ))}
         </select>
@@ -144,32 +165,30 @@ export function FinancePanel({
       {selected && (
         <>
           <p className="text-sm">
-            {query.data?.sources.some((s) => s.proof_id === proofId)
-              ? "已連結單一收款帳項"
-              : "歷史收款尚待財務核對，未重入帳"}
+            {query.data?.sources.some((s) => s.proof_id === proofId) ? copy.linked : copy.notLinked}
             {totalRefunded > 0
-              ? ` · 已退款 ${centsToHkd(totalRefunded)} · 實收 ${centsToHkd(refundable)}`
+              ? copy.refundedLine(format.money(totalRefunded), format.money(refundable))
               : ""}
           </p>
           <p className="text-sm">
-            收據：
-            {query.data?.receipts
-              .filter((r) => r.proof_id === proofId)
-              .map((r) => `${r.receipt_no}（${r.status === "issued" ? "已簽發" : "已作廢"}）`)
-              .join("、") || "未簽發"}
+            {copy.receiptsLine(
+              (query.data?.receipts ?? [])
+                .filter((r) => r.proof_id === proofId)
+                .map((r) => ({ number: r.receipt_no, issued: r.status === "issued" })),
+            )}
           </p>
           <label className="block">
-            調整原因
+            {copy.adjustmentReason}
             <Input value={reason} onChange={(e) => setReason(e.target.value)} />
           </label>
           <label className="block">
-            原月份分配
+            {copy.originalAllocation}
             <select
               className="block w-full rounded border p-2"
               value={allocationId}
               onChange={(e) => setAllocationId(e.target.value)}
             >
-              <option value="">選擇原分配</option>
+              <option value="">{copy.chooseAllocation}</option>
               {pledge.periods.flatMap((p) =>
                 p.allocations
                   .filter(
@@ -180,7 +199,7 @@ export function FinancePanel({
                   )
                   .map((a) => (
                     <option key={a.id} value={a.id}>
-                      {p.periodMonth} · {centsToHkd(a.amountCents)}
+                      {format.periodStart(p.periodMonth)} · {format.money(a.amountCents)}
                     </option>
                   )),
               )}
@@ -196,14 +215,14 @@ export function FinancePanel({
             }
             onClick={() => command({ action: "reverse", allocationId, reason })}
           >
-            新增分配撤銷記錄
+            {copy.reverse}
           </Button>
           <label className="block">
-            重新分配月份
+            {copy.reallocateMonth}
             <Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
           </label>
           <label className="block">
-            重新分配金額（港元；尚餘 {centsToHkd(remaining)}）
+            {copy.reallocateAmount(format.money(remaining))}
             <Input
               type="number"
               min="0.01"
@@ -236,24 +255,24 @@ export function FinancePanel({
               return command({ ...input, idempotencyKey: allocationRetry.current.key });
             }}
           >
-            將此金額分配至指定月份
+            {copy.reallocate}
           </Button>
           {query.data?.canRefund && !query.data.sources.some((x) => x.proof_id === proofId) && (
             <div className="space-y-2">
               <label>
-                待核對的既有收款
+                {copy.existingPayment}
                 <select
                   className="block w-full rounded border p-2"
                   value={paymentId}
                   onChange={(e) => setPaymentId(e.target.value)}
                 >
-                  <option value="">選擇同一聯絡人的既有收款</option>
+                  <option value="">{copy.chooseExistingPayment}</option>
                   {query.data.candidates
                     .filter((c) => c.amount_cents === selected.amountCents)
                     .map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.received_at?.slice(0, 10)} · {centsToHkd(c.amount_cents)} ·{" "}
-                        {c.bank_reference || "無銀行參考編號"}
+                        {format.isoDay(c.received_at)} · {format.money(c.amount_cents)} ·{" "}
+                        {c.bank_reference || copy.noBankReference}
                       </option>
                     ))}
                 </select>
@@ -262,7 +281,7 @@ export function FinancePanel({
                 disabled={busy || !paymentId || reason.trim().length < 5}
                 onClick={() => command({ action: "reconcile", proofId, paymentId, reason })}
               >
-                核對並連結既有收款
+                {copy.reconcile}
               </Button>
             </div>
           )}
@@ -273,20 +292,18 @@ export function FinancePanel({
                 disabled={busy}
                 onClick={() => command({ action: "receipt_requested", proofId, requested: true })}
               >
-                記錄助養人已要求收據
+                {copy.receiptRequested}
               </Button>
             )}
           {query.data?.canRefund && (
             <div className="space-y-2 border-t pt-3">
-              <p className="text-sm">
-                記錄已完成的退款（部分或全額）。保留原收款及退款歷史，只撤銷超出剩餘收款的分配，並作廢原收據。
-              </p>
+              <p className="text-sm">{copy.refundNote}</p>
               <label className="block">
-                已完成退款的銀行參考編號
+                {copy.refundReference}
                 <Input value={reference} onChange={(e) => setReference(e.target.value)} />
               </label>
               <label>
-                退款金額（港元；可退 {centsToHkd(refundable)}）
+                {copy.refundAmount(format.money(refundable))}
                 <Input
                   type="number"
                   min="0.01"
@@ -321,31 +338,22 @@ export function FinancePanel({
                   return command({ ...input, idempotencyKey: refundRetry.current.key });
                 }}
               >
-                記錄已完成退款
+                {copy.recordRefund}
               </Button>
             </div>
           )}
         </>
       )}
       <div className="space-y-1 border-t pt-3">
-        <h4 className="font-medium">通知跟進</h4>
+        <h4 className="font-medium">{copy.notifications}</h4>
         {query.data?.deliveries.map((d) => (
           <p className="text-xs" key={d.id}>
-            {{
-              proof_recorded: "收到付款資料",
-              active: "付款已核實",
-              refund_recorded: "退款已記錄",
-              needs_followup: "付款需跟進",
-              cancelled: "承諾已取消",
-            }[d.event] ?? "通知"}{" "}
-            ·{" "}
-            {{
-              queued: "等候傳送",
-              processing: "處理中",
-              sent: "服務商已接收",
-              failed: "傳送失敗，可重試",
-            }[d.status] ?? "未確認"}{" "}
-            · {deliveryLabel(d.delivery_state) ?? "尚無送達證據"} · 嘗試 {d.attempts} 次
+            {copy.deliveryLine(
+              copy.deliveryEvent(d.event),
+              copy.deliveryStatus(d.status),
+              deliveryLabel(d.delivery_state, language) ?? copy.noDeliveryEvidence,
+              d.attempts,
+            )}
             {d.last_error ? ` · ${d.last_error}` : ""}
           </p>
         ))}
@@ -356,14 +364,14 @@ export function FinancePanel({
             try {
               await fetchCoordinatorJson("/api/admin/sponsorships/deliveries", { method: "POST" });
               await query.refetch();
-            } catch (e) {
-              setError(e instanceof Error ? e.message : "通知重試失敗");
+            } catch (cause) {
+              setError({ code: "retry_failed", cause });
             } finally {
               setBusy(false);
             }
           }}
         >
-          重試待傳送通知
+          {copy.retryNotifications}
         </Button>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { policyReason } from "./messages";
 import { policyDraftSchema, monthlyPolicySchema, type PolicyDraft } from "./schemas";
 
 const unresolved = (reason: string, options?: string[]) => ({
@@ -105,8 +106,8 @@ const dogB = base("dog-cleaning-b", "狗舍清潔 B：無確認團體", "dog", "
 dogB.booking.scenario = "no_confirmed_group";
 dogB.booking.scenario_templates = { with_group: "dog-cleaning-a", without_group: "dog-cleaning-b" };
 dogB.eligibility.allowed_tiers = allTiers;
-dogB.booking.group_open = unresolved("狗舍團體開放窗口待設定");
-dogB.booking.group_close = unresolved("狗舍團體截止窗口待設定");
+dogB.booking.group_open = unresolved(policyReason("dog_group_open_window"));
+dogB.booking.group_close = unresolved(policyReason("dog_group_close_window"));
 dogB.tier_quotas = [
   { key: "newcomer_weekdays", tiers: ["newcomer"], maximum: unlimited, weekdays: [1, 3, 0] },
 ];
@@ -116,46 +117,42 @@ dogB.daily_limits = [
     tiers: ["newcomer"],
     maximum: limit(5),
     scope: "shelter_day",
-    count_mode: unresolved("每日新手按不同人或人次計算", ["distinct_people", "attendances"]),
+    count_mode: unresolved(policyReason("daily_newcomer_counting"), [
+      "distinct_people",
+      "attendances",
+    ]),
     include_group_visitors: false,
   },
 ];
-dogB.release_rules = [
-  unresolved(
-    "T−48h 熟手不足門檻、晚期每日或單場配額作用域及星期限制待選；以 relax_quota 放寬新手至10，無需保留池",
-    ["relax_quota"],
-  ),
-];
+dogB.release_rules = [unresolved(policyReason("dog_late_release_pending"), ["relax_quota"])];
 const dogA = base("dog-cleaning-a", "狗舍清潔 A：有確認團體", "dog", "09:30", "12:30", 10);
 dogA.booking.scenario = "confirmed_group";
 dogA.booking.scenario_templates = { with_group: "dog-cleaning-a", without_group: "dog-cleaning-b" };
-dogA.booking.group_open = unresolved("狗舍團體窗口未指定");
-dogA.booking.group_close = unresolved("狗舍團體截止未指定");
-dogA.capacity.group_in_shared_total = unresolved("團體是否計入總數10");
+dogA.booking.group_open = unresolved(policyReason("dog_group_window_unspecified"));
+dogA.booking.group_close = unresolved(policyReason("dog_group_close_unspecified"));
+dogA.capacity.group_in_shared_total = unresolved(policyReason("dog_groups_in_total"));
 dogA.capacity.shared_total = limit(10);
-dogA.capacity.group_size = unresolved("團體人數範圍待設定");
+dogA.capacity.group_size = unresolved(policyReason("dog_group_size_range"));
 dogA.roles = [
   {
     ...role("experienced", "恆常／資深", 0, 0, null),
-    maximum: unresolved("恆常／資深名額待選；5–6只是例子"),
+    maximum: unresolved(policyReason("experienced_places")),
   },
 ];
 function catMorning(key: string, name: string, total: number) {
   const p = base(key, name, "cat", "09:00", "12:00", total);
-  p.schedule.start_time = unresolved("貓舍早上開始時間待設定");
-  p.schedule.end_time = unresolved("貓舍早上結束時間待設定");
-  p.booking.individual_open = unresolved("T−7須明選168小時或香港日曆日", [
+  p.schedule.start_time = unresolved(policyReason("cat_morning_start"));
+  p.schedule.end_time = unresolved(policyReason("cat_morning_end"));
+  p.booking.individual_open = unresolved(policyReason("cat_open_seven_days"), [
     "hours_before",
     "calendar_days_before",
   ]);
   p.booking.group_open = { mode: "unrestricted" };
-  p.booking.group_close = unresolved("T−7團體截止須與個人開放採相同時間模式", [
+  p.booking.group_close = unresolved(policyReason("cat_group_close_same_mode"), [
     "hours_before",
     "calendar_days_before",
   ]);
-  p.release_rules = [
-    unresolved("T−48h 資深不足5：清潔A/B適用範圍、釋放池、可接收者及新手上限待設定"),
-  ];
+  p.release_rules = [unresolved(policyReason("cat_late_release_pending"))];
   return p;
 }
 const catA = catMorning("cat-cleaning-a", "貓舍清潔 A：有確認團體", 25);
@@ -168,7 +165,10 @@ catA.capacity = {
   shared_total: limit(25),
   group_in_shared_total: true,
   group_size: { minimum: 10, maximum: 15 },
-  role_count_model: unresolved("領隊獨立或包含於輔助", ["leader_separate", "leader_in_assistants"]),
+  role_count_model: unresolved(policyReason("cat_leader_counting"), [
+    "leader_separate",
+    "leader_in_assistants",
+  ]),
 };
 catA.roles = [
   role("leader", "資深領隊", 1, 1, 1, ["senior"]),
@@ -193,7 +193,7 @@ visit.roles = [
   role("leader", "資深領隊", 1, 1, 1, ["senior"]),
   role("assistant", "恆常／資深輔助", 1, 1, 2),
 ];
-visit.booking.individual_open = unresolved("T−7開放：選擇168小時或香港日曆日", [
+visit.booking.individual_open = unresolved(policyReason("cat_visit_open"), [
   "hours_before",
   "calendar_days_before",
 ]);
@@ -212,18 +212,18 @@ evening.roles = [
     credentials: evening.eligibility.credentials,
   },
 ];
-evening.booking.individual_open = unresolved("T−7或T−48開放待選", [
+evening.booking.individual_open = unresolved(policyReason("evening_open"), [
   "168_hours",
   "7_calendar_days",
   "48_hours",
 ]);
 function adoption(key: string, name: string, credentials: string[]) {
   const p = base(key, name, "adoption", "09:00", "17:00", 1);
-  p.schedule.start_time = unresolved("指定開始時間待設定");
-  p.schedule.end_time = unresolved("指定結束時間待設定");
-  p.schedule.location = unresolved("指定場地待設定");
-  p.schedule.weekdays = unresolved("指定服務日期待設定");
-  p.capacity.volunteers = unresolved("指定名額待設定");
+  p.schedule.start_time = unresolved(policyReason("adoption_start"));
+  p.schedule.end_time = unresolved(policyReason("adoption_end"));
+  p.schedule.location = unresolved(policyReason("adoption_location"));
+  p.schedule.weekdays = unresolved(policyReason("adoption_weekdays"));
+  p.capacity.volunteers = unresolved(policyReason("adoption_places"));
   p.eligibility.credentials = { mode: "all", keys: credentials };
   return p;
 }
@@ -241,17 +241,17 @@ export const initialPolicyCatalogue: PolicyDraft[] = [
 export const initialMonthlyPolicy = monthlyPolicySchema.parse({
   regular_attendance_threshold: 10,
   senior_years: 2,
-  senior_regular_observation_months: unresolved("保持恆常觀察期間及計法待選"),
-  attendance_unit: unresolved("同日一次或每個核實非重疊時段一次"),
-  shelter_scope: unresolved("貓狗出席是否合計"),
-  promotion_trigger: unresolved("第N次核實後或月初評核"),
+  senior_regular_observation_months: unresolved(policyReason("monthly_observation")),
+  attendance_unit: unresolved(policyReason("monthly_attendance_unit")),
+  shelter_scope: unresolved(policyReason("monthly_shelter_scope")),
+  promotion_trigger: unresolved(policyReason("monthly_promotion_trigger")),
   regular_monthly_minimum: 1,
   senior_monthly_minimum: 2,
   regular_zero_months: 1,
   senior_zero_months: 2,
   senior_auto_demotion: false,
   assessment_day: 1,
-  assessment_time: unresolved("香港時間執行時刻待設定"),
+  assessment_time: unresolved(policyReason("monthly_assessment_time")),
   short_month: "last_day",
   timezone: "Asia/Hong_Kong",
   notifications: {
@@ -265,8 +265,8 @@ export const initialMonthlyPolicy = monthlyPolicySchema.parse({
 });
 /** The superseded daily 20 is deliberately not included in any active scope. */
 export const unresolvedSharedDailyLimit = {
-  maximum: unresolved("舊全日20未經新版確認"),
-  scope: unresolved("適用場地及跨場地範圍"),
-  count_mode: unresolved("不同人或人次"),
-  include_group_visitors: unresolved("是否計團體訪客"),
+  maximum: unresolved(policyReason("shared_daily_old_twenty")),
+  scope: unresolved(policyReason("shared_daily_scope")),
+  count_mode: unresolved(policyReason("shared_daily_count_mode")),
+  include_group_visitors: unresolved(policyReason("shared_daily_group_visitors")),
 };

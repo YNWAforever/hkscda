@@ -8,7 +8,9 @@ import type {
   CccpPageContent,
   TnrPageContent,
 } from "../../../lib/aboutPages/types";
+import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
+import { aboutPagesCopy } from "./aboutPagesCopy";
 
 export const ABOUT_PAGES_QUERY_KEY = ["admin-about-pages"] as const;
 
@@ -27,10 +29,7 @@ type AboutPagesUpsertResult =
   | { pageSlug: "tnr"; content: TnrPageContent }
   | { pageSlug: "cccp"; content: CccpPageContent };
 
-const TABS: readonly [AboutPageSlug, string][] = [
-  ["about", "關於我們"],
-  ["tnr", "TNR"],
-];
+const TABS: readonly ["about", "tnr"] = ["about", "tnr"];
 
 export function invalidateAboutPagesQueries(client: {
   invalidateQueries(input: { queryKey: readonly string[] }): Promise<unknown>;
@@ -43,6 +42,7 @@ export function AboutPagesManagement() {
 }
 
 function AboutPagesManagementRuntime() {
+  const copy = useAdminCopy(aboutPagesCopy);
   const [activeTab, setActiveTab] = useState<AboutPageSlug>("about");
   // Drafts are lifted up here (rather than living inside each tab form) so that
   // switching tabs — which unmounts the inactive form — does not discard
@@ -83,17 +83,17 @@ function AboutPagesManagementRuntime() {
     },
   });
 
-  if (pagesQuery.isLoading) return <p aria-live="polite">載入頁面內容中…</p>;
+  if (pagesQuery.isLoading) return <p aria-live="polite">{copy.loading}</p>;
   if (pagesQuery.isError || !pagesQuery.data) {
     return (
       <LoadFailure
         error={pagesQuery.error}
         onRetry={() => void pagesQuery.refetch()}
-        title="無法載入頁面內容"
+        title={copy.loadFailed}
       />
     );
   }
-  if (!drafts) return <p aria-live="polite">載入頁面內容中…</p>;
+  if (!drafts) return <p aria-live="polite">{copy.loading}</p>;
 
   return (
     <AboutPagesManagementView
@@ -132,15 +132,16 @@ export function AboutPagesManagementView({
   isSaving: boolean;
   isSaveError: boolean;
 }) {
+  const copy = useAdminCopy(aboutPagesCopy);
   return (
     <div className="space-y-6 p-6">
       <div>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳內容</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">關於頁面管理</h1>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
       </div>
 
       <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
-        {TABS.map(([slug, label]) => (
+        {TABS.map((slug) => (
           <button
             key={slug}
             type="button"
@@ -152,7 +153,7 @@ export function AboutPagesManagementView({
             }
             onClick={() => onTabChange(slug)}
           >
-            {label}
+            {copy.tabs[slug]}
           </button>
         ))}
       </div>
@@ -180,14 +181,15 @@ export function AboutPagesManagementView({
 }
 
 function SaveBar({ isSaving, isSaveError }: { isSaving: boolean; isSaveError: boolean }) {
+  const copy = useAdminCopy(aboutPagesCopy);
   return (
     <div className="flex items-center gap-3">
       <button type="submit" className="btn-primary min-h-11 px-4" disabled={isSaving}>
-        儲存
+        {copy.save}
       </button>
       {isSaveError ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-          儲存失敗，請檢查資料後再試一次。
+          {copy.saveFailed}
         </p>
       ) : null}
     </div>
@@ -241,6 +243,7 @@ function AboutTabForm({
   isSaving: boolean;
   isSaveError: boolean;
 }) {
+  const copy = useAdminCopy(aboutPagesCopy);
   return (
     <form
       className="space-y-6"
@@ -250,19 +253,19 @@ function AboutTabForm({
       }}
     >
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">主視覺</legend>
+        <legend className="px-1 font-bold">{copy.groups.hero}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.hero.eyebrow}
           onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.hero.title}
           onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, title: v } })}
         />
         <TextField
-          label="描述"
+          label={copy.fields.description}
           value={draft.hero.description}
           onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, description: v } })}
           multiline
@@ -270,30 +273,30 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">我們的使命</legend>
+        <legend className="px-1 font-bold">{copy.groups.mission}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.mission.eyebrow}
           onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, eyebrow: v } })}
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.mission.title}
           onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, title: v } })}
         />
         <TextField
-          label="內文"
+          label={copy.fields.body}
           value={draft.mission.body}
           onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, body: v } })}
           multiline
         />
         <TextField
-          label="側欄標籤"
+          label={copy.fields.sideBadge}
           value={draft.mission.sideBadge}
           onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, sideBadge: v } })}
         />
         <TextField
-          label="側欄內文"
+          label={copy.fields.sideBody}
           value={draft.mission.sideBody}
           onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, sideBody: v } })}
           multiline
@@ -301,19 +304,19 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">公開資料</legend>
+        <legend className="px-1 font-bold">{copy.groups.impact}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.impact.eyebrow}
           onChange={(v) => onDraftChange({ ...draft, impact: { ...draft.impact, eyebrow: v } })}
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.impact.title}
           onChange={(v) => onDraftChange({ ...draft, impact: { ...draft.impact, title: v } })}
         />
         <TextField
-          label="描述"
+          label={copy.fields.description}
           value={draft.impact.description}
           onChange={(v) => onDraftChange({ ...draft, impact: { ...draft.impact, description: v } })}
           multiline
@@ -321,21 +324,21 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">四個重要步驟</legend>
+        <legend className="px-1 font-bold">{copy.groups.journey}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.journey.eyebrow}
           onChange={(v) => onDraftChange({ ...draft, journey: { ...draft.journey, eyebrow: v } })}
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.journey.title}
           onChange={(v) => onDraftChange({ ...draft, journey: { ...draft.journey, title: v } })}
         />
         {draft.journey.steps.map((step, index) => (
           <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
             <TextField
-              label={"步驟 " + (index + 1) + " 標題"}
+              label={copy.numbered.stepTitle(index + 1)}
               value={step.title}
               onChange={(v) => {
                 const steps = [...draft.journey.steps] as typeof draft.journey.steps;
@@ -344,7 +347,7 @@ function AboutTabForm({
               }}
             />
             <TextField
-              label={"步驟 " + (index + 1) + " 描述"}
+              label={copy.numbered.stepDescription(index + 1)}
               value={step.description}
               onChange={(v) => {
                 const steps = [...draft.journey.steps] as typeof draft.journey.steps;
@@ -358,23 +361,23 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">TNR 橫幅</legend>
+        <legend className="px-1 font-bold">{copy.groups.communityBand}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.communityBand.eyebrow}
           onChange={(v) =>
             onDraftChange({ ...draft, communityBand: { ...draft.communityBand, eyebrow: v } })
           }
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.communityBand.title}
           onChange={(v) =>
             onDraftChange({ ...draft, communityBand: { ...draft.communityBand, title: v } })
           }
         />
         <TextField
-          label="描述"
+          label={copy.fields.description}
           value={draft.communityBand.description}
           onChange={(v) =>
             onDraftChange({ ...draft, communityBand: { ...draft.communityBand, description: v } })
@@ -382,9 +385,9 @@ function AboutTabForm({
           multiline
         />
         <div className="space-y-2 border border-[var(--color-border)] p-3">
-          <p className="font-semibold">TNR 卡片</p>
+          <p className="font-semibold">{copy.groups.tnrCard}</p>
           <TextField
-            label="標題"
+            label={copy.fields.title}
             value={draft.communityBand.tnrCard.title}
             onChange={(v) =>
               onDraftChange({
@@ -397,7 +400,7 @@ function AboutTabForm({
             }
           />
           <TextField
-            label="描述"
+            label={copy.fields.description}
             value={draft.communityBand.tnrCard.description}
             onChange={(v) =>
               onDraftChange({
@@ -414,9 +417,9 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">負責任領養</legend>
+        <legend className="px-1 font-bold">{copy.groups.responsibleAdoption}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.responsibleAdoption.eyebrow}
           onChange={(v) =>
             onDraftChange({
@@ -426,7 +429,7 @@ function AboutTabForm({
           }
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.responsibleAdoption.title}
           onChange={(v) =>
             onDraftChange({
@@ -436,7 +439,7 @@ function AboutTabForm({
           }
         />
         <TextField
-          label="內文"
+          label={copy.fields.body}
           value={draft.responsibleAdoption.body}
           onChange={(v) =>
             onDraftChange({
@@ -447,7 +450,7 @@ function AboutTabForm({
           multiline
         />
         <TextField
-          label="連結文字"
+          label={copy.fields.linkLabel}
           value={draft.responsibleAdoption.linkLabel}
           onChange={(v) =>
             onDraftChange({
@@ -457,7 +460,7 @@ function AboutTabForm({
           }
         />
         <TextField
-          label="側欄標題"
+          label={copy.fields.sideTitle}
           value={draft.responsibleAdoption.sideTitle}
           onChange={(v) =>
             onDraftChange({
@@ -469,7 +472,7 @@ function AboutTabForm({
         {draft.responsibleAdoption.principles.map((principle, index) => (
           <TextField
             key={index}
-            label={"原則 " + (index + 1)}
+            label={copy.numbered.principle(index + 1)}
             value={principle}
             onChange={(v) => {
               const principles = [
@@ -487,23 +490,23 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">四種參與方式</legend>
+        <legend className="px-1 font-bold">{copy.groups.helpPaths}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.helpPaths.eyebrow}
           onChange={(v) =>
             onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, eyebrow: v } })
           }
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.helpPaths.title}
           onChange={(v) => onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, title: v } })}
         />
         {draft.helpPaths.items.map((item, index) => (
           <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
             <TextField
-              label={"項目 " + (index + 1) + " 標題"}
+              label={copy.numbered.itemTitle(index + 1)}
               value={item.title}
               onChange={(v) => {
                 const items = [...draft.helpPaths.items] as typeof draft.helpPaths.items;
@@ -512,7 +515,7 @@ function AboutTabForm({
               }}
             />
             <TextField
-              label={"項目 " + (index + 1) + " 描述"}
+              label={copy.numbered.itemDescription(index + 1)}
               value={item.description}
               onChange={(v) => {
                 const items = [...draft.helpPaths.items] as typeof draft.helpPaths.items;
@@ -522,7 +525,7 @@ function AboutTabForm({
               multiline
             />
             <TextField
-              label={"項目 " + (index + 1) + " 按鈕文字"}
+              label={copy.numbered.itemButton(index + 1)}
               value={item.label}
               onChange={(v) => {
                 const items = [...draft.helpPaths.items] as typeof draft.helpPaths.items;
@@ -535,14 +538,14 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">結尾</legend>
+        <legend className="px-1 font-bold">{copy.groups.closing}</legend>
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.closing.title}
           onChange={(v) => onDraftChange({ ...draft, closing: { ...draft.closing, title: v } })}
         />
         <TextField
-          label="描述"
+          label={copy.fields.description}
           value={draft.closing.description}
           onChange={(v) =>
             onDraftChange({ ...draft, closing: { ...draft.closing, description: v } })
@@ -550,7 +553,7 @@ function AboutTabForm({
           multiline
         />
         <TextField
-          label="按鈕文字"
+          label={copy.fields.buttonLabel}
           value={draft.closing.buttonLabel}
           onChange={(v) =>
             onDraftChange({ ...draft, closing: { ...draft.closing, buttonLabel: v } })
@@ -576,6 +579,7 @@ function TnrTabForm({
   isSaving: boolean;
   isSaveError: boolean;
 }) {
+  const copy = useAdminCopy(aboutPagesCopy);
   return (
     <form
       className="space-y-6"
@@ -585,19 +589,19 @@ function TnrTabForm({
       }}
     >
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">主視覺</legend>
+        <legend className="px-1 font-bold">{copy.groups.hero}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.hero.eyebrow}
           onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.hero.title}
           onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, title: v } })}
         />
         <TextField
-          label="描述"
+          label={copy.fields.description}
           value={draft.hero.description}
           onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, description: v } })}
           multiline
@@ -605,11 +609,11 @@ function TnrTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">三個階段</legend>
+        <legend className="px-1 font-bold">{copy.groups.stages}</legend>
         {draft.stages.map((stage, index) => (
           <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
             <TextField
-              label={"階段 " + (index + 1) + " 標題"}
+              label={copy.numbered.stageTitle(index + 1)}
               value={stage.title}
               onChange={(v) => {
                 const stages = [...draft.stages] as typeof draft.stages;
@@ -618,7 +622,7 @@ function TnrTabForm({
               }}
             />
             <TextField
-              label={"階段 " + (index + 1) + " 描述"}
+              label={copy.numbered.stageDescription(index + 1)}
               value={stage.description}
               onChange={(v) => {
                 const stages = [...draft.stages] as typeof draft.stages;
@@ -632,14 +636,14 @@ function TnrTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">社區參與</legend>
+        <legend className="px-1 font-bold">{copy.groups.chapter}</legend>
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.chapter.title}
           onChange={(v) => onDraftChange({ ...draft, chapter: { ...draft.chapter, title: v } })}
         />
         <TextField
-          label="描述"
+          label={copy.fields.description}
           value={draft.chapter.description}
           onChange={(v) =>
             onDraftChange({ ...draft, chapter: { ...draft.chapter, description: v } })
@@ -649,7 +653,7 @@ function TnrTabForm({
         {draft.chapter.bullets.map((bullet, index) => (
           <TextField
             key={index}
-            label={"重點 " + (index + 1)}
+            label={copy.numbered.bullet(index + 1)}
             value={bullet}
             onChange={(v) => {
               const bullets = [...draft.chapter.bullets] as typeof draft.chapter.bullets;
@@ -662,19 +666,19 @@ function TnrTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">行動呼籲</legend>
+        <legend className="px-1 font-bold">{copy.groups.cta}</legend>
         <TextField
-          label="引言"
+          label={copy.fields.eyebrow}
           value={draft.cta.eyebrow}
           onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, eyebrow: v } })}
         />
         <TextField
-          label="標題"
+          label={copy.fields.title}
           value={draft.cta.title}
           onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, title: v } })}
         />
         <TextField
-          label="描述前綴"
+          label={copy.fields.descriptionPrefix}
           value={draft.cta.descriptionPrefix}
           onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, descriptionPrefix: v } })}
           multiline

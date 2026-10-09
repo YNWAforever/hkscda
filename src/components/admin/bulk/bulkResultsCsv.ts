@@ -23,3 +23,11 @@ export function buildBulkResultsCsv(items: BulkItemResult[]): string {
     ].join("\n") + "\n"
   );
 }
+
+/**
+ * The CSV as a downloadable file. It starts with a UTF-8 byte order mark so that Excel reads
+ * Chinese text correctly.
+ */
+export function buildBulkResultsCsvBlob(items: BulkItemResult[]): Blob {
+  return new Blob(["\uFEFF", buildBulkResultsCsv(items)], { type: "text/csv;charset=utf-8" });
+}

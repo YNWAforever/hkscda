@@ -2,26 +2,14 @@ import { useId, useMemo } from "react";
 
 import type { FaqLanguage, HelpFaq } from "../../../lib/faq/types";
 import { describeHelpOutcome } from "../../../lib/help/outcome";
-import {
-  requiresStaffContact,
-  searchHelpFaqs,
-  type HelpSearchConfidence,
-} from "../../../lib/help/search";
+import { requiresStaffContact, searchHelpFaqs } from "../../../lib/help/search";
+import { useAdminCopy } from "../i18n/copy";
+import { faqCopy } from "./faqCopy";
 
 // The full-page help search's result limit; the compact widget uses 3.
 const TESTER_RESULT_LIMIT = 8;
 
-const CONFIDENCE_LABELS: Record<HelpSearchConfidence, string> = {
-  high: "高",
-  medium: "中",
-  low: "低",
-  none: "沒有",
-};
-
-const LANGUAGE_OPTIONS: Array<{ value: FaqLanguage; label: string }> = [
-  { value: "zh-HK", label: "中文" },
-  { value: "en", label: "English" },
-];
+const LANGUAGE_OPTIONS: readonly FaqLanguage[] = ["zh-HK", "en"];
 
 export type FaqAnswerTesterProps = {
   /** The FAQs to search: the active entries, with any open draft applied. */
@@ -46,6 +34,8 @@ export function FaqAnswerTester({
   onQueryChange,
   onLanguageChange,
 }: FaqAnswerTesterProps) {
+  const common = useAdminCopy(faqCopy);
+  const copy = common.tester;
   const id = useId();
   const hasQuery = query.trim().length > 0;
 
@@ -55,9 +45,10 @@ export function FaqAnswerTester({
   );
   const outcome = describeHelpOutcome(response, query);
 
+  const answerLabel = outcome.direct ? copy.direct : copy.related;
   const outcomeLabels = [
-    outcome.direct ? "直接答案" : outcome.related.length > 0 ? "相關答案" : null,
-    outcome.showFallback ? "轉介職員" : null,
+    outcome.direct || outcome.related.length > 0 ? answerLabel : null,
+    outcome.showFallback ? copy.referToStaff : null,
   ].filter((label): label is string => label !== null);
   // The visitor sees the direct answer alone, or else the related list.
   const shownResults = outcome.direct ? [outcome.direct] : outcome.related;
@@ -69,17 +60,15 @@ export function FaqAnswerTester({
     >
       <div className="space-y-1">
         <h2 id={`${id}-heading`} className="text-base font-bold text-[var(--color-text)]">
-          測試答案
+          {copy.heading}
         </h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          輸入訪客的問法，查看公開搜尋會顯示甚麼。結果包括正在編輯、尚未儲存的草稿。
-        </p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.description}</p>
       </div>
 
       <div className="flex flex-wrap items-end gap-4">
         <div className="min-w-0 flex-1 basis-64">
           <label htmlFor={`${id}-query`} className="block text-sm font-medium">
-            訪客的問法
+            {copy.queryLabel}
           </label>
           <input
             id={`${id}-query`}
@@ -90,17 +79,17 @@ export function FaqAnswerTester({
           />
         </div>
         <fieldset className="flex items-center gap-4">
-          <legend className="sr-only">語言</legend>
+          <legend className="sr-only">{copy.languageLegend}</legend>
           {LANGUAGE_OPTIONS.map((option) => (
-            <label key={option.value} className="flex min-h-11 items-center gap-2 text-sm">
+            <label key={option} className="flex min-h-11 items-center gap-2 text-sm">
               <input
                 type="radio"
                 name={`${id}-language`}
-                value={option.value}
-                checked={language === option.value}
-                onChange={() => onLanguageChange(option.value)}
+                value={option}
+                checked={language === option}
+                onChange={() => onLanguageChange(option)}
               />
-              {option.label}
+              {common.languages[option]}
             </label>
           ))}
         </fieldset>
@@ -108,7 +97,7 @@ export function FaqAnswerTester({
 
       {draftHidden ? (
         <p className="rounded-md bg-[var(--color-warning-highlight)] px-3 py-2 text-sm text-[var(--color-warning)]">
-          此草稿目前設為不顯示，訪客在啟用前不會看到。
+          {copy.draftHidden}
         </p>
       ) : null}
 
@@ -116,10 +105,11 @@ export function FaqAnswerTester({
         {hasQuery ? (
           <div className="space-y-2 rounded-md bg-[var(--color-surface-offset)] p-3 text-sm text-[var(--color-text)]">
             <p>
-              配對程度：<strong>{CONFIDENCE_LABELS[response.confidence]}</strong>
+              {copy.matchLevel}
+              <strong>{copy.confidence[response.confidence]}</strong>
             </p>
             <p className="flex flex-wrap items-center gap-2">
-              <span>訪客會看到：</span>
+              <span>{copy.willSee}</span>
               {outcomeLabels.map((label) => (
                 <strong
                   key={label}
@@ -131,7 +121,7 @@ export function FaqAnswerTester({
             </p>
             {shownResults.length > 0 ? (
               <div>
-                <p>配對的問題：</p>
+                <p>{copy.matchedQuestions}</p>
                 <ol className="mt-1 list-decimal space-y-1 pl-5">
                   {shownResults.map((result) => (
                     <li key={result.faq.id}>{result.faq.question[language]}</li>
@@ -139,14 +129,12 @@ export function FaqAnswerTester({
                 </ol>
               </div>
             ) : null}
-            {requiresStaffContact(query) ? <p>此問題會建議訪客聯絡職員</p> : null}
+            {requiresStaffContact(query) ? <p>{copy.advisedToContact}</p> : null}
           </div>
         ) : null}
       </div>
 
-      <p className="text-xs text-[var(--color-text-muted)]">
-        已發佈的修改最多需要 5 分鐘才會在訪客的頁面上出現。
-      </p>
+      <p className="text-xs text-[var(--color-text-muted)]">{copy.cacheNote}</p>
     </section>
   );
 }

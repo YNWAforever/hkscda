@@ -7,20 +7,18 @@ import type {
   CoordinatorStatus,
   MatchableAnimalOption,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Textarea } from "../../ui/textarea";
-import {
-  bilingualStatusName,
-  formatAdminNumber,
-  statusDisplayName,
-  useAdminPageCopy,
-} from "../adminPageCopy";
+import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchCoordinatorJson } from "./api";
 import { filterStatusesByCategory, formatFallback } from "./caseWorkflowLogic";
+import { matchPanelCopy } from "./copy";
 import { getDefaultMatchStatusId } from "./matchPanelLogic";
 
 type MatchPanelProps = {
@@ -47,49 +45,6 @@ const STATUS_DOT_CLASSES: Record<string, string> = {
   red: "bg-[var(--color-error)]",
   slate: "bg-[var(--color-text-muted)]",
 };
-
-const MATCH_PANEL_COPY = {
-  zh: {
-    title: "配對",
-    recorded: (count: number) => `${formatAdminNumber(count, "zh")} 筆紀錄`,
-    animal: "動物",
-    loadingAnimals: "載入動物中...",
-    chooseAnimal: "選擇動物",
-    matchStatus: "配對狀態",
-    chooseStatus: "選擇狀態",
-    notes: "備註",
-    optionalNote: "選填協調員備註",
-    addMatch: "新增配對",
-    status: "狀態",
-    approved: "已批核",
-    no: "否",
-    noMatches: "尚未有配對",
-    animalStatuses: {
-      available: "可領養",
-      fostered: "暫託中",
-    },
-  },
-  en: {
-    title: "Matches",
-    recorded: (count: number) => `${formatAdminNumber(count, "en")} recorded`,
-    animal: "Animal",
-    loadingAnimals: "Loading animals...",
-    chooseAnimal: "Choose animal",
-    matchStatus: "Match status",
-    chooseStatus: "Choose status",
-    notes: "Notes",
-    optionalNote: "Optional coordinator note",
-    addMatch: "Add match",
-    status: "Status",
-    approved: "Approved",
-    no: "No",
-    noMatches: "No matches yet",
-    animalStatuses: {
-      available: "Available",
-      fostered: "Fostered",
-    },
-  },
-} as const;
 
 export function MatchPanelAsyncError({ message }: { message: string }) {
   return (
@@ -121,21 +76,20 @@ function StatusChip({ status }: { status: CoordinatorStatus }) {
 
 function animalOptionLabel(
   animal: MatchableAnimalOption,
-  language: keyof typeof MATCH_PANEL_COPY,
+  copy: (typeof matchPanelCopy)["zh"],
   animalTypes: ReturnType<typeof useAdminPageCopy>["pageCopy"]["animalTypes"],
 ) {
-  const englishName = animal.name_en ? ` / ${animal.name_en}` : "";
   const typeLabel =
     animalTypes[animal.type as keyof typeof animalTypes] ?? animalTypes.unknown ?? animal.type;
-  const animalStatusLabels = MATCH_PANEL_COPY[language].animalStatuses as Record<string, string>;
+  const animalStatusLabels = copy.animalStatuses as Record<string, string>;
   const statusLabel = animalStatusLabels[animal.status] ?? animal.status;
 
-  return `${animal.name}${englishName} (${typeLabel} · ${statusLabel})`;
+  return copy.animalOption(animal.name, animal.name_en, typeLabel, statusLabel);
 }
 
 export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelProps) {
   const { language, pageCopy } = useAdminPageCopy();
-  const copy = MATCH_PANEL_COPY[language];
+  const copy = useAdminCopy(matchPanelCopy);
   const [animalId, setAnimalId] = useState("");
   const [statusId, setStatusId] = useState("");
   const [notes, setNotes] = useState("");
@@ -203,7 +157,7 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
             <SelectContent>
               {animals.map((animal) => (
                 <SelectItem key={animal.id} value={animal.id}>
-                  {animalOptionLabel(animal, language, pageCopy.animalTypes)}
+                  {animalOptionLabel(animal, copy, pageCopy.animalTypes)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -247,7 +201,11 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
 
       {(animalsError || createMutation.error) && (
         <MatchPanelAsyncError
-          message={animalsError?.message ?? createMutation.error?.message ?? ""}
+          message={
+            adminErrorMessage(animalsError, language) ??
+            adminErrorMessage(createMutation.error, language) ??
+            ""
+          }
         />
       )}
 

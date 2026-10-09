@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
+import { useAdminCopy } from "../i18n/copy";
+import { policySourcesCopy } from "./policySourcesCopy";
 const api = <T,>(body: unknown) =>
   fetchAdminJson<T>("/api/admin/volunteers/sources/", {
     method: "POST",
@@ -14,13 +16,16 @@ type Preview = {
   affected_templates: { template_key: string; name: string }[];
   effective_body: { name: string; capacity: { volunteers: { value?: number } } };
 };
-export function VolunteerPolicySources() {
+/** Where the form starts, for a test or a preview of the screen. In the browser it starts on venues. */
+export type PolicySourcesInitial = { kind?: "shelter" | "credential" };
+export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesInitial } = {}) {
+  const copy = useAdminCopy(policySourcesCopy);
   const qc = useQueryClient();
   const q = useQuery({
     queryKey: ["volunteer-policy-sources"],
     queryFn: () => api<SourceListing>({ action: "list" }),
   });
-  const [kind, setKind] = useState<"shelter" | "credential">("shelter"),
+  const [kind, setKind] = useState<"shelter" | "credential">(initial?.kind ?? "shelter"),
     [key, setKey] = useState(""),
     [label, setLabel] = useState(""),
     [timezone, setTimezone] = useState("Asia/Hong_Kong"),
@@ -81,20 +86,20 @@ export function VolunteerPolicySources() {
   });
   return (
     <section className="space-y-6 p-4 md:p-6">
-      <h1 className="text-2xl font-bold">共用來源、場地及資格</h1>
+      <h1 className="text-2xl font-bold">{copy.title}</h1>
       <WorkflowSections
         sections={[
-          { id: "source-registry", label: "場地與資格" },
-          { id: "source-publish", label: "來源發布" },
+          { id: "source-registry", label: copy.sections.registry },
+          { id: "source-publish", label: copy.sections.publish },
         ]}
       />
-      <p>共用預設 → 場地 → 模板。來源變更只影響之後的政策預覽；已發布場次保留原有完整版本。</p>
+      <p>{copy.intro}</p>
       <a className="underline" href="/admin/volunteers/settings">
-        返回模板設定
+        {copy.back}
       </a>
       <section className="space-y-3 rounded border p-4">
         <h2 id="source-registry" className="text-lg font-bold">
-          管理場地及資格名稱
+          {copy.registry.title}
         </h2>
         <form
           className="grid gap-3 md:grid-cols-2"
@@ -104,9 +109,9 @@ export function VolunteerPolicySources() {
           }}
         >
           <label className="grid min-w-0 gap-1">
-            類別
+            {copy.registry.kind}
             <select
-              aria-label="類別"
+              aria-label={copy.registry.kind}
               className={input}
               value={kind}
               onChange={(e) => {
@@ -115,14 +120,14 @@ export function VolunteerPolicySources() {
                 setLabel("");
               }}
             >
-              <option value="shelter">服務場地</option>
-              <option value="credential">資格／技能</option>
+              <option value="shelter">{copy.registry.kinds.shelter}</option>
+              <option value="credential">{copy.registry.kinds.credential}</option>
             </select>
           </label>
           <label className="grid min-w-0 gap-1">
-            新增或修改
+            {copy.registry.entry}
             <select
-              aria-label="新增或修改"
+              aria-label={copy.registry.entry}
               className={input}
               value={key}
               onChange={(e) => {
@@ -143,7 +148,7 @@ export function VolunteerPolicySources() {
                 }
               }}
             >
-              <option value="">新增</option>
+              <option value="">{copy.registry.addNew}</option>
               {(kind === "shelter" ? q.data?.shelters : q.data?.credentials)?.map((r) => (
                 <option key={r.key} value={r.key}>
                   {r.label}
@@ -152,7 +157,7 @@ export function VolunteerPolicySources() {
             </select>
           </label>
           <label className="grid min-w-0 gap-1">
-            顯示名稱
+            {copy.registry.label}
             <input
               required
               maxLength={150}
@@ -164,7 +169,7 @@ export function VolunteerPolicySources() {
           {kind === "shelter" && (
             <>
               <label className="grid min-w-0 gap-1">
-                時區
+                {copy.registry.timezone}
                 <input
                   required
                   className={input}
@@ -173,7 +178,7 @@ export function VolunteerPolicySources() {
                 />
               </label>
               <label className="grid min-w-0 gap-1">
-                地點
+                {copy.registry.location}
                 <input
                   required
                   maxLength={200}
@@ -185,7 +190,7 @@ export function VolunteerPolicySources() {
             </>
           )}
           <label className="grid min-w-0 gap-1">
-            更改原因
+            {copy.registry.reason}
             <input
               required
               className={input}
@@ -194,24 +199,22 @@ export function VolunteerPolicySources() {
             />
           </label>
           <button disabled={save.isPending} className={input}>
-            儲存名稱與資料
+            {copy.registry.save}
           </button>
         </form>
-        {save.error && <p role="alert">未能儲存，請核對資料或重新載入版本。</p>}
-        {save.isSuccess && <p role="status">已儲存。</p>}
+        {save.error && <p role="alert">{copy.registry.failed}</p>}
+        {save.isSuccess && <p role="status">{copy.registry.saved}</p>}
       </section>
       <section className="space-y-3 rounded border p-4">
         <h2 id="source-publish" className="text-lg font-bold">
-          發布共用或場地來源
+          {copy.publish.title}
         </h2>
-        <p>
-          先在模板設定編輯並儲存所需完整規則，再選擇草稿作來源。場地來源可用「回復繼承」引用共用設定；模板可逐項引用場地或共用設定。
-        </p>
+        <p>{copy.publish.intro}</p>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="grid min-w-0 gap-1">
-            來源層
+            {copy.publish.level}
             <select
-              aria-label="來源層"
+              aria-label={copy.publish.level}
               className={input}
               value={scope}
               onChange={(e) => {
@@ -219,7 +222,7 @@ export function VolunteerPolicySources() {
                 preview.reset();
               }}
             >
-              <option value="common">共用預設</option>
+              <option value="common">{copy.publish.shared}</option>
               {q.data?.shelters.map((s) => (
                 <option key={s.key} value={s.key}>
                   {s.label}
@@ -228,9 +231,9 @@ export function VolunteerPolicySources() {
             </select>
           </label>
           <label className="grid min-w-0 gap-1">
-            使用已儲存草稿
+            {copy.publish.draft}
             <select
-              aria-label="使用已儲存草稿"
+              aria-label={copy.publish.draft}
               className={input}
               value={template}
               onChange={(e) => {
@@ -238,10 +241,10 @@ export function VolunteerPolicySources() {
                 preview.reset();
               }}
             >
-              <option value="">請選擇</option>
+              <option value="">{copy.publish.choose}</option>
               {q.data?.drafts.map((d) => (
                 <option key={d.template_key} value={d.template_key}>
-                  {d.name}（草稿 {d.revision}）
+                  {copy.publish.draftOption(d.name, d.revision)}
                 </option>
               ))}
             </select>
@@ -252,22 +255,25 @@ export function VolunteerPolicySources() {
           disabled={!template || preview.isPending}
           onClick={() => preview.mutate()}
         >
-          預覽來源變更
+          {copy.publish.preview}
         </button>
-        {preview.error && <p role="alert">草稿未完整或版本已改變，請先返回模板設定核對。</p>}
+        {preview.error && <p role="alert">{copy.publish.previewFailed}</p>}
         {preview.data && (
           <div className="space-y-3 rounded bg-[var(--color-surface-offset)] p-3">
             <p>
-              來源：{preview.data.effective_body.name} · 義工容量{" "}
-              {preview.data.effective_body.capacity.volunteers.value}
+              {copy.publish.source(
+                preview.data.effective_body.name,
+                preview.data.effective_body.capacity.volunteers.value,
+              )}
             </p>
             <p>
-              引用此來源的模板：
-              {preview.data.affected_templates.map((t) => t.name).join("、") || "目前沒有"}
+              {copy.publish.templates(
+                preview.data.affected_templates.map((t) => t.name).join(copy.publish.nameSeparator),
+              )}
             </p>
-            <p>不會直接改動已發布場次；各模板須再預覽及發布才套用。</p>
+            <p>{copy.publish.note}</p>
             <label className="grid min-w-0 gap-1">
-              發布原因
+              {copy.publish.reason}
               <input
                 className={input}
                 required
@@ -280,14 +286,14 @@ export function VolunteerPolicySources() {
               disabled={!publicationReason.trim() || publish.isPending}
               onClick={() => publish.mutate()}
             >
-              確認發布來源
+              {copy.publish.confirm}
             </button>
           </div>
         )}
-        {publish.error && <p role="alert">來源已變更或預覽過期，請重新預覽。</p>}
-        {publish.isSuccess && <p role="status">來源已發布。</p>}
+        {publish.error && <p role="alert">{copy.publish.failed}</p>}
+        {publish.isSuccess && <p role="status">{copy.publish.published}</p>}
       </section>
-      {q.error && <p role="alert">未能載入設定。</p>}
+      {q.error && <p role="alert">{copy.loadFailed}</p>}
     </section>
   );
 }

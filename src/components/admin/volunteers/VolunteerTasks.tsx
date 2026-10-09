@@ -3,6 +3,10 @@ import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { volunteerTasksCopy } from "./volunteerTasksCopy";
 type Row = {
   id: string;
   kind: string;
@@ -23,22 +27,9 @@ const post = <T,>(command: object) =>
     method: "POST",
     body: JSON.stringify(command),
   });
-const kind: Record<string, string> = {
-  volunteer_booking_changed: "報名／取消／條款更新",
-  volunteer_qualification_review: "資格例外待核實",
-  volunteer_operation_changed: "團體／改期跟進",
-  volunteer_policy_contact: "政策／時間變更：聯絡已報名人士",
-  volunteer_monthly_assessment_notification: "月度出席提示",
-  volunteer_policy_reminder: "服務提醒",
-};
-const statuses: Record<string, string> = {
-  queued: "等候處理",
-  claimed: "處理中",
-  failed: "失敗",
-  provider_accepted: "供應商已接收",
-  delivered: "已有送達證據",
-};
 export function VolunteerTasks() {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(volunteerTasksCopy, language);
   const cache = useQueryClient();
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
@@ -64,40 +55,40 @@ export function VolunteerTasks() {
           : "/admin/volunteers/operations"
       }
     >
-      開啟{row.title || "相關工作"}
+      {copy.open(row.title)}
     </a>
   );
   return (
     <section className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">義工今日待辦與通知</h1>
-        <p>記錄聯絡及跟進結果不會更改資格、名額或批准結果，也不等同訊息已送達。</p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p>{copy.intro}</p>
         <a href="/admin/volunteers/calendar" className="underline">
-          月曆：查看缺人、資格例外及場次詳情
+          {copy.calendarLink}
         </a>
       </header>
       <WorkflowSections
         sections={[
-          { id: "tasks-pending", label: "待審批" },
-          { id: "tasks-contact", label: "聯絡跟進" },
-          { id: "tasks-notifications", label: "通知狀態" },
+          { id: "tasks-pending", label: copy.steps.pending },
+          { id: "tasks-contact", label: copy.steps.contact },
+          { id: "tasks-notifications", label: copy.steps.notifications },
         ]}
       />
-      {query.isLoading && <p>載入中…</p>}
+      {query.isLoading && <p>{copy.loading}</p>}
       {query.error && (
         <p role="alert">
-          未能載入待辦。
+          {copy.loadFailed}
           <button className="min-h-11 px-3 underline" onClick={() => void query.refetch()}>
-            重新載入
+            {copy.reload}
           </button>
         </p>
       )}
-      {mutation.error && <p role="alert">{mutation.error.message}</p>}
+      {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
       <section className="space-y-3">
         <h2 id="tasks-pending" className="text-xl font-semibold">
-          待審批
+          {copy.pending.title}
         </h2>
-        {query.data?.pending.length === 0 && <p>目前沒有待審批報名。</p>}
+        {query.data?.pending.length === 0 && <p>{copy.pending.none}</p>}
         {query.data?.pending.map((row) => (
           <article key={row.id} className="rounded border p-3">
             {row.contact_name} · {target(row)}
@@ -106,13 +97,13 @@ export function VolunteerTasks() {
       </section>
       <section className="space-y-3">
         <h2 id="tasks-contact" className="text-xl font-semibold">
-          待聯絡／核實
+          {copy.contact.title}
         </h2>
-        {query.data?.tasks.length === 0 && <p>目前沒有未完成跟進。</p>}
+        {query.data?.tasks.length === 0 && <p>{copy.contact.none}</p>}
         {query.data?.tasks.map((row) => (
           <article key={row.id} className="space-y-2 rounded border p-3">
             <p>
-              {kind[row.kind] ?? "營運跟進"} · {row.contact_name} · {target(row)}
+              {copy.kinds[row.kind] ?? copy.otherFollowUp} · {row.contact_name} · {target(row)}
             </p>
             <button
               className="min-h-11 underline"
@@ -122,12 +113,12 @@ export function VolunteerTasks() {
                 mutation.reset();
               }}
             >
-              記錄跟進結果
+              {copy.contact.record}
             </button>
             {selected === row.id && (
               <div>
                 <label>
-                  處理結果與聯絡紀錄
+                  {copy.contact.result}
                   <textarea
                     className="block min-h-24 w-full rounded border p-2"
                     maxLength={1000}
@@ -140,7 +131,7 @@ export function VolunteerTasks() {
                   disabled={!reason.trim() || mutation.isPending}
                   onClick={() => mutation.mutate({ action: "complete", id: row.id, reason })}
                 >
-                  完成此項跟進
+                  {copy.contact.complete}
                 </button>
               </div>
             )}
@@ -149,24 +140,29 @@ export function VolunteerTasks() {
       </section>
       <section className="space-y-3">
         <h2 id="tasks-notifications" className="text-xl font-semibold">
-          通知處理狀態
+          {copy.notifications.title}
         </h2>
-        {query.data?.notifications.length === 0 && <p>目前沒有通知工作。</p>}
+        {query.data?.notifications.length === 0 && <p>{copy.notifications.none}</p>}
         {query.data?.notifications.map((row) => (
           <article key={row.id} className="rounded border p-3">
             <p>
-              {kind[row.kind] ?? "通知"} · {statuses[row.status ?? ""] ?? "待核實"} · 已嘗試{" "}
-              {row.attempts} 次
+              {copy.notifications.line(
+                copy.kinds[row.kind] ?? copy.otherNotification,
+                copy.statuses[row.status ?? ""] ?? copy.otherStatus,
+                row.attempts,
+              )}
             </p>
-            {deliveryLabel(row.delivery_state) && <p>{deliveryLabel(row.delivery_state)}</p>}
-            {row.last_error && <p>原因：{row.last_error}</p>}
+            {deliveryLabel(row.delivery_state, language) && (
+              <p>{deliveryLabel(row.delivery_state, language)}</p>
+            )}
+            {row.last_error && <p>{copy.notifications.reason(row.last_error)}</p>}
             {row.status === "failed" && (
               <button
                 className="min-h-11 underline"
                 disabled={mutation.isPending}
                 onClick={() => mutation.mutate({ action: "retry", id: row.id })}
               >
-                重試此通知
+                {copy.notifications.retry}
               </button>
             )}
           </article>

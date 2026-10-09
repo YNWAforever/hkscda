@@ -1,10 +1,16 @@
-import {
-  addHkDays,
-  generationDates,
-  hkDate,
-  hkTimeLabel,
-} from "../../../lib/volunteers/bulk/service";
-import type { Row } from "./VolunteerActivityWorkspace";
+import { addHkDays, generationDates, hkDate } from "../../../lib/volunteers/bulk/service";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { activityWorkspaceCopy } from "./activityWorkspaceCopy";
+import type { Row } from "./activityWorkspaceTypes";
+import { volunteerCommonCopy } from "./volunteerCommonCopy";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
+
+/** Which of the three arrangements an activity's group scenario is. */
+function scenarioKey(scenario: string | null): "confirmed_group" | "no_confirmed_group" | "other" {
+  return scenario === "confirmed_group" || scenario === "no_confirmed_group" ? scenario : "other";
+}
+
 export function ActivitySchedule({
   rows,
   view,
@@ -13,6 +19,7 @@ export function ActivitySchedule({
   ids,
   onToggle,
   onOpen,
+  templateNames = {},
 }: {
   rows: Row[];
   view: string;
@@ -21,18 +28,24 @@ export function ActivitySchedule({
   ids: string[];
   onToggle: (id: string, checked: boolean) => void;
   onOpen: (id: string) => void;
+  /** The name of each template by its key, so English can show a name rather than a key. */
+  templateNames?: Record<string, string>;
 }) {
+  const { language } = useAdminLanguage();
+  const workspace = pickAdminCopy(activityWorkspaceCopy, language);
+  const copy = workspace.schedule;
+  const common = pickAdminCopy(volunteerCommonCopy, language);
+  const format = pickAdminCopy(volunteerFormatCopy, language);
+  const states: Record<string, string> = workspace.states;
   const select = (r: Row) => (
     <input
       type="checkbox"
-      aria-label={`選取 ${hkTimeLabel(r.starts_at)} ${r.title}`}
+      aria-label={copy.select(format.sessionTime(r.starts_at), r.title)}
       checked={ids.includes(r.id)}
       onChange={(e) => onToggle(r.id, e.target.checked)}
     />
   );
-  const status = (r: Row) =>
-    ({ draft: "草稿", published: "已發布", closed: "已結束", cancelled: "已取消" })[r.status] ??
-    r.status;
+  const status = (r: Row) => states[r.status] ?? common.unknown(r.status);
   const open = (r: Row) => (
     <button className="min-h-11 text-left font-semibold underline" onClick={() => onOpen(r.id)}>
       {r.title}
@@ -40,17 +53,22 @@ export function ActivitySchedule({
   );
   if (view !== "calendar")
     return (
-      <div className="overflow-x-auto" tabIndex={0} aria-label="活動表格，可水平捲動">
+      <div className="overflow-x-auto" tabIndex={0} aria-label={copy.tableLabel}>
         <table className="w-full text-left text-sm">
           <thead>
             <tr>
-              {["選取", "香港日期及時間", "活動／地點", "模板／政策", "報名及人手", "狀態"].map(
-                (label) => (
-                  <th className="p-3" key={label}>
-                    {label}
-                  </th>
-                ),
-              )}
+              {[
+                copy.columns.select,
+                copy.columns.time,
+                copy.columns.activity,
+                copy.columns.policy,
+                copy.columns.staffing,
+                copy.columns.status,
+              ].map((label) => (
+                <th className="p-3" key={label}>
+                  {label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -58,37 +76,34 @@ export function ActivitySchedule({
               <tr key={r.id} className="border-t border-[var(--color-border)]">
                 <td className="p-3">{select(r)}</td>
                 <td className="p-3 whitespace-nowrap">
-                  {hkTimeLabel(r.starts_at)}
-                  {r.ends_at && <p>至 {hkTimeLabel(r.ends_at)}</p>}
+                  {format.sessionTime(r.starts_at)}
+                  {r.ends_at && <p>{copy.until(format.sessionTime(r.ends_at))}</p>}
                 </td>
                 <td className="p-3">
                   {open(r)}
                   <p>
-                    {r.location} · {r.shelter_key ?? "待設定收容所"}
+                    {r.location} ·{" "}
+                    {r.shelter_key === null ? copy.shelterUnset : common.shelterKey(r.shelter_key)}
                   </p>
                 </td>
                 <td className="p-3">
-                  {r.template_key ?? "須對應模板"}
-                  <p>{r.policy_version_id ? "政策 v" + r.policy_revision : "待設定政策"}</p>
+                  {r.template_key === null
+                    ? copy.templateUnset
+                    : copy.template(r.template_key, templateNames[r.template_key])}
                   <p>
-                    {r.scenario === "confirmed_group"
-                      ? "已確認團體"
-                      : r.scenario === "no_confirmed_group"
-                        ? "未有已確認團體"
-                        : "一般安排"}
+                    {r.policy_version_id ? copy.policyVersion(r.policy_revision) : copy.policyUnset}
                   </p>
+                  <p>{copy.scenarios[scenarioKey(r.scenario)]}</p>
                 </td>
                 <td className="p-3">
-                  已確認 {r.approved} / {r.capacity} · 候補 {r.waitlisted}
+                  {copy.staffing(r.approved, r.capacity, r.waitlisted)}
                   {r.shortages.map((s) => (
-                    <p key={s.role}>
-                      尚欠 {s.role} {s.missing} 人
-                    </p>
+                    <p key={s.role}>{copy.shortage(s.role, s.missing)}</p>
                   ))}
                 </td>
                 <td className="p-3">
                   {status(r)}
-                  {r.registrations_closed_at && <p>已截止報名</p>}
+                  {r.registrations_closed_at && <p>{copy.registrationsClosed}</p>}
                 </td>
               </tr>
             ))}
@@ -104,14 +119,12 @@ export function ActivitySchedule({
     : Array.from(new Set(rows.map((r) => hkDate(new Date(r.starts_at))))).sort();
   const padding = contiguous ? new Date(first + "T12:00:00+08:00").getUTCDay() : 0;
   return (
-    <section aria-label="香港日期月曆">
-      <p className="mb-3 text-sm">
-        月曆顯示本頁最多25場活動；使用下方頁碼查看其餘場次。每格可開啟活動詳情。
-      </p>
+    <section aria-label={copy.calendarLabel}>
+      <p className="mb-3 text-sm">{copy.calendarNote}</p>
       <div className="hidden grid-cols-7 sm:grid" aria-hidden="true">
-        {["日", "一", "二", "三", "四", "五", "六"].map((day) => (
+        {[0, 1, 2, 3, 4, 5, 6].map((day) => (
           <span className="p-2" key={day}>
-            星期{day}
+            {copy.weekday(day)}
           </span>
         ))}
       </div>
@@ -140,14 +153,17 @@ export function ActivitySchedule({
                     {select(r)}
                     {open(r)}
                   </div>
-                  <p>{hkTimeLabel(r.starts_at)}</p>
+                  <p>{format.sessionTime(r.starts_at)}</p>
                   <p>
-                    {r.shelter_key ?? r.location} · {status(r)}
+                    {r.shelter_key === null
+                      ? r.location
+                      : common.shelterKey(r.shelter_key, r.location)}{" "}
+                    · {status(r)}
                   </p>
+                  <p>{copy.cardStaffing(r.approved, r.waitlisted)}</p>
                   <p>
-                    已確認 {r.approved} · 候補 {r.waitlisted}
+                    {r.policy_version_id ? copy.policyVersion(r.policy_revision) : copy.policyUnset}
                   </p>
-                  <p>{r.policy_version_id ? "政策 v" + r.policy_revision : "待設定政策"}</p>
                 </article>
               ))}
           </section>

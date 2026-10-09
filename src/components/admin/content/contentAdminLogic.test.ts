@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildContentSearchParams,
-  contentOptionalFieldLabels,
   contentStatusTone,
   copyTextToClipboard,
   formatContentTypeLabel,
@@ -11,6 +10,7 @@ import {
   suggestSlug,
   summarizeContentRows,
 } from "./contentAdminLogic";
+import { contentCommonCopy } from "./contentCommonCopy";
 
 describe("contentAdminLogic", () => {
   test("builds bounded content search params", () => {
@@ -48,6 +48,13 @@ describe("contentAdminLogic", () => {
     expect(contentStatusTone("archived")).toBe("muted");
     expect(formatContentTypeLabel("charity_market", "zh")).toBe("慈善市集");
     expect(formatContentTypeLabel("report", "en")).toBe("Report");
+  });
+
+  test("writes the content type in the admin's language, in sentence case in English", () => {
+    expect(formatContentTypeLabel("rescue_story", "zh")).toBe("救援故事");
+    expect(formatContentTypeLabel("event", "zh")).toBe("活動");
+    expect(formatContentTypeLabel("rescue_story", "en")).toBe("Rescue story");
+    expect(formatContentTypeLabel("charity_market", "en")).toBe("Charity market");
   });
 
   test("summarizes content rows", () => {
@@ -88,18 +95,21 @@ describe("contentAdminLogic", () => {
   });
 });
 
-describe("contentOptionalFieldLabels", () => {
-  test("labels every optional content field", () => {
-    expect(Object.keys(contentOptionalFieldLabels).sort()).toEqual([
-      "ctaLabel",
-      "ctaUrl",
-      "ogDescription",
-      "ogTitle",
-      "seoDescription",
-      "seoTitle",
-    ]);
-    for (const label of Object.values(contentOptionalFieldLabels)) {
-      expect(label.trim().length).toBeGreaterThan(0);
+describe("the optional content field labels", () => {
+  test("label every optional content field in both languages", () => {
+    for (const language of ["zh", "en"] as const) {
+      const labels = contentCommonCopy[language].optionalFields;
+      expect(Object.keys(labels).sort()).toEqual([
+        "ctaLabel",
+        "ctaUrl",
+        "ogDescription",
+        "ogTitle",
+        "seoDescription",
+        "seoTitle",
+      ]);
+      for (const label of Object.values(labels)) {
+        expect(label.trim().length).toBeGreaterThan(0);
+      }
     }
   });
 });

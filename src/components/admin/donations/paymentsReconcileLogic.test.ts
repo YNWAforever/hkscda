@@ -8,7 +8,6 @@ import {
   canIssueReceipt,
   canReconcile,
   canVoidReceipt,
-  financeActionLabel,
   findIssuedReceipt,
   paymentPurposeText,
   paymentStatusPill,
@@ -17,6 +16,11 @@ import {
   type AdminPaymentRow,
   type AdminReceiptRow,
 } from "./paymentsReconcileLogic";
+import { paymentsCopy } from "./copy";
+
+// The Chinese half is what the screen always showed; the pills and labels read their text from it.
+const zh = paymentsCopy.zh;
+const en = paymentsCopy.en;
 
 function payment(overrides: Partial<AdminPaymentRow> = {}): AdminPaymentRow {
   return {
@@ -55,18 +59,32 @@ const issuedReceipt: AdminReceiptRow = {
 
 describe("paymentStatusPill", () => {
   test("maps every payment status to a tone + label", () => {
-    expect(paymentStatusPill("pending")).toEqual({ tone: "warning", label: "待確認" });
-    expect(paymentStatusPill("succeeded")).toEqual({ tone: "success", label: "已確認" });
-    expect(paymentStatusPill("failed")).toEqual({ tone: "danger", label: "失敗" });
-    expect(paymentStatusPill("refunded")).toEqual({ tone: "neutral", label: "已退款" });
+    expect(paymentStatusPill("pending", zh)).toEqual({ tone: "warning", label: "待確認" });
+    expect(paymentStatusPill("succeeded", zh)).toEqual({ tone: "success", label: "已確認" });
+    expect(paymentStatusPill("failed", zh)).toEqual({ tone: "danger", label: "失敗" });
+    expect(paymentStatusPill("refunded", zh)).toEqual({ tone: "neutral", label: "已退款" });
+  });
+
+  test("writes the label in English with the same tone", () => {
+    expect(paymentStatusPill("pending", en)).toEqual({ tone: "warning", label: "Pending" });
+    expect(paymentStatusPill("succeeded", en)).toEqual({ tone: "success", label: "Confirmed" });
+    expect(paymentStatusPill("failed", en)).toEqual({ tone: "danger", label: "Failed" });
+    expect(paymentStatusPill("refunded", en)).toEqual({ tone: "neutral", label: "Refunded" });
   });
 });
 
 describe("paymentPurposeText", () => {
   test("shows the staff-only purpose note when present", () => {
-    expect(paymentPurposeText(payment().donation)).toBe("general");
-    expect(paymentPurposeText({ ...payment().donation, custom_purpose: "婚宴回禮" })).toBe(
+    expect(paymentPurposeText(payment().donation, zh)).toBe("general");
+    expect(paymentPurposeText({ ...payment().donation, custom_purpose: "婚宴回禮" }, zh)).toBe(
       "general · 其他用途：婚宴回禮",
+    );
+  });
+
+  test("English names the purpose and keeps the note as staff typed it", () => {
+    expect(paymentPurposeText(payment().donation, en)).toBe("General");
+    expect(paymentPurposeText({ ...payment().donation, custom_purpose: "婚宴回禮" }, en)).toBe(
+      "General · Other purpose: 婚宴回禮",
     );
   });
 });
@@ -76,6 +94,7 @@ describe("receiptPill", () => {
     const pill = receiptPill(
       payment({ status: "succeeded", donation: { ...payment().donation, status: "succeeded" } }),
       [issuedReceipt],
+      zh,
     );
     expect(pill).toEqual({ tone: "success", label: "已發 HKSCDA-2026-000001" });
   });
@@ -84,14 +103,17 @@ describe("receiptPill", () => {
     const pill = receiptPill(
       payment({ status: "succeeded", donation: { ...payment().donation, status: "succeeded" } }),
       [],
+      zh,
     );
     expect(pill).toEqual({ tone: "warning", label: "待發收條" });
   });
 
   test("void receipt shows voided", () => {
-    const pill = receiptPill(payment({ status: "succeeded" }), [
-      { ...issuedReceipt, status: "void" },
-    ]);
+    const pill = receiptPill(
+      payment({ status: "succeeded" }),
+      [{ ...issuedReceipt, status: "void" }],
+      zh,
+    );
     expect(pill).toEqual({ tone: "neutral", label: "已作廢" });
   });
 
@@ -99,8 +121,28 @@ describe("receiptPill", () => {
     const pill = receiptPill(
       payment({ donation: { ...payment().donation, receipt_requested: false } }),
       [],
+      zh,
     );
     expect(pill).toBeNull();
+  });
+
+  test("English writes each receipt state", () => {
+    const succeeded = payment({
+      status: "succeeded",
+      donation: { ...payment().donation, status: "succeeded" },
+    });
+    expect(receiptPill(succeeded, [issuedReceipt], en)).toEqual({
+      tone: "success",
+      label: "Issued HKSCDA-2026-000001",
+    });
+    expect(receiptPill(succeeded, [], en)).toEqual({ tone: "warning", label: "Receipt to issue" });
+    // A voided receipt shows once nothing is left to issue, as in the Chinese test above.
+    expect(
+      receiptPill(payment({ status: "succeeded" }), [{ ...issuedReceipt, status: "void" }], en),
+    ).toEqual({
+      tone: "neutral",
+      label: "Voided",
+    });
   });
 });
 
@@ -232,12 +274,19 @@ describe("summarizePayments", () => {
   });
 });
 
-describe("financeActionLabel", () => {
-  test("maps known finance actions, falls back to the raw action", () => {
-    expect(financeActionLabel("payment.mark_received")).toBe("標記已收款");
-    expect(financeActionLabel("receipt.issue")).toBe("發收條");
-    expect(financeActionLabel("receipt.void")).toBe("作廢收條");
-    expect(financeActionLabel("something.else")).toBe("something.else");
+describe("finance action labels", () => {
+  test("map known finance actions, fall back to the raw action", () => {
+    expect(zh.financeAction("payment.mark_received")).toBe("標記已收款");
+    expect(zh.financeAction("receipt.issue")).toBe("發收條");
+    expect(zh.financeAction("receipt.void")).toBe("作廢收條");
+    expect(zh.financeAction("something.else")).toBe("something.else");
+  });
+
+  test("English names each action and falls back to the raw action", () => {
+    expect(en.financeAction("payment.mark_received")).toBe("Marked as received");
+    expect(en.financeAction("receipt.issue")).toBe("Receipt issued");
+    expect(en.financeAction("receipt.void")).toBe("Receipt voided");
+    expect(en.financeAction("something.else")).toBe("something.else");
   });
 });
 

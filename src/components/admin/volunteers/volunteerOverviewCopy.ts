@@ -1,0 +1,173 @@
+import { defineAdminCopy } from "../i18n/copy";
+import { formatAdminNumber, pluralCount } from "../i18n/format";
+
+/** Copy for the volunteer operations overview (`VolunteerOverview`). */
+export const volunteerOverviewCopy = defineAdminCopy({
+  zh: {
+    hongKongTime: "香港時間",
+    title: "義工營運總覽",
+    intro: "由待辦開始，連接每位義工、每個場次及服務紀錄。",
+    findVolunteer: "尋找義工",
+    cards: {
+      pendingProfiles: { label: "待核實義工", hint: "包含尚未報名的身份" },
+      pendingRegistrations: { label: "待審批報名", hint: "所有場次的待審批記錄" },
+      todayActivities: { label: "今日開始的場次", hint: "已發布場次 · 香港時間" },
+    },
+    cardUnavailable: "此項暫未能讀取",
+    statsFailed: "部分統計未能載入。",
+    retryStats: "重試統計",
+    coverage: {
+      label: "未來服務覆蓋",
+      title: "未來 14／30 日服務覆蓋",
+      hint: "按已核准政策及實際場次計算；休息日不列為缺場。發布或預約時仍會重新驗證。",
+      location: "服務地點",
+      allLocations: "所有地點",
+      loading: "正在讀取服務覆蓋…",
+      unavailable: "覆蓋資料暫未能讀取；請勿把未知當作零場。",
+      generateLink: "前往場次工作台產生及預覽",
+      policyLink: "檢查已核准政策",
+      next14: "未來 14 日",
+      next30: "未來 30 日",
+    },
+    /** What the coverage of a period says. */
+    states: {
+      covered: "已排妥已發布場次",
+      attention: "有待處理的場次",
+      off_day: "所選日期屬休息日或不開放服務",
+      no_approved_policy: "未有已核准政策，不能推斷應開場次",
+      policy_inapplicable: "部分日期未有適用政策",
+      unavailable: "覆蓋資料暫不可用",
+    },
+    figures: {
+      scheduled: "應開場次",
+      published: "已發布",
+      unpublished: "未發布／政策未綁定",
+      missing: "尚未建立",
+      offDays: "休息日",
+      inapplicableDays: "未適用政策日",
+    },
+    nextPublished: (when: string) => "下一個已發布場次：" + when,
+    noNextDate: "暫無已核准的下次服務日期。",
+    /** Why a day has no published session: `date · policy：reason`. */
+    blocker: (date: string, policy: string, reason: string) => `${date} · ${policy}：${reason}`,
+    blockerReasons: {
+      missing: "尚未建立場次",
+      unpublished: "尚未發布",
+      policy_inapplicable: "政策未綁定或不適用",
+    },
+    today: {
+      title: "今日服務安排",
+      hint: "包括跨日進行中的場次；缺額按現有月曆政策檢查顯示。",
+      openCalendar: "開啟月曆",
+      loading: "正在讀取今日場次…",
+      loadFailed: "未能載入今日場次。",
+      reload: "重新載入",
+      truncated: "資料量較大，此處只顯示部分記錄，請到月曆縮小範圍。",
+      empty: "今日沒有已發布場次。",
+      viewActivities: "查看活動與報名",
+      timeTbc: "待定",
+      confirmed: (count: number, capacity: number) => `${count} 人已確認 · 場次容量 ${capacity}`,
+      noPolicy: "尚未連結政策，未計算職務缺額。",
+      shortage: (role: string, missing: number) => `${role} 尚欠 ${missing} 人`,
+      shortageSeparator: " · ",
+      minimumMet: "職務最低名額已達標",
+      viewSession: "查看場次及名單",
+    },
+    links: {
+      findTitle: "找到每一位義工",
+      findText: "按姓名或電郵搜尋，查看身份、資格及服務紀錄。",
+      followTitle: "跟進尚未完成的工作",
+      followText: "處理報名、補位聯絡及通知失敗，記錄跟進結果。",
+    },
+  },
+  en: {
+    hongKongTime: "Hong Kong time",
+    title: "Volunteer operations overview",
+    intro: "Start from what needs doing, then follow each volunteer, session and service record.",
+    findVolunteer: "Find a volunteer",
+    cards: {
+      pendingProfiles: {
+        label: "Volunteers awaiting verification",
+        hint: "Includes profiles with no registration yet",
+      },
+      pendingRegistrations: {
+        label: "Registrations awaiting approval",
+        hint: "Pending registrations across all sessions",
+      },
+      todayActivities: {
+        label: "Sessions starting today",
+        hint: "Published sessions · Hong Kong time",
+      },
+    },
+    cardUnavailable: "Could not load this figure",
+    statsFailed: "Some figures could not be loaded. ",
+    retryStats: "Retry figures",
+    coverage: {
+      label: "Upcoming service coverage",
+      title: "Service coverage for the next 14 and 30 days",
+      hint: "Worked out from approved policies and the sessions that exist. Rest days are not counted as missing sessions. Publishing or booking still checks again.",
+      location: "Service location",
+      allLocations: "All locations",
+      loading: "Loading service coverage…",
+      unavailable:
+        "Could not load coverage data. Do not treat an unknown figure as zero sessions. Refresh the page to try again.",
+      generateLink: "Go to the activity workspace to generate and preview",
+      policyLink: "Check approved policies",
+      next14: "Next 14 days",
+      next30: "Next 30 days",
+    },
+    states: {
+      covered: "Published sessions are in place",
+      attention: "Some sessions need attention",
+      off_day: "The selected dates are rest days or closed for service",
+      no_approved_policy:
+        "No approved policy, so the sessions that should open cannot be worked out",
+      policy_inapplicable: "No policy applies on some dates",
+      unavailable: "Coverage data is not available at the moment",
+    },
+    figures: {
+      scheduled: "Scheduled sessions",
+      published: "Published",
+      unpublished: "Unpublished or no policy linked",
+      missing: "Not yet created",
+      offDays: "Rest days",
+      inapplicableDays: "Days without a policy",
+    },
+    nextPublished: (when: string) => "Next published session: " + when,
+    noNextDate: "No approved date for the next service yet.",
+    blocker: (date: string, policy: string, reason: string) => `${date} · ${policy}: ${reason}`,
+    blockerReasons: {
+      missing: "Session not created yet",
+      unpublished: "Not published yet",
+      policy_inapplicable: "Policy not linked or not applicable",
+    },
+    today: {
+      title: "Today's service schedule",
+      hint: "Includes sessions that run across days. Shortfalls are checked against the policies in the calendar.",
+      openCalendar: "Open calendar",
+      loading: "Loading today's sessions…",
+      loadFailed: "Could not load today's sessions. ",
+      reload: "Reload",
+      truncated:
+        "There is a lot of data, so only some records are shown here. Narrow the range in the calendar.",
+      empty: "No published sessions today.",
+      viewActivities: "View activities and registrations",
+      timeTbc: "To be confirmed",
+      confirmed: (count: number, capacity: number) =>
+        `${formatAdminNumber(count, "en")} confirmed · session capacity ${formatAdminNumber(capacity, "en")}`,
+      noPolicy: "No policy is linked, so role shortfalls are not worked out.",
+      shortage: (role: string, missing: number) =>
+        `${role} needs ${pluralCount(missing, "more person", "more people")}`,
+      shortageSeparator: " · ",
+      minimumMet: "Minimum places for every role are met",
+      viewSession: "View session and list",
+    },
+    links: {
+      findTitle: "Find every volunteer",
+      findText: "Search by name or email to see profile, qualifications and service records.",
+      followTitle: "Follow up unfinished work",
+      followText:
+        "Handle registrations, waitlist contacts and failed notifications, and record the follow-up result.",
+    },
+  },
+});

@@ -3,6 +3,7 @@ import { Lock, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { CoordinatorStatus, CoordinatorStatusCategory } from "../../../lib/adoptions/types";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -105,7 +106,7 @@ export function StatusFieldError({ id, message }: { id: string; message?: string
 
 export function StatusAdmin() {
   const categoryPanelId = useId();
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.statuses;
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] =
@@ -313,7 +314,9 @@ export function StatusAdmin() {
                 ))}
 
               {error && !isLoading && (
-                <StatusLoadErrorRow message={`${copy.loadError}: ${error.message}`} />
+                <StatusLoadErrorRow
+                  message={`${copy.loadError}: ${adminErrorMessage(error, language) ?? ""}`}
+                />
               )}
 
               {!isLoading && !error && visibleStatuses.length === 0 && (
@@ -585,12 +588,12 @@ export function StatusAdmin() {
 
           {saveMutation.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {saveMutation.error.message}
+              {adminErrorMessage(saveMutation.error, language) ?? ""}
             </p>
           )}
           {deleteMutation.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {deleteMutation.error.message}
+              {adminErrorMessage(deleteMutation.error, language) ?? ""}
             </p>
           )}
 

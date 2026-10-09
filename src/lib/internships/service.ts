@@ -1,4 +1,100 @@
 import { z } from "zod";
+import type { AdminLanguage } from "../admin/language";
+
+/**
+ * The reasons the intake settings form is refused in the browser (`intakeSchema` is parsed
+ * there before saving), and the messages the internship API sends as text. Each has one
+ * message in each language. The API (`http.server.ts`) keeps sending the zh-HK text, so
+ * the admin screen finds the code with `internshipErrorCode` and writes the message for the
+ * admin's language; a message it does not know is shown as sent.
+ */
+export type IntakeIssueCode =
+  | "name_required"
+  | "shelter_required"
+  | "closes_before_opens"
+  | "invalid_intake";
+export type InternshipServerErrorCode =
+  | "invalid_request"
+  | "forbidden"
+  | "state_conflict"
+  | "unexpected";
+export type InternshipErrorCode = IntakeIssueCode | InternshipServerErrorCode;
+
+const INTERNSHIP_ERROR_TEXT: Record<InternshipErrorCode, Record<AdminLanguage, string>> = {
+  name_required: {
+    zh: "請填寫標題",
+    en: "Enter a title, then save again.",
+  },
+  shelter_required: {
+    zh: "請至少選擇一個服務場地",
+    en: "Choose at least one venue, then save again.",
+  },
+  closes_before_opens: {
+    zh: "截止時間必須晚於開放時間",
+    en: "The closing time must be after the opening time. Change one of them and save again.",
+  },
+  invalid_intake: {
+    zh: "請檢查收生設定欄位",
+    en: "Check the intake settings fields, then save again.",
+  },
+  invalid_request: {
+    zh: "請檢查實習申請欄位",
+    en: "Check the internship application fields and try again.",
+  },
+  forbidden: {
+    zh: "沒有此操作權限",
+    en: "You do not have permission to do this. Ask an administrator to check your role.",
+  },
+  state_conflict: {
+    zh: "操作不符合目前申請狀態或核實要求",
+    en: "This action does not fit the application's current status or verification. Refresh the page and check the application.",
+  },
+  unexpected: {
+    zh: "未能處理，請重新整理後再試",
+    en: "Could not process the request. Refresh the page and try again.",
+  },
+};
+
+/** The message for an internship error code. Defaults to zh-HK, the text the API sends. */
+export function internshipErrorText(
+  code: InternshipErrorCode,
+  language: AdminLanguage = "zh",
+): string {
+  return INTERNSHIP_ERROR_TEXT[code][language];
+}
+
+const SERVER_ERROR_CODES: readonly InternshipServerErrorCode[] = [
+  "invalid_request",
+  "forbidden",
+  "state_conflict",
+  "unexpected",
+];
+
+/** Which reason in a failed `intakeSchema` parse to tell staff about: the first one. */
+function intakeIssueCode(error: z.ZodError): IntakeIssueCode {
+  const issue = error.issues[0];
+  if (!issue) return "invalid_intake";
+  if (issue.code === "custom" && issue.params?.code === "closes_before_opens")
+    return "closes_before_opens";
+  if (issue.code === "too_small" && issue.path[0] === "name") return "name_required";
+  if (issue.code === "too_small" && issue.path[0] === "shelters") return "shelter_required";
+  return "invalid_intake";
+}
+
+/**
+ * The code for an error the internship screens can write in either language: a failed
+ * `intakeSchema` parse, or one of the API's fixed messages. `null` for anything else, which
+ * the screen shows as it came.
+ */
+export function internshipErrorCode(error: unknown): InternshipErrorCode | null {
+  if (error instanceof z.ZodError) return intakeIssueCode(error);
+  if (error instanceof Error)
+    return (
+      SERVER_ERROR_CODES.find((code) => INTERNSHIP_ERROR_TEXT[code].zh === error.message) ?? null
+    );
+  return null;
+}
+
 const dateTime = z.string().datetime({ offset: true }).nullable();
 export const intakeSchema = z
   .object({
@@ -13,10 +109,10 @@ export const intakeSchema = z
     instructions: z.string().max(3000),
   })
   .strict()
-  .refine(
-    (v) => !v.opens_at || !v.closes_at || Date.parse(v.opens_at) < Date.parse(v.closes_at),
-    "截止時間必須晚於開放時間",
-  );
+  .refine((v) => !v.opens_at || !v.closes_at || Date.parse(v.opens_at) < Date.parse(v.closes_at), {
+    message: internshipErrorText("closes_before_opens"),
+    params: { code: "closes_before_opens" },
+  });
 const key = { idempotency_key: z.string().uuid() },
   application = {
     application_id: z.string().uuid(),

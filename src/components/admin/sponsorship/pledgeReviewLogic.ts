@@ -1,8 +1,61 @@
 import type { StatusTone } from "../StatusBadge";
 import { MAX_PROOF_BYTES, PROOF_MIME_TYPES } from "../../../lib/sponsorship/schemas";
+import {
+  PledgeSelectionError,
+  type PledgeSelectionErrorCode,
+} from "../../../lib/sponsorshipAdmin/followupBulkSelection";
 import { hasProofAwaitingReview } from "../../../lib/sponsorshipAdmin/proofReview";
 import type { ReviewableProof } from "../../../lib/sponsorshipAdmin/proofReview";
+import { sponsorshipServerErrorCode } from "../../../lib/sponsorshipAdmin/serverErrors";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
+
+/**
+ * Why the detail drawer shows an error: the key of the page copy's `pledgeReview.errors`. The
+ * drawer keeps it with the caught error, if any, and writes the message for the admin's
+ * language when it renders.
+ */
+export type ActionError = {
+  code:
+    | "review"
+    | "assignAnimal"
+    | "endAssignment"
+    | "proofReviewChanged"
+    | "followupConflict"
+    | "followupUnknown"
+    | "cancel"
+    | "recordPayment";
+  cause?: unknown;
+};
+
+/**
+ * The error to keep for a failed drawer action: the code of a message the sponsorship API sends
+ * in zh-HK, or the caught error under the action's own code, to show as it came.
+ */
+export function actionFailure(
+  cause: unknown,
+  fallback: "review" | "assignAnimal" | "endAssignment" | "cancel" | "recordPayment",
+): ActionError {
+  const code = sponsorshipServerErrorCode(cause);
+  return code ? { code } : { code: fallback, cause };
+}
+
+/**
+ * Why the selection controls on the pledge list show an error: the selection helpers' own code,
+ * or one of the list's. The list keeps it with the caught error, if any, and writes the
+ * message for the admin's language when it renders.
+ */
+export type SelectionError = {
+  code: PledgeSelectionErrorCode | "select_failed" | "pin_failed" | "filter_changed";
+  cause?: unknown;
+};
+
+/** The error to keep for a failed selection: the helpers' own code, or the caught error. */
+export function selectionFailure(
+  cause: unknown,
+  fallback: "select_failed" | "pin_failed",
+): SelectionError {
+  return cause instanceof PledgeSelectionError ? { code: cause.code } : { code: fallback, cause };
+}
 
 export type PledgeListFilters = {
   q?: string;
@@ -98,19 +151,22 @@ export function isImageFileType(fileType: string | null | undefined): boolean {
   return typeof fileType === "string" && fileType.startsWith("image/");
 }
 
+/** Why a proof file cannot be attached; the form writes the message for the admin's language. */
+export type ProofFileProblem = "unsupported_type" | "too_large";
+
 /**
  * Client-side validation for the optional proof file on the "record
  * payment" form, mirroring the server's `validateProofDescriptor` (which
  * remains the source of truth — this only lets staff catch an obviously
  * invalid file before submitting instead of waiting for a 400 response).
- * Returns a user-facing error message, or `null` if the file is acceptable.
+ * Returns the problem with the file, or `null` if the file is acceptable.
  */
-export function validateManualProofFile(file: File): string | null {
+export function validateManualProofFile(file: File): ProofFileProblem | null {
   if (!PROOF_MIME_TYPES.includes(file.type as (typeof PROOF_MIME_TYPES)[number])) {
-    return "檔案格式不支援，請上載 JPG、PNG、WEBP 或 PDF 檔案";
+    return "unsupported_type";
   }
   if (file.size <= 0 || file.size > MAX_PROOF_BYTES) {
-    return "檔案大小超過上限（8MB）";
+    return "too_large";
   }
   return null;
 }

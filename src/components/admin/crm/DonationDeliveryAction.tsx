@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Button } from "../../ui/button";
+import type { AdminLanguage } from "../i18n/copy";
+import { pickAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "./api";
 import type { GiftDeliveryStatus } from "./ManualGiftOutcome";
+import { donationDeliveryActionCopy } from "./profileCopy";
 
 export function DonationDeliveryAction({
   supporterId,
@@ -10,8 +14,9 @@ export function DonationDeliveryAction({
 }: {
   supporterId: string;
   job: { id: string; status: Exclude<GiftDeliveryStatus, "not_required"> };
-  language: "zh" | "en";
+  language: AdminLanguage;
 }) {
+  const copy = pickAdminCopy(donationDeliveryActionCopy, language);
   const queryClient = useQueryClient();
   const retry = useMutation({
     mutationFn: () =>
@@ -28,9 +33,7 @@ export function DonationDeliveryAction({
   if (status === "complete")
     return (
       <span className="text-xs" role="status">
-        {language === "zh"
-          ? "電郵服務已接納確認電郵"
-          : "Acknowledgement accepted by email provider"}
+        {copy.complete}
       </span>
     );
   return (
@@ -42,18 +45,12 @@ export function DonationDeliveryAction({
         disabled={retry.isPending}
         onClick={() => retry.mutate()}
       >
-        {language === "zh" ? "重試收據及確認電郵" : "Retry receipt and acknowledgement"}
+        {copy.retry}
       </Button>
-      {status === "attention_required" && (
-        <span className="text-xs">
-          {language === "zh"
-            ? "請先檢查電郵或服務設定"
-            : "Check the email or service configuration first"}
-        </span>
-      )}
+      {status === "attention_required" && <span className="text-xs">{copy.checkFirst}</span>}
       {retry.error && (
         <span role="alert" className="text-xs text-[var(--color-destructive)]">
-          {retry.error.message}
+          {adminErrorMessage(retry.error, language)}
         </span>
       )}
     </div>

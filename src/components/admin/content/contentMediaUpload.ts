@@ -1,4 +1,5 @@
 import { CONTENT_MEDIA_MIME_TYPES, MAX_CONTENT_MEDIA_BYTES } from "../../../lib/content/schemas";
+import { ContentAdminError } from "./contentErrors";
 
 type UploadContentMediaImageArgs = {
   file: File;
@@ -38,10 +39,10 @@ export async function uploadContentMediaImage({
   // validateSelectedFile() already does for the equivalent PHOTO_MIME_TYPES
   // check.
   if (!CONTENT_MEDIA_MIME_TYPES.includes(file.type as (typeof CONTENT_MEDIA_MIME_TYPES)[number])) {
-    throw new Error("請選擇 JPG、PNG 或 WEBP 圖片");
+    throw new ContentAdminError("media_type");
   }
   if (file.size < 1 || file.size > MAX_CONTENT_MEDIA_BYTES) {
-    throw new Error("圖片不可超過 8 MiB");
+    throw new ContentAdminError("media_size");
   }
 
   const objectPath = `${contentId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;

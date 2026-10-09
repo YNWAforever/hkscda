@@ -14,8 +14,17 @@ import {
 } from "../../../lib/contentReview/cmsBulkSelection";
 import { CmsReviewBulkPanel } from "./CmsReviewBulkPanel";
 import type { ReviewInput, ReviewQueueRow } from "../../../lib/contentReview/service";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
 import { TablePager } from "../TablePager";
-const labels = { approved: "已核實可發布", demo: "示範資料（不可發布）", needs_review: "待核實" };
+import { reviewCopy } from "./reviewCopy";
+import { recordContentReview, type ReviewResult } from "./recordContentReview";
+import {
+  selectionErrorFrom,
+  selectionErrorText,
+  type SelectionError,
+} from "./reviewSelectionLogic";
+
 export function ContentReviewPanel({
   kind,
   id,
@@ -27,17 +36,18 @@ export function ContentReviewPanel({
   revision: string;
   disabled?: boolean;
 }) {
+  const copy = useAdminCopy(reviewCopy);
   const [classification, setClassification] =
     useState<ReviewInput["classification"]>("needs_review");
   const [evidence, setEvidence] = useState("");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
+  const [result, setResult] = useState<ReviewResult | null>(null);
   return (
     <fieldset className="space-y-3 rounded-lg border p-4" disabled={busy || disabled}>
-      <legend>此已儲存版本的來源審核</legend>
-      <p>只按已核實來源分類。示範資料及未核實資料不可發布；每次儲存新版本均須重新審核。</p>
+      <legend>{copy.panel.legend}</legend>
+      <p>{copy.panel.intro}</p>
       <label className="block">
-        分類
+        {copy.panel.classification}
         <select
           value={classification}
           onChange={(event) =>
@@ -45,7 +55,7 @@ export function ContentReviewPanel({
           }
           className="ml-2 border p-2"
         >
-          {Object.entries(labels).map(([key, label]) => (
+          {Object.entries(copy.classifications).map(([key, label]) => (
             <option key={key} value={key}>
               {label}
             </option>
@@ -53,7 +63,7 @@ export function ContentReviewPanel({
         </select>
       </label>
       <label className="block">
-        核實來源及理由
+        {copy.panel.evidence}
         <textarea
           maxLength={2000}
           value={evidence}
@@ -67,29 +77,17 @@ export function ContentReviewPanel({
         disabled={!evidence.trim()}
         onClick={async () => {
           setBusy(true);
-          setMessage("");
+          setResult(null);
           try {
-            await fetchAdminJson("/api/admin/content-review", {
-              method: "POST",
-              body: JSON.stringify({
-                entity_kind: kind,
-                entity_id: id,
-                revision_key: revision,
-                classification,
-                evidence,
-              }),
-            });
-            setMessage("此版本的審核已記錄。公開內容尚未改動。");
-          } catch {
-            setMessage("未能記錄；版本可能已變更，請重新載入後審核。");
+            setResult(await recordContentReview({ kind, id, revision, classification, evidence }));
           } finally {
             setBusy(false);
           }
         }}
       >
-        記錄此版本審核
+        {copy.panel.record}
       </button>
-      {message && <p role="status">{message}</p>}
+      {result && <p role="status">{copy.panel[result]}</p>}
     </fieldset>
   );
 }
@@ -100,6 +98,8 @@ export function ContentReviewQueue({
   initialKind?: "animal" | "content";
   initialQuality?: "all" | "demo" | "expired" | "missing_source";
 } = {}) {
+  const copy = useAdminCopy(reviewCopy);
+  const { language } = useAdminLanguage();
   const [page, setPage] = useState(1);
   const [kind, setKind] = useState<"animal" | "content">(initialKind);
   const [quality, setQuality] = useState<"all" | "demo" | "expired" | "missing_source">(
@@ -110,7 +110,7 @@ export function ContentReviewQueue({
   const canBulk = isAdmin && quality === "all";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionBusy, setSelectionBusy] = useState(false);
-  const [selectionError, setSelectionError] = useState("");
+  const [selectionError, setSelectionError] = useState<SelectionError | null>(null);
   const selectionGeneration = useRef(0);
   const query = useQuery({
     queryKey: ["editorial-review", kind, quality, page],
@@ -122,7 +122,7 @@ export function ContentReviewQueue({
   const selectionDisabled =
     selectionBusy || query.isFetching || !query.data || Boolean(query.error);
   function toggleSelected(id: string) {
-    setSelectionError("");
+    setSelectionError(null);
     try {
       setSelectedIds(
         selectedIds.includes(id)
@@ -132,12 +132,12 @@ export function ContentReviewQueue({
             : addCmsReviewSelection(selectedIds, [id]),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+      setSelectionError(selectionErrorFrom(cause, kind, "select_failed"));
     }
   }
   function selectVisible() {
     if (selectionDisabled || !query.data) return;
-    setSelectionError("");
+    setSelectionError(null);
     try {
       setSelectedIds(
         (kind === "animal" ? addAnimalReviewSelection : addCmsReviewSelection)(
@@ -146,13 +146,13 @@ export function ContentReviewQueue({
         ),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+      setSelectionError(selectionErrorFrom(cause, kind, "select_failed"));
     }
   }
   async function selectAllMatching() {
     if (selectionDisabled || !query.data) return;
     setSelectionBusy(true);
-    setSelectionError("");
+    setSelectionError(null);
     try {
       const generation = selectionGeneration.current;
       const selectedKind = kind;
@@ -164,22 +164,26 @@ export function ContentReviewQueue({
             `/api/admin/content-review?kind=${selectedKind}&quality=${selectedQuality}&page=${nextPage}`,
           ),
       );
-      if (selectionGeneration.current !== generation) throw new Error("篩選已變更；請重新選取");
+      if (selectionGeneration.current !== generation) {
+        setSelectionError({ code: "filter_changed" });
+        return;
+      }
       setSelectedIds(ids);
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+      setSelectionError(selectionErrorFrom(cause, kind, "collect_failed"));
     } finally {
       setSelectionBusy(false);
     }
   }
+  const selectionMessage = selectionError
+    ? selectionErrorText(selectionError, copy.queue, language)
+    : "";
   return (
     <details className="m-6 space-y-3 rounded-lg border p-4">
-      <summary className="cursor-pointer font-semibold">內容來源審核佇列</summary>
-      <p>
-        分類不會自動撤下現有公開內容。示範內容須先列明記錄、原因及建議處理，再取得內容負責人批准。
-      </p>
+      <summary className="cursor-pointer font-semibold">{copy.queue.summary}</summary>
+      <p>{copy.queue.intro}</p>
       <label>
-        資料類型
+        {copy.queue.kindLabel}
         <select
           className="ml-2 border p-2"
           value={kind}
@@ -189,16 +193,16 @@ export function ContentReviewQueue({
             setQuality("all");
             setPage(1);
             setSelectedIds([]);
-            setSelectionError("");
+            setSelectionError(null);
           }}
         >
-          <option value="content">宣傳內容</option>
-          <option value="animal">動物資料</option>
+          <option value="content">{copy.queue.kinds.content}</option>
+          <option value="animal">{copy.queue.kinds.animal}</option>
         </select>
       </label>
       {kind === "content" && (
         <label className="ml-3">
-          品質隊列
+          {copy.queue.qualityLabel}
           <select
             className="ml-2 border p-2"
             value={quality}
@@ -207,22 +211,21 @@ export function ContentReviewQueue({
               setQuality(event.target.value as typeof quality);
               setPage(1);
               setSelectedIds([]);
-              setSelectionError("");
+              setSelectionError(null);
             }}
           >
-            <option value="all">全部內容</option>
-            <option value="demo">示範內容</option>
-            <option value="expired">已過期內容</option>
-            <option value="missing_source">缺來源內容</option>
+            <option value="all">{copy.queue.qualities.all}</option>
+            <option value="demo">{copy.queue.qualities.demo}</option>
+            <option value="expired">{copy.queue.qualities.expired}</option>
+            <option value="missing_source">{copy.queue.qualities.missing_source}</option>
           </select>
         </label>
       )}
-      {kind === "content" && quality !== "all" && (
-        <p>品質隊列供逐項核實；批量草稿送審請返回「全部內容」。</p>
-      )}
+      {kind === "content" && quality !== "all" && <p>{copy.queue.qualityNote}</p>}
       {query.error && (
         <p role="alert">
-          未能載入審核佇列。<button onClick={() => void query.refetch()}>重試</button>
+          {copy.queue.loadFailed}
+          <button onClick={() => void query.refetch()}>{copy.queue.retry}</button>
         </p>
       )}
       {canBulk && (
@@ -233,7 +236,7 @@ export function ContentReviewQueue({
             disabled={selectionDisabled || !query.data || query.data.items.length === 0}
             onClick={selectVisible}
           >
-            選取本頁
+            {copy.queue.selectPage}
           </button>
           <button
             type="button"
@@ -243,7 +246,7 @@ export function ContentReviewQueue({
             }
             onClick={selectAllMatching}
           >
-            選取全部符合篩選的{kind === "animal" ? "動物資料" : "宣傳內容"}（最多 1000 筆）
+            {copy.queue.selectAll(kind)}
           </button>
           <button
             type="button"
@@ -251,14 +254,14 @@ export function ContentReviewQueue({
             disabled={selectionBusy || selectedIds.length === 0}
             onClick={() => setSelectedIds([])}
           >
-            清除選取
+            {copy.queue.clear}
           </button>
         </div>
       )}
-      {selectionBusy && <p role="status">正在固定選取範圍…</p>}
-      {selectionError && (
+      {selectionBusy && <p role="status">{copy.queue.collecting}</p>}
+      {selectionMessage && (
         <p role="alert" className="text-[var(--color-error)]">
-          {selectionError}
+          {selectionMessage}
         </p>
       )}
       <ul>
@@ -272,17 +275,17 @@ export function ContentReviewQueue({
                   disabled={selectionDisabled}
                   onChange={() => toggleSelected(row.entity_id)}
                 />
-                選取此{kind === "animal" ? "動物" : "CMS"}草稿
+                {copy.queue.selectRow(kind)}
               </label>
             )}
             <p>
-              {row.title} · {labels[row.classification]}
+              {copy.queue.rowTitle(row.title, copy.classifications[row.classification])}
               {row.classification === "demo" && row.publication_state === "published"
-                ? " · 建議暫停公開（待授權）"
+                ? copy.queue.notes.suggestUnpublish
                 : ""}
-              {row.quality_reason === "demo" ? " · 示範內容待處理" : ""}
-              {row.quality_reason === "expired" ? " · 有效期已過" : ""}
-              {row.quality_reason === "missing_source" ? " · 來源未記錄" : ""}
+              {row.quality_reason === "demo" ? copy.queue.notes.demoPending : ""}
+              {row.quality_reason === "expired" ? copy.queue.notes.expired : ""}
+              {row.quality_reason === "missing_source" ? copy.queue.notes.missingSource : ""}
             </p>
             {row.entity_kind === "content" ? (
               <Link
@@ -290,7 +293,7 @@ export function ContentReviewQueue({
                 params={{ id: row.entity_id }}
                 className="inline-flex min-h-11 items-center underline"
               >
-                開啟及核實來源
+                {copy.queue.open}
               </Link>
             ) : (
               <Link
@@ -298,7 +301,7 @@ export function ContentReviewQueue({
                 params={{ id: row.entity_id }}
                 className="inline-flex min-h-11 items-center underline"
               >
-                開啟及核實來源
+                {copy.queue.open}
               </Link>
             )}
           </li>
@@ -324,7 +327,7 @@ export function ContentReviewQueue({
           pageSize={25}
           total={query.data.total}
           onPageChange={setPage}
-          label="審核資料"
+          label={copy.queue.pager}
         />
       )}
     </details>

@@ -1,32 +1,10 @@
-import type {
-  GroupEnquiryActivityType,
-  GroupEnquiryNotificationStatus,
-  GroupEnquiryStatus,
-} from "../../../lib/groupEnquiries/types";
+import type { GroupEnquiryStatus } from "../../../lib/groupEnquiries/types";
 
 export const GROUP_ENQUIRY_PAGE_SIZE = 25;
 
-// The screen rendered these enum values raw — "in_progress" and
-// "retryNotification" sat on buttons in an otherwise Chinese admin.
-export const groupEnquiryStatusLabels: Record<GroupEnquiryStatus, string> = {
-  new: "新查詢",
-  in_progress: "處理中",
-  resolved: "已解決",
-  closed: "已結案",
-};
-
-export const groupEnquiryActivityLabels: Record<GroupEnquiryActivityType, string> = {
-  group_workshop: "團體工作坊",
-  school_talk: "學校講座",
-  shelter_visit: "中心參觀",
-  other: "其他",
-};
-
-export const groupEnquiryNotificationLabels: Record<GroupEnquiryNotificationStatus, string> = {
-  pending: "待發送",
-  sent: "已發送",
-  failed: "發送失敗",
-};
+// The labels of the statuses, activity types and notification statuses are in `groupEnquiryCopy`,
+// where the screen reads them in the admin's language. They used to be rendered raw —
+// "in_progress" and "retryNotification" sat on buttons in an otherwise Chinese admin.
 
 /**
  * Status transitions worth offering from the enquiry's current state.

@@ -2,14 +2,11 @@ import { useEffect, useState } from "react";
 import { Check, Copy, Save, Wand2 } from "lucide-react";
 
 import type { SocialCopyStatus, SocialCopyVariant } from "../../../lib/content/types";
+import { useAdminCopy } from "../i18n/copy";
 import { StatusPill } from "../StatusBadge";
+import { contentCommonCopy } from "./contentCommonCopy";
 import { copyTextToClipboard } from "./contentAdminLogic";
-
-const platformLabels: Record<SocialCopyVariant["platform"], string> = {
-  facebook: "Facebook",
-  instagram: "Instagram",
-  whatsapp: "WhatsApp",
-};
+import { editorPanelsCopy } from "./editorPanelsCopy";
 
 export type SocialCopyPatch = {
   copyText: string;
@@ -27,6 +24,9 @@ type SocialCopyPanelProps = {
   disabled?: boolean;
 };
 
+/** A failed copy to the clipboard: the browser's reason when it gave one, written when it renders. */
+type ClipboardFailure = { detail?: string };
+
 export function SocialCopyPanel({
   copies,
   onGenerate,
@@ -37,12 +37,13 @@ export function SocialCopyPanel({
   generating = false,
   disabled = false,
 }: SocialCopyPanelProps) {
+  const text = useAdminCopy(editorPanelsCopy).social;
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-panel)]">社交平台文案</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">按平台整理可複製的宣傳文字。</p>
+          <h2 className="text-lg font-bold text-[var(--color-panel)]">{text.heading}</h2>
+          <p className="text-sm text-[var(--color-text-muted)]">{text.intro}</p>
         </div>
         {onGenerate ? (
           <button
@@ -52,14 +53,14 @@ export function SocialCopyPanel({
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
             <Wand2 className="h-4 w-4" />
-            {generating ? "產生中" : "產生文案"}
+            {generating ? text.generating : text.generate}
           </button>
         ) : null}
       </div>
 
       {copies.length === 0 ? (
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
-          尚未有社交平台文案。
+          {text.empty}
         </p>
       ) : (
         <div className="grid gap-3 lg:grid-cols-3">
@@ -95,7 +96,9 @@ function SocialCopyCard({
   saving: boolean;
   disabled: boolean;
 }) {
-  const [clipboardError, setClipboardError] = useState<string | null>(null);
+  const text = useAdminCopy(editorPanelsCopy).social;
+  const common = useAdminCopy(contentCommonCopy);
+  const [clipboardError, setClipboardError] = useState<ClipboardFailure | null>(null);
   const savedHashtags = copy.hashtags.join(" ");
   const [draftText, setDraftText] = useState(copy.copyText);
   const [draftHashtags, setDraftHashtags] = useState(savedHashtags);
@@ -112,22 +115,22 @@ function SocialCopyCard({
   return (
     <article className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="font-bold text-[var(--color-panel)]">{platformLabels[copy.platform]}</h3>
+        <h3 className="font-bold text-[var(--color-panel)]">{text.platforms[copy.platform]}</h3>
         <StatusPill tone={copy.status === "copied" ? "success" : "neutral"}>
-          {copy.status}
+          {text.status(copy.status)}
         </StatusPill>
       </div>
 
       {clipboardError ? (
         <p className="mt-3 rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
-          {clipboardError}
+          {common.clipboardFailed(clipboardError.detail)}
         </p>
       ) : null}
 
       {onSave ? (
         <div className="mt-3 space-y-3">
           <label className="block text-xs font-semibold text-[var(--color-text-muted)]">
-            文案
+            {text.text}
             <textarea
               rows={6}
               value={draftText}
@@ -136,7 +139,7 @@ function SocialCopyCard({
             />
           </label>
           <label className="block text-xs font-semibold text-[var(--color-text-muted)]">
-            標籤（以空格分隔）
+            {text.hashtags}
             <input
               value={draftHashtags}
               onChange={(event) => setDraftHashtags(event.target.value)}
@@ -150,7 +153,7 @@ function SocialCopyCard({
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-2 py-1 text-xs font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
             <Save className="h-3 w-3" />
-            {saving ? "儲存中" : "儲存"}
+            {saving ? text.saving : text.save}
           </button>
         </div>
       ) : (
@@ -175,14 +178,17 @@ function SocialCopyCard({
               setClipboardError(null);
               void copySocialText(copy)
                 .then(() => onUpdateStatus(copy.id, "copied"))
-                .catch((error) => {
-                  setClipboardError(clipboardErrorMessage(error));
+                .catch((error: unknown) => {
+                  setClipboardError({
+                    // admin-error-render-ok: the browser's clipboard error, never a session error
+                    detail: error instanceof Error ? error.message : undefined,
+                  });
                 });
             }}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <Copy className="h-3 w-3" />
-            複製
+            {text.copy}
           </button>
           <button
             type="button"
@@ -191,7 +197,7 @@ function SocialCopyCard({
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <Check className="h-3 w-3" />
-            封存
+            {text.archive}
           </button>
         </div>
       ) : null}
@@ -217,9 +223,4 @@ function socialClipboardText(copy: SocialCopyVariant) {
 
 function copySocialText(copy: SocialCopyVariant) {
   return copyTextToClipboard(socialClipboardText(copy));
-}
-
-function clipboardErrorMessage(error: unknown) {
-  if (error instanceof Error) return `複製失敗：${error.message}`;
-  return "複製失敗，請手動選取文字。";
 }

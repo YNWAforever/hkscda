@@ -8,6 +8,7 @@ import type {
   CoordinatorTaskContactChannel,
   CoordinatorTaskPriority,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -251,7 +252,7 @@ function TaskItem({
   statuses: CoordinatorStatus[];
   onChanged?: () => Promise<void> | void;
 }) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.taskPanel;
   const [form, setForm] = useState<UpdateTaskFormState>(() => updateFormFromTask(task));
 
@@ -449,7 +450,7 @@ function TaskItem({
               className="text-sm text-[var(--color-error)] md:col-span-2 xl:col-span-3"
               role="alert"
             >
-              {updateMutation.error.message}
+              {adminErrorMessage(updateMutation.error, language) ?? ""}
             </p>
           )}
         </div>
@@ -468,7 +469,7 @@ export function TaskPanel({
   emptyMessage,
   onChanged,
 }: TaskPanelProps) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.taskPanel;
   const defaultStatusId = useMemo(() => getDefaultFollowupStatusId(statuses), [statuses]);
   const followupStatuses = useMemo(() => statusesForTaskControl(statuses), [statuses]);
@@ -619,7 +620,7 @@ export function TaskPanel({
       )}
 
       {showCreateForm && createMutation.error && (
-        <TaskPanelAsyncError message={createMutation.error.message} />
+        <TaskPanelAsyncError message={adminErrorMessage(createMutation.error, language) ?? ""} />
       )}
       {showCreateForm && followupStatuses.length === 0 && (
         <TaskPanelAsyncError message={copy.addStatusFirst} />

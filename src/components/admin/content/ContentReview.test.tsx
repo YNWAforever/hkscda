@@ -1,6 +1,6 @@
 import { expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 const realReactRouter = await import("@tanstack/react-router");
@@ -41,11 +41,11 @@ const { ContentReviewQueue } = await import("./ContentReview");
 
 test("animal bulk controls appear only to admins while staff keep the individual review link", () => {
   role = "staff";
-  const staff = renderToStaticMarkup(<ContentReviewQueue initialKind="animal" />);
+  const staff = renderAdminInChinese(<ContentReviewQueue initialKind="animal" />);
   expect(staff).not.toContain("批量送交動物草稿來源審核");
   expect(staff).toContain("開啟及核實來源");
   role = "admin";
-  const admin = renderToStaticMarkup(<ContentReviewQueue initialKind="animal" />);
+  const admin = renderAdminInChinese(<ContentReviewQueue initialKind="animal" />);
   expect(admin).toContain("批量送交動物草稿來源審核");
   expect(admin).toContain("選取全部符合篩選的動物資料（最多 1000 筆）");
   role = "staff";
@@ -53,11 +53,11 @@ test("animal bulk controls appear only to admins while staff keep the individual
 
 test("CMS bulk controls appear only to admins and do not remove individual review", () => {
   role = "staff";
-  const staff = renderToStaticMarkup(<ContentReviewQueue initialKind="content" />);
+  const staff = renderAdminInChinese(<ContentReviewQueue initialKind="content" />);
   expect(staff).not.toContain("批量送交 CMS 草稿來源審核");
   expect(staff).toContain("開啟及核實來源");
   role = "admin";
-  const admin = renderToStaticMarkup(<ContentReviewQueue initialKind="content" />);
+  const admin = renderAdminInChinese(<ContentReviewQueue initialKind="content" />);
   expect(admin).toContain("批量送交 CMS 草稿來源審核");
   expect(admin).toContain("選取全部符合篩選的宣傳內容（最多 1000 筆）");
   role = "staff";
@@ -65,7 +65,7 @@ test("CMS bulk controls appear only to admins and do not remove individual revie
 
 test("CMS quality queue can open directly on the expired filter", () => {
   role = "staff";
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <ContentReviewQueue initialKind="content" initialQuality="expired" />,
   );
   expect(html).toContain("品質隊列");
@@ -74,7 +74,7 @@ test("CMS quality queue can open directly on the expired filter", () => {
 
 test("filtered CMS quality queue cannot apply the draft bulk action", () => {
   role = "admin";
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <ContentReviewQueue initialKind="content" initialQuality="demo" />,
   );
   expect(html).toContain("品質隊列供逐項核實");

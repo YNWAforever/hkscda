@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
 import { TaskOverviewView } from "./TaskOverview";
+import { renderAdminInChinese } from "../i18n/testing";
 
 test("task overview distinguishes real zero from unavailable", () => {
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <TaskOverviewView
       cards={[
         {
@@ -29,7 +29,7 @@ test("task overview distinguishes real zero from unavailable", () => {
 });
 
 test("task overview presents the role tasks as an ordered guide with direct destinations", () => {
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <TaskOverviewView
       cards={[
         {

@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { BulkReview } from "../bulk/BulkReview";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { VolunteerReviewBulkOperation } from "../../../routes/api/admin/volunteers/reviewer-bulk";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { reviewPanelProblemMessage, type PanelProblem } from "./directoryProblems";
+import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
 
 const endpoint = "/api/admin/volunteers/reviewer-bulk";
 const savedOperationKey = "volunteer-review-bulk-operation";
@@ -19,6 +23,8 @@ export function VolunteerReviewBulkPanel({
   filterKey: string;
   selectionDisabled: boolean;
 }) {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(volunteerDirectoryCopy, language).reviewPanel;
   const users = useQuery({
     queryKey: ["admin-access-users"],
     queryFn: () => fetchAdminJson<UsersResponse>("/api/admin/access/users"),
@@ -31,7 +37,7 @@ export function VolunteerReviewBulkPanel({
   const [operation, setOperation] = useState<VolunteerReviewBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [problem, setProblem] = useState<PanelProblem | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
@@ -46,7 +52,7 @@ export function VolunteerReviewBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+        if (active) setProblem({ code: "load_saved" });
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -59,7 +65,7 @@ export function VolunteerReviewBulkPanel({
   async function reloadOperation() {
     if (!recoveryId || busy) return;
     setBusy(true);
-    setError("");
+    setProblem(null);
     try {
       setOperation(
         await fetchAdminJson<VolunteerReviewBulkOperation>(
@@ -67,7 +73,7 @@ export function VolunteerReviewBulkPanel({
         ),
       );
     } catch {
-      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+      setProblem({ code: "reload_saved" });
     } finally {
       setBusy(false);
     }
@@ -83,7 +89,7 @@ export function VolunteerReviewBulkPanel({
     )
       return;
     setBusy(true);
-    setError("");
+    setProblem(null);
     try {
       const bytes = new TextEncoder().encode(JSON.stringify({ filterKey, ids: selectedIds }));
       const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -98,7 +104,7 @@ export function VolunteerReviewBulkPanel({
       setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法建立預覽");
+      setProblem({ code: "preview_failed", cause });
     } finally {
       setBusy(false);
     }
@@ -106,7 +112,7 @@ export function VolunteerReviewBulkPanel({
   async function apply() {
     if (!operation || busy) return;
     setBusy(true);
-    setError("");
+    setProblem(null);
     try {
       setOperation(
         await fetchAdminJson<VolunteerReviewBulkOperation>(endpoint, {
@@ -115,7 +121,7 @@ export function VolunteerReviewBulkPanel({
         }),
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法套用；請重新讀取結果");
+      setProblem({ code: "apply_failed", cause });
       try {
         setOperation(
           await fetchAdminJson<VolunteerReviewBulkOperation>(
@@ -130,29 +136,27 @@ export function VolunteerReviewBulkPanel({
     }
   }
   const reviewerLabel = (id: string | null) =>
-    id ? (users.data?.users.find((user) => user.authUserId === id)?.email ?? id) : "未分派";
+    id ? (users.data?.users.find((user) => user.authUserId === id)?.email ?? id) : copy.unassigned;
+  const problemMessage = reviewPanelProblemMessage(problem, language);
   return (
     <section
-      aria-label="義工審核者批量分派"
+      aria-label={copy.label}
       className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
       <div>
-        <h2 className="text-lg font-bold">批量分派義工身份審核者</h2>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          只分派審核工作，不會核實身份、升級資格、發送通知或改變義工狀態。預覽有效 15
-          分鐘，套用時逐筆重新核對身份版本及職員權限。
-        </p>
+        <h2 className="text-lg font-bold">{copy.title}</h2>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{copy.hint}</p>
       </div>
       <label className="block max-w-sm text-sm">
-        審核者
+        {copy.reviewer}
         <select
-          aria-label="審核者"
+          aria-label={copy.reviewer}
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           disabled={busy}
           value={reviewerUserId}
           onChange={(event) => setReviewerUserId(event.target.value)}
         >
-          <option value="">選擇已啟用的職員</option>
+          <option value="">{copy.chooseReviewer}</option>
           {reviewers.map((user) => (
             <option key={user.authUserId} value={user.authUserId}>
               {user.email}
@@ -160,8 +164,8 @@ export function VolunteerReviewBulkPanel({
           ))}
         </select>
       </label>
-      {users.isError && <p role="alert">無法載入審核者名單，請重試。</p>}
-      <p className="text-sm">已選 {selectedIds.length} 筆（上限 1000）</p>
+      {users.isError && <p role="alert">{copy.listFailed}</p>}
+      <p className="text-sm">{copy.selected(selectedIds.length)}</p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -175,7 +179,7 @@ export function VolunteerReviewBulkPanel({
         }
         onClick={preview}
       >
-        {busy ? "處理中…" : "建立分派預覽"}
+        {busy ? copy.busy : copy.preview}
       </button>
       {recoveryId && (
         <button
@@ -184,24 +188,18 @@ export function VolunteerReviewBulkPanel({
           disabled={busy}
           onClick={reloadOperation}
         >
-          重新讀取結果
+          {copy.reload}
         </button>
       )}
-      {error && (
+      {problemMessage && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {problemMessage}
         </p>
       )}
       {operation && (
         <BulkReview
           key={operation.operationId}
-          title={
-            "審核者：" +
-            reviewerLabel(operation.reviewerUserId) +
-            " · " +
-            operation.items.length +
-            " 筆"
-          }
+          title={copy.reviewTitle(reviewerLabel(operation.reviewerUserId), operation.items.length)}
           operationId={operation.operationId}
           expiresAt={operation.expiresAt}
           items={operation.items.map((item) => ({

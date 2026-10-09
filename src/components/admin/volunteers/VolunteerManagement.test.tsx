@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type {
   VolunteerActivitySummary,
@@ -122,7 +122,7 @@ const { VolunteerManagement } = await import("./VolunteerManagement");
 function render(status: VolunteerRegistrationStatus = "pending", total = 1) {
   registrationRows = [registration({ status })];
   registrationTotal = total;
-  return renderToStaticMarkup(<VolunteerManagement />);
+  return renderAdminInChinese(<VolunteerManagement />);
 }
 
 describe("VolunteerManagement", () => {

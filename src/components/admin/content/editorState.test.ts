@@ -70,6 +70,11 @@ test("different pending panel cannot be reported as saved", async () => {
   );
   await Promise.resolve();
   await expect(run("profile", async () => undefined)).rejects.toThrow("另一個");
+  // The refusal carries a code, so a screen can write it in the admin's language.
+  await expect(run("profile", async () => undefined)).rejects.toMatchObject({
+    name: "ContentAdminError",
+    code: "operation_busy",
+  });
   finish();
   await first;
 });

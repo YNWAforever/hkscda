@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { useAdminCopy } from "../i18n/copy";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { TablePager } from "../TablePager";
@@ -15,9 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import type { PledgeStatus, PledgeSummary } from "../../../lib/sponsorshipAdmin/types";
 import {
   buildPledgeListSearchParams,
-  formatDate,
   formatFallback,
   pledgeStatusTone,
+  selectionFailure,
+  type SelectionError,
 } from "./pledgeReviewLogic";
 import { PledgeDetailDrawer } from "./PledgeDetailDrawer";
 import { SponsorshipFollowupBulkPanel } from "./SponsorshipFollowupBulkPanel";
@@ -25,9 +27,11 @@ import {
   addPledgeSelection,
   collectMatchingPledgeIds,
 } from "../../../lib/sponsorshipAdmin/followupBulkSelection";
-import { centsToHkd } from "../../../lib/donations/domain";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { useListQueryState } from "../../../lib/admin/useListQueryState";
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import { pledgeLaneCopy } from "./copy";
+import { sponsorshipFormatCopy } from "./formatCopy";
 import {
   PAGE_SIZE_OPTIONS,
   PLEDGE_ROUTE,
@@ -40,15 +44,11 @@ type PledgeListResponse = {
   total: number;
 };
 
-// A monthly commitment, so /月 is right here. `centsToHkd` rather than
-// rounding: HK$123.45 was being shown as HK$123.
-function amountLabel(pledge: PledgeSummary) {
-  return `${centsToHkd(pledge.amountCents)}/月`;
-}
-
 export function PledgeReviewLane() {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.pledgeReview;
+  const lane = useAdminCopy(pledgeLaneCopy);
+  const format = useAdminCopy(sponsorshipFormatCopy);
   const listState = useListQueryState({
     key: "sponsorship-pledges",
     initialFilters: {
@@ -67,7 +67,7 @@ export function PledgeReviewLane() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedScope, setSelectedScope] = useState("");
   const [selectionBusy, setSelectionBusy] = useState(false);
-  const [selectionError, setSelectionError] = useState("");
+  const [selectionError, setSelectionError] = useState<SelectionError | null>(null);
   const filterKey = JSON.stringify([query, status, proof]);
   const effectiveSelectedIds = selectedScope === filterKey ? selectedIds : [];
   const selectionScope = useRef({ filterKey, generation: 0 });
@@ -76,7 +76,7 @@ export function PledgeReviewLane() {
   useEffect(() => {
     setSelectedIds([]);
     setSelectedScope(filterKey);
-    setSelectionError("");
+    setSelectionError(null);
   }, [filterKey]);
 
   const pledgeStatusOptions: Array<{ value: PledgeStatus | "all"; label: string }> = [
@@ -117,7 +117,7 @@ export function PledgeReviewLane() {
     selectionBusy || isFetching || listState.isDebouncing || !data || Boolean(error);
   function toggleSelected(id: string) {
     setSelectedScope(filterKey);
-    setSelectionError("");
+    setSelectionError(null);
     try {
       setSelectedIds(
         effectiveSelectedIds.includes(id)
@@ -125,13 +125,13 @@ export function PledgeReviewLane() {
           : addPledgeSelection(effectiveSelectedIds, [id]),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+      setSelectionError(selectionFailure(cause, "select_failed"));
     }
   }
   function selectVisible() {
     if (selectionDisabled) return;
     setSelectedScope(filterKey);
-    setSelectionError("");
+    setSelectionError(null);
     try {
       setSelectedIds(
         addPledgeSelection(
@@ -140,7 +140,7 @@ export function PledgeReviewLane() {
         ),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+      setSelectionError(selectionFailure(cause, "select_failed"));
     }
   }
   async function selectAllMatching() {
@@ -148,7 +148,7 @@ export function PledgeReviewLane() {
     const scope = filterKey;
     const generation = selectionScope.current.generation;
     setSelectionBusy(true);
-    setSelectionError("");
+    setSelectionError(null);
     try {
       const ids = await collectMatchingPledgeIds(total, async (nextPage, limit) => {
         const params = buildPledgeListSearchParams({
@@ -162,23 +162,29 @@ export function PledgeReviewLane() {
           "/api/admin/sponsorships/pledges?" + params,
         );
       });
-      if (selectionScope.current.generation !== generation)
-        throw new Error("篩選條件已變更；請重新選取");
+      if (selectionScope.current.generation !== generation) {
+        setSelectionError({ code: "filter_changed" });
+        return;
+      }
       setSelectedScope(scope);
       setSelectedIds(ids);
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+      setSelectionError(selectionFailure(cause, "pin_failed"));
     } finally {
       setSelectionBusy(false);
     }
   }
+  // A reason the caught error gave is shown as it came; otherwise the message for the code.
+  const selectionMessage = selectionError
+    ? (adminErrorMessage(selectionError.cause, language) ?? lane.errors[selectionError.code])
+    : "";
 
   const columns: DataTableColumn<PledgeSummary>[] = [
     ...(canAssign
       ? [
           {
             id: "followup-bulk-select",
-            header: "選取",
+            header: lane.selectColumn,
             cell: (pledge) => (
               <label
                 className="inline-flex min-h-11 min-w-11 items-center justify-center"
@@ -186,7 +192,7 @@ export function PledgeReviewLane() {
               >
                 <input
                   type="checkbox"
-                  aria-label={"選取跟進 " + pledge.supporterName}
+                  aria-label={lane.selectFollowup(pledge.supporterName)}
                   checked={effectiveSelectedIds.includes(pledge.id)}
                   disabled={selectionDisabled || pledge.status !== "needs_followup"}
                   onChange={() => toggleSelected(pledge.id)}
@@ -212,13 +218,15 @@ export function PledgeReviewLane() {
     {
       id: "amount",
       header: copy.columns.amount,
-      cell: (pledge) => <span className="text-[var(--color-panel)]">{amountLabel(pledge)}</span>,
+      cell: (pledge) => (
+        <span className="text-[var(--color-panel)]">{format.monthly(pledge.amountCents)}</span>
+      ),
     },
     {
       id: "created",
       header: copy.columns.created,
       cell: (pledge) => (
-        <span className="text-[var(--color-text-muted)]">{formatDate(pledge.createdAt)}</span>
+        <span className="text-[var(--color-text-muted)]">{format.date(pledge.createdAt)}</span>
       ),
     },
     {
@@ -232,7 +240,7 @@ export function PledgeReviewLane() {
     },
     {
       id: "review",
-      header: "審核",
+      header: lane.reviewColumn,
       cell: (pledge) => (
         <button
           type="button"
@@ -243,7 +251,7 @@ export function PledgeReviewLane() {
             setSelectedPledgeId(pledge.id);
           }}
         >
-          審核 {pledge.supporterName}
+          {lane.reviewPledge(pledge.supporterName)}
         </button>
       ),
     },
@@ -263,7 +271,7 @@ export function PledgeReviewLane() {
               disabled={selectionDisabled}
               onChange={() => toggleSelected(pledge.id)}
             />
-            選取跟進
+            {lane.selectFollowupCard}
           </label>
         )}
         <div className="flex items-start justify-between gap-2">
@@ -278,7 +286,7 @@ export function PledgeReviewLane() {
           </StatusPill>
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          {amountLabel(pledge)} · {formatDate(pledge.createdAt)}
+          {format.monthly(pledge.amountCents)} · {format.date(pledge.createdAt)}
           <button
             type="button"
             className="block min-h-11 underline"
@@ -288,7 +296,7 @@ export function PledgeReviewLane() {
               setSelectedPledgeId(pledge.id);
             }}
           >
-            審核 {pledge.supporterName}
+            {lane.reviewPledge(pledge.supporterName)}
           </button>
         </div>
       </div>
@@ -330,12 +338,12 @@ export function PledgeReviewLane() {
             value={proof}
             onValueChange={(value) => changeFilter({ proof: value as PledgeFilters["proof"] })}
           >
-            <SelectTrigger aria-label="憑證審核篩選" className="h-9">
+            <SelectTrigger aria-label={lane.proofFilterLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">所有憑證狀態</SelectItem>
-              <SelectItem value="pending">待核實憑證</SelectItem>
+              <SelectItem value="all">{lane.allProofs}</SelectItem>
+              <SelectItem value="pending">{lane.pendingProofs}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -344,7 +352,7 @@ export function PledgeReviewLane() {
       {canAssign && (
         <section
           className="space-y-3 rounded-lg border border-[var(--color-border)] p-4"
-          aria-label="助養跟進選取"
+          aria-label={lane.selectionLabel}
         >
           <div className="flex flex-wrap gap-2">
             <Button
@@ -355,7 +363,7 @@ export function PledgeReviewLane() {
                 selectionDisabled || !pledges.some((item) => item.status === "needs_followup")
               }
             >
-              選取本頁待跟進
+              {lane.selectVisible}
             </Button>
             <Button
               type="button"
@@ -365,7 +373,7 @@ export function PledgeReviewLane() {
                 selectionDisabled || status !== "needs_followup" || total < 1 || total > 1000
               }
             >
-              選取全部符合條件（最多 1000 筆）
+              {lane.selectAllMatching}
             </Button>
             <Button
               type="button"
@@ -373,18 +381,18 @@ export function PledgeReviewLane() {
               onClick={() => setSelectedIds([])}
               disabled={selectionBusy || effectiveSelectedIds.length === 0}
             >
-              清除選取
+              {lane.clearSelection}
             </Button>
           </div>
           {status !== "needs_followup" && (
             <p role="status" className="text-sm">
-              選取全部前，請先篩選「待跟進」。
+              {lane.filterFirst}
             </p>
           )}
-          {selectionBusy && <p role="status">正在固定選取範圍…</p>}
-          {selectionError && (
+          {selectionBusy && <p role="status">{lane.pinning}</p>}
+          {selectionMessage && (
             <p role="alert" className="text-[var(--color-error)]">
-              {selectionError}
+              {selectionMessage}
             </p>
           )}
           <SponsorshipFollowupBulkPanel

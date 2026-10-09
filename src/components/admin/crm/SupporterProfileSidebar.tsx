@@ -1,80 +1,19 @@
 import { CalendarDays, Languages, Mail, Phone, ShieldCheck, Tags } from "lucide-react";
 
 import type { SupporterDetail, SupporterRole } from "../../../lib/crm/types";
-import { formatAdminDateTime } from "../adminPageCopy";
+import type { AdminLanguage } from "../i18n/copy";
+import { pickAdminCopy } from "../i18n/copy";
+import { crmFormatCopy } from "./formatCopy";
+import { supporterProfileCopy } from "./profileCopy";
 
 type SupporterProfileSidebarProps = {
   supporter: SupporterDetail;
-  language: "zh" | "en";
+  language: AdminLanguage;
   roleLabels: Record<SupporterRole, string>;
 };
 
-const PROFILE_COPY = {
-  zh: {
-    profile: "支持者資料",
-    contact: "聯絡",
-    noPhone: "沒有電話",
-    language: "語言",
-    consent: "通訊同意",
-    emailConsent: "電郵",
-    whatsappConsent: "WhatsApp",
-    source: "來源",
-    created: "建立",
-    updated: "更新",
-    tags: "標籤",
-    noTags: "沒有標籤",
-    adoption: "領養連結",
-    primaryProfile: "主要領養人檔案",
-    otherProfiles: "其他檔案",
-    noAdoption: "尚未連結領養紀錄。",
-    noContact: "沒有聯絡資料",
-    consentStatuses: {
-      opt_in: "同意",
-      opt_out: "不同意",
-      none: "未設定",
-    },
-    languages: {
-      "zh-HK": "繁體中文",
-      en: "English",
-    },
-  },
-  en: {
-    profile: "Supporter profile",
-    contact: "Contact",
-    noPhone: "No phone",
-    language: "Language",
-    consent: "Consent",
-    emailConsent: "Email",
-    whatsappConsent: "WhatsApp",
-    source: "Source",
-    created: "Created",
-    updated: "Updated",
-    tags: "Tags",
-    noTags: "No tags",
-    adoption: "Adoption links",
-    primaryProfile: "Primary adopter profile",
-    otherProfiles: "Other profiles",
-    noAdoption: "No linked adoption history.",
-    noContact: "No contact details",
-    consentStatuses: {
-      opt_in: "Opted in",
-      opt_out: "Opted out",
-      none: "Not set",
-    },
-    languages: {
-      "zh-HK": "Traditional Chinese",
-      en: "English",
-    },
-  },
-} as const;
-
 function formatFallback(value: string | null | undefined, fallback = "-") {
   return value && value.trim().length > 0 ? value : fallback;
-}
-
-function consentLabel(value: SupporterDetail["emailConsent"], language: keyof typeof PROFILE_COPY) {
-  const copy = PROFILE_COPY[language].consentStatuses;
-  return value ? copy[value] : copy.none;
 }
 
 export function SupporterProfileSidebar({
@@ -82,7 +21,10 @@ export function SupporterProfileSidebar({
   language,
   roleLabels,
 }: SupporterProfileSidebarProps) {
-  const copy = PROFILE_COPY[language];
+  const copy = pickAdminCopy(supporterProfileCopy, language);
+  const format = pickAdminCopy(crmFormatCopy, language);
+  const consentLabel = (value: SupporterDetail["emailConsent"]) =>
+    value ? copy.consentStatuses[value] : copy.consentStatuses.none;
   const profiles = [...supporter.adoption.profiles].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   );
@@ -135,13 +77,13 @@ export function SupporterProfileSidebar({
           <div className="flex items-start justify-between gap-3">
             <dt className="text-[var(--color-text-muted)]">{copy.emailConsent}</dt>
             <dd className="text-right font-medium text-[var(--color-panel)]">
-              {consentLabel(supporter.emailConsent, language)}
+              {consentLabel(supporter.emailConsent)}
             </dd>
           </div>
           <div className="flex items-start justify-between gap-3">
             <dt className="text-[var(--color-text-muted)]">{copy.whatsappConsent}</dt>
             <dd className="text-right font-medium text-[var(--color-panel)]">
-              {consentLabel(supporter.whatsappConsent, language)}
+              {consentLabel(supporter.whatsappConsent)}
             </dd>
           </div>
           <div className="flex items-start justify-between gap-3">
@@ -153,13 +95,13 @@ export function SupporterProfileSidebar({
           <div className="flex items-start justify-between gap-3">
             <dt className="text-[var(--color-text-muted)]">{copy.created}</dt>
             <dd className="text-right font-medium text-[var(--color-panel)]">
-              {formatAdminDateTime(supporter.createdAt, language)}
+              {format.dateTime(supporter.createdAt)}
             </dd>
           </div>
           <div className="flex items-start justify-between gap-3">
             <dt className="text-[var(--color-text-muted)]">{copy.updated}</dt>
             <dd className="text-right font-medium text-[var(--color-panel)]">
-              {formatAdminDateTime(supporter.updatedAt, language)}
+              {format.dateTime(supporter.updatedAt)}
             </dd>
           </div>
         </dl>
@@ -227,7 +169,7 @@ export function SupporterProfileSidebar({
             )}
             <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
               <CalendarDays className="h-3.5 w-3.5" />
-              <span>{formatAdminDateTime(primaryProfile.updatedAt, language)}</span>
+              <span>{format.dateTime(primaryProfile.updatedAt)}</span>
             </div>
           </div>
         ) : (

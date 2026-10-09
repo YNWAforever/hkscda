@@ -3,11 +3,13 @@ import { describe, expect, test } from "bun:test";
 import {
   availableEnquiryTransitions,
   buildGroupEnquirySearchParams,
-  groupEnquiryActivityLabels,
-  groupEnquiryNotificationLabels,
-  groupEnquiryStatusLabels,
   GROUP_ENQUIRY_PAGE_SIZE,
 } from "./groupEnquiryAdminLogic";
+import { groupEnquiryCopy } from "./groupEnquiryCopy";
+
+const groupEnquiryStatusLabels = groupEnquiryCopy.zh.statuses;
+const groupEnquiryActivityLabels = groupEnquiryCopy.zh.activityTypes;
+const groupEnquiryNotificationLabels = groupEnquiryCopy.zh.notifications;
 
 describe("group enquiry labels", () => {
   test("labels every enum value in Chinese", () => {

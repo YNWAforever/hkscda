@@ -199,6 +199,24 @@ function volunteerEvents(volunteer: SupporterVolunteerContext): SupporterTimelin
   });
 }
 
+function messageEvent(message: MessageHistoryRow): SupporterTimelineItem {
+  const subject = String(message.payload.subject ?? message.payload.template ?? "Message");
+  const deliveryState =
+    typeof message.payload.deliveryState === "string" ? message.payload.deliveryState : null;
+  return {
+    id: `message:${message.id}`,
+    at: message.sentAt ?? message.createdAt,
+    kind: "message",
+    title: `${message.channel} message ${message.status}`,
+    // The description keeps the zh-HK delivery label, as it always has. The subject and the
+    // raw state go with it so the English admin can write the state in English.
+    description: [subject, deliveryLabel(deliveryState)].filter(Boolean).join(" · "),
+    status: message.status,
+    subject,
+    ...(deliveryState ? { deliveryState } : {}),
+  };
+}
+
 export function assembleSupporterTimeline(input: {
   donations: DonationHistoryRow[];
   payments: PaymentHistoryRow[];
@@ -247,21 +265,7 @@ export function assembleSupporterTimeline(input: {
       description: `Source: ${consent.source}`,
       status: consent.status,
     })),
-    ...input.messages.map((message) => ({
-      id: `message:${message.id}`,
-      at: message.sentAt ?? message.createdAt,
-      kind: "message" as const,
-      title: `${message.channel} message ${message.status}`,
-      description: [
-        String(message.payload.subject ?? message.payload.template ?? "Message"),
-        deliveryLabel(
-          typeof message.payload.deliveryState === "string" ? message.payload.deliveryState : null,
-        ),
-      ]
-        .filter(Boolean)
-        .join(" · "),
-      status: message.status,
-    })),
+    ...input.messages.map((message) => messageEvent(message)),
     ...input.auditLogs.map((log) => ({
       id: `audit:${log.id}`,
       at: log.timestamp,

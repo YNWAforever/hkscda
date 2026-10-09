@@ -72,7 +72,6 @@ describe("adoptionGuideReleaseLogic", () => {
 
     expect(resolveMutationError(conflictResponse, localDraft)).toEqual({
       kind: "conflict",
-      message: "This release changed elsewhere. Reload before saving again.",
       preservedDraft: localDraft,
     });
   });
@@ -90,7 +89,6 @@ describe("adoptionGuideReleaseLogic", () => {
       ),
     ).toEqual({
       kind: "conflict",
-      message: "This release changed elsewhere. Reload before saving again.",
       preservedDraft: localDraft,
     });
   });
@@ -103,10 +101,8 @@ describe("adoptionGuideReleaseLogic", () => {
       message: "A server error occurred.",
     });
 
-    expect(resolveMutationError(error, localDraft)).toEqual({
-      kind: "error",
-      message: "A server error occurred.",
-    });
+    // The error is kept as the cause, so the screen shows the server's own message.
+    expect(resolveMutationError(error, localDraft)).toEqual({ kind: "error", cause: error });
   });
 
   test("requires explicit 409 status on structured conflict responses", () => {
@@ -117,10 +113,7 @@ describe("adoptionGuideReleaseLogic", () => {
         { status: 400, error: { code: "conflict", message: "Invalid request." } },
         localDraft,
       ),
-    ).toEqual({
-      kind: "error",
-      message: "Unable to save this release.",
-    });
+    ).toEqual({ kind: "error" });
   });
 
   test("fetches releases with the exact normalized query URL", async () => {

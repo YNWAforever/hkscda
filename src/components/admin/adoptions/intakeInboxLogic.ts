@@ -1,27 +1,13 @@
 import type { AdoptionIntakeLane, AdoptionIntakeUrgency } from "../../../lib/adoptions/types";
-
-export type IntakeInboxLanguage = "zh" | "en";
+import type { AdminLanguage } from "../../../lib/admin/language";
+import { adminPageCopy } from "../adminPageCopy";
+import { pickAdminCopy } from "../i18n/copy";
 
 export type IntakeSearchParamsInput = {
   lane?: AdoptionIntakeLane;
   openOnly?: boolean;
   page?: number;
   pageSize?: number;
-};
-
-const urgencyLabels: Record<AdoptionIntakeUrgency, Record<IntakeInboxLanguage, string>> = {
-  normal: {
-    zh: "普通",
-    en: "Normal",
-  },
-  high: {
-    zh: "高",
-    en: "High",
-  },
-  overdue: {
-    zh: "逾期",
-    en: "Overdue",
-  },
 };
 
 export function buildIntakeSearchParams(input: IntakeSearchParamsInput) {
@@ -40,6 +26,7 @@ export function buildIntakeSearchParams(input: IntakeSearchParamsInput) {
   return params;
 }
 
-export function intakeUrgencyLabel(urgency: AdoptionIntakeUrgency, language: IntakeInboxLanguage) {
-  return urgencyLabels[urgency][language];
+/** The urgency label from the application inbox page copy, in the admin's language. */
+export function intakeUrgencyLabel(urgency: AdoptionIntakeUrgency, language: AdminLanguage) {
+  return pickAdminCopy(adminPageCopy, language).intakeInbox.urgency[urgency];
 }

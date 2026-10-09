@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { AdminSessionError } from "../../../lib/admin/session";
 import type { AnimalInternalProfile } from "../../../lib/adoptions/types";
 import type { AnimalPipelineRow } from "./animalPipelineLogic";
 import {
@@ -9,6 +10,9 @@ import {
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
   groupAnimalPipelineRows,
+  PipelineLookupError,
+  pipelineLookupErrorText,
+  pipelineReadErrorText,
   readPipelineLookup,
   resolveAnimalPipelinePagination,
 } from "./animalPipelineLogic";
@@ -302,6 +306,33 @@ describe("readPipelineLookup", () => {
   test("falls back to String(error) for a non-Error rejection", async () => {
     await expect(readPipelineLookup("positions", () => Promise.reject("offline"))).rejects.toThrow(
       "Positions could not load: offline",
+    );
+  });
+
+  test("keeps the Chinese text of a lapsed session, and the cause to write it in English", async () => {
+    const failed = await readPipelineLookup("positions", () =>
+      Promise.reject(new AdminSessionError("not_signed_in")),
+    ).catch((error: unknown) => error);
+    expect(failed).toBeInstanceOf(PipelineLookupError);
+    // The message is what the screen has always shown.
+    expect((failed as Error).message).toBe("Positions could not load: 未登入");
+    expect(pipelineReadErrorText(failed, "zh")).toBe("Positions could not load: 未登入");
+    expect(pipelineReadErrorText(failed, "en")).toBe(
+      "Positions could not load: Not signed in. Sign in again.",
+    );
+  });
+});
+
+describe("pipelineReadErrorText", () => {
+  test("writes any other read failure as adminErrorMessage does, and nothing for no failure", () => {
+    expect(pipelineReadErrorText(new AdminSessionError("not_signed_in"), "en")).toBe(
+      "Not signed in. Sign in again.",
+    );
+    expect(pipelineReadErrorText(new AdminSessionError("not_signed_in"), "zh")).toBe("未登入");
+    expect(pipelineReadErrorText(new Error("Forbidden"), "en")).toBe("Forbidden");
+    expect(pipelineReadErrorText(null, "en")).toBeNull();
+    expect(pipelineLookupErrorText("arrivalSources", "offline", "en")).toBe(
+      "Arrival sources could not load: offline",
     );
   });
 });

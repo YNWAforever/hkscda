@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 
@@ -23,7 +23,7 @@ const { AdoptionRulesManagement, toRuleInput } = await import("./AdoptionRulesMa
 describe("AdoptionRulesManagement", () => {
   test("shows a retry control instead of the old unclickable reload message on failure", () => {
     rulesError = new Error("boom");
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AdoptionRulesManagement activeTab="rules" onTabChange={() => {}} />,
     );
     expect(markup).toContain("無法載入領養規則");

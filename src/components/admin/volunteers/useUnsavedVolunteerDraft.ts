@@ -1,10 +1,18 @@
 import { useBlocker } from "@tanstack/react-router";
-/** Preserve an edited policy on SPA navigation as well as document unload. */
-export function useUnsavedVolunteerDraft(dirty: boolean) {
+import { useSharedAdminCopy } from "../i18n/copy";
+import { volunteerCommonCopy } from "./volunteerCommonCopy";
+
+/**
+ * Preserve an edited policy on SPA navigation as well as document unload. The prompt is `prompt`
+ * when the caller has its own text; otherwise it is written in the admin's language, and a page
+ * outside the admin language provider gets Chinese, as it always had.
+ */
+export function useUnsavedVolunteerDraft(dirty: boolean, prompt?: string) {
+  const defaultPrompt = useSharedAdminCopy(volunteerCommonCopy).leaveDraftPrompt;
   useBlocker({
     disabled: !dirty,
     enableBeforeUnload: dirty,
     shouldBlockFn: ({ current, next }) =>
-      current.pathname !== next.pathname && !window.confirm("目前有未儲存修改，確定捨棄並離開？"),
+      current.pathname !== next.pathname && !window.confirm(prompt ?? defaultPrompt),
   });
 }

@@ -3,16 +3,10 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import { Clock, Eye, EyeOff } from "lucide-react";
 
 import type { StoryUpdate } from "../../../lib/content/types";
+import { useAdminCopy } from "../i18n/copy";
 import { StatusPill } from "../StatusBadge";
-
-const updateKindLabels: Record<StoryUpdate["kind"], string> = {
-  medical: "醫療",
-  care: "照顧",
-  photo: "相片",
-  foster: "寄養",
-  adoption: "領養",
-  general: "一般",
-};
+import { contentCommonCopy } from "./contentCommonCopy";
+import { editorPanelsCopy } from "./editorPanelsCopy";
 
 type ContentTimelineProps = {
   updates: StoryUpdate[];
@@ -27,10 +21,12 @@ export function ContentTimeline({
   generatingUpdateId,
   disabled = false,
 }: ContentTimelineProps) {
+  const copy = useAdminCopy(editorPanelsCopy).timeline;
+  const common = useAdminCopy(contentCommonCopy);
   if (updates.length === 0) {
     return (
       <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
-        尚未有故事更新。
+        {copy.empty}
       </p>
     );
   }
@@ -51,10 +47,10 @@ export function ContentTimeline({
                   ) : (
                     <EyeOff className="h-3 w-3" />
                   )}
-                  {update.visibility === "public" ? "公開" : "內部"}
+                  {common.visibility[update.visibility]}
                 </StatusPill>
                 <span className="rounded-full bg-[var(--color-surface-2)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)]">
-                  {updateKindLabels[update.kind]}
+                  {common.updateKinds[update.kind]}
                 </span>
               </div>
               <h3 className="mt-2 text-base font-bold text-[var(--color-panel)]">{update.title}</h3>
@@ -63,7 +59,7 @@ export function ContentTimeline({
             <div className="flex shrink-0 flex-col items-end gap-2 text-xs text-[var(--color-text-muted)]">
               <span className="inline-flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {formatDate(update.occurredAt)}
+                {common.date(update.occurredAt)}
               </span>
               {onGenerateDrafts && update.shouldGenerateAdopterDrafts ? (
                 <button
@@ -72,7 +68,7 @@ export function ContentTimeline({
                   onClick={() => onGenerateDrafts(update.id)}
                   className="rounded-md border border-[var(--color-border)] px-2 py-1 font-semibold text-[var(--color-panel)] disabled:opacity-60"
                 >
-                  {generatingUpdateId === update.id ? "產生中" : "通知草稿"}
+                  {generatingUpdateId === update.id ? copy.creating : copy.createDrafts}
                 </button>
               ) : null}
             </div>
@@ -83,11 +79,8 @@ export function ContentTimeline({
   );
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium" }).format(new Date(value));
-}
-
 function UpdateBody({ update }: { update: StoryUpdate }) {
+  const copy = useAdminCopy(editorPanelsCopy).timeline;
   const [body, setBody] = useState(update.body);
   const [loaded, setLoaded] = useState(update.bodyLoaded !== false);
   const [pending, setPending] = useState(false);
@@ -96,7 +89,7 @@ function UpdateBody({ update }: { update: StoryUpdate }) {
     return body ? (
       <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--color-text-muted)]">{body}</p>
     ) : (
-      <p className="text-sm">沒有正文</p>
+      <p className="text-sm">{copy.noBody}</p>
     );
   return (
     <div>
@@ -120,9 +113,9 @@ function UpdateBody({ update }: { update: StoryUpdate }) {
         }}
         className="mt-2 text-sm underline"
       >
-        {pending ? "載入中" : "閱讀更新正文"}
+        {pending ? copy.loading : copy.readBody}
       </button>
-      {error ? <p role="alert">無法載入正文，請重試。</p> : null}
+      {error ? <p role="alert">{copy.bodyFailed}</p> : null}
     </div>
   );
 }

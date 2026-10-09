@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink, Image, RefreshCw, Save } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   AdoptionCaseDetail,
   CoordinatorStatus,
@@ -15,22 +16,20 @@ import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
+import type { AdminLanguage } from "../adminI18n";
 import {
   bilingualStatusName,
   formatAdminNumber,
   statusDisplayName,
   useAdminPageCopy,
 } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import { openPendingPhotoWindow, openSignedPhotoUrl } from "./caseDetailPhotoWindow";
-import {
-  filterStatusesByCategory,
-  findApprovedMatches,
-  formatDate,
-  formatFallback,
-  formatHkdCents,
-} from "./caseWorkflowLogic";
+import { caseDetailCopy } from "./caseDetailCopy";
+import { filterStatusesByCategory, findApprovedMatches, formatFallback } from "./caseWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import { FinalizationPanel } from "./FinalizationPanel";
 import { MatchPanel } from "./MatchPanel";
 import { TaskPanel } from "./TaskPanel";
@@ -53,192 +52,7 @@ type StatusUpdateResponse = {
 
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
-const CASE_DETAIL_COPY = {
-  zh: {
-    backToCases: "返回個案",
-    notFound: "找不到個案",
-    refresh: "重新整理",
-    statusesError: "無法載入狀態",
-    noDataCaptured: "沒有紀錄資料",
-    yes: "是",
-    no: "否",
-    notFinalized: "未完成",
-    auditSummary: "審核摘要",
-    auditSubtitle: "根據目前個案資料整理",
-    sections: {
-      applicant: "申請人",
-      publicSubmission: "公開申請",
-      rankedAnimalPreferences: "動物偏好排序",
-      visitPreferences: "探訪偏好",
-      questionnaire: "問卷資料",
-      photos: "申請相片",
-      statusLink: "狀態連結",
-      assessmentPreferences: "評估及偏好",
-      statusControls: "狀態控制",
-    },
-    labels: {
-      currentStatus: "目前狀態",
-      created: "建立日期",
-      closed: "結束日期",
-      matches: "配對",
-      approvedMatches: "已批核配對",
-      followups: "跟進工作",
-      finalized: "完成狀態",
-      adoptionFee: "領養費",
-      name: "姓名",
-      phone: "電話",
-      email: "電郵",
-      address: "地址",
-      supporterId: "捐款人 ID",
-      adopterProfileId: "領養人檔案 ID",
-      requestedAnimal: "申請動物",
-      animalType: "動物類別",
-      housingType: "住所類別",
-      familySize: "家庭人數",
-      existingPets: "現有寵物",
-      submitted: "提交日期",
-      reason: "申請原因",
-      assessment: "評估",
-      preferences: "偏好",
-      caseStatus: "個案狀態",
-      note: "備註",
-      rank: "排序",
-      animal: "動物",
-      type: "類別",
-      dateRange: "日期範圍",
-      timeWindows: "可選時段",
-      language: "語言",
-      preferredContactMethod: "偏好聯絡方式",
-      termsVersion: "條款版本",
-      fileName: "檔案",
-      mimeType: "格式",
-      size: "大小",
-      uploaded: "上載時間",
-      expiresAt: "到期",
-      revokedAt: "撤銷",
-      lastViewedAt: "最後查看",
-    },
-    questionnaireGroups: {
-      contact: "聯絡",
-      home: "家居",
-      readiness: "準備",
-    },
-    photoCategories: {
-      home: "家居",
-      window: "窗戶",
-      living: "生活空間",
-    },
-    contactMethods: {
-      phone: "電話",
-      whatsapp: "WhatsApp",
-      email: "電郵",
-    },
-    noPublicDetail: "未有公開申請詳細資料",
-    noVisitPreference: "未有探訪偏好",
-    noPhotos: "未有相片",
-    noStatusToken: "未有狀態連結紀錄",
-    activeStatusLink: "有效",
-    revokedStatusLink: "已撤銷",
-    openPhoto: "開啟相片",
-    openingPhoto: "開啟中...",
-    photoOpenFailed: "無法開啟相片",
-    chooseStatus: "選擇狀態",
-    optionalStatusNote: "選填狀態備註",
-    saveStatus: "儲存狀態",
-  },
-  en: {
-    backToCases: "Back to cases",
-    notFound: "Case not found",
-    refresh: "Refresh",
-    statusesError: "Could not load statuses",
-    noDataCaptured: "No data captured",
-    yes: "Yes",
-    no: "No",
-    notFinalized: "Not finalized",
-    auditSummary: "Audit summary",
-    auditSubtitle: "Summary from current case data",
-    sections: {
-      applicant: "Applicant",
-      publicSubmission: "Public submission",
-      rankedAnimalPreferences: "Ranked animal preferences",
-      visitPreferences: "Visit preferences",
-      questionnaire: "Questionnaire",
-      photos: "Application photos",
-      statusLink: "Status link",
-      assessmentPreferences: "Assessment and preferences",
-      statusControls: "Status controls",
-    },
-    labels: {
-      currentStatus: "Current status",
-      created: "Created",
-      closed: "Closed",
-      matches: "Matches",
-      approvedMatches: "Approved matches",
-      followups: "Follow-ups",
-      finalized: "Finalized",
-      adoptionFee: "Adoption fee",
-      name: "Name",
-      phone: "Phone",
-      email: "Email",
-      address: "Address",
-      supporterId: "Supporter ID",
-      adopterProfileId: "Adopter profile ID",
-      requestedAnimal: "Requested animal",
-      animalType: "Animal type",
-      housingType: "Housing type",
-      familySize: "Family size",
-      existingPets: "Existing pets",
-      submitted: "Submitted",
-      reason: "Reason",
-      assessment: "Assessment",
-      preferences: "Preferences",
-      caseStatus: "Case status",
-      note: "Note",
-      rank: "Rank",
-      animal: "Animal",
-      type: "Type",
-      dateRange: "Date range",
-      timeWindows: "Time windows",
-      language: "Language",
-      preferredContactMethod: "Preferred contact",
-      termsVersion: "Terms version",
-      fileName: "File",
-      mimeType: "Format",
-      size: "Size",
-      uploaded: "Uploaded",
-      expiresAt: "Expires",
-      revokedAt: "Revoked",
-      lastViewedAt: "Last viewed",
-    },
-    questionnaireGroups: {
-      contact: "Contact",
-      home: "Home",
-      readiness: "Readiness",
-    },
-    photoCategories: {
-      home: "Home",
-      window: "Window",
-      living: "Living space",
-    },
-    contactMethods: {
-      phone: "Phone",
-      whatsapp: "WhatsApp",
-      email: "Email",
-    },
-    noPublicDetail: "No public application detail captured",
-    noVisitPreference: "No visit preference captured",
-    noPhotos: "No photos uploaded",
-    noStatusToken: "No status-link record",
-    activeStatusLink: "Active",
-    revokedStatusLink: "Revoked",
-    openPhoto: "Open photo",
-    openingPhoto: "Opening...",
-    photoOpenFailed: "Could not open photo",
-    chooseStatus: "Choose status",
-    optionalStatusNote: "Optional status note",
-    saveStatus: "Save status",
-  },
-} as const;
+type CaseDetailCopy = (typeof caseDetailCopy)["zh"];
 
 const STATUS_DOT_CLASSES: Record<string, string> = {
   amber: "bg-[var(--color-warning)]",
@@ -296,15 +110,14 @@ function Section({
 }
 
 export function CaseDetailStatusesError({ message }: { message: string }) {
-  const { language } = useAdminPageCopy();
-  const copy = CASE_DETAIL_COPY[language];
+  const copy = useAdminCopy(caseDetailCopy);
 
   return (
     <div
       className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-error)]"
       role="alert"
     >
-      {copy.statusesError}: {message}
+      {copy.statusesError(message)}
     </div>
   );
 }
@@ -331,8 +144,7 @@ function formatNumberish(value: number | null | undefined) {
   return value === null || value === undefined ? "-" : String(value);
 }
 
-function formatUnknownValue(value: unknown, language: keyof typeof CASE_DETAIL_COPY): string {
-  const copy = CASE_DETAIL_COPY[language];
+function formatUnknownValue(value: unknown, copy: CaseDetailCopy): string {
   if (value === null || value === undefined) return "-";
   if (typeof value === "string") return formatFallback(value);
   if (typeof value === "number") return String(value);
@@ -340,23 +152,15 @@ function formatUnknownValue(value: unknown, language: keyof typeof CASE_DETAIL_C
   if (Array.isArray(value)) {
     return value.length === 0
       ? "-"
-      : value.map((item) => formatUnknownValue(item, language)).join(", ");
+      : value.map((item) => formatUnknownValue(item, copy)).join(", ");
   }
   if (typeof value === "object") return JSON.stringify(value);
   return String(value);
 }
 
-function RecordSummary({
-  title,
-  record,
-  language,
-}: {
-  title: string;
-  record: Record<string, unknown>;
-  language: keyof typeof CASE_DETAIL_COPY;
-}) {
+function RecordSummary({ title, record }: { title: string; record: Record<string, unknown> }) {
   const entries = Object.entries(record ?? {});
-  const copy = CASE_DETAIL_COPY[language];
+  const copy = useAdminCopy(caseDetailCopy);
 
   return (
     <div className="border-t border-[var(--color-border)] first:border-t-0">
@@ -376,7 +180,7 @@ function RecordSummary({
             >
               <div className="text-xs text-[var(--color-text-muted)]">{key}</div>
               <div className="mt-1 break-words text-sm text-[var(--color-panel)]">
-                {formatUnknownValue(value, language)}
+                {formatUnknownValue(value, copy)}
               </div>
             </div>
           ))}
@@ -400,7 +204,7 @@ function formatBytes(value: number) {
 
 function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
   const { language } = useAdminPageCopy();
-  const copy = CASE_DETAIL_COPY[language];
+  const copy = useAdminCopy(caseDetailCopy);
 
   const mutation = useMutation<{ url: string }, Error, void>({
     mutationFn: () =>
@@ -438,7 +242,7 @@ function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
       </Button>
       {mutation.error && (
         <p className="text-xs text-[var(--color-error)]" role="alert">
-          {copy.photoOpenFailed}: {mutation.error.message}
+          {copy.photoOpenFailed(adminErrorMessage(mutation.error, language) ?? "")}
         </p>
       )}
     </div>
@@ -446,8 +250,9 @@ function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
 }
 
 function PublicAdoptionSections({ adoptionCase }: { adoptionCase: AdoptionCaseDetail }) {
-  const { language, pageCopy } = useAdminPageCopy();
-  const copy = CASE_DETAIL_COPY[language];
+  const { pageCopy } = useAdminPageCopy();
+  const copy = useAdminCopy(caseDetailCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
   const publicAdoption = adoptionCase.publicAdoption;
 
   if (!publicAdoption) return null;
@@ -496,7 +301,10 @@ function PublicAdoptionSections({ adoptionCase }: { adoptionCase: AdoptionCaseDe
             items={[
               {
                 label: copy.labels.dateRange,
-                value: `${publicAdoption.visitPreference.dateRangeStart} - ${publicAdoption.visitPreference.dateRangeEnd}`,
+                value: format.dateRange(
+                  publicAdoption.visitPreference.dateRangeStart,
+                  publicAdoption.visitPreference.dateRangeEnd,
+                ),
               },
               {
                 label: copy.labels.timeWindows,
@@ -529,17 +337,14 @@ function PublicAdoptionSections({ adoptionCase }: { adoptionCase: AdoptionCaseDe
         <RecordSummary
           title={copy.questionnaireGroups.contact}
           record={objectRecord(questionnaire.contact)}
-          language={language}
         />
         <RecordSummary
           title={copy.questionnaireGroups.home}
           record={objectRecord(questionnaire.home)}
-          language={language}
         />
         <RecordSummary
           title={copy.questionnaireGroups.readiness}
           record={objectRecord(questionnaire.readiness)}
-          language={language}
         />
       </Section>
 
@@ -566,7 +371,7 @@ function PublicAdoptionSections({ adoptionCase }: { adoptionCase: AdoptionCaseDe
                   </div>
                 </div>
                 <div className="text-xs text-[var(--color-text-muted)]">
-                  {copy.labels.uploaded}: {formatDate(photo.uploadedAt)}
+                  {copy.labels.uploaded}: {format.date(photo.uploadedAt)}
                 </div>
                 <PublicPhotoButton photo={photo} />
               </div>
@@ -587,15 +392,15 @@ function PublicAdoptionSections({ adoptionCase }: { adoptionCase: AdoptionCaseDe
               },
               {
                 label: copy.labels.expiresAt,
-                value: formatDate(publicAdoption.statusToken.expiresAt),
+                value: format.date(publicAdoption.statusToken.expiresAt),
               },
               {
                 label: copy.labels.revokedAt,
-                value: formatDate(publicAdoption.statusToken.revokedAt),
+                value: format.date(publicAdoption.statusToken.revokedAt),
               },
               {
                 label: copy.labels.lastViewedAt,
-                value: formatDate(publicAdoption.statusToken.lastViewedAt),
+                value: format.date(publicAdoption.statusToken.lastViewedAt),
               },
             ]}
           />
@@ -626,18 +431,19 @@ function AuditSummary({
   language,
 }: {
   adoptionCase: AdoptionCaseDetail;
-  language: keyof typeof CASE_DETAIL_COPY;
+  language: AdminLanguage;
 }) {
   const approvedMatches = findApprovedMatches(adoptionCase.matches);
-  const copy = CASE_DETAIL_COPY[language];
+  const copy = useAdminCopy(caseDetailCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
 
   return (
     <Section title={copy.auditSummary} subtitle={copy.auditSubtitle}>
       <DetailGrid
         items={[
           { label: copy.labels.currentStatus, value: <StatusChip status={adoptionCase.status} /> },
-          { label: copy.labels.created, value: formatDate(adoptionCase.createdAt) },
-          { label: copy.labels.closed, value: formatDate(adoptionCase.closedAt) },
+          { label: copy.labels.created, value: format.date(adoptionCase.createdAt) },
+          { label: copy.labels.closed, value: format.date(adoptionCase.closedAt) },
           {
             label: copy.labels.matches,
             value: formatAdminNumber(adoptionCase.matches.length, language),
@@ -658,7 +464,7 @@ function AuditSummary({
           },
           {
             label: copy.labels.adoptionFee,
-            value: formatHkdCents(adoptionCase.successfulAdoption?.adoptionFeeCents),
+            value: format.money(adoptionCase.successfulAdoption?.adoptionFeeCents),
           },
         ]}
       />
@@ -668,7 +474,8 @@ function AuditSummary({
 
 export function CaseDetail({ caseId }: CaseDetailProps) {
   const { language, pageCopy } = useAdminPageCopy();
-  const copy = CASE_DETAIL_COPY[language];
+  const copy = useAdminCopy(caseDetailCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
   const queryClient = useQueryClient();
   const [selectedStatusId, setSelectedStatusId] = useState("");
   const [statusNote, setStatusNote] = useState("");
@@ -804,7 +611,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
             </h1>
             <p className="text-sm text-[var(--color-text-muted)]">
               {formatFallback(adoptionCase.requestedAnimalName)} ·{" "}
-              {formatDate(adoptionCase.createdAt)}
+              {format.date(adoptionCase.createdAt)}
             </p>
           </div>
         </div>
@@ -814,7 +621,9 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         </Button>
       </div>
 
-      {statusesError && <CaseDetailStatusesError message={statusesError.message} />}
+      {statusesError && (
+        <CaseDetailStatusesError message={adminErrorMessage(statusesError, language) ?? ""} />
+      )}
 
       <Section title={copy.sections.applicant}>
         <DetailGrid
@@ -849,8 +658,8 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
             { label: copy.labels.housingType, value: formatFallback(adoptionCase.housingType) },
             { label: copy.labels.familySize, value: formatNumberish(adoptionCase.familySize) },
             { label: copy.labels.existingPets, value: formatFallback(adoptionCase.existingPets) },
-            { label: copy.labels.submitted, value: formatDate(adoptionCase.createdAt) },
-            { label: copy.labels.closed, value: formatDate(adoptionCase.closedAt) },
+            { label: copy.labels.submitted, value: format.date(adoptionCase.createdAt) },
+            { label: copy.labels.closed, value: format.date(adoptionCase.closedAt) },
             {
               label: copy.labels.currentStatus,
               value: <StatusChip status={adoptionCase.status} />,
@@ -868,16 +677,8 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       <PublicAdoptionSections adoptionCase={adoptionCase} />
 
       <Section title={copy.sections.assessmentPreferences}>
-        <RecordSummary
-          title={copy.labels.assessment}
-          record={adoptionCase.assessment}
-          language={language}
-        />
-        <RecordSummary
-          title={copy.labels.preferences}
-          record={adoptionCase.preferences}
-          language={language}
-        />
+        <RecordSummary title={copy.labels.assessment} record={adoptionCase.assessment} />
+        <RecordSummary title={copy.labels.preferences} record={adoptionCase.preferences} />
       </Section>
 
       <Section title={copy.sections.statusControls}>
@@ -918,7 +719,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           </div>
           {statusMutation.error && (
             <p className="text-sm text-[var(--color-error)]" role="alert">
-              {statusMutation.error.message}
+              {adminErrorMessage(statusMutation.error, language) ?? ""}
             </p>
           )}
         </form>

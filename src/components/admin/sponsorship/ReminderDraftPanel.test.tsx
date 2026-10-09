@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
 
+import { renderAdminInChinese } from "../i18n/testing";
 import { ReminderDraftPreview } from "./ReminderDraftPanel";
 
 test("staff preview labels recipient and internal ledger amount without a send action", () => {
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <ReminderDraftPreview
       result={{
         kind: "draft",
@@ -26,7 +26,7 @@ test("staff preview labels recipient and internal ledger amount without a send a
 });
 
 test("unavailable preview explains pending proof instead of showing an email", () => {
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <ReminderDraftPreview result={{ kind: "unavailable", reason: "proof_pending" }} />,
   );
   expect(html).toContain("付款憑證待核實");

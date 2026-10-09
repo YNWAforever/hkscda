@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactNode } from "react";
 
 import type { ContentDetail } from "../../../lib/content/types";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactRouter = await import("@tanstack/react-router");
 
@@ -128,7 +129,7 @@ const content: ContentDetail = {
 describe("ContentEditor", () => {
   test("renders authoring controls for story profile, updates, media, and links", async () => {
     const { ContentAuthoringPanels } = await import("./ContentEditor");
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <QueryClientProvider client={new QueryClient()}>
         <ContentAuthoringPanels
           content={content}
@@ -173,7 +174,7 @@ describe("ContentEditor", () => {
         },
       ],
     };
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <QueryClientProvider client={new QueryClient()}>
         <ContentAuthoringPanels
           content={contentWithInternalUpdate}
@@ -196,7 +197,7 @@ describe("ContentEditor", () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();
 
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <QueryClientProvider client={queryClient}>
         <ContentEditor contentId={content.id} initialContent={content} />
       </QueryClientProvider>,

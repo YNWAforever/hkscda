@@ -1,5 +1,9 @@
 import React, { type ReactNode, type ReactElement } from "react";
 import { beforeEach, expect, mock, test } from "bun:test";
+// Coupling: this test calls the panel as a plain function and answers `useState`, `useRef` and
+// `useEffect` by call order, so a new hook in the panel, or a change to the order of the existing
+// ones, needs a matching change in the mock below. The screen text is in
+// SponsorshipEnglish.test.tsx, which renders the panel without this mock.
 const state: unknown[] = [],
   effects: Array<() => void | (() => void)> = [],
   cleanups: Array<() => void> = [];
@@ -29,7 +33,23 @@ mock.module("react", () => ({
     }
   },
 }));
+// The panel reads the language from React context, which this test does not mount, so the
+// language hook answers from `language`, which is Chinese unless a test switches it. The panel
+// also imports `adminErrorMessage`, whose module needs the real query helpers, so the query mock
+// keeps them and replaces only `useQuery`.
+let language: "zh" | "en" = "zh";
+const realQuery = await import("@tanstack/react-query");
+const realLanguage = await import("../adminI18n");
+mock.module("../adminI18n", () => ({
+  ...realLanguage,
+  useAdminLanguage: () => ({
+    language,
+    copy: realLanguage.adminCopy[language],
+    setLanguage: () => {},
+  }),
+}));
 mock.module("@tanstack/react-query", () => ({
+  ...realQuery,
   useQuery: () => ({
     data: {
       assignees: [
@@ -59,6 +79,7 @@ const { SponsorshipFollowupBulkPanel } = await import("./SponsorshipFollowupBulk
 type Props = {
   children?: ReactNode;
   disabled?: boolean;
+  role?: string;
   onClick?: () => Promise<void>;
   onChange?: (e: { target: { value: string } }) => void;
 };
@@ -90,6 +111,7 @@ beforeEach(() => {
   effects.length = 0;
   cleanups.length = 0;
   storage.clear();
+  language = "zh";
   request = async () => {
     throw Error("Synthetic 503");
   };
@@ -101,6 +123,32 @@ test("transient recovery GET keeps saved operation and exposes retry", async () 
   expect(storage.get(key)).toBe(saved);
   expect(walk(render()).some((n) => n.props.children === "重新讀取結果")).toBe(true);
 });
+const alertText = () =>
+  String(walk(render()).find((n) => n.props.role === "alert")?.props.children);
+
+test("an error shown in Chinese is written in English when the language changes", async () => {
+  // The panel keeps a code for the failure, not the sentence, so the sentence follows the language.
+  storage.set(key, saved);
+  render();
+  await flush();
+  expect(alertText()).toBe("未能讀取已保存的操作，請重新讀取結果。");
+  language = "en";
+  expect(alertText()).toBe(
+    "Could not load the saved operation. Select Reload result to try again.",
+  );
+  expect(walk(render()).some((n) => n.props.children === "Reload result")).toBe(true);
+});
+
+test("a reason the server gave for a failed preview is shown as it came, in either language", async () => {
+  walk(render()).find((x) => x.type === "select")!.props.onChange!({
+    target: { value: "22222222-2222-4222-8222-222222222222" },
+  });
+  await walk(render()).find((x) => x.type === "button")!.props.onClick!();
+  expect(alertText()).toBe("Synthetic 503");
+  language = "en";
+  expect(alertText()).toBe("Synthetic 503");
+});
+
 test("in-flight recovery disables creating a competing preview", () => {
   storage.set(key, saved);
   request = () => new Promise(() => {});

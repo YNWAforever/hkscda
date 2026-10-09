@@ -5,30 +5,36 @@ import { CalendarClock, ChevronDown, Copy, Plus, RefreshCw, Users, X } from "luc
 import { useMemo, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import {
+  volunteerRegistrationStatusLabel,
+  volunteerRegistrationStatusLabelsFor,
+} from "../../../lib/volunteers/labels";
 import type {
   VolunteerActivitySummary,
-  VolunteerActivityType,
   VolunteerAttendanceStatus,
   VolunteerRegistrationStatus,
   VolunteerRegistrationSummary,
 } from "../../../lib/volunteers/types";
+import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { pickAdminCopy } from "../i18n/copy";
 import { StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
+import { ActivityCreateForm } from "./ActivityCreateForm";
+import { EMPTY_ACTIVITY_DRAFT, type ActivityDraft } from "./activityDraft";
 import {
-  activityStatusLabels,
-  activityTypeLabels,
-  attendanceStatusLabels,
   availableRegistrationTransitions,
   buildActivitySearchParams,
   buildRegistrationSearchParams,
   isDestructiveTransition,
-  registrationStatusLabels,
-  registrationTypeLabels,
   summarizeActivityCapacity,
   VOLUNTEER_ADMIN_PAGE_SIZE,
   volunteerStatusTone,
 } from "./volunteerAdminLogic";
+import { volunteerCommonCopy } from "./volunteerCommonCopy";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
 
 type ActivityListResponse = {
   activities: VolunteerActivitySummary[];
@@ -48,21 +54,6 @@ function toIsoFromLocal(value: string) {
   return new Date(value + ":00+08:00").toISOString();
 }
 
-function formatDateTime(value: string) {
-  return new Date(value).toLocaleString("zh-HK", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Hong_Kong",
-  });
-}
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("zh-HK", {
-    dateStyle: "medium",
-    timeZone: "Asia/Hong_Kong",
-  });
-}
-
 function statusClass(status: VolunteerRegistrationStatus) {
   const tone = volunteerStatusTone(status);
   if (tone === "success") return "bg-[var(--color-success-highlight)] text-[var(--color-success)]";
@@ -79,26 +70,6 @@ const buttonBase =
   "inline-flex min-h-9 cursor-pointer items-center justify-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold " +
   "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] " +
   "disabled:cursor-not-allowed disabled:opacity-50";
-
-/** Labelled field wrapper — the old form relied on placeholders alone, and the
- *  two number inputs had neither placeholder nor label. */
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-xs font-semibold text-[var(--color-panel)]">{label}</span>
-      {children}
-      {hint ? <span className="text-xs text-[var(--color-text-muted)]">{hint}</span> : null}
-    </label>
-  );
-}
 
 function StatCard({
   icon,
@@ -138,6 +109,11 @@ function StatCard({
 }
 
 export function VolunteerManagement() {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(volunteerRegistrationCopy, language);
+  const text = copy.management;
+  const common = pickAdminCopy(volunteerCommonCopy, language);
+  const format = pickAdminCopy(volunteerFormatCopy, language);
   const queryClient = useQueryClient();
   const [activityQuery, setActivityQuery] = useState("");
   const [registrationQuery, setRegistrationQuery] = useState("");
@@ -158,15 +134,7 @@ export function VolunteerManagement() {
   const [activityPage, setActivityPage] = useState(1);
   const [registrationPage, setRegistrationPage] = useState(1);
 
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState<VolunteerActivityType>("cleaning_day");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
-  const [location, setLocation] = useState("");
-  const [capacity, setCapacity] = useState(12);
-  const [minAge, setMinAge] = useState(16);
-  const [autoApprove, setAutoApprove] = useState(false);
-  const [allowGroups, setAllowGroups] = useState(true);
+  const [draft, setDraft] = useState<ActivityDraft>(EMPTY_ACTIVITY_DRAFT);
 
   const activitySearch = useMemo(
     () =>
@@ -238,25 +206,22 @@ export function VolunteerManagement() {
       fetchAdminJson<{ id: string }>("/api/admin/volunteers/activities", {
         method: "POST",
         body: JSON.stringify({
-          type,
-          title,
+          type: draft.type,
+          title: draft.title,
           description: null,
-          startsAt: toIsoFromLocal(startsAt),
-          endsAt: endsAt ? toIsoFromLocal(endsAt) : null,
-          location,
-          capacity,
-          minAge,
-          autoApprove,
+          startsAt: toIsoFromLocal(draft.startsAt),
+          endsAt: draft.endsAt ? toIsoFromLocal(draft.endsAt) : null,
+          location: draft.location,
+          capacity: draft.capacity,
+          minAge: draft.minAge,
+          autoApprove: draft.autoApprove,
           allowWaitlist: true,
           status: "published",
-          registrationModes: allowGroups ? ["individual", "group"] : ["individual"],
+          registrationModes: draft.allowGroups ? ["individual", "group"] : ["individual"],
         }),
       }),
     onSuccess: () => {
-      setTitle("");
-      setStartsAt("");
-      setEndsAt("");
-      setLocation("");
+      setDraft((current) => ({ ...current, title: "", startsAt: "", endsAt: "", location: "" }));
       setShowCreate(false);
       void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
     },
@@ -309,27 +274,27 @@ export function VolunteerManagement() {
   const activityColumns: DataTableColumn<VolunteerActivitySummary>[] = [
     {
       id: "activity",
-      header: "活動",
+      header: text.activities.columns.activity,
       cell: (activity) => (
         <div>
           <p className="font-semibold text-[var(--color-panel)]">{activity.title}</p>
           <p className="text-xs text-[var(--color-text-muted)]">
-            {activityTypeLabels[activity.type]} · {activity.location}
+            {common.activityType[activity.type]} · {activity.location}
           </p>
         </div>
       ),
     },
     {
       id: "time",
-      header: "日期",
+      header: text.activities.columns.date,
       cell: (activity) => (
         <div className="text-sm">
           <p className="tabular-nums text-[var(--color-panel)]">
-            {formatDateTime(activity.startsAt)}
+            {format.managementDateTime(activity.startsAt)}
           </p>
           {activity.endsAt ? (
             <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-              至 {formatDateTime(activity.endsAt)}
+              {text.activities.until(format.managementDateTime(activity.endsAt))}
             </p>
           ) : null}
         </div>
@@ -337,7 +302,7 @@ export function VolunteerManagement() {
     },
     {
       id: "capacity",
-      header: "名額",
+      header: text.activities.columns.places,
       cell: (activity) => {
         const summary = summarizeActivityCapacity(activity);
         const full = summary.approved >= activity.capacity;
@@ -348,10 +313,13 @@ export function VolunteerManagement() {
                 full ? "text-[var(--color-warning)]" : "text-[var(--color-panel)]"
               }`}
             >
-              {summary.approved} / {activity.capacity}
+              {format.number(summary.approved)} / {format.number(activity.capacity)}
             </p>
             <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-              待審 {activity.pendingParticipants ?? 0} · 候補 {summary.waitlisted}
+              {text.activities.pendingAndWaitlisted(
+                activity.pendingParticipants ?? 0,
+                summary.waitlisted,
+              )}
             </p>
           </div>
         );
@@ -359,16 +327,16 @@ export function VolunteerManagement() {
     },
     {
       id: "status",
-      header: "狀態",
+      header: text.activities.columns.status,
       cell: (activity) => (
         <span className="rounded-full bg-[var(--color-surface-offset)] px-2 py-1 text-xs font-bold text-[var(--color-panel)]">
-          {activityStatusLabels[activity.status]}
+          {common.activityStatus[activity.status]}
         </span>
       ),
     },
     {
       id: "actions",
-      header: "操作",
+      header: text.activities.columns.actions,
       cell: (activity) => {
         const selected = activityFilter?.id === activity.id;
         return (
@@ -386,7 +354,7 @@ export function VolunteerManagement() {
               }`}
             >
               <Users className="h-3.5 w-3.5" />
-              {selected ? "顯示中" : "查看報名"}
+              {selected ? text.activities.showing : text.activities.viewRegistrations}
             </button>
             <button
               type="button"
@@ -402,7 +370,9 @@ export function VolunteerManagement() {
               }
               className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
             >
-              {activity.status === "published" ? "關閉報名" : "發布"}
+              {activity.status === "published"
+                ? text.activities.closeRegistration
+                : text.activities.publish}
             </button>
             <button
               type="button"
@@ -411,7 +381,7 @@ export function VolunteerManagement() {
               className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
             >
               <Copy className="h-3.5 w-3.5" />
-              複製
+              {text.activities.duplicate}
             </button>
           </div>
         );
@@ -422,7 +392,7 @@ export function VolunteerManagement() {
   const registrationColumns: DataTableColumn<RegistrationRow>[] = [
     {
       id: "name",
-      header: "報名人",
+      header: text.registrations.columns.registrant,
       cell: (registration) => (
         <div className="min-w-48">
           <Link
@@ -438,7 +408,7 @@ export function VolunteerManagement() {
           </p>
           {registration.organizationName ? (
             <p className="text-xs text-[var(--color-text-muted)]">
-              機構：{registration.organizationName}
+              {text.registrations.organisation(registration.organizationName)}
             </p>
           ) : null}
         </div>
@@ -446,67 +416,71 @@ export function VolunteerManagement() {
     },
     {
       id: "activity",
-      header: "報名活動",
+      header: text.registrations.columns.activity,
       cell: (registration) =>
         registration.activity ? (
           <div className="min-w-40 text-sm">
             <p className="font-medium text-[var(--color-panel)]">{registration.activity.title}</p>
             <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-              {formatDateTime(registration.activity.startsAt)}
+              {format.managementDateTime(registration.activity.startsAt)}
             </p>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {activityTypeLabels[registration.activity.type]} · {registration.activity.location}
+              {common.activityType[registration.activity.type]} · {registration.activity.location}
             </p>
           </div>
         ) : (
           // Never show a bare UUID: it tells the operator nothing.
-          <span className="text-xs text-[var(--color-text-muted)]">活動資料未載入</span>
+          <span className="text-xs text-[var(--color-text-muted)]">
+            {text.registrations.activityNotLoaded}
+          </span>
         ),
     },
     {
       id: "people",
-      header: "人數 / 形式",
+      header: text.registrations.columns.people,
       cell: (registration) => (
         <div className="text-sm">
           <p className="font-semibold tabular-nums text-[var(--color-panel)]">
-            {registration.participantCount} 人
+            {text.registrations.peopleCount(registration.participantCount)}
           </p>
           <p className="text-xs text-[var(--color-text-muted)]">
-            {registrationTypeLabels[registration.registrationType]}
+            {common.registrationType[registration.registrationType]}
           </p>
           {registration.youngestAge !== null ? (
             <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-              最小 {registration.youngestAge} 歲
+              {text.registrations.youngest(registration.youngestAge)}
             </p>
           ) : null}
           {registration.guardianName ? (
-            <p className="text-xs text-[var(--color-warning)]">需家長同意</p>
+            <p className="text-xs text-[var(--color-warning)]">
+              {text.registrations.guardianConsent}
+            </p>
           ) : null}
         </div>
       ),
     },
     {
       id: "status",
-      header: "狀態",
+      header: text.registrations.columns.status,
       cell: (registration) => (
         <div className="space-y-1">
           <span
             className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
           >
-            {registrationStatusLabels[registration.status]}
+            {volunteerRegistrationStatusLabel(registration.status, language)}
           </span>
           <p className="text-xs text-[var(--color-text-muted)]">
-            出席：{attendanceStatusLabels[registration.attendanceStatus]}
+            {text.registrations.attendance(common.attendance[registration.attendanceStatus])}
           </p>
           <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-            {formatDate(registration.createdAt)} 報名
+            {text.registrations.registeredOn(format.managementDate(registration.createdAt))}
           </p>
         </div>
       ),
     },
     {
       id: "actions",
-      header: "操作",
+      header: text.registrations.columns.actions,
       cell: (registration) => renderRegistrationActions(registration),
     },
   ];
@@ -525,7 +499,7 @@ export function VolunteerManagement() {
         : false;
 
       if (transitions.length === 0 && !attendable) {
-        return <span className="text-xs text-[var(--color-text-muted)]">無需處理</span>;
+        return <span className="text-xs text-[var(--color-text-muted)]">{copy.nothingToDo}</span>;
       }
 
       return (
@@ -541,7 +515,7 @@ export function VolunteerManagement() {
                 onClick={() => {
                   if (
                     destructive &&
-                    !window.confirm(`確定拒絕 ${registration.contactName} 的報名？對方會收到通知。`)
+                    !window.confirm(text.registrations.confirmReject(registration.contactName))
                   ) {
                     return;
                   }
@@ -559,7 +533,7 @@ export function VolunteerManagement() {
                       : "border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]"
                 }`}
               >
-                {registrationStatusLabels[status]}
+                {copy.transitions[status]}
               </button>
             );
           })}
@@ -570,7 +544,7 @@ export function VolunteerManagement() {
               onClick={() => completeAttendance.mutate(registration)}
               className={`${buttonBase} border border-[var(--color-success)] text-[var(--color-success)] hover:bg-[var(--color-success-highlight)]`}
             >
-              標記完成
+              {text.registrations.markCompleted}
             </button>
           ) : null}
         </div>
@@ -604,7 +578,7 @@ export function VolunteerManagement() {
           <span
             className={`shrink-0 rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
           >
-            {registrationStatusLabels[registration.status]}
+            {volunteerRegistrationStatusLabel(registration.status, language)}
           </span>
         </div>
 
@@ -612,36 +586,44 @@ export function VolunteerManagement() {
           <div className="rounded-md bg-[var(--color-surface-offset)] p-3 text-sm">
             <p className="font-medium text-[var(--color-panel)]">{registration.activity.title}</p>
             <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
-              {formatDateTime(registration.activity.startsAt)} · {registration.activity.location}
+              {format.managementDateTime(registration.activity.startsAt)} ·{" "}
+              {registration.activity.location}
             </p>
           </div>
         ) : null}
 
         <dl className="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <dt className="text-[var(--color-text-muted)]">人數 / 形式</dt>
+            <dt className="text-[var(--color-text-muted)]">{text.registrations.cardPeople}</dt>
             <dd className="tabular-nums text-[var(--color-panel)]">
-              {registration.participantCount} 人 ·{" "}
-              {registrationTypeLabels[registration.registrationType]}
+              {text.registrations.cardPeopleValue(
+                registration.participantCount,
+                common.registrationType[registration.registrationType],
+              )}
             </dd>
           </div>
           <div>
-            <dt className="text-[var(--color-text-muted)]">出席</dt>
+            <dt className="text-[var(--color-text-muted)]">{text.registrations.cardAttendance}</dt>
             <dd className="text-[var(--color-panel)]">
-              {attendanceStatusLabels[registration.attendanceStatus]}
+              {common.attendance[registration.attendanceStatus]}
             </dd>
           </div>
           {registration.organizationName ? (
             <div className="col-span-2">
-              <dt className="text-[var(--color-text-muted)]">機構</dt>
+              <dt className="text-[var(--color-text-muted)]">
+                {text.registrations.cardOrganisation}
+              </dt>
               <dd className="text-[var(--color-panel)]">{registration.organizationName}</dd>
             </div>
           ) : null}
           {registration.guardianName ? (
             <div className="col-span-2">
-              <dt className="text-[var(--color-text-muted)]">家長同意</dt>
+              <dt className="text-[var(--color-text-muted)]">{text.registrations.cardGuardian}</dt>
               <dd className="text-[var(--color-warning)]">
-                {registration.guardianName} · {registration.guardianPhone ?? "未提供電話"}
+                {text.registrations.guardianValue(
+                  registration.guardianName,
+                  registration.guardianPhone,
+                )}
               </dd>
             </div>
           ) : null}
@@ -654,12 +636,14 @@ export function VolunteerManagement() {
     );
   }
 
+  const changeFailure = patchActivity.error ?? updateRegistration.error;
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">義工與活動管理</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">建立活動、審批報名，並記錄出席。</p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{text.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{text.intro}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -668,7 +652,7 @@ export function VolunteerManagement() {
             className={`${buttonBase} min-h-11 border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-surface-offset)]`}
           >
             <RefreshCw className="h-4 w-4" />
-            重新整理
+            {text.refresh}
           </button>
           <button
             type="button"
@@ -677,7 +661,7 @@ export function VolunteerManagement() {
             className={`${buttonBase} min-h-11 bg-[var(--color-primary)] px-3 text-sm text-[var(--color-primary-foreground)] hover:opacity-90`}
           >
             <Plus className="h-4 w-4" />
-            新增活動
+            {text.addActivity}
             <ChevronDown
               className={`h-4 w-4 transition-transform duration-150 ${showCreate ? "rotate-180" : ""}`}
             />
@@ -688,23 +672,23 @@ export function VolunteerManagement() {
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard
           icon={<Users className="h-5 w-5" />}
-          label="本頁活動待審批人數"
-          value={pendingCount}
+          label={text.stats.pending}
+          value={format.number(pendingCount)}
           emphasis={!activitiesFailed && pendingCount > 0}
           failed={activitiesFailed}
           loading={activitiesQuery.isLoading}
         />
         <StatCard
           icon={<CalendarClock className="h-5 w-5" />}
-          label="本頁即將舉行的活動"
-          value={upcomingCount}
+          label={text.stats.upcoming}
+          value={format.number(upcomingCount)}
           failed={activitiesFailed}
           loading={activitiesQuery.isLoading}
         />
         <StatCard
           icon={<Users className="h-5 w-5" />}
-          label="目前顯示的報名"
-          value={registrations.length}
+          label={text.stats.shown}
+          value={format.number(registrations.length)}
           failed={registrationsFailed}
           loading={registrationsQuery.isLoading}
         />
@@ -713,142 +697,33 @@ export function VolunteerManagement() {
       {/* Creating an activity is occasional; keeping the 9-field form open on
           every visit pushed the tables the operator actually came for below
           the fold. */}
-      {(patchActivity.error || updateRegistration.error) && (
+      {changeFailure && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {patchActivity.error?.message ?? updateRegistration.error?.message}
+          {volunteerAdminErrorMessage(changeFailure, language)}
         </p>
       )}
       {showCreate ? (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            createActivity.mutate();
-          }}
-          className="grid gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 md:grid-cols-4"
-        >
-          <Field label="活動名稱">
-            <input
-              required
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="活動類型">
-            <select
-              value={type}
-              onChange={(event) => setType(event.target.value as VolunteerActivityType)}
-              className={inputClass}
-            >
-              {Object.entries(activityTypeLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="開始時間">
-            <input
-              required
-              type="datetime-local"
-              value={startsAt}
-              onChange={(event) => setStartsAt(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="結束時間" hint="可留空">
-            <input
-              type="datetime-local"
-              value={endsAt}
-              onChange={(event) => setEndsAt(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="地點">
-            <input
-              required
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="名額" hint="可批准的總人數">
-            <input
-              type="number"
-              min={1}
-              value={capacity}
-              onChange={(event) => setCapacity(Number(event.target.value))}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="最低年齡" hint="個人報名下限">
-            <input
-              type="number"
-              min={0}
-              value={minAge}
-              onChange={(event) => setMinAge(Number(event.target.value))}
-              className={inputClass}
-            />
-          </Field>
-          <fieldset className="flex flex-wrap items-center gap-4 text-sm">
-            <legend className="mb-1 text-xs font-semibold text-[var(--color-panel)]">
-              報名設定
-            </legend>
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={autoApprove}
-                onChange={(event) => setAutoApprove(event.target.checked)}
-                className="h-4 w-4 cursor-pointer"
-              />
-              自動審批
-            </label>
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={allowGroups}
-                onChange={(event) => setAllowGroups(event.target.checked)}
-                className="h-4 w-4 cursor-pointer"
-              />
-              接受團體
-            </label>
-          </fieldset>
-          <div className="flex gap-2 md:col-span-4">
-            <button
-              type="submit"
-              disabled={createActivity.isPending}
-              className={`${buttonBase} min-h-11 bg-[var(--color-primary)] px-4 text-sm text-[var(--color-primary-foreground)] hover:opacity-90`}
-            >
-              <Plus className="h-4 w-4" />
-              {createActivity.isPending ? "建立中…" : "建立活動"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowCreate(false)}
-              className={`${buttonBase} min-h-11 border border-[var(--color-border)] px-4 text-sm hover:bg-[var(--color-surface-offset)]`}
-            >
-              取消
-            </button>
-          </div>
-          {createActivity.isError ? (
-            <p role="alert" className="text-sm text-[var(--color-error)] md:col-span-4">
-              建立失敗，請檢查輸入內容後再試。
-            </p>
-          ) : null}
-        </form>
+        <ActivityCreateForm
+          draft={draft}
+          onChange={(patch) => setDraft((current) => ({ ...current, ...patch }))}
+          onSubmit={() => createActivity.mutate()}
+          onCancel={() => setShowCreate(false)}
+          pending={createActivity.isPending}
+          failed={createActivity.isError}
+        />
       ) : null}
 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-bold text-[var(--color-panel)]">活動</h2>
+          <h2 className="text-lg font-bold text-[var(--color-panel)]">{text.activities.title}</h2>
           <input
             value={activityQuery}
             onChange={(event) => {
               setActivityQuery(event.target.value);
               setActivityPage(1);
             }}
-            placeholder="搜尋活動名稱或地點"
-            aria-label="搜尋活動"
+            placeholder={text.activities.searchPlaceholder}
+            aria-label={text.activities.searchLabel}
             className={`${inputClass} max-w-64`}
           />
         </div>
@@ -857,7 +732,7 @@ export function VolunteerManagement() {
           rows={activities}
           getRowKey={(activity) => activity.id}
           loading={activitiesQuery.isLoading}
-          empty="尚未建立任何活動。按「新增活動」開始。"
+          empty={text.activities.empty}
           error={activitiesQuery.error}
           onRetry={() => void activitiesQuery.refetch()}
         />
@@ -870,13 +745,15 @@ export function VolunteerManagement() {
           total={activitiesQuery.data?.total}
           onPageChange={setActivityPage}
           busy={activitiesQuery.isFetching || activitiesFailed}
-          label="活動"
+          label={text.activities.pagerLabel}
         />
       </section>
 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-bold text-[var(--color-panel)]">報名</h2>
+          <h2 className="text-lg font-bold text-[var(--color-panel)]">
+            {text.registrations.title}
+          </h2>
           <div className="flex flex-wrap gap-2">
             <select
               value={registrationStatus}
@@ -885,15 +762,17 @@ export function VolunteerManagement() {
                   setRegistrationStatus(event.target.value as VolunteerRegistrationStatus | "all"),
                 )
               }
-              aria-label="按狀態篩選"
+              aria-label={text.registrations.statusFilter}
               className={`${inputClass} max-w-40`}
             >
-              <option value="all">全部狀態</option>
-              {Object.entries(registrationStatusLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
+              <option value="all">{text.registrations.allStatuses}</option>
+              {Object.entries(volunteerRegistrationStatusLabelsFor(language)).map(
+                ([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ),
+              )}
             </select>
             <select
               value={attendanceStatus}
@@ -902,11 +781,11 @@ export function VolunteerManagement() {
                   setAttendanceStatus(event.target.value as VolunteerAttendanceStatus | "all"),
                 )
               }
-              aria-label="按出席狀況篩選"
+              aria-label={text.registrations.attendanceFilter}
               className={`${inputClass} max-w-40`}
             >
-              <option value="all">全部出席狀況</option>
-              {Object.entries(attendanceStatusLabels).map(([value, label]) => (
+              <option value="all">{text.registrations.allAttendance}</option>
+              {Object.entries(common.attendance).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
@@ -917,8 +796,8 @@ export function VolunteerManagement() {
               onChange={(event) =>
                 applyRegistrationFilter(() => setRegistrationQuery(event.target.value))
               }
-              placeholder="搜尋姓名、電郵或電話"
-              aria-label="搜尋報名人"
+              placeholder={text.registrations.searchPlaceholder}
+              aria-label={text.registrations.searchLabel}
               className={`${inputClass} max-w-56`}
             />
           </div>
@@ -927,8 +806,11 @@ export function VolunteerManagement() {
         {activityFilter ? (
           <div className="flex flex-wrap items-center gap-2 rounded-md border border-[var(--color-primary)] bg-[var(--color-primary-highlight)] px-3 py-2 text-sm">
             <span className="text-[var(--color-panel)]">
-              只顯示「<strong>{activityFilter.title}</strong>」（
-              {formatDateTime(activityFilter.startsAt)}）的報名
+              {text.registrations.filterBannerBefore}
+              <strong>{activityFilter.title}</strong>
+              {text.registrations.filterBannerAfter(
+                format.managementDateTime(activityFilter.startsAt),
+              )}
             </span>
             <button
               type="button"
@@ -936,7 +818,7 @@ export function VolunteerManagement() {
               className={`${buttonBase} border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)]`}
             >
               <X className="h-3.5 w-3.5" />
-              清除篩選
+              {text.registrations.clearFilter}
             </button>
           </div>
         ) : null}
@@ -949,8 +831,8 @@ export function VolunteerManagement() {
           renderMobileCard={renderRegistrationCard}
           empty={
             activityFilter
-              ? `「${activityFilter.title}」目前沒有符合條件的報名。`
-              : "沒有符合條件的報名。試試放寬篩選條件。"
+              ? text.registrations.emptyForActivity(activityFilter.title)
+              : text.registrations.empty
           }
           error={registrationsQuery.error}
           onRetry={() => void registrationsQuery.refetch()}
@@ -961,7 +843,7 @@ export function VolunteerManagement() {
           total={registrationsQuery.data?.total}
           onPageChange={setRegistrationPage}
           busy={registrationsQuery.isFetching || registrationsFailed}
-          label="報名"
+          label={text.registrations.pagerLabel}
         />
       </section>
     </div>

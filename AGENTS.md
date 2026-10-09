@@ -102,6 +102,7 @@ enforces the pairing.
   argument, so `Promise<void>` rejects the real implementation at the call site.
 - CSS theming: use `var(--color-*)` tokens from `styles.css`, never hardcoded colours
 - Tests: `*.test.ts` beside the source, `bun:test`, dependency-injected fakes
+- Admin copy: every admin string lives in a bilingual copy.ts / *Copy.ts module built with defineAdminCopy (tsc enforces zh/en parity); adminCopyGuard.test.ts fails on Chinese anywhere else in src/components/admin or src/routes/admin. Terms follow docs/admin-glossary.md.
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)
 - Plans/specs land in `docs/superpowers/{plans,specs}/` before large features
 

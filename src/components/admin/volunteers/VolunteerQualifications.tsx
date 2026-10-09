@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import { QualificationProfileSearch } from "./QualificationProfileSearch";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { legacyReconciliationCopy } from "./legacyReconciliationCopy";
+import { qualificationsCopy } from "./qualificationsCopy";
+import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
+import { policyFormatCopy } from "./policyFormatCopy";
 
 type Profile = {
   id: string;
@@ -34,19 +41,26 @@ const post = <T,>(body: object) =>
     body: JSON.stringify(body),
   });
 const inputClass = "min-h-11 rounded border border-[var(--color-border)] p-2";
-const tiers = { newcomer: "新手義工", regular: "恆常義工", senior: "資深義工" };
-export function VolunteerQualifications() {
+const tierKeys = ["newcomer", "regular", "senior"] as const;
+/** Which profile the screen starts on, for a test or a preview. In the browser it is the `profile_id` of the address. */
+export type QualificationsInitial = { profileId?: string };
+export function VolunteerQualifications({ initial }: { initial?: QualificationsInitial } = {}) {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(qualificationsCopy, language);
+  const tiers = pickAdminCopy(volunteerDirectoryCopy, language).tiers;
+  const format = pickAdminCopy(policyFormatCopy, language);
   const queryClient = useQueryClient();
   const [legacyOpened, setLegacyOpened] = useState(false);
   const query = useQuery({
     queryKey: ["volunteer-qualifications"],
     queryFn: () => post<Data>({ action: "list" }),
   });
-  const [selected, setSelected] = useState(() =>
-    typeof window === "undefined"
+  const [selected, setSelected] = useState(() => {
+    if (initial?.profileId !== undefined) return initial.profileId;
+    return typeof window === "undefined"
       ? ""
-      : (new URLSearchParams(window.location.search).get("profile_id") ?? ""),
-  );
+      : (new URLSearchParams(window.location.search).get("profile_id") ?? "");
+  });
   const [tier, setTier] = useState<Profile["tier"]>("newcomer");
   const [joined, setJoined] = useState("");
   const [coverage, setCoverage] = useState("");
@@ -101,68 +115,70 @@ export function VolunteerQualifications() {
   return (
     <section className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">義工身份與資格核實</h1>
-        <p>只按已核實證據設定級別及課程資格。自填 Remark 不會授予技能；既有出席及名單會保留。</p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p>{copy.intro}</p>
       </header>
       <nav className="flex gap-4">
-        <a href="/admin/volunteers/people">返回義工名冊</a>
-        <a href="/admin/volunteers/calendar">義工月曆</a>
+        <a href="/admin/volunteers/people">{copy.links.directory}</a>
+        <a href="/admin/volunteers/calendar">{copy.links.calendar}</a>
       </nav>
       <QualificationProfileSearch onSelect={selectProfile} disabled={mutation.isPending} />
-      {query.isLoading && <p>載入中…</p>}
+      {query.isLoading && <p>{copy.loading}</p>}
       {query.error && (
         <p role="alert">
-          未能載入身份資料。
+          {copy.loadFailed}
           <button onClick={() => void query.refetch()} className="min-h-11 px-3 underline">
-            重新載入
+            {copy.reload}
           </button>
         </p>
       )}
       <label className="flex flex-col gap-2">
-        選擇義工
+        {copy.choose}
         <select
           className={inputClass}
           value={selected}
-          aria-label="選擇義工"
+          aria-label={copy.choose}
           disabled={mutation.isPending}
           onChange={(e) => selectProfile(e.target.value)}
         >
-          <option value="">請選擇待核實或已有身份</option>
+          <option value="">{copy.chooseOption}</option>
           {query.data?.profiles.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.display_name} ·{" "}
-              {p.status === "pending" ? "待核實" : p.status === "active" ? "已核實" : "暫停"} ·{" "}
-              {tiers[p.tier]}
+              {copy.option(p.display_name, copy.status(p.status), tiers[p.tier])}
             </option>
           ))}
         </select>
       </label>
       {profile && (
         <div className="space-y-4 rounded-lg border p-5">
-          <h2 className="text-lg font-bold">{profile.display_name} · 身份核實</h2>
+          <h2 className="text-lg font-bold">{copy.profile.heading(profile.display_name)}</h2>
           <a
             className="inline-block min-h-11 py-2 underline"
             href={`/admin/volunteers/people/${profile.id}`}
           >
-            查看完整義工檔案及服務紀錄
+            {copy.profile.record}
           </a>
-          <p>出生日期：{profile.birth_date || "未提供"}</p>
+          <p>
+            {copy.profile.birthDate(
+              profile.birth_date ? format.day(profile.birth_date) : copy.profile.notProvided,
+            )}
+          </p>
           <label className="flex flex-col gap-2">
-            核實級別
+            {copy.profile.tier}
             <select
               className={inputClass}
               value={tier}
               onChange={(e) => setTier(e.target.value as Profile["tier"])}
             >
-              {Object.entries(tiers).map(([k, v]) => (
+              {tierKeys.map((k) => (
                 <option key={k} value={k}>
-                  {v}
+                  {tiers[k]}
                 </option>
               ))}
             </select>
           </label>
           <label className="flex flex-col gap-2">
-            核實／更正理由與證據來源
+            {copy.profile.reason}
             <textarea
               className={inputClass}
               required
@@ -173,7 +189,7 @@ export function VolunteerQualifications() {
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label>
-              已核實加入日期（不詳留空）
+              {copy.profile.joinedOn}
               <input
                 className={inputClass}
                 type="date"
@@ -182,7 +198,7 @@ export function VolunteerQualifications() {
               />
             </label>
             <label>
-              完整出席紀錄覆蓋起日（不詳留空）
+              {copy.profile.coverageStart}
               <input
                 className={inputClass}
                 type="date"
@@ -191,7 +207,7 @@ export function VolunteerQualifications() {
               />
             </label>
           </div>
-          <p>只有已核實且完整覆蓋的月份才可判斷零出席。請在理由記錄日期及覆蓋範圍的證據來源。</p>
+          <p>{copy.profile.coverageNote}</p>
           <div className="flex gap-3">
             <button
               className={inputClass}
@@ -205,21 +221,21 @@ export function VolunteerQualifications() {
                 })
               }
             >
-              確認身份及級別
+              {copy.profile.verify}
             </button>
             <button
               className={inputClass}
               disabled={!reason.trim() || mutation.isPending}
               onClick={() => act({ action: "suspend" })}
             >
-              暫停新報名資格
+              {copy.profile.pause}
             </button>
           </div>
-          <h2 className="text-lg font-semibold">核實課程／技能</h2>
+          <h2 className="text-lg font-semibold">{copy.credential.title}</h2>
           <label className="flex flex-col gap-2">
-            資格
+            {copy.credential.label}
             <select className={inputClass} value={key} onChange={(e) => setKey(e.target.value)}>
-              <option value="">請選擇</option>
+              <option value="">{copy.credential.choose}</option>
               {query.data?.credential_definitions.map((d) => (
                 <option key={d.key} value={d.key}>
                   {d.label}
@@ -229,7 +245,7 @@ export function VolunteerQualifications() {
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-2">
-              有效起日（香港時間）
+              {copy.credential.validFrom}
               <input
                 className={inputClass}
                 type="date"
@@ -238,7 +254,7 @@ export function VolunteerQualifications() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              到期日（該日零時失效；可留空）
+              {copy.credential.expiry}
               <input
                 className={inputClass}
                 type="date"
@@ -248,7 +264,7 @@ export function VolunteerQualifications() {
             </label>
           </div>
           <label className="flex flex-col gap-2">
-            核實證據紀錄
+            {copy.credential.evidence}
             <textarea
               className={inputClass}
               maxLength={2000}
@@ -269,23 +285,23 @@ export function VolunteerQualifications() {
               })
             }
           >
-            儲存已核實資格
+            {copy.credential.save}
           </button>
           <ul className="space-y-2">
             {query.data?.credentials
               .filter((c) => c.profile_id === profile.id)
               .map((c) => (
                 <li key={c.id} className="rounded border p-3">
-                  {
-                    query.data?.credential_definitions.find((d) => d.key === c.credential_key)
-                      ?.label
-                  }{" "}
-                  · {c.revoked_at ? "已撤銷" : "已核實"} ·{" "}
-                  {c.valid_until
-                    ? new Date(c.valid_until).toLocaleDateString("zh-HK", {
-                        timeZone: "Asia/Hong_Kong",
-                      })
-                    : "未設到期日"}
+                  {copy.credential.line(
+                    copy.credential.name(
+                      query.data?.credential_definitions.find((d) => d.key === c.credential_key)
+                        ?.label,
+                    ),
+                    c.revoked_at ? copy.credential.revoked : copy.credential.verified,
+                    c.valid_until
+                      ? format.credentialExpiry(c.valid_until)
+                      : copy.credential.noExpiry,
+                  )}
                   <p>{c.evidence}</p>
                   {!c.revoked_at && (
                     <button
@@ -293,7 +309,7 @@ export function VolunteerQualifications() {
                       disabled={!reason.trim() || mutation.isPending}
                       onClick={() => act({ action: "revoke", credential_id: c.id })}
                     >
-                      撤銷資格
+                      {copy.credential.revoke}
                     </button>
                   )}
                 </li>
@@ -307,11 +323,13 @@ export function VolunteerQualifications() {
           if (event.currentTarget.open) setLegacyOpened(true);
         }}
       >
-        <summary className="cursor-pointer font-semibold">舊報名身份核對</summary>
+        <summary className="cursor-pointer font-semibold">
+          {pickAdminCopy(legacyReconciliationCopy, language).title}
+        </summary>
         {legacyOpened && <VolunteerLegacyReconciliation profiles={query.data?.profiles ?? []} />}
       </details>
-      {mutation.error && <p role="alert">{mutation.error.message}</p>}
-      {mutation.isSuccess && <p role="status">更新已保存，核實歷史及未來場次跟進任務已保留。</p>}
+      {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
+      {mutation.isSuccess && <p role="status">{copy.saved}</p>}
     </section>
   );
 }

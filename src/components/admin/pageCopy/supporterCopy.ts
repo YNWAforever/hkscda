@@ -1,0 +1,101 @@
+import { defineAdminCopy } from "../i18n/copy";
+
+/**
+ * Page copy for the supporter list and supporter form.
+ */
+export const supporterPageCopy = defineAdminCopy({
+  zh: {
+    supporters: {
+      title: "支持者",
+      subtitle: "捐款人、義工、暫托及領養人紀錄、收據、同意狀態及手動捐款。",
+      searchLabel: "搜尋支持者",
+      searchPlaceholder: "搜尋姓名、電郵、電話、參考編號或收據",
+      roleFilterLabel: "按身份篩選",
+      allRoles: "所有身份",
+      /** The supporter list failed to load. */
+      loadError: "無法載入支持者",
+      /** The supporter form could not load the one supporter it edits. */
+      loadSupporterError: "無法載入支持者",
+      empty: "沒有找到支持者",
+      newSupporter: "新增支持者",
+      editSupporter: "編輯支持者",
+      saveSupporter: "儲存支持者",
+      needsReview: "需要檢查",
+      clear: "正常",
+      lastGift: "最近捐款",
+      receipts: "收據",
+      consent: "同意狀態",
+      email: "電郵",
+      whatsapp: "WhatsApp",
+      lifetime: "累計",
+      roleLabels: {
+        donor: "捐款人",
+        adopter: "領養人",
+        volunteer: "義工",
+        foster: "暫托",
+      },
+      columns: {
+        supporter: "支持者",
+        roles: "身份",
+        consent: "同意狀態",
+        lifetime: "累計",
+        lastGift: "最近捐款",
+        receipts: "收據",
+      },
+      form: {
+        name: "姓名",
+        email: "電郵",
+        phone: "電話",
+        language: "語言",
+        tags: "標籤",
+        roles: "身份",
+      },
+    },
+  },
+  en: {
+    supporters: {
+      title: "Supporters",
+      subtitle: "Donor records, receipts, consent and manual donations.",
+      searchLabel: "Search supporters",
+      searchPlaceholder: "Search name, email, phone, reference or receipt",
+      roleFilterLabel: "Filter by role",
+      allRoles: "All roles",
+      loadError: "Could not load supporters. Refresh the page or try again.",
+      loadSupporterError: "Could not load the supporter. Refresh the page or try again.",
+      empty: "No supporters found",
+      newSupporter: "New supporter",
+      editSupporter: "Edit supporter",
+      saveSupporter: "Save supporter",
+      needsReview: "Needs review",
+      clear: "Clear",
+      lastGift: "Last donation",
+      receipts: "Receipts",
+      consent: "Consent",
+      email: "Email",
+      whatsapp: "WhatsApp",
+      lifetime: "Lifetime",
+      roleLabels: {
+        donor: "Donor",
+        adopter: "Adopter",
+        volunteer: "Volunteer",
+        foster: "Foster",
+      },
+      columns: {
+        supporter: "Supporter",
+        roles: "Roles",
+        consent: "Consent",
+        lifetime: "Lifetime",
+        lastGift: "Last donation",
+        receipts: "Receipts",
+      },
+      form: {
+        name: "Name",
+        email: "Email",
+        phone: "Phone",
+        language: "Language",
+        tags: "Tags",
+        roles: "Roles",
+      },
+    },
+  },
+});

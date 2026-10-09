@@ -86,6 +86,21 @@ test("refund adjustment, invalid ledger, missing recipient and inactive pledge f
   });
 });
 
+test("the draft is outward copy in the supporter's language and word for word what it was", () => {
+  // The admin's language never changes it: it goes to the supporter, not to staff.
+  const now = new Date("2026-09-28T02:00:00Z");
+  const zh = buildSponsorshipReminderDraft(pledge(), now);
+  expect(zh.kind === "draft" && zh.subject).toBe("助養紀錄跟進：2026-08");
+  expect(zh.kind === "draft" && zh.body).toBe(
+    "陳小姐 您好：\n\n我們正核對您 2026-08 的助養紀錄。現有紀錄顯示該月份的付款資料仍待核對。如您已付款，請回覆相關付款參考資料，以便職員跟進。\n\n香港拯救貓狗協會",
+  );
+  const en = buildSponsorshipReminderDraft(pledge({ language: "en", supporterName: "Alex" }), now);
+  expect(en.kind === "draft" && en.subject).toBe("Sponsorship record follow-up: 2026-08");
+  expect(en.kind === "draft" && en.body).toBe(
+    "Dear Alex,\n\nWe are reviewing your sponsorship record for 2026-08. Our record shows that the payment information for this month needs checking. If you have already paid, please reply with the payment reference so our team can review it.\n\nHong Kong Saving Cats and Dogs Association",
+  );
+});
+
 test("English preference produces a neutral English draft", () => {
   const draft = buildSponsorshipReminderDraft(
     pledge({ language: "en", supporterName: "Alex" }),
