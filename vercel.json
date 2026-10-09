@@ -39,6 +39,14 @@
     {
       "path": "/api/jobs/crm-exports",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/jobs/adoption-uploads",
+      "schedule": "15 19 * * *"
+    },
+    {
+      "path": "/api/jobs/public-media-repair",
+      "schedule": "45 19 * * *"
     }
   ]
 }

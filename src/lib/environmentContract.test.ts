@@ -60,4 +60,36 @@ describe("deployment environment contract", () => {
       example.match(new RegExp("^" + name + "=(.*)$", "m"))?.[1]?.trim();
     expect(read("VITE_PUBLIC_SITE_ORIGIN")).toBe(read("APP_URL"));
   });
+
+  test("documents the background-job contract in .env.example, the runbook and both instruction files", () => {
+    const example = readFileSync(join(process.cwd(), ".env.example"), "utf8");
+    const runbook = readFileSync(join(process.cwd(), "docs/background-jobs-runbook.md"), "utf8");
+    const vercel = JSON.parse(readFileSync(join(process.cwd(), "vercel.json"), "utf8")) as {
+      crons?: Array<{ path: string }>;
+    };
+
+    for (const name of [
+      "CRON_SECRET",
+      "VOLUNTEER_JOB_ACTOR_ID",
+      "SPONSORSHIP_JOB_ACTOR_ID",
+      "RESEND_API_KEY",
+      "RESEND_WEBHOOK_SECRET",
+      "APP_URL",
+    ]) {
+      expect(example).toMatch(new RegExp(`^${name}=`, "m"));
+      expect(runbook).toContain(name);
+    }
+
+    const cronPaths = (vercel.crons ?? []).map((cron) => cron.path);
+    expect(cronPaths.length).toBeGreaterThan(0);
+    for (const path of cronPaths) {
+      expect(runbook).toContain(path);
+    }
+
+    const deploymentBullet =
+      "- Vercel plan is Pro: the crons in vercel.json run at their declared schedules. Every /api/jobs/* route and /api/internal/readiness require CRON_SECRET; without it Vercel's cron calls get 401 and no background job runs. Environment-variable changes take effect only after a redeploy. Switch-on steps: docs/background-jobs-runbook.md.";
+    for (const file of ["CLAUDE.md", "AGENTS.md"]) {
+      expect(readFileSync(join(process.cwd(), file), "utf8")).toContain(deploymentBullet);
+    }
+  });
 });

@@ -153,4 +153,5 @@ collective; avoid comparative superlatives and founder-centric organisational fr
 - Do not create or share a public preview while review access is meant to remain private
 - Preview command (only after approval): `vercel deploy --scope ynwaforevers-projects`
 - Nitro preset: `vercel` (configured in `vite.config.ts`)
+- Vercel plan is Pro: the crons in vercel.json run at their declared schedules. Every /api/jobs/* route and /api/internal/readiness require CRON_SECRET; without it Vercel's cron calls get 401 and no background job runs. Environment-variable changes take effect only after a redeploy. Switch-on steps: docs/background-jobs-runbook.md.
 
