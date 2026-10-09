@@ -33,10 +33,10 @@ const STATUS_CLASS_FN =
   /\b(?:function\s+\w*status\w*(?:class|colou?r|tone)\w*\s*\(|(?:const|let)\s+\w*status\w*(?:class|colou?r|tone)\w*\s*=\s*(?:\([^)]*\)|\w+)\s*(?::[^=]+)?=>)/i;
 
 /**
- * Any `const` named for a status, a dot or a tone (`STATUS_DOT_CLASSES`, `dotClass`,
+ * Any `const` or `function` named for a status, a dot or a tone (`STATUS_DOT_CLASSES`, `dotClass`,
  * `urgencyTones` ...), typed or not. It is flagged only when its value holds colour classes.
  */
-const STATUS_NAMED_CONST = /\b(?:const|let|var)\s+\w*(?:status|dot|tone)\w*\b/i;
+const STATUS_NAMED_DECLARATION = /\b(?:const|let|var|function)\s+\w*(?:status|dot|tone)\w*\b/i;
 
 function isExempt(lines: readonly string[], index: number): boolean {
   const above = index > 0 ? lines[index - 1] : "";
@@ -76,7 +76,11 @@ export function findPrivateStatusLooks(files: readonly SourceFile[]): string[] {
         hits.push(`${file.path}:${index + 1}`);
         return;
       }
-      if (STATUS_RECORD.test(line) || STATUS_CLASS_FN.test(line) || STATUS_NAMED_CONST.test(line)) {
+      if (
+        STATUS_RECORD.test(line) ||
+        STATUS_CLASS_FN.test(line) ||
+        STATUS_NAMED_DECLARATION.test(line)
+      ) {
         if (COLOUR_CLASS.test(declarationBody(lines, index)))
           hits.push(`${file.path}:${index + 1}`);
       }
@@ -186,6 +190,25 @@ describe("findPrivateStatusLooks", () => {
     const arrow =
       'const pickDot = (s: S) =>\n  s === "a" ? "bg-[var(--color-error)]" : "bg-[var(--color-border)]";\n';
     expect(findPrivateStatusLooks(at(arrow))).toHaveLength(1);
+  });
+
+  test("flags a function named for a dot, a status dot or a tone, exported or not", () => {
+    const body = '{\n  return s ? "bg-[var(--color-success)]" : "text-[var(--color-error)]";\n}\n';
+    for (const head of [
+      "function dotClass(s: S)",
+      "export function statusDot(s: S)",
+      "function toneFor(s: S)",
+    ]) {
+      expect(findPrivateStatusLooks(at(`${head} ${body}`)), head).toEqual([
+        "src/components/admin/New.tsx:1",
+      ]);
+    }
+  });
+
+  test("does not flag such a function when it returns tone names or labels", () => {
+    const text =
+      'function toneFor(s: S): StatusTone {\n  return s ? "success" : "danger";\n}\nfunction dotLabel(s: S) {\n  return "Dot";\n}\n';
+    expect(findPrivateStatusLooks(at(text))).toEqual([]);
   });
 
   test("does not flag a status-named const that holds no colour class", () => {

@@ -104,6 +104,7 @@ export function StatusLoadErrorRow({
   );
 }
 
+// admin-status-ok: a form field error message for the status editor, not a status colour
 export function StatusFieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
 
