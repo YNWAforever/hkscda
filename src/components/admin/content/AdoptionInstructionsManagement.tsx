@@ -1,7 +1,7 @@
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
-import { AdminApiError, fetchAdminJson } from "../../../lib/admin/session";
+import { AdminApiError, adminErrorMessage, fetchAdminJson } from "../../../lib/admin/session";
 import type {
   AdoptionInstructionAdminPage,
   AdoptionInstructionHistoryPage,
@@ -12,6 +12,13 @@ import type {
   AdoptionInstructionRevisionSummary,
 } from "../../../lib/adoptionInstructions/types";
 import { adoptionInstructionContentSchema } from "../../../lib/adoptionInstructions/schemas";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { adoptionInstructionsCopy } from "./adoptionInstructionsCopy";
+
+type ProblemCode = keyof typeof adoptionInstructionsCopy.zh.problems;
+/** What went wrong, as the editor keeps it: a code, and the error the server gave, if any. */
+type Problem = { code: ProblemCode; cause?: unknown };
 
 export const ADOPTION_INSTRUCTIONS_QUERY_KEY = ["admin-adoption-instructions"] as const;
 type Operation =
@@ -40,6 +47,7 @@ export function AdoptionInstructionsManagement({
   onDirtyChange?: (dirty: boolean) => void;
   editorRef?: Ref<AdoptionInstructionEditorHandle>;
 } = {}) {
+  const { language } = useAdminLanguage();
   const client = useQueryClient();
   const identity = useQuery(adminIdentityQueryOptions());
   const query = useQuery({
@@ -61,7 +69,7 @@ export function AdoptionInstructionsManagement({
       key={generation}
       data={query.data}
       loading={query.isPending}
-      error={query.error?.message}
+      error={adminErrorMessage(query.error, language) ?? undefined}
       role={identity.data?.admin.role}
       onDirtyChange={onDirtyChange}
       editorRef={editorRef}
@@ -101,33 +109,6 @@ type Props = {
   onDirtyChange?: (dirty: boolean) => void;
   editorRef?: Ref<AdoptionInstructionEditorHandle>;
 };
-const labels: Record<string, string> = {
-  hero: "頁首",
-  fees: "領養費用",
-  estates: "可養狗屋苑",
-  guides: "領養後指南",
-  rules: "領養規則",
-  care: "動物照顧須知",
-  eyebrow: "引題",
-  title: "標題",
-  description: "簡介",
-  sectionTitle: "章節標題",
-  dogTitle: "狗隻標題",
-  catTitle: "貓隻標題",
-  itemLabel: "項目欄名",
-  amountLabel: "費用欄名",
-  notice: "費用備註",
-  introduction: "介紹",
-  estateLabel: "屋苑欄名",
-  districtLabel: "地區欄名",
-  notesLabel: "備註欄名",
-  emptyState: "無資料提示（後接聯絡我們連結）",
-  generalTitle: "一般指南標題",
-  zhHkActionLabel: "中文下載按鈕",
-  enActionLabel: "英文下載按鈕",
-  cat: "貓隻",
-  dog: "狗隻",
-};
 function fields(content: AdoptionInstructionContent): [string, string][] {
   const entries: [string, string][] = [];
   function visit(value: object, prefix = "") {
@@ -164,18 +145,20 @@ function maxLength(path: string) {
 }
 
 export function AdoptionInstructionsManagementView(props: Props) {
+  const copy = useAdminCopy(adoptionInstructionsCopy);
+  const { language } = useAdminLanguage();
   // This editor is deliberately not keyed by query version: refetches must not erase local work.
   const [local, setLocal] = useState<AdoptionInstructionRevision | null>(null);
   const [saved, setSaved] = useState<AdoptionInstructionRevision | null>(null);
   const [editingBase, setEditingBase] = useState<AdoptionInstructionRevision | null>(null);
   const [pending, setPending] = useState(false);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Problem | null>(null);
   const [conflict, setConflict] = useState(false);
   const [serverFields, setServerFields] = useState<Record<string, string[]>>({});
   const [historyExtra, setHistoryExtra] = useState<AdoptionInstructionRevisionSummary[]>([]);
   const [historyCursor, setHistoryCursor] = useState<string | null | undefined>(undefined);
   const [historyPending, setHistoryPending] = useState(false);
-  const [historyProblem, setHistoryProblem] = useState<string | null>(null);
+  const [historyProblem, setHistoryProblem] = useState<Problem | null>(null);
   const [selectedRevision, setSelectedRevision] = useState<AdoptionInstructionRevision | null>(
     null,
   );
@@ -209,7 +192,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
       ]);
       setHistoryCursor(page.nextCursor);
     } catch (error) {
-      setHistoryProblem(error instanceof Error ? error.message : "未能載入更多版本。");
+      setHistoryProblem({ code: "history_failed", cause: error });
     } finally {
       setHistoryPending(false);
     }
@@ -221,7 +204,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
     try {
       setSelectedRevision(await props.onLoadRevision(revisionId));
     } catch (error) {
-      setHistoryProblem(error instanceof Error ? error.message : "未能載入版本內容。");
+      setHistoryProblem({ code: "revision_failed", cause: error });
     } finally {
       setDetailPending(false);
     }
@@ -234,7 +217,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
   const issues: Record<string, string[]> = { ...serverFields };
   if (validation && !validation.success)
     for (const issue of validation.error.issues)
-      (issues[issue.path.join(".")] ??= []).push("請填寫有效的純文字，並遵守字數限制。");
+      (issues[issue.path.join(".")] ??= []).push(copy.invalidText);
   const draft = Boolean(props.data?.draft);
   const canEdit = props.role === "admin" || props.role === "staff";
   const blocked = pending || conflict || !draft || !canEdit;
@@ -273,8 +256,8 @@ export function AdoptionInstructionsManagementView(props: Props) {
       if (error instanceof AdminApiError && error.status === 409) {
         setConflict(true);
         await props.onRefresh?.().catch(() => undefined);
-        setProblem("伺服器版本已更新；你的輸入已保留。請複製需要保留的文字，再重新載入。");
-      } else setProblem(error instanceof Error ? error.message : "未能完成操作，請稍後再試。");
+        setProblem({ code: "server_updated" });
+      } else setProblem({ code: "action_failed", cause: error });
       if (error instanceof AdminApiError && error.fields)
         setServerFields(
           Object.fromEntries(
@@ -289,37 +272,40 @@ export function AdoptionInstructionsManagementView(props: Props) {
       setPending(false);
     }
   }
-  if (props.loading && !props.data) return <p role="status">正在載入頁面內容…</p>;
+  const problemText = problem
+    ? (adminErrorMessage(problem.cause, language) ?? copy.problems[problem.code])
+    : null;
+  const historyProblemText = historyProblem
+    ? (adminErrorMessage(historyProblem.cause, language) ?? copy.problems[historyProblem.code])
+    : null;
+  if (props.loading && !props.data) return <p role="status">{copy.loading}</p>;
   if (!props.data || !content || !revision)
-    return <p role="alert">{props.error ?? "未能載入頁面內容。請確認頁面內容資料已建立。"}</p>;
+    return <p role="alert">{props.error ?? copy.notLoaded}</p>;
   return (
     <section className="space-y-5 p-6">
-      <h2 className="text-xl font-bold">頁面內容</h2>
+      <h2 className="text-xl font-bold">{copy.heading}</h2>
       <p>
-        編輯中文頁面標題及說明。領養規則及照顧須知的雙語內容，請使用各自的分頁；文件請到
+        {copy.introBefore}
         <a href="/admin/content/adoption-guides" className="underline">
-          領養後指南版本
+          {copy.introLink}
         </a>
-        管理。
+        {copy.introAfter}
       </p>
       <p role="status">
-        已發布修訂 {props.data.published?.revisionNumber ?? "—"} ·{" "}
-        {draft ? `草稿版本 ${revision.version}` : "尚未建立草稿"}
-        {dirty ? " · 尚未儲存" : ""}
+        {copy.statusLine(
+          props.data.published?.revisionNumber ?? null,
+          draft ? revision.version : null,
+          dirty,
+        )}
       </p>
-      <p className="text-sm">
-        最後更新：{revision.updatedAt} · {revision.updatedBy ?? "系統"}
-      </p>
-      {(problem || props.error) && <p role="alert">{problem ?? props.error}</p>}
+      <p className="text-sm">{copy.lastUpdated(revision.updatedAt, revision.updatedBy)}</p>
+      {(problemText || props.error) && <p role="alert">{problemText ?? props.error}</p>}
       {conflict && (
         <div role="alert">
-          <p>
-            伺服器草稿版本 {props.data.draft?.version ?? "—"}
-            。請比較本機與伺服器內容，再決定是否採用。
-          </p>
+          <p>{copy.conflict.intro(props.data.draft?.version ?? null)}</p>
           {props.data.draft && content && (
             <details>
-              <summary>比較本機與伺服器文字</summary>
+              <summary>{copy.conflict.summary}</summary>
               <dl>
                 {fields(content)
                   .filter(([path, value]) =>
@@ -330,9 +316,12 @@ export function AdoptionInstructionsManagementView(props: Props) {
                   .map(([path, value]) => (
                     <div key={path} className="my-2 border-b pb-2">
                       <dt>{path}</dt>
-                      <dd>本機：{value}</dd>
                       <dd>
-                        伺服器：
+                        {copy.conflict.local}
+                        {value}
+                      </dd>
+                      <dd>
+                        {copy.conflict.server}
                         {fields(props.data!.draft!.content).find(([key]) => key === path)?.[1]}
                       </dd>
                     </div>
@@ -348,13 +337,13 @@ export function AdoptionInstructionsManagementView(props: Props) {
               try {
                 await props.onReload?.();
               } catch (error) {
-                setProblem(error instanceof Error ? error.message : "未能重新載入。");
+                setProblem({ code: "reload_failed", cause: error });
               } finally {
                 setPending(false);
               }
             }}
           >
-            採用伺服器版本（放棄本機修改）
+            {copy.conflict.useServer}
           </button>
         </div>
       )}
@@ -366,17 +355,17 @@ export function AdoptionInstructionsManagementView(props: Props) {
             void run({ action: "create", expectedPageVersion: props.data!.page.version })
           }
         >
-          建立草稿
+          {copy.createDraft}
         </button>
       )}
       <fieldset disabled={blocked} className="grid gap-4 md:grid-cols-2">
-        <legend className="sr-only">中文頁面文字</legend>
+        <legend className="sr-only">{copy.fieldsLegend}</legend>
         {fields(content).map(([path, value]) => (
           <label key={path} className="grid gap-1 text-sm">
             <span>
               {path
                 .split(".")
-                .map((key) => labels[key] ?? key)
+                .map((key) => copy.fieldLabels[key] ?? key)
                 .join(" / ")}
             </span>
             <textarea
@@ -397,7 +386,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
             />
             {issues[path] && (
               <span id={path + "-error"} role="alert">
-                {path}：{issues[path].join(" ")}
+                {copy.issueLine(path, issues[path].join(" "))}
               </span>
             )}
           </label>
@@ -409,7 +398,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
           disabled={blocked || !valid || !dirty}
           onClick={() => void run({ action: "save", expectedVersion: revision.version, content })}
         >
-          儲存草稿
+          {copy.saveDraft}
         </button>
         <a
           href="/admin/content/adoption-preview"
@@ -420,7 +409,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
             if (blocked || dirty || !valid) event.preventDefault();
           }}
         >
-          預覽已儲存草稿
+          {copy.previewDraft}
         </a>
         {props.role === "admin" && (
           <button
@@ -435,7 +424,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
               });
             }}
           >
-            發布頁面
+            {copy.publish}
           </button>
         )}
       </div>
@@ -445,7 +434,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
           disabled={pending || conflict || dirty}
           onClick={() => void run({ action: "archive", expectedVersion: revision.version })}
         >
-          封存草稿（不發布）
+          {copy.archiveDraft}
         </button>
       )}
       {dirty && (
@@ -459,26 +448,27 @@ export function AdoptionInstructionsManagementView(props: Props) {
             setServerFields({});
           }}
         >
-          放棄未儲存修改
+          {copy.discardChanges}
         </button>
       )}
-      <h3 className="font-bold">版本紀錄</h3>
-      {draft && props.role === "admin" && (
-        <p>請先封存或發布目前草稿，才可將歷史版本還原為新草稿。</p>
-      )}
+      <h3 className="font-bold">{copy.history.heading}</h3>
+      {draft && props.role === "admin" && <p>{copy.history.restoreBlocked}</p>}
       <ul>
         {allHistory
           .filter((item) => item.state !== "draft")
           .map((item) => (
             <li key={item.id} className="flex gap-3 py-2">
-              修訂 {item.revisionNumber} · {item.state === "published" ? "已發布" : "已封存"} ·{" "}
-              {item.publishedAt}
+              {copy.history.item(
+                item.revisionNumber,
+                item.state === "published" ? "published" : "archived",
+                item.publishedAt,
+              )}
               <button
                 type="button"
                 disabled={detailPending}
                 onClick={() => void openRevision(item.id)}
               >
-                查看內容
+                {copy.history.view}
               </button>
               {props.role === "admin" && (
                 <button
@@ -486,24 +476,26 @@ export function AdoptionInstructionsManagementView(props: Props) {
                   disabled={pending || draft || dirty || conflict}
                   onClick={() => void run({ action: "restore", revisionId: item.id })}
                 >
-                  還原此版本
+                  {copy.history.restore}
                 </button>
               )}
             </li>
           ))}
       </ul>
-      {historyProblem && <p role="alert">{historyProblem}</p>}
+      {historyProblemText && <p role="alert">{historyProblemText}</p>}
       {nextHistoryCursor && props.onLoadHistory && (
         <button type="button" disabled={historyPending} onClick={() => void loadMoreHistory()}>
-          {historyPending ? "載入版本中…" : "查看更多版本"}
+          {historyPending ? copy.history.loading : copy.history.more}
         </button>
       )}
       {selectedRevision && (
         <section
-          aria-label={"修訂 " + selectedRevision.revisionNumber + " 內容"}
+          aria-label={copy.history.revisionContent(selectedRevision.revisionNumber)}
           className="space-y-2"
         >
-          <h4 className="font-semibold">修訂 {selectedRevision.revisionNumber} 內容</h4>
+          <h4 className="font-semibold">
+            {copy.history.revisionContent(selectedRevision.revisionNumber)}
+          </h4>
           <dl className="space-y-2">
             {fields(selectedRevision.content).map(([path, value]) => (
               <div key={path}>

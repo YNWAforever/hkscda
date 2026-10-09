@@ -4,6 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
+import { documentsCopy } from "./documentsCopy";
 import { fetchAllAnnualReportAssets } from "./documentManagementLogic";
 
 type AssetListResponse = { items: DocumentAsset[]; total: number };
@@ -14,6 +18,7 @@ export function AnnualReportManagement({ initialRows }: { initialRows?: AnnualRe
 }
 
 function AnnualReportManagementRuntime() {
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [yearLabel, setYearLabel] = useState("");
@@ -37,7 +42,7 @@ function AnnualReportManagementRuntime() {
   const createMutation = useMutation({
     mutationFn: () => {
       if (!title.trim() || !yearLabel.trim() || !documentAssetId) {
-        throw new Error("請填寫標題、年度並選擇 PDF");
+        throw new DocumentAdminError("report_fields_required");
       }
       return fetchAdminJson("/api/admin/annual-reports", {
         method: "POST",
@@ -87,10 +92,10 @@ function AnnualReportManagementRuntime() {
   });
 
   const error =
-    (reportsQuery.error instanceof Error ? reportsQuery.error.message : null) ??
-    (assetsQuery.error instanceof Error ? assetsQuery.error.message : null) ??
-    (createMutation.error instanceof Error ? createMutation.error.message : null) ??
-    (actionMutation.error instanceof Error ? actionMutation.error.message : null);
+    documentErrorMessage(reportsQuery.error, language) ??
+    documentErrorMessage(assetsQuery.error, language) ??
+    documentErrorMessage(createMutation.error, language) ??
+    documentErrorMessage(actionMutation.error, language);
 
   return (
     <AnnualReportManagementView
@@ -155,12 +160,14 @@ export function AnnualReportManagementView({
   onCreate,
   onAction,
 }: ViewProps) {
+  const common = useAdminCopy(documentsCopy);
+  const copy = common.annualReports;
   return (
     <div className="space-y-6 p-6">
       <header>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳內容</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">年度報告</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">安排公開報告年度、次序及發佈狀態。</p>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </header>
 
       {onCreate ? (
@@ -172,7 +179,7 @@ export function AnnualReportManagementView({
           }}
         >
           <label className="space-y-1 text-sm font-semibold">
-            標題
+            {copy.form.title}
             <input
               value={title}
               onChange={(event) => onTitleChange?.(event.target.value)}
@@ -180,31 +187,31 @@ export function AnnualReportManagementView({
             />
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            年度
+            {copy.form.year}
             <input
               value={yearLabel}
               onChange={(event) => onYearLabelChange?.(event.target.value)}
-              placeholder="2025/26"
+              placeholder={copy.form.yearPlaceholder}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             />
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            PDF
+            {copy.form.pdf}
             <select
               value={documentAssetId}
               onChange={(event) => onDocumentAssetChange?.(event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              <option value="">選擇文件</option>
+              <option value="">{copy.form.choose}</option>
               {assets.map((asset) => (
                 <option key={asset.id} value={asset.id}>
-                  {asset.title} · {asset.isPublished ? "已發佈" : "草稿"}
+                  {copy.form.assetOption(asset.title, asset.isPublished)}
                 </option>
               ))}
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            次序
+            {copy.form.order}
             <input
               type="number"
               min={0}
@@ -223,7 +230,7 @@ export function AnnualReportManagementView({
             ) : (
               <Plus className="h-4 w-4" />
             )}
-            新增
+            {copy.form.submit}
           </button>
         </form>
       ) : null}
@@ -241,24 +248,24 @@ export function AnnualReportManagementView({
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
-              <th className="px-3 py-3">報告</th>
-              <th className="px-3 py-3">PDF</th>
-              <th className="px-3 py-3">次序</th>
-              <th className="px-3 py-3">狀態</th>
-              <th className="px-3 py-3 text-right">操作</th>
+              <th className="px-3 py-3">{copy.table.report}</th>
+              <th className="px-3 py-3">{copy.table.pdf}</th>
+              <th className="px-3 py-3">{copy.table.order}</th>
+              <th className="px-3 py-3">{copy.table.status}</th>
+              <th className="px-3 py-3 text-right">{copy.table.actions}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center">
-                  載入中...
+                  {copy.table.loading}
                 </td>
               </tr>
             ) : rows.length === 0 && !error ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
-                  尚未建立年度報告
+                  {copy.table.empty}
                 </td>
               </tr>
             ) : (
@@ -282,7 +289,7 @@ export function AnnualReportManagementView({
                       </span>
                       {!canPublish ? (
                         <span className="mt-1 block text-xs font-semibold text-[var(--color-warning)]">
-                          請先發佈 PDF
+                          {copy.table.publishPdfFirst}
                         </span>
                       ) : null}
                     </td>
@@ -290,7 +297,7 @@ export function AnnualReportManagementView({
                       {onAction ? (
                         <input
                           disabled={actionPending}
-                          aria-label={`${report.title} 次序`}
+                          aria-label={copy.table.orderLabel(report.title)}
                           type="number"
                           min={0}
                           defaultValue={report.sortOrder}
@@ -305,7 +312,9 @@ export function AnnualReportManagementView({
                         report.sortOrder
                       )}
                     </td>
-                    <td className="px-3 py-3">{report.isPublished ? "已發佈" : "草稿"}</td>
+                    <td className="px-3 py-3">
+                      {report.isPublished ? copy.table.published : copy.table.draft}
+                    </td>
                     <td className="px-3 py-3">
                       <div className="flex justify-end gap-2">
                         <button
@@ -316,19 +325,15 @@ export function AnnualReportManagementView({
                           }
                           className="rounded-md border border-[var(--color-border)] px-3 py-1.5 font-semibold disabled:cursor-not-allowed disabled:opacity-40"
                         >
-                          {report.isPublished ? "取消發佈" : "發佈"}
+                          {report.isPublished ? copy.table.unpublish : copy.table.publish}
                         </button>
                         {onAction ? (
                           <button
                             type="button"
-                            aria-label={`刪除 ${report.title}`}
+                            aria-label={copy.table.deleteLabel(report.title)}
                             disabled={actionPending}
                             onClick={() => {
-                              if (
-                                globalThis.confirm?.(
-                                  `確定刪除「${report.title}」？此操作無法復原。`,
-                                )
-                              ) {
+                              if (globalThis.confirm?.(copy.table.confirmDelete(report.title))) {
                                 onAction(report.id, "delete");
                               }
                             }}

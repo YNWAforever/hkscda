@@ -1,5 +1,6 @@
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { AdminApiError } from "../../../lib/admin/session";
+import type { AdminLanguage } from "../../../lib/admin/language";
+import { AdminApiError, adminErrorMessage } from "../../../lib/admin/session";
 import type {
   PaginatedPaymentPublicConfig,
   PaymentPublicConfigPublishResult,
@@ -113,6 +114,36 @@ export function resolveMutationError<T>(
         ? error.message
         : "Unable to save this configuration.",
   };
+}
+
+export type PaymentMethodSaveErrorCode = "conflict" | "save_failed";
+
+/**
+ * Why a submit, withdraw or publish failed, as the screen keeps it: a code for the text to show
+ * when there is no better one, and the `cause` (the caught error) whose own message is shown first.
+ * The text of the codes is in `paymentMethodsCopy.errors`.
+ */
+export type PaymentMethodSaveFailure = { code: PaymentMethodSaveErrorCode; cause?: unknown };
+
+/** The failure to keep for a caught error: a version conflict, or the error with a message to show. */
+export function paymentMethodSaveFailure(error: unknown): PaymentMethodSaveFailure {
+  if (resolveMutationError(error, null).kind === "conflict") return { code: "conflict" };
+  return {
+    code: "save_failed",
+    cause: error instanceof Error && error.message ? error : undefined,
+  };
+}
+
+/**
+ * The message for a failure in `language`: the cause's own message (a session error is translated),
+ * else the code's text from `errors`, which is `paymentMethodsCopy.errors` for the language.
+ */
+export function paymentMethodSaveFailureText(
+  failure: PaymentMethodSaveFailure,
+  errors: Record<PaymentMethodSaveErrorCode, string>,
+  language: AdminLanguage,
+): string {
+  return adminErrorMessage(failure.cause, language) ?? errors[failure.code];
 }
 
 export function createPaymentMethodPublishAttempt(

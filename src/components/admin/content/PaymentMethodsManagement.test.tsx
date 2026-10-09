@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { AdminIdentity } from "../../../lib/admin/access";
 import type { PaymentPublicConfig } from "../../../lib/paymentPublicConfig/types";
@@ -46,7 +46,7 @@ function noop() {}
 
 describe("PaymentMethodsManagementView", () => {
   test("disables Publish when the signed-in treasurer is the row's own submitter", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_1}
         configs={[BASE_CONFIG]}
@@ -65,7 +65,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("enables Publish for a different treasurer than the submitter", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_2}
         configs={[BASE_CONFIG]}
@@ -82,7 +82,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("shows an empty-state message when there are no configured payment methods", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_1}
         configs={[]}
@@ -96,7 +96,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("hides withdraw and publish actions when there is no signed-in identity", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={undefined}
         configs={[BASE_CONFIG]}
@@ -111,7 +111,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("shows only the submit button, with a translated state label, for a draft config", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_1}
         configs={[{ ...BASE_CONFIG, state: "draft" }]}
@@ -128,7 +128,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("shows withdraw and publish, not submit, with a translated state label, for an in_review config", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_2}
         configs={[BASE_CONFIG]}
@@ -146,7 +146,7 @@ describe("PaymentMethodsManagementView", () => {
 
   test("renders published and archived states read-only, with no action buttons", () => {
     for (const state of ["published", "archived"] as const) {
-      const html = renderToStaticMarkup(
+      const html = renderAdminInChinese(
         <PaymentMethodsManagementView
           identity={TREASURER_1}
           configs={[{ ...BASE_CONFIG, state }]}
@@ -163,7 +163,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("shows the not-publicly-visible indicator when isPubliclyVisible is false", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_1}
         configs={[{ ...BASE_CONFIG, isPubliclyVisible: false }]}
@@ -177,7 +177,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("renders the error message when present", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_1}
         configs={[]}
@@ -192,7 +192,7 @@ describe("PaymentMethodsManagementView", () => {
   });
 
   test("disables submit, withdraw, and publish buttons while a mutation is pending, regardless of canPublish", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <PaymentMethodsManagementView
         identity={TREASURER_2}
         configs={[

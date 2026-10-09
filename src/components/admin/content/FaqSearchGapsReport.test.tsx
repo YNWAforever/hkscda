@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { SearchGap, SearchGapReport } from "../../../lib/faq/searchGaps";
 
@@ -58,7 +58,7 @@ const weakGap: SearchGap = {
 
 function render(state: Partial<typeof queryState>) {
   queryState = { data: undefined, error: null, isLoading: false, isError: false, ...state };
-  return renderToStaticMarkup(<FaqSearchGapsReport onTest={() => {}} onCreate={() => {}} />);
+  return renderAdminInChinese(<FaqSearchGapsReport onTest={() => {}} onCreate={() => {}} />);
 }
 
 // Visible text only, so assertions do not depend on the element structure.

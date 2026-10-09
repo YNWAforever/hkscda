@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import { DocumentManagement, DocumentManagementView } from "./DocumentManagement";
 import { uploadDocumentPdf } from "./documentUpload";
@@ -24,7 +24,7 @@ const asset = {
 
 describe("DocumentManagement", () => {
   test("renders the document workspace from initial summaries", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <DocumentManagement initialData={{ items: [asset], total: 1 }} />,
     );
 
@@ -35,7 +35,7 @@ describe("DocumentManagement", () => {
   test("guards release-managed documents while preserving unrelated controls", () => {
     const releaseId = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
     const unrelated = { ...asset, id: "99999999-8888-4777-8666-555555555555", title: "Other PDF" };
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <DocumentManagementView
         data={{ items: [asset, unrelated], total: 2 }}
         ownerReleaseIds={{ [asset.id]: releaseId }}
@@ -55,7 +55,7 @@ describe("DocumentManagement", () => {
     expect(unrelatedRow).not.toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
   });
   test("does not claim there are no documents underneath a load error", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <DocumentManagementView data={{ items: [], total: 0 }} error="boom" />,
     );
 
@@ -64,7 +64,7 @@ describe("DocumentManagement", () => {
   });
 
   test("uses the shared TablePager and blocks paging forward on a load error", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <DocumentManagementView
         data={{ items: [asset], total: 60 }}
         page={1}
@@ -77,7 +77,7 @@ describe("DocumentManagement", () => {
   });
 
   test("fails closed while document ownership is unknown", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <DocumentManagementView
         data={{ items: [asset], total: 1 }}
         ownershipReady={false}

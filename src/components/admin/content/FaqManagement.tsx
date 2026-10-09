@@ -1,25 +1,29 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type Ref } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { buildTesterFaqs } from "../../../lib/faq/answerTester";
-import { FAQ_CTA_OPTIONS } from "../../../lib/faq/schemas";
+import { FAQ_CTA_OPTIONS, faqCtaOptionLabel } from "../../../lib/faq/schemas";
 import type { FaqCategory, FaqEntry, FaqEntryInput, FaqLanguage } from "../../../lib/faq/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { localizedText } from "../i18n/localizedText";
 import { LoadFailure } from "../LoadFailure";
 import { FaqAnswerTester } from "./FaqAnswerTester";
+import { faqCopy } from "./faqCopy";
 import { FaqSearchGapsReport } from "./FaqSearchGapsReport";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
 
-const CATEGORY_LABELS: Record<FaqCategory, string> = {
-  sponsorship: "助養",
-  adoption: "領養",
-  tax_receipt: "報稅收據",
-  donation: "捐款",
-  contact: "聯絡職員",
-};
+const CATEGORIES: readonly FaqCategory[] = [
+  "sponsorship",
+  "adoption",
+  "tax_receipt",
+  "donation",
+  "contact",
+];
 
-type FaqDraft = {
+export type FaqDraft = {
   id?: string;
   category: FaqCategory;
   questionZh: string;
@@ -81,12 +85,15 @@ export function invalidateFaqQueries(client: {
 }
 
 export function FaqManagement() {
+  const common = useAdminCopy(faqCopy);
+  const copy = common.list;
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<FaqDraft | null>(null);
   // The draft form renders below the whole FAQ table, so opening it from a button
   // higher up the page would otherwise look like nothing happened. This counts
-  // openings so the form is revealed on each one, including a second 「以此新增問題」
-  // click while a draft is already open.
+  // openings so the form is revealed on each one, including a second "add question from this"
+  // click on a search-gap row while a draft is already open.
   const [draftOpenings, setDraftOpenings] = useState(0);
   const firstFieldRef = useRef<HTMLSelectElement>(null);
 
@@ -141,13 +148,13 @@ export function FaqManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">常見問題</h1>
+        <h1 className="text-xl font-bold">{copy.title}</h1>
         <button
           type="button"
           className="btn-primary min-h-11 px-4"
           onClick={() => openDraft(draftFromEntry())}
         >
-          新增問題
+          {copy.add}
         </button>
       </div>
 
@@ -166,13 +173,13 @@ export function FaqManagement() {
       />
 
       {entriesQuery.isLoading ? (
-        <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.loading}</p>
       ) : null}
       {entriesQuery.isError ? (
         <LoadFailure
           error={entriesQuery.error}
           onRetry={() => void entriesQuery.refetch()}
-          title="無法載入常見問題"
+          title={copy.loadFailed}
         />
       ) : null}
 
@@ -191,23 +198,25 @@ export function FaqManagement() {
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b text-left">
-              <th className="py-2">分類</th>
-              <th className="py-2">問題</th>
-              <th className="py-2">排序</th>
-              <th className="py-2">狀態</th>
+              <th className="py-2">{copy.category}</th>
+              <th className="py-2">{copy.question}</th>
+              <th className="py-2">{copy.sortOrder}</th>
+              <th className="py-2">{copy.status}</th>
               <th className="py-2" />
             </tr>
           </thead>
           <tbody>
             {entries.map((entry) => (
               <tr key={entry.id} className="border-b">
-                <td className="py-2">{CATEGORY_LABELS[entry.category]}</td>
-                <td className="py-2">{entry.question["zh-HK"]}</td>
+                <td className="py-2">{common.categories[entry.category]}</td>
+                <td className="py-2">
+                  {localizedText(entry.question["zh-HK"], entry.question.en, language)}
+                </td>
                 <td className="py-2">{entry.sortOrder}</td>
-                <td className="py-2">{entry.isActive ? "顯示中" : "已停用"}</td>
+                <td className="py-2">{entry.isActive ? copy.shown : copy.disabled}</td>
                 <td className="py-2">
                   <button type="button" onClick={() => openDraft(draftFromEntry(entry))}>
-                    編輯
+                    {copy.edit}
                   </button>
                   {entry.isActive ? (
                     <button
@@ -215,7 +224,7 @@ export function FaqManagement() {
                       onClick={() => deactivateMutation.mutate(entry.id)}
                       disabled={deactivateMutation.isPending}
                     >
-                      停用
+                      {copy.disable}
                     </button>
                   ) : null}
                 </td>
@@ -226,150 +235,175 @@ export function FaqManagement() {
       ) : null}
       {deactivateMutation.isError ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          停用操作失敗，請再試一次。
+          {copy.disableFailed}
         </p>
       ) : null}
 
       {draft ? (
-        <form
-          className="space-y-3 border p-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            upsertMutation.mutate(toInput(draft));
-          }}
-        >
-          <label className="block">
-            分類
-            <select
-              ref={firstFieldRef}
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.category}
-              onChange={(event) =>
-                setDraft({ ...draft, category: event.target.value as FaqCategory })
-              }
-            >
-              {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            問題（中文）
-            <input
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.questionZh}
-              onChange={(event) => setDraft({ ...draft, questionZh: event.target.value })}
-              required
-            />
-          </label>
-          <label className="block">
-            Question (English)
-            <input
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.questionEn}
-              onChange={(event) => setDraft({ ...draft, questionEn: event.target.value })}
-              required
-            />
-          </label>
-          <label className="block">
-            答案（中文）
-            <textarea
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.answerZh}
-              onChange={(event) => setDraft({ ...draft, answerZh: event.target.value })}
-              required
-            />
-          </label>
-          <label className="block">
-            Answer (English)
-            <textarea
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.answerEn}
-              onChange={(event) => setDraft({ ...draft, answerEn: event.target.value })}
-              required
-            />
-          </label>
-          <label className="block">
-            關鍵字（中文，以逗號分隔）
-            <input
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.keywordsZh}
-              onChange={(event) => setDraft({ ...draft, keywordsZh: event.target.value })}
-            />
-          </label>
-          <label className="block">
-            Keywords (English, comma-separated)
-            <input
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.keywordsEn}
-              onChange={(event) => setDraft({ ...draft, keywordsEn: event.target.value })}
-            />
-          </label>
-          <label className="block">
-            行動按鈕
-            <select
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.ctaKey}
-              onChange={(event) => setDraft({ ...draft, ctaKey: event.target.value })}
-            >
-              <option value="">（沒有行動按鈕）</option>
-              {FAQ_CTA_OPTIONS.map((option) => (
-                <option key={option.key} value={option.key}>
-                  {option.label["zh-HK"]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={draft.sensitive}
-              onChange={(event) => setDraft({ ...draft, sensitive: event.target.checked })}
-            />
-            涉及個人資料／財務內容
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={draft.isActive}
-              onChange={(event) => setDraft({ ...draft, isActive: event.target.checked })}
-            />
-            在 /help 頁面顯示
-          </label>
-          <label className="block">
-            排序
-            <input
-              type="number"
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.sortOrder}
-              onChange={(event) => setDraft({ ...draft, sortOrder: Number(event.target.value) })}
-            />
-          </label>
-          {upsertMutation.isError ? (
-            <p role="alert" className="text-sm text-[var(--color-error)]">
-              儲存失敗，請檢查資料後再試一次。
-            </p>
-          ) : null}
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="btn-primary min-h-11 px-4"
-              disabled={upsertMutation.isPending}
-            >
-              儲存
-            </button>
-            <button
-              type="button"
-              className="btn-secondary min-h-11 px-4"
-              onClick={() => setDraft(null)}
-            >
-              取消
-            </button>
-          </div>
-        </form>
+        <FaqEntryForm
+          draft={draft}
+          onDraftChange={setDraft}
+          onSubmit={() => upsertMutation.mutate(toInput(draft))}
+          onCancel={() => setDraft(null)}
+          pending={upsertMutation.isPending}
+          failed={upsertMutation.isError}
+          firstFieldRef={firstFieldRef}
+        />
       ) : null}
     </div>
+  );
+}
+
+export function FaqEntryForm({
+  draft,
+  onDraftChange,
+  onSubmit,
+  onCancel,
+  pending,
+  failed,
+  firstFieldRef,
+}: {
+  draft: FaqDraft;
+  onDraftChange: (draft: FaqDraft) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  pending: boolean;
+  failed: boolean;
+  firstFieldRef?: Ref<HTMLSelectElement>;
+}) {
+  const common = useAdminCopy(faqCopy);
+  const copy = common.form;
+  const { language } = useAdminLanguage();
+  return (
+    <form
+      className="space-y-3 border p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit();
+      }}
+    >
+      <label className="block">
+        {copy.category}
+        <select
+          ref={firstFieldRef}
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.category}
+          onChange={(event) =>
+            onDraftChange({ ...draft, category: event.target.value as FaqCategory })
+          }
+        >
+          {CATEGORIES.map((value) => (
+            <option key={value} value={value}>
+              {common.categories[value]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="block">
+        {copy.questionZh}
+        <input
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.questionZh}
+          onChange={(event) => onDraftChange({ ...draft, questionZh: event.target.value })}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.questionEn}
+        <input
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.questionEn}
+          onChange={(event) => onDraftChange({ ...draft, questionEn: event.target.value })}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.answerZh}
+        <textarea
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.answerZh}
+          onChange={(event) => onDraftChange({ ...draft, answerZh: event.target.value })}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.answerEn}
+        <textarea
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.answerEn}
+          onChange={(event) => onDraftChange({ ...draft, answerEn: event.target.value })}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.keywordsZh}
+        <input
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.keywordsZh}
+          onChange={(event) => onDraftChange({ ...draft, keywordsZh: event.target.value })}
+        />
+      </label>
+      <label className="block">
+        {copy.keywordsEn}
+        <input
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.keywordsEn}
+          onChange={(event) => onDraftChange({ ...draft, keywordsEn: event.target.value })}
+        />
+      </label>
+      <label className="block">
+        {copy.cta}
+        <select
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.ctaKey}
+          onChange={(event) => onDraftChange({ ...draft, ctaKey: event.target.value })}
+        >
+          <option value="">{copy.noCta}</option>
+          {FAQ_CTA_OPTIONS.map((option) => (
+            <option key={option.key} value={option.key}>
+              {faqCtaOptionLabel(option, language)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={draft.sensitive}
+          onChange={(event) => onDraftChange({ ...draft, sensitive: event.target.checked })}
+        />
+        {copy.sensitive}
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={draft.isActive}
+          onChange={(event) => onDraftChange({ ...draft, isActive: event.target.checked })}
+        />
+        {copy.isActive}
+      </label>
+      <label className="block">
+        {copy.sortOrder}
+        <input
+          type="number"
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.sortOrder}
+          onChange={(event) => onDraftChange({ ...draft, sortOrder: Number(event.target.value) })}
+        />
+      </label>
+      {failed ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {copy.saveFailed}
+        </p>
+      ) : null}
+      <div className="flex gap-3">
+        <button type="submit" className="btn-primary min-h-11 px-4" disabled={pending}>
+          {copy.save}
+        </button>
+        <button type="button" className="btn-secondary min-h-11 px-4" onClick={onCancel}>
+          {copy.cancel}
+        </button>
+      </div>
+    </form>
   );
 }

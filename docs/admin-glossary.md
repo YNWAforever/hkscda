@@ -21,7 +21,7 @@ other way round.
 | 領養人 | adopter       | A person who has adopted an animal or is being matched to one.                                     |
 | 申請人 | applicant     | The person who submitted an adoption or internship application.                                    |
 | 義工   | volunteer     | Never "volunteer worker". 義工營運中心 is "Volunteer operations".                                  |
-| 訪客   | visitor       | A guest at a session who is not a registered volunteer. Visitors have their own places.            |
+| 訪客   | visitor       | A guest at a session who is not a registered volunteer, or a person using the public website.      |
 | 職員   | staff         | An admin user with the staff role. One person is a "staff member".                                 |
 | 協調員 | coordinator   | The staff member who runs adoption cases. Not "case worker".                                       |
 | 管理員 | administrator | The admin role. "Admin" is fine in a short label.                                                  |
@@ -165,7 +165,7 @@ other way round.
 | 常見問題     | FAQ                   | Question-and-answer content.                                                                            |
 | 年度報告     | annual report         | The yearly report page and its documents.                                                               |
 | 團隊與管治   | team and governance   | The team profiles and governance documents.                                                             |
-| 宣傳內容     | content               | The content area of the navigation. Not "promotion". 宣傳 alone is "Website content".                   |
+| 宣傳內容     | content               | Not "promotion". A page eyebrow 宣傳 or 宣傳內容 stands for the nav group 網站內容, "Website content".  |
 | 救援故事     | rescue story          | A content type: the story of one rescue. 故事更新 is "story update", 故事牆 is "story wall".            |
 | 救援地區     | rescue region         | Where the animal was rescued. 公開狀態 on a story is "Public status": rescued, medical care and so on.  |
 | 慈善市集     | charity market        | A content type.                                                                                         |
@@ -255,6 +255,25 @@ other way round.
 | 略過         | skipped             | Left out of a bulk action on purpose.                                                                |
 | 衝突         | conflict            | The record changed after the preview, so the bulk action left it alone.                              |
 | 技術參考     | technical reference | The operation id of a bulk action, to quote when reporting a problem.                                |
+
+## Information pages, FAQ and team
+
+| zh-HK        | English                 | Usage                                                                                               |
+| ------------ | ----------------------- | --------------------------------------------------------------------------------------------------- |
+| 領養須知     | adoption instructions   | The public page of what adopters need to know; 領養需知 is the same. Its editor is "Page content".  |
+| 動物照顧須知 | animal care guidelines  | The care advice for cats and dogs. 照顧須知 is "care guidelines"; one entry is a "topic" (主題).    |
+| 屋苑         | estate                  | A housing estate. 可養狗屋苑 is "dog-friendly estates": estates that allow dogs.                    |
+| 領養指南版本 | adoption guide releases | The same screen as 領養後指南版本, "Post-adoption guide releases". The zh-HK uses both names.       |
+| 婚宴回禮     | wedding favour          | 婚宴回禮表格 is "Wedding favour form", a kind of document.                                          |
+| 引言         | lead-in                 | The small line above a heading. 引題 is the same.                                                   |
+| 主視覺       | main banner             | The large opening section of a page. 橫幅 is "banner".                                              |
+| 行動呼籲     | call to action          | A section that asks visitors to act. 行動按鈕 is "action button": the button under an FAQ answer.   |
+| 按鈕文字     | button text             | 連結文字 is "link text".                                                                            |
+| 提交審批     | submit for approval     | For a payment method setting. 核准並發佈 is "Approve and publish". 提交審閱 is "Submit for review". |
+| 配對程度     | match level             | How well a visitor's FAQ search matched: high, medium, low or none.                                 |
+| 沒有答案     | no answer               | A search with no match. 配對較弱 is "Weak match".                                                   |
+| 直接答案     | direct answer           | The one answer shown alone. 相關答案 is "Related answers"; 轉介職員 is "Refer to staff".            |
+| 職銜         | position                | A board member's job title. 在任 is "In office"; 卸任 is "Step down", 已卸任 "Stepped down".        |
 
 ## Style
 

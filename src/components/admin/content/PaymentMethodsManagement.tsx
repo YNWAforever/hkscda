@@ -5,13 +5,19 @@ import { Button } from "../../ui/button";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import type { AdminIdentity } from "../../../lib/admin/access";
 import type { PaymentPublicConfig } from "../../../lib/paymentPublicConfig/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { localizedText } from "../i18n/localizedText";
 import { cmsStateCopy } from "./cmsStateCopy";
+import { paymentMethodsCopy } from "./paymentMethodsCopy";
 import {
   canPublish,
   createPaymentMethodPublishAttempt,
   fetchPaymentMethodConfigs,
   mutatePaymentMethodConfig,
-  resolveMutationError,
+  paymentMethodSaveFailure,
+  paymentMethodSaveFailureText,
+  type PaymentMethodSaveFailure,
 } from "./paymentMethodsLogic";
 
 const QUERY_KEY = ["payment-methods"] as const;
@@ -33,9 +39,12 @@ export function PaymentMethodsManagementView({
   onWithdraw: (config: PaymentPublicConfig) => void;
   onPublish: (config: PaymentPublicConfig) => void;
 }) {
+  const copy = useAdminCopy(paymentMethodsCopy);
+  const states = useAdminCopy(cmsStateCopy);
+  const { language } = useAdminLanguage();
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">付款方式設定</h1>
+      <h1 className="text-xl font-bold">{copy.title}</h1>
       {errorMessage ? (
         <p
           role="alert"
@@ -46,7 +55,7 @@ export function PaymentMethodsManagementView({
       ) : null}
 
       {configs.length === 0 ? (
-        <p className="p-3 text-sm text-[var(--color-text-muted)]">尚未建立任何付款方式設定</p>
+        <p className="p-3 text-sm text-[var(--color-text-muted)]">{copy.empty}</p>
       ) : null}
       <ul className="divide-y divide-[var(--color-border)] rounded-md border border-[var(--color-border)]">
         {configs.map((config) => {
@@ -56,19 +65,23 @@ export function PaymentMethodsManagementView({
           return (
             <li key={config.id} className="flex items-center justify-between gap-4 p-3">
               <div>
-                <span className="font-bold">{config.displayLabelZh}</span>{" "}
+                <span className="font-bold">
+                  {localizedText(config.displayLabelZh, config.displayLabelEn, language)}
+                </span>{" "}
                 <span className="text-[var(--color-text-muted)]">({config.method})</span>{" "}
                 <span className="text-xs text-[var(--color-text-muted)]">
-                  {cmsStateCopy.zh[config.state]}
+                  {states[config.state]}
                 </span>
                 {config.isPubliclyVisible ? null : (
-                  <span className="ml-2 text-xs text-[var(--color-text-muted)]">未公開</span>
+                  <span className="ml-2 text-xs text-[var(--color-text-muted)]">
+                    {copy.notPublic}
+                  </span>
                 )}
               </div>
               <div className="flex items-start gap-2">
                 {config.state === "draft" ? (
                   <Button type="button" onClick={() => onSubmit(config)} disabled={pending}>
-                    提交審批
+                    {copy.submit}
                   </Button>
                 ) : null}
                 {config.state === "in_review" && identity ? (
@@ -79,7 +92,7 @@ export function PaymentMethodsManagementView({
                       variant="outline"
                       disabled={pending}
                     >
-                      撤回
+                      {copy.withdraw}
                     </Button>
                     <div className="flex flex-col items-end gap-1">
                       <Button
@@ -95,11 +108,11 @@ export function PaymentMethodsManagementView({
                         }
                         aria-describedby={blockedBySameActor ? publishHintId : undefined}
                       >
-                        核准並發佈
+                        {copy.approveAndPublish}
                       </Button>
                       {blockedBySameActor ? (
                         <p id={publishHintId} className="text-xs text-[var(--color-text-muted)]">
-                          需要由另一位財務或管理員核准
+                          {copy.needsAnotherApprover}
                         </p>
                       ) : null}
                     </div>
@@ -115,18 +128,23 @@ export function PaymentMethodsManagementView({
 }
 
 export function PaymentMethodsManagement() {
+  const copy = useAdminCopy(paymentMethodsCopy);
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const identityQuery = useQuery(adminIdentityQueryOptions());
   const listQuery = useQuery({
     queryKey: QUERY_KEY,
     queryFn: () => fetchPaymentMethodConfigs({ pageSize: 50 }),
   });
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const [failure, setFailure] = useState<PaymentMethodSaveFailure | undefined>(undefined);
   const [pending, setPending] = useState(false);
 
   const configs = listQuery.data?.items ?? [];
   const queryErrorMessage =
-    listQuery.error || identityQuery.error ? "無法載入付款方式設定，請重新整理頁面。" : undefined;
+    listQuery.error || identityQuery.error ? copy.errors.load_failed : undefined;
+  const failureMessage = failure
+    ? paymentMethodSaveFailureText(failure, copy.errors, language)
+    : undefined;
 
   async function refresh() {
     await queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -136,10 +154,10 @@ export function PaymentMethodsManagement() {
     setPending(true);
     try {
       await mutatePaymentMethodConfig(config.id, "submit", { expectedVersion: config.version });
-      setErrorMessage(undefined);
+      setFailure(undefined);
       await refresh();
     } catch (error) {
-      setErrorMessage(resolveMutationError(error, config).message);
+      setFailure(paymentMethodSaveFailure(error));
     } finally {
       setPending(false);
     }
@@ -150,10 +168,10 @@ export function PaymentMethodsManagement() {
     try {
       const attempt = createPaymentMethodPublishAttempt(config.version);
       await mutatePaymentMethodConfig(config.id, "publish", attempt.payload);
-      setErrorMessage(undefined);
+      setFailure(undefined);
       await refresh();
     } catch (error) {
-      setErrorMessage(resolveMutationError(error, config).message);
+      setFailure(paymentMethodSaveFailure(error));
     } finally {
       setPending(false);
     }
@@ -163,24 +181,24 @@ export function PaymentMethodsManagement() {
     setPending(true);
     try {
       await mutatePaymentMethodConfig(config.id, "withdraw", { expectedVersion: config.version });
-      setErrorMessage(undefined);
+      setFailure(undefined);
       await refresh();
     } catch (error) {
-      setErrorMessage(resolveMutationError(error, config).message);
+      setFailure(paymentMethodSaveFailure(error));
     } finally {
       setPending(false);
     }
   }
 
   if (listQuery.isLoading || identityQuery.isLoading) {
-    return <p>載入付款方式設定中...</p>;
+    return <p>{copy.loading}</p>;
   }
 
   return (
     <PaymentMethodsManagementView
       identity={identityQuery.data?.admin}
       configs={configs}
-      errorMessage={errorMessage ?? queryErrorMessage}
+      errorMessage={failureMessage ?? queryErrorMessage}
       pending={pending}
       onSubmit={handleSubmit}
       onWithdraw={handleWithdraw}

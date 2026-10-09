@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 
@@ -30,7 +30,7 @@ const { FaqManagement } = await import("./FaqManagement");
 describe("FaqManagement", () => {
   test("shows a retry control instead of the old unclickable reload message on failure", () => {
     entriesError = new Error("boom");
-    const markup = renderToStaticMarkup(<FaqManagement />);
+    const markup = renderAdminInChinese(<FaqManagement />);
     expect(markup).toContain("無法載入常見問題");
     expect(markup).toContain("重試");
     expect(markup).not.toContain("未能載入");
@@ -39,7 +39,7 @@ describe("FaqManagement", () => {
   });
 
   test("shows the answer tester under the header and above the table", () => {
-    const markup = renderToStaticMarkup(<FaqManagement />);
+    const markup = renderAdminInChinese(<FaqManagement />);
 
     const heading = markup.indexOf("常見問題</h1>");
     const tester = markup.indexOf("測試答案");
@@ -50,7 +50,7 @@ describe("FaqManagement", () => {
   });
 
   test("shows the search-gap report under the header and above the answer tester", () => {
-    const markup = renderToStaticMarkup(<FaqManagement />);
+    const markup = renderAdminInChinese(<FaqManagement />);
 
     const heading = markup.indexOf("常見問題</h1>");
     const report = markup.indexOf("搜尋未有答案的主題（過去 30 日）");
@@ -61,7 +61,7 @@ describe("FaqManagement", () => {
 
   test("shows the search-gap report even when the FAQ list failed to load", () => {
     entriesError = new Error("boom");
-    const markup = renderToStaticMarkup(<FaqManagement />);
+    const markup = renderAdminInChinese(<FaqManagement />);
     entriesError = null;
 
     expect(markup).toContain("無法載入常見問題");
@@ -71,7 +71,7 @@ describe("FaqManagement", () => {
 
   test("a failed search-gap report does not hide the FAQ list", () => {
     searchGapsError = new Error("boom");
-    const markup = renderToStaticMarkup(<FaqManagement />);
+    const markup = renderAdminInChinese(<FaqManagement />);
     searchGapsError = null;
 
     expect(markup).toContain("無法載入搜尋主題報告");

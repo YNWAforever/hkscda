@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type {
   AdoptionGuidePreview,
@@ -83,7 +83,7 @@ function view({
 
 describe("AdoptionGuideReleaseManagementView", () => {
   test("renders five steps and blocks incomplete submission", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionGuideReleaseManagementView
         actorRole="staff"
         releases={[incompleteCatDraft]}
@@ -102,15 +102,15 @@ describe("AdoptionGuideReleaseManagementView", () => {
   });
 
   test("shows publish only to admins reviewing a ready release", () => {
-    const staffHtml = renderToStaticMarkup(view({ role: "staff", release: readyReview }));
-    const adminHtml = renderToStaticMarkup(view({ role: "admin", release: readyReview }));
+    const staffHtml = renderAdminInChinese(view({ role: "staff", release: readyReview }));
+    const adminHtml = renderAdminInChinese(view({ role: "admin", release: readyReview }));
 
     expect(staffHtml).not.toContain("正式發佈");
     expect(adminHtml).toContain("正式發佈");
   });
 
   test("renders loading, API error, empty-list, filters, and history states", () => {
-    const loadingHtml = renderToStaticMarkup(
+    const loadingHtml = renderAdminInChinese(
       <AdoptionGuideReleaseManagementView
         actorRole="staff"
         releases={[]}
@@ -120,7 +120,7 @@ describe("AdoptionGuideReleaseManagementView", () => {
         error="Unable to load releases"
       />,
     );
-    const emptyHtml = renderToStaticMarkup(
+    const emptyHtml = renderAdminInChinese(
       <AdoptionGuideReleaseManagementView
         actorRole="staff"
         releases={[]}
@@ -128,7 +128,7 @@ describe("AdoptionGuideReleaseManagementView", () => {
         preview={null}
       />,
     );
-    const historyHtml = renderToStaticMarkup(view({ role: "admin", release: readyReview }));
+    const historyHtml = renderAdminInChinese(view({ role: "admin", release: readyReview }));
 
     expect(loadingHtml).toContain("載入中");
     expect(loadingHtml).toContain("Unable to load releases");
@@ -140,8 +140,8 @@ describe("AdoptionGuideReleaseManagementView", () => {
   });
 
   test("renders upload guidance, authenticated preview links, and review transitions", () => {
-    const reviewHtml = renderToStaticMarkup(view({ role: "admin", release: readyReview }));
-    const draftHtml = renderToStaticMarkup(
+    const reviewHtml = renderAdminInChinese(view({ role: "admin", release: readyReview }));
+    const draftHtml = renderAdminInChinese(
       <AdoptionGuideReleaseManagementView
         actorRole="staff"
         releases={[incompleteCatDraft]}
@@ -159,7 +159,7 @@ describe("AdoptionGuideReleaseManagementView", () => {
   });
 
   test("keeps local form values visible when a conflict is reported", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionGuideReleaseManagementView
         actorRole="staff"
         releases={[incompleteCatDraft]}
@@ -174,7 +174,7 @@ describe("AdoptionGuideReleaseManagementView", () => {
   });
   test("renders every non-draft state read-only", () => {
     for (const state of ["in_review", "published", "archived"] as const) {
-      const html = renderToStaticMarkup(
+      const html = renderAdminInChinese(
         <AdoptionGuideReleaseManagementView
           actorRole="admin"
           releases={[{ ...readyReview, state }]}
@@ -193,7 +193,7 @@ describe("AdoptionGuideReleaseManagementView", () => {
   });
 
   test("uses exact bilingual preview action labels", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionGuideReleaseManagementView
         actorRole="admin"
         releases={[readyReview]}

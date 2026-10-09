@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { AdminAdoptionInformationPage } from "../../../lib/adoptionInformation/types";
 import {
@@ -48,7 +48,7 @@ const estates: AdminAdoptionInformationPage = {
 
 describe("AdoptionInformationManagement", () => {
   test("preserves fee prices as text and renders species-scoped editing", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AdoptionInformationManagement initialData={{ fees, estates }} />,
     );
 
@@ -64,7 +64,7 @@ describe("AdoptionInformationManagement", () => {
   });
 
   test("supports estate create, edit, publish, and delete controls", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AdoptionInformationManagementView activeTab="estates" data={estates} query="" />,
     );
 
@@ -78,15 +78,15 @@ describe("AdoptionInformationManagement", () => {
 
   test("announces loading, error, and empty states", () => {
     expect(
-      renderToStaticMarkup(<AdoptionInformationManagementView activeTab="fees" loading query="" />),
+      renderAdminInChinese(<AdoptionInformationManagementView activeTab="fees" loading query="" />),
     ).toContain("載入領養資料中");
     expect(
-      renderToStaticMarkup(
+      renderAdminInChinese(
         <AdoptionInformationManagementView activeTab="fees" error="Could not load" query="" />,
       ),
     ).toContain('role="alert"');
     expect(
-      renderToStaticMarkup(
+      renderAdminInChinese(
         <AdoptionInformationManagementView
           activeTab="estates"
           data={{ ...estates, items: [], total: 0 }}
@@ -97,7 +97,7 @@ describe("AdoptionInformationManagement", () => {
   });
 
   test("uses the shared TablePager for estates and blocks paging forward on a load error", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AdoptionInformationManagementView
         activeTab="estates"
         data={{ ...estates, total: 120 }}
@@ -129,7 +129,7 @@ describe("AdoptionInformationManagement", () => {
   });
 
   test("renders all four content tabs, including rules and care topics", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AdoptionInformationManagement initialData={{ fees, estates }} />,
     );
     expect(markup).toContain("領養規則");
@@ -137,7 +137,7 @@ describe("AdoptionInformationManagement", () => {
   });
 
   test("renders fee move controls from canonical versioned rows", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AdoptionInformationManagementView activeTab="fees" data={fees} query="" pending />,
     );
     expect(markup).toContain("HK$1,500");

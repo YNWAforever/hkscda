@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { AdminLanguage } from "../admin/language";
 import type { FaqCta } from "./types";
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
@@ -66,6 +67,20 @@ export const FAQ_CTA_OPTIONS: Array<{ key: string } & FaqCta> = [
     analyticsAction: "contact_for_private_case",
   },
 ];
+
+/**
+ * The label of an action button option as the admin FAQ form lists it, in the admin's language: the
+ * zh-HK text visitors see on the button, or the English text they see in English. The default is
+ * zh-HK, the label the form has always shown. The public FAQ reads the whole label through
+ * `resolveFaqCta`, which this does not change.
+ */
+export function faqCtaOptionLabel(
+  option: { label: FaqCta["label"] },
+  language: AdminLanguage = "zh",
+): string {
+  if (language === "en" && option.label.en.trim()) return option.label.en;
+  return option.label["zh-HK"];
+}
 
 const FAQ_CTA_KEYS = FAQ_CTA_OPTIONS.map((option) => option.key) as [string, ...string[]];
 

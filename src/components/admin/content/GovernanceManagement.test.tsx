@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 
@@ -23,7 +23,7 @@ const { GovernanceManagement } = await import("./GovernanceManagement");
 describe("GovernanceManagement", () => {
   test("shows a retry control instead of the old unclickable reload message on failure", () => {
     membersError = new Error("boom");
-    const markup = renderToStaticMarkup(<GovernanceManagement />);
+    const markup = renderAdminInChinese(<GovernanceManagement />);
     expect(markup).toContain("無法載入團隊名單");
     expect(markup).toContain("重試");
     expect(markup).not.toContain("未能載入");
