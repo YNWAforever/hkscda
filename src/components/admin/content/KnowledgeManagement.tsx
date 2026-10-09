@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -158,9 +159,29 @@ export function KnowledgeManagement() {
   });
 
   const loadError = knowledgeQuery.error ?? ownershipQuery.error ?? documentsQuery.error;
+  // Irreversible, and the trigger sits inline in a list where a mis-click is easy. Name the
+  // post so the operator can tell which row they hit.
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle =
+    knowledgeQuery.data?.posts.find((post) => post.id === deleteId)?.title ??
+    copy.editor.thisArticle;
 
   return (
     <>
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={copy.editor.delete}
+        consequence={copy.editor.confirmDelete(deleteTitle)}
+        confirmLabel={copy.editor.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) mutation.mutate({ action: "delete", id: deleteId });
+        }}
+      />
       <section className="m-6 space-y-3 rounded border p-4">
         <h2>{copy.picker.heading}</h2>
         <label>
@@ -213,15 +234,7 @@ export function KnowledgeManagement() {
         onPageChange={setPage}
         fetching={knowledgeQuery.isFetching}
         onSave={(draft) => mutation.mutate({ action: "save", draft })}
-        onDelete={(id) => {
-          // Irreversible, and the trigger sits inline in a list where a mis-click
-          // is easy. Name the post so the operator can tell which row they hit.
-          const title =
-            knowledgeQuery.data?.posts.find((post) => post.id === id)?.title ??
-            copy.editor.thisArticle;
-          if (!window.confirm(copy.editor.confirmDelete(title))) return;
-          mutation.mutate({ action: "delete", id });
-        }}
+        onDelete={setDeleteId}
       />
     </>
   );

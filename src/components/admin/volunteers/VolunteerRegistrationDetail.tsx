@@ -9,6 +9,7 @@ import { volunteerRegistrationStatusLabel } from "../../../lib/volunteers/labels
 import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
 import { availableRegistrationTransitions, isDestructiveTransition } from "./volunteerAdminLogic";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
@@ -45,6 +46,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
   const queryClient = useQueryClient();
   const [correctionReason, setCorrectionReason] = useState("");
   const [isCorrection, setIsCorrection] = useState(false);
+  const [rejectStatus, setRejectStatus] = useState<string | null>(null);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["volunteer-registration", registrationId],
     queryFn: () =>
@@ -134,6 +136,20 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   return (
     <div className="space-y-5 p-6">
+      <ConfirmActionDialog
+        open={rejectStatus !== null}
+        onOpenChange={(open) => {
+          if (!open) setRejectStatus(null);
+        }}
+        title={copy.transitions.rejected}
+        consequence={copy.confirmReject(registration.contactName)}
+        confirmLabel={copy.transitions.rejected}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (rejectStatus !== null) updateStatus.mutate(rejectStatus);
+        }}
+      />
       <Link
         to="/admin/volunteers/activities"
         className="text-sm font-semibold text-[var(--color-primary)]"
@@ -234,10 +250,8 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
               type="button"
               disabled={updateStatus.isPending}
               onClick={() => {
-                if (
-                  isDestructiveTransition(status) &&
-                  !window.confirm(copy.confirmReject(registration.contactName))
-                ) {
+                if (isDestructiveTransition(status)) {
+                  setRejectStatus(status);
                   return;
                 }
                 updateStatus.mutate(status);

@@ -38,7 +38,7 @@ mock.module("@tanstack/react-router", () => ({
     );
   },
   useNavigate: () => async () => {},
-  useBlocker: () => {},
+  useBlocker: () => ({ status: "idle", reset() {}, proceed() {} }),
 }));
 
 type QueryState = Record<string, unknown>;

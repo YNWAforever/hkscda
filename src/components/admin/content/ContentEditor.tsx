@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
-import { Link, useBlocker } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
@@ -59,6 +59,8 @@ import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel, type SocialCopyPatch } from "./SocialCopyPanel";
 import { LoadFailure } from "../LoadFailure";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { useLeaveConfirm } from "../useLeaveConfirm";
 
 type ContentEditorProps = {
   contentId: string;
@@ -148,10 +150,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     if (!dirty) delete dirtyVersions.current[panel];
     setEditor((current) => editorTransition(current, { type: dirty ? "edit" : "saved", panel }));
   }, []);
-  useBlocker({
-    shouldBlockFn: () => hasDirty && !window.confirm(copy.leaveConfirm),
-    enableBeforeUnload: hasDirty,
-  });
+  const leaveDialog = useLeaveConfirm({ dirty: hasDirty, consequence: copy.leaveConfirm });
+  const [reloadOpen, setReloadOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
   const [pendingPublishedMedia, setPendingPublishedMedia] = useState(0);
@@ -191,8 +192,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       }));
   }, [content]);
   const [reloadFailed, setReloadFailed] = useState(false);
-  const reload = async () => {
-    if (hasDirty && !window.confirm(copy.reloadConfirm)) return;
+  const requestReload = async () => {
+    if (hasDirty) {
+      setReloadOpen(true);
+      return;
+    }
+    await performReload();
+  };
+  const performReload = async () => {
     const data = await contentQuery.refetch();
     if (!canAcceptEditorReload(data) || !data.data) {
       setReloadFailed(true);
@@ -225,7 +232,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         body: JSON.stringify({ expectedVersion: content?.version }),
       }),
     onSuccess: async () => {
-      await reload();
+      await requestReload();
       void queryClient.invalidateQueries({ queryKey: ["admin-content-revisions", contentId] });
     },
   });
@@ -461,6 +468,29 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   return (
     <div className="space-y-6 p-6">
+      {leaveDialog}
+      <ConfirmActionDialog
+        open={reloadOpen}
+        onOpenChange={setReloadOpen}
+        title={copy.conflict.reload}
+        consequence={copy.reloadConfirm}
+        confirmLabel={copy.conflict.reload}
+        destructive
+        reason="none"
+        onConfirm={performReload}
+      />
+      <ConfirmActionDialog
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        title={copy.archive}
+        consequence={copy.archiveConfirm(content.title)}
+        confirmLabel={copy.archive}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          await runOperation("archive", () => archiveContent.mutateAsync()).catch(() => undefined);
+        }}
+      />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link
@@ -484,7 +514,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <button
             type="button"
             disabled={editorActionPending || contentQuery.isFetching}
-            onClick={() => void reload()}
+            onClick={() => void requestReload()}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <RefreshCw className="h-4 w-4" />
@@ -507,14 +537,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <button
             type="button"
             disabled={editorActionPending}
-            onClick={() => {
-              if (!window.confirm(copy.archiveConfirm(content.title))) {
-                return;
-              }
-              void runOperation("archive", () => archiveContent.mutateAsync()).catch(
-                () => undefined,
-              );
-            }}
+            onClick={() => setArchiveOpen(true)}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <Archive className="h-4 w-4" />
@@ -539,7 +562,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           >
             {copy.conflict.compare}
           </button>
-          <button type="button" onClick={() => void reload()}>
+          <button type="button" onClick={() => void requestReload()}>
             {copy.conflict.reload}
           </button>
         </div>

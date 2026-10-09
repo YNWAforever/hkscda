@@ -14,6 +14,7 @@ import { Switch } from "../../ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import {
@@ -170,6 +171,7 @@ export function StatusAdmin() {
     },
   });
 
+  const [deleteTarget, setDeleteTarget] = useState<CoordinatorStatus | null>(null);
   const deleteMutation = useMutation<DeleteResponse, Error, CoordinatorStatus>({
     mutationFn: (status) =>
       fetchCoordinatorJson<DeleteResponse>(
@@ -223,12 +225,27 @@ export function StatusAdmin() {
 
   function handleDelete(status: CoordinatorStatus) {
     if (status.isSystem || deleteMutation.isPending) return;
-    if (!window.confirm(copy.deleteConfirm(status.labelZh, status.labelEn))) return;
-    deleteMutation.mutate(status);
+    setDeleteTarget(status);
   }
 
   return (
     <div className="space-y-5 p-6">
+      <ConfirmActionDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title={pageCopy.common.delete}
+        consequence={
+          deleteTarget ? copy.deleteConfirm(deleteTarget.labelZh, deleteTarget.labelEn) : ""
+        }
+        confirmLabel={pageCopy.common.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget);
+        }}
+      />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>

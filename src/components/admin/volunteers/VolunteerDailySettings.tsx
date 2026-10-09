@@ -91,7 +91,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
       setReason("");
     }
   }, [binding]);
-  useUnsavedVolunteerDraft(dirty);
+  const leaveDialog = useUnsavedVolunteerDraft(dirty);
   const quota = draft?.daily_limits.find((q) => q.key === binding?.body.key);
   const edit = (change: (p: PolicyDraft) => void) => {
     if (!draft) return;
@@ -161,6 +161,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
     });
   return (
     <div className="space-y-6 p-4 md:p-6">
+      {leaveDialog}
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>

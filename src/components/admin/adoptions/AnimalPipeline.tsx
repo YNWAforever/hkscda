@@ -19,6 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionCopy } from "../confirmActionCopy";
 import { LoadFailure } from "../LoadFailure";
 import { useAdminCopy } from "../i18n/copy";
 import { localizedText } from "../i18n/localizedText";
@@ -155,6 +157,7 @@ function useDebouncedValue<T>(value: T, delayMs: number) {
 export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }) {
   const { language } = useAdminLanguage();
   const copy = useAdminCopy(animalPipelineCopy);
+  const shared = useAdminCopy(confirmActionCopy);
   const format = useAdminCopy(adoptionFormatCopy);
   const queryClient = useQueryClient();
   const appliedInitialAnimalId = useRef<string | null>(null);
@@ -169,6 +172,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   });
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState<AnimalInternalProfile | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<(typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]>(25);
   const debouncedQuery = useDebouncedValue(query, PIPELINE_SEARCH_DEBOUNCE_MS);
@@ -381,12 +385,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
    */
   function requestCloseProfileDialog() {
     const saved = selectedRow?.profile;
-    if (
-      profileForm &&
-      saved &&
-      hasUnsavedProfileChanges(profileForm, saved) &&
-      !window.confirm(copy.discardConfirm)
-    ) {
+    if (profileForm && saved && hasUnsavedProfileChanges(profileForm, saved)) {
+      setDiscardOpen(true);
       return;
     }
     closeProfileDialog();
@@ -993,6 +993,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
       )}
 
+      <ConfirmActionDialog
+        open={discardOpen}
+        onOpenChange={setDiscardOpen}
+        title={shared.discardChanges}
+        consequence={copy.discardConfirm}
+        confirmLabel={shared.discardChanges}
+        destructive
+        reason="none"
+        onConfirm={async () => closeProfileDialog()}
+      />
       <AnimalProfileDialog
         open={Boolean(selectedAnimalId)}
         animalName={selectedRow ? animalName(selectedRow) : null}

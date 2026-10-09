@@ -19,6 +19,7 @@ import type {
 import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { pickAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { ActivityCreateForm } from "./ActivityCreateForm";
@@ -131,6 +132,12 @@ export function VolunteerManagement() {
   // below it, which is how you answer "who signed up for this event".
   const [activityFilter, setActivityFilter] = useState<VolunteerActivitySummary | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<{
+    id: string;
+    contactName: string;
+    status: VolunteerRegistrationStatus;
+    expectedUpdatedAt: string;
+  } | null>(null);
   const [activityPage, setActivityPage] = useState(1);
   const [registrationPage, setRegistrationPage] = useState(1);
 
@@ -513,10 +520,13 @@ export function VolunteerManagement() {
                 type="button"
                 disabled={updateRegistration.isPending}
                 onClick={() => {
-                  if (
-                    destructive &&
-                    !window.confirm(text.registrations.confirmReject(registration.contactName))
-                  ) {
+                  if (destructive) {
+                    setRejectTarget({
+                      id: registration.id,
+                      contactName: registration.contactName,
+                      status,
+                      expectedUpdatedAt: registration.updatedAt,
+                    });
                     return;
                   }
                   updateRegistration.mutate({
@@ -640,6 +650,25 @@ export function VolunteerManagement() {
 
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={rejectTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setRejectTarget(null);
+        }}
+        title={copy.transitions.rejected}
+        consequence={text.registrations.confirmReject(rejectTarget?.contactName ?? "")}
+        confirmLabel={copy.transitions.rejected}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (!rejectTarget) return;
+          updateRegistration.mutate({
+            id: rejectTarget.id,
+            status: rejectTarget.status,
+            expectedUpdatedAt: rejectTarget.expectedUpdatedAt,
+          });
+        }}
+      />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-panel)]">{text.title}</h1>

@@ -12,6 +12,7 @@ import {
 } from "../../lib/animals/adminListState";
 import { needsSpeciesVerification } from "../../lib/animals/adminCatalogue";
 import type { Animal, AnimalPublicationState } from "../../types/animal";
+import { ConfirmActionDialog } from "./ConfirmActionDialog";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
 import { useAdminLanguage } from "./adminI18n";
@@ -168,23 +169,6 @@ export function AnimalsTable({
           >
             {text.unarchive}
           </button>
-        ) : confirmDelete === animal.id ? (
-          <span className="flex flex-wrap items-center gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => handleArchive(animal.id, false)}
-              className="inline-flex min-h-11 items-center px-1 text-[var(--color-error)] hover:underline"
-            >
-              {copy.common.confirm}
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmDelete(null)}
-              className="inline-flex min-h-11 items-center px-1 text-[var(--color-text-muted)] hover:underline"
-            >
-              {copy.common.cancel}
-            </button>
-          </span>
         ) : (
           <button
             type="button"
@@ -256,6 +240,20 @@ export function AnimalsTable({
 
   return (
     <div className="space-y-4">
+      <ConfirmActionDialog
+        open={confirmDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDelete(null);
+        }}
+        title={text.archive}
+        consequence={text.archiveHint}
+        confirmLabel={text.archive}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (confirmDelete !== null) await handleArchive(confirmDelete, false);
+        }}
+      />
       <div className="flex flex-wrap items-center gap-4">
         <input
           value={state.q}

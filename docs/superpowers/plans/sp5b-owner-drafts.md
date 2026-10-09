@@ -36,3 +36,20 @@ Notes for the owner:
   `forbidden` and `forbiddenAction` are shown as one sentence with no link.
 - `sessionAction` is the link text and always links to the sign-in page; a 401 is never shown as "no access".
 - An error with no status of its own is classified by its `cause`, one level down.
+
+## Task 3: ConfirmActionDialog
+
+Every confirm in the admin now opens `ConfirmActionDialog`. Its zh text is existing wording only: the consequence
+sentence is the site's old zh confirm text word for word, the confirm button is the action's existing zh button
+label, the title repeats that label, Cancel is 取消 and the reason label is 原因. Nothing below is in the code.
+
+| Where                                                                                                | Current zh (shipped)                                    | Draft zh (not shipped)                                  | Why                                                                                                  |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `confirmActionCopy.ts` `zh.reasonHint(minLength)`                                                    | (empty; no hint in zh)                                  | 請至少輸入 N 個字。                                     | Shown only when a reason is required (SP-5b-2); English reads "Enter at least N characters."         |
+| `volunteers/VolunteerManagement.tsx` and `VolunteerRegistrationDetail.tsx` reject: button and title  | 已拒絕 (the state name, `transitions.rejected`)         | 拒絕                                                    | The only existing label is a state name, not a verb (a11y.md L1-a)                                   |
+| `confirmActionCopy.ts` `zh.discardChanges`, used by the template switch and the animal profile close | 放棄更改 (borrowed from `crm/formCopy.ts`)              | 捨棄變更並切換 (template) / 捨棄變更並關閉 (profile)    | The borrowed label does not name what happens next                                                   |
+| `content/ContentEditor.tsx` reload: button and title                                                 | 重新載入最新版本 (`conflict.reload`)                    | 重新載入並捨棄修改                                      | Existing label does not say that unsaved content is lost                                             |
+| `content/KnowledgeManagement.tsx` delete: button and title                                           | Delete (the zh half holds English; SP-5a kept it)       | 刪除                                                    | Same English-in-zh issue as the table button                                                         |
+| `content/AdoptionInformationManagement.tsx` estate delete: button and title                          | 刪除                                                    | (none needed)                                           | Listed so the sweep is complete                                                                      |
+| Every dialog title (all sites)                                                                       | Same text as the confirm button                         | A question per site, e.g. 刪除「某某」？ / 封存此內容？ | A title that repeats the button gives a screen reader little; the sentence below carries the meaning |
+| `confirmActionCopy.ts` `zh.failed`                                                                   | 操作失敗，請稍後再試。 (borrowed from `access/copy.ts`) | (none needed)                                           | Shown when a request rejects with an error that has no message                                       |

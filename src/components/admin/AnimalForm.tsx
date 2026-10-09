@@ -2,7 +2,7 @@ import { ContentReviewPanel } from "./content/ContentReview";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useBlocker, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchAdminJson } from "../../lib/admin/http";
 import { AdminApiError } from "../../lib/admin/session";
@@ -19,6 +19,7 @@ import { useAdminLanguage } from "./adminI18n";
 import { animalFormCopy } from "./animalFormCopy";
 import { uploadAnimalPhoto } from "./animalPhotoUpload";
 import { useAdminCopy } from "./i18n/copy";
+import { useLeaveConfirm } from "./useLeaveConfirm";
 import { localizedText } from "./i18n/localizedText";
 
 function buildAnimalSchema(messages: { name: string; age: string }) {
@@ -75,10 +76,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     setPreviewId(null);
     setPreviewBody(null);
   };
-  useBlocker({
-    shouldBlockFn: () => dirty && !window.confirm(formCopy.leaveConfirm),
-    enableBeforeUnload: dirty,
-  });
+  const leaveDialog = useLeaveConfirm({ dirty, consequence: formCopy.leaveConfirm });
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [publishReason, setPublishReason] = useState("");
   const [versions, setVersions] = useState<
@@ -426,485 +424,498 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     );
 
   return (
-    <form
-      onChange={(event) => {
-        if ((event.target as HTMLElement).id !== "animal-publish-reason") markDirty();
-      }}
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-3xl space-y-5"
-    >
-      <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
-          {copy.form.chineseGroup}
-        </legend>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseName}</label>
-            <input
-              {...register("name")}
-              aria-label={copy.form.chineseName}
-              placeholder={copy.form.namePlaceholder}
-              className={field}
-            />
-            {errors.name && (
-              <p className="text-[var(--color-error)] text-xs mt-1">{errors.name.message}</p>
-            )}
+    <>
+      {leaveDialog}
+      <form
+        onChange={(event) => {
+          if ((event.target as HTMLElement).id !== "animal-publish-reason") markDirty();
+        }}
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-3xl space-y-5"
+      >
+        <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
+            {copy.form.chineseGroup}
+          </legend>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.chineseName}</label>
+              <input
+                {...register("name")}
+                aria-label={copy.form.chineseName}
+                placeholder={copy.form.namePlaceholder}
+                className={field}
+              />
+              {errors.name && (
+                <p className="text-[var(--color-error)] text-xs mt-1">{errors.name.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.chineseAge}</label>
+              <input
+                {...register("age")}
+                aria-label={copy.form.chineseAge}
+                placeholder={copy.form.agePlaceholder}
+                className={field}
+              />
+              {errors.age && (
+                <p className="text-[var(--color-error)] text-xs mt-1">{errors.age.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.chineseNotes}</label>
+              <input
+                {...register("notes")}
+                aria-label={copy.form.chineseNotes}
+                placeholder={copy.form.notesPlaceholder}
+                className={field}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                {copy.form.chineseDescription}
+              </label>
+              <textarea
+                {...register("description")}
+                aria-label={copy.form.chineseDescription}
+                rows={4}
+                placeholder={copy.form.descriptionPlaceholder}
+                className={field}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseAge}</label>
-            <input
-              {...register("age")}
-              aria-label={copy.form.chineseAge}
-              placeholder={copy.form.agePlaceholder}
-              className={field}
-            />
-            {errors.age && (
-              <p className="text-[var(--color-error)] text-xs mt-1">{errors.age.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseNotes}</label>
-            <input
-              {...register("notes")}
-              aria-label={copy.form.chineseNotes}
-              placeholder={copy.form.notesPlaceholder}
-              className={field}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseDescription}</label>
-            <textarea
-              {...register("description")}
-              aria-label={copy.form.chineseDescription}
-              rows={4}
-              placeholder={copy.form.descriptionPlaceholder}
-              className={field}
-            />
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
-          {copy.form.englishGroup}
-        </legend>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.englishName}</label>
-            <input
-              {...register("name_en")}
-              aria-label={copy.form.englishName}
-              placeholder={copy.form.englishNamePlaceholder}
-              className={field}
-            />
+        <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
+            {copy.form.englishGroup}
+          </legend>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.englishName}</label>
+              <input
+                {...register("name_en")}
+                aria-label={copy.form.englishName}
+                placeholder={copy.form.englishNamePlaceholder}
+                className={field}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.englishAge}</label>
+              <input
+                {...register("age_en")}
+                aria-label={copy.form.englishAge}
+                placeholder={copy.form.englishAgePlaceholder}
+                className={field}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.englishNotes}</label>
+              <input
+                {...register("notes_en")}
+                aria-label={copy.form.englishNotes}
+                placeholder={copy.form.englishNotesPlaceholder}
+                className={field}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                {copy.form.englishDescription}
+              </label>
+              <textarea
+                {...register("description_en")}
+                aria-label={copy.form.englishDescription}
+                rows={4}
+                placeholder={copy.form.englishDescriptionPlaceholder}
+                className={field}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.englishAge}</label>
-            <input
-              {...register("age_en")}
-              aria-label={copy.form.englishAge}
-              placeholder={copy.form.englishAgePlaceholder}
-              className={field}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.englishNotes}</label>
-            <input
-              {...register("notes_en")}
-              aria-label={copy.form.englishNotes}
-              placeholder={copy.form.englishNotesPlaceholder}
-              className={field}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">{copy.form.englishDescription}</label>
-            <textarea
-              {...register("description_en")}
-              aria-label={copy.form.englishDescription}
-              rows={4}
-              placeholder={copy.form.englishDescriptionPlaceholder}
-              className={field}
-            />
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
-          {copy.form.adminGroup}
-        </legend>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <label htmlFor="animal-type" className="block text-sm font-medium mb-1">
-              {copy.form.type}
-            </label>
-            <select id="animal-type" {...register("type")} className={selectField}>
-              {typeOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={Boolean("disabled" in option && option.disabled)}
-                  style={optionStyle}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
+        <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
+            {copy.form.adminGroup}
+          </legend>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div>
+              <label htmlFor="animal-type" className="block text-sm font-medium mb-1">
+                {copy.form.type}
+              </label>
+              <select id="animal-type" {...register("type")} className={selectField}>
+                {typeOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={Boolean("disabled" in option && option.disabled)}
+                    style={optionStyle}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="animal-gender" className="block text-sm font-medium mb-1">
+                {copy.form.gender}
+              </label>
+              <select id="animal-gender" {...register("gender")} className={selectField}>
+                {genderOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={Boolean("disabled" in option && option.disabled)}
+                    style={optionStyle}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="animal-status" className="block text-sm font-medium mb-1">
+                {copy.form.status}
+              </label>
+              <select id="animal-status" {...register("status")} className={selectField}>
+                {statusOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={Boolean("disabled" in option && option.disabled)}
+                    style={optionStyle}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label htmlFor="animal-gender" className="block text-sm font-medium mb-1">
-              {copy.form.gender}
-            </label>
-            <select id="animal-gender" {...register("gender")} className={selectField}>
-              {genderOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={Boolean("disabled" in option && option.disabled)}
-                  style={optionStyle}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="animal-status" className="block text-sm font-medium mb-1">
-              {copy.form.status}
-            </label>
-            <select id="animal-status" {...register("status")} className={selectField}>
-              {statusOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={Boolean("disabled" in option && option.disabled)}
-                  style={optionStyle}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Adoption and sponsorship are independent: both may be ticked, and an
+          {/* Adoption and sponsorship are independent: both may be ticked, and an
             animal with neither is visible to staff but appears in no public
             catalogue (the "public read available" RLS policy requires one). */}
-        {/* Publication is its own axis. Withholding a record must never require
+          {/* Publication is its own axis. Withholding a record must never require
             claiming the animal was adopted or fostered. */}
-        <div className="mt-4">
-          <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
-            {formCopy.publication.label}
-          </label>
-          <select id="publication-state" {...register("publication_state")} className={selectField}>
-            <option value="draft" style={optionStyle}>
-              {formCopy.publication.draft}
-            </option>
-            <option value="published" style={optionStyle}>
-              {formCopy.publication.published}
-            </option>
-            <option value="unpublished" style={optionStyle}>
-              {formCopy.publication.unpublished}
-            </option>
-          </select>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">{formCopy.publication.hint}</p>
-        </div>
+          <div className="mt-4">
+            <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
+              {formCopy.publication.label}
+            </label>
+            <select
+              id="publication-state"
+              {...register("publication_state")}
+              className={selectField}
+            >
+              <option value="draft" style={optionStyle}>
+                {formCopy.publication.draft}
+              </option>
+              <option value="published" style={optionStyle}>
+                {formCopy.publication.published}
+              </option>
+              <option value="unpublished" style={optionStyle}>
+                {formCopy.publication.unpublished}
+              </option>
+            </select>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {formCopy.publication.hint}
+            </p>
+          </div>
 
-        <div className="mt-4 space-y-2">
-          <span className="block text-sm font-medium">{formCopy.listing.label}</span>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
-            {formCopy.listing.adoption}
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
-            {formCopy.listing.sponsorship}
-          </label>
-        </div>
-      </fieldset>
+          <div className="mt-4 space-y-2">
+            <span className="block text-sm font-medium">{formCopy.listing.label}</span>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
+              {formCopy.listing.adoption}
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
+              {formCopy.listing.sponsorship}
+            </label>
+          </div>
+        </fieldset>
 
-      {/* The only animal facts the public site renders. Everything outside this
+        {/* The only animal facts the public site renders. Everything outside this
           set stays internal: the database CHECK constraint refuses any other
           key, and refuses URLs, email addresses, phone numbers and angle
           brackets inside these ones, so contact details cannot leak into a
           public page through a free-text box. */}
-      <fieldset className="space-y-4 rounded-lg border border-[var(--color-border)] p-4">
-        <legend className="px-1 text-sm font-semibold">{formCopy.profile.heading}</legend>
-        <p className="text-xs text-[var(--color-text-muted)]">{formCopy.profile.intro}</p>
+        <fieldset className="space-y-4 rounded-lg border border-[var(--color-border)] p-4">
+          <legend className="px-1 text-sm font-semibold">{formCopy.profile.heading}</legend>
+          <p className="text-xs text-[var(--color-text-muted)]">{formCopy.profile.intro}</p>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-code">
+                {formCopy.profile.code}
+              </label>
+              <input
+                id="profile-code"
+                className={field}
+                value={profileFields.code}
+                onChange={(e) => setProfileField("code", e.target.value)}
+                placeholder={formCopy.profile.codePlaceholder}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-birthday">
+                {formCopy.profile.birthday}
+              </label>
+              <input
+                id="profile-birthday"
+                type="date"
+                className={field}
+                value={profileFields.birthday}
+                onChange={(e) => setProfileField("birthday", e.target.value)}
+              />
+              {/* Age is derived from this one source rather than kept as a second
+                copy that can disagree with it. */}
+              <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                {formCopy.profile.birthdayHint}
+              </p>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-neutered">
+                {formCopy.profile.neutered}
+              </label>
+              <select
+                id="profile-neutered"
+                className={selectField}
+                value={profileFields.neutered}
+                onChange={(e) => setProfileField("neutered", e.target.value)}
+              >
+                <option value="" style={optionStyle}>
+                  {formCopy.profile.notRecorded}
+                </option>
+                <option value="yes" style={optionStyle}>
+                  {formCopy.profile.neuteredYes}
+                </option>
+                <option value="no" style={optionStyle}>
+                  {formCopy.profile.neuteredNo}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-suitability">
+                {formCopy.profile.suitability}
+              </label>
+              <select
+                id="profile-suitability"
+                className={selectField}
+                value={profileFields.suitability}
+                onChange={(e) => setProfileField("suitability", e.target.value)}
+              >
+                <option value="" style={optionStyle}>
+                  {formCopy.profile.notRecorded}
+                </option>
+                <option value="newbie" style={optionStyle}>
+                  {formCopy.profile.suitabilityNewbie}
+                </option>
+                <option value="experienced" style={optionStyle}>
+                  {formCopy.profile.suitabilityExperienced}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-record-date">
+                {formCopy.profile.recordDate}
+              </label>
+              <input
+                id="profile-record-date"
+                type="date"
+                className={field}
+                value={profileFields.recordDate}
+                onChange={(e) => setProfileField("recordDate", e.target.value)}
+              />
+            </div>
+          </div>
+
           <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-code">
-              {formCopy.profile.code}
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-personality">
+              {formCopy.profile.personality}
             </label>
-            <input
-              id="profile-code"
+            <textarea
+              id="profile-personality"
+              rows={3}
               className={field}
-              value={profileFields.code}
-              onChange={(e) => setProfileField("code", e.target.value)}
-              placeholder={formCopy.profile.codePlaceholder}
+              value={profileFields.personality}
+              onChange={(e) => setProfileField("personality", e.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-birthday">
-              {formCopy.profile.birthday}
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-health">
+              {formCopy.profile.health}
             </label>
-            <input
-              id="profile-birthday"
-              type="date"
+            <textarea
+              id="profile-health"
+              rows={3}
               className={field}
-              value={profileFields.birthday}
-              onChange={(e) => setProfileField("birthday", e.target.value)}
+              value={profileFields.health}
+              onChange={(e) => setProfileField("health", e.target.value)}
             />
-            {/* Age is derived from this one source rather than kept as a second
-                copy that can disagree with it. */}
+            {/* Simplifying the public page must not drop what an applicant needs
+              to know before applying. */}
             <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-              {formCopy.profile.birthdayHint}
+              {formCopy.profile.healthHint}
             </p>
           </div>
+          {watch("sponsorship_eligible") ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium" htmlFor="profile-sponsor-use">
+                  {formCopy.profile.sponsorUse}
+                </label>
+                <textarea
+                  id="profile-sponsor-use"
+                  rows={3}
+                  className={field}
+                  value={profileFields.sponsorUse}
+                  onChange={(event) => setProfileField("sponsorUse", event.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium" htmlFor="profile-recent-progress">
+                  {formCopy.profile.recentProgress}
+                </label>
+                <textarea
+                  id="profile-recent-progress"
+                  rows={3}
+                  className={field}
+                  value={profileFields.recentProgress}
+                  onChange={(event) => setProfileField("recentProgress", event.target.value)}
+                />
+              </div>
+            </div>
+          ) : null}
           <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-neutered">
-              {formCopy.profile.neutered}
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
+              {formCopy.profile.story}
             </label>
-            <select
-              id="profile-neutered"
-              className={selectField}
-              value={profileFields.neutered}
-              onChange={(e) => setProfileField("neutered", e.target.value)}
-            >
-              <option value="" style={optionStyle}>
-                {formCopy.profile.notRecorded}
-              </option>
-              <option value="yes" style={optionStyle}>
-                {formCopy.profile.neuteredYes}
-              </option>
-              <option value="no" style={optionStyle}>
-                {formCopy.profile.neuteredNo}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-suitability">
-              {formCopy.profile.suitability}
-            </label>
-            <select
-              id="profile-suitability"
-              className={selectField}
-              value={profileFields.suitability}
-              onChange={(e) => setProfileField("suitability", e.target.value)}
-            >
-              <option value="" style={optionStyle}>
-                {formCopy.profile.notRecorded}
-              </option>
-              <option value="newbie" style={optionStyle}>
-                {formCopy.profile.suitabilityNewbie}
-              </option>
-              <option value="experienced" style={optionStyle}>
-                {formCopy.profile.suitabilityExperienced}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-record-date">
-              {formCopy.profile.recordDate}
-            </label>
-            <input
-              id="profile-record-date"
-              type="date"
+            <textarea
+              id="profile-story"
+              rows={6}
               className={field}
-              value={profileFields.recordDate}
-              onChange={(e) => setProfileField("recordDate", e.target.value)}
+              value={profileFields.story}
+              onChange={(e) => setProfileField("story", e.target.value)}
             />
           </div>
-        </div>
+        </fieldset>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="profile-personality">
-            {formCopy.profile.personality}
-          </label>
-          <textarea
-            id="profile-personality"
-            rows={3}
-            className={field}
-            value={profileFields.personality}
-            onChange={(e) => setProfileField("personality", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="profile-health">
-            {formCopy.profile.health}
-          </label>
-          <textarea
-            id="profile-health"
-            rows={3}
-            className={field}
-            value={profileFields.health}
-            onChange={(e) => setProfileField("health", e.target.value)}
-          />
-          {/* Simplifying the public page must not drop what an applicant needs
-              to know before applying. */}
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            {formCopy.profile.healthHint}
-          </p>
-        </div>
-        {watch("sponsorship_eligible") ? (
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium" htmlFor="profile-sponsor-use">
-                {formCopy.profile.sponsorUse}
-              </label>
-              <textarea
-                id="profile-sponsor-use"
-                rows={3}
-                className={field}
-                value={profileFields.sponsorUse}
-                onChange={(event) => setProfileField("sponsorUse", event.target.value)}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium" htmlFor="profile-recent-progress">
-                {formCopy.profile.recentProgress}
-              </label>
-              <textarea
-                id="profile-recent-progress"
-                rows={3}
-                className={field}
-                value={profileFields.recentProgress}
-                onChange={(event) => setProfileField("recentProgress", event.target.value)}
-              />
-            </div>
-          </div>
-        ) : null}
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
-            {formCopy.profile.story}
-          </label>
-          <textarea
-            id="profile-story"
-            rows={6}
-            className={field}
-            value={profileFields.story}
-            onChange={(e) => setProfileField("story", e.target.value)}
-          />
-        </div>
-      </fieldset>
-
-      <AnimalGalleryEditor
-        items={gallery}
-        onChange={(items) => {
-          setGallery(items);
-          setPreviewId(null);
-        }}
-      />
-
-      <div>
-        <label htmlFor="animal-photo" className="block text-sm font-medium mb-1">
-          {copy.form.photo}
-        </label>
-        <input
-          id="animal-photo"
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-          className="text-sm"
+        <AnimalGalleryEditor
+          items={gallery}
+          onChange={(items) => {
+            setGallery(items);
+            setPreviewId(null);
+          }}
         />
-        {imageFile || gallery.some((item) => item.file) ? (
-          <UploadCheckNotice
-            existing={existing}
-            animalId={animalId}
-            imageFileName={imageFile?.name ?? null}
-            galleryFiles={gallery.flatMap((item) =>
-              item.file ? [{ id: item.id, name: item.file.name }] : [],
-            )}
+
+        <div>
+          <label htmlFor="animal-photo" className="block text-sm font-medium mb-1">
+            {copy.form.photo}
+          </label>
+          <input
+            id="animal-photo"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+            className="text-sm"
           />
-        ) : null}
-        {existing?.image_url && !imageFile && (
-          <img
-            src={existing.image_url}
-            alt={copy.form.imageAlt}
-            className="w-20 h-20 object-cover rounded mt-2"
-          />
+          {imageFile || gallery.some((item) => item.file) ? (
+            <UploadCheckNotice
+              existing={existing}
+              animalId={animalId}
+              imageFileName={imageFile?.name ?? null}
+              galleryFiles={gallery.flatMap((item) =>
+                item.file ? [{ id: item.id, name: item.file.name }] : [],
+              )}
+            />
+          ) : null}
+          {existing?.image_url && !imageFile && (
+            <img
+              src={existing.image_url}
+              alt={copy.form.imageAlt}
+              className="w-20 h-20 object-cover rounded mt-2"
+            />
+          )}
+        </div>
+
+        {versions.length > 0 && (
+          <section className="rounded-lg border p-3">
+            <h2 className="font-bold">{formCopy.versions.heading}</h2>
+            {versions.map((version) => (
+              <button
+                key={version.id}
+                type="button"
+                className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
+                onClick={() => copyVersion(version.id)}
+              >
+                {formCopy.versions.duplicate(version.revision)}
+              </button>
+            ))}
+          </section>
         )}
-      </div>
+        {error && <p className="text-[var(--color-error)] text-sm">{error}</p>}
 
-      {versions.length > 0 && (
-        <section className="rounded-lg border p-3">
-          <h2 className="font-bold">{formCopy.versions.heading}</h2>
-          {versions.map((version) => (
+        {draftRevision > 0 && (
+          <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+            <h2 className="font-bold">{formCopy.publish.heading}</h2>
+            <div onChange={(event) => event.stopPropagation()}>
+              <ContentReviewPanel
+                key={draftRevision}
+                kind="animal"
+                id={animalId}
+                revision={String(draftRevision)}
+                disabled={dirty || saving}
+              />
+            </div>
+            {dirty && <p role="status">{formCopy.publish.dirty}</p>}
+            {previewBody && <SavedVersionPreview body={previewBody} revision={draftRevision} />}
             <button
-              key={version.id}
               type="button"
-              className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
-              onClick={() => copyVersion(version.id)}
-            >
-              {formCopy.versions.duplicate(version.revision)}
-            </button>
-          ))}
-        </section>
-      )}
-      {error && <p className="text-[var(--color-error)] text-sm">{error}</p>}
-
-      {draftRevision > 0 && (
-        <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-          <h2 className="font-bold">{formCopy.publish.heading}</h2>
-          <div onChange={(event) => event.stopPropagation()}>
-            <ContentReviewPanel
-              key={draftRevision}
-              kind="animal"
-              id={animalId}
-              revision={String(draftRevision)}
+              onClick={previewDraft}
               disabled={dirty || saving}
-            />
-          </div>
-          {dirty && <p role="status">{formCopy.publish.dirty}</p>}
-          {previewBody && <SavedVersionPreview body={previewBody} revision={draftRevision} />}
-          <button
-            type="button"
-            onClick={previewDraft}
-            disabled={dirty || saving}
-            className="rounded-lg border px-4 py-2 text-sm"
-          >
-            {formCopy.publish.createPreview}
-          </button>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="animal-publish-reason">
-              {formCopy.publish.reason}
-            </label>
-            <input
-              id="animal-publish-reason"
-              className={field}
-              value={publishReason}
-              onChange={(event) => setPublishReason(event.target.value)}
-            />
-          </div>
-          <button
-            type="button"
-            disabled={dirty || saving || !previewId || !publishReason.trim()}
-            onClick={publishDraft}
-            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
-          >
-            {formCopy.publish.publishVersion}
-          </button>
-        </section>
-      )}
+              className="rounded-lg border px-4 py-2 text-sm"
+            >
+              {formCopy.publish.createPreview}
+            </button>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="animal-publish-reason">
+                {formCopy.publish.reason}
+              </label>
+              <input
+                id="animal-publish-reason"
+                className={field}
+                value={publishReason}
+                onChange={(event) => setPublishReason(event.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              disabled={dirty || saving || !previewId || !publishReason.trim()}
+              onClick={publishDraft}
+              className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+            >
+              {formCopy.publish.publishVersion}
+            </button>
+          </section>
+        )}
 
-      <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={saving}
-          className="px-6 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
-        >
-          {saving ? copy.common.saving : copy.common.save}
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/admin" })}
-          className="px-6 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-surface-offset)]"
-        >
-          {copy.common.cancel}
-        </button>
-      </div>
-    </form>
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
+          >
+            {saving ? copy.common.saving : copy.common.save}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/admin" })}
+            className="px-6 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-surface-offset)]"
+          >
+            {copy.common.cancel}
+          </button>
+        </div>
+      </form>
+    </>
   );
 }
 

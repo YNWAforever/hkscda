@@ -591,7 +591,7 @@ mock.module("@tanstack/react-query", () => ({
 mock.module("@tanstack/react-router", () => ({
   ...realRouter,
   useNavigate: () => () => Promise.resolve(),
-  useBlocker: () => undefined,
+  useBlocker: () => ({ status: "idle", reset() {}, proceed() {} }),
   Link: ({
     children,
     className,

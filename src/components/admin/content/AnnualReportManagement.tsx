@@ -6,6 +6,7 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
 import { documentsCopy } from "./documentsCopy";
@@ -178,8 +179,24 @@ export function AnnualReportManagementView({
 }: ViewProps) {
   const common = useAdminCopy(documentsCopy);
   const copy = common.annualReports;
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle = rows.find((report) => report.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={copy.table.deleteLabel(deleteTitle)}
+        consequence={copy.table.confirmDelete(deleteTitle)}
+        confirmLabel={copy.table.deleteLabel(deleteTitle)}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) onAction?.(deleteId, "delete");
+        }}
+      />
       <header>
         <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
         <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
@@ -355,11 +372,7 @@ export function AnnualReportManagementView({
                             type="button"
                             aria-label={copy.table.deleteLabel(report.title)}
                             disabled={actionPending}
-                            onClick={() => {
-                              if (globalThis.confirm?.(copy.table.confirmDelete(report.title))) {
-                                onAction(report.id, "delete");
-                              }
-                            }}
+                            onClick={() => setDeleteId(report.id)}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />

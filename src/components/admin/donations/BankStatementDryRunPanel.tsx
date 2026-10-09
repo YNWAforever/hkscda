@@ -10,9 +10,10 @@ import {
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { useAdminCopy } from "../i18n/copy";
 import { BankMatchOperationReview } from "./BankMatchOperationReview";
-import { bankPanelCopy, bankPreviewCopy } from "./bankCopy";
+import { bankPanelCopy, bankPreviewCopy, bankReviewCopy } from "./bankCopy";
 import { donationFormatCopy } from "./formatCopy";
 
 const PAGE_SIZE = 25;
@@ -128,6 +129,7 @@ type OperationError = "restore_failed" | "create_failed" | "refresh_failed" | "a
 
 export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string }) {
   const copy = useAdminCopy(bankPanelCopy);
+  const review = useAdminCopy(bankReviewCopy);
   const format = useAdminCopy(donationFormatCopy);
   const fetchForActor = <T,>(path: string, init?: RequestInit) =>
     fetchAdminJson<T>(path, init, actorUserId);
@@ -141,6 +143,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
   const [pending, setPending] = useState(false);
   const [operationPending, setOperationPending] = useState(false);
   const [applyingOrdinal, setApplyingOrdinal] = useState<number | null>(null);
+  const [confirmOrdinal, setConfirmOrdinal] = useState<number | null>(null);
   const [error, setError] = useState<PreviewError | null>(null);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
@@ -287,27 +290,22 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     }
   }
 
-  async function applyOne(ordinal: number) {
+  /** The pending item that can be applied now, or undefined when nothing may be applied. */
+  function applicableItem(ordinal: number) {
     const item = operation?.items.find((entry) => entry.ordinal === ordinal);
-    if (
-      !operation ||
-      !item ||
-      item.status !== "pending" ||
-      operationBusy.current ||
-      operationReadFailed
-    )
-      return;
-    if (
-      !window.confirm(
-        copy.confirmApply(
-          item.bankReference,
-          item.paymentId,
-          item.paymentHint,
-          format.money(item.amountCents),
-        ),
-      )
-    )
-      return;
+    if (!operation || !item || item.status !== "pending" || operationBusy.current) return undefined;
+    return operationReadFailed ? undefined : item;
+  }
+
+  /** Asks first: confirming a match credits a payment, so the person sees what it is. */
+  function requestApply(ordinal: number) {
+    if (applicableItem(ordinal)) setConfirmOrdinal(ordinal);
+  }
+
+  const confirmItem = operation?.items.find((entry) => entry.ordinal === confirmOrdinal);
+
+  async function applyOne(ordinal: number) {
+    if (!operation || !applicableItem(ordinal)) return;
     const generation = ++operationGeneration.current;
     const current = () => mounted.current && operationGeneration.current === generation;
     operationBusy.current = true;
@@ -349,6 +347,28 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
 
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+      <ConfirmActionDialog
+        open={confirmOrdinal !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmOrdinal(null);
+        }}
+        title={review.confirmThis}
+        consequence={
+          confirmItem
+            ? copy.confirmApply(
+                confirmItem.bankReference,
+                confirmItem.paymentId,
+                confirmItem.paymentHint,
+                format.money(confirmItem.amountCents),
+              )
+            : ""
+        }
+        confirmLabel={review.confirmThis}
+        reason="none"
+        onConfirm={async () => {
+          if (confirmOrdinal !== null) await applyOne(confirmOrdinal);
+        }}
+      />
       <h3 className="font-semibold text-[var(--color-panel)]">{copy.heading}</h3>
       <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       <p className="break-all text-xs text-[var(--color-text-muted)]">
@@ -445,7 +465,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
         <BankMatchOperationReview
           key={operation.operationId}
           operation={operation}
-          onApply={(ordinal) => void applyOne(ordinal)}
+          onApply={requestApply}
           pendingOrdinal={applyingOrdinal}
           disabled={operationPending || operationReadFailed}
         />

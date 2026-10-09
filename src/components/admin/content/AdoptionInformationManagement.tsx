@@ -41,6 +41,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../ui/alert-dialog";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -127,6 +128,7 @@ function AdoptionInformationManagementRuntime() {
   const [pageDirty, setPageDirty] = useState(false);
   const [pendingTab, setPendingTab] = useState<AdoptionContentTab | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [deleteEstateId, setDeleteEstateId] = useState<string | null>(null);
   const [leaveProblem, setLeaveProblem] = useState<LeaveProblem | null>(null);
   const editorRef = useRef<AdoptionInstructionEditorHandle>(null);
   const reorderInFlight = useRef(false);
@@ -290,83 +292,105 @@ function AdoptionInformationManagementRuntime() {
     return <CareTopicsManagement activeTab={activeTab} onTabChange={handleTabChange} />;
   }
 
+  // Irreversible and triggered from an inline row button; name the estate so the operator can
+  // confirm they hit the row they meant.
+  const estateToDelete = informationQuery.data?.items.find((item) => item.id === deleteEstateId);
+  const estateLabel =
+    estateToDelete && "estateName" in estateToDelete
+      ? (estateToDelete as { estateName?: string }).estateName
+      : null;
+
   return (
-    <AdoptionInformationManagementView
-      activeTab={activeTab}
-      data={informationQuery.data}
-      loading={informationQuery.isLoading}
-      loadFailure={
-        informationQuery.error
-          ? {
-              error: informationQuery.error,
-              heading: adminErrorMessage(informationQuery.error, language),
-              onRetry: () => void informationQuery.refetch(),
+    <>
+      <ConfirmActionDialog
+        open={deleteEstateId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteEstateId(null);
+        }}
+        title={copy.estates.delete}
+        consequence={copy.estates.confirmDelete(estateLabel ?? copy.estates.thisEstate)}
+        confirmLabel={copy.estates.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteEstateId !== null)
+            mutation.mutate({ action: "delete-estate", id: deleteEstateId });
+        }}
+      />
+      <AdoptionInformationManagementView
+        activeTab={activeTab}
+        data={informationQuery.data}
+        loading={informationQuery.isLoading}
+        loadFailure={
+          informationQuery.error
+            ? {
+                error: informationQuery.error,
+                heading: adminErrorMessage(informationQuery.error, language),
+                onRetry: () => void informationQuery.refetch(),
+              }
+            : null
+        }
+        error={adminErrorMessage(mutation.error, language)}
+        query={query}
+        page={page}
+        pending={mutation.isPending}
+        onTabChange={handleTabChange}
+        onQueryChange={(value) => {
+          setQuery(value);
+          setPage(1);
+        }}
+        onPageChange={setPage}
+        onSaveFee={async (input) =>
+          ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee })
+            .fee
+        }
+        onMoveFee={(input, direction) => {
+          if (mutation.isPending || reorderInFlight.current) return;
+          const pair = moveFeeWithinSpecies(
+            informationQuery.data?.items ?? [],
+            input.id,
+            direction,
+          );
+          if (pair.length !== 2 || !pair[0] || !pair[1]) return;
+          reorderInFlight.current = true;
+          void mutation
+            .mutateAsync({
+              action: "move-fees",
+              input: {
+                firstId: pair[0].id,
+                secondId: pair[1].id,
+                expectedVersions: { first: pair[0].version, second: pair[1].version },
+              },
+            })
+            .catch(() => undefined)
+            .finally(() => {
+              reorderInFlight.current = false;
+            });
+        }}
+        onCreateEstate={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "create-estate", input })) as {
+              estate: DogFriendlyEstate;
             }
-          : null
-      }
-      error={adminErrorMessage(mutation.error, language)}
-      query={query}
-      page={page}
-      pending={mutation.isPending}
-      onTabChange={handleTabChange}
-      onQueryChange={(value) => {
-        setQuery(value);
-        setPage(1);
-      }}
-      onPageChange={setPage}
-      onSaveFee={async (input) =>
-        ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee }).fee
-      }
-      onMoveFee={(input, direction) => {
-        if (mutation.isPending || reorderInFlight.current) return;
-        const pair = moveFeeWithinSpecies(informationQuery.data?.items ?? [], input.id, direction);
-        if (pair.length !== 2 || !pair[0] || !pair[1]) return;
-        reorderInFlight.current = true;
-        void mutation
-          .mutateAsync({
-            action: "move-fees",
-            input: {
-              firstId: pair[0].id,
-              secondId: pair[1].id,
-              expectedVersions: { first: pair[0].version, second: pair[1].version },
-            },
-          })
-          .catch(() => undefined)
-          .finally(() => {
-            reorderInFlight.current = false;
-          });
-      }}
-      onCreateEstate={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "create-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onUpdateEstate={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "update-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onSetEstatePublication={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "publish-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onDeleteEstate={(id) => {
-        // Irreversible and triggered from an inline row button; name the estate
-        // so the operator can confirm they hit the row they meant.
-        const estate = informationQuery.data?.items.find((item) => item.id === id);
-        const label =
-          estate && "estateName" in estate ? (estate as { estateName?: string }).estateName : null;
-        if (!window.confirm(copy.estates.confirmDelete(label ?? copy.estates.thisEstate))) return;
-        mutation.mutate({ action: "delete-estate", id });
-      }}
-    />
+          ).estate
+        }
+        onUpdateEstate={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "update-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onSetEstatePublication={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "publish-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onDeleteEstate={setDeleteEstateId}
+      />
+    </>
   );
 }
 
