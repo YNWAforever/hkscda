@@ -32,8 +32,14 @@ mock.module("../ui/alert-dialog", () => ({
 const { renderAdminInChinese, renderAdminInEnglish, expectNoChineseText } =
   await import("./i18n/testing");
 const { ConfirmActionDialog } = await import("./ConfirmActionDialog");
-const { CONFIRM_REASON_MAX_LENGTH, INITIAL_CONFIRM_STATE, canConfirm, confirmDialogReducer } =
-  await import("./confirmActionState");
+const {
+  CONFIRM_REASON_MAX_LENGTH,
+  INITIAL_CONFIRM_STATE,
+  canConfirm,
+  confirmDialogReducer,
+  runConfirm,
+} = await import("./confirmActionState");
+const { confirmActionCopy } = await import("./confirmActionCopy");
 
 const base = {
   open: true,
@@ -166,5 +172,110 @@ describe("error text", () => {
       "Sign in again",
     );
     expect(adminErrorMessage(new AdminSessionError("not_signed_in"), "zh")).toBe("未登入");
+  });
+});
+
+type Action = Parameters<typeof confirmDialogReducer>[1];
+
+/** A fake dialog around `runConfirm`: the state the reducer keeps, and what was called. */
+function fakeDialog(over: Partial<Parameters<typeof runConfirm>[0]> = {}) {
+  const box = {
+    state: INITIAL_CONFIRM_STATE,
+    closed: [] as boolean[],
+    calls: [] as (string | null)[],
+  };
+  const args = {
+    open: true,
+    reason: "none" as const,
+    get state() {
+      return box.state;
+    },
+    inFlight: { current: false },
+    dispatch: (action: Action) => {
+      box.state = confirmDialogReducer(box.state, action);
+    },
+    onConfirm: async (reason: string | null) => {
+      box.calls.push(reason);
+    },
+    onOpenChange: (open: boolean) => {
+      box.closed.push(open);
+    },
+    ...over,
+  };
+  return { box, args };
+}
+
+describe("runConfirm", () => {
+  test("closes the dialog when the action resolves", async () => {
+    const { box, args } = fakeDialog();
+    await runConfirm(args);
+    expect(box.calls).toEqual([null]);
+    expect(box.closed).toEqual([false]);
+    expect(box.state.pending).toBe(true); // the dialog resets itself when it closes
+    expect(args.inFlight.current).toBe(false);
+  });
+
+  test("a rejection keeps the dialog open, with the typed reason and the error", async () => {
+    const reason = { required: true, minLength: 3 } as const;
+    const failure = new AdminSessionError("not_signed_in");
+    const { box, args } = fakeDialog({
+      reason,
+      onConfirm: async () => {
+        throw failure;
+      },
+    });
+    box.state = confirmDialogReducer(box.state, { type: "edit", text: " because " });
+    await runConfirm(args);
+    expect(box.closed).toEqual([]);
+    expect(box.state).toEqual({ text: " because ", pending: false, error: failure, failed: true });
+    const { adminErrorMessage } = await import("../../lib/admin/session");
+    expect(adminErrorMessage(box.state.error, "en")).toContain("Sign in again");
+    // and the person can try again
+    expect(args.inFlight.current).toBe(false);
+  });
+
+  test("passes the trimmed reason to the action", async () => {
+    const { box, args } = fakeDialog({ reason: { required: true, minLength: 3 } });
+    box.state = confirmDialogReducer(box.state, { type: "edit", text: "  because  " });
+    await runConfirm(args);
+    expect(box.calls).toEqual(["because"]);
+  });
+
+  test("a second click while the first is running does nothing", async () => {
+    let release: () => void = () => {};
+    const { box, args } = fakeDialog({
+      onConfirm: (reason) => {
+        box.calls.push(reason);
+        return new Promise<void>((resolve) => {
+          release = resolve;
+        });
+      },
+    });
+    const first = runConfirm(args);
+    await runConfirm(args);
+    expect(box.calls).toHaveLength(1);
+    release();
+    await first;
+    expect(box.closed).toEqual([false]);
+  });
+
+  test("a click after the dialog has closed (the fade-out) does nothing", async () => {
+    const { box, args } = fakeDialog({ open: false });
+    await runConfirm(args);
+    expect(box.calls).toEqual([]);
+    expect(box.state.pending).toBe(false);
+  });
+
+  test("a reason that is too short does not run the action", async () => {
+    const { box, args } = fakeDialog({ reason: { required: true, minLength: 5 } });
+    await runConfirm(args);
+    expect(box.calls).toEqual([]);
+  });
+});
+
+describe("pending text", () => {
+  test("reuses the existing zh wording, and reads Working… in English", () => {
+    expect(confirmActionCopy.zh.working).toBe("處理中…");
+    expect(confirmActionCopy.en.working).toBe("Working…");
   });
 });

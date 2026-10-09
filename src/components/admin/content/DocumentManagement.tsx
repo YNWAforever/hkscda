@@ -139,7 +139,9 @@ function DocumentManagementRuntime() {
       }
       error={
         documentErrorMessage(uploadMutation.error, adminLanguage) ??
-        documentErrorMessage(actionMutation.error, adminLanguage)
+        (actionMutation.variables?.action === "delete"
+          ? null
+          : documentErrorMessage(actionMutation.error, adminLanguage))
       }
       query={query}
       kind={kind}
@@ -169,7 +171,12 @@ function DocumentManagementRuntime() {
       onUploadLanguageChange={setUploadLanguage}
       onFileChange={setFile}
       onUpload={() => uploadMutation.mutate()}
-      onAction={(id, action) => actionMutation.mutate({ id, action })}
+      onAction={(id, action) => {
+        const run = actionMutation.mutateAsync({ id, action });
+        // Only a delete waits in its confirm dialog; the other actions show their error on the page.
+        if (action === "delete") return run;
+        run.catch(() => undefined);
+      }}
     />
   );
 }
@@ -202,7 +209,7 @@ type ViewProps = {
   onUploadLanguageChange?: (value: DocumentLanguage) => void;
   onFileChange?: (file: File | null) => void;
   onUpload?: () => void;
-  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void;
+  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void | Promise<unknown>;
 };
 
 export function DocumentManagementView({
@@ -251,7 +258,7 @@ export function DocumentManagementView({
         destructive
         reason="none"
         onConfirm={async () => {
-          if (deleteId !== null) onAction?.(deleteId, "delete");
+          if (deleteId !== null) await onAction?.(deleteId, "delete");
         }}
       />
       <header>

@@ -314,7 +314,7 @@ function AdoptionInformationManagementRuntime() {
         reason="none"
         onConfirm={async () => {
           if (deleteEstateId !== null)
-            mutation.mutate({ action: "delete-estate", id: deleteEstateId });
+            await mutation.mutateAsync({ action: "delete-estate", id: deleteEstateId });
         }}
       />
       <AdoptionInformationManagementView
@@ -330,7 +330,12 @@ function AdoptionInformationManagementRuntime() {
               }
             : null
         }
-        error={adminErrorMessage(mutation.error, language)}
+        // A failed delete is shown inside its confirm dialog, not twice.
+        error={
+          mutation.variables?.action === "delete-estate"
+            ? null
+            : adminErrorMessage(mutation.error, language)
+        }
         query={query}
         page={page}
         pending={mutation.isPending}

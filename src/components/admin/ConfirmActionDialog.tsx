@@ -20,6 +20,7 @@ import {
   INITIAL_CONFIRM_STATE,
   canConfirm,
   confirmDialogReducer,
+  runConfirm,
   type ConfirmReason,
 } from "./confirmActionState";
 import { useAdminLanguageOrDefault } from "./i18n/languageContext";
@@ -59,20 +60,8 @@ export function ConfirmActionDialog({
     if (!open) dispatch({ type: "reset" });
   }, [open]);
 
-  const submit = async () => {
-    // The ref answers a second click that lands before the pending state has rendered.
-    if (inFlight.current || !canConfirm(reason, state.text, state.pending)) return;
-    inFlight.current = true;
-    dispatch({ type: "start" });
-    try {
-      await onConfirm(required ? state.text.trim() : null);
-      onOpenChange(false);
-    } catch (error) {
-      dispatch({ type: "rejected", error });
-    } finally {
-      inFlight.current = false;
-    }
-  };
+  const submit = () =>
+    runConfirm({ open, reason, state, inFlight, dispatch, onConfirm, onOpenChange });
 
   const hint = required ? copy.reasonHint(reason.minLength) : "";
 
@@ -126,7 +115,7 @@ export function ConfirmActionDialog({
               void submit();
             }}
           >
-            {confirmLabel}
+            {state.pending ? copy.working : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

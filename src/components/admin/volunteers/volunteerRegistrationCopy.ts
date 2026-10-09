@@ -17,6 +17,8 @@ export const volunteerRegistrationCopy = defineAdminCopy({
       rejected: "已拒絕",
       cancelled: "已取消",
     },
+    /** The verb on the reject confirmation (existing wording: pageCopy/pledgeCopy.ts reject). */
+    rejectVerb: "拒絕",
     /** The button that records an attendance status. */
     attendanceActions: {
       not_marked: "未記錄",
@@ -144,6 +146,7 @@ export const volunteerRegistrationCopy = defineAdminCopy({
       rejected: "Reject",
       cancelled: "Mark cancelled",
     },
+    rejectVerb: "Reject",
     attendanceActions: {
       not_marked: "Mark not recorded",
       attended: "Mark attended",

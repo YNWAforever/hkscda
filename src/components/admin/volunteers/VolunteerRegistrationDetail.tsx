@@ -141,13 +141,13 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         onOpenChange={(open) => {
           if (!open) setRejectStatus(null);
         }}
-        title={copy.transitions.rejected}
+        title={copy.rejectVerb}
         consequence={copy.confirmReject(registration.contactName)}
-        confirmLabel={copy.transitions.rejected}
+        confirmLabel={copy.rejectVerb}
         destructive
         reason="none"
         onConfirm={async () => {
-          if (rejectStatus !== null) updateStatus.mutate(rejectStatus);
+          if (rejectStatus !== null) await updateStatus.mutateAsync(rejectStatus);
         }}
       />
       <Link
@@ -207,7 +207,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           <DetailItem label={text.notes} value={registration.notes ?? text.none} />
         </div>
 
-        {updateStatus.error && (
+        {updateStatus.error && updateStatus.variables !== "rejected" && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
             {volunteerAdminErrorMessage(updateStatus.error, language)}
           </p>

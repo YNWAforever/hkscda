@@ -55,3 +55,42 @@ export function confirmDialogReducer(
       return INITIAL_CONFIRM_STATE;
   }
 }
+
+export type RunConfirmArgs = {
+  open: boolean;
+  reason: ConfirmReason;
+  state: ConfirmDialogState;
+  /** Answers a second click that lands before the pending state has rendered. */
+  inFlight: { current: boolean };
+  dispatch: (action: ConfirmDialogAction) => void;
+  onConfirm: (reason: string | null) => Promise<void>;
+  onOpenChange: (open: boolean) => void;
+};
+
+/**
+ * What a click on the confirm button does. It does nothing when the dialog is closed (a click
+ * during the close fade), when a request is already running or when the reason is too short.
+ * It closes the dialog when `onConfirm` resolves, and keeps it open with the text when it rejects.
+ */
+export async function runConfirm({
+  open,
+  reason,
+  state,
+  inFlight,
+  dispatch,
+  onConfirm,
+  onOpenChange,
+}: RunConfirmArgs): Promise<void> {
+  if (!open) return;
+  if (inFlight.current || !canConfirm(reason, state.text, state.pending)) return;
+  inFlight.current = true;
+  dispatch({ type: "start" });
+  try {
+    await onConfirm(reason === "none" ? null : state.text.trim());
+    onOpenChange(false);
+  } catch (error) {
+    dispatch({ type: "rejected", error });
+  } finally {
+    inFlight.current = false;
+  }
+}

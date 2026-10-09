@@ -194,7 +194,8 @@ export function PaymentsReconcile() {
     }
   }
 
-  const actionFailure = issueReceipt.error ?? voidReceipt.error;
+  // A failed void is shown inside its confirm dialog, with the reason kept.
+  const actionFailure = issueReceipt.error;
   const actionError = actionFailure ? (adminErrorMessage(actionFailure, language) ?? "") : "";
 
   function rowActions(payment: AdminPaymentRow) {
@@ -356,7 +357,7 @@ export function PaymentsReconcile() {
         destructive
         reason="none"
         onConfirm={async () => {
-          if (voidTarget) voidReceipt.mutate(voidTarget.id);
+          if (voidTarget) await voidReceipt.mutateAsync(voidTarget.id);
         }}
       />
       <section className="grid gap-3 sm:grid-cols-3">

@@ -243,7 +243,7 @@ export function StatusAdmin() {
         destructive
         reason="none"
         onConfirm={async () => {
-          if (deleteTarget) deleteMutation.mutate(deleteTarget);
+          if (deleteTarget) await deleteMutation.mutateAsync(deleteTarget);
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -619,11 +619,6 @@ export function StatusAdmin() {
           {saveMutation.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
               {adminErrorMessage(saveMutation.error, language) ?? ""}
-            </p>
-          )}
-          {deleteMutation.error && (
-            <p role="alert" className="text-sm text-[var(--color-error)]">
-              {adminErrorMessage(deleteMutation.error, language) ?? ""}
             </p>
           )}
 

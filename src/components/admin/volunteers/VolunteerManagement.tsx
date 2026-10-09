@@ -646,7 +646,10 @@ export function VolunteerManagement() {
     );
   }
 
-  const changeFailure = patchActivity.error ?? updateRegistration.error;
+  // A failed rejection is shown inside its confirm dialog, not twice.
+  const registrationFailure =
+    updateRegistration.variables?.status === "rejected" ? null : updateRegistration.error;
+  const changeFailure = patchActivity.error ?? registrationFailure;
 
   return (
     <div className="space-y-6 p-6">
@@ -655,14 +658,14 @@ export function VolunteerManagement() {
         onOpenChange={(open) => {
           if (!open) setRejectTarget(null);
         }}
-        title={copy.transitions.rejected}
+        title={copy.rejectVerb}
         consequence={text.registrations.confirmReject(rejectTarget?.contactName ?? "")}
-        confirmLabel={copy.transitions.rejected}
+        confirmLabel={copy.rejectVerb}
         destructive
         reason="none"
         onConfirm={async () => {
           if (!rejectTarget) return;
-          updateRegistration.mutate({
+          await updateRegistration.mutateAsync({
             id: rejectTarget.id,
             status: rejectTarget.status,
             expectedUpdatedAt: rejectTarget.expectedUpdatedAt,

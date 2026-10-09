@@ -16,6 +16,8 @@ export const confirmActionCopy = defineAdminCopy({
     discardChanges: "放棄更改",
     reasonLabel: "原因",
     reasonHint: (_minLength: number) => "",
+    // Existing wording: content/reviewCopy.ts processing.
+    working: "處理中…",
     failed: "操作失敗，請稍後再試。",
   },
   en: {
@@ -24,6 +26,7 @@ export const confirmActionCopy = defineAdminCopy({
     discardChanges: "Discard changes",
     reasonLabel: "Reason",
     reasonHint: (minLength: number) => `Enter at least ${minLength} characters.`,
+    working: "Working…",
     failed: "Could not complete this. Try again.",
   },
 });

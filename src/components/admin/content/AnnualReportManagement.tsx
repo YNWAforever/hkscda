@@ -96,7 +96,9 @@ function AnnualReportManagementRuntime() {
   const loadError = reportsQuery.error ?? assetsQuery.error;
   const error =
     documentErrorMessage(createMutation.error, language) ??
-    documentErrorMessage(actionMutation.error, language);
+    (actionMutation.variables?.action === "delete"
+      ? null
+      : documentErrorMessage(actionMutation.error, language));
 
   return (
     <AnnualReportManagementView
@@ -127,7 +129,12 @@ function AnnualReportManagementRuntime() {
       actionPending={actionMutation.isPending}
       onSortOrderChange={setSortOrder}
       onCreate={() => createMutation.mutate()}
-      onAction={(id, action, nextSortOrder) => actionMutation.mutate({ id, action, nextSortOrder })}
+      onAction={(id, action, nextSortOrder) => {
+        const run = actionMutation.mutateAsync({ id, action, nextSortOrder });
+        // Only a delete waits in its confirm dialog; the other actions show their error on the page.
+        if (action === "delete") return run;
+        run.catch(() => undefined);
+      }}
     />
   );
 }
@@ -155,7 +162,7 @@ type ViewProps = {
     id: string,
     action: "publish" | "unpublish" | "delete" | "order",
     nextSortOrder?: number,
-  ) => void;
+  ) => void | Promise<unknown>;
 };
 
 export function AnnualReportManagementView({
@@ -194,7 +201,7 @@ export function AnnualReportManagementView({
         destructive
         reason="none"
         onConfirm={async () => {
-          if (deleteId !== null) onAction?.(deleteId, "delete");
+          if (deleteId !== null) await onAction?.(deleteId, "delete");
         }}
       />
       <header>

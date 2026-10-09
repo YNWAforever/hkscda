@@ -104,7 +104,7 @@ function toInput(
 
 export function KnowledgeManagement() {
   const copy = useAdminCopy(knowledgeCopy);
-  const { language } = useAdminLanguage();
+  const { language, copy: common } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [documentPage, setDocumentPage] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
@@ -173,9 +173,9 @@ export function KnowledgeManagement() {
         onOpenChange={(open) => {
           if (!open) setDeleteId(null);
         }}
-        title={copy.editor.delete}
+        title={common.common.delete}
         consequence={copy.editor.confirmDelete(deleteTitle)}
-        confirmLabel={copy.editor.delete}
+        confirmLabel={common.common.delete}
         destructive
         reason="none"
         onConfirm={async () => {
