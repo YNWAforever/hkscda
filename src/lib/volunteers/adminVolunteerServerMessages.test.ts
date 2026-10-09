@@ -431,6 +431,45 @@ describe("registrations and activities", () => {
     );
   });
 
+  test("a server message that is already English arrives as the message for its HTTP status, in both languages", async () => {
+    const empty = { data: null, error: null };
+    const badId = expectReaches(
+      await reach(() =>
+        handlers(empty).getRegistration({
+          request: new Request("http://localhost/x"),
+          params: { id: "not-a-uuid" },
+        }),
+      ),
+      null,
+      400,
+    );
+    const tooBig = expectReaches(
+      await reach(() =>
+        handlers(empty).updateRegistrationStatus({
+          request: new Request("http://localhost/x", {
+            method: "PATCH",
+            body: "x".repeat(1024 * 1024 + 16),
+          }),
+          params: { id },
+        }),
+      ),
+      null,
+      413,
+    );
+    for (const [failure, sent] of [
+      [badId, "Invalid volunteer id"],
+      [tooBig, "Request body too large"],
+    ] as const) {
+      // The browser gets the zh-HK message for the status, so the server's English is not what shows.
+      expect(failure.message).toBe(volunteerErrorMessage({}, failure.status));
+      expect(failure.message).not.toContain(sent);
+      expect(volunteerAdminErrorMessage(failure, "en")).toBe(
+        volunteerErrorMessage({}, failure.status, "en"),
+      );
+      expect(volunteerAdminErrorMessage(failure, "en")).not.toContain(sent);
+    }
+  });
+
   test("the retired copy command arrives as the apiResult message", async () => {
     const failure = expectReaches(
       await reach(() =>

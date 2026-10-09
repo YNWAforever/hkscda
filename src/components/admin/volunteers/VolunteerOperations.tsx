@@ -3,12 +3,15 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSupabaseClient } from "../../../lib/supabase";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import type { AdminLanguage } from "../../../lib/admin/language";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import { TurnstileWidget, turnstileEnabled } from "../../site/TurnstileWidget";
 import { VerifiedEmailSignIn, useCommandKey } from "../../site/volunteer/VerifiedEmailSignIn";
 import type { OperationCommand } from "../../../lib/volunteers/policy/operations";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 import { useAdminLanguageOrDefault } from "../i18n/languageContext";
 import { pickAdminCopy } from "../i18n/copy";
+import { sharedPageCopy } from "../pageCopy/sharedCopy";
 import { OperationPreview } from "./OperationPreview";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerOperationsCopy } from "./volunteerOperationsCopy";
@@ -46,32 +49,74 @@ function useOperationsLanguage(publicMode: boolean) {
   return publicMode ? "zh" : adminLanguage;
 }
 
-export function VolunteerOperations({ publicMode = false }: { publicMode?: boolean }) {
+/** Who is signed in: not known yet, nobody, or a person. */
+type SessionState =
+  | { status: "checking" }
+  | { status: "signedOut" }
+  | { status: "signedIn"; userId: string };
+
+/** What the page says to staff in place of the workspace while nobody is known to be signed in. */
+function StaffSignInStatus({ checking, language }: { checking: boolean; language: AdminLanguage }) {
+  const copy = pickAdminCopy(volunteerOperationsCopy, language);
+  const notSignedIn = pickAdminCopy(sharedPageCopy, language).common.notSignedIn;
+  const backToLogin = pickAdminCopy(adminCommonCopy, language).login.backToLogin;
+  if (checking) return <p role="status">{copy.checkingSignIn}</p>;
+  return (
+    <>
+      <p role="status">{notSignedIn}</p>
+      <a href="/admin/login" className="inline-block min-h-11 py-2 underline">
+        {backToLogin}
+      </a>
+    </>
+  );
+}
+
+/**
+ * The page shown until a person is signed in: the public page asks the volunteer to verify an email;
+ * the admin page says it is checking, and once it knows nobody is signed in (also after signing out
+ * on another tab) tells staff to sign in again.
+ */
+export function OperationsSignInGate({
+  publicMode,
+  checking,
+}: {
+  publicMode: boolean;
+  checking: boolean;
+}) {
   const language = useOperationsLanguage(publicMode);
   const copy = pickAdminCopy(volunteerOperationsCopy, language);
-  const [session, setSession] = useState<{ token: string; userId: string }>();
+  return (
+    <div className="space-y-4 p-4">
+      <h1 className="text-2xl font-bold">{copy.title}</h1>
+      {publicMode ? (
+        <VerifiedEmailSignIn />
+      ) : (
+        <StaffSignInStatus checking={checking} language={language} />
+      )}
+    </div>
+  );
+}
+
+const signedOut: SessionState = { status: "signedOut" };
+
+function readSession(session: { user: { id: string } } | null): SessionState {
+  return session ? { status: "signedIn", userId: session.user.id } : signedOut;
+}
+
+export function VolunteerOperations({ publicMode = false }: { publicMode?: boolean }) {
+  const [session, setSession] = useState<SessionState>({ status: "checking" });
   useEffect(() => {
     const client = getSupabaseClient();
     void client.auth
       .getSession()
-      .then(({ data }) =>
-        setSession(
-          data.session
-            ? { token: data.session.access_token, userId: data.session.user.id }
-            : undefined,
-        ),
-      );
-    const { data } = client.auth.onAuthStateChange((_event, s) =>
-      setSession(s ? { token: s.access_token, userId: s.user.id } : undefined),
-    );
+      .then(({ data }) => setSession(readSession(data.session)))
+      .catch(() => setSession(signedOut));
+    const { data } = client.auth.onAuthStateChange((_event, s) => setSession(readSession(s)));
     return () => data.subscription.unsubscribe();
   }, []);
-  if (!session)
+  if (session.status !== "signedIn")
     return (
-      <div className="space-y-4 p-4">
-        <h1 className="text-2xl font-bold">{copy.title}</h1>
-        {publicMode ? <VerifiedEmailSignIn /> : <p role="status">{copy.checkingSignIn}</p>}
-      </div>
+      <OperationsSignInGate publicMode={publicMode} checking={session.status === "checking"} />
     );
   return <OperationsWorkspace publicMode={publicMode} userId={session.userId} />;
 }

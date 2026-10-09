@@ -28,7 +28,8 @@ describe("the error text of the volunteer admin screens", () => {
     expect(volunteerAdminErrorMessage(new VolunteerSelectionError("too_many"))).toBe(
       "最多只能選取 1000 筆義工身份",
     );
-    // An English message from the server is shown as it came; a value that is not an error has none.
+    // The English message of a plain error is shown as it came; a value that is not an error has none.
+    // (An API error never carries the server's English: see adminVolunteerServerMessages.test.ts.)
     expect(volunteerAdminErrorMessage(new Error("Capacity conflict"), "en")).toBe(
       "Capacity conflict",
     );

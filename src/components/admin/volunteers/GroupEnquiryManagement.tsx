@@ -264,6 +264,7 @@ function EnquiryDetailPanel({
   onPatch: (body: Record<string, unknown>) => void;
 }) {
   const copy = useAdminCopy(groupEnquiryCopy);
+  const format = useAdminCopy(volunteerFormatCopy);
   const [adminNotes, setAdminNotes] = useState(detail.adminNotes ?? "");
 
   return (
@@ -295,7 +296,9 @@ function EnquiryDetailPanel({
         <div>
           <dt className="text-xs text-[var(--color-text-muted)]">{copy.detail.participants}</dt>
           <dd className="tabular-nums text-[var(--color-panel)]">
-            {detail.participantCount ?? copy.detail.notProvided}
+            {typeof detail.participantCount === "number"
+              ? format.number(detail.participantCount)
+              : copy.detail.notProvided}
             {detail.participantAgeProfile ? ` · ${detail.participantAgeProfile}` : ""}
           </dd>
         </div>

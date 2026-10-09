@@ -13,13 +13,15 @@ const CHINESE = /[\p{Script=Han}\u3000-\u303F\uFF00-\uFFEF]/u;
 /**
  * The message for an error caught on a volunteer admin screen, in `language`. It starts from
  * `adminErrorMessage`, the general error-text function, so a session error is translated and an
- * English message the server sent is shown as it came.
+ * English message of an error that did not come from the API is shown as it came.
  *
  * Two errors the volunteer code throws itself (`BulkInputError`, `VolunteerSelectionError`) are
  * written from their code. A volunteer API error reaches the browser with a zh-HK message
  * (`fetchAdminJson` writes it into the `AdminApiError`). Chinese keeps showing it. English finds the
  * English text of that exact message in `apiResult` or `serverErrors`, and when the message is not in
- * either, it shows the message that fits the HTTP status instead, never the Chinese text.
+ * either, it shows the message that fits the HTTP status instead, never the Chinese text. A server
+ * message that is English already (`Invalid volunteer id`) is replaced by `fetchAdminJson` with the
+ * zh-HK message for its status, so it too reaches English as the message for that status.
  */
 export function volunteerAdminErrorMessage(
   error: unknown,

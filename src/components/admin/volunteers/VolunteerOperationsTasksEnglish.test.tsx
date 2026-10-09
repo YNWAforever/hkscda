@@ -10,7 +10,8 @@ import {
 
 // The mocks and the fixtures are in volunteerKit.test.support.tsx; it must load before a screen does.
 const kit = await import("./volunteerKit.test.support");
-const { VolunteerOperations, OperationsWorkspace } = await import("./VolunteerOperations");
+const { VolunteerOperations, OperationsWorkspace, OperationsSignInGate } =
+  await import("./VolunteerOperations");
 const { OperationPreview } = await import("./OperationPreview");
 const { volunteerOperationsCopy } = await import("./volunteerOperationsCopy");
 const { VolunteerTasks } = await import("./VolunteerTasks");
@@ -195,6 +196,23 @@ describe("the group requests and rescheduling screen in English", () => {
       expect(group, text).toContain(text);
     }
     expect(render({ apply_action: "group_apply" })).toContain("Scenario: B, without a group.");
+    // Large figures are grouped in English and stay plain in Chinese.
+    const large = render({
+      apply_action: "group_apply",
+      manifest: { group_headcount: 1200, volunteer_capacity: 1000 },
+    });
+    expect(large).toContain(
+      "Total group size: 1,200. Total places available to volunteers: 1,000.",
+    );
+    expect(
+      render({ apply_action: "move_apply", manifest: { capacity: 2500, remaining: 1100 } }),
+    ).toContain("The destination session has 2,500 places in total and 1,100 left.");
+    expect(volunteerOperationsCopy.zh.preview.group(1200, 1000, "A 有團體")).toBe(
+      "團體總人數：1200；可供義工使用的總位：1000；情況：A 有團體。",
+    );
+    expect(volunteerOperationsCopy.zh.preview.move(2500, 1100)).toBe(
+      "目的場次總位 2500，目前剩餘 1100。確認前伺服器會再次檢查。",
+    );
 
     const staffMove = render({
       apply_action: "move_apply",
@@ -262,7 +280,45 @@ describe("the group requests and rescheduling screen in English", () => {
         expect(markup, text).toContain(text);
       }
     });
-    expect(renderAdminInChinese(<VolunteerOperations />)).toContain("正在確認登入狀態…");
+    expect(renderAdminInChinese(<VolunteerOperations />)).toContain("正在驗證登入狀態…");
+  });
+
+  test("tells staff to sign in again once nobody is signed in, instead of checking for ever", () => {
+    // The gate's two admin states, in both languages: still checking, and signed out (also what a
+    // sign-out on another tab leaves). The signed-out state names a next step and links to sign-in.
+    const checking = renderAdminInEnglish(<OperationsSignInGate publicMode={false} checking />);
+    expect(checking).toContain("Checking your sign-in…");
+    expect(checking).not.toContain("/admin/login");
+    const signedOut = renderAdminInEnglish(
+      <OperationsSignInGate publicMode={false} checking={false} />,
+    );
+    expectNoChineseText(signedOut);
+    expect(signedOut).toContain("Group requests and volunteer rescheduling");
+    expect(signedOut).toContain("Not signed in. Sign in again.");
+    expect(signedOut).toContain('href="/admin/login"');
+    expect(signedOut).toContain("Back to sign in");
+    expect(signedOut).not.toContain("Checking your sign-in");
+
+    const checkingZh = renderAdminInChinese(<OperationsSignInGate publicMode={false} checking />);
+    expect(checkingZh).toContain("正在驗證登入狀態…");
+    const signedOutZh = renderAdminInChinese(
+      <OperationsSignInGate publicMode={false} checking={false} />,
+    );
+    expect(signedOutZh).toContain("團體申請及義工改期");
+    expect(signedOutZh).toContain("未登入");
+    expect(signedOutZh).toContain('href="/admin/login"');
+    expect(signedOutZh).toContain("返回登入");
+    expect(signedOutZh).not.toContain("正在驗證登入狀態");
+
+    // The public page never shows the staff messages: it keeps the volunteer's own sign-in.
+    for (const isChecking of [true, false]) {
+      const publicGate = renderAdminInEnglish(
+        <OperationsSignInGate publicMode checking={isChecking} />,
+      );
+      expect(publicGate).toContain("團體申請及義工改期");
+      expect(publicGate).not.toContain("/admin/login");
+      expect(publicGate).not.toContain("Not signed in");
+    }
   });
 });
 

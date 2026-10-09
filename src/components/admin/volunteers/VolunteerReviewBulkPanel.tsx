@@ -3,25 +3,16 @@ import { useEffect, useState } from "react";
 
 import { BulkReview } from "../bulk/BulkReview";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import type { VolunteerReviewBulkOperation } from "../../../routes/api/admin/volunteers/reviewer-bulk";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
+import { reviewPanelProblemMessage, type PanelProblem } from "./directoryProblems";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
 
 const endpoint = "/api/admin/volunteers/reviewer-bulk";
 const savedOperationKey = "volunteer-review-bulk-operation";
 type Reviewer = { authUserId: string; email: string; role: string; status: string };
 type UsersResponse = { users: Reviewer[] };
-
-/**
- * What went wrong, as a code and the error behind it. The text is written when the panel renders,
- * so a problem shown in Chinese reads in English after the language is changed.
- */
-type PanelProblem = {
-  code: "load_saved" | "reload_saved" | "preview_failed" | "apply_failed";
-  cause?: unknown;
-};
 
 export function VolunteerReviewBulkPanel({
   selectedIds,
@@ -146,9 +137,7 @@ export function VolunteerReviewBulkPanel({
   }
   const reviewerLabel = (id: string | null) =>
     id ? (users.data?.users.find((user) => user.authUserId === id)?.email ?? id) : copy.unassigned;
-  const problemMessage = problem
-    ? (volunteerAdminErrorMessage(problem.cause, language) ?? copy.errors[problem.code])
-    : "";
+  const problemMessage = reviewPanelProblemMessage(problem, language);
   return (
     <section
       aria-label={copy.label}

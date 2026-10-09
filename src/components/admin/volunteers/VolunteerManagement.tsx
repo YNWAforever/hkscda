@@ -673,7 +673,7 @@ export function VolunteerManagement() {
         <StatCard
           icon={<Users className="h-5 w-5" />}
           label={text.stats.pending}
-          value={pendingCount}
+          value={format.number(pendingCount)}
           emphasis={!activitiesFailed && pendingCount > 0}
           failed={activitiesFailed}
           loading={activitiesQuery.isLoading}
@@ -681,14 +681,14 @@ export function VolunteerManagement() {
         <StatCard
           icon={<CalendarClock className="h-5 w-5" />}
           label={text.stats.upcoming}
-          value={upcomingCount}
+          value={format.number(upcomingCount)}
           failed={activitiesFailed}
           loading={activitiesQuery.isLoading}
         />
         <StatCard
           icon={<Users className="h-5 w-5" />}
           label={text.stats.shown}
-          value={registrations.length}
+          value={format.number(registrations.length)}
           failed={registrationsFailed}
           loading={registrationsQuery.isLoading}
         />

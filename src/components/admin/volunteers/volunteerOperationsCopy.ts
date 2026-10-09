@@ -1,5 +1,9 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { pluralCount } from "../i18n/format";
+import { formatAdminNumber, pluralCount } from "../i18n/format";
+
+/** A figure the preview may not have: blank when the server sent none, grouped like the rest. */
+const figure = (value: number | undefined) =>
+  value === undefined ? "" : formatAdminNumber(value, "en");
 
 /**
  * Copy for group requests and volunteer rescheduling (`VolunteerOperations`, `OperationPreview`).
@@ -8,8 +12,8 @@ import { pluralCount } from "../i18n/format";
 export const volunteerOperationsCopy = defineAdminCopy({
   zh: {
     title: "團體申請及義工改期",
-    /** Shown to staff while the browser checks who is signed in. */
-    checkingSignIn: "正在確認登入狀態…",
+    /** Shown to staff while the browser checks who is signed in (the wording of the supporter page). */
+    checkingSignIn: "正在驗證登入狀態…",
     intro: "所有時間為香港時間。團體查詢不等於已確認團體；確認及改期均重新檢查當前政策和名單。",
     backPublic: "返回義工服務",
     backAdmin: "返回義工月曆",
@@ -144,11 +148,11 @@ export const volunteerOperationsCopy = defineAdminCopy({
     preview: {
       title: "Confirm this change",
       group: (headcount: number | undefined, capacity: number | undefined, scenario: string) =>
-        `Total group size: ${headcount ?? ""}. Total places available to volunteers: ${capacity ?? ""}. Scenario: ${scenario}.`,
+        `Total group size: ${figure(headcount)}. Total places available to volunteers: ${figure(capacity)}. Scenario: ${scenario}.`,
       scenarios: { confirmed_group: "A, with a group", other: "B, without a group" },
       late: "This is a change checked by hand after the freeze cut-off.",
       move: (capacity: number | undefined, remaining: number | undefined) =>
-        `The destination session has ${capacity ?? ""} places in total and ${remaining ?? ""} left. The server checks again before confirming.`,
+        `The destination session has ${figure(capacity)} places in total and ${figure(remaining)} left. The server checks again before confirming.`,
       terms: "Destination session terms",
       accept: "I have read and agree to the destination session terms",
       staffCannotAccept:

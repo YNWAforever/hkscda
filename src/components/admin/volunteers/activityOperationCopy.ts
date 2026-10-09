@@ -247,10 +247,14 @@ export const activityOperationCopy = defineAdminCopy({
         `Batch ${formatAdminNumber(number, "en")} · ${date} · ${pluralCount(count, "session")} · ${state}`,
       policy: (name: string, state: string, approved: number | undefined) =>
         `Policy: ${name} · ${state} · ${approved === undefined ? "Affected registrations to check" : "Confirmed registrations affected: " + formatAdminNumber(approved, "en")}`,
-      capacity: (current: number | undefined, after: number | undefined) =>
-        `Capacity: ${current ?? "no current value"} → ${after ?? current ?? "no preview value"}`,
+      capacity: (current: number | undefined, after: number | undefined) => {
+        const now = current === undefined ? "no current value" : formatAdminNumber(current, "en");
+        const next = after ?? current;
+        const preview = next === undefined ? "no preview value" : formatAdminNumber(next, "en");
+        return `Capacity: ${now} → ${preview}`;
+      },
       after: (title: string, when: string, shelter: string, capacity: number) =>
-        `After: ${title} · ${when} · ${shelter} · Capacity ${capacity}`,
+        `After: ${title} · ${when} · ${shelter} · Capacity ${formatAdminNumber(capacity, "en")}`,
       issueSeparator: " ",
       attendanceEffect: (applied: number, skipped: number) =>
         `Attendance can be updated for ${formatAdminNumber(applied, "en")} and is skipped for ${formatAdminNumber(skipped, "en")}`,

@@ -101,7 +101,10 @@ export const activityWorkspaceCopy = defineAdminCopy({
       until: (end: string) => `至 ${end}`,
       shelterUnset: "待設定收容所",
       templateUnset: "須對應模板",
-      /** A template: Chinese shows its key, as it always has; English shows its name. */
+      /**
+       * A template: Chinese shows its key, as it always has; English shows the name staff gave it, or
+       * "Unnamed template" when the list of templates has none for this key.
+       */
       template: (key: string, _name: string | undefined) => key,
       policyVersion: (revision: number) => `政策 v${revision}`,
       policyUnset: "待設定政策",
@@ -221,7 +224,7 @@ export const activityWorkspaceCopy = defineAdminCopy({
       columns: {
         select: "Select",
         time: "Hong Kong date and time",
-        activity: "Activity and venue",
+        activity: "Activity and location",
         policy: "Template and policy",
         staffing: "Registrations and staffing",
         status: "Status",
@@ -229,7 +232,8 @@ export const activityWorkspaceCopy = defineAdminCopy({
       until: (end: string) => `to ${end}`,
       shelterUnset: "Shelter not set",
       templateUnset: "Needs a template",
-      template: (key: string, name: string | undefined) => name ?? key,
+      template: (_key: string, name: string | undefined) =>
+        name?.trim() ? name : "Unnamed template",
       policyVersion: (revision: number) => `Policy v${revision}`,
       policyUnset: "Policy not set",
       scenarios: {

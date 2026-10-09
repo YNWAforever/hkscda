@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
-import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import {
   addVolunteerSelection,
   collectMatchingVolunteerIds,
@@ -12,6 +11,7 @@ import type { DirectoryList } from "../../../lib/volunteers/directory/types";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { VolunteerReviewBulkPanel } from "./VolunteerReviewBulkPanel";
+import { selectionProblemMessage, type SelectionProblem } from "./directoryProblems";
 
 import {
   directoryQuery,
@@ -25,9 +25,6 @@ const control =
 const link =
   "inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--color-border)] px-4 py-2 font-medium text-[var(--color-primary)] hover:bg-[var(--color-muted)] focus-visible:outline-2";
 type ListData = DirectoryList;
-
-/** Why a selection of profiles could not be made, kept as a code and the error that caused it. */
-type SelectionProblem = { code: "select_failed" | "pin_failed"; cause?: unknown };
 
 /** What the card says about the account email: not linked, verified, or not verified. */
 function emailNote(
@@ -148,10 +145,7 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
       fetchAdminJson<ListData>(`/api/admin/volunteers/people?${directoryQuery(search)}`),
   });
   const selectionDisabled = selectionBusy || query.isFetching || !query.data;
-  const selectionMessage = selectionProblem
-    ? (volunteerAdminErrorMessage(selectionProblem.cause, language) ??
-      copy.selection.errors[selectionProblem.code])
-    : "";
+  const selectionMessage = selectionProblemMessage(selectionProblem, language);
   function toggleSelected(id: string) {
     setSelectedScope(filterKey);
     setSelectionProblem(null);

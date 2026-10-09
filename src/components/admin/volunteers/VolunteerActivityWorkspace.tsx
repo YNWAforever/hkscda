@@ -22,6 +22,7 @@ import {
 import { applyReviewedGroups, reviewBulkOperation } from "../../../lib/volunteers/bulk/review";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
+import { uniqueTemplates } from "./activityTemplates";
 import { activityWorkspaceCopy } from "./activityWorkspaceCopy";
 import type {
   ActivityDetail,
@@ -372,9 +373,6 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const templateNames = Object.fromEntries(
     templateList.map((template) => [template.template_key, template.name]),
   );
-  const uniqueTemplates = Array.from(
-    new Map(templateList.map((t) => [t.template_key, t])).values(),
-  );
   const previewDisabled =
     preview.isPending ||
     sequence.isPending ||
@@ -454,7 +452,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               onChange={(e) => updateFilter({ template: e.target.value })}
             >
               <option value="">{copy.filters.allTemplates}</option>
-              {uniqueTemplates.map((t) => (
+              {uniqueTemplates(templateList).map((t) => (
                 <option key={t.template_key} value={t.template_key}>
                   {t.name}
                 </option>

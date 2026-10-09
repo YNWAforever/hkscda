@@ -6,7 +6,7 @@ import { hongKongDayRange, type OverviewData } from "../../../lib/volunteers/ove
 import type { SessionCoverage } from "../../../lib/volunteers/sessionCoverage";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
-import { volunteerCommonCopy } from "./volunteerCommonCopy";
+import { isNamedShelter, volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerOverviewCopy } from "./volunteerOverviewCopy";
 type TodayActivity = {
@@ -81,6 +81,16 @@ function CoverageCard({ label, coverage }: { label: string; coverage: SessionCov
   );
 }
 
+/** What a count card shows: an ellipsis while it loads, the figure, or a dash when there is none. */
+function countText(
+  loading: boolean,
+  count: number | null | undefined,
+  number: (value: number) => string,
+) {
+  if (loading) return "…";
+  return typeof count === "number" ? number(count) : "—";
+}
+
 export function VolunteerOverview() {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerOverviewCopy, language);
@@ -123,6 +133,8 @@ export function VolunteerOverview() {
     },
   ];
   const activities = calendar.data?.activities.filter((a) => a.status === "published") ?? [];
+  const centres = stats.data?.coverage?.centres ?? [];
+  const unnamedCentres = centres.filter((key) => !isNamedShelter(key));
   return (
     <section className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
@@ -153,7 +165,7 @@ export function VolunteerOverview() {
               <card.icon size={22} className="mb-4 text-[var(--color-primary)]" />
               <p className="text-sm font-semibold">{copy.cards[card.key].label}</p>
               <p className="my-2 text-3xl font-bold tabular-nums">
-                {stats.isLoading ? "…" : typeof count === "number" ? format.number(count) : "—"}
+                {countText(stats.isLoading, count, format.number)}
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
                 {count === null ? copy.cardUnavailable : copy.cards[card.key].hint}
@@ -187,9 +199,12 @@ export function VolunteerOverview() {
               onChange={(event) => setCentre(event.target.value)}
             >
               <option value="all">{copy.coverage.allLocations}</option>
-              {(stats.data?.coverage?.centres ?? []).map((key) => (
+              {centres.map((key) => (
                 <option key={key} value={key}>
-                  {common.shelterName(key)}
+                  {common.shelterName(key, {
+                    position: unnamedCentres.indexOf(key) + 1,
+                    total: unnamedCentres.length,
+                  })}
                 </option>
               ))}
             </select>

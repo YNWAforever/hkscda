@@ -6,6 +6,7 @@ import {
   BULK_OPERATIONS,
   type BulkOperation,
 } from "./activityOperationCopy";
+import { uniqueTemplates } from "./activityTemplates";
 import type { OperationDraft, Template } from "./activityWorkspaceTypes";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 
@@ -14,11 +15,6 @@ const control =
 const button =
   control +
   " cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-[var(--color-primary)]";
-
-/** The first template of each key, in the order the server sent them. */
-function uniqueTemplates(templates: Template[]) {
-  return Array.from(new Map(templates.map((t) => [t.template_key, t])).values());
-}
 
 /**
  * Step 2 of the activity workspace: choose a bulk operation and fill in what it needs. The page

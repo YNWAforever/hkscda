@@ -237,7 +237,7 @@ describe("the volunteer overview in English", () => {
         "Cat shelter",
         "Dog shelter",
         "Adoption day",
-        "mystery_shelter",
+        "Other venue",
         "Next 14 days",
         "Next 30 days",
         "Published sessions are in place",
@@ -265,6 +265,35 @@ describe("the volunteer overview in English", () => {
       }
       expect(markup).not.toContain("should not show");
       expect(markup).not.toContain("Could not load");
+      // A venue an admin added has no English name, so the stored key is not shown as a label.
+      expect(markup).not.toContain(">mystery_shelter<");
+      expect(markup).toContain('value="mystery_shelter">Other venue</option>');
+    });
+  });
+
+  test("tells several venues without a name apart in the venue list, and keeps the key in Chinese", () => {
+    const two = {
+      ...full,
+      "volunteer-overview": kit.ok({
+        date: "2026-10-09",
+        counts: { pendingProfiles: 3, pendingRegistrations: 5, todayActivities: 2 },
+        coverage: {
+          centres: ["cat", "mystery_a", "mystery_b"],
+          next14: coverage("covered"),
+          next30: coverage("covered"),
+        },
+      }),
+    };
+    kit.withQueries(two, () => {
+      const markup = renderAdminInEnglish(<VolunteerOverview />);
+      expect(markup).toContain(">Other venue 1</option>");
+      expect(markup).toContain(">Other venue 2</option>");
+      expect(markup).toContain(">Cat shelter</option>");
+      expect(markup).not.toContain("mystery_a<");
+      const zh = renderAdminInChinese(<VolunteerOverview />);
+      expect(zh).toContain(">mystery_a</option>");
+      expect(zh).toContain(">貓舍</option>");
+      expect(zh).not.toContain("Other venue");
     });
   });
 

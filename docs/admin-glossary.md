@@ -148,7 +148,7 @@ other way round.
 | 凍結截點 | freeze cut-off        | The time after which a group's size is fixed. A later change is a "late change".                       |
 | 出席事實 | attendance record     | A recorded fact of whether and how long someone served. 出席更正 is "attendance correction".           |
 | 服務時數 | service hours         | The hours a volunteer served, only as recorded.                                                        |
-| 收容所   | shelter               | A session's venue key: cat shelter, dog shelter or adoption day (領養日).                              |
+| 收容所   | shelter               | A session's venue key: cat shelter, dog shelter, adoption day (領養日); any other is "Other venue".    |
 
 ## Content and publishing
 

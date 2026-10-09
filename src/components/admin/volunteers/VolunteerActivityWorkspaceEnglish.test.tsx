@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, setSystemTime, test } from "bun:test";
 
 import { AdminApiError } from "../../../lib/admin/session";
 import { BulkInputError } from "../../../lib/volunteers/bulk/service";
@@ -24,6 +24,9 @@ const { activityOperationCopy } = await import("./activityOperationCopy");
 const { FIXTURE } = kit;
 const ALLOW = [FIXTURE.activity, FIXTURE.location, FIXTURE.role, FIXTURE.template];
 const noop = () => {};
+
+// A test that fixes the clock puts it back, so no other test in the run sees the fixed time.
+afterEach(() => setSystemTime());
 
 const workspaceQueries = (over: Record<string, unknown> = {}) => ({
   "volunteer-workspace": kit.ok({ activities: kit.workspaceRows, total: 60 }),
@@ -63,13 +66,13 @@ describe("the activity workspace in English", () => {
         "Previous page",
         "Next page",
         "Hong Kong date and time",
-        "Activity and venue",
+        "Activity and location",
         "Template and policy",
         "Registrations and staffing",
         "Cat shelter",
         "Dog shelter",
         "Shelter not set",
-        "mystery_shelter",
+        "Other venue",
         "Needs a template",
         "Policy v3",
         "Policy not set",
@@ -84,9 +87,12 @@ describe("the activity workspace in English", () => {
       ]) {
         expect(markup, text).toContain(text);
       }
-      // The table names a template by its name; the key is kept for a template with no name.
+      // The table names a template by its name, and a venue key English has no name for is "Other
+      // venue": a stored key is never shown as a label.
       expect(markup).toContain(FIXTURE.template + "<p>Policy v3</p>");
       expect(markup).not.toContain(">cat_saturday<");
+      expect(markup).not.toContain("mystery_shelter");
+      expect(markup).not.toContain("Activity and venue");
       for (const status of ["Published", "Draft", "Ended", "Cancelled", "Unknown"]) {
         expect(markup, status).toContain(status);
       }
@@ -95,6 +101,9 @@ describe("the activity workspace in English", () => {
   });
 
   test("shows the calendar with English weekday names", () => {
+    // The workspace starts its range at today and runs 30 days, and the fixture sessions are on fixed
+    // dates (10 and 12 Oct 2026), so the clock is fixed to the day before them.
+    setSystemTime(new Date("2026-10-09T04:00:00Z"));
     kit.withQueries(workspaceQueries(), () => {
       const markup = renderAdminInEnglish(<VolunteerActivityWorkspace initialView="calendar" />);
       expectNoChineseText(markup, { allow: ALLOW });
@@ -237,17 +246,59 @@ describe("the activity table in English", () => {
     );
     expect(markup).toContain('checked=""');
     expect(markup).toContain(FIXTURE.template);
-    // A template with no name falls back to its key.
+    // A template with no name is "Unnamed template", and a venue key English has no name for is
+    // "Other venue": English never shows a stored key as a label. Chinese keeps showing both keys.
     const unnamed = renderAdminInEnglish(
       <ActivitySchedule
-        rows={[kit.workspaceRows[0]] as never}
+        rows={[kit.workspaceRows[0], kit.workspaceRows[3]] as never}
         view="table"
         ids={[]}
         onToggle={noop}
         onOpen={noop}
       />,
     );
-    expect(unnamed).toContain("cat_saturday");
+    expectNoChineseText(unnamed, { allow: ALLOW });
+    expect(unnamed).toContain("Unnamed template");
+    expect(unnamed).toContain("Cat shelter");
+    expect(unnamed).toContain("Other venue");
+    expect(unnamed).not.toContain("cat_saturday");
+    expect(unnamed).not.toContain("mystery_shelter");
+    const unnamedZh = renderAdminInChinese(
+      <ActivitySchedule
+        rows={[kit.workspaceRows[0], kit.workspaceRows[3]] as never}
+        view="table"
+        ids={[]}
+        onToggle={noop}
+        onOpen={noop}
+      />,
+    );
+    expect(unnamedZh).toContain("cat_saturday");
+    expect(unnamedZh).toContain("mystery_shelter");
+    expect(unnamedZh).not.toContain("Unnamed template");
+  });
+
+  test("shows a calendar for a short period day by day, whatever the date today is", () => {
+    // The range is given, so this does not depend on the clock.
+    const calendar = (from: string, until: string) =>
+      renderAdminInEnglish(
+        <ActivitySchedule
+          rows={kit.workspaceRows as never}
+          view="calendar"
+          from={from}
+          until={until}
+          ids={[]}
+          onToggle={noop}
+          onOpen={noop}
+        />,
+      );
+    const october = calendar("2026-10-09", "2026-10-15");
+    expectNoChineseText(october, { allow: ALLOW });
+    expect(october).toContain("Confirmed 8 · Waitlisted 2");
+    expect(october).toContain("Cat shelter · Published");
+    expect(october).toContain("Dog shelter · Ended");
+    const november = calendar("2026-11-28", "2026-12-02");
+    expect(november).toContain("Other venue · Cancelled");
+    expect(november).not.toContain("mystery_shelter");
   });
 
   test("shows a calendar for a long period as a list of the days that have sessions", () => {
@@ -352,6 +403,31 @@ describe("the bulk operation form in English", () => {
     for (const mode of ["close", "cancel"]) {
       expect(render({ mode })).toContain("Reason for the action");
     }
+  });
+
+  test("calls a venue English has no name for 'Other venue' in the template lines", () => {
+    const strangers = kit.workspaceTemplates.map((t) => ({ ...t, shelter: "mystery_shelter" }));
+    const markup = renderAdminInEnglish(
+      <ActivityOperationForm
+        draft={draft({ mode: "copy" }) as never}
+        onChange={noop}
+        templates={strangers}
+        previewDisabled={false}
+        onPreview={noop}
+      />,
+    );
+    expect(markup).toContain(FIXTURE.template + " · Other venue · 09:00–12:00");
+    expect(markup).not.toContain("mystery_shelter");
+    const zh = renderAdminInChinese(
+      <ActivityOperationForm
+        draft={draft({ mode: "copy" }) as never}
+        onChange={noop}
+        templates={strangers}
+        previewDisabled={false}
+        onPreview={noop}
+      />,
+    );
+    expect(zh).toContain(FIXTURE.template + " · mystery_shelter · 09:00–12:00");
   });
 
   test("keeps the Chinese form as it was", () => {
@@ -471,6 +547,18 @@ describe("the bulk operation progress in English", () => {
     expect(markup).toContain("Run the reviewed batches in order");
     expect(markup).toContain("Each batch still runs its existing transaction one at a time.");
     expect(markup).toContain("No notification or follow-up records for this operation yet.");
+  });
+
+  test("calls a venue English has no name for 'Other venue' in the line after the change", () => {
+    const text = JSON.stringify(kit.bulkOperation());
+    expect(text).toContain('"shelter_key":"dog"');
+    const strange = JSON.parse(
+      text.replaceAll('"shelter_key":"dog"', '"shelter_key":"mystery_shelter"'),
+    ) as ReturnType<typeof kit.bulkOperation>;
+    const markup = panel(strange);
+    expect(markup).toContain("· Other venue · Capacity 10");
+    expect(markup).not.toContain("mystery_shelter");
+    expect(panel(strange, true, "zh")).toContain("· mystery_shelter · 容量 10");
   });
 
   test("keeps the Chinese progress as it was", () => {

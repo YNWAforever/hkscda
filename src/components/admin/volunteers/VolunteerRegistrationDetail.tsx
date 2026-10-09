@@ -167,7 +167,10 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
             label={text.date}
             value={format.registrationDateTime(registration.activity.startsAt)}
           />
-          <DetailItem label={text.participants} value={String(registration.participantCount)} />
+          <DetailItem
+            label={text.participants}
+            value={format.number(registration.participantCount)}
+          />
           <DetailItem
             label={text.type}
             value={common.registrationType[registration.registrationType]}
@@ -222,7 +225,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         ) : null}
         <DetailItem
           label={text.placesLeft}
-          value={String(registration.activity.remainingCapacity)}
+          value={format.number(registration.activity.remainingCapacity)}
         />
         <div className="mt-5 flex flex-wrap gap-2">
           {statusActions.map((status) => (

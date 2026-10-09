@@ -12,8 +12,10 @@ import type { AdminLanguage } from "../admin/language";
  * the `code` the policy checks send both replace the server's own `error` text with a message from
  * `apiResult`, which is bilingual already (the operations screen's ten group and rescheduling
  * reasons, the policy rules a booking can break that `apiResult` also covers, and the retired
- * "copy" command are all in that group). The test proves which is which. Messages that are already
- * English (`Invalid volunteer id`, `Request body too large`) are shown as they come.
+ * "copy" command are all in that group). The test proves which is which. A message that is already
+ * English (`Invalid volunteer id`, `Request body too large`) is not in this table either:
+ * `fetchAdminJson` replaces it with the zh-HK message for its HTTP status, so English shows the
+ * English message for that status, not the server's own words.
  */
 const VOLUNTEER_SERVER_TEXT = {
   // /api/admin/volunteers/overview (lib/volunteers/overview.ts)

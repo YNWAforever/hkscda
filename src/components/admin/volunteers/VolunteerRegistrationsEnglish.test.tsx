@@ -175,6 +175,22 @@ describe("a registration's detail page in English", () => {
     });
   });
 
+  test("writes large figures with a thousands separator in English and plainly in Chinese", () => {
+    const big = kit.registrationDetail({
+      participantCount: 1200,
+      activity: { ...kit.registrationDetail().activity, remainingCapacity: 1500 },
+    });
+    kit.withQueries(detailQuery(big), () => {
+      const english = renderAdminInEnglish(<VolunteerRegistrationDetail registrationId="r" />);
+      expect(english).toContain(">1,200</p>");
+      expect(english).toContain(">1,500</p>");
+      const chinese = renderAdminInChinese(<VolunteerRegistrationDetail registrationId="r" />);
+      expect(chinese).toContain(">1200</p>");
+      expect(chinese).toContain(">1500</p>");
+      expect(chinese).not.toContain("1,200");
+    });
+  });
+
   test("tells the loading, a failure and a missing registration in English", () => {
     kit.withQueries({}, () => {
       expect(renderAdminInEnglish(<VolunteerRegistrationDetail registrationId="r" />)).toContain(
@@ -324,6 +340,23 @@ describe("the volunteers and activities page in English", () => {
     });
   });
 
+  test("writes the figures at the top of the page with a thousands separator in English only", () => {
+    const queries = {
+      ...managementQueries(),
+      "volunteer-activities": kit.ok({
+        activities: [kit.activitySummary({ pendingParticipants: 1200 })],
+        total: 1,
+      }),
+    };
+    kit.withQueries(queries, () => {
+      const english = renderAdminInEnglish(<VolunteerManagement />);
+      expect(english).toContain(">1,200</p>");
+      const chinese = renderAdminInChinese(<VolunteerManagement />);
+      expect(chinese).toContain(">1200</p>");
+      expect(chinese).not.toContain("1,200");
+    });
+  });
+
   test("offers the actions for each status as verbs and says when there is nothing to do", () => {
     kit.withQueries(managementQueries("approved", "completed"), () => {
       const markup = renderAdminInEnglish(<VolunteerManagement />);
@@ -430,8 +463,23 @@ describe("the volunteers and activities page in English", () => {
     expect(volunteerRegistrationCopy.en.management.registrations.filterBannerAfter("1 Aug")).toBe(
       " (1 Aug)",
     );
+    // A venue key with no English name reads "Other venue" (numbered in a list of several), never
+    // the stored key. Chinese keeps naming the three known venues and shows any other key as stored.
     expect(volunteerCommonCopy.en.shelterName("cat")).toBe("Cat shelter");
-    expect(volunteerCommonCopy.en.shelterName("mystery")).toBe("mystery");
+    expect(volunteerCommonCopy.en.shelterName("mystery")).toBe("Other venue");
+    expect(volunteerCommonCopy.en.shelterName("mystery", { position: 2, total: 3 })).toBe(
+      "Other venue 2",
+    );
+    expect(volunteerCommonCopy.en.shelterName("mystery", { position: 1, total: 1 })).toBe(
+      "Other venue",
+    );
+    expect(volunteerCommonCopy.en.shelterName("constructor")).toBe("Other venue");
+    expect(volunteerCommonCopy.en.shelterKey("dog_shelter")).toBe("Dog shelter");
+    expect(volunteerCommonCopy.en.shelterKey("mystery")).toBe("Other venue");
+    expect(volunteerCommonCopy.zh.shelterName("cat")).toBe("貓舍");
+    expect(volunteerCommonCopy.zh.shelterName("adoption")).toBe("領養日");
+    expect(volunteerCommonCopy.zh.shelterName("mystery")).toBe("mystery");
+    expect(volunteerCommonCopy.zh.shelterKey("cat")).toBe("cat");
     expect(volunteerCommonCopy.en.unknown("mystery")).toBe("Unknown");
     expect(volunteerCommonCopy.zh.unknown("mystery")).toBe("mystery");
   });
@@ -558,6 +606,16 @@ describe("the group enquiries page in English", () => {
       }
       expect(markup).not.toContain("school_talk");
       expect(markup).not.toContain("retryNotification");
+    });
+  });
+
+  test("writes a large head count with a thousands separator in English only", () => {
+    kit.withQueries(enquiryQueries(enquiryDetail({ participantCount: 1200 })), () => {
+      const english = renderAdminInEnglish(<GroupEnquiryManagement />);
+      expect(english).toContain(">1,200 · ");
+      const chinese = renderAdminInChinese(<GroupEnquiryManagement />);
+      expect(chinese).toContain(">1200 · ");
+      expect(chinese).not.toContain("1,200");
     });
   });
 
