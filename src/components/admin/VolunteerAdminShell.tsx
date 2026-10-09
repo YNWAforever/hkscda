@@ -5,7 +5,11 @@ import { useState, type ReactNode } from "react";
 import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { AdminLayout } from "./AdminLayout";
 import { useAdminCopy } from "./i18n/copy";
-import { getVolunteerNavigation, getVolunteerWorkspacePage } from "./volunteerWorkspace";
+import {
+  getVolunteerNavigation,
+  getVolunteerWorkspacePage,
+  VOLUNTEER_WORKSPACE_GROUPS,
+} from "./volunteerWorkspace";
 import { volunteerWorkspaceCopy } from "./volunteerWorkspaceCopy";
 import "./volunteer-workspace.css";
 
@@ -78,7 +82,7 @@ export function VolunteerWorkspaceFrame({
             data-open={navigationOpen}
             aria-label={copy.navigationLabel}
           >
-            {(["operations", "settings"] as const).map((group) => {
+            {VOLUNTEER_WORKSPACE_GROUPS.map((group) => {
               const groupItems = items.filter((item) => item.group === group);
               if (!groupItems.length) return null;
               return (

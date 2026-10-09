@@ -24,6 +24,13 @@ import { volunteerWorkspaceCopy, type VolunteerWorkspacePageId } from "./volunte
 const { DESTINATIONS, EXTRA_DESTINATIONS, RECORD_PAGES, VOLUNTEER_PAGES, ADOPTION_TABS } =
   await loadDestinations();
 
+/** The volunteer workspace pages the navigation model registers under the volunteers item. */
+const NAV_CHILD_IDS: ReadonlySet<string> = new Set(
+  (ADMIN_NAV_ITEMS.find((item) => item.id === "volunteers")?.children ?? []).map(
+    (child) => child.id,
+  ),
+);
+
 const LANGUAGES: readonly AdminLanguage[] = ["en", "zh"];
 const PAGE_STATES = ["loading", "empty", "error"] as const satisfies readonly QueryState[];
 const RECORD_STATES = ["loading", "empty", "error"] as const satisfies readonly QueryState[];
@@ -73,37 +80,51 @@ const DIFFERENT_H1: Partial<Record<AdminNavItemId, Allowance>> = {
  * for the rest; the `h1` is the same words. The person page is headed by the frame, which writes
  * the generic title; the person's name is in the breadcrumb.
  */
-const WORKSPACE_NAV_ITEM: Partial<Record<string, AdminNavItemId>> = {
+const WORKSPACE_NAV_ITEM: Partial<Record<VolunteerWorkspacePageId, AdminNavItemId>> = {
   overview: "volunteers",
   settings: "volunteer-settings",
   "group-enquiries": "volunteer-group-enquiries",
 };
 
-/** The Chinese heading of each workspace page whose wording differs from its label. Pinned. */
-const WORKSPACE_PINNED: Record<string, Allowance> = Object.fromEntries(
-  Object.entries({
-    overview: "義工營運總覽",
-    activities: "義工活動工作台",
-    calendar: "義工活動工作台",
-    tasks: "義工今日待辦與通知",
-    operations: "團體申請及義工改期",
-    qualifications: "義工身份與資格核實",
-    "daily-settings": "全日義工配額",
-    assessments: "每月義工級別評核",
-    sources: "共用來源、場地及資格",
-  }).map(([name, zh]) => [name, { zh, reason: ZH_PENDING_OWNER }]),
+/**
+ * The Chinese heading of each workspace page whose wording differs from its label. Pinned. The
+ * keys are the navigation model's own page ids (`VolunteerWorkspacePageId`), so `tsc` rejects a
+ * pin for a page that was renamed or removed.
+ */
+const WORKSPACE_PINNED_ZH: Partial<Record<VolunteerWorkspacePageId, string>> = {
+  overview: "義工營運總覽",
+  activities: "義工活動工作台",
+  calendar: "義工活動工作台",
+  tasks: "義工今日待辦與通知",
+  operations: "團體申請及義工改期",
+  qualifications: "義工身份與資格核實",
+  "daily-settings": "全日義工配額",
+  assessments: "每月義工級別評核",
+  sources: "共用來源、場地及資格",
+};
+
+const WORKSPACE_PINNED = new Map<VolunteerWorkspacePageId, Allowance>(
+  (Object.entries(WORKSPACE_PINNED_ZH) as [VolunteerWorkspacePageId, string][]).map(([id, zh]) => [
+    id,
+    { zh, reason: ZH_PENDING_OWNER },
+  ]),
 );
 
 /** The heading a workspace page would have with no pin: its navigation or workspace label. */
-function workspaceLabel(name: string, language: AdminLanguage): string {
-  const navItem = WORKSPACE_NAV_ITEM[name];
+function workspaceLabel(id: VolunteerWorkspacePageId, language: AdminLanguage): string {
+  const navItem = WORKSPACE_NAV_ITEM[id];
   if (navItem) return adminCopy[language].navItems[navItem];
-  return volunteerWorkspaceCopy[language].pages[name as VolunteerWorkspacePageId].label;
+  return volunteerWorkspaceCopy[language].pages[id].label;
+}
+
+function isWorkspacePageId(name: string): name is VolunteerWorkspacePageId {
+  return NAV_CHILD_IDS.has(name);
 }
 
 function expectedWorkspaceHeading(name: string, language: AdminLanguage): string {
   if (name === "person") return volunteerWorkspaceCopy[language].intros.person.title;
-  return WORKSPACE_PINNED[name]?.[language] ?? workspaceLabel(name, language);
+  if (!isWorkspacePageId(name)) throw new Error(`"${name}" is not a volunteer workspace page`);
+  return WORKSPACE_PINNED.get(name)?.[language] ?? workspaceLabel(name, language);
 }
 
 const VOLUNTEER_PAGE_STATES: Partial<Record<string, readonly QueryState[]>> = {
@@ -264,11 +285,20 @@ describe("every tab of the adoption information page has one h1", () => {
 
 describe("a pinned heading is only allowed while it differs from its label", () => {
   test("every workspace pin has a reason and differs from the label", () => {
-    for (const [name, allowance] of Object.entries(WORKSPACE_PINNED)) {
+    for (const [name, allowance] of WORKSPACE_PINNED) {
       expect(allowance.reason.trim().length, `${name} needs a reason`).toBeGreaterThan(20);
       expect(allowance.zh, `${name} is pinned but equals its label`).not.toBe(
         workspaceLabel(name, "zh"),
       );
+    }
+  });
+
+  test("every workspace pin and every workspace page is a page of the navigation model", () => {
+    for (const name of WORKSPACE_PINNED.keys()) {
+      expect(NAV_CHILD_IDS.has(name), `${name} is pinned but is not a navigation page`).toBe(true);
+    }
+    for (const id of NAV_CHILD_IDS) {
+      expect(Object.hasOwn(VOLUNTEER_PAGES, id), `${id} has no page rendered here`).toBe(true);
     }
   });
 

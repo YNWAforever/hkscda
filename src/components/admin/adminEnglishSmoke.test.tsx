@@ -5,7 +5,7 @@ import { adminCopy } from "./adminI18n";
 import { ADMIN_NAV_ITEMS, type AdminNavItemId } from "./adminNav";
 import { expectNoChineseText, renderAdminInEnglish } from "./i18n/testing";
 
-const { DESTINATIONS, EXTRA_DESTINATIONS } = await loadDestinations();
+const { DESTINATIONS, EXTRA_DESTINATIONS, CHILD_DESTINATIONS } = await loadDestinations();
 
 /**
  * The smoke test of the finished English admin: it renders the page behind every destination of
@@ -78,6 +78,31 @@ describe("every admin destination in English", () => {
       expectNoChineseText(empty);
     });
   }
+
+  // The volunteer workspace pages are children of the `volunteers` item, so they are not counted
+  // in the check below, but every one of them is rendered here.
+  const volunteerChildren =
+    ADMIN_NAV_ITEMS.find((item) => item.id === "volunteers")?.children ?? [];
+  for (const child of volunteerChildren) {
+    test(`volunteer page ${child.id}, a child of the volunteers item, has no Chinese`, () => {
+      const destination = CHILD_DESTINATIONS[child.id];
+      expect(
+        destination,
+        `The page "${child.id}" has no entry in CHILD_DESTINATIONS.`,
+      ).toBeDefined();
+      const { loading, empty } = renderBoth(destination);
+      expect(loading.length, `${child.id} rendered nothing while loading`).toBeGreaterThan(0);
+      expectNoChineseText(loading);
+      expect(empty, `${child.id} should show its English page`).toContain(destination.shows);
+      expectNoChineseText(empty);
+    });
+  }
+
+  test("every volunteer workspace page has a destination here, and none is left over", () => {
+    expect(Object.keys(CHILD_DESTINATIONS).sort()).toEqual(
+      volunteerChildren.map((child) => child.id).sort(),
+    );
+  });
 
   test("renders one page for every navigation destination", () => {
     const ids = ADMIN_NAV_ITEMS.map((item) => item.id);

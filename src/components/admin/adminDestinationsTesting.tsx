@@ -175,6 +175,7 @@ export async function loadDestinations() {
   const { VolunteerPolicySimulation } = await import("./volunteers/VolunteerPolicySimulation");
   const { VolunteerDirectory } = await import("./volunteers/VolunteerDirectory");
   const { VolunteerWorkspaceFrame } = await import("./VolunteerAdminShell");
+  const { initialMonthlyPolicy } = await import("../../lib/volunteers/policy/catalogue");
 
   function dashboard(section: AdminListSearch["section"]): ReactElement {
     return (
@@ -370,6 +371,80 @@ export async function loadDestinations() {
     ),
   };
 
+  /**
+   * The volunteer workspace pages, which the navigation model registers as children of the
+   * `volunteers` item rather than as items of their own. They are rendered in the workspace frame
+   * like the destinations above, and left out of the count check on `ADMIN_NAV_ITEMS`.
+   */
+  const CHILD_DESTINATIONS: Record<VolunteerWorkspacePageId, Destination> = {
+    overview: {
+      page: VOLUNTEER_PAGES.overview,
+      shows: "Start from what needs doing, then follow each volunteer, session and service record.",
+    },
+    people: {
+      page: VOLUNTEER_PAGES.people,
+      shows:
+        "Find volunteer profiles, verify qualifications and see registrations and service records.",
+    },
+    activities: {
+      page: VOLUNTEER_PAGES.activities,
+      shows: "Manage sessions, registrations and attendance records in Hong Kong time.",
+    },
+    calendar: {
+      page: VOLUNTEER_PAGES.calendar,
+      shows: "Manage sessions, registrations and attendance records in Hong Kong time.",
+    },
+    tasks: {
+      page: VOLUNTEER_PAGES.tasks,
+      shows: "does not mean a message was delivered.",
+    },
+    "group-enquiries": {
+      page: VOLUNTEER_PAGES["group-enquiries"],
+      shows:
+        "Manage group activity enquiries, internal notes, statuses and retries of failed notifications.",
+    },
+    operations: { page: VOLUNTEER_PAGES.operations, shows: "Checking your sign-in" },
+    qualifications: {
+      page: VOLUNTEER_PAGES.qualifications,
+      shows: "does not grant a skill.",
+    },
+    settings: { page: VOLUNTEER_PAGES.settings, shows: "Loading the volunteer policy" },
+    "daily-settings": {
+      page: VOLUNTEER_PAGES["daily-settings"],
+      shows: "Existing registrations are not cancelled automatically.",
+    },
+    // The page starts from the catalogue's policy, whose notification templates are stored Chinese
+    // names (data, not interface text), so this render starts from a policy with English names.
+    assessments: {
+      page: () => (
+        <VolunteerWorkspaceFrame>
+          <VolunteerAssessments
+            initial={{
+              policy: {
+                ...initialMonthlyPolicy,
+                notifications: {
+                  ...initialMonthlyPolicy.notifications,
+                  regular_template: "Gentle reminder",
+                  senior_template: "Care message",
+                },
+              },
+            }}
+          />
+        </VolunteerWorkspaceFrame>
+      ),
+      shows: "Unknown history coverage is not treated as zero attendance",
+    },
+    sources: {
+      page: VOLUNTEER_PAGES.sources,
+      shows: "A source change only affects later policy previews.",
+    },
+    simulation: {
+      page: VOLUNTEER_PAGES.simulation,
+      shows:
+        "A simulation does not register anyone, publish, release one-off places or send notifications.",
+    },
+  };
+
   /** The five tabs of the adoption information page, each of which draws a different editor. */
   const ADOPTION_TABS: Record<
     "fees" | "page" | "estates" | "rules" | "careTopics",
@@ -382,5 +457,12 @@ export async function loadDestinations() {
     careTopics: () => <AdoptionInformationManagement initialTab="careTopics" />,
   };
 
-  return { DESTINATIONS, EXTRA_DESTINATIONS, RECORD_PAGES, VOLUNTEER_PAGES, ADOPTION_TABS };
+  return {
+    DESTINATIONS,
+    EXTRA_DESTINATIONS,
+    CHILD_DESTINATIONS,
+    RECORD_PAGES,
+    VOLUNTEER_PAGES,
+    ADOPTION_TABS,
+  };
 }

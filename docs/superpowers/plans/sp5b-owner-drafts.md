@@ -114,3 +114,17 @@ The one breadcrumb is now `AdminLayout`'s, in the order group / destination / re
 導覽路徑. Two old Chinese breadcrumbs are gone: the animals list's "後台 / 動物管理 / 貓貓" (label 麵包屑導覽) and the volunteer
 shell's "義工營運中心 / page / 義工個人詳情 or 報名詳情" (label 麵包屑). The generic detail titles 義工個人詳情 / 報名詳情 are no longer
 shown in a breadcrumb; 義工個人詳情 remains the person page's `h1`. Nothing new is written.
+
+### Task 5: Volunteer sidebar groups (zh labels change)
+
+The audit names the three groups, so they ship in both languages. The zh half replaces the two old group labels.
+Confirm or reword; the file is `volunteerWorkspaceCopy.ts` (`groups`, zh and en).
+
+| Group  | Current zh (before Task 5)            | Shipped zh | Shipped en |
+| ------ | ------------------------------------- | ---------- | ---------- |
+| daily  | 日常營運 (was the "operations" group) | 日常       | Daily work |
+| people | none (new group)                      | 人員       | People     |
+| policy | 管理員設定 (was the "settings" group) | 政策       | Policy     |
+
+Owner questions: 級別評核 (assessments) sits under 政策 because it is administrator-only like the other policy pages;
+move it to 人員 if you see it as a people task (its roles stay administrator-only, as `access.ts` has them). 身份與資格核實 (qualifications) sits under 人員.

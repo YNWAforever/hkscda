@@ -4,9 +4,10 @@ import {
   ADMIN_NAV_GROUPS,
   ADMIN_NAV_ITEMS,
   getActiveAdminNavItemIds,
+  getAdminNavChild,
+  type AdminNavItem,
   type AdminSection,
 } from "./adminNav";
-import { getVolunteerWorkspacePage } from "./volunteerWorkspace";
 import { volunteerWorkspaceCopy } from "./volunteerWorkspaceCopy";
 
 /** One step of the breadcrumb. The page you are on has no `to`. */
@@ -61,14 +62,17 @@ export function truncateRecordName(name: string | null | undefined): string | nu
 }
 
 /**
- * The volunteer workspace page a path belongs to, as a crumb. This is the one place the
- * breadcrumb reads the workspace's own page list (`VOLUNTEER_WORKSPACE_PAGES`); once those pages
- * are navigation items, only this function changes. The overview is the workspace root, which the
- * navigation item already names, so it has no crumb of its own.
+ * The page under a navigation item that a path belongs to, as a crumb, read from the item's
+ * children in the navigation model. The overview is the workspace root, which the navigation item
+ * already names, so it has no crumb of its own.
  */
-function resolveVolunteerPage(pathname: string, language: AdminLanguage): BreadcrumbCrumb | null {
-  const page = getVolunteerWorkspacePage(pathname);
-  if (!page || page.id === "overview") return null;
+function resolveChildPage(
+  item: AdminNavItem,
+  pathname: string,
+  language: AdminLanguage,
+): BreadcrumbCrumb | null {
+  const page = getAdminNavChild(item, pathname);
+  if (!page || page.to === item.to) return null;
   return { label: volunteerWorkspaceCopy[language].pages[page.id].label, to: page.to };
 }
 
@@ -105,7 +109,7 @@ export function breadcrumbTrail(
   ];
 
   // The volunteer workspace's own pages sit one level under its navigation item.
-  const workspacePage = item.id === "volunteers" ? resolveVolunteerPage(path, language) : null;
+  const workspacePage = item.id === "volunteers" ? resolveChildPage(item, path, language) : null;
   if (workspacePage) trail.push(workspacePage);
 
   const name = truncateRecordName(recordName);

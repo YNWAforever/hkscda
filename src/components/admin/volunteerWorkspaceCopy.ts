@@ -32,8 +32,9 @@ export const volunteerWorkspaceCopy = defineAdminCopy({
     currentPage: "目前頁面",
     navigationLabel: "義工工作區",
     groups: {
-      operations: "日常營運",
-      settings: "管理員設定",
+      daily: "日常",
+      people: "人員",
+      policy: "政策",
     },
     /** The heading and the line under it for the pages whose route asks for them. */
     intros: {
@@ -95,8 +96,9 @@ export const volunteerWorkspaceCopy = defineAdminCopy({
     currentPage: "Current page",
     navigationLabel: "Volunteer workspace",
     groups: {
-      operations: "Daily operations",
-      settings: "Administrator settings",
+      daily: "Daily work",
+      people: "People",
+      policy: "Policy",
     },
     intros: {
       people: {

@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
+import { canRoleAccessAdminArea, getAdminAreaForLocation } from "../../lib/admin/access";
+import type { AdminRole } from "../../lib/admin/access";
 import { adminCopy } from "./adminI18n";
 import {
   ADMIN_NAV_GROUPS,
@@ -231,5 +233,56 @@ describe("grouped admin navigation", () => {
         "volunteers",
       ),
     ).toEqual(["volunteer-group-enquiries"]);
+  });
+});
+
+describe("the volunteer workspace pages in the navigation model", () => {
+  const volunteers = ADMIN_NAV_ITEMS.find((item) => item.id === "volunteers");
+  const children = volunteers?.children ?? [];
+  const ROLES: readonly AdminRole[] = ["staff", "treasurer", "admin"];
+
+  test("registers all thirteen pages as children of the volunteers item", () => {
+    expect(children.map((child) => child.id)).toEqual([
+      "overview",
+      "tasks",
+      "calendar",
+      "activities",
+      "operations",
+      "group-enquiries",
+      "people",
+      "qualifications",
+      "settings",
+      "daily-settings",
+      "assessments",
+      "sources",
+      "simulation",
+    ]);
+    expect(new Set(children.map((child) => child.to)).size).toBe(children.length);
+  });
+
+  test("keeps the top level at one entry per destination", () => {
+    expect(ADMIN_NAV_ITEMS.filter((item) => item.children)).toHaveLength(1);
+    expect(ADMIN_NAV_ITEMS).toHaveLength(25);
+  });
+
+  test("gives every child the roles that access.ts grants for its path", () => {
+    for (const child of children) {
+      const area = getAdminAreaForLocation({ pathname: child.to });
+      const granted = ROLES.filter((role) => canRoleAccessAdminArea(role, area));
+      expect([...child.roles].sort(), child.id).toEqual([...granted].sort());
+    }
+  });
+
+  test("a child that is also a top-level item has that item's roles", () => {
+    for (const child of children) {
+      const twin = ADMIN_NAV_ITEMS.find((item) => item.to === child.to);
+      if (!twin) continue;
+      const allowed = ROLES.filter((role) =>
+        getAdminNavigation(role, "/admin", "cat").groups.some((group) =>
+          group.items.some((item) => item.id === twin.id),
+        ),
+      );
+      expect([...child.roles].sort(), child.id).toEqual([...allowed].sort());
+    }
   });
 });

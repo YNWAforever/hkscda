@@ -36,8 +36,9 @@ describe("the volunteer shell in English", () => {
       "Volunteer operations",
       "Administrator workspace",
       "Volunteer workspace",
-      "Daily operations",
-      "Administrator settings",
+      "Daily work",
+      "People",
+      "Policy",
       "Workspace navigation · Volunteer directory",
       "Breadcrumb",
     ]) {
@@ -53,8 +54,9 @@ describe("the volunteer shell in English", () => {
     const markup = renderAdminInEnglish(shell("/admin/volunteers"));
     expectNoChineseText(markup, { allow: [TOGGLE_WORD] });
     expect(markup).toContain("Staff workspace");
-    expect(markup).toContain("Daily operations");
-    expect(markup).not.toContain("Administrator settings");
+    expect(markup).toContain("Daily work");
+    expect(markup).toContain("People");
+    expect(markup).not.toContain(">Policy<");
     expect(markup).not.toContain("Session policy");
     kit.state.role = "admin";
   });
@@ -127,8 +129,9 @@ describe("the volunteer shell in English", () => {
       "跳至頁面內容",
       "義工營運中心",
       "管理員工作區",
-      "日常營運",
-      "管理員設定",
+      ">日常<",
+      ">人員<",
+      ">政策<",
       "工作區導覽 · 義工名冊",
       "導覽路徑",
       "<h1>義工名冊</h1>",
