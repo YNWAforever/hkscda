@@ -13,6 +13,7 @@ import { AdminHomeRouteContext } from "./adminHomeRoute";
 import { getAdminNavigation, getActiveAdminNavItemIds } from "./adminNav";
 import type { AdminNavigationGroup, AdminSection } from "./adminNav";
 import { adminLanguageTag } from "./i18n/pageLanguage";
+import { useSessionExpiryRedirect } from "./useSessionExpiryRedirect";
 
 const COLLAPSE_KEY = "hkscda-admin-sidebar-collapsed";
 
@@ -195,6 +196,8 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const focusPageOnClose = useRef(false);
   const queryClient = useQueryClient();
+  // A lapsed session sends staff to sign-in and back to this page; a deliberate logout must not.
+  const suppressSessionExpiry = useSessionExpiryRedirect(queryClient);
   // beforeLoad already primed this entry for the current navigation, so this is
   // a cache hit with no request. It used to be a second GET /api/admin/me.
   const { data: identity } = useQuery(adminIdentityQueryOptions());
@@ -214,6 +217,7 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   }
 
   async function handleLogout() {
+    suppressSessionExpiry();
     await supabase.auth.signOut();
     // Otherwise the next admin to sign in on this tab reads the previous one's
     // cached identity.
