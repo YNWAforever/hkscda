@@ -164,9 +164,8 @@ describe("BulkReview", () => {
 
   test("keeps the Chinese screen as it was", () => {
     const markup = renderAdminInChinese(review({ title: "批量標籤" }));
-    expect(markup).toContain(
-      `預覽到期：${new Date(FUTURE).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
-    );
+    // FUTURE is 01:00Z, 09:00 in Hong Kong, written in the shared admin format.
+    expect(markup).toContain("預覽到期：2099年9月28日 (一) 09:00");
     for (const text of [
       'aria-label="逐筆套用差異"',
       ">項目<",

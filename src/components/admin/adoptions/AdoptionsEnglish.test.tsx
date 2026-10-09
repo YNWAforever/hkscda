@@ -386,7 +386,7 @@ describe("case list in English", () => {
       "清除選取",
       "批量分派領養個案負責職員",
       "已選 0 筆（上限 1000）",
-      "2026-10-01",
+      "2026年10月1日 (四)",
     ]) {
       expect(markup, text).toContain(text);
     }
@@ -580,7 +580,7 @@ describe("case detail in English", () => {
   test("keeps the Chinese case detail, dates and fee as they were", () => {
     load();
     const markup = renderAdminInChinese(<CaseDetail caseId="c-1" />);
-    expect(markup).toContain("2026-10-10 - 2026-10-20");
+    expect(markup).toContain("2026年10月10日 (六) - 2026年10月20日 (二)");
     for (const text of [
       "返回個案",
       "審核摘要",
@@ -588,7 +588,7 @@ describe("case detail in English", () => {
       "動物偏好排序",
       "完成領養",
       "已記錄成功領養",
-      "2026-10-01",
+      "2026年10月1日 (四)",
       "HK$500.50",
       "家居",
     ]) {
@@ -766,8 +766,8 @@ describe("adopter detail in English", () => {
       "已拒絕",
       "1 個相關個案",
       "1 個已完成領養",
-      "HK$500",
-      "2026-10-03",
+      "HK$500.00",
+      "2026年10月3日 (六)",
     ]) {
       expect(markup, text).toContain(text);
     }
@@ -977,7 +977,12 @@ describe("finalisation panel in English", () => {
         successfulAdoption={caseDetail.successfulAdoption as never}
       />,
     );
-    for (const text of ["已記錄成功領養", "2026-10-03", "2026-10-05", "HK$500.50"]) {
+    for (const text of [
+      "已記錄成功領養",
+      "2026年10月3日 (六)",
+      "2026年10月5日 (一)",
+      "HK$500.50",
+    ]) {
       expect(done, text).toContain(text);
     }
   });
@@ -1025,11 +1030,11 @@ describe("date and fee formats", () => {
     expect(format.money(null)).toBe("-");
   });
 
-  test("Chinese keeps the plain date and the fee without trailing zeros", () => {
+  test("Chinese uses the shared Hong Kong date and the fee with two decimals", () => {
     const format = adoptionFormatCopy.zh;
-    expect(format.date("2026-10-06T20:00:00Z")).toBe("2026-10-06");
+    expect(format.date("2026-10-06T20:00:00Z")).toBe("2026年10月7日 (三)");
     expect(format.date(undefined)).toBe("-");
-    expect(format.money(123400)).toBe("HK$1,234");
+    expect(format.money(123400)).toBe("HK$1,234.00");
     expect(format.money(123450)).toBe("HK$1,234.50");
     expect(format.money(undefined)).toBe("-");
   });

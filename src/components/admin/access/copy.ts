@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDateTime } from "../i18n/format";
+import { formatAdminDateTime, formatAdminDateTimeOrNull } from "../i18n/format";
 
 /** Copy for the access management screen. */
 export const accessCopy = defineAdminCopy({
@@ -36,15 +36,8 @@ export const accessCopy = defineAdminCopy({
     previous: "上一頁",
     next: "下一頁",
     auditPage: (page: number) => `第 ${page} 頁`,
-    // Kept as the legacy zh-HK date and time, so the Chinese screen is unchanged.
-    dateTime: (value: string | null) =>
-      value
-        ? new Intl.DateTimeFormat("zh-HK", {
-            dateStyle: "medium",
-            timeStyle: "short",
-            timeZone: "Asia/Hong_Kong",
-          }).format(new Date(value))
-        : "—",
+    /** An invite or audit time, or a dash when there is none or it is not a date. */
+    dateTime: (value: string | null) => formatAdminDateTimeOrNull(value, "zh") ?? "—",
     roles: {
       staff: "職員",
       treasurer: "司庫",

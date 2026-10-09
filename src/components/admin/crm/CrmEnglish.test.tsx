@@ -392,14 +392,14 @@ describe("supporter list in English", () => {
       "批量指派跟進負責人",
       "聯絡資料格式整理預覽",
       "電郵 opt_in / WhatsApp opt_out",
-      "HK$1,234",
-      // The Chinese list rounds an amount to whole dollars, as it always has.
-      "HK$501",
+      "HK$1,234.00",
+      // The Chinese list keeps the cents, as English does.
+      "HK$500.50",
       "共 2 位支持者",
     ]) {
       expect(markup, text).toContain(text);
     }
-    expect(markup).not.toContain("HK$1,234.00");
+    expect(markup).not.toContain("HK$501");
   });
 });
 
@@ -503,9 +503,9 @@ describe("supporter detail in English", () => {
     for (const text of [
       "支持者資料",
       "累計捐款",
-      "HK$1,234",
+      "HK$1,234.00",
       "更新捐款人通訊的同意狀態。",
-      "已退款 HK$100 · 實收 HK$401",
+      "已退款 HK$100.00 · 實收 HK$400.50",
       "其他用途：婚宴回禮",
       "需要收據",
       "發出收據",
@@ -519,7 +519,7 @@ describe("supporter detail in English", () => {
     ]) {
       expect(markup, text).toContain(text);
     }
-    expect(markup).not.toContain("HK$1,234.00");
+    expect(markup).not.toContain("HK$401");
   });
 });
 
@@ -919,10 +919,11 @@ describe("the supporter copy modules", () => {
     expect(tagBulkCopy.zh.selectedCount(1000)).toBe("已選 1000 筆（上限 1000）");
   });
 
-  test("format amounts and dates as each language always has", () => {
+  test("format amounts and dates in the shared admin formats, with the cents kept", () => {
     const zh = crmFormatCopy.zh;
     const en = crmFormatCopy.en;
-    expect(zh.money(123400)).toBe("HK$1,234");
+    expect(zh.money(123400)).toBe("HK$1,234.00");
+    expect(zh.money(12345)).toBe("HK$123.45");
     expect(en.money(123400)).toBe("HK$1,234.00");
     expect(zh.money(null)).toBe("-");
     expect(en.money(undefined)).toBe("-");
@@ -932,13 +933,7 @@ describe("the supporter copy modules", () => {
     expect(en.dateTime("2026-10-01T02:30:00Z")).toBe("1 Oct 2026 (Thu) 10:30");
     expect(en.dateTime("not a date")).toBe("not a date");
     expect(zh.dateTime(null)).toBe("-");
-    expect(zh.dateTime("2026-10-01T02:30:00Z")).toBe(
-      new Intl.DateTimeFormat("zh-HK", {
-        dateStyle: "medium",
-        timeStyle: "short",
-        hour12: false,
-        timeZone: "Asia/Hong_Kong",
-      }).format(new Date("2026-10-01T02:30:00Z")),
-    );
+    expect(zh.dateTime("2026-10-01T02:30:00Z")).toBe("2026年10月1日 (四) 10:30");
+    expect(zh.date("2026-10-06T20:00:00Z")).toBe("2026年10月7日 (三)");
   });
 });

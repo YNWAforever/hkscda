@@ -1,7 +1,11 @@
-import { centsToHkd } from "../../../lib/donations/domain";
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDate, formatAdminDateTime, formatAdminMoney } from "../i18n/format";
-import { formatDate } from "./pledgeReviewLogic";
+import {
+  formatAdminDate,
+  formatAdminDateOrNull,
+  formatAdminDateTime,
+  formatAdminDateTimeOrNull,
+  formatAdminMoney,
+} from "../i18n/format";
 
 const MONTH_NAMES_EN = [
   "Jan",
@@ -30,10 +34,10 @@ function englishMonth(value: string): string {
 }
 
 /**
- * How the sponsorship screens write amounts and dates. Chinese keeps what it has always
- * shown: the amount with cents only when there are some, the date as the first ten characters
- * of the timestamp the server sent, and a stored day or month exactly as stored. English uses
- * the admin's Hong Kong formats, with two decimals on an amount, and a month as "Aug 2026".
+ * How the sponsorship screens write amounts and dates. Both languages use the admin's Hong Kong
+ * formats, with two decimals on an amount. A sponsorship month is a calendar month, not a moment,
+ * and no shared month format exists: Chinese keeps it as stored (`2026-08`), and English writes
+ * it as "Aug 2026".
  */
 export const sponsorshipFormatCopy = defineAdminCopy({
   zh: {
@@ -43,21 +47,21 @@ export const sponsorshipFormatCopy = defineAdminCopy({
      * three months is not a HK$300/month sponsorship, and labelling it that way misstates the
      * supporter's commitment. The cents are kept (section 6.3): 123.45 must not turn into 123.
      */
-    money: (cents: number) => centsToHkd(cents),
+    money: (cents: number) => formatAdminMoney(cents / 100, "zh"),
     /** The pledge's monthly commitment, a rate, so it carries the per-month suffix. */
-    monthly: (cents: number) => `${centsToHkd(cents)}/月`,
-    /** A date from a timestamp the server sent, or a dash when there is none. */
-    date: (value: string | null | undefined) => formatDate(value),
+    monthly: (cents: number) => `${formatAdminMoney(cents / 100, "zh")}/月`,
+    /** A date from a timestamp the server sent, or a dash when there is none or it is not a date. */
+    date: (value: string | null | undefined) => formatAdminDateOrNull(value, "zh") ?? "-",
     /** A calendar day that is stored as a day, such as the day a payment was made. */
-    day: (value: string) => value,
-    /** A calendar day cut from a timestamp, or nothing when there is none. */
-    isoDay: (value: string | null | undefined) => value?.slice(0, 10) ?? "",
+    day: (value: string) => formatAdminDateOrNull(value, "zh") ?? value,
+    /** The Hong Kong day of a timestamp, or nothing when there is none or it is not a date. */
+    isoDay: (value: string | null | undefined) => formatAdminDateOrNull(value, "zh") ?? "",
     /** A sponsorship month: `2026-08`. */
     month: (value: string) => value.slice(0, 7),
     /** The first day of a sponsorship month in a list of allocations, as stored. */
     periodStart: (value: string) => value,
     /** A moment the server sent, such as when a draft was made. */
-    dateTime: (value: string) => value,
+    dateTime: (value: string) => formatAdminDateTimeOrNull(value, "zh") ?? value,
   },
   en: {
     money: (cents: number) => formatAdminMoney(cents / 100, "en"),

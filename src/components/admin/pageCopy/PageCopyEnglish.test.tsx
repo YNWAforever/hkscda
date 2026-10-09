@@ -1,11 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
 import * as pageCopyModule from "../adminPageCopy";
+import { adoptionFormatCopy } from "../adoptions/formatCopy";
+import { formatAdminDateTime } from "../i18n/format";
 
 import {
   adminPageCopy,
   bilingualStatusName,
-  formatLegacyAdminDateTime,
   formatAdminNumber,
   statusDisplayName,
   useAdminPageCopy,
@@ -194,15 +195,15 @@ describe("page copy helpers", () => {
     expect(formatAdminNumber(undefined, "zh")).toBe("0");
   });
 
-  test("does not export a second formatAdminDateTime beside the Task 1 formatter", () => {
-    // New code imports formatAdminDateTime from i18n/format; the old format has its own name.
+  test("exports no date formatter of its own: dates come from i18n/format", () => {
     expect("formatAdminDateTime" in pageCopyModule).toBe(false);
-    expect("formatLegacyAdminDateTime" in pageCopyModule).toBe(true);
+    expect("formatLegacyAdminDateTime" in pageCopyModule).toBe(false);
   });
 
-  test("formatLegacyAdminDateTime keeps its Hong Kong time output", () => {
-    expect(formatLegacyAdminDateTime(null, "zh")).toBe("-");
-    expect(formatLegacyAdminDateTime("not a date", "en")).toBe("not a date");
+  test("the coordinator report time keeps its English output, and Chinese is the shared format", () => {
+    const reportTime = adoptionFormatCopy.en.reportTime;
+    expect(reportTime(null)).toBe("-");
+    expect(reportTime("not a date")).toBe("not a date");
     const value = "2026-10-01T02:30:00Z";
     const expected = (locale: string) =>
       new Intl.DateTimeFormat(locale, {
@@ -211,8 +212,8 @@ describe("page copy helpers", () => {
         hour12: false,
         timeZone: "Asia/Hong_Kong",
       }).format(new Date(value));
-    expect(formatLegacyAdminDateTime(value, "zh")).toBe(expected("zh-HK"));
-    expect(formatLegacyAdminDateTime(value, "en")).toBe(expected("en-HK"));
+    expect(reportTime(value)).toBe(expected("en-HK"));
+    expect(adoptionFormatCopy.zh.reportTime(value)).toBe(formatAdminDateTime(value, "zh"));
   });
 
   test("statusDisplayName shows the language's own label, then the other, then the key", () => {

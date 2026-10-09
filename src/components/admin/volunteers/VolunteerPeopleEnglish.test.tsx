@@ -24,11 +24,6 @@ const { FIXTURE } = kit;
 const ALLOW = [FIXTURE.volunteer, FIXTURE.role, FIXTURE.evidence, FIXTURE.reason, FIXTURE.activity];
 const noop = () => {};
 const selection = { ids: ["profile-1"], disabled: false, toggle: noop };
-/** A date as the Chinese person page has always written it (the ICU data decides the exact text). */
-const zhDate = (value: string) =>
-  new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium", timeZone: "Asia/Hong_Kong" }).format(
-    new Date(value),
-  );
 
 const users = {
   users: [
@@ -467,18 +462,17 @@ describe("a volunteer's person page in English", () => {
     for (const text of [
       "返回名冊",
       "核實身份與資格",
-      "帳戶電郵：電郵已驗證 · 職員身份核實：已核實（" + zhDate("2026-09-01T02:00:00Z") + "）",
+      "帳戶電郵：電郵已驗證 · 職員身份核實：已核實（2026年9月1日 (二)）",
       "身份編號：profile-1",
       "紀錄覆蓋範圍",
-      "歷史覆蓋起點：" +
-        zhDate("2025-01-01") +
+      "歷史覆蓋起點：2025年1月1日 (三)" +
         "。只顯示已連結此身份的紀錄；未連結的舊資料不會按姓名推測合併。每類最多顯示 100 筆；缺少紀錄不代表沒有服務或資格。",
       'aria-label="個人紀錄分類"',
       "身份與資格",
       "出生日期",
       "顯示 2 / 3 筆",
-      "有效期間：" + zhDate("2026-01-01") + " 至 " + zhDate("2027-01-01"),
-      "有效期間：" + zhDate("2025-01-01") + " 至 未設定到期日",
+      "有效期間：2026年1月1日 (四) 至 2027年1月1日 (五)",
+      "有效期間：2025年1月1日 (三) 至 未設定到期日",
       "· 已撤銷",
       "撤銷日期：",
       "證據：" + FIXTURE.evidence,
@@ -668,13 +662,7 @@ describe("matching an old registration to a profile in English", () => {
         "舊報名身份核對",
         "只連結有證據的同一人，不會以相同姓名或電郵自動合併。",
         "待核對個人報名",
-        FIXTURE.volunteer +
-          " · " +
-          FIXTURE.activity +
-          " · " +
-          new Date("2026-05-01T02:00:00Z").toLocaleDateString("zh-HK", {
-            timeZone: "Asia/Hong_Kong",
-          }),
+        FIXTURE.volunteer + " · " + FIXTURE.activity + " · " + "2026年5月1日 (五)",
         "已核實義工",
         "請選擇已核實身份",
         "身份相符證據及核對理由",

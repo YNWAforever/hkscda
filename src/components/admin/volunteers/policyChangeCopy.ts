@@ -1,3 +1,4 @@
+import type { AdminLanguage } from "../../../lib/admin/language";
 import { localisePolicyReason } from "../../../lib/volunteers/policy/messages";
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminDate, formatAdminNumber, pluralCount } from "../i18n/format";
@@ -258,6 +259,22 @@ const IDENTIFIER_KEYS = new Set(["key", "pool", "quota"]);
 const TEMPLATE_KEYS = new Set(["template_key", "with_group", "without_group"]);
 /** Keys whose value is a day, such as `2026-10-09`. */
 const DATE_KEYS = new Set(["effective_from", "effective_until", "excluded_dates"]);
+
+/**
+ * A policy value that is a calendar day (`2026-10-09` under a day key) in the shared date format,
+ * or `null` for any other value. The day is read as that same day, never moved by a time zone.
+ */
+export function policyDay(
+  value: string | number,
+  key: string,
+  language: AdminLanguage,
+): string | null {
+  if (typeof value !== "string" || !DATE_KEYS.has(key) || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+  return formatAdminDate(value, language);
+}
+
 /** Keys whose value is text staff typed: a name, a note or a place, shown as typed. */
 const TEXT_KEYS = new Set([
   "name",
@@ -298,7 +315,8 @@ export function describeEnglishPolicyLeaf(
   if (key === "reason") return localisePolicyReason(value, "en");
   if (key === "version_id") return "A terms version is linked";
   if (key === "timezone" && value === "Asia/Hong_Kong") return "Hong Kong time";
-  if (DATE_KEYS.has(key) && /^\d{4}-\d{2}-\d{2}$/.test(value)) return formatAdminDate(value, "en");
+  const day = policyDay(value, key, "en");
+  if (day !== null) return day;
   if (IDENTIFIER_KEYS.has(key) || TEXT_KEYS.has(key)) return value;
   return LOOKS_LIKE_A_CODE.test(value) ? "Other value" : value;
 }
@@ -343,9 +361,9 @@ export const policyChangeCopy = defineAdminCopy({
         .join(" / "),
     /** A path in a list of what still has to be decided: the path as stored, as it has always been. */
     issuePath: (path: string) => path,
-    /** One value that is not a list, an object or a yes or no. */
-    leaf: (value: string | number, _key: string, _lookups: PolicyLookups) =>
-      ZH_LABELS[String(value)] ?? String(value),
+    /** One value that is not a list, an object or a yes or no; a day is the shared Chinese date. */
+    leaf: (value: string | number, key: string, _lookups: PolicyLookups) =>
+      policyDay(value, key, "zh") ?? ZH_LABELS[String(value)] ?? String(value),
   },
   en: {
     sectionLabel: "Policy changes",

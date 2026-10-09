@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDate } from "../i18n/format";
+import { formatAdminDate, formatAdminDateOrNull } from "../i18n/format";
 
 /** Copy for the team and governance screen. The names and positions staff type are data. */
 export const governanceCopy = defineAdminCopy({
@@ -18,8 +18,8 @@ export const governanceCopy = defineAdminCopy({
       steppedDown: "已卸任",
       edit: "編輯",
       stepDown: "卸任",
-      /** The effective date: the stored `YYYY-MM-DD` text in Chinese. */
-      date: (value: string) => String(value),
+      /** The effective date, a stored `YYYY-MM-DD` calendar day; text that is not a day as stored. */
+      date: (value: string) => formatAdminDateOrNull(value, "zh") ?? String(value),
     },
     stepDownFailed: "卸任操作失敗，請再試一次。",
     form: {

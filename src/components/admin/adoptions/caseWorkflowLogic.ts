@@ -74,19 +74,14 @@ export function formatFallback(value: string | null | undefined) {
   return trimmed(value) || "-";
 }
 
+/**
+ * The English date of a case on the intake inbox and the adopter list: the first ten characters
+ * of the stored value. Chinese uses the shared Hong Kong date (`adoptionFormatCopy.zh.listDay`).
+ */
 export function formatDate(value: string | null | undefined) {
   const nextValue = trimmed(value);
   if (!nextValue) return "-";
-  return nextValue.slice(0, 10);
-}
-
-export function formatHkdCents(amountCents: number | null | undefined) {
-  if (amountCents === null || amountCents === undefined) return "-";
-  const sign = amountCents < 0 ? "-" : "";
-  const absoluteCents = Math.abs(amountCents);
-  const dollars = Math.floor(absoluteCents / 100).toLocaleString("en-US");
-  const cents = String(absoluteCents % 100).padStart(2, "0");
-  return cents === "00" ? `${sign}HK$${dollars}` : `${sign}HK$${dollars}.${cents}`;
+  return nextValue.slice(0, 10); // admin-format-ok: English list day, kept as it was
 }
 
 function parseHkdDollarsToCents(value: string) {

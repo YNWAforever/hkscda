@@ -186,16 +186,12 @@ describe("access management in Chinese", () => {
     expect(markup).toMatch(/<h1[^>]*>權限管理<\/h1>/);
   });
 
-  test("keeps the medium date and short time of the Chinese screen", () => {
+  test("writes the Chinese times in the shared Hong Kong date and time", () => {
     users = loadedUsers;
     audit = loadedAudit;
     const markup = renderAdminInChinese(<AccessManagement />);
-    const expected = new Intl.DateTimeFormat("zh-HK", {
-      dateStyle: "medium",
-      timeStyle: "short",
-      timeZone: "Asia/Hong_Kong",
-    }).format(new Date(SENT));
-    expect(markup).toContain(expected);
+    // SENT is 02:30Z, 10:30 in Hong Kong.
+    expect(markup).toContain("2026年10月1日 (四) 10:30");
     expect(accessCopy.zh.dateTime(null)).toBe("—");
   });
 

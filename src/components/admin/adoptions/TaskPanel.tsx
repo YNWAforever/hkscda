@@ -268,16 +268,16 @@ function TaskItem({
             </div>
             <div className="grid gap-2 text-xs text-[var(--color-text-muted)] sm:grid-cols-2">
               <span>
-                {copy.display.due}: {formatTaskDateTime(task.dueAt)}
+                {copy.display.due}: {formatTaskDateTime(task.dueAt, language)}
               </span>
               <span>
-                {copy.display.scheduled}: {formatTaskDateTime(task.scheduledAt)}
+                {copy.display.scheduled}: {formatTaskDateTime(task.scheduledAt, language)}
               </span>
               <span>
-                {copy.display.completed}: {formatTaskDateTime(task.completedAt)}
+                {copy.display.completed}: {formatTaskDateTime(task.completedAt, language)}
               </span>
               <span>
-                {copy.display.nextStep}: {formatTaskDateTime(task.nextStepAt)}
+                {copy.display.nextStep}: {formatTaskDateTime(task.nextStepAt, language)}
               </span>
               <span>
                 {copy.display.volunteer}: {formatFallback(task.volunteer ?? task.assignedTo)}

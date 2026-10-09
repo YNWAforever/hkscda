@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDateTime } from "../i18n/format";
+import { formatAdminDateTime, formatAdminDateTimeOrNull } from "../i18n/format";
 
 /** The name of each part of the page content in a field's label, by the key in its path. */
 const ZH_FIELD_LABELS: Record<string, string> = {
@@ -84,7 +84,7 @@ export const adoptionInstructionsCopy = defineAdminCopy({
         draftVersion === null ? "尚未建立草稿" : `草稿版本 ${draftVersion}`
       }${dirty ? " · 尚未儲存" : ""}`,
     lastUpdated: (updatedAt: string, updatedBy: string | null) =>
-      `最後更新：${updatedAt} · ${updatedBy ?? "系統"}`,
+      `最後更新：${formatAdminDateTimeOrNull(updatedAt, "zh") ?? updatedAt} · ${updatedBy ?? "系統"}`,
     conflict: {
       intro: (serverVersion: number | null) =>
         `伺服器草稿版本 ${serverVersion ?? "—"}。請比較本機與伺服器內容，再決定是否採用。`,
@@ -106,7 +106,9 @@ export const adoptionInstructionsCopy = defineAdminCopy({
       heading: "版本紀錄",
       restoreBlocked: "請先封存或發布目前草稿，才可將歷史版本還原為新草稿。",
       item: (revisionNumber: number, state: "published" | "archived", publishedAt: string | null) =>
-        `修訂 ${revisionNumber} · ${state === "published" ? "已發布" : "已封存"} · ${publishedAt ?? ""}`,
+        `修訂 ${revisionNumber} · ${state === "published" ? "已發布" : "已封存"} · ${
+          publishedAt === null ? "" : (formatAdminDateTimeOrNull(publishedAt, "zh") ?? publishedAt)
+        }`,
       view: "查看內容",
       restore: "還原此版本",
       loading: "載入版本中…",

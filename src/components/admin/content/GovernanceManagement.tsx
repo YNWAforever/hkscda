@@ -23,6 +23,7 @@ function draftFromMember(member?: BoardMember): BoardMemberDraft {
     name: member?.name ?? "",
     roleTitle: member?.roleTitle ?? "",
     sortOrder: member?.sortOrder ?? 0,
+    // admin-format-ok: the date input's default value, a form value and not a displayed date
     effectiveDate: member?.effectiveDate ?? new Date().toISOString().slice(0, 10),
   };
 }

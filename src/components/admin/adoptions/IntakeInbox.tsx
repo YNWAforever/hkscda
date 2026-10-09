@@ -15,7 +15,8 @@ import { useAdminPageCopy } from "../adminPageCopy";
 import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
-import { formatDate, formatFallback } from "./caseWorkflowLogic";
+import { formatFallback } from "./caseWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import { buildIntakeSearchParams, intakeUrgencyLabel } from "./intakeInboxLogic";
 
 type IntakeItemsResponse = {
@@ -219,11 +220,11 @@ export function IntakeInbox() {
                     <div>
                       {copy.due}:{" "}
                       <span className="font-medium text-[var(--color-panel)]">
-                        {formatDate(item.dueAt)}
+                        {adoptionFormatCopy[language].listDay(item.dueAt)}
                       </span>
                     </div>
                     <div>
-                      {copy.created}: {formatDate(item.createdAt)}
+                      {copy.created}: {adoptionFormatCopy[language].listDay(item.createdAt)}
                     </div>
                     {item.adoptionCaseId ? (
                       <Button type="button" variant="outline" size="sm" asChild>

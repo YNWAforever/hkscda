@@ -1009,7 +1009,7 @@ describe("the adoption instructions page editor in English", () => {
     );
     expect(chinese(0, "archived", null)).toBe("修訂 0 · 已封存 · ");
     expect(chinese(1, "published", "2026-09-26T00:00:00Z")).toBe(
-      "修訂 1 · 已發布 · 2026-09-26T00:00:00Z",
+      "修訂 1 · 已發布 · 2026年9月26日 (六) 08:00",
     );
   });
 
@@ -1027,7 +1027,7 @@ describe("the adoption instructions page editor in English", () => {
       "編輯中文頁面標題及說明。領養規則及照顧須知的雙語內容，請使用各自的分頁；文件請到",
       ">領養後指南版本</a>管理。",
       "已發布修訂 1 · 草稿版本 4",
-      "最後更新：2026-09-26T00:00:00Z · staff-a",
+      "最後更新：2026年9月26日 (六) 08:00 · staff-a",
       "頁首 / 引題",
       "動物照顧須知 / 貓隻 / 標題",
       ">儲存草稿</button>",
@@ -1035,7 +1035,7 @@ describe("the adoption instructions page editor in English", () => {
       ">發布頁面</button>",
       ">封存草稿（不發布）</button>",
       ">版本紀錄</h3>",
-      "修訂 1 · 已發布 · 2026-09-26T00:00:00Z",
+      "修訂 1 · 已發布 · 2026年9月26日 (六) 08:00",
       ">查看內容</button>",
       ">還原此版本</button>",
       ">查看更多版本</button>",

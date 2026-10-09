@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDateTime, pluralCount } from "../i18n/format";
+import { formatAdminDateTime, formatAdminDateTimeOrNull, pluralCount } from "../i18n/format";
 import type { BulkItemResult } from "./bulkResultsCsv";
 
 /** Copy for the bulk preview and results panels. */
@@ -18,9 +18,8 @@ export const bulkCopy = defineAdminCopy({
       download: "下載逐筆結果 CSV",
     },
     review: {
-      // Kept as the legacy zh-HK date and time, so the Chinese screen is unchanged.
       expires: (expiresAt: string) =>
-        `預覽到期：${new Date(expiresAt).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
+        `預覽到期：${formatAdminDateTimeOrNull(expiresAt, "zh") ?? expiresAt}`,
       expiredNotice: " · 已過期，請重新預覽",
       diffLabel: "逐筆套用差異",
       columns: {

@@ -74,6 +74,34 @@ export function formatAdminDateTime(value: Date | string, language: AdminLanguag
   return `${dateText(date, parts, language)} ${parts.hour}:${parts.minute}`;
 }
 
+/** The date of a stored value, or `null` when there is none, it is blank or it is not a date. */
+function storedDate(value: Date | string | null | undefined): Date | null {
+  if (value === null || value === undefined) return null;
+  return toDate(typeof value === "string" ? value.trim() : value);
+}
+
+/**
+ * `formatAdminDate`, or `null` when there is no value, the text is blank or it is not a date,
+ * so that the screen shows its own placeholder (a dash, say) instead of the raw text. A stored
+ * calendar day (`2026-10-07`) is read as midnight UTC, which is the same day in Hong Kong.
+ */
+export function formatAdminDateOrNull(
+  value: Date | string | null | undefined,
+  language: AdminLanguage,
+): string | null {
+  const date = storedDate(value);
+  return date ? dateText(date, hongKongParts(date), language) : null;
+}
+
+/** `formatAdminDateTime`, or `null` as `formatAdminDateOrNull` returns it. */
+export function formatAdminDateTimeOrNull(
+  value: Date | string | null | undefined,
+  language: AdminLanguage,
+): string | null {
+  const date = storedDate(value);
+  return date ? formatAdminDateTime(date, language) : null;
+}
+
 const NUMBER_LOCALE: Record<AdminLanguage, string> = { zh: "zh-HK", en: "en-US" };
 
 /**

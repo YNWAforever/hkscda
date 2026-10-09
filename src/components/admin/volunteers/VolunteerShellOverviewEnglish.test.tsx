@@ -432,12 +432,12 @@ describe("the volunteer overview in English", () => {
         "未來 14／30 日服務覆蓋",
         "已排妥已發布場次",
         "下一個已發布場次：",
-        "2026-10-10 · " + FIXTURE.template + "：尚未建立場次",
+        "2026年10月10日 (六) · " + FIXTURE.template + "：尚未建立場次",
         "今日服務安排",
         FIXTURE.role + " 尚欠 2 人",
         "6 人已確認 · 場次容量 12",
         "職務最低名額已達標",
-        "2026-10-09 · 香港時間",
+        "2026年10月9日 (五) · 香港時間",
         "貓舍",
       ]) {
         expect(markup, text).toContain(text);

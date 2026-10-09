@@ -14,12 +14,13 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { formatAdminNumber, formatLegacyAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
+import { formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { getCoordinatorExportFilename } from "./adopterWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import {
   buildExportHistorySearchParams,
   buildMonthlySummarySearchParams,
@@ -228,7 +229,7 @@ export function CoordinatorReports() {
       id: "timestamp",
       header: copy.columns.timestamp,
       className: "min-w-44 px-4 font-medium text-[var(--color-panel)]",
-      cell: (row) => formatLegacyAdminDateTime(row.timestamp, language),
+      cell: (row) => adoptionFormatCopy[language].reportTime(row.timestamp),
     },
     {
       id: "actor",
@@ -294,7 +295,7 @@ export function CoordinatorReports() {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="font-medium text-[var(--color-panel)]">
-              {formatLegacyAdminDateTime(row.timestamp, language)}
+              {adoptionFormatCopy[language].reportTime(row.timestamp)}
             </div>
             <div className="truncate text-xs text-[var(--color-text-muted)]">{actorLabel(row)}</div>
           </div>

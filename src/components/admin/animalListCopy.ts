@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "./i18n/copy";
-import { formatAdminDateTime, pluralCount } from "./i18n/format";
+import { formatAdminDateTime, formatAdminDateTimeOrNull, pluralCount } from "./i18n/format";
 
 /**
  * Copy for the animal list and the public photo repair queue. The column headings, the
@@ -46,10 +46,9 @@ export const animalListCopy = defineAdminCopy({
       status: { pending: "待處理", claimed: "處理中", failed: "需人工覆核" },
       attempt: (attempts: number, errorCode: string | null) =>
         `· 第 ${attempts} 次 · 原因碼：${errorCode ?? "未記錄"}`,
-      created: (value: string) =>
-        `建立：${new Date(value).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
+      created: (value: string) => `建立：${formatAdminDateTimeOrNull(value, "zh") ?? value}`,
       nextRetry: (value: string) =>
-        `· 下次處理：${new Date(value).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
+        `· 下次處理：${formatAdminDateTimeOrNull(value, "zh") ?? value}`,
       review: "覆核並重試",
       reasonLabel: "已修復原因及重試理由",
       confirmFixed: "我已核對並修復失敗原因",

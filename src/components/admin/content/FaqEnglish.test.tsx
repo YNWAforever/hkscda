@@ -541,8 +541,8 @@ describe("the search-gap report in English", () => {
       ">English</td>",
       ">12</td>",
       ">1234</td>",
-      "2026-10-07",
-      "2026-09-29",
+      "2026年10月7日 (三)",
+      "2026年9月29日 (二)",
       ">測試</button>",
       ">以此新增問題</button>",
       `aria-label="測試「${GAP_TOPIC}」"`,
@@ -593,9 +593,9 @@ describe("the copy module", () => {
     });
   });
 
-  test("shows the report's counts and days as Chinese always has", () => {
+  test("shows the report's counts as Chinese always has, and the day in the shared format", () => {
     expect(faqCopy.zh.gaps.count(1234)).toBe("1234");
-    expect(faqCopy.zh.gaps.day("2026-10-07")).toBe("2026-10-07");
+    expect(faqCopy.zh.gaps.day("2026-10-07")).toBe("2026年10月7日 (三)");
     expect(faqCopy.en.gaps.count(1234)).toBe("1,234");
     expect(faqCopy.en.gaps.day("2026-10-07")).toBe("7 Oct 2026 (Wed)");
   });

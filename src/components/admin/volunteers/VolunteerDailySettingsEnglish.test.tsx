@@ -232,12 +232,12 @@ describe("the daily volunteer quota in English", () => {
     ]) {
       expect(markup, option).toContain(`>${option}</option>`);
     }
-    // Chinese shows each venue's key, as before.
+    // Chinese shows each venue's key, as before, and the day in the shared format.
     const chinese = screen("zh", {}, twoUnknown);
     for (const option of [
-      "2026-10-13 · venue-yuen-long · 新手／恆常每日配額",
-      "2026-10-14 · venue-tsuen-wan · 新手／恆常每日配額",
-      "2026-10-15 · venue-yuen-long · 新手／恆常每日配額",
+      "2026年10月13日 (二) · venue-yuen-long · 新手／恆常每日配額",
+      "2026年10月14日 (三) · venue-tsuen-wan · 新手／恆常每日配額",
+      "2026年10月15日 (四) · venue-yuen-long · 新手／恆常每日配額",
     ]) {
       expect(chinese, option).toContain(`>${option}</option>`);
     }
@@ -397,12 +397,12 @@ describe("the daily volunteer quota in Chinese", () => {
       'aria-label="本頁步驟"',
       "選擇日期及配額",
       "請選擇",
-      "2026-10-10 · 狗舍 · 新手／恆常每日配額",
-      "2026-10-11 · 跨場地 · 新手／恆常每日配額",
+      "2026年10月10日 (六) · 狗舍 · 新手／恆常每日配額",
+      "2026年10月11日 (日) · 跨場地 · 新手／恆常每日配額",
       // A scope is named as its venue is, and a venue the screen has no name for shows its key.
-      "2026-10-12 · 領養日 · 新手／恆常每日配額",
-      "2026-10-13 · venue-yuen-long · 新手／恆常每日配額",
-      "2026-10-10 · 修訂 4（尚未發布）",
+      "2026年10月12日 (一) · 領養日 · 新手／恆常每日配額",
+      "2026年10月13日 (二) · venue-yuen-long · 新手／恆常每日配額",
+      "2026年10月10日 (六) · 修訂 4（尚未發布）",
       "目前每日上限：8。共有 2 場受同一配額影響。",
       "每日名額模式",
       "指定數量",

@@ -160,9 +160,8 @@ describe("task overview in Chinese", () => {
       expect(markup, card.key).toContain(card.label);
       expect(markup, card.key).toContain(card.guidance);
     }
-    expect(markup).toContain(
-      `最早：${new Date(OLDEST).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
-    );
+    // OLDEST is 02:30Z, 10:30 in Hong Kong, written in the shared admin format.
+    expect(markup).toContain("最早：2026年10月1日 (四) 10:30");
     expect(markup).toContain("步驟 1");
     expect(markup).toContain("開啟工作區");
     expect(markup).toContain("未能讀取");

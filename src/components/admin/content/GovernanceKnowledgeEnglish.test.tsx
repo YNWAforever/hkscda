@@ -311,7 +311,7 @@ describe("team and governance in English", () => {
     ]);
   });
 
-  test("keeps the Chinese screen as it was, with the stored date text", () => {
+  test("keeps the Chinese screen as it was, with the effective day in the shared format", () => {
     reset();
     const markup = renderAdminInChinese(<GovernanceManagement />);
     expectAll(markup, [
@@ -320,7 +320,7 @@ describe("team and governance in English", () => {
       ">姓名</th>",
       ">職銜</th>",
       ">生效日期</th>",
-      ">2026-08-01</td>",
+      ">2026年8月1日 (六)</td>",
       ">在任</td>",
       ">已卸任</td>",
       ">編輯</button>",

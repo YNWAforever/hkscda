@@ -380,10 +380,10 @@ describe("pledge review list in English", () => {
       "清除選取",
       "選取全部前，請先篩選「待跟進」。",
       "批量分派助養跟進",
-      "HK$300/月",
+      "HK$300.00/月",
       `審核 ${SUPPORTER}`,
       `選取跟進 ${SUPPORTER}`,
-      "2026-08-01",
+      "2026年8月1日 (六)",
     ]);
   });
 });
@@ -553,8 +553,8 @@ describe("pledge detail drawer in English", () => {
       "承諾詳情",
       "關閉",
       "需要跟進",
-      "HK$300/月（300）",
-      "建立於 2026-08-01",
+      "HK$300.00/月（HK$300.00）",
+      "建立於 2026年8月1日 (六)",
       "助養跟進分派",
       "尚未分派跟進職員",
       "助養月份跟進草稿",
@@ -563,14 +563,14 @@ describe("pledge detail drawer in English", () => {
       "已確認助養動物",
       "助養月份",
       "每月意向 HK$250.50 · 已分配 HK$250.50",
-      "每月意向 HK$300 · 已分配 HK$0 · 待跟進 HK$300（非債務）",
+      "每月意向 HK$300.00 · 已分配 HK$0.00 · 待跟進 HK$300.00（非債務）",
       "已付",
       "待付",
       "收款、月份及通知",
       "付款證明記錄",
       "近期活動",
       "查看完整支持者時間軸",
-      "fps · FPS-001 · HK$300",
+      "fps · FPS-001 · HK$300.00",
       "bank_transfer · - · HK$300.50 · 職員記錄",
       "sponsorship_pledge.proof_reviewed",
     ]);
@@ -684,9 +684,9 @@ describe("finance panel in English", () => {
       "提交時的聯絡資料（保留原始版本）",
       "已核實，更新聯絡人主檔",
       "已核實付款",
-      "歷史收款尚待財務核對，未重入帳 · 已退款 HK$50 · 實收 HK$250.50",
+      "歷史收款尚待財務核對，未重入帳 · 已退款 HK$50.00 · 實收 HK$250.50",
       "收據：R-2026-0001（已簽發）、R-2026-0002（已作廢）",
-      "重新分配金額（港元；尚餘 HK$0）",
+      "重新分配金額（港元；尚餘 HK$0.00）",
       "退款金額（港元；可退 HK$250.50）",
       "記錄已完成退款",
       "收到付款資料 · 等候傳送 · 已送達收件伺服器 · 嘗試 1 次",
@@ -793,7 +793,7 @@ describe("reminder draft in English", () => {
     expectAll(markup, [
       "收件人：陳大文 &lt;alex@example.invalid&gt;",
       "待核對月份：2026-08；內部紀錄未核對承諾：HK$123.45。此數字不是欠款認定，亦不會寫入電郵草稿。",
-      "只供內部審閱。草稿於 2026-09-28T02:00:00.000Z 產生；資料或憑證變動後須重新核對。發送需另行審批。",
+      "只供內部審閱。草稿於 2026年9月28日 (一) 10:00 產生；資料或憑證變動後須重新核對。發送需另行審批。",
       "主旨草稿",
       "內容草稿",
     ]);
@@ -904,11 +904,12 @@ describe("sponsorship copy", () => {
     expect(pledgeDrawerCopy.zh.proofFileErrors.too_large).toBe("檔案大小超過上限（8MB）");
   });
 
-  test("the tier amount is written as money in English", () => {
+  test("the tier amount is written as money in both languages", () => {
     expect(pledgeDrawerCopy.en.tierAmount("300")).toBe("HK$300.00 tier");
     expect(pledgeDrawerCopy.en.tierAmount("500")).toBe("HK$500.00 tier");
     expect(pledgeDrawerCopy.en.tierAmount("custom")).toBe("custom");
-    expect(pledgeDrawerCopy.zh.tierAmount("300")).toBe("300");
+    expect(pledgeDrawerCopy.zh.tierAmount("300")).toBe("HK$300.00");
+    expect(pledgeDrawerCopy.zh.tierAmount("custom")).toBe("custom");
   });
 
   test("an English month is read from the text, so no time zone can move it", () => {
@@ -940,7 +941,7 @@ describe("sponsorship copy", () => {
     // Not a month: shown as its first seven characters, as Chinese shows every month.
     expect(month("2026-13-01")).toBe("2026-13");
     expect(month("")).toBe("");
-    // Chinese is unchanged.
+    // Chinese keeps the stored month: there is no shared month format.
     expect(sponsorshipFormatCopy.zh.month("2026-01-01")).toBe("2026-01");
     expect(sponsorshipFormatCopy.zh.month("2025-12-31")).toBe("2025-12");
   });
@@ -959,27 +960,27 @@ describe("sponsorship copy", () => {
     expect(financeCopy.zh.deliveryLine("A", "B", "C", 1)).toBe("A · B · C · 嘗試 1 次");
   });
 
-  test("amounts and dates: Chinese keeps what it showed, English uses the admin formats", () => {
+  test("amounts and dates use the shared admin formats; a month stays a calendar month", () => {
     const zh = sponsorshipFormatCopy.zh;
     const en = sponsorshipFormatCopy.en;
     expect(zh.money(12345)).toBe("HK$123.45");
-    expect(zh.money(30000)).toBe("HK$300");
+    expect(zh.money(30000)).toBe("HK$300.00");
     expect(en.money(30000)).toBe("HK$300.00");
-    expect(zh.monthly(30000)).toBe("HK$300/月");
+    expect(zh.monthly(30000)).toBe("HK$300.00/月");
     expect(en.monthly(30000)).toBe("HK$300.00/month");
-    expect(zh.date("2026-08-01T02:30:00Z")).toBe("2026-08-01");
+    expect(zh.date("2026-08-01T02:30:00Z")).toBe("2026年8月1日 (六)");
     expect(en.date("2026-08-01T02:30:00Z")).toBe("1 Aug 2026 (Sat)");
     expect(zh.date(null)).toBe("-");
     expect(en.date("  ")).toBe("-");
-    expect(zh.day("2026-08-02")).toBe("2026-08-02");
+    expect(zh.day("2026-08-02")).toBe("2026年8月2日 (日)");
     expect(en.day("2026-08-02")).toBe("2 Aug 2026 (Sun)");
-    expect(zh.isoDay("2026-08-31T02:30:00Z")).toBe("2026-08-31");
+    expect(zh.isoDay("2026-08-31T02:30:00Z")).toBe("2026年8月31日 (一)");
     expect(zh.isoDay(null)).toBe("");
     expect(en.isoDay(null)).toBe("");
     expect(zh.periodStart("2026-08-01")).toBe("2026-08-01");
     expect(en.periodStart("2026-08-01")).toBe("Aug 2026");
     expect(zh.month("2026-08-01")).toBe("2026-08");
-    expect(zh.dateTime("2026-09-28T02:00:00.000Z")).toBe("2026-09-28T02:00:00.000Z");
+    expect(zh.dateTime("2026-09-28T02:00:00.000Z")).toBe("2026年9月28日 (一) 10:00");
     expect(en.dateTime("2026-09-28T02:00:00.000Z")).toBe("28 Sep 2026 (Mon) 10:00");
   });
 
