@@ -191,8 +191,8 @@ record name.
 
 **Volunteer sidebar.**
 
-- It regroups into 日常 · 人員 · 政策, reusing existing labels where possible. New group labels go
-  on the owner list, with English meanwhile.
+- It regroups into 日常 · 人員 · 政策. These are the audit's own labels, so they ship, and they are
+  listed on the owner list for confirmation.
 - The 10 pages registered only in `volunteerWorkspace.ts` move into the `adminNav.ts` model with
   their roles.
 - `adminNav.test.ts` and the smoke test cover them.
