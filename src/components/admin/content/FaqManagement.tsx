@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { buildTesterFaqs } from "../../../lib/faq/answerTester";
 import { FAQ_CTA_OPTIONS } from "../../../lib/faq/schemas";
-import type { FaqCategory, FaqEntry, FaqEntryInput } from "../../../lib/faq/types";
+import type { FaqCategory, FaqEntry, FaqEntryInput, FaqLanguage } from "../../../lib/faq/types";
 import { LoadFailure } from "../LoadFailure";
+import { FaqAnswerTester } from "./FaqAnswerTester";
+import { FaqSearchGapsReport } from "./FaqSearchGapsReport";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
 
@@ -80,6 +83,28 @@ export function invalidateFaqQueries(client: {
 export function FaqManagement() {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<FaqDraft | null>(null);
+  // The draft form renders below the whole FAQ table, so opening it from a button
+  // higher up the page would otherwise look like nothing happened. This counts
+  // openings so the form is revealed on each one, including a second 「以此新增問題」
+  // click while a draft is already open.
+  const [draftOpenings, setDraftOpenings] = useState(0);
+  const firstFieldRef = useRef<HTMLSelectElement>(null);
+
+  function openDraft(next: FaqDraft) {
+    setDraft(next);
+    setDraftOpenings((count) => count + 1);
+  }
+
+  useEffect(() => {
+    const field = firstFieldRef.current;
+    if (draftOpenings === 0 || !field) return;
+    field.scrollIntoView({ block: "center" });
+    field.focus({ preventScroll: true });
+  }, [draftOpenings]);
+
+  // Held here, not in the tester, so the search-gap report can fill them in.
+  const [testerQuery, setTesterQuery] = useState("");
+  const [testerLanguage, setTesterLanguage] = useState<FaqLanguage>("zh-HK");
 
   const entriesQuery = useQuery({
     queryKey: ADMIN_FAQ_QUERY_KEY,
@@ -108,6 +133,10 @@ export function FaqManagement() {
   });
 
   const entries = entriesQuery.data ?? [];
+  const tester = useMemo(
+    () => buildTesterFaqs(entriesQuery.data ?? [], draft ? toInput(draft) : null),
+    [entriesQuery.data, draft],
+  );
 
   return (
     <div className="space-y-6">
@@ -116,11 +145,25 @@ export function FaqManagement() {
         <button
           type="button"
           className="btn-primary min-h-11 px-4"
-          onClick={() => setDraft(draftFromEntry())}
+          onClick={() => openDraft(draftFromEntry())}
         >
           新增問題
         </button>
       </div>
+
+      {/* Fetches on its own, so it shows whatever state the FAQ list is in. */}
+      <FaqSearchGapsReport
+        onTest={(topic, language) => {
+          setTesterQuery(topic);
+          setTesterLanguage(language);
+        }}
+        onCreate={(topic, language) =>
+          openDraft({
+            ...draftFromEntry(),
+            [language === "en" ? "questionEn" : "questionZh"]: topic,
+          })
+        }
+      />
 
       {entriesQuery.isLoading ? (
         <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>
@@ -130,6 +173,17 @@ export function FaqManagement() {
           error={entriesQuery.error}
           onRetry={() => void entriesQuery.refetch()}
           title="無法載入常見問題"
+        />
+      ) : null}
+
+      {!entriesQuery.isLoading && !entriesQuery.isError ? (
+        <FaqAnswerTester
+          faqs={tester.faqs}
+          draftHidden={tester.draftHidden}
+          query={testerQuery}
+          language={testerLanguage}
+          onQueryChange={setTesterQuery}
+          onLanguageChange={setTesterLanguage}
         />
       ) : null}
 
@@ -152,7 +206,7 @@ export function FaqManagement() {
                 <td className="py-2">{entry.sortOrder}</td>
                 <td className="py-2">{entry.isActive ? "顯示中" : "已停用"}</td>
                 <td className="py-2">
-                  <button type="button" onClick={() => setDraft(draftFromEntry(entry))}>
+                  <button type="button" onClick={() => openDraft(draftFromEntry(entry))}>
                     編輯
                   </button>
                   {entry.isActive ? (
@@ -187,6 +241,7 @@ export function FaqManagement() {
           <label className="block">
             分類
             <select
+              ref={firstFieldRef}
               className="mt-1 block w-full border px-3 py-2"
               value={draft.category}
               onChange={(event) =>

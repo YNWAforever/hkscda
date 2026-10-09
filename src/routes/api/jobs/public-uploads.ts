@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import { createSupabaseSearchGapRepository } from "../../../lib/faq/searchGapRepository.server";
 import {
   cleanupExpiredAnimalDraftUploads,
   createSupabaseAnimalDraftUploadCleanupPort,
@@ -28,6 +29,9 @@ type Dependencies = {
   runSponsorship(client: SupabaseClient): ReturnType<typeof cleanupExpiredSponsorshipProofUploads>;
   runInternship(client: SupabaseClient): ReturnType<typeof cleanupExpiredInternshipUploads>;
   runAnimalDraft(client: SupabaseClient): ReturnType<typeof cleanupExpiredAnimalDraftUploads>;
+  runFaqSearchGapPurge(
+    client: SupabaseClient,
+  ): Promise<{ removed: number; preserved: number; failed: number }>;
   logger: Pick<Console, "error">;
 };
 
@@ -56,6 +60,11 @@ export function createPublicUploadCleanupHandler({
     cleanupExpiredInternshipUploads(createSupabaseInternshipUploadCleanupPort(client)),
   runAnimalDraft = (client) =>
     cleanupExpiredAnimalDraftUploads(createSupabaseAnimalDraftUploadCleanupPort(client)),
+  runFaqSearchGapPurge = async (client) => ({
+    removed: await createSupabaseSearchGapRepository(client).purge(),
+    preserved: 0,
+    failed: 0,
+  }),
   logger = console,
 }: Partial<Dependencies> = {}) {
   return async (request: Request): Promise<Response> => {
@@ -66,12 +75,14 @@ export function createPublicUploadCleanupHandler({
       );
     }
     const client = createClient();
-    const [adoption, sponsorship, internship, animalDraft] = await Promise.allSettled([
-      runAdoption(client),
-      runSponsorship(client),
-      runInternship(client),
-      runAnimalDraft(client),
-    ]);
+    const [adoption, sponsorship, internship, animalDraft, faqSearchGaps] =
+      await Promise.allSettled([
+        runAdoption(client),
+        runSponsorship(client),
+        runInternship(client),
+        runAnimalDraft(client),
+        runFaqSearchGapPurge(client),
+      ]);
     if (adoption.status === "rejected")
       logger.error("Adoption upload cleanup failed", adoption.reason);
     if (sponsorship.status === "rejected")
@@ -80,7 +91,9 @@ export function createPublicUploadCleanupHandler({
       logger.error("Internship upload cleanup failed", internship.reason);
     if (animalDraft.status === "rejected")
       logger.error("Animal draft upload cleanup failed", animalDraft.reason);
-    const failed = [adoption, sponsorship, internship, animalDraft].some(
+    if (faqSearchGaps.status === "rejected")
+      logger.error("FAQ search gap purge failed", faqSearchGaps.reason);
+    const failed = [adoption, sponsorship, internship, animalDraft, faqSearchGaps].some(
       (result) => result.status === "rejected" || result.value.failed > 0,
     );
     return Response.json(
@@ -89,6 +102,7 @@ export function createPublicUploadCleanupHandler({
         sponsorship: sponsorship.status === "fulfilled" ? sponsorship.value : null,
         internship: internship.status === "fulfilled" ? internship.value : null,
         animalDraft: animalDraft.status === "fulfilled" ? animalDraft.value : null,
+        faqSearchGaps: faqSearchGaps.status === "fulfilled" ? faqSearchGaps.value : null,
       },
       { status: failed ? 500 : 200, headers: { "cache-control": "no-store" } },
     );

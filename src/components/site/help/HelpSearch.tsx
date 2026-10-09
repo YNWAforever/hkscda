@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
-import { trackHelpEvent } from "../../../lib/help/analytics";
 import {
   helpCategoryLabels,
   type HelpCategory,
   type HelpFaq,
   type HelpLanguage,
 } from "../../../lib/help/faq";
-import { requiresStaffContact, searchHelpFaqs } from "../../../lib/help/search";
+import { describeHelpOutcome } from "../../../lib/help/outcome";
+import { recordHelpSearch } from "../../../lib/help/recordSearch";
+import { searchHelpFaqs } from "../../../lib/help/search";
 import { ContactFallback } from "./ContactFallback";
 import { FaqResultCard } from "./FaqResultCard";
 
@@ -72,12 +73,7 @@ export function HelpSearch({
     }
 
     const nextResponse = searchHelpFaqs(nextQuery, faqs, { language, limit: resultLimit });
-    trackHelpEvent("help_search", {
-      language,
-      resultCount: nextResponse.results.length,
-      confidenceBucket: nextResponse.confidence,
-      query: nextQuery,
-    });
+    recordHelpSearch({ query: nextQuery, language, response: nextResponse });
   }
 
   function handleTopicClick(category: HelpCategory) {
@@ -87,13 +83,12 @@ export function HelpSearch({
   }
 
   const hasQuery = submittedQuery.trim().length > 0;
-  const directResult = response.confidence === "high" ? response.results[0] : undefined;
-  const showRelated = hasQuery && !directResult && response.results.length > 0;
-  const showFallback =
-    hasQuery &&
-    (response.confidence === "low" ||
-      response.confidence === "none" ||
-      requiresStaffContact(submittedQuery));
+  const {
+    direct: directResult,
+    related,
+    showFallback,
+  } = describeHelpOutcome(response, submittedQuery);
+  const showRelated = related.length > 0;
 
   const inputId = `${surface}-help-query`;
   const compactInputClass =
@@ -168,7 +163,7 @@ export function HelpSearch({
             <p className="text-sm font-bold text-[var(--color-panel)]">
               {language === "zh-HK" ? "可能相關的答案" : "Related answers"}
             </p>
-            {response.results.map((result) => (
+            {related.map((result) => (
               <FaqResultCard
                 key={result.faq.id}
                 faq={result.faq}

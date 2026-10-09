@@ -1,0 +1,77 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+import { describe, expect, test } from "bun:test";
+
+const migrationsDir = join(process.cwd(), "supabase", "migrations");
+
+function readSearchGapMigration() {
+  const fileName = readdirSync(migrationsDir).find((entry) =>
+    entry.endsWith("_faq_search_gaps.sql"),
+  );
+  if (!fileName) throw new Error("faq_search_gaps migration is missing");
+  return readFileSync(join(migrationsDir, fileName), "utf8");
+}
+
+const functionSignatures = [
+  "purge_faq_search_gaps()",
+  "record_faq_search_gap(text, text, text)",
+  "list_faq_search_gaps(integer, integer)",
+];
+
+describe("faq_search_gaps migration", () => {
+  const sql = readSearchGapMigration();
+
+  test("creates the daily-count table keyed by day, language, confidence and topic", () => {
+    expect(sql).toContain("create table public.faq_search_gap");
+    expect(sql).toContain("primary key (day, language, confidence, topic)");
+  });
+
+  test("buckets days in Hong Kong time", () => {
+    expect(sql).toContain("at time zone 'Asia/Hong_Kong'");
+  });
+
+  // The privacy notice promises topic, language and date only: no column may
+  // record the time of a search.
+  test("stores a date and a count, never the time of a search", () => {
+    expect(sql).not.toContain("last_seen_at");
+    expect(sql).not.toMatch(/timestamp/i);
+  });
+
+  // Day D is kept through D + 89 and purged from D + 90: 90 days, as the privacy
+  // notice says. `< today - 90` would keep a row for 91 days.
+  test("purges rows aged 90 days or more", () => {
+    expect(sql).toContain("where g.day < v_today - 89;");
+    expect(sql).not.toContain("v_today - 90");
+  });
+
+  test("orders the report totally, so rows with equal totals never reshuffle", () => {
+    expect(sql).toContain(
+      "order by sum(g.search_count) desc, max(g.day) desc, g.topic, g.language, g.confidence",
+    );
+  });
+
+  test("locks the table down: RLS on, no client access", () => {
+    expect(sql).toContain("alter table public.faq_search_gap enable row level security");
+    expect(sql).toContain(
+      "revoke all on table public.faq_search_gap from public, anon, authenticated",
+    );
+  });
+
+  test.each(functionSignatures)("%s is callable only by service_role", (signature) => {
+    expect(sql).toContain(
+      `revoke all on function public.${signature} from public, anon, authenticated`,
+    );
+    expect(sql).toContain(`grant execute on function public.${signature} to service_role`);
+  });
+
+  test("all three functions are security definer with a pinned search_path", () => {
+    const definerMatches = [...sql.matchAll(/security definer/g)];
+    expect(definerMatches).toHaveLength(3);
+    for (const match of definerMatches) {
+      // The header runs from the attribute to the body delimiter.
+      const header = sql.slice(match.index, sql.indexOf("as $$", match.index));
+      expect(header).toContain("set search_path = public, pg_temp");
+    }
+  });
+});

@@ -1,7 +1,8 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, spyOn, test } from "bun:test";
 
-import { createAdminFaqHandlers } from "./http";
+import { createAdminFaqHandlers, createAdminFaqSearchGapHandler } from "./http";
 import type { createFaqService } from "./service";
+import type { SearchGapReport } from "./searchGaps";
 
 const adminUserId = "11111111-1111-4111-8111-111111111111";
 const actorId = "22222222-2222-4222-8222-222222222222";
@@ -124,5 +125,68 @@ describe("createAdminFaqHandlers", () => {
     const handlers = createAdminFaqHandlers({ requireFaqAdmin, service });
     const response = await handlers.list({ request: request("http://localhost/x") });
     expect(response.status).toBe(500);
+  });
+});
+
+describe("createAdminFaqSearchGapHandler", () => {
+  const report: SearchGapReport = {
+    days: 30,
+    gaps: [
+      {
+        topic: "寵物證書",
+        language: "zh-HK",
+        confidence: "none",
+        searchCount: 4,
+        lastSeenDay: "2026-10-07",
+      },
+    ],
+  };
+
+  test("requires an admin and returns the report with no-store", async () => {
+    const requireFaqAdmin = mock(async () => admin);
+    const service = { listReport: mock(async () => report) };
+    const handler = createAdminFaqSearchGapHandler({ requireFaqAdmin, service });
+
+    const response = await handler({ request: request("http://localhost/x") });
+
+    expect(requireFaqAdmin).toHaveBeenCalledTimes(1);
+    expect(service.listReport).toHaveBeenCalledTimes(1);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual(report);
+  });
+
+  test("propagates a Response thrown by requireFaqAdmin and does not read the report", async () => {
+    const requireFaqAdmin = mock(async () => {
+      throw new Response("Forbidden", { status: 403 });
+    });
+    const service = { listReport: mock(async () => report) };
+    const handler = createAdminFaqSearchGapHandler({ requireFaqAdmin, service });
+
+    const response = await handler({ request: request("http://localhost/x") });
+
+    expect(response.status).toBe(403);
+    expect(service.listReport).not.toHaveBeenCalled();
+  });
+
+  test("a failing report falls through to the generic 500 without leaking the error", async () => {
+    const requireFaqAdmin = mock(async () => admin);
+    const service = {
+      listReport: mock(async (): Promise<SearchGapReport> => {
+        throw new Error("db exploded");
+      }),
+    };
+    const handler = createAdminFaqSearchGapHandler({ requireFaqAdmin, service });
+    const logged = spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await handler({ request: request("http://localhost/x") });
+
+      expect(response.status).toBe(500);
+      expect(response.headers.get("cache-control")).toBe("no-store");
+      expect(await response.json()).toEqual({ error: "Could not process FAQ request" });
+    } finally {
+      logged.mockRestore();
+    }
   });
 });

@@ -81,6 +81,7 @@ enforces the pairing.
   `/api/csp-report`, populated by the browser's own CSP reporting machinery, not
   by page JS or a user action) have no Turnstile widget to obtain a token from —
   rate limiting alone is the correct control there.
+  Page-JS telemetry beacons that carry only a server-re-sanitised, non-identifying value (e.g. /api/help/search-gap) are rate limited, JSON-only and size-capped instead of Turnstile-verified: there is no form to attach a token to.
 - Never trust `x-forwarded-for[0]` — use `getClientIp()`.
 - Admin mutations write an `audit_log` row. Match that in new domains.
 
