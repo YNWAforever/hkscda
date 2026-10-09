@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 
 import { expectNoChineseText, findChineseRuns } from "../../../components/admin/i18n/testing";
 import {
@@ -19,6 +20,7 @@ import {
   policyValidationMessage,
   type PolicyReasonCode,
   type PolicyValidationCode,
+  undecidedSetting,
 } from "./messages";
 import { createPolicyService } from "./service";
 import { sourceCommandSchema } from "./sourceService";
@@ -344,6 +346,29 @@ describe("the default output of the policy modules, which the server and the pub
         ),
       ),
     ).toContain(ZH_VALIDATION.quota_missing);
+  });
+
+  test("writes an undecided setting with the stored zh-HK reason, from the one helper the screens share", () => {
+    expect(undecidedSetting() as unknown).toEqual({
+      state: "unresolved",
+      reason: policyReason("pending_admin"),
+    });
+    for (const code of POLICY_REASON_CODES) {
+      expect(undecidedSetting(code) as unknown).toEqual({
+        state: "unresolved",
+        reason: policyReason(code),
+      });
+      expect(undecidedSetting(code).reason as string).toBe(policyReason(code, "zh"));
+    }
+    // The advanced fields and the daily quota screen used to hold a copy each.
+    for (const file of [
+      "../../../components/admin/volunteers/PolicyAdvancedFields.tsx",
+      "../../../components/admin/volunteers/VolunteerDailySettings.tsx",
+    ]) {
+      const source = readFileSync(new URL(file, import.meta.url), "utf8");
+      expect(source, file).not.toMatch(/(const|function) undecided\b/);
+      expect(source, file).toContain("undecidedSetting(");
+    }
   });
 
   test("gives the readiness list the zh-HK message it has always had, and the same list in English", () => {

@@ -69,9 +69,6 @@ export const POLICY_ALLOW: string[] = [
   ...Object.values(kit.FIXTURE),
 ];
 
-/** The built-in names of the catalogue, which the template picker of the advanced fields reads as data. */
-export const CATALOGUE_NAMES: string[] = initialPolicyCatalogue.map((policy) => policy.name);
-
 /** The catalogue's draft with the given key, cloned, its Chinese names replaced by data from above. */
 export function cleanDraft(key = "cat-cleaning-a", over: (draft: PolicyDraft) => void = () => {}) {
   const index = initialPolicyCatalogue.findIndex((policy) => policy.template_key === key);
@@ -200,6 +197,11 @@ export function richDraft(): PolicyDraft {
       },
     ];
   });
+}
+
+/** The name of every saved template by its key, as the settings screen gives it to the comparison. */
+export function templateNames(): Record<string, string> {
+  return Object.fromEntries(savedDrafts().map((draft) => [draft.template_key, draft.body.name]));
 }
 
 /** What the registry of venues and qualifications answers, in the shape of `SourceListing`. */
@@ -344,6 +346,9 @@ export function monthlyPolicy(over: Record<string, unknown> = {}) {
   } as typeof initialMonthlyPolicy;
 }
 
+/** Ordinary English words with a hyphen, which look like a stored key such as `dog-cleaning-a`. */
+const HYPHENATED_WORDS = ["one-off", "non-overlapping"];
+
 /** The raw keys, codes and field paths that a screen in English must not show as text. */
 export function rawKeysIn(markup: string, allow: string[] = []): string[] {
   const text = markup
@@ -351,6 +356,8 @@ export function rawKeysIn(markup: string, allow: string[] = []): string[] {
     .replace(/&[a-z#0-9]+;/g, " ")
     .split("\n")
     .join(" ");
-  const found = text.match(/\b[a-z][a-z0-9]*(?:[_.][a-z0-9]+)+\b/g) ?? [];
-  return [...new Set(found)].filter((word) => !allow.includes(word));
+  const found = text.match(/\b[a-z][a-z0-9]*(?:[_.-][a-z0-9]+)+\b/g) ?? [];
+  return [...new Set(found)].filter(
+    (word) => !allow.includes(word) && !HYPHENATED_WORDS.includes(word),
+  );
 }

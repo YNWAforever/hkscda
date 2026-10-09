@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
 import { ZodError } from "zod";
 
 import { AdminApiError } from "../../../lib/admin/session";
@@ -19,7 +20,16 @@ const { policySettingsCopy } = await import("./policySettingsCopy");
 const { PolicyInputError, englishPolicyProblems, policyErrorMessage, policyNoticeText } =
   await import("./policySettingsLogic");
 
-const { kit, POLICY_ALLOW, POLICY_TEXT, richDraft, registry, settingsList } = policyKit;
+const {
+  kit,
+  POLICY_ALLOW,
+  POLICY_TEXT,
+  cleanDraft,
+  richDraft,
+  registry,
+  savedDrafts,
+  settingsList,
+} = policyKit;
 const ALLOW = POLICY_ALLOW;
 /** Identifiers that staff typed into the "Identifier" field of a quota or a limit. They are data. */
 const IDENTIFIERS = [
@@ -201,6 +211,39 @@ describe("the volunteer policy settings in English", () => {
       `Preview: No earlier version → ${POLICY_TEXT.templates[1]}`,
     );
     expect(chinese({ preview: first })).toContain(`預覽：沒有舊版本 → ${POLICY_TEXT.templates[1]}`);
+  });
+
+  test("name the templates a group situation pairs with, in the picker and in the comparison, as staff saved them", () => {
+    const pairing =
+      (withGroup: string, withoutGroup: string) => (draft: ReturnType<typeof cleanDraft>) => {
+        draft.booking.scenario = "confirmed_group";
+        draft.booking.scenario_templates = { with_group: withGroup, without_group: withoutGroup };
+      };
+    const draft = cleanDraft("cat-cleaning-a", pairing("cat-cleaning-a", "cat-cleaning-b"));
+    const preview = policyKit.policyPreview({
+      previous: cleanDraft("cat-cleaning-a", pairing("cat-cleaning-a", "template-removed")),
+      candidate: cleanDraft("cat-cleaning-a", pairing("cat-cleaning-a", "cat-cleaning-b")),
+    });
+    const markup = english({ draft, preview });
+    const names = Object.fromEntries(
+      savedDrafts().map((saved) => [saved.template_key, saved.body.name]),
+    );
+    // Only names that staff saved: a built-in name of the catalogue would be Chinese that is not in the allowance.
+    expectNoChineseText(markup, { allow: ALLOW });
+    expect(markup).toContain(`>${names["cat-cleaning-a"]}</option>`);
+    expect(markup).toContain(`>${names["cat-cleaning-b"]}</option>`);
+    // The comparison writes the name of each template, and "Other template" for one that is not saved.
+    expect(markup).toContain("Other template");
+    expect(markup).not.toContain("template-removed");
+    expect(policyKit.rawKeysIn(markup, IDENTIFIERS)).toEqual([]);
+  });
+
+  test("give every line of the publishing readiness its own React key", () => {
+    // Two problems can name the same setting, and React cannot be asked about duplicate keys without a
+    // DOM, so the key is pinned: the position in the list comes first.
+    expect(
+      readFileSync(new URL("./VolunteerPolicySettings.tsx", import.meta.url), "utf8"),
+    ).toContain("<li key={`${i}:${x.path}`}>");
   });
 
   test("describe a preview that found problems without showing a code or a path", () => {

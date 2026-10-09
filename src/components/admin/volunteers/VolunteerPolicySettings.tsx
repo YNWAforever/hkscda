@@ -17,6 +17,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { policyChangeCopy } from "./policyChangeCopy";
 import { policyCommonCopy } from "./policyCommonCopy";
+import { copyOfTemplate } from "./policyDefaults";
 import {
   PolicyInputError,
   policyErrorMessage,
@@ -206,10 +207,23 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     ),
     versions = q.data.versions.filter((x) => x.template_key === key),
     err = save.error ?? pre.error ?? pub.error ?? gen.error ?? cp.error,
+    // The templates a group situation can pair with, and the names English gives their keys: what
+    // staff saved (they can rename it), with the catalogue where nothing is saved.
+    savedTemplates = [
+      ...new Map(
+        [...initialPolicyCatalogue, ...q.data.drafts.map((x) => x.body)].map((x) => [
+          x.template_key,
+          x,
+        ]),
+      ).values(),
+    ],
     lookups = {
       shelters: Object.fromEntries((registry.data?.shelters ?? []).map((s) => [s.key, s.label])),
       credentials: Object.fromEntries(
         (registry.data?.credentials ?? []).map((c) => [c.key, c.label]),
+      ),
+      templates: Object.fromEntries(
+        [...savedTemplates, draft].map((x) => [x.template_key, x.name]),
       ),
     };
   return (
@@ -222,9 +236,7 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         <button
           className={bc}
           onClick={() => {
-            const next = structuredClone(draft);
-            next.template_key = `template-${crypto.randomUUID()}`;
-            next.name = copy.copyName(draft.name);
+            const next = copyOfTemplate(draft, `template-${crypto.randomUUID()}`);
             setKey(next.template_key);
             setDraft(next);
             setRev(0);
@@ -478,7 +490,7 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         </p>
       </section>
       <div id="policy-rules">
-        <PolicyAdvancedFields policy={draft} onChange={edit} />
+        <PolicyAdvancedFields policy={draft} onChange={edit} templates={savedTemplates} />
       </div>
       <div id="policy-source">
         <PolicySourceFields policy={draft} onChange={edit} />
@@ -499,8 +511,8 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
           <p className="text-sm text-[var(--color-success)]">{copy.readiness.none}</p>
         ) : (
           <ul className="list-disc pl-5 text-sm text-[var(--color-warning)]">
-            {ready?.issues.map((x) => (
-              <li key={x.path}>
+            {ready?.issues.map((x, i) => (
+              <li key={`${i}:${x.path}`}>
                 <b>{change.issuePath(x.path)}</b>
                 {copy.separator}
                 {x.message}

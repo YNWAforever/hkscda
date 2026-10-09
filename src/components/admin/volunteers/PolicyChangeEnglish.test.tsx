@@ -19,12 +19,21 @@ const { policyChanges } = await import("./policyChanges");
 const { initialPolicyCatalogue } = await import("../../../lib/volunteers/policy/catalogue");
 const { policySourcePaths } = await import("../../../lib/volunteers/policy/sourcePaths");
 
-const { kit, POLICY_ALLOW, POLICY_TEXT, cleanDraft, policyPreview, richDraft, rawKeysIn } =
-  policyKit;
+const {
+  kit,
+  POLICY_ALLOW,
+  POLICY_TEXT,
+  cleanDraft,
+  policyPreview,
+  richDraft,
+  rawKeysIn,
+  templateNames,
+} = policyKit;
 const noop = () => {};
 const lookups = {
   shelters: { cat: POLICY_TEXT.venues[0] },
   credentials: { socialisation_training: POLICY_TEXT.qualifications[0] },
+  templates: templateNames(),
 };
 
 describe("the comparison of two policy versions in English", () => {
@@ -105,6 +114,49 @@ describe("the comparison of two policy versions in English", () => {
     expect(markup).not.toContain("venue-new");
   });
 
+  test("names the templates a group situation pairs with and never shows their keys", () => {
+    const markup = render(
+      <PolicyChangeSummary
+        before={{
+          booking: {
+            scenario_templates: { with_group: "dog-cleaning-a", without_group: "template-removed" },
+          },
+        }}
+        after={{
+          booking: {
+            scenario_templates: {
+              with_group: "cat-cleaning-a",
+              without_group: "cat-afternoon-chores",
+            },
+          },
+        }}
+        lookups={lookups}
+      />,
+    );
+    expectNoChineseText(markup, { allow: POLICY_ALLOW });
+    for (const key of ["dog-cleaning-a", "cat-cleaning-a", "cat-afternoon-chores"]) {
+      expect(markup, key).toContain(lookups.templates[key]);
+      expect(markup, key).not.toContain(key);
+    }
+    // A template nobody saved is unnamed, and its key is not shown in its place.
+    expect(markup).toContain(">Other template<");
+    expect(markup).not.toContain("template-removed");
+    expect(rawKeysIn(markup)).toEqual([]);
+  });
+
+  test("keeps the Chinese comparison of paired templates as the stored keys", () => {
+    const markup = renderAdminInChinese(
+      <PolicyChangeSummary
+        before={{ booking: { scenario_templates: { with_group: "dog-cleaning-a" } } }}
+        after={{ booking: { scenario_templates: { with_group: "cat-cleaning-a" } } }}
+        lookups={lookups}
+      />,
+    );
+    expect(markup).toContain("dog-cleaning-a");
+    expect(markup).toContain("cat-cleaning-a");
+    expect(markup).not.toContain("Other template");
+  });
+
   test("describes values of every kind", () => {
     const en = policyChangeCopy.en;
     const say = (value: unknown, key = "") => describePolicyValue(value, en, lookups, key);
@@ -124,7 +176,15 @@ describe("the comparison of two policy versions in English", () => {
     expect(say({ state: "unresolved", reason: "an old reason nobody knows" })).toContain(
       "This setting is not finished.",
     );
-    expect(say({ with_group: "dog-cleaning-a" })).toBe("With a group: dog-cleaning-a");
+    // A template is its saved name, never its key; a template nobody saved is "Other template".
+    expect(say({ with_group: "dog-cleaning-a" })).toBe(
+      `With a group: ${lookups.templates["dog-cleaning-a"]}`,
+    );
+    expect(say({ without_group: "cat-cleaning-a" })).toBe(
+      `Without a group: ${lookups.templates["cat-cleaning-a"]}`,
+    );
+    expect(say({ with_group: "template-deleted" })).toBe("With a group: Other template");
+    expect(describeEnglishPolicyLeaf("dog-cleaning-a", "with_group", {})).toBe("Other template");
     expect(say("09:00", "start_time")).toBe("09:00");
     expect(say("2026-10-09", "excluded_dates")).toBe("9 Oct 2026 (Fri)");
     expect(say("3f6c1b6e-0000-4000-8000-000000000000", "version_id")).toBe(
@@ -296,7 +356,7 @@ describe("the table of where each policy setting comes from, in English", () => 
       "<td>At group closing</td>",
       "<td>The current terms must be agreed</td>",
       "<td>1 item</td>",
-      "<td>To be set</td>",
+      "<td>Not set yet</td>",
       "<td>Set</td>",
       "<td>Not set</td>",
       "<td>Yes</td>",

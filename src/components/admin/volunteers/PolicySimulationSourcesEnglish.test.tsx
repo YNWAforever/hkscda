@@ -18,7 +18,7 @@ const { policySourcesCopy } = await import("./policySourcesCopy");
 
 const { kit, POLICY_ALLOW, POLICY_TEXT, registry } = policyKit;
 
-/** The role the database lists for a draft with no roles of its own, in Chinese. */
+/** The role the database lists for a draft with no roles of its own (it writes the label in Chinese). */
 const DEFAULT_ROLE = "一般義工";
 
 const simulationListing = {
@@ -112,17 +112,17 @@ describe("the policy simulation in English", () => {
     expect(markup).toContain(">Choose</option>");
   });
 
-  test("names the role the database adds to a draft that has none, and shows a named role as named", () => {
+  test("shows every role as it is named, including the one the database adds to a draft with none", () => {
     const markup = simulation("en", { template: "adoption-driver" });
-    expect(markup).toContain(">General volunteer</option>");
-    expect(markup).not.toContain(DEFAULT_ROLE);
+    // The database writes this role's Chinese label itself, and a role that staff named the same is
+    // stored in the same way, so the screen cannot tell the two apart. English shows both as data.
+    expect(markup).toContain(`>${DEFAULT_ROLE}</option>`);
+    expect(markup).not.toContain("General volunteer");
+    expectNoChineseText(markup, { allow: [...POLICY_ALLOW, DEFAULT_ROLE] });
     expect(simulation("zh", { template: "adoption-driver" })).toContain(
       `>${DEFAULT_ROLE}</option>`,
     );
-    expect(policySimulationCopy.en.roleName("volunteer", POLICY_TEXT.guide)).toBe(
-      POLICY_TEXT.guide,
-    );
-    expect(policySimulationCopy.en.roleName("leader", DEFAULT_ROLE)).toBe(DEFAULT_ROLE);
+    expect(Object.keys(policySimulationCopy.en)).not.toContain("roleName");
   });
 
   test("tells the result of a simulation with its figures and the next rule boundary", () => {

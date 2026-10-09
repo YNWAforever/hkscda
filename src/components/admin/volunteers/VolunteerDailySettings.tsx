@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
-import { policyReason, type PolicyReasonCode } from "../../../lib/volunteers/policy/messages";
+import { undecidedSetting } from "../../../lib/volunteers/policy/messages";
 import { getPolicyReadiness, type PolicyDraft } from "../../../lib/volunteers/policy/schemas";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
@@ -53,11 +53,6 @@ const button =
   "min-h-11 rounded-md border border-[var(--color-border)] px-4 py-2 text-sm font-semibold disabled:opacity-50";
 const tiers = ["newcomer", "regular", "senior"] as const;
 const days = [0, 1, 2, 3, 4, 5, 6];
-/** A setting left undecided; the reason is the stored zh-HK text, which the screen names in either language. */
-const undecided = (code: PolicyReasonCode) => ({
-  state: "unresolved" as const,
-  reason: policyReason(code),
-});
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1">
@@ -317,7 +312,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
                                   ? "once"
                                   : e.target.value === "dynamic"
                                     ? "dynamic"
-                                    : undecided("pick_release_semantics");
+                                    : undecidedSetting("pick_release_semantics");
                           })
                         }
                       >
@@ -356,7 +351,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
                                 e.target.value === "first_session" ||
                                 e.target.value === "last_session"
                                   ? e.target.value
-                                  : undecided("pick_daily_anchor");
+                                  : undecidedSetting("pick_daily_anchor");
                           })
                         }
                       >
@@ -563,7 +558,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
                     condition: {
                       tiers: ["regular", "senior"],
                       operator: "lt",
-                      threshold: undecided("enter_experienced_threshold"),
+                      threshold: undecidedSetting("enter_experienced_threshold"),
                     },
                     action: {
                       type: "relax_quota",
@@ -571,7 +566,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
                       scope: quota.scope,
                       new_maximum:
                         p.capacity.volunteers.state === "value" ? p.capacity.volunteers.value : 1,
-                      daily_anchor: undecided("pick_first_or_last"),
+                      daily_anchor: undecidedSetting("pick_first_or_last"),
                     },
                     allowed_tiers: [...quota.tiers],
                     credentials: { mode: "all", keys: [] },
@@ -585,8 +580,8 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
           </section>
           {readiness && !readiness.ready && (
             <ul role="alert">
-              {readiness.issues.map((x) => (
-                <li key={x.path}>{x.message}</li>
+              {readiness.issues.map((x, i) => (
+                <li key={`${i}:${x.path}`}>{x.message}</li>
               ))}
             </ul>
           )}

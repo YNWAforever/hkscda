@@ -6,7 +6,7 @@ import { volunteerTasksCopy } from "./volunteerTasksCopy";
 /** What the page last did, as a code. The page writes it when it renders, so it follows the language. */
 export type AssessmentMessage =
   | { code: "draft_saved" | "preview_ready" | "preview_blocked" | "published" | "requeued" }
-  | { code: "run_done"; profiles: number }
+  | { code: "run_done"; profiles?: number }
   | { code: "error"; cause: unknown };
 
 /** The name of an assessment scope, `combined`, `cat` or `dog`, as the list of finished assessments writes it. */
@@ -96,7 +96,11 @@ export const assessmentsCopy = defineAdminCopy({
       preview_blocked: "仍有待決定設定，暫不可發布",
       published: "版本已發布",
       requeued: "通知已重新排隊",
-      run_done: (profiles: number) => `評核完成：${profiles} 人；通知已排入佇列，未標示為已送達`,
+      /** The count of profiles is left out when the server did not say how many there were. */
+      run_done: (profiles?: number) =>
+        profiles === undefined
+          ? "評核完成：通知已排入佇列，未標示為已送達"
+          : `評核完成：${profiles} 人；通知已排入佇列，未標示為已送達`,
     },
     /** An error with no message of its own: the Chinese page has never said anything for one. */
     failed: "",
@@ -164,9 +168,8 @@ export const assessmentsCopy = defineAdminCopy({
     candidates: {
       title: "Senior volunteer candidates (staff must approve)",
       text: "Candidates are only found from the published policy and verified evidence of years of service and of observation as regular. Nobody is promoted automatically.",
-      unnamed: "No name entered",
-      line: (name: string, trigger: string, moment: string) =>
-        `Volunteer ${name} · ${trigger} · ${moment}`,
+      unnamed: "Unnamed volunteer",
+      line: (name: string, trigger: string, moment: string) => `${name} · ${trigger} · ${moment}`,
       triggers: {
         verified_attendance: "Triggered by a verified attendance",
         other: "Triggered by the monthly assessment",
@@ -187,8 +190,10 @@ export const assessmentsCopy = defineAdminCopy({
       preview_blocked: "Some settings are still undecided, so the policy cannot be published yet.",
       published: "The version is published.",
       requeued: "The notification is queued again.",
-      run_done: (profiles: number) =>
-        `Assessment finished for ${pluralCount(profiles, "person", "people")}. Notifications are queued and are not marked as delivered.`,
+      run_done: (profiles?: number) =>
+        profiles === undefined
+          ? "Assessment finished. Notifications are queued and are not marked as delivered."
+          : `Assessment finished for ${pluralCount(profiles, "person", "people")}. Notifications are queued and are not marked as delivered.`,
     },
     failed: "The action failed. Try again.",
     unreadable:

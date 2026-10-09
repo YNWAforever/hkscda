@@ -383,8 +383,8 @@ describe("the monthly tier assessment in English", () => {
       "1 Aug 2026 (Sat) · Cat shelter · Completed",
       "1 Jul 2026 (Wed) · Dog shelter · Completed",
       "1 Jun 2026 (Mon) · Other scope · Completed",
-      `Volunteer ${POLICY_TEXT.volunteer} · Triggered by a verified attendance · 9 Oct 2026 (Fri) 10:00`,
-      "Volunteer No name entered · Triggered by the monthly assessment · 8 Oct 2026 (Thu) 10:00",
+      `${POLICY_TEXT.volunteer} · Triggered by a verified attendance · 9 Oct 2026 (Fri) 10:00`,
+      "Unnamed volunteer · Triggered by the monthly assessment · 8 Oct 2026 (Thu) 10:00",
       "Monthly attendance reminder · Failed · Attempts: 3",
       "Service reminder · Delivery evidence received · Attempts: 1",
       "Notification · Unknown status · Attempts: 1,234",
@@ -400,15 +400,34 @@ describe("the monthly tier assessment in English", () => {
     expect(rawKeysIn(markup)).toEqual([]);
   });
 
-  test("starts the effective date from the clock it is given, in whichever language", () => {
-    const later = (
-      <VolunteerAssessments
-        now={() => new Date("2027-01-31T23:30:00Z")}
-        initial={{ data: listing }}
-      />
-    );
-    expect(renderAdminInEnglish(later)).toContain('value="2027-01-31"');
-    expect(renderAdminInChinese(later)).toContain('value="2027-01-31"');
+  test("shows no Chinese before anything has loaded, apart from the messages staff can edit", () => {
+    const markup = renderAdminInEnglish(<VolunteerAssessments now={NOW} />);
+    // The default reminder and care messages are text that staff can edit and that goes out to
+    // volunteers as it is written, so they stay in Chinese in the two boxes and nowhere else.
+    expectNoChineseText(markup, { allow: ["溫馨提示", "關懷"] });
+    expect(markup).toContain(">溫馨提示</textarea>");
+    expect(markup).toContain(">關懷</textarea>");
+    expect(markup).toContain("Monthly volunteer tier assessment");
+    expect(markup).toContain("Undecided");
+    expect(markup).toContain('value="2026-10-09"');
+    expect(rawKeysIn(markup)).toEqual([]);
+  });
+
+  test("starts the effective date from the Hong Kong date of the clock it is given, in whichever language", () => {
+    // Each clock is a moment in UTC and the Hong Kong day it falls on. The day in Hong Kong has
+    // already turned over in the first two, and a UTC date would still show the day before.
+    for (const [moment, day] of [
+      ["2027-01-31T23:30:00Z", "2027-02-01"],
+      ["2026-12-31T16:30:00Z", "2027-01-01"],
+      ["2026-12-31T15:59:00Z", "2026-12-31"],
+      ["2026-10-09T04:00:00Z", "2026-10-09"],
+    ] as const) {
+      const page = (
+        <VolunteerAssessments now={() => new Date(moment)} initial={{ data: listing }} />
+      );
+      expect(renderAdminInEnglish(page), moment).toContain(`value="${day}"`);
+      expect(renderAdminInChinese(page), moment).toContain(`value="${day}"`);
+    }
   });
 
   test("tells what the page last did, and what to do about a failure", () => {
@@ -432,12 +451,18 @@ describe("the monthly tier assessment in English", () => {
     expect(say({ code: "run_done", profiles: 1500 })).toContain(
       "Assessment finished for 1,500 people.",
     );
+    // When the server does not say how many people were assessed, no number is made up.
+    expect(say({ code: "run_done" })).toContain(
+      "Assessment finished. Notifications are queued and are not marked as delivered.",
+    );
+    expect(say({ code: "run_done", profiles: 0 })).toContain("Assessment finished for 0 people.");
     const forbidden = new AdminApiError({
       status: 403,
-      message: volunteerServerErrorText("assessments_forbidden"),
+      message: volunteerServerErrorText("action_forbidden"),
     });
+    // Several routes send this same text, so the English cannot name the assessment.
     expect(say({ code: "error", cause: forbidden })).toContain(
-      "You do not have permission to change the monthly assessment. Ask an administrator for access.",
+      "You do not have permission to do this. Ask an administrator for access.",
     );
     expect(
       assessmentMessageText(
@@ -520,6 +545,10 @@ describe("the monthly tier assessment in English", () => {
       expect(markup, text).toContain(text);
     }
     expect(assessments("zh", { message: { code: "draft_saved" } })).toContain("草稿已儲存");
+    // Without a count the Chinese page leaves it out, and no longer prints "undefined 人".
+    const noCount = assessments("zh", { message: { code: "run_done" } });
+    expect(noCount).toContain("評核完成：通知已排入佇列，未標示為已送達");
+    expect(noCount).not.toContain("undefined");
     expect(assessments("zh", { data: { available_channels: [] } })).toContain(
       "電郵（未配置；只可測試）",
     );

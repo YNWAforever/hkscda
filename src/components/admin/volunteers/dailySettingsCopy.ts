@@ -25,11 +25,10 @@ export const dailySettingsCopy = defineAdminCopy({
     },
     choose: "選擇日期及配額",
     pleaseChoose: "請選擇",
-    /** The name of the scope of a quota in the list of dates: all venues, or one. */
+    /** The name of the scope of a quota in the list of dates: all venues, or the venue the key names. */
     scopeName: (scopeKey: string): string => {
       if (scopeKey.startsWith("all:")) return "跨場地";
-      if (scopeKey.startsWith("dog:")) return "狗舍";
-      return "貓舍";
+      return volunteerCommonCopy.zh.shelterName(scopeVenue(scopeKey));
     },
     /** What separates the tiers a quota applies to. */
     tierSeparator: "／",
@@ -117,7 +116,7 @@ export const dailySettingsCopy = defineAdminCopy({
     heading: (date: string, revision: number, dirty: boolean) =>
       `${date} · Revision ${formatAdminNumber(revision, "en")}${dirty ? " (not published yet)" : ""}`,
     current: (limit: string, sessions: number) =>
-      `The current daily maximum is ${limit}. ${pluralCount(sessions, "session")} share this quota.`,
+      `The current daily maximum is ${limit}. ${pluralCount(sessions, "session")} ${sessions === 1 ? "shares" : "share"} this quota.`,
     limit: (state: string, value: number | undefined) => {
       if (state === "value") return formatAdminNumber(value, "en");
       if (state === "unlimited") return "Unlimited";

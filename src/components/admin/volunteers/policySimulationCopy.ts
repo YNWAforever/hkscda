@@ -44,13 +44,6 @@ const EN_REASONS: Record<string, string> = {
   overlapping_duty: "The duty time overlaps another duty",
 };
 
-/**
- * The role the database lists for a draft that has no roles of its own (`volunteer_policy_simulation`):
- * it writes the Chinese label itself. It is a name the system chose, not one staff typed, so English names
- * it; every other role shows the name staff gave it.
- */
-const DATABASE_DEFAULT_ROLE = { key: "volunteer", label: "一般義工" };
-
 /** Copy for the policy simulation screen (`VolunteerPolicySimulation`). */
 export const policySimulationCopy = defineAdminCopy({
   zh: {
@@ -68,8 +61,6 @@ export const policySimulationCopy = defineAdminCopy({
       time: "模擬香港時間",
     },
     draftOption: (name: string, revision: number) => `${name}（草稿版本 ${revision}）`,
-    /** The name of a role in the list of roles of a draft. */
-    roleName: (_key: string, label: string) => label,
     /** A tier by its stored value; a value the screen does not know shows nothing. */
     tier: (tier: string) =>
       (({ newcomer: "新手", regular: "普通", senior: "資深" }) as Record<string, string>)[tier] ??
@@ -103,10 +94,6 @@ export const policySimulationCopy = defineAdminCopy({
     },
     draftOption: (name: string, revision: number) =>
       `${name} (draft revision ${formatAdminNumber(revision, "en")})`,
-    roleName: (key: string, label: string) =>
-      key === DATABASE_DEFAULT_ROLE.key && label === DATABASE_DEFAULT_ROLE.label
-        ? "General volunteer"
-        : label,
     tier: (tier: string) =>
       (({ newcomer: "Newcomer", regular: "Regular", senior: "Senior" }) as Record<string, string>)[
         tier

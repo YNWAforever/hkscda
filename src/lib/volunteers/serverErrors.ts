@@ -4,8 +4,8 @@ import type { AdminLanguage } from "../admin/language";
  * The zh-HK messages that the volunteer API routes send in an `error` field and that reach an admin
  * screen as they are: each has a code, its zh-HK text exactly as the server sends it, and an English
  * text that says what to do next. The server keeps sending the zh-HK text, and
- * `adminVolunteerServerMessages.test.ts` drives the real handlers through `fetchAdminJson` to keep
- * this table in step with them. The admin finds the English text with `volunteerServerErrorCode` and
+ * `adminVolunteerServerMessages.test.ts` and `adminVolunteerPolicyServerMessages.test.ts` drive the real
+ * handlers through `fetchAdminJson` to keep this table in step with them. The admin finds the English text with `volunteerServerErrorCode` and
  * `volunteerAdminErrorMessage`.
  *
  * A message is listed only when it can arrive intact. Many never do: `normalizeVolunteerResult` and
@@ -18,6 +18,12 @@ import type { AdminLanguage } from "../admin/language";
  * English message for that status, not the server's own words.
  */
 const VOLUNTEER_SERVER_TEXT = {
+  // Sent by the assessments, bulk, daily quota, operations and policy routes alike when the database
+  // refuses a change (42501), so the English cannot name one screen.
+  action_forbidden: {
+    zh: "沒有此操作權限",
+    en: "You do not have permission to do this. Ask an administrator for access.",
+  },
   // /api/admin/volunteers/overview (lib/volunteers/overview.ts)
   overview_invalid_centre: {
     zh: "服務地點無效",
@@ -121,10 +127,6 @@ const VOLUNTEER_SERVER_TEXT = {
   assessments_invalid: {
     zh: "請檢查每月評核設定",
     en: "Check the monthly assessment settings and try again.",
-  },
-  assessments_forbidden: {
-    zh: "沒有此操作權限",
-    en: "You do not have permission to change the monthly assessment. Ask an administrator for access.",
   },
   assessments_failed: {
     zh: "未能處理每月評核",

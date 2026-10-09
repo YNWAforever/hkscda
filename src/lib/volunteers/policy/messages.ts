@@ -286,6 +286,14 @@ export function policyReason(code: PolicyReasonCode, language: AdminLanguage = "
 }
 
 /**
+ * A setting left undecided, as the admin screens write it into a policy. The reason is the stored zh-HK
+ * text whatever the language of the admin, like every reason; the screens name it when they show it.
+ */
+export function undecidedSetting(code: PolicyReasonCode = "pending_admin") {
+  return { state: "unresolved" as const, reason: REASONS[code].zh };
+}
+
+/**
  * A stored reason as the admin shows it. Chinese shows the text as stored. English shows the English
  * text of a reason it knows, and for any other stored text the message for an unfinished setting,
  * because a stored Chinese sentence is never shown in English.

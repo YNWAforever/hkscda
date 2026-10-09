@@ -6,11 +6,13 @@ import { volunteerCommonCopy } from "./volunteerCommonCopy";
 
 /**
  * Names the policy screens can put to the keys and values of a policy: the registered venues and
- * qualifications, whose names staff typed. English shows these names instead of the stored keys.
+ * qualifications and the saved templates, whose names staff typed. English shows these names instead
+ * of the stored keys.
  */
 export type PolicyLookups = {
   shelters?: Record<string, string>;
   credentials?: Record<string, string>;
+  templates?: Record<string, string>;
 };
 
 const ZH_LABELS: Record<string, string> = {
@@ -250,15 +252,10 @@ const EN_VALUES: Record<string, Record<string, string>> = {
   waitlist_order: { first_come_first_served: "First come, first served" },
 };
 
-/** Keys whose value is an identifier staff typed (or a template identifier): shown as stored. */
-const IDENTIFIER_KEYS = new Set([
-  "key",
-  "pool",
-  "quota",
-  "template_key",
-  "with_group",
-  "without_group",
-]);
+/** Keys whose value is an identifier staff typed in the "Identifier" field: shown as stored. */
+const IDENTIFIER_KEYS = new Set(["key", "pool", "quota"]);
+/** Keys whose value is the key of a template: English shows the name of the template instead. */
+const TEMPLATE_KEYS = new Set(["template_key", "with_group", "without_group"]);
 /** Keys whose value is a day, such as `2026-10-09`. */
 const DATE_KEYS = new Set(["effective_from", "effective_until", "excluded_dates"]);
 /** Keys whose value is text staff typed: a name, a note or a place, shown as typed. */
@@ -297,6 +294,7 @@ export function describeEnglishPolicyLeaf(
   if (key === "shelter")
     return lookups.shelters?.[value] ?? volunteerCommonCopy.en.shelterName(value);
   if (key === "keys") return lookups.credentials?.[value] ?? "Unnamed qualification";
+  if (TEMPLATE_KEYS.has(key)) return lookups.templates?.[value] ?? "Other template";
   if (key === "reason") return localisePolicyReason(value, "en");
   if (key === "version_id") return "A terms version is linked";
   if (key === "timezone" && value === "Asia/Hong_Kong") return "Hong Kong time";

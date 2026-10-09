@@ -151,7 +151,7 @@ export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulat
           >
             {draft?.roles.map((r) => (
               <option key={r.key} value={r.key}>
-                {copy.roleName(r.key, r.label)}
+                {r.label}
               </option>
             ))}
           </select>

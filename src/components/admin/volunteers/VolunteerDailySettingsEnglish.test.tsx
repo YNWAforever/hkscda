@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
+import { readFileSync } from "node:fs";
+
 import { AdminApiError } from "../../../lib/admin/session";
 import { policyReason } from "../../../lib/volunteers/policy/messages";
 import type { PolicyDraft } from "../../../lib/volunteers/policy/schemas";
@@ -208,6 +210,36 @@ describe("the daily volunteer quota in English", () => {
     }
   });
 
+  test("agrees the verb with the number of sessions that share the quota", () => {
+    const one = {
+      "volunteer-daily-settings": kit.ok({
+        bindings: [
+          binding(KEY, "2026-10-10", {
+            activities: [
+              { id: "activity-1", title: kit.FIXTURE.activity, starts_at: "2026-10-10T01:00:00Z" },
+            ],
+          }),
+        ],
+        credentials: registry().credentials,
+      }),
+    };
+    expect(screen("en", {}, one)).toContain(
+      "The current daily maximum is 8. 1 session shares this quota.",
+    );
+    expect(screen("en")).toContain("The current daily maximum is 8. 2 sessions share this quota.");
+    expect(dailySettingsCopy.en.current("Unlimited", 0)).toBe(
+      "The current daily maximum is Unlimited. 0 sessions share this quota.",
+    );
+  });
+
+  test("gives every line of the check before publishing its own React key", () => {
+    // Two problems can name the same setting, and React cannot be asked about duplicate keys without a
+    // DOM, so the key is pinned: the position in the list comes first.
+    expect(
+      readFileSync(new URL("./VolunteerDailySettings.tsx", import.meta.url), "utf8"),
+    ).toContain("<li key={`${i}:${x.path}`}>{x.message}</li>");
+  });
+
   test("says what is left to decide, in English and without a field path", () => {
     const markup = screen("en");
     for (const message of [
@@ -304,6 +336,8 @@ describe("the daily volunteer quota in English", () => {
     expect(dailySettingsCopy.en.limit("unlimited", undefined)).toBe("Unlimited");
     expect(dailySettingsCopy.en.limit("unresolved", undefined)).toBe("Undecided");
     expect(dailySettingsCopy.en.scopeName("cat:cap")).toBe("Cat shelter");
+    expect(dailySettingsCopy.en.scopeName("all:cap")).toBe("All venues");
+    expect(dailySettingsCopy.en.scopeName("mystery:cap")).toBe("Other venue");
     expect(dailySettingsCopy.en.heading("10 Oct 2026 (Sat)", 1234, false)).toBe(
       "10 Oct 2026 (Sat) · Revision 1,234",
     );
@@ -311,7 +345,7 @@ describe("the daily volunteer quota in English", () => {
 });
 
 describe("the daily volunteer quota in Chinese", () => {
-  test("stays as it was, including the label the screen has always given a scope", () => {
+  test("names a scope as its venue, and every other word stays as it was", () => {
     const markup = screen("zh", { preview });
     for (const text of [
       "全日義工配額",
@@ -322,9 +356,9 @@ describe("the daily volunteer quota in Chinese", () => {
       "請選擇",
       "2026-10-10 · 狗舍 · 新手／恆常每日配額",
       "2026-10-11 · 跨場地 · 新手／恆常每日配額",
-      // The label for any other scope has always been the cat shelter's.
-      "2026-10-12 · 貓舍 · 新手／恆常每日配額",
-      "2026-10-13 · 貓舍 · 新手／恆常每日配額",
+      // A scope is named as its venue is, and a venue the screen has no name for shows its key.
+      "2026-10-12 · 領養日 · 新手／恆常每日配額",
+      "2026-10-13 · venue-yuen-long · 新手／恆常每日配額",
       "2026-10-10 · 修訂 4（尚未發布）",
       "目前每日上限：8。共有 2 場受同一配額影響。",
       "每日名額模式",
@@ -364,5 +398,16 @@ describe("the daily volunteer quota in Chinese", () => {
     ]) {
       expect(markup, text).toContain(text);
     }
+  });
+
+  // The screen used to call every scope that was not `all:` or `dog:` the cat shelter. That was a bug:
+  // a venue other than the two shelters was named after the wrong one.
+  test("names the scope of a quota after its venue", () => {
+    const scopeName = dailySettingsCopy.zh.scopeName;
+    expect(scopeName("all:cap")).toBe("跨場地");
+    expect(scopeName("dog:cap")).toBe("狗舍");
+    expect(scopeName("cat:cap")).toBe("貓舍");
+    expect(scopeName("adoption:day")).toBe("領養日");
+    expect(scopeName("venue-yuen-long:cap")).toBe("venue-yuen-long");
   });
 });

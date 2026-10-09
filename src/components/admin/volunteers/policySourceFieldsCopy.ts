@@ -145,7 +145,7 @@ function describeEn(value: unknown, path: string, lookups: PolicyLookups): strin
     const v = value as Described;
     if (v.state === "value") return formatAdminNumber(Number(v.value), "en");
     if (v.state === "unlimited") return "Unlimited";
-    if (v.state === "unresolved" || v.state === "inherit") return "To be set";
+    if (v.state === "unresolved" || v.state === "inherit") return "Not set yet";
   }
   return "Set";
 }

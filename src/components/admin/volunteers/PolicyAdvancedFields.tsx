@@ -2,22 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
 import { initialPolicyCatalogue } from "../../../lib/volunteers/policy/catalogue";
-import { policyReason, type PolicyReasonCode } from "../../../lib/volunteers/policy/messages";
+import { undecidedSetting } from "../../../lib/volunteers/policy/messages";
 import type { PolicyDraft } from "../../../lib/volunteers/policy/schemas";
 import { useAdminCopy } from "../i18n/copy";
 import { policyAdvancedCopy } from "./policyAdvancedCopy";
 import { policyCommonCopy } from "./policyCommonCopy";
+import { newPolicyRole } from "./policyDefaults";
 const input =
   "min-h-10 w-full rounded-md border border-[var(--color-border)] bg-white px-2 py-1.5 text-sm";
 const tiers = ["newcomer", "regular", "senior"] as const,
   days = [0, 1, 2, 3, 4, 5, 6];
 type Limit = PolicyDraft["capacity"]["volunteers"];
 type Window = PolicyDraft["booking"]["individual_open"];
-/** A setting left undecided: the reason is the stored zh-HK text, which the screen names in either language. */
-const undecided = (code: PolicyReasonCode = "pending_admin") => ({
-  state: "unresolved" as const,
-  reason: policyReason(code),
-});
 function F({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="space-y-1">
@@ -82,7 +78,7 @@ function Lim({ value, set }: { value: Limit; set: (v: Limit) => void }) {
                 ? { state: "unlimited" }
                 : e.target.value === "inherit"
                   ? { state: "inherit" }
-                  : undecided(),
+                  : undecidedSetting(),
           )
         }
       >
@@ -173,7 +169,7 @@ function Win({ value, set }: { value: Window; set: (v: Window) => void }) {
                   ? { mode: m }
                   : m === "inherit"
                     ? { state: "inherit" }
-                    : undecided(),
+                    : undecidedSetting(),
           );
         }}
       >
@@ -236,7 +232,7 @@ function ConfigBool({
               ? false
               : e.target.value === "inherit"
                 ? { state: "inherit" }
-                : undecided(),
+                : undecidedSetting(),
         )
       }
     >
@@ -247,26 +243,21 @@ function ConfigBool({
     </select>
   );
 }
+/**
+ * `templates` are the templates a group situation can pair with: the saved drafts, which are data that
+ * staff can rename, with the catalogue only where nothing is saved. The settings screen passes them.
+ */
 export function PolicyAdvancedFields({
   policy,
   onChange,
+  templates = initialPolicyCatalogue,
 }: {
   policy: PolicyDraft;
   onChange: (fn: (p: PolicyDraft) => void) => void;
+  templates?: PolicyDraft[];
 }) {
   const copy = useAdminCopy(policyAdvancedCopy);
-  const addRole = () =>
-    onChange((p) =>
-      p.roles.push({
-        key: "new_role",
-        label: copy.newRole,
-        minimum: 0,
-        reserved: 0,
-        maximum: { state: "unlimited" },
-        allowed_tiers: ["regular"],
-        credentials: { mode: "all", keys: [] },
-      }),
-    );
+  const addRole = () => onChange((p) => p.roles.push(newPolicyRole()));
   const addQuota = () =>
     onChange((p) =>
       p.tier_quotas.push({
@@ -357,7 +348,7 @@ export function PolicyAdvancedFields({
                     ? { minimum: 0, maximum: 0 }
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : undecided();
+                      : undecidedSetting();
               })
             }
           >
@@ -413,7 +404,7 @@ export function PolicyAdvancedFields({
                     ? e.target.value
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : undecided();
+                      : undecidedSetting();
               })
             }
           >
@@ -486,16 +477,16 @@ export function PolicyAdvancedFields({
                         prior && !("state" in prior)
                           ? prior
                           : {
-                              with_group: undecided("pick_with_group_template"),
-                              without_group: undecided("pick_without_group_template"),
+                              with_group: undecidedSetting("pick_with_group_template"),
+                              without_group: undecidedSetting("pick_without_group_template"),
                             };
-                      next[field] = e.target.value || undecided("pick_paired_template");
+                      next[field] = e.target.value || undecidedSetting("pick_paired_template");
                       p.booking.scenario_templates = next;
                     })
                   }
                 >
                   <option value="">{copy.booking.undecided}</option>
-                  {initialPolicyCatalogue
+                  {templates
                     .filter(
                       (p) =>
                         p.shelter === policy.shelter &&
@@ -529,7 +520,7 @@ export function PolicyAdvancedFields({
                     ? e.target.value
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : undecided();
+                      : undecidedSetting();
               })
             }
           >
@@ -554,7 +545,7 @@ export function PolicyAdvancedFields({
                     ? e.target.value
                     : e.target.value === "inherit"
                       ? { state: "inherit" }
-                      : undecided();
+                      : undecidedSetting();
               })
             }
           >
@@ -845,7 +836,7 @@ export function PolicyAdvancedFields({
                         ? e.target.value
                         : e.target.value === "inherit"
                           ? { state: "inherit" }
-                          : undecided();
+                          : undecidedSetting();
                   })
                 }
               >
@@ -931,7 +922,7 @@ export function PolicyAdvancedFields({
                             ? "once"
                             : e.target.value === "dynamic"
                               ? "dynamic"
-                              : undecided("pick_release_semantics");
+                              : undecidedSetting("pick_release_semantics");
                     })
                   }
                 >
@@ -1131,7 +1122,7 @@ export function PolicyAdvancedFields({
                                 e.target.value === "first_session" ||
                                 e.target.value === "last_session"
                                   ? e.target.value
-                                  : undecided("pick_daily_anchor_pending");
+                                  : undecidedSetting("pick_daily_anchor_pending");
                             }
                           })
                         }

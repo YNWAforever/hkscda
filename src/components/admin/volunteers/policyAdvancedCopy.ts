@@ -21,6 +21,7 @@ export const policyAdvancedCopy = defineAdminCopy({
     },
     flag: { true: "是", false: "否", inherit: "沿用", unresolved: "未決定" },
     /** The display name a new role starts with. */
+    /** The label "Add role" stores. `policyDefaults.ts` reads this half whatever the admin reads. */
     newRole: "新職務",
     capacity: {
       title: "完整名額設定",
@@ -188,6 +189,7 @@ export const policyAdvancedCopy = defineAdminCopy({
       unresolved: "Undecided",
     },
     flag: { true: "Yes", false: "No", inherit: "Inherit", unresolved: "Undecided" },
+    /** Never stored (a policy is data that every language reads); the halves keep one shape. */
     newRole: "New role",
     capacity: {
       title: "Full places settings",

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { hkDate } from "../../../lib/volunteers/bulk/service";
 import { initialMonthlyPolicy } from "../../../lib/volunteers/policy/catalogue";
 import { monthlyPolicySchema } from "../../../lib/volunteers/policy/schemas";
 import { useAdminLanguage } from "../adminI18n";
@@ -64,7 +65,7 @@ export function VolunteerAssessments({
   now = () => new Date(),
 }: {
   initial?: AssessmentsInitial;
-  /** The clock that gives the effective date its starting value. */
+  /** The clock that gives the effective date its starting value: the Hong Kong date of the moment it reads. */
   now?: () => Date;
 } = {}) {
   const { language } = useAdminLanguage();
@@ -75,7 +76,7 @@ export function VolunteerAssessments({
     [data, setData] = useState<AssessmentListing>(initial?.data ?? {}),
     [message, setMessage] = useState<AssessmentMessage | undefined>(initial?.message),
     [reason, setReason] = useState(""),
-    [effective, setEffective] = useState(now().toISOString().slice(0, 10)),
+    [effective, setEffective] = useState(hkDate(now())),
     [month, setMonth] = useState(""),
     [scope, setScope] = useState(initial?.scope ?? "combined"),
     [jobs, setJobs] = useState<AssessmentJob[]>(initial?.jobs ?? []);
@@ -389,7 +390,7 @@ export function VolunteerAssessments({
           onClick={() =>
             cmd({ kind: "run", period_start: month + "-01", scope_key: scope })
               .then((x) => {
-                setMessage({ code: "run_done", profiles: x.profiles ?? 0 });
+                setMessage({ code: "run_done", profiles: x.profiles });
                 load();
               })
               .catch(fail)

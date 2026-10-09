@@ -22,6 +22,7 @@ export const policySettingsCopy = defineAdminCopy({
     },
     createTemplate: "新增模板（複製目前設定）",
     /** The name a copied template starts with. */
+    /** The name "Create a template" stores. `policyDefaults.ts` reads this half whatever the admin reads. */
     copyName: (name: string) => `${name}（副本）`,
     intro: (revision: number, dirty: boolean) =>
       `先儲存草稿，再預覽受影響活動。修訂 ${revision}${dirty ? "（尚未儲存）" : ""}`,
@@ -125,6 +126,7 @@ export const policySettingsCopy = defineAdminCopy({
       daily: "Manage daily quotas and late release",
     },
     createTemplate: "Create a template (copy the current settings)",
+    /** Never stored (a policy is data that every language reads); the halves keep one shape. */
     copyName: (name: string) => `${name} (copy)`,
     intro: (revision: number, dirty: boolean) =>
       `Save the draft first, then preview the affected activities. Revision ${formatAdminNumber(revision, "en")}${dirty ? " (not saved yet)" : ""}`,

@@ -12,11 +12,11 @@ import {
 // second loads the first, and both must load before a screen does.
 const policyKit = await import("./policyKit.test.support");
 const { PolicyAdvancedFields } = await import("./PolicyAdvancedFields");
+const { initialPolicyCatalogue } = await import("../../../lib/volunteers/policy/catalogue");
 const { policyAdvancedCopy } = await import("./policyAdvancedCopy");
 const { policyCommonCopy } = await import("./policyCommonCopy");
 
-const { kit, POLICY_ALLOW, CATALOGUE_NAMES, richDraft, registry, rawKeysIn, cleanDraft } =
-  policyKit;
+const { kit, POLICY_ALLOW, richDraft, registry, rawKeysIn, cleanDraft, savedDrafts } = policyKit;
 const noop = () => {};
 /** Identifiers that staff typed into the "Identifier" field of a quota or a limit. They are data. */
 const IDENTIFIERS = [
@@ -184,14 +184,52 @@ describe("the advanced policy fields in English", () => {
     }
   });
 
-  test("offer the built-in templates for a group situation by their stored names", () => {
-    const markup = english(
-      cleanDraft("cat-cleaning-a", (d) => (d.booking.scenario = "confirmed_group")),
+  /** The settings screen passes what staff saved; the picker shows those names, which they can change. */
+  function pickerWith(templates?: ReturnType<typeof cleanDraft>[]) {
+    const policy = cleanDraft("cat-cleaning-a", (d) => (d.booking.scenario = "confirmed_group"));
+    let markup = "";
+    kit.withQueries({ "volunteer-policy-sources": kit.ok(registry()) }, () => {
+      markup = renderAdminInEnglish(
+        <PolicyAdvancedFields policy={policy} onChange={noop} templates={templates} />,
+      );
+    });
+    return markup;
+  }
+  const saved = savedDrafts().map((draft) => draft.body);
+  const nameOf = (key: string) => saved.find((draft) => draft.template_key === key)?.name ?? "";
+
+  test("offer the saved templates for a group situation by the names staff saved", () => {
+    const markup = pickerWith(saved);
+    // Only saved names, which are data like any name staff typed, so no catalogue name can hide here.
+    expectNoChineseText(markup, { allow: POLICY_ALLOW });
+    expect(markup).toContain(`>${nameOf("cat-cleaning-a")}</option>`);
+    expect(markup).toContain(`>${nameOf("cat-cleaning-b")}</option>`);
+    // The other venues' templates and the other situations are not offered.
+    expect(markup).not.toContain(`>${nameOf("dog-cleaning-a")}</option>`);
+    expect(markup).not.toContain(`>${nameOf("cat-afternoon-chores")}</option>`);
+  });
+
+  test("offer a template under the name staff gave it when they renamed it", () => {
+    const renamed = saved.map((draft) =>
+      draft.template_key === "cat-cleaning-b"
+        ? { ...draft, name: policyKit.POLICY_TEXT.driver }
+        : draft,
     );
-    // The picker of templates reads the catalogue's own built-in names, which are data like any saved
-    // name. They are allowed whole, so they cannot hide a label that leaks.
-    expectNoChineseText(markup, { allow: [...POLICY_ALLOW, ...CATALOGUE_NAMES] });
-    expect(markup).toContain("貓舍清潔 A：有確認團體");
+    const markup = pickerWith(renamed);
+    expect(markup).toContain(`>${policyKit.POLICY_TEXT.driver}</option>`);
+    expect(markup).not.toContain(`>${nameOf("cat-cleaning-b")}</option>`);
+  });
+
+  test("fall back to the catalogue names only where nothing is saved", () => {
+    const markup = pickerWith();
+    const catalogueName = (key: string) =>
+      initialPolicyCatalogue.find((policy) => policy.template_key === key)?.name ?? "";
+    for (const key of ["cat-cleaning-a", "cat-cleaning-b"]) {
+      expect(markup, key).toContain(`>${catalogueName(key)}</option>`);
+    }
+    expectNoChineseText(markup, {
+      allow: [...POLICY_ALLOW, catalogueName("cat-cleaning-a"), catalogueName("cat-cleaning-b")],
+    });
   });
 
   test("have English copy that holds no Chinese and names every tier and weekday", () => {
