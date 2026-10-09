@@ -46,11 +46,11 @@ type Allowance = {
 /**
  * The zh half of every page keeps today's wording: the admin's Chinese is not changed without the
  * owner's approval. The label each page should show instead is drafted in
- * `docs/superpowers/plans/sp5b-owner-drafts.md`; approving it deletes the entry here and the
+ * `docs/superpowers/plans/2026-10-10-admin-audit-sp5b-owner-review.md`; approving it deletes the entry here and the
  * page's `zh` title, so the page follows the label in Chinese too.
  */
 const ZH_PENDING_OWNER =
-  "The Chinese heading keeps today's wording until the owner approves the drafted label (see docs/superpowers/plans/sp5b-owner-drafts.md).";
+  "The Chinese heading keeps today's wording until the owner approves the drafted label (see docs/superpowers/plans/2026-10-10-admin-audit-sp5b-owner-review.md).";
 
 const DIFFERENT_H1: Partial<Record<AdminNavItemId, Allowance>> = {
   internships: { zh: "獸醫學生實習申請", reason: ZH_PENDING_OWNER },

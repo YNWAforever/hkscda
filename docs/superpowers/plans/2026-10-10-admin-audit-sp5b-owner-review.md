@@ -81,7 +81,7 @@ These zh action buttons read as a state or a noun, not a verb. English already u
 | BT-15 | 通知草稿                          | `content/editorPanelsCopy.ts:52` (`createDrafts`)          | Create notification drafts                                     | 產生通知草稿                                                                                    |
 | BT-16 | 較早版本 / 最新版本               | `content/editorPanelsCopy.ts:116` / `:115`                 | Show earlier / latest versions                                 | 顯示較早版本 / 顯示最新版本                                                                     |
 | BT-17 | 完成                              | `crm/formCopy.ts:78`                                       | Close                                                          | 關閉                                                                                            |
-| BT-18 | 解析星期設定                      | `volunteers/policyAdvancedCopy.ts:102` (`resolveWeekdays`) | Set the weekdays                                               | 改為每日適用 (the meaning is unclear in zh)                                                     |
+| BT-18 | 解析星期設定                      | `volunteers/policyAdvancedCopy.ts:102` (`resolveWeekdays`) | Set the weekdays                                               | 設定適用星期 (the current zh meaning is unclear)                                                |
 
 Not in the 18 above, low priority: `i18n/adminCommonCopy.ts:188` 確認 (`common.confirm`, EN Confirm) could read 確認封存 for the inline archive step; the glossary allows 確認 as "finishes a step". The inline archive step in `AnimalsTable.tsx` now opens `ConfirmActionDialog`, so check whether this label is still used before spending time on it.
 

@@ -5,7 +5,7 @@ import { defineAdminCopy } from "./i18n/copy";
  * consequence sentence and the confirm verb come from the screen that opens it.
  * The Chinese half reuses wording the admin already shows; the line that would be new
  * (the minimum-length hint) stays empty in Chinese and is drafted for the owner in
- * docs/superpowers/plans/sp5b-owner-drafts.md.
+ * docs/superpowers/plans/2026-10-10-admin-audit-sp5b-owner-review.md.
  */
 export const confirmActionCopy = defineAdminCopy({
   zh: {

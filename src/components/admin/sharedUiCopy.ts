@@ -9,7 +9,7 @@ export const sharedUiCopy = defineAdminCopy({
       retrying: "重試中…",
       retry: "重試",
       // The Chinese half adds no line by design; wording for it is drafted for the owner in
-      // docs/superpowers/plans/sp5b-owner-drafts.md.
+      // docs/superpowers/plans/2026-10-10-admin-audit-sp5b-owner-review.md.
       classLines: {
         session: null as string | null,
         sessionAction: null as string | null,
