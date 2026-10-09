@@ -14,6 +14,7 @@ import { Button } from "../../ui/button";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import type { AdminLanguage } from "../adminI18n";
 import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { StatusBadge } from "../StatusBadge";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
@@ -42,18 +43,6 @@ type StatusesResponse = {
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
 type AdopterDetailCopy = (typeof adopterDetailCopy)["zh"];
-
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
 
 function sectionClassName() {
   return "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]";
@@ -107,23 +96,6 @@ function LatestCaseLink({
         {latestCase.requestedAnimalName ? ` · ${latestCase.requestedAnimalName}` : ""}
       </div>
     </div>
-  );
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{statusDisplayName(status, language)}</span>
-    </Badge>
   );
 }
 
@@ -295,7 +267,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       id: "status",
       header: copy.labels.status,
       className: "min-w-48",
-      cell: (c) => <StatusChip status={c.status} />,
+      cell: (c) => <StatusBadge status={c.status} />,
     },
     {
       id: "action",
@@ -330,7 +302,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
                 formatFallback(c.animalType)}
             </div>
           </div>
-          <StatusChip status={c.status} />
+          <StatusBadge status={c.status} />
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
           {formatFallback(c.requestedAnimalName)}

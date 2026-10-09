@@ -6,7 +6,6 @@ import type { AdminRole, AdminStatus } from "../../../lib/admin/access";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { adminErrorMessage } from "../../../lib/admin/session";
 import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
-import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import {
   Dialog,
@@ -20,6 +19,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { LoadFailure, StatFigure } from "../LoadFailure";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { accessCopy } from "./copy";
@@ -59,11 +59,10 @@ type AccessAuditResponse = {
 
 const roles: AdminRole[] = ["staff", "treasurer", "admin"];
 
-function statusTone(status: AdminStatus) {
-  if (status === "active") return "bg-[var(--color-success-highlight)] text-[var(--color-success)]";
-  if (status === "pending")
-    return "bg-[var(--color-primary-highlight)] text-[var(--color-primary)]";
-  return "bg-[var(--color-surface-offset)] text-[var(--color-text-muted)]";
+function statusTone(status: AdminStatus): StatusTone {
+  if (status === "active") return "success";
+  if (status === "pending") return "warning";
+  return "neutral";
 }
 
 function actionLabel(action: string, labels: Record<string, string>) {
@@ -186,9 +185,9 @@ export function AccessManagement() {
       id: "status",
       header: t.status,
       cell: (user) => (
-        <Badge className={statusTone(user.status)} variant="outline">
+        <StatusPill tone={statusTone(user.status)}>
           {user.status === "active" ? t.active : user.status === "pending" ? t.pending : t.disabled}
-        </Badge>
+        </StatusPill>
       ),
     },
     {

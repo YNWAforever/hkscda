@@ -5,6 +5,7 @@ import type { SupporterTimelineItem } from "../../../lib/crm/types";
 import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
+import { StatusPill } from "../StatusBadge";
 import { crmLabelCopy, timelineCopy } from "./copy";
 import { crmFormatCopy } from "./formatCopy";
 
@@ -60,11 +61,7 @@ export function SupporterTimeline({ items }: SupporterTimelineProps) {
               <span className="rounded-full bg-[var(--color-accent-soft)] px-2 py-0.5 text-xs text-[var(--color-panel)]">
                 {copy.kind(item.kind)}
               </span>
-              {item.status && (
-                <span className="rounded-full border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">
-                  {labels.status(item.status)}
-                </span>
-              )}
+              {item.status && <StatusPill>{labels.status(item.status)}</StatusPill>}
             </div>
             <p className="mt-1 text-sm text-[var(--color-text-muted)]">
               {timelineDescription(item, language)}

@@ -40,6 +40,7 @@ import {
 } from "./animalPipelineLogic";
 import { animalPipelineCopy } from "./animalPipelineCopy";
 import { AnimalProfileDialog } from "./AnimalProfileDialog";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { ExportButton } from "./ExportButton";
 import { adoptionFormatCopy } from "./formatCopy";
 
@@ -89,12 +90,10 @@ const TYPE_FILTERS = ["all", "cat", "dog", "sponsor"] as const;
 const ADOPTABLE_FILTERS = ["all", "adoptable", "not_adoptable"] as const;
 const SUPPORT_POOL_FILTERS = ["all", "inside", "outside"] as const;
 
-const STATUS_BADGE_CLASSES: Record<AnimalStatus, string> = {
-  available: "border-[var(--color-success)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  fostered:
-    "border-[var(--color-lavender-deep)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  adopted:
-    "border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
+const STATUS_TONES: Record<AnimalStatus, StatusTone> = {
+  available: "success",
+  fostered: "info",
+  adopted: "warning",
 };
 
 function cloneProfile(profile: AnimalInternalProfile): AnimalInternalProfile {
@@ -499,9 +498,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           lifecycleMutation.isPending && lifecycleMutation.variables?.animalId === row.id;
         return (
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
+            <StatusPill tone={STATUS_TONES[row.status]}>
               {copy.statusOptions[row.status]}
-            </Badge>
+            </StatusPill>
             <Select
               value={row.status}
               disabled={isUpdatingStatus}
@@ -631,9 +630,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
-            {copy.statusOptions[row.status]}
-          </Badge>
+          <StatusPill tone={STATUS_TONES[row.status]}>{copy.statusOptions[row.status]}</StatusPill>
           <Select
             value={row.status}
             disabled={isUpdatingStatus}

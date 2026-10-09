@@ -11,6 +11,7 @@ import type {
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { TablePager } from "../TablePager";
 import {
   availableEnquiryTransitions,
@@ -31,12 +32,10 @@ const buttonBase =
   "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] " +
   "disabled:cursor-not-allowed disabled:opacity-50";
 
-function statusClass(status: GroupEnquiryStatus) {
-  if (status === "resolved") {
-    return "bg-[var(--color-success-highlight)] text-[var(--color-success)]";
-  }
-  if (status === "new") return "bg-[var(--color-primary-highlight)] text-[var(--color-primary)]";
-  return "bg-[var(--color-surface-offset)] text-[var(--color-panel)]";
+function enquiryTone(status: GroupEnquiryStatus): StatusTone {
+  if (status === "resolved") return "success";
+  if (status === "new") return "warning";
+  return "neutral";
 }
 
 /** Why the update of an enquiry failed: another staff member changed it first, or anything else. */
@@ -126,9 +125,7 @@ export function GroupEnquiryManagement() {
       id: "status",
       header: copy.columns.status,
       cell: (row) => (
-        <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass(row.status)}`}>
-          {copy.statuses[row.status]}
-        </span>
+        <StatusPill tone={enquiryTone(row.status)}>{copy.statuses[row.status]}</StatusPill>
       ),
     },
     {
@@ -276,9 +273,7 @@ function EnquiryDetailPanel({
             {detail.contactPerson} · {detail.email} · {detail.phone}
           </p>
         </div>
-        <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass(detail.status)}`}>
-          {copy.statuses[detail.status]}
-        </span>
+        <StatusPill tone={enquiryTone(detail.status)}>{copy.statuses[detail.status]}</StatusPill>
       </div>
 
       {/* The enquiry's own content was never shown — staff had to guess what

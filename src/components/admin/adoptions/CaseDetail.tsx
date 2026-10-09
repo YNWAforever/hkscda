@@ -11,7 +11,6 @@ import type {
   CoordinatorStatusCategory,
   PublicAdoptionPhoto,
 } from "../../../lib/adoptions/types";
-import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
@@ -24,6 +23,7 @@ import {
   useAdminPageCopy,
 } from "../adminPageCopy";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { StatusBadge } from "../StatusBadge";
 import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
@@ -56,37 +56,8 @@ const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
 type CaseDetailCopy = (typeof caseDetailCopy)["zh"];
 
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
-
 function sectionClassName() {
   return "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]";
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{statusDisplayName(status, language)}</span>
-    </Badge>
-  );
 }
 
 function Section({
@@ -444,7 +415,7 @@ function AuditSummary({
     <Section title={copy.auditSummary} subtitle={copy.auditSubtitle}>
       <DetailGrid
         items={[
-          { label: copy.labels.currentStatus, value: <StatusChip status={adoptionCase.status} /> },
+          { label: copy.labels.currentStatus, value: <StatusBadge status={adoptionCase.status} /> },
           { label: copy.labels.created, value: format.date(adoptionCase.createdAt) },
           { label: copy.labels.closed, value: format.date(adoptionCase.closedAt) },
           {
@@ -678,7 +649,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
             { label: copy.labels.closed, value: format.date(adoptionCase.closedAt) },
             {
               label: copy.labels.currentStatus,
-              value: <StatusChip status={adoptionCase.status} />,
+              value: <StatusBadge status={adoptionCase.status} />,
             },
           ]}
         />

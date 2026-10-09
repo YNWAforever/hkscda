@@ -20,6 +20,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { pickAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { ActivityCreateForm } from "./ActivityCreateForm";
@@ -55,12 +56,15 @@ function toIsoFromLocal(value: string) {
   return new Date(value + ":00+08:00").toISOString();
 }
 
-function statusClass(status: VolunteerRegistrationStatus) {
-  const tone = volunteerStatusTone(status);
-  if (tone === "success") return "bg-[var(--color-success-highlight)] text-[var(--color-success)]";
-  if (tone === "warning") return "bg-[var(--color-surface-offset)] text-[var(--color-warning)]";
-  if (tone === "danger") return "bg-[var(--color-primary-highlight)] text-[var(--color-error)]";
-  return "bg-[var(--color-surface-offset)] text-[var(--color-panel)]";
+const REGISTRATION_TONES = {
+  success: "success",
+  warning: "warning",
+  danger: "danger",
+  default: "neutral",
+} as const satisfies Record<ReturnType<typeof volunteerStatusTone>, StatusTone>;
+
+function registrationTone(status: VolunteerRegistrationStatus): StatusTone {
+  return REGISTRATION_TONES[volunteerStatusTone(status)];
 }
 
 const inputClass =
@@ -471,11 +475,9 @@ export function VolunteerManagement() {
       header: text.registrations.columns.status,
       cell: (registration) => (
         <div className="space-y-1">
-          <span
-            className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
-          >
+          <StatusPill tone={registrationTone(registration.status)}>
             {volunteerRegistrationStatusLabel(registration.status, language)}
-          </span>
+          </StatusPill>
           <p className="text-xs text-[var(--color-text-muted)]">
             {text.registrations.attendance(common.attendance[registration.attendanceStatus])}
           </p>
@@ -585,11 +587,9 @@ export function VolunteerManagement() {
               {registration.contactPhone}
             </p>
           </div>
-          <span
-            className={`shrink-0 rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
-          >
+          <StatusPill tone={registrationTone(registration.status)} className="shrink-0">
             {volunteerRegistrationStatusLabel(registration.status, language)}
-          </span>
+          </StatusPill>
         </div>
 
         {registration.activity ? (

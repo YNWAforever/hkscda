@@ -16,6 +16,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
 import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { StatusBadge } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
 import { formatFallback } from "./caseWorkflowLogic";
 import {
@@ -61,18 +62,6 @@ const CONTACT_CHANNELS: CoordinatorTaskContactChannel[] = [
 
 const EMPTY_DEFAULT_LINKS: TaskPanelDefaultLinks = {};
 
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
-
 function emptyCreateForm(
   defaultLinks: TaskPanelDefaultLinks = {},
   statusId = "",
@@ -103,23 +92,6 @@ function updateFormFromTask(task: CoordinatorTask): UpdateTaskFormState {
     nextStepAt: isoToDatetimeLocal(task.nextStepAt),
     remarks: task.remarks ?? "",
   };
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{statusDisplayName(status, language)}</span>
-    </Badge>
-  );
 }
 
 function priorityLabel(
@@ -286,7 +258,7 @@ function TaskItem({
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-semibold text-[var(--color-panel)]">{task.title}</h3>
-              <StatusChip status={task.status} />
+              <StatusBadge status={task.status} />
               <Badge
                 variant="outline"
                 className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
