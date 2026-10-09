@@ -218,14 +218,19 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   }
 
   async function handleLogout() {
-    await signOutAndLeave({
-      suppressSessionExpiry,
-      signOut: () => supabase.auth.signOut(),
-      queryClient,
-      push: () => {
-        void navigate({ to: "/admin/login" });
-      },
-    });
+    try {
+      await signOutAndLeave({
+        suppressSessionExpiry,
+        signOut: () => supabase.auth.signOut(),
+        queryClient,
+        push: () => {
+          void navigate({ to: "/admin/login" });
+        },
+      });
+    } catch (error) {
+      // The user has still been sent to sign-in; the failure is only worth a log.
+      console.error("Sign-out failed", error);
+    }
   }
 
   const { groups, activeGroupId } = getAdminNavigation(adminRole, pathname, activeSection);

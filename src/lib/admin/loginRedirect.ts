@@ -27,7 +27,17 @@ export function safeAdminRedirect(value: unknown): string | null {
   if (value.includes("//") || value.includes("\\")) return null;
   // eslint-disable-next-line no-control-regex
   if (/[\u0000-\u001f\u007f\s]/.test(value)) return null;
+  // An encoded slash or backslash could become a real separator in a server or proxy that
+  // decodes before it normalises, so none is accepted.
+  if (/%2f|%5c/i.test(value)) return null;
   if (DOT_SEGMENT.test(value)) return null;
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+  if (DOT_SEGMENT.test(decoded)) return null;
   let resolved: URL;
   try {
     resolved = new URL(value, "http://x");

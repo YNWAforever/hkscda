@@ -60,6 +60,14 @@ describe("completeSignIn", () => {
     expect(push).toHaveBeenCalledWith("/admin");
   });
 
+  test("clears the whole cache when a previous identity exists and the new one cannot be confirmed", async () => {
+    const { queryClient, push } = signInSetup(new Error("offline"), meResponse(admin));
+    await completeSignIn({ queryClient, redirectParam: undefined, push });
+    expect(queryClient.getQueryData(["animals"])).toBeUndefined();
+    expect(queryClient.getQueryData(ADMIN_IDENTITY_QUERY_KEY)).toBeUndefined();
+    expect(push).toHaveBeenCalledWith("/admin");
+  });
+
   test("clears the whole cache when a different person signs in", async () => {
     const { queryClient, push } = signInSetup(meResponse(staff), meResponse(admin));
     await completeSignIn({ queryClient, redirectParam: undefined, push });

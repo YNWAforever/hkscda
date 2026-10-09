@@ -12,12 +12,16 @@ const admin: AdminIdentity = {
 };
 
 describe("safeAdminRedirect", () => {
-  test.each(["/admin", "/admin/animals?page=2", "/admin/cases/abc?tab=notes#top", "/admin/"])(
-    "accepts %s",
-    (value) => {
-      expect(safeAdminRedirect(value)).toBe(value);
-    },
-  );
+  test.each([
+    "/admin",
+    "/admin/animals?page=2",
+    "/admin/cases/abc?tab=notes#top",
+    "/admin/cases/abc?tab=notes",
+    "/admin/content/a.b.c",
+    "/admin/",
+  ])("accepts %s", (value) => {
+    expect(safeAdminRedirect(value)).toBe(value);
+  });
 
   test.each([
     "//evil.example/admin",
@@ -36,6 +40,14 @@ describe("safeAdminRedirect", () => {
     "/admin/login/",
     "/admin/login?x=1",
     "/admin/login#x",
+    "/admin/..%2f..%2fx",
+    "/admin/%2F",
+    "/admin/a%5cb",
+    "/admin/a%5Cb",
+    "/admin/%2e%2e%2fx",
+    "/admin/%E0%A4%A",
+    "/admin/%2e%2e",
+    "/admin/x?next=%2f%2fevil",
     "/admin/reset-password",
     "/admin/reset-password?token=1",
     "/admin/../..",

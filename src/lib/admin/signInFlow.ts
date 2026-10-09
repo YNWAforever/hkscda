@@ -21,10 +21,11 @@ export async function completeSignIn({
     queryClient.getQueryData<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY)?.admin.authUserId;
   queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
   const result = await queryClient.fetchQuery(adminIdentityQueryOptions()).catch(() => null);
-  if (result && previousId && previousId !== result.admin.authUserId) {
-    // Another person signed in on this tab: nothing the last one saw may stay cached.
+  if (previousId && (!result || previousId !== result.admin.authUserId)) {
+    // Another person signed in on this tab, or we cannot tell who: nothing the last one saw
+    // may stay cached.
     queryClient.clear();
-    queryClient.setQueryData(ADMIN_IDENTITY_QUERY_KEY, result);
+    if (result) queryClient.setQueryData(ADMIN_IDENTITY_QUERY_KEY, result);
   }
   push(postSignInDestination(redirectParam, result?.admin ?? null));
 }
