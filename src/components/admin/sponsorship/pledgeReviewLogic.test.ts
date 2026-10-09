@@ -10,10 +10,32 @@ import {
   isImageFileType,
   pledgeStatusTone,
   proofHasNoFile,
+  selectionFailure,
   validateManualProofFile,
 } from "./pledgeReviewLogic";
 import { MAX_PROOF_BYTES } from "../../../lib/sponsorship/schemas";
+import { PledgeSelectionError } from "../../../lib/sponsorshipAdmin/followupBulkSelection";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
+
+describe("selectionFailure", () => {
+  test("keeps only the code of a selection the helpers refused", () => {
+    expect(selectionFailure(new PledgeSelectionError("too_many"), "select_failed")).toEqual({
+      code: "too_many",
+    });
+    expect(selectionFailure(new PledgeSelectionError("list_changed"), "pin_failed")).toEqual({
+      code: "list_changed",
+    });
+  });
+
+  test("keeps any other caught error under the fallback code, to show as it came", () => {
+    const cause = new Error("Request failed");
+    expect(selectionFailure(cause, "pin_failed")).toEqual({ code: "pin_failed", cause });
+    expect(selectionFailure("not an error", "select_failed")).toEqual({
+      code: "select_failed",
+      cause: "not an error",
+    });
+  });
+});
 
 describe("buildPledgeListSearchParams", () => {
   test("omits empty filters and applies page/pageSize defaults", () => {
@@ -175,12 +197,14 @@ describe("validateManualProofFile", () => {
     }
   });
 
+  // The form writes the message for the admin's language from the code, so the code is what is
+  // pinned here; the wording of each code is in the drawer copy.
   test("rejects an unsupported MIME type", () => {
-    expect(validateManualProofFile(fakeFile({ type: "text/plain" }))).not.toBeNull();
+    expect(validateManualProofFile(fakeFile({ type: "text/plain" }))).toBe("unsupported_type");
   });
 
   test("rejects a file over MAX_PROOF_BYTES", () => {
-    expect(validateManualProofFile(fakeFile({ size: MAX_PROOF_BYTES + 1 }))).not.toBeNull();
+    expect(validateManualProofFile(fakeFile({ size: MAX_PROOF_BYTES + 1 }))).toBe("too_large");
   });
 
   test("accepts a file exactly at MAX_PROOF_BYTES", () => {
@@ -188,7 +212,7 @@ describe("validateManualProofFile", () => {
   });
 
   test("rejects an empty (zero-byte) file", () => {
-    expect(validateManualProofFile(fakeFile({ size: 0 }))).not.toBeNull();
+    expect(validateManualProofFile(fakeFile({ size: 0 }))).toBe("too_large");
   });
 });
 

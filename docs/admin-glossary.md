@@ -104,6 +104,12 @@ other way round.
 | 候選       | candidate               | A payment that might match a row of a bank statement file.                               |
 | 逐組確認   | one-by-one confirmation | Confirming each bank match separately after checking it.                                 |
 | 送達工作   | delivery job            | A queued job that issues a receipt or sends the acknowledgement email. Not "task".       |
+| 助養月份   | sponsorship month       | One month in a pledge's ledger. 已付 is "Paid" and 待付 is "Unpaid".                     |
+| 每月意向   | monthly pledge          | What the sponsor intends to pay each month. 非債務 is "not a debt".                      |
+| 分配       | allocation              | Sharing a verified payment across months. The verb is "allocate", not "assign".          |
+| 撤銷       | reverse                 | Undo an allocation with a reversing entry. 分配撤銷記錄 is "allocation reversal".        |
+| 聯絡人     | supporter               | The same record as 支持者. 聯絡人主檔 is "supporter record".                             |
+| 傳送       | send                    | A queued notification is "Waiting to send". 傳送失敗 is "Failed to send".                |
 
 ## Volunteers and internships
 
@@ -127,6 +133,8 @@ other way round.
 | 政策     | policy         | The rules for sessions, quotas and tiers. 義工政策設定 is "Volunteer policy settings".           |
 | 團體查詢 | group enquiry  | An enquiry from a group that wants to volunteer together.                                        |
 | 模擬     | simulation     | Tries a scenario without publishing or changing the policy.                                      |
+| 收生     | intake         | Opening and closing internship applications. 收生設定 is "intake settings".                      |
+| 貓舍     | cat shelter    | One of the two places an internship takes place. 狗舍 is "dog shelter".                          |
 
 ## Content and publishing
 

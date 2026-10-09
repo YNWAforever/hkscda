@@ -8,34 +8,50 @@ import { useRef, useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Sheet, SheetContent, SheetTitle } from "../../ui/sheet";
 import { StatusPill } from "../StatusBadge";
-import { centsToHkd } from "../../../lib/donations/domain";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   AssignmentEndReason,
   PaymentProofRecord,
   PledgeDetail,
 } from "../../../lib/sponsorshipAdmin/types";
+import { pledgeDrawerCopy } from "./drawerCopy";
+import { sponsorshipFormatCopy } from "./formatCopy";
 import {
   canCancelPledge,
   canRecordPayment,
   canReviewProof,
-  formatDate,
   formatFallback,
   isImageFileType,
   pledgeStatusTone,
   proofHasNoFile,
   validateManualProofFile,
+  type ProofFileProblem,
 } from "./pledgeReviewLogic";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 type FollowupAssigneesResponse = {
   assignees: Array<{ authUserId: string; email: string; role: "staff" | "admin" }>;
 };
+
+/**
+ * Why the drawer shows an error. It is kept as a code (the key of the page copy's
+ * `pledgeReview.errors`), with the caught error where the server may have given a reason, and
+ * written when the drawer renders.
+ */
+type ActionError = {
+  code: "review" | "followupConflict" | "followupUnknown" | "cancel" | "recordPayment";
+  cause?: unknown;
+};
+
+/** The notice shown after an assignment is saved: the key of the page copy's `followup`. */
+type FollowupNotice = "saved" | "savedRefreshFailed";
 
 const PAYMENT_METHOD_VALUES = ["fps", "bank_transfer", "payme", "paypal", "give_asia"] as const;
 
@@ -58,26 +74,6 @@ const PROOF_REVIEW_STATUS_TONE: Record<
   rejected: "danger",
 };
 
-/**
- * The pledge's monthly commitment — a rate, so it carries /月.
- *
- * `centsToHkd` rather than rounding: section 6.3 requires 123.45 to stay
- * 123.45, and `Math.round(cents / 100)` silently turned HK$123.45 into HK$123.
- */
-function monthlyAmountLabel(amountCents: number) {
-  return `${centsToHkd(amountCents)}/月`;
-}
-
-/**
- * One payment that was received. Deliberately WITHOUT /月: section 6.4 requires
- * that "one-off payments must not show '/month'". A HK$300 payment covering
- * three months is not a HK$300/month sponsorship, and labelling it that way
- * misstates the supporter's commitment.
- */
-function paymentAmountLabel(amountCents: number) {
-  return centsToHkd(amountCents);
-}
-
 /** `2026-08-01` is the month of August, not the 1st — render it as the month. */
 function monthLabel(periodMonth: string) {
   return periodMonth.slice(0, 7);
@@ -86,7 +82,7 @@ function monthLabel(periodMonth: string) {
 type ProofUrlResponse = { url: string; fileName: string };
 
 function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentProofRecord }) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.pledgeReview.proofPreview;
   const {
     data,
@@ -119,7 +115,7 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
       )}
       {error && (
         <p role="alert" className="text-xs text-[var(--color-error)]">
-          {copy.loadError(error.message)}
+          {copy.loadError(adminErrorMessage(error, language) ?? error.message)}
         </p>
       )}
       {data &&
@@ -154,8 +150,10 @@ export function PledgeDetailDrawer({
   onClose: () => void;
   onChanged: () => void;
 }) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.pledgeReview;
+  const drawer = useAdminCopy(pledgeDrawerCopy);
+  const format = useAdminCopy(sponsorshipFormatCopy);
   const pledgeStatusLabel: Record<PledgeDetail["status"], string> = copy.statuses;
   const paymentMethodOptions: Array<{
     value: (typeof PAYMENT_METHOD_VALUES)[number];
@@ -167,9 +165,9 @@ export function PledgeDetailDrawer({
 
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<ActionError | null>(null);
   const [followupAssigneeId, setFollowupAssigneeId] = useState("");
-  const [followupNotice, setFollowupNotice] = useState<string | null>(null);
+  const [followupNotice, setFollowupNotice] = useState<FollowupNotice | null>(null);
   const identity = useQuery(adminIdentityQueryOptions());
   const canMatch = identity.data?.admin.role === "staff" || identity.data?.admin.role === "admin";
   const canFinance =
@@ -193,7 +191,7 @@ export function PledgeDetailDrawer({
   const [paymentDate, setPaymentDate] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
   const [proofFile, setProofFile] = useState<File | null>(null);
-  const [proofFileError, setProofFileError] = useState<string | null>(null);
+  const [proofFileError, setProofFileError] = useState<ProofFileProblem | null>(null);
 
   const { data, isLoading, error, refetch } = useQuery<PledgeDetailResponse, Error>({
     queryKey: ["sponsorship-pledge", pledgeId],
@@ -260,7 +258,7 @@ export function PledgeDetailDrawer({
       if (confirmed) {
         followupRetry.current = null;
         setFollowupAssigneeId("");
-        setFollowupNotice(current ? copy.followup.saved : copy.followup.savedRefreshFailed);
+        setFollowupNotice(current ? "saved" : "savedRefreshFailed");
         onChanged();
         void queryClient.invalidateQueries({ queryKey: ["sponsorship-pledges"] }).catch(() => {});
       } else {
@@ -275,7 +273,7 @@ export function PledgeDetailDrawer({
           followupRetry.current = null;
           setFollowupAssigneeId("");
         }
-        setActionError(conflict ? copy.followup.conflict : copy.followup.unknown);
+        setActionError({ code: conflict ? "followupConflict" : "followupUnknown" });
       }
     } finally {
       setSubmitting(false);
@@ -302,8 +300,8 @@ export function PledgeDetailDrawer({
       });
       setReviewNote("");
       await refreshAll();
-    } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
+    } catch (cause) {
+      setActionError({ code: "review", cause });
     } finally {
       setSubmitting(false);
     }
@@ -319,8 +317,8 @@ export function PledgeDetailDrawer({
       });
       setCancelNote("");
       await refreshAll();
-    } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : copy.errors.cancel);
+    } catch (cause) {
+      setActionError({ code: "cancel", cause });
     } finally {
       setSubmitting(false);
     }
@@ -336,8 +334,8 @@ export function PledgeDetailDrawer({
       });
       setAssignAnimalId("");
       await refreshAll();
-    } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
+    } catch (cause) {
+      setActionError({ code: "review", cause });
     } finally {
       setSubmitting(false);
     }
@@ -358,8 +356,8 @@ export function PledgeDetailDrawer({
       );
       setEndNoteByAssignment((previous) => ({ ...previous, [assignmentId]: "" }));
       await refreshAll();
-    } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
+    } catch (cause) {
+      setActionError({ code: "review", cause });
     } finally {
       setSubmitting(false);
     }
@@ -417,14 +415,18 @@ export function PledgeDetailDrawer({
       setProofFile(null);
       setProofFileError(null);
       await refreshAll();
-    } catch (submitError) {
-      setActionError(
-        submitError instanceof Error ? submitError.message : copy.errors.recordPayment,
-      );
+    } catch (cause) {
+      setActionError({ code: "recordPayment", cause });
     } finally {
       setSubmitting(false);
     }
   }
+
+  // A reason the caught error gave is shown as it came; otherwise the message for the code.
+  const actionMessage = actionError
+    ? ((actionError.cause === undefined ? null : adminErrorMessage(actionError.cause, language)) ??
+      copy.errors[actionError.code])
+    : "";
 
   return (
     <Sheet
@@ -448,13 +450,17 @@ export function PledgeDetailDrawer({
 
         {followupNotice && (
           <p role="status" className="mt-4 text-sm">
-            {followupNotice}
+            {copy.followup[followupNotice]}
           </p>
         )}
         {isLoading && (
           <p className="mt-6 text-sm text-[var(--color-text-muted)]">{pageCopy.common.loading}</p>
         )}
-        {error && <p className="mt-6 text-sm text-[var(--color-error)]">{error.message}</p>}
+        {error && (
+          <p className="mt-6 text-sm text-[var(--color-error)]">
+            {drawer.loadFailed(adminErrorMessage(error, language) ?? error.message)}
+          </p>
+        )}
 
         {pledge && (
           <div className="mt-6 space-y-6">
@@ -471,11 +477,15 @@ export function PledgeDetailDrawer({
                 {formatFallback(pledge.supporterEmail)} · {formatFallback(pledge.supporterPhone)}
               </p>
               <p className="text-sm text-[var(--color-panel)]">
-                {monthlyAmountLabel(pledge.amountCents)}（
-                {pledge.monthlyTier === "custom" ? copy.customTier : pledge.monthlyTier}）
+                {drawer.withTier(
+                  format.monthly(pledge.amountCents),
+                  pledge.monthlyTier === "custom"
+                    ? copy.customTier
+                    : drawer.tierAmount(pledge.monthlyTier),
+                )}
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
-                {copy.createdOn(formatDate(pledge.createdAt))}
+                {copy.createdOn(format.date(pledge.createdAt))}
               </p>
             </section>
 
@@ -492,9 +502,9 @@ export function PledgeDetailDrawer({
               </ul>
             </section>
 
-            {actionError && (
+            {actionMessage && (
               <p role="alert" className="text-sm text-[var(--color-error)]">
-                {actionError}
+                {actionMessage}
               </p>
             )}
 
@@ -613,7 +623,7 @@ export function PledgeDetailDrawer({
                 />
                 {proofFileError && (
                   <p role="alert" className="text-xs text-[var(--color-error)]">
-                    {proofFileError}
+                    {drawer.proofFileErrors[proofFileError]}
                   </p>
                 )}
                 <Button
@@ -634,9 +644,9 @@ export function PledgeDetailDrawer({
                 {pledge.currentProof && (
                   <>
                     <p className="text-sm text-[var(--color-text-muted)]">
-                      {pledge.currentProof.paymentMethod} ·{" "}
+                      {drawer.paymentMethodName(pledge.currentProof.paymentMethod)} ·{" "}
                       {formatFallback(pledge.currentProof.reference)} ·{" "}
-                      {paymentAmountLabel(pledge.currentProof.amountCents)}
+                      {format.money(pledge.currentProof.amountCents)}
                     </p>
                     <ProofPreview
                       key={`${pledge.currentProof.id}:${pledge.currentProof.revision}`}
@@ -713,11 +723,11 @@ export function PledgeDetailDrawer({
                       )}
                     </div>
                     <p className="text-[var(--color-text-muted)]">
-                      {copy.assignments.started} {assignment.startedOn}
+                      {copy.assignments.started} {format.day(assignment.startedOn)}
                       {assignment.endedOn && (
                         <>
                           {" · "}
-                          {copy.assignments.ended} {assignment.endedOn}
+                          {copy.assignments.ended} {format.day(assignment.endedOn)}
                           {assignment.endReason && (
                             <> · {copy.assignments.reasons[assignment.endReason]}</>
                           )}
@@ -796,7 +806,9 @@ export function PledgeDetailDrawer({
 
             {pledge.periods.length > 0 && (
               <section className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--color-panel)]">助養月份</h3>
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                  {drawer.periodsTitle}
+                </h3>
                 <ul className="space-y-2">
                   {pledge.periods.map((period) => {
                     const settled = period.outstandingCents === 0;
@@ -810,14 +822,14 @@ export function PledgeDetailDrawer({
                             {monthLabel(period.periodMonth)}
                           </span>
                           <StatusPill tone={settled ? "success" : "warning"}>
-                            {settled ? "已付" : "待付"}
+                            {settled ? drawer.paid : drawer.unpaid}
                           </StatusPill>
                         </div>
                         <p className="text-[var(--color-text-muted)]">
-                          每月意向 {paymentAmountLabel(period.committedCents)} · 已分配{" "}
-                          {paymentAmountLabel(period.allocatedCents)}
-                          {!settled && (
-                            <> · 待跟進 {paymentAmountLabel(period.outstandingCents)}（非債務）</>
+                          {drawer.periodLine(
+                            format.money(period.committedCents),
+                            format.money(period.allocatedCents),
+                            settled ? null : format.money(period.outstandingCents),
                           )}
                         </p>
                       </li>
@@ -842,7 +854,7 @@ export function PledgeDetailDrawer({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-medium text-[var(--color-panel)]">
-                            {formatDate(proof.createdAt)}
+                            {format.date(proof.createdAt)}
                             {isCurrent && (
                               <span className="ml-2 text-xs font-normal text-[var(--color-text-muted)]">
                                 {copy.proofHistory.current}
@@ -854,8 +866,9 @@ export function PledgeDetailDrawer({
                           </StatusPill>
                         </div>
                         <p className="text-[var(--color-text-muted)]">
-                          {proof.paymentMethod} · {formatFallback(proof.reference)} ·{" "}
-                          {paymentAmountLabel(proof.amountCents)} · {proofSourceLabel[proof.source]}
+                          {drawer.paymentMethodName(proof.paymentMethod)} ·{" "}
+                          {formatFallback(proof.reference)} · {format.money(proof.amountCents)} ·{" "}
+                          {proofSourceLabel[proof.source]}
                         </p>
                         {proof.fileName && (
                           <p className="text-xs text-[var(--color-text-muted)]">
@@ -886,7 +899,7 @@ export function PledgeDetailDrawer({
               <ul className="space-y-1 text-xs text-[var(--color-text-muted)]">
                 {pledge.recentAuditLog.map((entry) => (
                   <li key={entry.id}>
-                    {formatDate(entry.timestamp)} — {entry.action}
+                    {format.date(entry.timestamp)} — {drawer.auditAction(entry.action)}
                   </li>
                 ))}
               </ul>

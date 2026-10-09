@@ -1,5 +1,9 @@
 import React, { type ReactNode, type ReactElement } from "react";
 import { beforeEach, expect, mock, test } from "bun:test";
+// Coupling: this test calls the drawer as a plain function and answers `useState` and `useRef`
+// by call order, so a new `useState` or `useRef` in the drawer, or a change to the order of the
+// existing ones, needs a matching change in the mock below. The screen text is in
+// SponsorshipEnglish.test.tsx, which renders the drawer without this mock.
 const chosen = "33333333-3333-4333-8333-333333333333";
 let hookIndex = 0;
 const state: unknown[] = [];
@@ -23,10 +27,18 @@ mock.module("react", () => ({
     ];
   },
 }));
-const actualCopy = await import("../adminPageCopy");
-mock.module("../adminPageCopy", () => ({
-  ...actualCopy,
-  useAdminPageCopy: () => ({ language: "zh", pageCopy: actualCopy.adminPageCopy.zh }),
+// The drawer reads the language from React context, which this test does not mount, so the
+// language hook answers from `language`, which is Chinese unless a test switches it. The page
+// copy and the sponsorship copy both read it from here.
+let language: "zh" | "en" = "zh";
+const realLanguage = await import("../adminI18n");
+mock.module("../adminI18n", () => ({
+  ...realLanguage,
+  useAdminLanguage: () => ({
+    language,
+    copy: realLanguage.adminCopy[language],
+    setLanguage: () => {},
+  }),
 }));
 const original = {
   id: "22222222-2222-4222-8222-222222222222",
@@ -124,6 +136,7 @@ beforeEach(() => {
   bodies.length = 0;
   reads = 0;
   mode = "lost";
+  language = "zh";
 });
 test("lost POST response followed by matching owner/version clears failure", async () => {
   await assign();
@@ -151,6 +164,40 @@ test("an unreadable recovery never claims success", async () => {
   mode = "unknown";
   await assign();
   expect(walk(render()).some((n) => n.props.role === "alert")).toBe(true);
+});
+
+const textOf = (role: "alert" | "status") =>
+  String(walk(render()).find((n) => n.props.role === role)?.props.children);
+
+test("an error shown in Chinese is written in English when the language changes", async () => {
+  // The drawer keeps a code for the failure, not the sentence, so the sentence follows the language.
+  mode = "conflict";
+  await assign();
+  expect(textOf("alert")).toBe("跟進資料已有更新，請核對目前職員後再分派。");
+  language = "en";
+  expect(textOf("alert")).toBe(
+    "Follow-up details changed. Check the current owner before assigning again.",
+  );
+});
+
+test("an unconfirmed result is written in the language it is shown in", async () => {
+  mode = "unknown";
+  await assign();
+  expect(textOf("alert")).toBe("未能確認分派結果；請重新整理或重試原有分派。");
+  language = "en";
+  expect(textOf("alert")).toBe(
+    "The assignment result could not be confirmed. Refresh or retry the original assignment.",
+  );
+});
+
+test("the saved notice follows the language too", async () => {
+  mode = "refresh_fail";
+  await assign();
+  expect(textOf("status")).toBe("分派已儲存；最新資料未能載入，請重新整理。");
+  language = "en";
+  expect(textOf("status")).toBe(
+    "Assignment saved; the latest details could not load. Please refresh.",
+  );
 });
 
 test("an unknown retry keeps its original version after a background refresh", async () => {

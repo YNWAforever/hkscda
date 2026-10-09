@@ -60,12 +60,13 @@ export const pledgePageCopy = defineAdminCopy({
         unavailable: "未能載入可分派職員，請稍後重試。",
         saved: "分派已儲存。",
         savedRefreshFailed: "分派已儲存；最新資料未能載入，請重新整理。",
-        conflict: "跟進資料已有更新，請核對目前職員後再分派。",
-        unknown: "未能確認分派結果；請重新整理或重試原有分派。",
       },
+      /** The message for each way an action in the drawer can fail, by the code the drawer keeps. */
       errors: {
         review: "審核失敗",
         followup: "跟進分派失敗，請重新載入後再試。",
+        followupConflict: "跟進資料已有更新，請核對目前職員後再分派。",
+        followupUnknown: "未能確認分派結果；請重新整理或重試原有分派。",
         cancel: "取消失敗",
         recordPayment: "記錄付款失敗",
       },
@@ -148,7 +149,7 @@ export const pledgePageCopy = defineAdminCopy({
       statuses: {
         pending_payment: "Pending payment",
         provisional: "Pending review",
-        active: "Active",
+        active: "Confirmed",
         needs_followup: "Needs follow-up",
         cancelled: "Cancelled",
       },
@@ -181,15 +182,16 @@ export const pledgePageCopy = defineAdminCopy({
         unavailable: "Could not load staff choices. Please try again.",
         saved: "Assignment saved.",
         savedRefreshFailed: "Assignment saved; the latest details could not load. Please refresh.",
-        conflict: "Follow-up details changed. Check the current owner before assigning again.",
-        unknown:
-          "The assignment result could not be confirmed. Refresh or retry the original assignment.",
       },
       errors: {
-        review: "Review failed",
+        review: "Could not review the payment proof. Refresh the page and try again.",
         followup: "Could not assign follow-up. Refresh and try again.",
-        cancel: "Cancellation failed",
-        recordPayment: "Failed to record payment",
+        followupConflict:
+          "Follow-up details changed. Check the current owner before assigning again.",
+        followupUnknown:
+          "The assignment result could not be confirmed. Refresh or retry the original assignment.",
+        cancel: "Could not cancel the sponsorship. Refresh the page and try again.",
+        recordPayment: "Could not record the payment. Check the details and try again.",
       },
       recordPayment: {
         title: "Record payment",
@@ -232,7 +234,8 @@ export const pledgePageCopy = defineAdminCopy({
         noFile: "No file attached",
         load: "Load payment proof",
         loading: "Loading payment proof...",
-        loadError: (message: string) => `Could not load payment proof: ${message}`,
+        loadError: (message: string) =>
+          `Could not load the payment proof (${message}). Select Load payment proof to try again.`,
         open: (fileName: string) => `Open payment proof (${fileName})`,
       },
       cancel: {

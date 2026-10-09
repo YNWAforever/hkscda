@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "../../ui/input";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { localizedText } from "../i18n/localizedText";
 import { fetchCoordinatorJson } from "../adoptions/api";
+import { animalPickerCopy } from "./copy";
 type Candidate = {
   id: string;
   name: string;
@@ -16,6 +20,8 @@ export function AnimalPicker({
   value: string;
   onChange: (id: string) => void;
 }) {
+  const copy = useAdminCopy(animalPickerCopy);
+  const { language } = useAdminLanguage();
   const [search, setSearch] = useState("");
   const { data, isError } = useQuery({
     queryKey: ["sponsorship-assignment-candidates", search],
@@ -27,15 +33,15 @@ export function AnimalPicker({
   return (
     <div className="min-w-0 flex-1 space-y-2">
       <label>
-        搜尋助養動物
+        {copy.searchLabel}
         <Input
           value={search}
           maxLength={100}
-          placeholder="名字或動物編號"
+          placeholder={copy.searchPlaceholder}
           onChange={(e) => setSearch(e.target.value)}
         />
       </label>
-      {isError && <p role="alert">未能載入可配對動物</p>}
+      {isError && <p role="alert">{copy.loadFailed}</p>}
       <div className="max-h-48 space-y-1 overflow-y-auto">
         {data?.animals.map((a) => (
           <button
@@ -49,7 +55,7 @@ export function AnimalPicker({
               <img alt="" src={a.image_url} className="h-10 w-10 rounded object-cover" />
             )}
             <span>
-              {a.name} · {a.code || "未有公開編號"}
+              {localizedText(a.name, a.name_en, language)} · {a.code || copy.noCode}
             </span>
           </button>
         ))}
