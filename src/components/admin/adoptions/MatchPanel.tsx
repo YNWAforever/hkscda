@@ -20,6 +20,7 @@ import { fetchCoordinatorJson } from "./api";
 import { filterStatusesByCategory, formatFallback } from "./caseWorkflowLogic";
 import { matchPanelCopy } from "./copy";
 import { getDefaultMatchStatusId } from "./matchPanelLogic";
+import { LoadFailure } from "../LoadFailure";
 
 type MatchPanelProps = {
   caseId: string;
@@ -100,6 +101,7 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
     data: animals = [],
     error: animalsError,
     isLoading: animalsLoading,
+    refetch: refetchAnimals,
   } = useQuery<MatchableAnimalOption[], Error>({
     queryKey: ["admin-active-animal-options"],
     queryFn: async () =>
@@ -199,14 +201,16 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
         </div>
       </div>
 
-      {(animalsError || createMutation.error) && (
-        <MatchPanelAsyncError
-          message={
-            adminErrorMessage(animalsError, language) ??
-            adminErrorMessage(createMutation.error, language) ??
-            ""
-          }
+      {animalsError && (
+        <LoadFailure
+          error={animalsError}
+          onRetry={() => void refetchAnimals()}
+          title={adminErrorMessage(animalsError, language) ?? undefined}
+          className="rounded-none border-0 border-b"
         />
+      )}
+      {createMutation.error && (
+        <MatchPanelAsyncError message={adminErrorMessage(createMutation.error, language) ?? ""} />
       )}
 
       <Table>

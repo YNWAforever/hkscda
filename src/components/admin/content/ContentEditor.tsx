@@ -58,6 +58,7 @@ import { ContentTimeline } from "./ContentTimeline";
 import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel, type SocialCopyPatch } from "./SocialCopyPanel";
+import { LoadFailure } from "../LoadFailure";
 
 type ContentEditorProps = {
   contentId: string;
@@ -446,9 +447,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <ArrowLeft className="h-4 w-4" />
           {copy.back}
         </Link>
-        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
-          {copy.notFound}
-        </p>
+        {contentQuery.error ? (
+          // A failed read is not a missing item: say which it was, and offer the retry.
+          <LoadFailure error={contentQuery.error} onRetry={() => void contentQuery.refetch()} />
+        ) : (
+          <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
+            {copy.notFound}
+          </p>
+        )}
       </div>
     );
   }

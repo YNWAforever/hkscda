@@ -541,7 +541,7 @@ describe("the profile search of the verification page in English", () => {
     );
   });
 
-  test("says when the search is running or did not finish, with a space before the retry button", () => {
+  test("says when the search is running or did not finish, with a retry", () => {
     kit.withQueries({ "volunteer-directory": { isFetching: true } }, () => {
       expect(renderAdminInEnglish(<QualificationProfileSearch onSelect={noop} />)).toContain(
         "Searching…",
@@ -549,7 +549,7 @@ describe("the profile search of the verification page in English", () => {
     });
     kit.withQueries({ "volunteer-directory": kit.failed() }, () => {
       const markup = renderAdminInEnglish(<QualificationProfileSearch onSelect={noop} />);
-      expect(markup).toContain("The search did not finish. <button");
+      expect(markup).toContain("The search did not finish.");
       expect(markup).toContain(">Retry</button>");
     });
   });

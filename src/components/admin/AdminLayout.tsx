@@ -4,10 +4,12 @@ import { ListTodo, LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-re
 import { useEffect, useRef, useState, type ReactNode, type MouseEvent } from "react";
 
 import { supabase } from "../../lib/supabase";
+import { getFirstAllowedAdminRoute } from "../../lib/admin/access";
 import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { cn } from "../../lib/utils";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { AdminLanguageProvider, AdminLanguageToggle, useAdminLanguage } from "./adminI18n";
+import { AdminHomeRouteContext } from "./adminHomeRoute";
 import { getAdminNavigation, getActiveAdminNavItemIds } from "./adminNav";
 import type { AdminNavigationGroup, AdminSection } from "./adminNav";
 import { adminLanguageTag } from "./i18n/pageLanguage";
@@ -334,7 +336,11 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
           {activeGroup && !animalRoot && (
             <WorkspaceNavigation group={activeGroup} activeIds={activeIds} />
           )}
-          {children}
+          <AdminHomeRouteContext.Provider
+            value={identity ? getFirstAllowedAdminRoute(identity.admin.role) : null}
+          >
+            {children}
+          </AdminHomeRouteContext.Provider>
         </main>
       </div>
     </div>

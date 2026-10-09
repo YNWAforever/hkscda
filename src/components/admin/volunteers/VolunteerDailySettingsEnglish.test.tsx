@@ -360,8 +360,9 @@ describe("the daily volunteer quota in English", () => {
       },
     );
     expect(failed).toContain(
-      '<p role="alert">The data has been updated. Refresh the page, preview again and try again.</p>',
+      ">The data has been updated. Refresh the page, preview again and try again.</p>",
     );
+    expect(failed).toMatch(/<button[^>]*>Retry<\/button>/);
     expectNoChineseText(failed);
     kit.withMutationError({ nothing: "to say" }, () => {
       expect(screen("en")).toContain("Could not process the settings. Try again.");

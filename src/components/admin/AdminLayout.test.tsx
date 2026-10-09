@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { ADMIN_NAV_ITEMS } from "./adminNav";
+import { LoadFailure } from "./LoadFailure";
 import { expectNoChineseText, renderAdminInChinese, renderAdminInEnglish } from "./i18n/testing";
 
 const realRouter = await import("@tanstack/react-router");
@@ -128,6 +129,27 @@ describe("AdminLayout", () => {
       const sponsorship = renderAdminInEnglish(layout("payments"));
       expectNoChineseText(sponsorship, { allow: [TOGGLE_WORD] });
       expect(sponsorship).toContain("Sponsorship payments and matching");
+    });
+
+    test("gives a forbidden failure on the page a link to the first page the role can open", () => {
+      pathname = "/admin";
+      const forbidden = Object.assign(new Error("no"), { status: 403 });
+      const page = (
+        <AdminLayout activeSection="cat">
+          <LoadFailure error={forbidden} onRetry={() => {}} />
+        </AdminLayout>
+      );
+      role = "treasurer";
+      expect(renderAdminInEnglish(page)).toContain('href="/admin?section=payments"');
+      role = "staff";
+      expect(renderAdminInEnglish(page)).toContain('href="/admin?section=cat"');
+      // Until the identity is known the line stands without a link to a guess.
+      role = null;
+      const unknown = renderAdminInEnglish(page);
+      expect(unknown).toContain(
+        "You don&#x27;t have access to this. Go to a page your role can open.",
+      );
+      expect(unknown).not.toContain('href="/admin?section=');
     });
 
     test("shows a signed-out shell without Chinese", () => {

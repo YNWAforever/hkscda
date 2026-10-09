@@ -940,7 +940,11 @@ describe("the adoption instructions page editor in English", () => {
       "Loading page content…",
     );
     expect(
-      renderAdminInEnglish(<AdoptionInstructionsManagementView error="Could not load" />),
+      renderAdminInEnglish(
+        <AdoptionInstructionsManagementView
+          loadFailure={{ error: new Error("x"), heading: "Could not load", onRetry: () => {} }}
+        />,
+      ),
     ).toContain("Could not load");
     expect(renderAdminInEnglish(<AdoptionInstructionsManagementView />)).toContain(
       "Could not load the page content. Check that the page content has been set up, then reload the page.",

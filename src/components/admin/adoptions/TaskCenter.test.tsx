@@ -56,10 +56,11 @@ describe("TaskCenter", () => {
     // buildTaskCenterSummary seeds every bucket at 0 and iterates an empty
     // array on a rejected query, so all six tiles used to read a real 0 next
     // to the error banner -- indistinguishable from "no work outstanding".
-    // The 7th marker is the TaskPanel subtitle, which had the same defect.
+    // The failure state now stands where the TaskPanel was, so its subtitle marker is gone and
+    // the empty "no tasks" sentence cannot appear beside the error.
     tasksError = new Error("boom");
     const markup = render();
-    expect((markup.match(/—/g) ?? []).length).toBe(7);
+    expect((markup.match(/—/g) ?? []).length).toBe(6);
     tasksError = null;
   });
 

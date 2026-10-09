@@ -14,6 +14,7 @@ import type {
 } from "../../../lib/adoptionGuideReleases/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { adoptionGuideCopy } from "./adoptionGuideCopy";
 import { cmsStateCopy } from "./cmsStateCopy";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
@@ -207,13 +208,13 @@ export function AdoptionGuideReleaseManagement({
       : actionMutation.isPending
         ? actionMutation.variables?.operation
         : undefined;
-  const combinedError =
-    adoptionGuideFailureText(localError, copy.errors, language) ??
-    documentErrorMessage(identityQuery.error, language) ??
-    documentErrorMessage(releasesQuery.error, language) ??
-    documentErrorMessage(linkedReleaseQuery.error, language) ??
-    documentErrorMessage(assetsQuery.error, language) ??
-    documentErrorMessage(previewQuery.error, language);
+  const combinedError = adoptionGuideFailureText(localError, copy.errors, language);
+  const loadError =
+    identityQuery.error ??
+    releasesQuery.error ??
+    linkedReleaseQuery.error ??
+    assetsQuery.error ??
+    previewQuery.error;
 
   const actorRole = identityQuery.data?.admin.role === "admin" ? "admin" : "staff";
 
@@ -230,6 +231,21 @@ export function AdoptionGuideReleaseManagement({
       pageSize={releasesQuery.data?.pageSize ?? filters.pageSize ?? 25}
       filters={filters}
       loading={releasesQuery.isLoading || linkedReleaseQuery.isLoading || identityQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, language),
+              onRetry: () => {
+                void identityQuery.refetch();
+                void releasesQuery.refetch();
+                void linkedReleaseQuery.refetch();
+                void assetsQuery.refetch();
+                void previewQuery.refetch();
+              },
+            }
+          : null
+      }
       error={combinedError}
       pendingAction={pendingAction}
       onFiltersChange={setFilters}
@@ -291,6 +307,9 @@ export type AdoptionGuideReleaseManagementViewProps = {
   page?: number;
   pageSize?: number;
   loading?: boolean;
+  /** A release list, its preview or the documents failed to load. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save or another action. */
   error?: string | null;
   pendingAction?: string;
   onSelect?: (id: string) => void;
@@ -318,6 +337,7 @@ export function AdoptionGuideReleaseManagementView({
   page = 1,
   pageSize = 25,
   loading = false,
+  loadFailure = null,
   error,
   pendingAction,
   onSelect,
@@ -425,6 +445,13 @@ export function AdoptionGuideReleaseManagementView({
         </label>
       </section>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -443,7 +470,7 @@ export function AdoptionGuideReleaseManagementView({
             {copy.list.heading}
           </h2>
           {loading ? <p className="p-4 text-sm">{copy.list.loading}</p> : null}
-          {!loading && releases.length === 0 ? (
+          {!loading && !loadFailure && releases.length === 0 ? (
             <p className="p-4 text-sm text-[var(--color-text-muted)]">{copy.list.empty}</p>
           ) : null}
           <ul className="divide-y divide-[var(--color-border)]">

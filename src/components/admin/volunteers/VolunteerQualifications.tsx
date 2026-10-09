@@ -10,6 +10,7 @@ import { legacyReconciliationCopy } from "./legacyReconciliationCopy";
 import { qualificationsCopy } from "./qualificationsCopy";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 
 type Profile = {
   id: string;
@@ -125,12 +126,12 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
       <QualificationProfileSearch onSelect={selectProfile} disabled={mutation.isPending} />
       {query.isLoading && <p>{copy.loading}</p>}
       {query.error && (
-        <p role="alert">
-          {copy.loadFailed}
-          <button onClick={() => void query.refetch()} className="min-h-11 px-3 underline">
-            {copy.reload}
-          </button>
-        </p>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+        />
       )}
       <label className="flex flex-col gap-2">
         {copy.choose}

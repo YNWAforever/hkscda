@@ -4,6 +4,7 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DirectoryList } from "../../../lib/volunteers/directory/types";
 import { useAdminCopy } from "../i18n/copy";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
+import { LoadFailure } from "../LoadFailure";
 export function QualificationProfileSearch({
   onSelect,
   disabled = false,
@@ -58,12 +59,12 @@ export function QualificationProfileSearch({
         </p>
       )}
       {query.error && (
-        <p role="alert">
-          {copy.failed}
-          <button className="min-h-11 px-2 underline" onClick={() => void query.refetch()}>
-            {copy.retry}
-          </button>
-        </p>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.failed}
+          retryLabel={copy.retry}
+        />
       )}
       {query.data && (
         <div className="mt-3 space-y-2">

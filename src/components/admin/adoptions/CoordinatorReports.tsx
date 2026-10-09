@@ -16,7 +16,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { formatAdminNumber, formatLegacyAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
-import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { getCoordinatorExportFilename } from "./adopterWorkflowLogic";
@@ -358,17 +358,14 @@ export function CoordinatorReports() {
         </Button>
       </div>
 
-      {(summaryQuery.error || historyQuery.error || downloadError) && (
+      {(summaryQuery.error || downloadError) && (
         <div className="space-y-2">
           {summaryQuery.error && (
-            <InlineAlert>
-              {copy.loadSummaryError}: {adminErrorMessage(summaryQuery.error, language) ?? ""}
-            </InlineAlert>
-          )}
-          {historyQuery.error && (
-            <InlineAlert>
-              {copy.loadHistoryError}: {adminErrorMessage(historyQuery.error, language) ?? ""}
-            </InlineAlert>
+            <LoadFailure
+              error={summaryQuery.error}
+              onRetry={() => void summaryQuery.refetch()}
+              title={copy.loadSummaryError}
+            />
           )}
           {downloadError && <InlineAlert>{downloadError}</InlineAlert>}
         </div>
@@ -500,7 +497,10 @@ export function CoordinatorReports() {
           getRowKey={(row) => row.id}
           loading={historyQuery.isLoading}
           skeletonRows={5}
-          empty={historyQuery.error ? null : copy.empty}
+          empty={copy.empty}
+          error={historyQuery.error}
+          onRetry={() => void historyQuery.refetch()}
+          failureTitle={copy.loadHistoryError}
           renderMobileCard={renderExportCard}
         />
       </section>

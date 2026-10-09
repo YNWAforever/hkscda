@@ -6,6 +6,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { legacyReconciliationCopy } from "./legacyReconciliationCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 type LegacyRow = {
   id: string;
   contact_name: string;
@@ -61,17 +62,13 @@ export function VolunteerLegacyReconciliation({
       <h2 className="text-lg font-semibold">{copy.title}</h2>
       <p>{copy.hint}</p>
       {query.error && (
-        <div role="alert">
-          <p>{copy.loadFailed}</p>
-          <button
-            type="button"
-            className={cls}
-            disabled={query.isFetching}
-            onClick={() => void query.refetch()}
-          >
-            {copy.reload}
-          </button>
-        </div>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          retrying={query.isFetching}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+        />
       )}
       {query.isLoading && <p role="status">{copy.loading}</p>}
       <label className="block">

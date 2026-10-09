@@ -8,6 +8,15 @@ export const sharedUiCopy = defineAdminCopy({
       guidance: "請重試。若問題持續，請提供錯誤編號",
       retrying: "重試中…",
       retry: "重試",
+      // The Chinese half adds no line by design; wording for it is drafted for the owner in
+      // docs/superpowers/plans/sp5b-owner-drafts.md.
+      classLines: {
+        forbidden: null as string | null,
+        forbiddenAction: null as string | null,
+        notFound: null as string | null,
+        server: null as string | null,
+        network: null as string | null,
+      },
     },
     dataTable: {
       empty: "沒有結果",
@@ -29,6 +38,13 @@ export const sharedUiCopy = defineAdminCopy({
       guidance: "Try again. If the problem continues, quote this error reference:",
       retrying: "Retrying…",
       retry: "Retry",
+      classLines: {
+        forbidden: "You don't have access to this.",
+        forbiddenAction: "Go to a page your role can open.",
+        notFound: "This record could not be found. Go back to the list and check it still exists.",
+        server: "The server had a problem. Try again in a moment.",
+        network: "Could not reach the server. Check your connection and try again.",
+      },
     },
     dataTable: {
       empty: "No results",

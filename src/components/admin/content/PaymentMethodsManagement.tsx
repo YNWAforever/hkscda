@@ -8,6 +8,7 @@ import type { PaymentPublicConfig } from "../../../lib/paymentPublicConfig/types
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { localizedText } from "../i18n/localizedText";
+import { LoadFailure } from "../LoadFailure";
 import { cmsStateCopy } from "./cmsStateCopy";
 import { paymentMethodsCopy } from "./paymentMethodsCopy";
 import {
@@ -142,8 +143,7 @@ export function PaymentMethodsManagement() {
   const [pending, setPending] = useState(false);
 
   const configs = listQuery.data?.items ?? [];
-  const queryErrorMessage =
-    listQuery.error || identityQuery.error ? copy.errors.load_failed : undefined;
+  const loadError = listQuery.error ?? identityQuery.error;
   const failureMessage = failure
     ? paymentMethodSaveFailureText(failure, copy.errors, language)
     : undefined;
@@ -196,11 +196,29 @@ export function PaymentMethodsManagement() {
     return <p>{copy.loading}</p>;
   }
 
+  // A failed load is shown as a failure on its own: the list below it would only be empty
+  // because nothing was read.
+  if (loadError) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-xl font-bold">{copy.title}</h1>
+        <LoadFailure
+          error={loadError}
+          onRetry={() => {
+            void listQuery.refetch();
+            void identityQuery.refetch();
+          }}
+          title={copy.errors.load_failed}
+        />
+      </div>
+    );
+  }
+
   return (
     <PaymentMethodsManagementView
       identity={identityQuery.data?.admin}
       configs={configs}
-      errorMessage={failureMessage ?? queryErrorMessage}
+      errorMessage={failureMessage}
       pending={pending}
       onSubmit={handleSubmit}
       onWithdraw={handleWithdraw}

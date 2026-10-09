@@ -8,6 +8,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { reviewPanelProblemMessage, type PanelProblem } from "./directoryProblems";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
+import { LoadFailure } from "../LoadFailure";
 
 const endpoint = "/api/admin/volunteers/reviewer-bulk";
 const savedOperationKey = "volunteer-review-bulk-operation";
@@ -164,7 +165,13 @@ export function VolunteerReviewBulkPanel({
           ))}
         </select>
       </label>
-      {users.isError && <p role="alert">{copy.listFailed}</p>}
+      {users.isError && (
+        <LoadFailure
+          error={users.error}
+          onRetry={() => void users.refetch()}
+          title={copy.listFailed}
+        />
+      )}
       <p className="text-sm">{copy.selected(selectedIds.length)}</p>
       <button
         type="button"

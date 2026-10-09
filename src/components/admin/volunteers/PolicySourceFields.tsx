@@ -8,6 +8,7 @@ import {
 import type { PolicyDraft } from "../../../lib/volunteers/policy/schemas";
 import { useAdminCopy } from "../i18n/copy";
 import { policySourceFieldsCopy, type SettingOrigin } from "./policySourceFieldsCopy";
+import { LoadFailure } from "../LoadFailure";
 
 const ORIGINS: readonly string[] = ["common", "shelter", "template", "inherited"];
 
@@ -107,7 +108,13 @@ export function PolicySourceFields({
           </tbody>
         </table>
       </div>
-      {result.error && <p role="alert">{copy.incomplete}</p>}
+      {result.error && (
+        <LoadFailure
+          error={result.error}
+          onRetry={() => void result.refetch()}
+          title={copy.incomplete}
+        />
+      )}
     </details>
   );
 }

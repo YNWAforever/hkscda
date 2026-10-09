@@ -146,6 +146,43 @@ describe("admin browser session", () => {
     await expect(fetchAdminJson("/api/admin/content")).rejects.toThrow("API request failed");
   });
 
+  test("carries the HTTP status on every error it throws", async () => {
+    for (const status of [401, 403, 404, 500]) {
+      // A plain string error body, a malformed body and a structured body all keep the status.
+      for (const response of [
+        () => Response.json({ error: "Request denied." }, { status }),
+        () => new Response("not json", { status }),
+        () => Response.json({ error: { code: "conflict", message: "Nope." } }, { status }),
+      ]) {
+        globalThis.fetch = mock(async () => response()) as unknown as typeof fetch;
+        const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+        expect(error).toBeInstanceOf(Error);
+        expect((error as { status?: unknown }).status).toBe(status);
+      }
+    }
+  });
+
+  test("keeps the status on a volunteers path error", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({}, { status: 403 }),
+    ) as unknown as typeof fetch;
+    const error = await fetchAdminJson("/api/admin/volunteers/activities").catch(
+      (reason: unknown) => reason,
+    );
+    expect(error).toBeInstanceOf(AdminApiError);
+    expect((error as { status?: unknown }).status).toBe(403);
+  });
+
+  test("gives a null status for a network failure and keeps the error as it was", async () => {
+    globalThis.fetch = mock(async () => {
+      throw new TypeError("Failed to fetch");
+    }) as unknown as typeof fetch;
+    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+    expect(error).toBeInstanceOf(TypeError);
+    expect((error as Error).message).toBe("Failed to fetch");
+    expect((error as { status?: unknown }).status).toBeNull();
+  });
+
   test("omits unsafe structured error codes and invalid field collections", async () => {
     globalThis.fetch = mock(async () =>
       Response.json(
@@ -246,6 +283,11 @@ describe("session errors", () => {
     expect(error).toBeInstanceOf(Error);
     expect((error as InstanceType<typeof AdminSessionError>).code).toBe("not_signed_in");
     expect((error as Error).message).toBe("未登入");
+  });
+
+  test("a missing session reads as a 401", async () => {
+    const error = await getAdminAccessToken().catch((caught: unknown) => caught);
+    expect((error as InstanceType<typeof AdminSessionError>).status).toBe(401);
   });
 
   test("a changed account keeps its zh-HK message and carries a code", async () => {

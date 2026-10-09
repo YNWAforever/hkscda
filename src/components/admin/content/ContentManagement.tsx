@@ -134,7 +134,8 @@ const CONTENT_ROUTE: ListRouteState<ContentFilters> = {
 
 export function ContentManagement({ initialData }: ContentManagementProps) {
   if (initialData) {
-    return <ContentManagementView data={initialData} loading={false} />;
+    // A fixed list handed in as a prop has nothing to load, so it can never fail or refresh.
+    return <ContentManagementView data={initialData} loading={false} onRefresh={() => {}} />;
   }
 
   return <ContentManagementRuntime />;
@@ -255,6 +256,7 @@ function ContentManagementRuntime() {
         mapVisibility={mapVisibility}
         hasUpdate={hasUpdate}
         draftState={draftState}
+        // admin-load-failure-ok: the view passes this to its DataTable, which shows a LoadFailure with onRefresh as the retry
         error={adminErrorMessage(contentQuery.error, language)}
         onQueryChange={undefined}
         onTypeChange={(value) => changeFilter({ type: value })}
@@ -298,7 +300,7 @@ type ContentManagementViewProps = {
   onDraftStateChange?: (value: "all" | NotificationDraftStatus) => void;
   onPageChange?: (page: number) => void;
   fetching?: boolean;
-  onRefresh?: () => void;
+  onRefresh: () => void;
 };
 
 function ContentManagementView({

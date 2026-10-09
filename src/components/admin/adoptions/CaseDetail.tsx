@@ -109,17 +109,18 @@ function Section({
   );
 }
 
-export function CaseDetailStatusesError({ message }: { message: string }) {
+export function CaseDetailStatusesError({
+  message,
+  error,
+  onRetry,
+}: {
+  message: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
   const copy = useAdminCopy(caseDetailCopy);
 
-  return (
-    <div
-      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-error)]"
-      role="alert"
-    >
-      {copy.statusesError(message)}
-    </div>
-  );
+  return <LoadFailure error={error} onRetry={onRetry} title={copy.statusesError(message)} />;
 }
 
 function DetailGrid({ items }: { items: Array<{ label: string; value: ReactNode }> }) {
@@ -496,7 +497,11 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       ),
   });
 
-  const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
+  const {
+    data: statusesData,
+    error: statusesError,
+    refetch: refetchStatuses,
+  } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
@@ -621,8 +626,13 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         </Button>
       </div>
 
+      {/* admin-load-failure-ok: CaseDetailStatusesError renders a LoadFailure with the retry */}
       {statusesError && (
-        <CaseDetailStatusesError message={adminErrorMessage(statusesError, language) ?? ""} />
+        <CaseDetailStatusesError
+          message={adminErrorMessage(statusesError, language) ?? ""}
+          error={statusesError}
+          onRetry={() => void refetchStatuses()}
+        />
       )}
 
       <Section title={copy.sections.applicant}>

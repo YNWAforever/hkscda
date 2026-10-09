@@ -27,6 +27,7 @@ import {
 import { policySettingsCopy } from "./policySettingsCopy";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 type D = { template_key: string; body: PolicyDraft; revision: number };
 type V = { id: string; template_key: string; effective_from: string; reason: string };
 type A = {
@@ -197,9 +198,9 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     });
   if (q.isError)
     return (
-      <p role="alert" className="p-6 text-[var(--color-error)]">
-        {copy.loadFailed}
-      </p>
+      <div className="p-6">
+        <LoadFailure error={q.error} onRetry={() => void q.refetch()} title={copy.loadFailed} />
+      </div>
     );
   if (q.isLoading || !draft || !q.data) return <p className="p-6">{copy.loading}</p>;
   const activities = q.data.activities.filter(

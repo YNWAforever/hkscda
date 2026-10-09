@@ -19,7 +19,7 @@ import {
 } from "../../ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { DataTable, type DataTableColumn } from "../DataTable";
-import { StatFigure } from "../LoadFailure";
+import { LoadFailure, StatFigure } from "../LoadFailure";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { accessCopy } from "./copy";
@@ -350,10 +350,11 @@ export function AccessManagement() {
       <section className="rounded-lg border border-[var(--color-border)] bg-white p-4">
         <h2 className="text-base font-semibold text-[var(--color-panel)]">{t.audit}</h2>
         {auditQuery.error && (
-          <p role="alert">
-            {t.auditLoadError}
-            <button onClick={() => void auditQuery.refetch()}>{t.retry}</button>
-          </p>
+          <LoadFailure
+            error={auditQuery.error}
+            onRetry={() => void auditQuery.refetch()}
+            title={t.auditLoadError}
+          />
         )}
         <nav aria-label={t.auditPagerLabel} className="flex gap-3">
           <button

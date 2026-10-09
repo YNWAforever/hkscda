@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { activityOperationCopy } from "./activityOperationCopy";
 import type { ActivityDetail } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 
 const button =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm " +
@@ -41,13 +42,12 @@ export function ActivityDetailBody({
   if (detail.isPending) return <p role="status">{text.loading}</p>;
   if (detail.isError)
     return (
-      <p role="alert">
-        {volunteerAdminErrorMessage(detail.error, language)}
-        {text.errorGap}
-        <button className={button} onClick={() => void detail.refetch()}>
-          {text.retry}
-        </button>
-      </p>
+      <LoadFailure
+        error={detail.error}
+        onRetry={() => void detail.refetch()}
+        title={volunteerAdminErrorMessage(detail.error, language) ?? undefined}
+        retryLabel={text.retry}
+      />
     );
   if (!detail.data) return null;
   const { activity, registrations, total, history, history_total } = detail.data;

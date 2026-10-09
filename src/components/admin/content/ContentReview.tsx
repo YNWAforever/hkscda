@@ -16,6 +16,7 @@ import { CmsReviewBulkPanel } from "./CmsReviewBulkPanel";
 import type { ReviewInput, ReviewQueueRow } from "../../../lib/contentReview/service";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { reviewCopy } from "./reviewCopy";
 import { recordContentReview, type ReviewResult } from "./recordContentReview";
@@ -223,10 +224,11 @@ export function ContentReviewQueue({
       )}
       {kind === "content" && quality !== "all" && <p>{copy.queue.qualityNote}</p>}
       {query.error && (
-        <p role="alert">
-          {copy.queue.loadFailed}
-          <button onClick={() => void query.refetch()}>{copy.queue.retry}</button>
-        </p>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.queue.loadFailed}
+        />
       )}
       {canBulk && (
         <div className="flex flex-wrap gap-2">

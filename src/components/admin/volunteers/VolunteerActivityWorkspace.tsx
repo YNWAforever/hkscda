@@ -33,6 +33,7 @@ import type {
   Template,
 } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 
 const call = <T,>(body: unknown, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/bulk", {
@@ -354,16 +355,10 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       setReviewAll(false);
     },
   });
-  const failure = [
-    list.error,
-    templates.error,
-    choose.error,
-    preview.error,
-    apply.error,
-    sequence.error,
-    refresh.error,
-    restored.error,
-  ].find(Boolean);
+  const loadError = list.error ?? templates.error ?? restored.error;
+  const failure = [choose.error, preview.error, apply.error, sequence.error, refresh.error].find(
+    Boolean,
+  );
   const error = failure ? (volunteerAdminErrorMessage(failure, language) ?? "") : "";
   const rows = list.isError ? [] : (list.data?.activities ?? []);
   const total = list.data?.total ?? 0;
@@ -557,6 +552,18 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           </select>
         </label>
       </div>
+      {loadError ? (
+        <LoadFailure
+          error={loadError}
+          onRetry={() => {
+            void list.refetch();
+            void templates.refetch();
+            void restored.refetch();
+          }}
+          title={volunteerAdminErrorMessage(loadError, language) ?? undefined}
+          retryLabel={copy.reload}
+        />
+      ) : null}
       {error && (
         <div role="alert" className="rounded border border-[var(--color-error)] p-3">
           {error}
@@ -624,7 +631,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         {listRefreshing && list.data ? <p role="status">{copy.list.updating}</p> : null}
         {list.isPending ? (
           <p role="status">{copy.list.loading}</p>
-        ) : list.isError ? (
+        ) : list.isError ? ( // admin-load-failure-ok: the LoadFailure above names the failure; this line only stands in for the list
           <p>{copy.list.unavailable}</p>
         ) : !rows.length ? (
           <p>

@@ -150,8 +150,8 @@ describe("the activity workspace in English", () => {
         );
         expect(markup).toContain("The activity list is not available. Reload to try again.");
         expect(markup).toContain("Activities (data not available)");
-        // A space keeps the message and the button from running together.
-        expect(markup).toContain("Contact an administrator. <button");
+        // The failure state keeps the screen's own label on its retry control.
+        expect(markup).toMatch(/<button[^>]*>Reload<\/button>/);
       },
     );
   });
@@ -713,9 +713,7 @@ describe("the activity panel in English", () => {
       error: new AdminApiError({ status: 404, message: "找不到這筆記錄，請返回名單重新選擇。" }),
     });
     expectNoChineseText(failure);
-    expect(failure).toContain(
-      "This record was not found. Go back to the list and choose again. <button",
-    );
+    expect(failure).toContain("This record was not found. Go back to the list and choose again.");
     expect(failure).toContain(">Retry</button>");
   });
 

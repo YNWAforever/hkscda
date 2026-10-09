@@ -9,6 +9,7 @@ import { pickAdminCopy } from "../i18n/copy";
 import { isNamedShelter, volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerOverviewCopy } from "./volunteerOverviewCopy";
+import { LoadFailure } from "../LoadFailure";
 type TodayActivity = {
   id: string;
   title: string;
@@ -174,14 +175,21 @@ export function VolunteerOverview() {
           );
         })}
       </div>
-      {(stats.error || Object.values(stats.data?.counts ?? {}).some((x) => x === null)) && (
+      {stats.error ? (
+        <LoadFailure
+          error={stats.error}
+          onRetry={() => void stats.refetch()}
+          title={copy.statsFailed}
+          retryLabel={copy.retryStats}
+        />
+      ) : Object.values(stats.data?.counts ?? {}).some((x) => x === null) ? (
         <div role="alert">
           {copy.statsFailed}
           <button onClick={() => void stats.refetch()} className="min-h-11 px-3 underline">
             {copy.retryStats}
           </button>
         </div>
-      )}
+      ) : null}
       <section
         aria-label={copy.coverage.label}
         className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
@@ -249,12 +257,12 @@ export function VolunteerOverview() {
         </div>
         {calendar.isLoading && <p role="status">{copy.today.loading}</p>}
         {calendar.error && (
-          <div role="alert">
-            {copy.today.loadFailed}
-            <button className="min-h-11 px-3 underline" onClick={() => void calendar.refetch()}>
-              {copy.today.reload}
-            </button>
-          </div>
+          <LoadFailure
+            error={calendar.error}
+            onRetry={() => void calendar.refetch()}
+            title={copy.today.loadFailed}
+            retryLabel={copy.today.reload}
+          />
         )}
         {calendar.data?.truncated && <p role="status">{copy.today.truncated}</p>}
         {calendar.isSuccess && activities.length === 0 && (

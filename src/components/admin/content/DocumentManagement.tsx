@@ -8,6 +8,7 @@ import { pageAfterDelete } from "./documentManagementLogic";
 import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
 import { documentsCopy } from "./documentsCopy";
@@ -115,15 +116,27 @@ function DocumentManagementRuntime() {
     },
   });
 
+  const loadError = documentsQuery.error ?? ownershipQuery.error;
+
   return (
     <DocumentManagementView
       data={documentsQuery.data}
       ownershipReady={ownershipQuery.isSuccess}
       ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByAssetId}
       loading={documentsQuery.isLoading || ownershipQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, adminLanguage),
+              onRetry: () => {
+                void documentsQuery.refetch();
+                void ownershipQuery.refetch();
+              },
+            }
+          : null
+      }
       error={
-        documentErrorMessage(documentsQuery.error, adminLanguage) ??
-        documentErrorMessage(ownershipQuery.error, adminLanguage) ??
         documentErrorMessage(uploadMutation.error, adminLanguage) ??
         documentErrorMessage(actionMutation.error, adminLanguage)
       }
@@ -165,6 +178,9 @@ type ViewProps = {
   ownershipReady?: boolean;
   ownerReleaseIds?: Readonly<Record<string, string>>;
   loading?: boolean;
+  /** The list or its ownership failed to load. Shown as a failure with a retry. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of an upload or an action. */
   error?: string | null;
   query?: string;
   kind?: DocumentKind | "all";
@@ -193,6 +209,7 @@ export function DocumentManagementView({
   ownershipReady = true,
   ownerReleaseIds = {},
   loading = false,
+  loadFailure = null,
   error,
   query = "",
   kind = "all",
@@ -334,6 +351,13 @@ export function DocumentManagementView({
         </select>
       </div>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -361,7 +385,7 @@ export function DocumentManagementView({
                   {copy.table.loading}
                 </td>
               </tr>
-            ) : rows.length === 0 && !error ? (
+            ) : rows.length === 0 && !error && !loadFailure ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
                   {copy.table.empty}
@@ -441,7 +465,7 @@ export function DocumentManagementView({
           total={data?.total}
           onPageChange={onPageChange}
           label={copy.table.pager}
-          failed={Boolean(error)}
+          failed={Boolean(error || loadFailure)}
         />
       ) : null}
     </div>

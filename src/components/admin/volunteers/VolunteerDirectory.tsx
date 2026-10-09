@@ -20,6 +20,7 @@ import {
   type DirectorySearch,
 } from "./directorySearch";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
+import { LoadFailure } from "../LoadFailure";
 const control =
   "min-h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2";
 const link =
@@ -258,12 +259,12 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
       <p className="text-sm text-[var(--color-muted-foreground)]">{copy.note}</p>
       {query.isPending && <p role="status">{copy.loading}</p>}
       {query.isError && (
-        <div role="alert" className="rounded-xl border border-[var(--color-border)] p-4">
-          <p>{copy.loadFailed}</p>
-          <button type="button" className={`${link} mt-3`} onClick={() => void query.refetch()}>
-            {copy.reload}
-          </button>
-        </div>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+        />
       )}
       {isAdmin && query.data && !query.isError && (
         <div className="space-y-4">

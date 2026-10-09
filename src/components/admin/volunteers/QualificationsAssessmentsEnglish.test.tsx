@@ -180,15 +180,15 @@ describe("the qualification verification in English", () => {
     );
   });
 
-  test("says when the profiles are loading or could not be loaded, with a button that has room", () => {
+  test("says when the profiles are loading or could not be loaded, with a retry", () => {
     expect(qualifications("en", "", {})).toContain("<p>Loading…</p>");
     const failed = qualifications("en", "", { "volunteer-qualifications": kit.failed() });
-    expect(failed).toContain('<p role="alert">Could not load the profile data. <button');
+    expect(failed).toContain("Could not load the profile data.");
     expect(failed).toContain(">Reload</button>");
     expectNoChineseText(failed);
-    expect(qualifications("zh", "", { "volunteer-qualifications": kit.failed() })).toContain(
-      "未能載入身份資料。<button",
-    );
+    const zhFailed = qualifications("zh", "", { "volunteer-qualifications": kit.failed() });
+    expect(zhFailed).toContain("未能載入身份資料。");
+    expect(zhFailed).toContain(">重新載入</button>");
   });
 
   test("keeps the Chinese screen as it was", () => {

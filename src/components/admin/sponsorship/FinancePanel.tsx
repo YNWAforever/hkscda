@@ -8,6 +8,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure } from "../LoadFailure";
 import { financeCopy } from "./financeCopy";
 import { sponsorshipFormatCopy } from "./formatCopy";
 type FinanceData = {
@@ -119,7 +120,14 @@ export function FinancePanel({
       >
         {copy.openMonths}
       </Button>
-      {(query.isError || error) && <p role="alert">{errorMessage ?? copy.loadFailed}</p>}
+      {query.isError && (
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.loadFailed}
+        />
+      )}
+      {error && <p role="alert">{errorMessage ?? copy.loadFailed}</p>}
       {pledge.contactSubmission && (
         <div className="space-y-2 rounded border p-3">
           <h4 className="font-medium">{copy.submitted.heading}</h4>

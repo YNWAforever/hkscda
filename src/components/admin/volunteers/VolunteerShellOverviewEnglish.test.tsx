@@ -297,7 +297,7 @@ describe("the volunteer overview in English", () => {
     });
   });
 
-  test("says when a figure or the coverage could not be read, and leaves a space before the retry button", () => {
+  test("says when a figure or the coverage could not be read, with a retry", () => {
     kit.withQueries(
       {
         "volunteer-overview": kit.ok({
@@ -313,7 +313,7 @@ describe("the volunteer overview in English", () => {
         expect(markup).toContain("Could not load this figure");
         expect(markup).toContain("Some figures could not be loaded. <button");
         expect(markup).toContain(">Retry figures</button>");
-        expect(markup).toContain("Could not load today&#x27;s sessions. <button");
+        expect(markup).toContain("Could not load today&#x27;s sessions.");
         expect(markup).toContain(">Reload</button>");
         expect(markup).toContain("Do not treat an unknown figure as zero sessions.");
         expect(markup).toContain("Refresh the page to try again.");

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { adminErrorMessage } from "../../../lib/admin/session";
@@ -156,6 +157,8 @@ export function KnowledgeManagement() {
     onSuccess: () => invalidateKnowledgeQueries(queryClient),
   });
 
+  const loadError = knowledgeQuery.error ?? ownershipQuery.error ?? documentsQuery.error;
+
   return (
     <>
       <section className="m-6 space-y-3 rounded border p-4">
@@ -191,12 +194,20 @@ export function KnowledgeManagement() {
         status={status}
         loading={knowledgeQuery.isLoading || ownershipQuery.isLoading}
         pending={mutation.isPending}
-        error={
-          adminErrorMessage(knowledgeQuery.error, language) ??
-          adminErrorMessage(ownershipQuery.error, language) ??
-          adminErrorMessage(documentsQuery.error, language) ??
-          adminErrorMessage(mutation.error, language)
+        loadFailure={
+          loadError
+            ? {
+                error: loadError,
+                heading: adminErrorMessage(loadError, language),
+                onRetry: () => {
+                  void knowledgeQuery.refetch();
+                  void ownershipQuery.refetch();
+                  void documentsQuery.refetch();
+                },
+              }
+            : null
         }
+        error={adminErrorMessage(mutation.error, language)}
         onQueryChange={withPageReset(setQuery)}
         onStatusChange={withPageReset(setStatus)}
         onPageChange={setPage}
@@ -225,6 +236,7 @@ export function KnowledgeManagementView({
   status = "all",
   loading = false,
   pending = false,
+  loadFailure = null,
   error,
   onQueryChange,
   onStatusChange,
@@ -241,6 +253,9 @@ export function KnowledgeManagementView({
   status?: AdminKnowledgeStatus;
   loading?: boolean;
   pending?: boolean;
+  /** The articles, their ownership or the documents failed to load. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save or a delete. */
   error?: string | null;
   onQueryChange?: (value: string) => void;
   onStatusChange?: (value: AdminKnowledgeStatus) => void;
@@ -282,6 +297,13 @@ export function KnowledgeManagementView({
         </label>
       </div>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
@@ -294,7 +316,9 @@ export function KnowledgeManagementView({
         <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
       ) : null}
 
-      {!loading && ownershipReady && posts.length === 0 && !error ? <p>{copy.empty}</p> : null}
+      {!loading && ownershipReady && posts.length === 0 && !error && !loadFailure ? (
+        <p>{copy.empty}</p>
+      ) : null}
       {!loading &&
         ownershipReady &&
         posts.map((post) => (

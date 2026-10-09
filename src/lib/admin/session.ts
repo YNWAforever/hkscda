@@ -41,9 +41,26 @@ export function adminSessionErrorText(
 }
 
 export class AdminSessionError extends Error {
+  /** A lapsed session is what a 401 means, so a failure screen can treat the two alike. */
+  readonly status = 401;
+
   constructor(readonly code: AdminSessionErrorCode) {
     super(adminSessionErrorText(code));
     this.name = "AdminSessionError";
+  }
+}
+
+/**
+ * An error `fetchAdminJson` throws for a response that carried no structured error. Its
+ * message is exactly what the plain `Error` it replaces carried; `status` is the HTTP status.
+ */
+export class AdminHttpError extends Error {
+  constructor(
+    message: string,
+    readonly status: number | null,
+  ) {
+    super(message);
+    this.name = "AdminHttpError";
   }
 }
 
@@ -104,6 +121,13 @@ export async function fetchAdminJson<T>(
       authorization: `Bearer ${token}`,
       ...init?.headers,
     },
+  }).catch((error: unknown) => {
+    // A request that never got a response has no status. The error is rethrown as it was, so
+    // its message and class are unchanged.
+    if (error instanceof Error && error.name !== "AbortError") {
+      Object.defineProperty(error, "status", { value: null, configurable: true });
+    }
+    throw error;
   });
 
   if (!response.ok) {
@@ -116,10 +140,11 @@ export async function fetchAdminJson<T>(
         message: volunteerErrorMessage(body, response.status),
       });
 
-    throw new Error(
+    throw new AdminHttpError(
       body && typeof body === "object" && typeof body.error === "string"
         ? body.error
         : "API request failed",
+      response.status,
     );
   }
 

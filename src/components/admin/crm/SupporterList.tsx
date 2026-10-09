@@ -108,7 +108,7 @@ export function SupporterList() {
     );
   }
 
-  const { data, error, isLoading, isFetching } = useQuery({
+  const { data, error, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["crm-supporters", search.toString()],
     queryFn: ({ signal }) =>
       fetchAdminJson<SupporterListResponse>("/api/admin/supporters?" + search, { signal }),
@@ -333,14 +333,6 @@ export function SupporterList() {
           {listCopy.refreshing}
         </p>
       )}
-      {error && (
-        <div
-          role="alert"
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-error)]"
-        >
-          {copy.loadError}
-        </div>
-      )}
 
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <button
@@ -410,7 +402,10 @@ export function SupporterList() {
           getRowKey={(s) => s.id}
           loading={isLoading || !listState.hydrated}
           skeletonRows={5}
-          empty={error ? null : copy.empty}
+          empty={copy.empty}
+          error={error}
+          onRetry={() => void refetch()}
+          failureTitle={copy.loadError}
           renderMobileCard={renderSupporterCard}
         />
       </div>

@@ -8,6 +8,7 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import { adminErrorMessage } from "../../../lib/admin/session";
 import type { AdoptionAssignmentBulkOperation } from "../../../routes/api/admin/adoptions/assignment-bulk";
 import { assignmentBulkCopy } from "./copy";
+import { LoadFailure } from "../LoadFailure";
 
 const endpoint = "/api/admin/adoptions/assignment-bulk";
 const savedOperationKey = "adoption-assignment-bulk-operation";
@@ -185,7 +186,13 @@ export function AdoptionAssignmentBulkPanel({
           ))}
         </select>
       </label>
-      {users.isError && <p role="alert">{copy.usersLoadFailed}</p>}
+      {users.isError && (
+        <LoadFailure
+          error={users.error}
+          onRetry={() => void users.refetch()}
+          title={copy.usersLoadFailed}
+        />
+      )}
       <label className="block max-w-sm text-sm">
         {copy.minAgeDays}
         <input

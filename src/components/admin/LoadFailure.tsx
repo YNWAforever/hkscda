@@ -1,8 +1,10 @@
-import type { ReactNode } from "react";
+import { useContext, type ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
+import { AdminHomeRouteContext } from "./adminHomeRoute";
 import { Button } from "../ui/button";
 import { useSharedAdminCopy } from "./i18n/copy";
+import { failureClass, type FailureClass } from "./failureClass";
 import { sharedUiCopy } from "./sharedUiCopy";
 
 /**
@@ -61,13 +63,29 @@ export function errorReference(error: unknown): string {
   return hash.toString(16).padStart(8, "0").slice(0, 6).toUpperCase();
 }
 
+/**
+ * A failed load, as a view component takes it from the container that owns the query: the
+ * error to classify, the sentence the screen words for it (the heading), and the retry.
+ */
+export type ViewLoadFailure = {
+  error: unknown;
+  /** Replaces the default heading. Omit to keep "Could not load". */
+  heading?: string | null;
+  onRetry: () => void;
+};
+
 export type LoadFailureProps = {
   /** The caught error. Its text is never rendered; only a reference is shown. */
   error: unknown;
-  /** Re-runs the failed query. Omit only when no retry is possible. */
-  onRetry?: () => void;
+  /** Re-runs the failed query. */
+  onRetry: () => void;
   /** Overrides the default "Could not load" heading with something more specific. */
   title?: ReactNode;
+  /**
+   * Replaces the "Retry" label of the control when a screen already words its own ("Reload").
+   * The retrying label stays the shared one.
+   */
+  retryLabel?: ReactNode;
   /** True while the retry is in flight, so the control cannot be double-fired. */
   retrying?: boolean;
   className?: string;
@@ -77,11 +95,13 @@ export function LoadFailure({
   error,
   onRetry,
   title,
+  retryLabel,
   retrying = false,
   className,
 }: LoadFailureProps) {
   const copy = useSharedAdminCopy(sharedUiCopy).loadFailure;
   const reference = errorReference(error);
+  const classLine = useClassLine(failureClass(error));
   return (
     <div
       role="alert"
@@ -93,16 +113,50 @@ export function LoadFailure({
       <p className="text-sm font-medium text-[var(--color-text)]">
         {title === undefined ? copy.title : title}
       </p>
+      {classLine ? <p className="text-xs text-[var(--color-text)]">{classLine}</p> : null}
       <p className="text-xs text-[var(--color-text-muted)]">
         {copy.guidance} <span className="font-mono">{reference}</span>
       </p>
-      {onRetry ? (
-        <Button type="button" variant="outline" size="sm" onClick={onRetry} disabled={retrying}>
-          {retrying ? copy.retrying : copy.retry}
-        </Button>
-      ) : null}
+      <Button type="button" variant="outline" size="sm" onClick={onRetry} disabled={retrying}>
+        {retrying ? copy.retrying : (retryLabel ?? copy.retry)}
+      </Button>
     </div>
   );
+}
+
+/**
+ * The sentence that names a class of failure, in the active language, or `null` when there is
+ * none (an unknown failure, or a language whose half carries no line). A forbidden failure
+ * links to the first page the signed-in role can open when `AdminLayout` has provided it.
+ */
+function useClassLine(failure: FailureClass): ReactNode {
+  const lines = useSharedAdminCopy(sharedUiCopy).loadFailure.classLines;
+  const homeRoute = useContext(AdminHomeRouteContext);
+  switch (failure) {
+    case "forbidden": {
+      if (!lines.forbidden) return null;
+      const action = lines.forbiddenAction;
+      if (!action) return lines.forbidden;
+      return homeRoute ? (
+        <>
+          {lines.forbidden}{" "}
+          <a className="underline" href={homeRoute}>
+            {action}
+          </a>
+        </>
+      ) : (
+        `${lines.forbidden} ${action}`
+      );
+    }
+    case "not_found":
+      return lines.notFound;
+    case "server":
+      return lines.server;
+    case "network":
+      return lines.network;
+    case "unknown":
+      return null;
+  }
 }
 
 /**

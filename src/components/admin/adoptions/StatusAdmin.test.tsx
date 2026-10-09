@@ -14,7 +14,11 @@ describe("StatusLoadErrorRow", () => {
     const markup = renderToStaticMarkup(
       <table>
         <tbody>
-          <StatusLoadErrorRow message="Could not load statuses" />
+          <StatusLoadErrorRow
+            message="Could not load statuses"
+            error={new Error("boom")}
+            onRetry={() => {}}
+          />
         </tbody>
       </table>,
     );

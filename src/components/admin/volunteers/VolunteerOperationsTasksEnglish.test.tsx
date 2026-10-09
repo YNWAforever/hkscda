@@ -421,7 +421,7 @@ describe("today's volunteer tasks in English", () => {
     );
     kit.withQueries({ "volunteer-tasks": kit.failed() }, () => {
       const markup = renderAdminInEnglish(<VolunteerTasks />);
-      expect(markup).toContain("Could not load the tasks. <button");
+      expect(markup).toContain("Could not load the tasks.");
       expect(markup).toContain(">Reload</button>");
     });
     kit.withQueries({}, () => {

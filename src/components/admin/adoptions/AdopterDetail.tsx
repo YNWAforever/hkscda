@@ -20,7 +20,7 @@ import { adopterDetailCopy } from "./adopterDetailCopy";
 import { fetchCoordinatorJson } from "./api";
 import { formatFallback } from "./caseWorkflowLogic";
 import { adoptionFormatCopy } from "./formatCopy";
-import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
+import { TaskPanel } from "./TaskPanel";
 
 type AdopterCaseHistoryRow = AdopterDetailData["cases"][number];
 type AdopterSuccessfulAdoptionRow = AdopterDetailData["successfulAdoptions"][number];
@@ -226,7 +226,11 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       ),
   });
 
-  const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
+  const {
+    data: statusesData,
+    error: statusesError,
+    refetch: refetchStatuses,
+  } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
@@ -572,10 +576,10 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
 
       {statusesError && (
         <section className={sectionClassName()}>
-          <TaskPanelAsyncError
-            message={copy.loadFollowupStatusesError(
-              adminErrorMessage(statusesError, language) ?? "",
-            )}
+          <LoadFailure
+            error={statusesError}
+            onRetry={() => void refetchStatuses()}
+            title={copy.loadFollowupStatusesError(adminErrorMessage(statusesError, language) ?? "")}
           />
           <div className="px-4 py-3 text-sm text-[var(--color-text-muted)]">
             {copy.followupStatusHint}

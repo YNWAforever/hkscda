@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { LoadFailure } from "../LoadFailure";
 import { useAdminCopy } from "../i18n/copy";
 import { localizedText } from "../i18n/localizedText";
 import { fetchCoordinatorJson } from "./api";
@@ -271,9 +272,10 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     sourcesQuery.isFetching ||
     statusesQuery.isFetching;
 
-  const readErrors = [positionsQuery.error, sourcesQuery.error, statusesQuery.error]
-    .map((error) => pipelineReadErrorText(error, language))
-    .filter(Boolean);
+  const readFailures = [positionsQuery, sourcesQuery, statusesQuery].flatMap((lookup) => {
+    const message = pipelineReadErrorText(lookup.error, language);
+    return lookup.error && message ? [{ error: lookup.error, message, retry: lookup.refetch }] : [];
+  });
 
   const lifecycleMutation = useMutation<void, Error, { animalId: string; status: AnimalStatus }>({
     mutationFn: ({ animalId, status }) =>
@@ -868,16 +870,15 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           </Tabs>
         </div>
 
-        {readErrors.length > 0 && (
-          <div
-            className="space-y-1 border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
-            role="alert"
-          >
-            {readErrors.map((message, index) => (
-              <p key={`${index}:${message}`}>{message}</p>
-            ))}
-          </div>
-        )}
+        {readFailures.map(({ error, message, retry }) => (
+          <LoadFailure
+            key={message}
+            error={error}
+            onRetry={() => void retry()}
+            title={message}
+            className="rounded-none border-0 border-t"
+          />
+        ))}
         {lifecycleMutation.error && (
           <div
             className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
@@ -889,12 +890,12 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       </section>
 
       {pipelineQuery.error ? (
-        <section
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-error)]"
-          role="alert"
-        >
-          {adminErrorMessage(pipelineQuery.error, language) ?? ""}
-        </section>
+        <LoadFailure
+          error={pipelineQuery.error}
+          onRetry={() => void pipelineQuery.refetch()}
+          title={adminErrorMessage(pipelineQuery.error, language) ?? undefined}
+          className="bg-[var(--color-surface)]"
+        />
       ) : (
         <div className="space-y-4">
           {pipelineQuery.isLoading &&
@@ -1006,7 +1007,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         animalId={selectedAnimalId}
         tasks={selectedAnimalTasks}
         statuses={statuses}
+        // admin-load-failure-ok: the dialog wraps this message in a LoadFailure with a retry
         tasksError={adminErrorMessage(selectedAnimalTasksQuery.error, language)}
+        onRetryTasks={() => void selectedAnimalTasksQuery.refetch()}
         onTasksChanged={invalidateSelectedAnimalTasks}
       />
     </div>

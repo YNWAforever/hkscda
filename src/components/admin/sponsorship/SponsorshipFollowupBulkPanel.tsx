@@ -9,6 +9,7 @@ import type { SponsorshipFollowupBulkOperation } from "../../../routes/api/admin
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { followupBulkCopy } from "./bulkCopy";
+import { LoadFailure } from "../LoadFailure";
 
 const endpoint = "/api/admin/sponsorships/followup-bulk";
 const savedOperationKey = "sponsorship-followup-bulk-operation";
@@ -187,7 +188,13 @@ export function SponsorshipFollowupBulkPanel({
           ))}
         </select>
       </label>
-      {assignees.isError && <p role="alert">{copy.pickerFailed}</p>}
+      {assignees.isError && (
+        <LoadFailure
+          error={assignees.error}
+          onRetry={() => void assignees.refetch()}
+          title={copy.pickerFailed}
+        />
+      )}
       <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
       <button
         type="button"

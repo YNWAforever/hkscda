@@ -14,6 +14,7 @@ import { Switch } from "../../ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildStatusMutationPayload,
@@ -84,11 +85,19 @@ function FlagBadge({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function StatusLoadErrorRow({ message }: { message: string }) {
+export function StatusLoadErrorRow({
+  message,
+  error,
+  onRetry,
+}: {
+  message: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
   return (
-    <TableRow className="h-16">
-      <TableCell colSpan={5} className="px-4 text-[var(--color-error)]">
-        <span role="alert">{message}</span>
+    <TableRow>
+      <TableCell colSpan={5} className="px-4 py-4">
+        <LoadFailure error={error} onRetry={onRetry} title={message} className="border-0" />
       </TableCell>
     </TableRow>
   );
@@ -114,7 +123,7 @@ export function StatusAdmin() {
   const [form, setForm] = useState<StatusFormState>(() => createBlankStatusForm("adoption_case"));
   const [originalForm, setOriginalForm] = useState<StatusFormState | null>(null);
 
-  const { data, error, isLoading } = useQuery<StatusesResponse, Error>({
+  const { data, error, isLoading, refetch } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
@@ -316,6 +325,8 @@ export function StatusAdmin() {
               {error && !isLoading && (
                 <StatusLoadErrorRow
                   message={`${copy.loadError}: ${adminErrorMessage(error, language) ?? ""}`}
+                  error={error}
+                  onRetry={() => void refetch()}
                 />
               )}
 

@@ -29,6 +29,7 @@ import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
 import { CareTopicsManagement } from "./CareTopicsManagement";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { adoptionInformationCopy } from "./adoptionInformationCopy";
 import {
@@ -294,10 +295,16 @@ function AdoptionInformationManagementRuntime() {
       activeTab={activeTab}
       data={informationQuery.data}
       loading={informationQuery.isLoading}
-      error={
-        adminErrorMessage(informationQuery.error, language) ??
-        adminErrorMessage(mutation.error, language)
+      loadFailure={
+        informationQuery.error
+          ? {
+              error: informationQuery.error,
+              heading: adminErrorMessage(informationQuery.error, language),
+              onRetry: () => void informationQuery.refetch(),
+            }
+          : null
       }
+      error={adminErrorMessage(mutation.error, language)}
       query={query}
       page={page}
       pending={mutation.isPending}
@@ -367,6 +374,9 @@ type ViewProps = {
   activeTab: AdoptionContentTab;
   data?: AdminAdoptionInformationPage;
   loading?: boolean;
+  /** The fees or estates failed to load. Shown instead of the lists. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save. */
   error?: string | null;
   query: string;
   page?: number;
@@ -386,6 +396,7 @@ export function AdoptionInformationManagementView({
   activeTab,
   data,
   loading = false,
+  loadFailure = null,
   error,
   query,
   page = 1,
@@ -435,6 +446,13 @@ export function AdoptionInformationManagementView({
         </label>
       ) : null}
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
@@ -442,7 +460,7 @@ export function AdoptionInformationManagementView({
       ) : null}
       {loading ? <p aria-live="polite">{copy.loading}</p> : null}
 
-      {!loading && activeTab === "fees" ? (
+      {!loading && !loadFailure && activeTab === "fees" ? (
         <section className="space-y-6" aria-label={copy.fees.section}>
           {(["dog", "cat"] as const).map((animalType) => (
             <div key={animalType} className="space-y-3">
@@ -469,7 +487,7 @@ export function AdoptionInformationManagementView({
         </section>
       ) : null}
 
-      {!loading && activeTab === "estates" ? (
+      {!loading && !loadFailure && activeTab === "estates" ? (
         <section className="space-y-4" aria-label={copy.estates.section}>
           <EstateEditor pending={pending} onCreate={onCreateEstate} />
           {estates.length ? (
@@ -496,7 +514,7 @@ export function AdoptionInformationManagementView({
           total={data?.total}
           onPageChange={onPageChange}
           label={copy.estates.pager}
-          failed={Boolean(error)}
+          failed={Boolean(error || loadFailure)}
         />
       ) : null}
     </div>
