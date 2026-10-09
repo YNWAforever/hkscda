@@ -9,15 +9,19 @@ import {
   PAYMENT_RECONCILE_PAGE_SIZE,
   type AdminPaymentListResult,
 } from "../../../lib/donations/adminPayments";
-import { centsToHkd } from "../../../lib/donations/domain";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { useAdminCopy } from "../i18n/copy";
+import { errorTextCopy } from "../i18n/errorTextCopy";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
+import { paymentsCopy } from "./copy";
 import { DonationDeliveryWorklist } from "./DonationDeliveryWorklist";
+import { donationFormatCopy } from "./formatCopy";
 import { ReconcileDialog } from "./ReconcileDialog";
 import {
   buildPaymentExportSearchParams,
@@ -25,7 +29,6 @@ import {
   canIssueReceipt,
   canReconcile,
   canVoidReceipt,
-  financeActionLabel,
   findIssuedReceipt,
   paymentPurposeText,
   paymentStatusPill,
@@ -43,32 +46,30 @@ type FinanceActivityItem = {
   createdAt: string;
 };
 
-const STATUS_OPTIONS: { value: PaymentFilters["status"]; label: string }[] = [
-  { value: "all", label: "全部狀態" },
-  { value: "pending", label: "待確認" },
-  { value: "succeeded", label: "已確認" },
-  { value: "failed", label: "失敗" },
-  { value: "refunded", label: "已退款" },
+const STATUS_VALUES: PaymentFilters["status"][] = [
+  "all",
+  "pending",
+  "succeeded",
+  "failed",
+  "refunded",
 ];
 
-const PROVIDER_OPTIONS: { value: PaymentFilters["provider"]; label: string }[] = [
-  { value: "all", label: "全部方式" },
-  { value: "stripe", label: "Stripe" },
-  { value: "paypal", label: "PayPal" },
-  { value: "fps", label: "FPS" },
-  { value: "payme", label: "PayMe" },
-  { value: "manual", label: "Manual" },
+const PROVIDER_VALUES: PaymentFilters["provider"][] = [
+  "all",
+  "stripe",
+  "paypal",
+  "fps",
+  "payme",
+  "manual",
 ];
-
-function formatActivityTime(value: string) {
-  return new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium", timeStyle: "short" }).format(
-    new Date(value),
-  );
-}
 
 export function PaymentsReconcile() {
   const liveActor = useLiveAdminActor();
   const queryClient = useQueryClient();
+  const { pageCopy } = useAdminPageCopy();
+  const copy = useAdminCopy(paymentsCopy);
+  const format = useAdminCopy(donationFormatCopy);
+  const errorText = useAdminCopy(errorTextCopy);
   const [filters, setFilters] = useState<PaymentFilters>({
     status: "all",
     provider: "all",
@@ -76,7 +77,8 @@ export function PaymentsReconcile() {
   });
   const [page, setPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [exportError, setExportError] = useState("");
+  // The caught error, written for the current language when it is shown.
+  const [exportFailure, setExportFailure] = useState<{ cause: unknown } | null>(null);
 
   useEffect(() => {
     const handle = window.setTimeout(() => setDebouncedSearch(filters.search.trim()), 250);
@@ -156,7 +158,7 @@ export function PaymentsReconcile() {
   });
 
   async function handleExport() {
-    setExportError("");
+    setExportFailure(null);
     try {
       const token = await getAdminAccessToken();
       const exportSearch = filters.search.trim();
@@ -173,7 +175,9 @@ export function PaymentsReconcile() {
       });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(typeof body.error === "string" ? body.error : "匯出失敗");
+        // A refusal carries the server's own reason when it sent one.
+        setExportFailure({ cause: typeof body.error === "string" ? new Error(body.error) : null });
+        return;
       }
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -185,11 +189,12 @@ export function PaymentsReconcile() {
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (error) {
-      setExportError(error instanceof Error ? error.message : "匯出失敗");
+      setExportFailure({ cause: error });
     }
   }
 
-  const actionError = issueReceipt.error?.message ?? voidReceipt.error?.message ?? "";
+  const actionFailure = issueReceipt.error ?? voidReceipt.error;
+  const actionError = actionFailure ? errorText.describe(actionFailure, "") : "";
 
   function rowActions(payment: AdminPaymentRow) {
     const issued = findIssuedReceipt(payment.donation.id, receipts);
@@ -199,7 +204,7 @@ export function PaymentsReconcile() {
           <ReconcileDialog
             paymentId={payment.id}
             supporterName={payment.donation.supporter.name}
-            amountLabel={centsToHkd(payment.amount_cents)}
+            amountLabel={format.money(payment.amount_cents)}
             onReconciled={refresh}
           />
         )}
@@ -212,7 +217,7 @@ export function PaymentsReconcile() {
             disabled={issueReceipt.isPending}
           >
             <FileCheck className="h-4 w-4" />
-            發收條
+            {copy.issueReceipt}
           </Button>
         )}
         {canVoidReceipt(payment, receipts, adminRole) && issued && (
@@ -221,13 +226,13 @@ export function PaymentsReconcile() {
             variant="outline"
             size="sm"
             onClick={() => {
-              if (window.confirm(`確定作廢收條 ${issued.receipt_no}？`))
+              if (window.confirm(copy.confirmVoid(issued.receipt_no)))
                 voidReceipt.mutate(issued.id);
             }}
             disabled={voidReceipt.isPending}
           >
             <FileX className="h-4 w-4" />
-            作廢收條
+            {copy.voidReceipt}
           </Button>
         )}
       </div>
@@ -237,7 +242,7 @@ export function PaymentsReconcile() {
   const columns: DataTableColumn<AdminPaymentRow>[] = [
     {
       id: "supporter",
-      header: "捐款人",
+      header: copy.columns.supporter,
       cell: (payment) => (
         <div>
           <div className="font-medium text-[var(--color-panel)]">
@@ -249,17 +254,23 @@ export function PaymentsReconcile() {
         </div>
       ),
     },
-    { id: "provider", header: "方式", cell: (payment) => payment.provider.toUpperCase() },
+    {
+      id: "provider",
+      header: copy.columns.provider,
+      cell: (payment) => payment.provider.toUpperCase(),
+    },
     {
       id: "amount",
-      header: "金額",
+      header: copy.columns.amount,
       cell: (payment) => (
         <span className="font-medium">
-          {centsToHkd(payment.amount_cents)}
+          {format.money(payment.amount_cents)}
           {Boolean(payment.refunded_cents) && (
             <small className="block">
-              已退款 {centsToHkd(payment.refunded_cents ?? 0)} · 實收{" "}
-              {centsToHkd(payment.amount_cents - (payment.refunded_cents ?? 0))}
+              {copy.refundedLine(
+                format.money(payment.refunded_cents ?? 0),
+                format.money(payment.amount_cents - (payment.refunded_cents ?? 0)),
+              )}
             </small>
           )}
         </span>
@@ -267,12 +278,12 @@ export function PaymentsReconcile() {
     },
     {
       id: "purpose",
-      header: "用途",
-      cell: (payment) => paymentPurposeText(payment.donation),
+      header: copy.columns.purpose,
+      cell: (payment) => paymentPurposeText(payment.donation, copy),
     },
     {
       id: "reference",
-      header: "參考",
+      header: copy.columns.reference,
       cell: (payment) => (
         <div>
           <div>{payment.provider_ref ?? "—"}</div>
@@ -284,26 +295,26 @@ export function PaymentsReconcile() {
     },
     {
       id: "status",
-      header: "收款狀態",
+      header: copy.columns.status,
       cell: (payment) => {
-        const pill = paymentStatusPill(payment.status);
+        const pill = paymentStatusPill(payment.status, copy);
         return <StatusPill tone={pill.tone}>{pill.label}</StatusPill>;
       },
     },
     {
       id: "receipt",
-      header: "收條",
+      header: copy.columns.receipt,
       cell: (payment) => {
-        const pill = receiptPill(payment, receipts);
+        const pill = receiptPill(payment, receipts, copy);
         return pill ? <StatusPill tone={pill.tone}>{pill.label}</StatusPill> : <span>—</span>;
       },
     },
-    { id: "actions", header: "操作", cell: rowActions },
+    { id: "actions", header: copy.columns.actions, cell: rowActions },
   ];
 
   function renderMobileCard(payment: AdminPaymentRow) {
-    const statusPill = paymentStatusPill(payment.status);
-    const rPill = receiptPill(payment, receipts);
+    const statusPill = paymentStatusPill(payment.status, copy);
+    const rPill = receiptPill(payment, receipts, copy);
     return (
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
@@ -312,10 +323,10 @@ export function PaymentsReconcile() {
               {payment.donation.supporter.name}
             </div>
             <div className="text-xs text-[var(--color-text-muted)]">
-              {payment.provider.toUpperCase()} · {paymentPurposeText(payment.donation)}
+              {payment.provider.toUpperCase()} · {paymentPurposeText(payment.donation, copy)}
             </div>
           </div>
-          <div className="text-right font-medium">{centsToHkd(payment.amount_cents)}</div>
+          <div className="text-right font-medium">{format.money(payment.amount_cents)}</div>
         </div>
         <div className="flex flex-wrap gap-2">
           <StatusPill tone={statusPill.tone}>{statusPill.label}</StatusPill>
@@ -327,9 +338,9 @@ export function PaymentsReconcile() {
   }
 
   const summaryCards = [
-    ["待確認手動收款", String(summary.awaitingReconcile)],
-    ["待發收條", String(summary.awaitingReceipt)],
-    ["已確認金額", centsToHkd(summary.confirmedAmountCents)],
+    [copy.summary.awaitingReconcile, String(summary.awaitingReconcile)],
+    [copy.summary.awaitingReceipt, String(summary.awaitingReceipt)],
+    [copy.summary.confirmedAmount, format.money(summary.confirmedAmountCents)],
   ];
 
   const activity = activityData?.activity ?? [];
@@ -367,20 +378,20 @@ export function PaymentsReconcile() {
         <Input
           value={filters.search}
           onChange={(event) => updateFilters({ search: event.target.value })}
-          placeholder="搜尋姓名 / 電郵 / 參考"
+          placeholder={copy.searchPlaceholder}
           className="max-w-xs"
         />
         <Select
           value={filters.status}
           onValueChange={(value) => updateFilters({ status: value as PaymentFilters["status"] })}
         >
-          <SelectTrigger className="w-36" aria-label="收款狀態篩選">
+          <SelectTrigger className="w-36" aria-label={copy.statusFilterLabel}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {STATUS_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
+            {STATUS_VALUES.map((value) => (
+              <SelectItem key={value} value={value}>
+                {value === "all" ? copy.allStatuses : copy.paymentStatus[value]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -391,13 +402,13 @@ export function PaymentsReconcile() {
             updateFilters({ provider: value as PaymentFilters["provider"] })
           }
         >
-          <SelectTrigger className="w-36" aria-label="收款方式篩選">
+          <SelectTrigger className="w-36" aria-label={copy.providerFilterLabel}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {PROVIDER_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
+            {PROVIDER_VALUES.map((value) => (
+              <SelectItem key={value} value={value}>
+                {value === "all" ? copy.allMethods : copy.providerNames[value]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -405,9 +416,13 @@ export function PaymentsReconcile() {
         <div className="ml-auto flex flex-col items-end gap-1">
           <Button type="button" variant="outline" onClick={() => void handleExport()}>
             <Download className="h-4 w-4" />
-            匯出 CSV
+            {pageCopy.common.exportCsv}
           </Button>
-          {exportError && <p className="text-xs text-[var(--color-error)]">{exportError}</p>}
+          {exportFailure && (
+            <p className="text-xs text-[var(--color-error)]">
+              {errorText.describe(exportFailure.cause, copy.exportFailed)}
+            </p>
+          )}
         </div>
       </section>
 
@@ -418,16 +433,14 @@ export function PaymentsReconcile() {
         rows={payments}
         getRowKey={(payment) => payment.id}
         loading={isLoading || isFetching}
-        empty="沒有收款紀錄"
+        empty={copy.noPayments}
         error={paymentsQuery.error}
         onRetry={() => void paymentsQuery.refetch()}
         renderMobileCard={renderMobileCard}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--color-text-muted)]">
-        <span>
-          {pageStart}-{pageEnd} / {total}
-        </span>
+        <span>{copy.range(pageStart, pageEnd, total)}</span>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -435,20 +448,18 @@ export function PaymentsReconcile() {
             size="sm"
             onClick={() => setPage((current) => Math.max(1, current - 1))}
             disabled={page <= 1 || isFetching}
-            aria-label="Previous payments page"
+            aria-label={copy.previousPage}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span>
-            {page} / {totalPages}
-          </span>
+          <span>{copy.pageIndicator(page, totalPages)}</span>
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
             disabled={page >= totalPages || isFetching}
-            aria-label="Next payments page"
+            aria-label={copy.nextPage}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -456,21 +467,21 @@ export function PaymentsReconcile() {
       </div>
 
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-        <h2 className="text-lg font-semibold text-[var(--color-panel)]">最近收款活動</h2>
+        <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.activityTitle}</h2>
         <div className="mt-3 divide-y divide-[var(--color-border)]">
           {activity.length === 0 && (
-            <p className="py-4 text-sm text-[var(--color-text-muted)]">暫無活動紀錄。</p>
+            <p className="py-4 text-sm text-[var(--color-text-muted)]">{copy.noActivity}</p>
           )}
           {activity.map((item) => (
             <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
               <div className="text-sm text-[var(--color-panel)]">
-                {financeActionLabel(item.action)}
+                {copy.financeAction(item.action)}
                 <span className="ml-2 text-xs text-[var(--color-text-muted)]">
-                  {item.actorEmail ?? "系統"}
+                  {item.actorEmail ?? copy.system}
                 </span>
               </div>
               <div className="text-xs text-[var(--color-text-muted)]">
-                {formatActivityTime(item.createdAt)}
+                {format.activityTime(item.createdAt)}
               </div>
             </div>
           ))}

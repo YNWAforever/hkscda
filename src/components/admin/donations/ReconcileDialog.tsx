@@ -8,6 +8,9 @@ import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { useAdminCopy } from "../i18n/copy";
+import { errorTextCopy } from "../i18n/errorTextCopy";
+import { reconcileDialogCopy } from "./copy";
 
 type ReconcileDialogProps = {
   paymentId: string;
@@ -22,9 +25,10 @@ export function ReconcileDialog({
   amountLabel,
   onReconciled,
 }: ReconcileDialogProps) {
+  const copy = useAdminCopy(reconcileDialogCopy);
+  const errorText = useAdminCopy(errorTextCopy);
   const [open, setOpen] = useState(false);
   const [bankReference, setBankReference] = useState("");
-  const [deliveryWarning, setDeliveryWarning] = useState("");
   const [deliveryJobId, setDeliveryJobId] = useState<string | null>(null);
 
   const trimmed = bankReference.trim();
@@ -46,9 +50,6 @@ export function ReconcileDialog({
         onReconciled();
       } else {
         setDeliveryJobId(result.deliveryJobId);
-        setDeliveryWarning(
-          "收款及稽核已記錄；收條或電郵工作尚未完成。可重試或到待處理工作檢查，不要再次入帳。",
-        );
       }
     },
   });
@@ -78,7 +79,6 @@ export function ReconcileDialog({
     mutation.reset();
     retryDelivery.reset();
     setBankReference("");
-    setDeliveryWarning("");
     setDeliveryJobId(null);
   }
 
@@ -87,43 +87,45 @@ export function ReconcileDialog({
       <DialogTrigger asChild>
         <Button type="button" size="sm">
           <CheckCircle2 className="h-4 w-4" />
-          標記已收款
+          {copy.title}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>標記已收款</DialogTitle>
+          <DialogTitle>{copy.title}</DialogTitle>
         </DialogHeader>
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <p className="text-sm text-[var(--color-text-muted)]">
             {supporterName} · {amountLabel}
           </p>
           <div className="grid gap-2">
-            <Label htmlFor="reconcile-bank-reference">銀行 / PayMe / FPS 參考編號</Label>
+            <Label htmlFor="reconcile-bank-reference">{copy.referenceLabel}</Label>
             <Input
               id="reconcile-bank-reference"
               value={bankReference}
               onChange={(event) => setBankReference(event.target.value)}
-              placeholder="例如 FPS-20260630-001"
+              placeholder={copy.referencePlaceholder}
               autoFocus
             />
           </div>
           {mutation.error && (
-            <p className="text-sm text-[var(--color-error)]">{mutation.error.message}</p>
+            <p className="text-sm text-[var(--color-error)]">
+              {errorText.describe(mutation.error, "")}
+            </p>
           )}
-          {deliveryWarning && (
+          {deliveryJobId && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {deliveryWarning}
+              {copy.deliveryWarning}
             </p>
           )}
           {retryDelivery.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {retryDelivery.error.message}
+              {errorText.describe(retryDelivery.error, "")}
             </p>
           )}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={closeDialog}>
-              {deliveryJobId ? "關閉" : "取消"}
+              {deliveryJobId ? copy.close : copy.cancel}
             </Button>
             {deliveryJobId && (
               <Button
@@ -132,14 +134,14 @@ export function ReconcileDialog({
                 disabled={retryDelivery.isPending}
                 onClick={() => retryDelivery.mutate()}
               >
-                {retryDelivery.isPending ? "處理中…" : "重試收條及電郵"}
+                {retryDelivery.isPending ? copy.processing : copy.retry}
               </Button>
             )}
             <Button
               type="submit"
               disabled={!canSubmit || mutation.isPending || Boolean(deliveryJobId)}
             >
-              {mutation.isPending ? "處理中…" : "確認收款"}
+              {mutation.isPending ? copy.processing : copy.confirm}
             </Button>
           </div>
         </form>

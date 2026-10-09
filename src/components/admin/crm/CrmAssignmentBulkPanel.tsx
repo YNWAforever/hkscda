@@ -3,10 +3,24 @@ import { useEffect, useRef, useState } from "react";
 import { BulkReview } from "../bulk/BulkReview";
 import type { CrmAssignmentBulkOperation } from "../../../routes/api/admin/supporters/assignment-bulk";
 import type { CrmAssignmentAssignee } from "../../../routes/api/admin/supporters/assignment-assignees";
+import { useAdminCopy } from "../i18n/copy";
+import { errorTextCopy } from "../i18n/errorTextCopy";
 import { fetchAdminJson } from "./api";
+import { supporterAssignmentCopy } from "./bulkCopy";
 
 const endpoint = "/api/admin/supporters/assignment-bulk";
 const savedOperationPrefix = "crm-assignment-bulk-operation";
+
+/**
+ * Why the panel shows an error. It is kept as a code, with the caught error where the message
+ * comes from the server, and written from the copy when the panel renders.
+ */
+type PanelError =
+  | { code: "restore_failed" }
+  | { code: "reload_failed" }
+  | { code: "preview_failed"; cause: unknown }
+  | { code: "apply_unconfirmed" }
+  | { code: "apply_result_unconfirmed" };
 
 export function CrmAssignmentBulkPanel({
   actorUserId,
@@ -21,12 +35,14 @@ export function CrmAssignmentBulkPanel({
   roleFilter: string;
   selectionDisabled: boolean;
 }) {
+  const copy = useAdminCopy(supporterAssignmentCopy);
+  const errorText = useAdminCopy(errorTextCopy);
   const [assignees, setAssignees] = useState<CrmAssignmentAssignee[]>([]);
   const [assigneeUserId, setAssigneeUserId] = useState("");
   const [operation, setOperation] = useState<CrmAssignmentBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [pickerError, setPickerError] = useState("");
+  const [error, setError] = useState<PanelError | null>(null);
+  const [pickerFailed, setPickerFailed] = useState(false);
 
   const fetchForActor = <T,>(path: string, init?: RequestInit) =>
     fetchAdminJson<T>(path, init, actorUserId);
@@ -51,7 +67,7 @@ export function CrmAssignmentBulkPanel({
     setRecoveryId(result.operationId);
     setOperation(result);
     setReadFailed(false);
-    setError("");
+    setError(null);
   }
 
   useEffect(() => {
@@ -64,7 +80,7 @@ export function CrmAssignmentBulkPanel({
         if (mounted.current) setAssignees(result.assignees);
       })
       .catch(() => {
-        if (mounted.current) setPickerError("無法載入可指派的職員");
+        if (mounted.current) setPickerFailed(true);
       });
     const saved = sessionStorage.getItem(savedOperationKey);
     if (saved && /^[0-9a-f-]{36}$/i.test(saved)) {
@@ -80,7 +96,7 @@ export function CrmAssignmentBulkPanel({
         .catch(() => {
           if (isCurrent(generation)) {
             setReadFailed(true);
-            setError("未能讀取已保存的操作，請重新讀取結果。");
+            setError({ code: "restore_failed" });
           }
         })
         .finally(() => {
@@ -107,7 +123,7 @@ export function CrmAssignmentBulkPanel({
     const generation = ++requestGeneration.current;
     requestBusy.current = true;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const result = await fetchForActor<CrmAssignmentBulkOperation>(
         endpoint + "?operationId=" + encodeURIComponent(recoveryId),
@@ -116,7 +132,7 @@ export function CrmAssignmentBulkPanel({
     } catch {
       if (isCurrent(generation)) {
         setReadFailed(true);
-        setError("未能讀取結果；保留操作參考，請稍後再讀取。");
+        setError({ code: "reload_failed" });
       }
     } finally {
       if (isCurrent(generation)) {
@@ -143,7 +159,7 @@ export function CrmAssignmentBulkPanel({
       isCurrent(generation) && selectionScope.current.generation === scope;
     requestBusy.current = true;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const digest = await crypto.subtle.digest(
         "SHA-256",
@@ -159,7 +175,7 @@ export function CrmAssignmentBulkPanel({
       });
       if (currentPreview()) remember(result);
     } catch (cause) {
-      if (currentPreview()) setError(cause instanceof Error ? cause.message : "無法建立預覽");
+      if (currentPreview()) setError({ code: "preview_failed", cause });
     } finally {
       if (isCurrent(generation)) {
         requestBusy.current = false;
@@ -173,7 +189,7 @@ export function CrmAssignmentBulkPanel({
     const generation = ++requestGeneration.current;
     requestBusy.current = true;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const result = await fetchForActor<CrmAssignmentBulkOperation>(endpoint, {
         method: "POST",
@@ -183,15 +199,14 @@ export function CrmAssignmentBulkPanel({
     } catch {
       if (!isCurrent(generation)) return;
       setReadFailed(true);
-      setError("操作回應未確認；先重新讀取已保存結果。");
+      setError({ code: "apply_unconfirmed" });
       try {
         const result = await fetchForActor<CrmAssignmentBulkOperation>(
           endpoint + "?operationId=" + encodeURIComponent(operation.operationId),
         );
         if (isCurrent(generation)) remember(result);
       } catch {
-        if (isCurrent(generation))
-          setError("操作結果未確認；保留操作參考，重新讀取成功前暫停套用。");
+        if (isCurrent(generation)) setError({ code: "apply_result_unconfirmed" });
       }
     } finally {
       if (isCurrent(generation)) {
@@ -202,37 +217,45 @@ export function CrmAssignmentBulkPanel({
   }
 
   const assigneeLabel = (id: string | null) =>
-    id ? (assignees.find((person) => person.authUserId === id)?.email ?? id) : "未指派";
+    id ? (assignees.find((person) => person.authUserId === id)?.email ?? id) : copy.unassigned;
+  const errorMessage = error
+    ? error.code === "restore_failed"
+      ? copy.savedOperationFailed
+      : error.code === "reload_failed"
+        ? copy.reloadFailed
+        : error.code === "preview_failed"
+          ? errorText.describe(error.cause, copy.previewFailed)
+          : error.code === "apply_unconfirmed"
+            ? copy.applyUnconfirmed
+            : copy.applyResultUnconfirmed
+    : "";
   return (
     <section
-      aria-label="支持者跟進負責人批量操作"
+      aria-label={copy.panelLabel}
       className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
       <div>
-        <h2 className="text-lg font-bold">批量指派跟進負責人</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          只更新 CRM
-          跟進負責人。先固定範圍並逐筆預覽，套用時重新核對職員權限及支持者版本；不會發送通知。
-        </p>
+        <h2 className="text-lg font-bold">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
       <label className="block max-w-sm text-sm">
-        跟進負責人
+        {copy.ownerLabel}
         <select
-          aria-label="批量跟進負責人"
+          aria-label={copy.ownerAria}
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           disabled={busy}
           value={assigneeUserId}
           onChange={(event) => setAssigneeUserId(event.target.value)}
         >
-          <option value="">選擇職員</option>
+          <option value="">{copy.chooseOwner}</option>
           {assignees.map((person) => (
             <option key={person.authUserId} value={person.authUserId}>
-              {person.email}（{person.role}）
+              {copy.ownerOption(person.email, person.role)}
             </option>
           ))}
         </select>
       </label>
-      <p className="text-sm">已選 {selectedIds.length} 筆（上限 1000）</p>
+      <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -246,16 +269,16 @@ export function CrmAssignmentBulkPanel({
         }
         onClick={preview}
       >
-        {busy ? "處理中…" : "建立預覽"}
+        {busy ? copy.processing : copy.preview}
       </button>
-      {pickerError && (
+      {pickerFailed && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {pickerError}
+          {copy.pickerFailed}
         </p>
       )}
-      {error && (
+      {errorMessage && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {errorMessage}
         </p>
       )}
       {recoveryId && (
@@ -265,19 +288,13 @@ export function CrmAssignmentBulkPanel({
           disabled={busy}
           onClick={reloadOperation}
         >
-          重新讀取結果
+          {copy.reload}
         </button>
       )}
       {operation && (
         <BulkReview
           key={operation.operationId}
-          title={
-            "指派給：" +
-            assigneeLabel(operation.assigneeUserId) +
-            " · " +
-            operation.items.length +
-            " 筆"
-          }
+          title={copy.reviewTitle(assigneeLabel(operation.assigneeUserId), operation.items.length)}
           operationId={operation.operationId}
           expiresAt={operation.expiresAt}
           items={operation.items.map((item) => ({

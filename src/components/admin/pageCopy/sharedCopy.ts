@@ -113,7 +113,7 @@ export const sharedPageCopy = defineAdminCopy({
       searchMatches: (count: number) => pluralCount(count, "match", "matches"),
       totalCount: (count: number) => `${formatAdminNumber(count, "en")} total`,
       totalRecords: (count: number) => pluralCount(count, "record"),
-      totalSupporters: (count: number) => pluralCount(count, "total supporter"),
+      totalSupporters: (count: number) => pluralCount(count, "supporter"),
       scheduledOrCompleted: (count: number) =>
         `${formatAdminNumber(count, "en")} scheduled or completed`,
       pageOf: (page: number, totalPages: number) =>

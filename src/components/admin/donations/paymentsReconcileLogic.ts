@@ -1,4 +1,5 @@
 import type { StatusTone } from "../StatusBadge";
+import type { paymentsCopy } from "./copy";
 
 import type {
   AdminPaymentListResult,
@@ -48,33 +49,49 @@ export type {
 
 export type PillSpec = { tone: StatusTone; label: string };
 
-const PAYMENT_PILLS: Record<PaymentStatus, PillSpec> = {
-  pending: { tone: "warning", label: "待確認" },
-  succeeded: { tone: "success", label: "已確認" },
-  failed: { tone: "danger", label: "失敗" },
-  refunded: { tone: "neutral", label: "已退款" },
+type PaymentsCopyHalf = (typeof paymentsCopy)["zh"];
+
+/** The half of the payments copy these helpers read; pass the one for the screen's language. */
+export type PaymentsLabels = Pick<
+  PaymentsCopyHalf,
+  | "paymentStatus"
+  | "purposeLabel"
+  | "purposeWithNote"
+  | "receiptIssued"
+  | "receiptAwaiting"
+  | "receiptVoided"
+>;
+
+const PAYMENT_TONES: Record<PaymentStatus, StatusTone> = {
+  pending: "warning",
+  succeeded: "success",
+  failed: "danger",
+  refunded: "neutral",
 };
 
-export function paymentStatusPill(status: PaymentStatus): PillSpec {
-  return PAYMENT_PILLS[status];
+export function paymentStatusPill(status: PaymentStatus, labels: PaymentsLabels): PillSpec {
+  return { tone: PAYMENT_TONES[status], label: labels.paymentStatus[status] };
 }
 
 export function paymentPurposeText(
   donation: Pick<AdminPaymentRow["donation"], "purpose" | "custom_purpose">,
+  labels: PaymentsLabels,
 ) {
   return donation.custom_purpose
-    ? `${donation.purpose} · 其他用途：${donation.custom_purpose}`
-    : donation.purpose;
+    ? labels.purposeWithNote(donation.purpose, donation.custom_purpose)
+    : labels.purposeLabel(donation.purpose);
 }
 
 export function receiptPill(
   payment: AdminPaymentRow,
   receipts: AdminReceiptRow[],
+  labels: PaymentsLabels,
 ): PillSpec | null {
   const issued = findIssuedReceipt(payment.donation.id, receipts);
-  if (issued) return { tone: "success", label: `已發 ${issued.receipt_no}` };
-  if (canIssueReceipt(payment, receipts)) return { tone: "warning", label: "待發收條" };
-  if (findVoidReceipt(payment.donation.id, receipts)) return { tone: "neutral", label: "已作廢" };
+  if (issued) return { tone: "success", label: labels.receiptIssued(issued.receipt_no) };
+  if (canIssueReceipt(payment, receipts)) return { tone: "warning", label: labels.receiptAwaiting };
+  if (findVoidReceipt(payment.donation.id, receipts))
+    return { tone: "neutral", label: labels.receiptVoided };
   return null;
 }
 
@@ -97,14 +114,4 @@ export function applyPaymentFilters(
       .toLowerCase();
     return haystack.includes(search);
   });
-}
-
-const FINANCE_ACTION_LABELS: Record<string, string> = {
-  "payment.mark_received": "標記已收款",
-  "receipt.issue": "發收條",
-  "receipt.void": "作廢收條",
-};
-
-export function financeActionLabel(action: string): string {
-  return FINANCE_ACTION_LABELS[action] ?? action;
 }

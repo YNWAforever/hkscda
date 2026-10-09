@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { ContactFormatPreviewResponse } from "../../../lib/crm/contactFormatPreview";
+import { useAdminCopy } from "../i18n/copy";
+import { errorTextCopy } from "../i18n/errorTextCopy";
 import { fetchAdminJson } from "./api";
+import { contactFormatCopy } from "./bulkCopy";
 
 const endpoint = "/api/admin/supporters/format-preview";
 const pageSize = 25;
@@ -17,6 +20,8 @@ export function CrmContactFormatPreviewPanel({
   roleFilter: string;
   selectionDisabled: boolean;
 }) {
+  const copy = useAdminCopy(contactFormatCopy);
+  const errorText = useAdminCopy(errorTextCopy);
   const selectionKey = JSON.stringify([query, roleFilter, selectedIds]);
   const selectionKeyRef = useRef(selectionKey);
   const requestGeneration = useRef(0);
@@ -29,12 +34,13 @@ export function CrmContactFormatPreviewPanel({
     value: ContactFormatPreviewResponse;
   } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  // The caught error, written for the current language when it is shown.
+  const [failure, setFailure] = useState<{ cause: unknown } | null>(null);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     setResult(null);
-    setError("");
+    setFailure(null);
     setBusy(false);
     setPage(1);
     const generation = requestGeneration;
@@ -50,7 +56,7 @@ export function CrmContactFormatPreviewPanel({
     const isCurrent = () =>
       requestGeneration.current === generation && selectionKeyRef.current === scope;
     setBusy(true);
-    setError("");
+    setFailure(null);
     try {
       const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(scope));
       const filterHash = Array.from(new Uint8Array(digest), (byte) =>
@@ -66,7 +72,7 @@ export function CrmContactFormatPreviewPanel({
       setPage(1);
     } catch (cause) {
       if (isCurrent()) {
-        setError(cause instanceof Error ? cause.message : "無法預覽資料格式");
+        setFailure({ cause });
       }
     } finally {
       if (isCurrent()) setBusy(false);
@@ -76,25 +82,18 @@ export function CrmContactFormatPreviewPanel({
   const previewResult = result?.selectionKey === selectionKey ? result.value : null;
   const pageCount = previewResult ? Math.ceil(previewResult.items.length / pageSize) : 0;
   const pageItems = previewResult?.items.slice((page - 1) * pageSize, page * pageSize) ?? [];
-  const label = {
-    suggested: "建議整理",
-    manual_review: "身份需人工核對",
-    unchanged: "無需整理",
-    skipped: "已移除或找不到",
-  } as const;
+  const label = copy.statuses;
 
   return (
     <section
-      aria-label="支持者聯絡資料格式預覽"
+      aria-label={copy.panelLabel}
       className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
       <div>
-        <h2 className="text-lg font-bold">聯絡資料格式整理預覽</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          唯讀顯示名稱、電郵及電話的空白／大小寫建議。電郵屬身份資料，必須人工核對；不會修改任何資料、身份或同意紀錄。
-        </p>
+        <h2 className="text-lg font-bold">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
-      <p className="text-sm">已選 {selectedIds.length} 筆（上限 1000）</p>
+      <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -103,35 +102,35 @@ export function CrmContactFormatPreviewPanel({
         }
         onClick={preview}
       >
-        {busy ? "正在檢查…" : "預覽格式建議"}
+        {busy ? copy.checking : copy.preview}
       </button>
-      {error && (
+      {failure && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {errorText.describe(failure.cause, copy.previewFailed)}
         </p>
       )}
       {previewResult && (
         <div className="space-y-3">
           <p role="status" className="text-sm">
-            建議整理 {previewResult.counts.suggested} · 身份需人工核對{" "}
-            {previewResult.counts.manual_review} · 無需整理 {previewResult.counts.unchanged} ·
-            已移除或找不到 {previewResult.counts.skipped}
+            {label.suggested} {previewResult.counts.suggested} · {label.manual_review}{" "}
+            {previewResult.counts.manual_review} · {label.unchanged}{" "}
+            {previewResult.counts.unchanged} · {label.skipped} {previewResult.counts.skipped}
           </p>
-          <div className="overflow-x-auto" role="region" aria-label="聯絡資料格式比較" tabIndex={0}>
+          <div className="overflow-x-auto" role="region" aria-label={copy.regionLabel} tabIndex={0}>
             <table className="w-full min-w-[42rem] text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--color-border)]">
                   <th scope="col" className="px-2 py-2">
-                    支持者 ID
+                    {copy.columns.supporterId}
                   </th>
                   <th scope="col" className="px-2 py-2">
-                    狀態
+                    {copy.columns.status}
                   </th>
                   <th scope="col" className="px-2 py-2">
-                    目前資料
+                    {copy.columns.current}
                   </th>
                   <th scope="col" className="px-2 py-2">
-                    格式建議
+                    {copy.columns.suggestion}
                   </th>
                 </tr>
               </thead>
@@ -170,18 +169,16 @@ export function CrmContactFormatPreviewPanel({
                 disabled={page === 1}
                 onClick={() => setPage((value) => value - 1)}
               >
-                上一頁
+                {copy.previous}
               </button>
-              <span>
-                第 {page} / {pageCount} 頁
-              </span>
+              <span>{copy.pageOf(page, pageCount)}</span>
               <button
                 type="button"
                 className="btn-secondary min-h-11"
                 disabled={page === pageCount}
                 onClick={() => setPage((value) => value + 1)}
               >
-                下一頁
+                {copy.next}
               </button>
             </div>
           )}

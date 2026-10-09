@@ -52,7 +52,7 @@ export const supporterPageCopy = defineAdminCopy({
   en: {
     supporters: {
       title: "Supporters",
-      subtitle: "Donor records, receipts, consent and manual gifts.",
+      subtitle: "Donor records, receipts, consent and manual donations.",
       searchLabel: "Search supporters",
       searchPlaceholder: "Search name, email, phone, reference or receipt",
       roleFilterLabel: "Filter by role",
@@ -64,7 +64,7 @@ export const supporterPageCopy = defineAdminCopy({
       saveSupporter: "Save supporter",
       needsReview: "Needs review",
       clear: "Clear",
-      lastGift: "Last gift",
+      lastGift: "Last donation",
       receipts: "Receipts",
       consent: "Consent",
       email: "Email",
@@ -81,7 +81,7 @@ export const supporterPageCopy = defineAdminCopy({
         roles: "Roles",
         consent: "Consent",
         lifetime: "Lifetime",
-        lastGift: "Last gift",
+        lastGift: "Last donation",
         receipts: "Receipts",
       },
       form: {

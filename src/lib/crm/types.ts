@@ -231,4 +231,11 @@ export type SupporterTimelineItem = {
   amountCents?: number;
   status?: string;
   link?: SupporterTimelineLink;
+  /**
+   * On a message: what `description` starts with, and the provider's delivery state that the
+   * server turned into its zh-HK label at the end of `description`. A screen in another
+   * language shows `subject` and writes the state in its own words.
+   */
+  subject?: string;
+  deliveryState?: string;
 };

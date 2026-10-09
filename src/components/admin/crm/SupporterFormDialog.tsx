@@ -14,8 +14,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "./api";
+import { supporterFormCopy } from "./formCopy";
+import { supporterProfileCopy } from "./profileCopy";
 
 type SupporterFormDialogProps =
   | { mode: "create" }
@@ -55,6 +59,8 @@ function splitTags(value: string) {
 export function SupporterFormDialog(props: SupporterFormDialogProps) {
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.supporters;
+  const formCopy = useAdminCopy(supporterFormCopy);
+  const languageNames = useAdminCopy(supporterProfileCopy).languages;
   const queryClient = useQueryClient();
   const supporterId = props.mode === "edit" ? props.supporter.id : null;
   const [open, setOpen] = useState(false);
@@ -206,7 +212,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
         </DialogHeader>
         {loading || (open && !ready && !loadError) ? (
           <p role="status" className="text-sm text-[var(--color-text-muted)]">
-            {language === "zh" ? "正在載入最新支持者資料…" : "Loading latest supporter details…"}
+            {formCopy.loadingLatest}
           </p>
         ) : null}
         {loadError ? (
@@ -217,7 +223,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
               variant="outline"
               onClick={() => setReloadToken((value) => value + 1)}
             >
-              {language === "zh" ? "重試" : "Retry"}
+              {formCopy.retry}
             </Button>
           </div>
         ) : null}
@@ -266,8 +272,8 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="zh-HK">繁體中文</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="zh-HK">{languageNames["zh-HK"]}</SelectItem>
+                  <SelectItem value="en">{languageNames.en}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -304,13 +310,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             </fieldset>
             {mutation.error && (
               <div role="alert" className="space-y-2 text-sm text-[var(--color-destructive)]">
-                <p>
-                  {conflict
-                    ? language === "zh"
-                      ? "資料已由其他職員更新。你的修改尚未儲存；請重新載入最新版本再編輯。"
-                      : "Another staff member changed this supporter. Your edits were not saved. Reload the latest version before editing."
-                    : mutation.error.message}
-                </p>
+                <p>{conflict ? formCopy.conflict : adminErrorMessage(mutation.error, language)}</p>
                 {conflict && (
                   <Button
                     type="button"
@@ -320,7 +320,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
                       setReloadToken((value) => value + 1);
                     }}
                   >
-                    {language === "zh" ? "放棄本次修改並重新載入" : "Discard edits and reload"}
+                    {formCopy.discardAndReload}
                   </Button>
                 )}
               </div>
@@ -330,12 +330,10 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
                 role="alert"
                 className="space-y-2 rounded-md border border-[var(--color-border)] p-3 text-sm"
               >
-                <p>
-                  {language === "zh" ? "尚有未儲存更改，確定要放棄？" : "Discard unsaved changes?"}
-                </p>
+                <p>{formCopy.discardPrompt}</p>
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={() => setDiscardPrompt(false)}>
-                    {language === "zh" ? "繼續編輯" : "Keep editing"}
+                    {formCopy.keepEditing}
                   </Button>
                   <Button
                     type="button"
@@ -345,14 +343,14 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
                       setOpen(false);
                     }}
                   >
-                    {language === "zh" ? "放棄更改" : "Discard changes"}
+                    {formCopy.discardChanges}
                   </Button>
                 </div>
               </div>
             )}
             <div className="flex gap-2">
               <Button type="button" variant="outline" onClick={() => changeOpen(false)}>
-                {language === "zh" ? "取消" : "Cancel"}
+                {formCopy.cancel}
               </Button>
               <Button
                 type="button"

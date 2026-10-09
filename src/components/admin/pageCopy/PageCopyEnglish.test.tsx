@@ -135,8 +135,8 @@ describe("adminPageCopy page headers", () => {
     expect(adminPageCopy.en.common.searchMatches(3)).toBe("3 matches");
     expect(adminPageCopy.en.common.totalRecords(1)).toBe("1 record");
     expect(adminPageCopy.en.common.totalRecords(3)).toBe("3 records");
-    expect(adminPageCopy.en.common.totalSupporters(1)).toBe("1 total supporter");
-    expect(adminPageCopy.en.common.totalSupporters(3)).toBe("3 total supporters");
+    expect(adminPageCopy.en.common.totalSupporters(1)).toBe("1 supporter");
+    expect(adminPageCopy.en.common.totalSupporters(3)).toBe("3 supporters");
     expect(adminPageCopy.en.common.rowsCount(1)).toBe("1 row");
     expect(adminPageCopy.en.common.rowsCount(3)).toBe("3 rows");
     expect(adminPageCopy.en.statuses.subtitle(1, 1)).toBe("1 status across 1 category");

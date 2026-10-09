@@ -299,3 +299,39 @@ test("verified bounce evidence is visible in CRM without presenting a resend as 
   expect(timeline[0].description).toContain("退信");
   expect(timeline[0].status).toBe("sent");
 });
+
+test("a message keeps its zh-HK description and also carries the parts an English screen needs", () => {
+  const timeline = assembleSupporterTimeline({
+    donations: [],
+    payments: [],
+    receipts: [],
+    consents: [],
+    auditLogs: [],
+    messages: [
+      {
+        id: "bounce",
+        channel: "email",
+        status: "sent",
+        payload: { subject: "Receipt", deliveryState: "bounced" },
+        sentAt: "2026-09-13T00:00:00Z",
+        createdAt: "2026-09-13T00:00:00Z",
+      },
+      {
+        id: "plain",
+        channel: "email",
+        status: "queued",
+        payload: { template: "receipt_ready" },
+        sentAt: null,
+        createdAt: "2026-09-12T00:00:00Z",
+      },
+    ],
+  });
+  const bounced = timeline.find((item) => item.id === "message:bounce");
+  expect(bounced?.description).toBe("Receipt · 退信：需要跟進");
+  expect(bounced?.subject).toBe("Receipt");
+  expect(bounced?.deliveryState).toBe("bounced");
+  const plain = timeline.find((item) => item.id === "message:plain");
+  expect(plain?.description).toBe("receipt_ready");
+  expect(plain?.subject).toBe("receipt_ready");
+  expect(plain && "deliveryState" in plain).toBe(false);
+});

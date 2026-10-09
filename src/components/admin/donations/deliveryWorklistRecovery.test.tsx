@@ -1,5 +1,5 @@
 import { expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 let options:
   | {
       mutationFn: (id: string) => Promise<unknown>;
@@ -27,7 +27,7 @@ mock.module("../../../lib/admin/http", () => ({
 }));
 const { DonationDeliveryWorklist } = await import("./DonationDeliveryWorklist");
 test("unknown POST outcome refreshes both durable worklist and task overview", async () => {
-  renderToStaticMarkup(<DonationDeliveryWorklist />);
+  renderAdminInChinese(<DonationDeliveryWorklist />);
   try {
     await options!.mutationFn("synthetic-job");
   } catch (e) {

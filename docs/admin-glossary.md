@@ -74,25 +74,36 @@ other way round.
 
 ## Sponsorship, donations and payments
 
-| zh-HK    | English            | Usage                                                                                    |
-| -------- | ------------------ | ---------------------------------------------------------------------------------------- |
-| 助養     | sponsorship        | Regular support for one animal. The people are "sponsors".                               |
-| 助養動物 | sponsorship animal | An animal that can be sponsored.                                                         |
-| 承諾     | pledge             | A sponsor's promise to pay. 承諾審核 is "Pledge review".                                 |
-| 捐款     | donation           | Money given once or regularly. The verb is "donate".                                     |
-| 收款     | payments           | Money received, as on the Payments page. 收款紀錄 is "Payment records".                  |
-| 付款     | payment            | The payer's side: 付款方式 is "payment method", 付款參考 is "payment reference".         |
-| 金額     | amount             | Always shown as HK$ with two decimals.                                                   |
-| 憑證     | proof              | Evidence of a payment. 付款證明 is the same: "payment proof".                            |
-| 收據     | receipt            | The receipt HKSCDA issues for a payment. 收條 is the same thing: always write "receipt". |
-| 發收條   | issue a receipt    | The action that creates a receipt.                                                       |
-| 作廢     | void               | Cancel a receipt or record so it no longer counts. The record stays; it is not deleted.  |
-| 退款     | refund             |                                                                                          |
-| 入帳     | credit             | Record a payment as received. 已入帳 is "Credited". 重新入帳 is "credit again".          |
-| 對帳     | reconcile          | Match bank lines to payments. 銀行對帳檔 is "bank statement file".                       |
-| 參考編號 | reference          | 銀行參考 is "bank reference".                                                            |
-| 同意紀錄 | consent record     | A supporter's recorded consent to be contacted.                                          |
-| 匯出     | export             | Download records as a file.                                                              |
+| zh-HK      | English                 | Usage                                                                                    |
+| ---------- | ----------------------- | ---------------------------------------------------------------------------------------- |
+| 助養       | sponsorship             | Regular support for one animal. The people are "sponsors".                               |
+| 助養動物   | sponsorship animal      | An animal that can be sponsored.                                                         |
+| 承諾       | pledge                  | A sponsor's promise to pay. 承諾審核 is "Pledge review".                                 |
+| 捐款       | donation                | Money given once or regularly. The verb is "donate". Never "gift".                       |
+| 收款       | payments                | Money received, as on the Payments page. 收款紀錄 is "Payment records".                  |
+| 付款       | payment                 | The payer's side: 付款方式 is "payment method", 付款參考 is "payment reference".         |
+| 金額       | amount                  | Always shown as HK$ with two decimals.                                                   |
+| 憑證       | proof                   | Evidence of a payment. 付款證明 is the same: "payment proof".                            |
+| 收據       | receipt                 | The receipt HKSCDA issues for a payment. 收條 is the same thing: always write "receipt". |
+| 發收條     | issue a receipt         | The action that creates a receipt.                                                       |
+| 作廢       | void                    | Cancel a receipt or record so it no longer counts. The record stays; it is not deleted.  |
+| 退款       | refund                  |                                                                                          |
+| 入帳       | credit                  | Record a payment as received. 已入帳 is "Credited". 重新入帳 is "credit again".          |
+| 對帳       | reconcile               | Match bank lines to payments. 銀行對帳檔 is "bank statement file".                       |
+| 參考編號   | reference               | 銀行參考 is "bank reference".                                                            |
+| 同意紀錄   | consent record          | A supporter's recorded consent to be contacted.                                          |
+| 匯出       | export                  | Download records as a file.                                                              |
+| 即時匯出   | immediate export        | A CSV that downloads at once. 背景匯出 is "background export": built while you work.     |
+| 時間軸     | timeline                | A supporter's activity, newest first.                                                    |
+| 身份       | role                    | What kind of supporter someone is: donor, adopter, volunteer or foster.                  |
+| 同意       | opted in                | A supporter's consent for a channel. 不同意 is "Opted out" and 未設定 is "Not set".      |
+| 手動捐款   | manual donation         | A donation that staff record by hand.                                                    |
+| 跟進負責人 | follow-up owner         | The staff member responsible for a supporter's follow-up.                                |
+| 標記已收款 | mark as received        | The action on a pending manual payment. 確認收款 is "Confirm payment".                   |
+| 快照       | snapshot                | The saved preview of a bulk or bank-match action, applied item by item.                  |
+| 候選       | candidate               | A payment that might match a row of a bank statement file.                               |
+| 逐組確認   | one-by-one confirmation | Confirming each bank match separately after checking it.                                 |
+| 送達工作   | delivery job            | A queued job that issues a receipt or sends the acknowledgement email. Not "task".       |
 
 ## Volunteers and internships
 

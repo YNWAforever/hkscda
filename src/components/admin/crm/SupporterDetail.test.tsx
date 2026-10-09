@@ -1,16 +1,11 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+
+import { renderAdminInChinese, renderAdminInEnglish } from "../i18n/testing";
 
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
 const realReactQuery = await import("@tanstack/react-query");
-const realAdminPageCopy = await import("../adminPageCopy");
-
-mock.module("../adminPageCopy", () => ({
-  ...realAdminPageCopy,
-  useAdminPageCopy: () => ({ language: "zh", pageCopy: realAdminPageCopy.adminPageCopy.zh }),
-}));
 
 let supporterError: Error | null = null;
 
@@ -28,7 +23,7 @@ mock.module("@tanstack/react-query", () => ({
 
 const { SupporterDetail } = await import("./SupporterDetail");
 
-const render = () => renderToStaticMarkup(<SupporterDetail supporterId="supporter-1" />);
+const render = () => renderAdminInChinese(<SupporterDetail supporterId="supporter-1" />);
 
 describe("SupporterDetail", () => {
   test("offers a retry when the supporter record fails to load", () => {
@@ -42,5 +37,11 @@ describe("SupporterDetail", () => {
   test("still shows the load-error copy when there is genuinely no data and no error", () => {
     const markup = render();
     expect(markup).toContain("無法載入捐款人");
+  });
+
+  test("shows the load failure in English", () => {
+    const markup = renderAdminInEnglish(<SupporterDetail supporterId="supporter-1" />);
+    expect(markup).toContain("Could not load supporter.");
+    expect(markup).toContain("Retry");
   });
 });
