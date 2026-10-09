@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  actionFailure,
   buildPledgeListSearchParams,
   canCancelPledge,
   canRecordPayment,
@@ -16,6 +17,25 @@ import {
 import { MAX_PROOF_BYTES } from "../../../lib/sponsorship/schemas";
 import { PledgeSelectionError } from "../../../lib/sponsorshipAdmin/followupBulkSelection";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
+
+describe("actionFailure", () => {
+  test("keeps only the code of the zh-HK message the sponsorship API sends", () => {
+    const cause = new Error("付款證明或審批資料已更新，請重新載入。");
+    expect(actionFailure(cause, "review")).toEqual({ code: "proofReviewChanged" });
+  });
+
+  test("keeps any other caught error under the action's own code, to show as it came", () => {
+    const cause = new Error("Sponsorship pledge is already cancelled");
+    expect(actionFailure(cause, "cancel")).toEqual({ code: "cancel", cause });
+    // Adding an animal and ending a sponsorship have their own codes, not the review one.
+    expect(actionFailure(cause, "assignAnimal")).toEqual({ code: "assignAnimal", cause });
+    expect(actionFailure(cause, "endAssignment")).toEqual({ code: "endAssignment", cause });
+    expect(actionFailure("not an error", "recordPayment")).toEqual({
+      code: "recordPayment",
+      cause: "not an error",
+    });
+  });
+});
 
 describe("selectionFailure", () => {
   test("keeps only the code of a selection the helpers refused", () => {

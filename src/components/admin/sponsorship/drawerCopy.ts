@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
+import { formatAdminMoney } from "../i18n/format";
 import { pledgePageCopy } from "../pageCopy/pledgeCopy";
 
 /**
@@ -61,7 +62,8 @@ export const pledgeDrawerCopy = defineAdminCopy({
   en: {
     loadFailed: (reason: string) =>
       `${reason}${/[.!?]$/.test(reason) ? "" : "."} Close this panel and open the pledge again.`,
-    tierAmount: (tier: string) => `HK$${tier} tier`,
+    tierAmount: (tier: string) =>
+      Number.isFinite(Number(tier)) ? `${formatAdminMoney(Number(tier), "en")} tier` : tier,
     withTier: (monthly: string, tier: string) => `${monthly} (${tier})`,
     paymentMethodName: (code: string) => EN_PAYMENT_METHODS[code] ?? plainPhrase(code),
     auditAction: (code: string) => EN_AUDIT_ACTIONS[code] ?? plainPhrase(code),
@@ -73,7 +75,8 @@ export const pledgeDrawerCopy = defineAdminCopy({
       (outstanding === null ? "" : ` · Outstanding for follow-up ${outstanding} (not a debt)`),
     proofFileErrors: {
       unsupported_type: "This file type is not supported. Upload a JPG, PNG, WEBP or PDF file.",
-      too_large: "The file is larger than the 8MB limit. Choose a smaller file.",
+      // A file with no content is refused with the same code as one that is too big.
+      too_large: "The file is empty or larger than the 8MB limit. Choose another file.",
     },
   },
 });

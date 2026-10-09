@@ -134,7 +134,7 @@ other way round.
 | 團體查詢 | group enquiry  | An enquiry from a group that wants to volunteer together.                                        |
 | 模擬     | simulation     | Tries a scenario without publishing or changing the policy.                                      |
 | 收生     | intake         | Opening and closing internship applications. 收生設定 is "intake settings".                      |
-| 貓舍     | cat shelter    | One of the two places an internship takes place. 狗舍 is "dog shelter".                          |
+| 貓舍     | cat shelter    | A venue for an internship (服務場地 is "Venues"). 狗舍 is "dog shelter".                         |
 
 ## Content and publishing
 

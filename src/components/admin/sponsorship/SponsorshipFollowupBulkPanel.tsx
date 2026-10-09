@@ -158,8 +158,7 @@ export function SponsorshipFollowupBulkPanel({
       : copy.unassigned;
   // A reason the server gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? ((error.cause === undefined ? null : adminErrorMessage(error.cause, language)) ??
-      copy.errors[error.code])
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
     : "";
 
   return (

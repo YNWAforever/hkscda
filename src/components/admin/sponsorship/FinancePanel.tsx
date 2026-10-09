@@ -95,8 +95,7 @@ export function FinancePanel({
   }
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? ((error.cause === undefined ? null : adminErrorMessage(error.cause, language)) ??
-      copy.errors[error.code])
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
     : null;
   return (
     <section className="space-y-3 rounded-lg border p-4">

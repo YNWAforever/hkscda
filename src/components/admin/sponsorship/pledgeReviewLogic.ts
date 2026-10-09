@@ -6,7 +6,38 @@ import {
 } from "../../../lib/sponsorshipAdmin/followupBulkSelection";
 import { hasProofAwaitingReview } from "../../../lib/sponsorshipAdmin/proofReview";
 import type { ReviewableProof } from "../../../lib/sponsorshipAdmin/proofReview";
+import { sponsorshipServerErrorCode } from "../../../lib/sponsorshipAdmin/serverErrors";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
+
+/**
+ * Why the detail drawer shows an error: the key of the page copy's `pledgeReview.errors`. The
+ * drawer keeps it with the caught error, if any, and writes the message for the admin's
+ * language when it renders.
+ */
+export type ActionError = {
+  code:
+    | "review"
+    | "assignAnimal"
+    | "endAssignment"
+    | "proofReviewChanged"
+    | "followupConflict"
+    | "followupUnknown"
+    | "cancel"
+    | "recordPayment";
+  cause?: unknown;
+};
+
+/**
+ * The error to keep for a failed drawer action: the code of a message the sponsorship API sends
+ * in zh-HK, or the caught error under the action's own code, to show as it came.
+ */
+export function actionFailure(
+  cause: unknown,
+  fallback: "review" | "assignAnimal" | "endAssignment" | "cancel" | "recordPayment",
+): ActionError {
+  const code = sponsorshipServerErrorCode(cause);
+  return code ? { code } : { code: fallback, cause };
+}
 
 /**
  * Why the selection controls on the pledge list show an error: the selection helpers' own code,

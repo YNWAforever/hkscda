@@ -22,7 +22,7 @@ export function ReminderDraftPreview({ result }: { result: ReminderDraftResult }
   return (
     <div className="space-y-3 text-sm text-[var(--color-panel)]">
       <p>{copy.recipient(result.recipient.name, result.recipient.email)}</p>
-      <p>{copy.ledger(result.periodMonth.slice(0, 7), format.money(result.outstandingCents))}</p>
+      <p>{copy.ledger(format.month(result.periodMonth), format.money(result.outstandingCents))}</p>
       <p className="text-[var(--color-text-muted)]">
         {copy.internalOnly(format.dateTime(result.generatedAt))}
       </p>

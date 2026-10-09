@@ -24,6 +24,7 @@ import type {
 import { pledgeDrawerCopy } from "./drawerCopy";
 import { sponsorshipFormatCopy } from "./formatCopy";
 import {
+  actionFailure,
   canCancelPledge,
   canRecordPayment,
   canReviewProof,
@@ -32,22 +33,13 @@ import {
   pledgeStatusTone,
   proofHasNoFile,
   validateManualProofFile,
+  type ActionError,
   type ProofFileProblem,
 } from "./pledgeReviewLogic";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 type FollowupAssigneesResponse = {
   assignees: Array<{ authUserId: string; email: string; role: "staff" | "admin" }>;
-};
-
-/**
- * Why the drawer shows an error. It is kept as a code (the key of the page copy's
- * `pledgeReview.errors`), with the caught error where the server may have given a reason, and
- * written when the drawer renders.
- */
-type ActionError = {
-  code: "review" | "followupConflict" | "followupUnknown" | "cancel" | "recordPayment";
-  cause?: unknown;
 };
 
 /** The notice shown after an assignment is saved: the key of the page copy's `followup`. */
@@ -74,11 +66,6 @@ const PROOF_REVIEW_STATUS_TONE: Record<
   rejected: "danger",
 };
 
-/** `2026-08-01` is the month of August, not the 1st — render it as the month. */
-function monthLabel(periodMonth: string) {
-  return periodMonth.slice(0, 7);
-}
-
 type ProofUrlResponse = { url: string; fileName: string };
 
 function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentProofRecord }) {
@@ -100,6 +87,9 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
     return <p className="text-sm text-[var(--color-text-muted)]">{copy.noFile}</p>;
   }
 
+  // The reason the server gave, as it came, or the translated session error.
+  const reason = error ? adminErrorMessage(error, language) : null;
+
   return (
     <div className="space-y-2">
       {!data && (
@@ -113,9 +103,9 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
           {isPending ? copy.loading : copy.load}
         </Button>
       )}
-      {error && (
+      {reason !== null && (
         <p role="alert" className="text-xs text-[var(--color-error)]">
-          {copy.loadError(adminErrorMessage(error, language) ?? error.message)}
+          {copy.loadError(reason)}
         </p>
       )}
       {data &&
@@ -301,7 +291,7 @@ export function PledgeDetailDrawer({
       setReviewNote("");
       await refreshAll();
     } catch (cause) {
-      setActionError({ code: "review", cause });
+      setActionError(actionFailure(cause, "review"));
     } finally {
       setSubmitting(false);
     }
@@ -318,7 +308,7 @@ export function PledgeDetailDrawer({
       setCancelNote("");
       await refreshAll();
     } catch (cause) {
-      setActionError({ code: "cancel", cause });
+      setActionError(actionFailure(cause, "cancel"));
     } finally {
       setSubmitting(false);
     }
@@ -335,7 +325,7 @@ export function PledgeDetailDrawer({
       setAssignAnimalId("");
       await refreshAll();
     } catch (cause) {
-      setActionError({ code: "review", cause });
+      setActionError(actionFailure(cause, "assignAnimal"));
     } finally {
       setSubmitting(false);
     }
@@ -357,7 +347,7 @@ export function PledgeDetailDrawer({
       setEndNoteByAssignment((previous) => ({ ...previous, [assignmentId]: "" }));
       await refreshAll();
     } catch (cause) {
-      setActionError({ code: "review", cause });
+      setActionError(actionFailure(cause, "endAssignment"));
     } finally {
       setSubmitting(false);
     }
@@ -416,7 +406,7 @@ export function PledgeDetailDrawer({
       setProofFileError(null);
       await refreshAll();
     } catch (cause) {
-      setActionError({ code: "recordPayment", cause });
+      setActionError(actionFailure(cause, "recordPayment"));
     } finally {
       setSubmitting(false);
     }
@@ -424,9 +414,10 @@ export function PledgeDetailDrawer({
 
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const actionMessage = actionError
-    ? ((actionError.cause === undefined ? null : adminErrorMessage(actionError.cause, language)) ??
-      copy.errors[actionError.code])
+    ? (adminErrorMessage(actionError.cause, language) ?? copy.errors[actionError.code])
     : "";
+  // The reason the pledge could not be loaded, as the server gave it.
+  const loadReason = error ? adminErrorMessage(error, language) : null;
 
   return (
     <Sheet
@@ -456,10 +447,8 @@ export function PledgeDetailDrawer({
         {isLoading && (
           <p className="mt-6 text-sm text-[var(--color-text-muted)]">{pageCopy.common.loading}</p>
         )}
-        {error && (
-          <p className="mt-6 text-sm text-[var(--color-error)]">
-            {drawer.loadFailed(adminErrorMessage(error, language) ?? error.message)}
-          </p>
+        {loadReason !== null && (
+          <p className="mt-6 text-sm text-[var(--color-error)]">{drawer.loadFailed(loadReason)}</p>
         )}
 
         {pledge && (
@@ -819,7 +808,7 @@ export function PledgeDetailDrawer({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-medium text-[var(--color-panel)]">
-                            {monthLabel(period.periodMonth)}
+                            {format.month(period.periodMonth)}
                           </span>
                           <StatusPill tone={settled ? "success" : "warning"}>
                             {settled ? drawer.paid : drawer.unpaid}

@@ -63,7 +63,7 @@ export function IntakePublishPreview({
         {preview.after.enabled ? settings.open : settings.paused}
       </p>
       <p>
-        {settings.sheltersLine(
+        {settings.venuesLine(
           preview.after.shelters.map((s) => (s === "cat" ? copy.shelters.cat : copy.shelters.dog)),
         )}
       </p>
@@ -88,7 +88,7 @@ export function IntakePublishPreview({
   );
 }
 
-function IntakeSettings() {
+export function IntakeSettings() {
   const copy = useAdminCopy(internshipCopy);
   const { language } = useAdminLanguage();
   const settings = copy.settings;
@@ -144,8 +144,7 @@ function IntakeSettings() {
   if (!value) return <p>{settings.loading}</p>;
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? ((error.cause === undefined ? null : adminErrorMessage(error.cause, language)) ??
-      copy.errors[error.code])
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
     : "";
   return (
     <details className="space-y-4 rounded border p-4">
@@ -175,7 +174,7 @@ function IntakeSettings() {
         {settings.enabled}
       </label>
       <fieldset>
-        <legend>{settings.sheltersLegend}</legend>
+        <legend>{settings.venuesLegend}</legend>
         {(["cat", "dog"] as const).map((key) => (
           <label key={key} className="mr-4">
             <input
@@ -311,8 +310,7 @@ export function InternshipManagement() {
   const statusName = (code: string) => statusNames[code] ?? code;
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? ((error.cause === undefined ? null : adminErrorMessage(error.cause, language)) ??
-      copy.errors[error.code])
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
     : "";
   return (
     <section className="space-y-5">

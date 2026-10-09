@@ -58,10 +58,13 @@ const original = {
   periods: [],
   recentAuditLog: [],
 };
-let pledge = { ...original },
+let pledge: Record<string, unknown> & { id: string; followupVersion: number } = { ...original },
   mode: "lost" | "refresh_fail" | "conflict" | "unknown" = "lost",
   posts = 0,
   reads = 0;
+// What every request to the API fails with, when a test sets it; and who is signed in.
+let failWith: unknown = null;
+let role: "staff" | "admin" = "staff";
 const bodies: Array<{ assigneeUserId: string; expectedVersion: number }> = [];
 const refetch = async () => {
   reads++;
@@ -87,10 +90,11 @@ mock.module("@tanstack/react-query", () => ({
               assignees: [{ authUserId: chosen, email: "staff@example.invalid", role: "staff" }],
             },
           }
-        : { data: { admin: { role: "staff" } } },
+        : { data: { admin: { role } } },
 }));
 mock.module("../adoptions/api", () => ({
   fetchCoordinatorJson: async (_url: string, options: { body: string }) => {
+    if (failWith !== null) throw failWith;
     bodies.push(JSON.parse(options.body));
     posts++;
     if (mode !== "refresh_fail") throw Error("Response lost");
@@ -104,6 +108,7 @@ type Props = {
   id?: string;
   onClick?: () => Promise<void>;
   onValueChange?: (value: string) => void;
+  onChange?: (event: { target: { files?: File[] } }) => void;
   disabled?: boolean;
 };
 function walk(node: ReactNode, result: ReactElement<Props>[] = []): ReactElement<Props>[] {
@@ -137,6 +142,8 @@ beforeEach(() => {
   reads = 0;
   mode = "lost";
   language = "zh";
+  failWith = null;
+  role = "staff";
 });
 test("lost POST response followed by matching owner/version clears failure", async () => {
   await assign();
@@ -198,6 +205,106 @@ test("the saved notice follows the language too", async () => {
   expect(textOf("status")).toBe(
     "Assignment saved; the latest details could not load. Please refresh.",
   );
+});
+
+const pendingProof = {
+  id: "proof-1",
+  revision: 2,
+  pledgeId: original.id,
+  storagePath: null,
+  fileName: null,
+  fileType: null,
+  fileSize: null,
+  paymentMethod: "fps",
+  reference: "FPS-001",
+  amountCents: 30000,
+  paymentDate: "2026-09-30",
+  reviewStatus: "pending",
+  source: "staff",
+  reviewedBy: null,
+  reviewedAt: null,
+  reviewNote: null,
+  createdAt: "2026-09-30T02:30:00Z",
+};
+const openAssignment = {
+  id: "assignment-1",
+  animalId: "animal-1",
+  animalNameSnapshot: "Synthetic cat",
+  startedOn: "2026-08-02",
+  endedOn: null,
+  endReason: null,
+  note: null,
+  endNote: null,
+  animalState: null,
+  reviewReason: null,
+};
+const button = (label: string) => walk(render()).find((n) => n.props.children === label);
+
+test("a review refused because the proof changed reads in the language it is shown in", async () => {
+  // The sponsorship API sends this one message in zh-HK, whatever the admin's language.
+  role = "admin";
+  pledge = { ...original, proofHistory: [pendingProof], currentProof: pendingProof };
+  failWith = new Error("付款證明或審批資料已更新，請重新載入。");
+  await button("核實通過")!.props.onClick!();
+  expect(textOf("alert")).toBe("付款證明或審批資料已更新，請重新載入。");
+  language = "en";
+  expect(textOf("alert")).toBe(
+    "The payment proof or review changed. Reload the pledge and review it again.",
+  );
+});
+
+test("another reason the server gives for a review is shown as it came, in either language", async () => {
+  role = "admin";
+  pledge = { ...original, proofHistory: [pendingProof], currentProof: pendingProof };
+  failWith = new Error("Sponsorship pledge is not awaiting review");
+  await button("核實通過")!.props.onClick!();
+  expect(textOf("alert")).toBe("Sponsorship pledge is not awaiting review");
+  language = "en";
+  expect(textOf("alert")).toBe("Sponsorship pledge is not awaiting review");
+});
+
+test("adding an animal that fails without a reason says so in its own words", async () => {
+  // Chinese has always shown the review text here; English names the action.
+  failWith = "no reason";
+  await button("新增動物")!.props.onClick!();
+  expect(textOf("alert")).toBe("審核失敗");
+  language = "en";
+  expect(textOf("alert")).toBe("Could not add the animal. Check the animal UUID and try again.");
+  failWith = new Error("Animal 123 cannot be sponsored");
+  language = "zh";
+  await button("新增動物")!.props.onClick!();
+  expect(textOf("alert")).toBe("Animal 123 cannot be sponsored");
+});
+
+test("ending a sponsorship that fails without a reason says so in its own words", async () => {
+  pledge = { ...original, assignments: [openAssignment] };
+  failWith = "no reason";
+  await button("結束助養關係")!.props.onClick!();
+  expect(textOf("alert")).toBe("審核失敗");
+  language = "en";
+  expect(textOf("alert")).toBe("Could not end the sponsorship. Refresh the page and try again.");
+});
+
+test("a proof file that cannot be attached is explained in the language it is shown in", () => {
+  const chooseFile = (file: File) =>
+    walk(render()).find((n) => n.props.id === "pledge-payment-proof")!.props.onChange!({
+      target: { files: [file] },
+    });
+  chooseFile(new File([new Uint8Array(0)], "empty.png", { type: "image/png" }));
+  expect(textOf("alert")).toBe("檔案大小超過上限（8MB）");
+  language = "en";
+  expect(textOf("alert")).toBe(
+    "The file is empty or larger than the 8MB limit. Choose another file.",
+  );
+  chooseFile(new File(["text"], "notes.txt", { type: "text/plain" }));
+  expect(textOf("alert")).toBe(
+    "This file type is not supported. Upload a JPG, PNG, WEBP or PDF file.",
+  );
+  language = "zh";
+  expect(textOf("alert")).toBe("檔案格式不支援，請上載 JPG、PNG、WEBP 或 PDF 檔案");
+  // A file that works clears the message.
+  chooseFile(new File(["x"], "slip.png", { type: "image/png" }));
+  expect(walk(render()).some((n) => n.props.role === "alert")).toBe(false);
 });
 
 test("an unknown retry keeps its original version after a background refresh", async () => {

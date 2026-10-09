@@ -176,9 +176,7 @@ export function PledgeReviewLane() {
   }
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const selectionMessage = selectionError
-    ? ((selectionError.cause === undefined
-        ? null
-        : adminErrorMessage(selectionError.cause, language)) ?? lane.errors[selectionError.code])
+    ? (adminErrorMessage(selectionError.cause, language) ?? lane.errors[selectionError.code])
     : "";
 
   const columns: DataTableColumn<PledgeSummary>[] = [

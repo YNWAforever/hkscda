@@ -1,3 +1,4 @@
+import { sponsorshipServerErrorText } from "../../../lib/sponsorshipAdmin/serverErrors";
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber } from "../i18n/format";
 
@@ -64,6 +65,12 @@ export const pledgePageCopy = defineAdminCopy({
       /** The message for each way an action in the drawer can fail, by the code the drawer keeps. */
       errors: {
         review: "審核失敗",
+        // Adding an animal and ending a sponsorship have always shown the review text when the
+        // server gave no reason, so Chinese keeps it; English says what went wrong.
+        assignAnimal: "審核失敗",
+        endAssignment: "審核失敗",
+        // The sponsorship API sends this one in zh-HK; the other server reasons are English.
+        proofReviewChanged: sponsorshipServerErrorText("proofReviewChanged", "zh"),
         followup: "跟進分派失敗，請重新載入後再試。",
         followupConflict: "跟進資料已有更新，請核對目前職員後再分派。",
         followupUnknown: "未能確認分派結果；請重新整理或重試原有分派。",
@@ -185,6 +192,9 @@ export const pledgePageCopy = defineAdminCopy({
       },
       errors: {
         review: "Could not review the payment proof. Refresh the page and try again.",
+        assignAnimal: "Could not add the animal. Check the animal UUID and try again.",
+        endAssignment: "Could not end the sponsorship. Refresh the page and try again.",
+        proofReviewChanged: sponsorshipServerErrorText("proofReviewChanged", "en"),
         followup: "Could not assign follow-up. Refresh and try again.",
         followupConflict:
           "Follow-up details changed. Check the current owner before assigning again.",

@@ -102,7 +102,7 @@ export const reminderDraftCopy = defineAdminCopy({
     subjectLabel: "Draft subject",
     bodyLabel: "Draft body",
     unavailable: {
-      status: "This sponsorship is not active yet. Verify its current status first.",
+      status: "This sponsorship is not confirmed yet. Verify its current status first.",
       recipient: "There is no valid recipient email or name. Verify the supporter's details first.",
       proof_pending:
         "A payment proof is waiting to be verified. Finish the review first, so a reminder is not sent by mistake.",

@@ -7,6 +7,7 @@ import type {
   PledgeDetail,
   PledgeSummary,
 } from "../../../lib/sponsorshipAdmin/types";
+import { adminPageCopy } from "../adminPageCopy";
 import {
   expectNoChineseInCopy,
   expectNoChineseText,
@@ -414,7 +415,7 @@ describe("pledge detail drawer in English", () => {
       "Close",
       "Needs follow-up",
       "chan@example.org · 9123 4567",
-      "HK$300.00/month (HK$300 tier)",
+      "HK$300.00/month (HK$300.00 tier)",
       "Created 1 Aug 2026 (Sat)",
       "Animal ranking",
       // follow-up assignment
@@ -457,7 +458,8 @@ describe("pledge detail drawer in English", () => {
       "Payments, months and notifications",
       // months
       "Sponsorship months",
-      "2026-08",
+      ">Aug 2026<",
+      ">Sep 2026<",
       "Paid",
       "Unpaid",
       "Monthly pledge HK$250.50 · Allocated HK$250.50",
@@ -521,6 +523,23 @@ describe("pledge detail drawer in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, ["Cancelled", "HK$300.00/month (Custom)", "- · -"]);
     expect(markup).not.toContain("Sponsorship months");
+  });
+
+  test("writes a sponsorship month as a month and year in English, in January and December too", () => {
+    role = "admin";
+    const month = detail.periods[1]!;
+    pledgeOverride = {
+      periods: [
+        { ...month, id: "period-dec", periodMonth: "2025-12-01" },
+        { ...month, id: "period-jan", periodMonth: "2026-01-01" },
+      ],
+    };
+    const english = renderAdminInEnglish(drawer);
+    const chinese = renderAdminInChinese(drawer);
+    pledgeOverride = {};
+    expectNoChineseText(english, { allow: DATA });
+    expectAll(english, [">Dec 2025<", ">Jan 2026<"]);
+    expectAll(chinese, [">2025-12<", ">2026-01<"]);
   });
 
   test("says what to do when the pledge cannot be loaded, and shows the reason as it came", () => {
@@ -608,7 +627,7 @@ describe("finance panel in English", () => {
       "Reason for the change",
       "Original month allocation",
       "Choose the original allocation",
-      "2026-08 · HK$250.50",
+      "Aug 2026 · HK$250.50",
       "Add allocation reversal",
       "Month to reallocate to",
       "Amount to reallocate (HKD; HK$0.00 left)",
@@ -715,7 +734,7 @@ describe("reminder draft in English", () => {
     expectNoChineseText(markup);
     expectAll(markup, [
       "Recipient: Alex &lt;alex@example.invalid&gt;",
-      "Month to reconcile: 2026-08.",
+      "Month to reconcile: Aug 2026.",
       "HK$123.45",
       "not a finding that money is owed",
       "For internal review only. The draft was made on 28 Sep 2026 (Mon) 10:00.",
@@ -743,7 +762,7 @@ describe("reminder draft in English", () => {
 
   test("explains in English why no draft can be made", () => {
     const expected: Record<string, string> = {
-      status: "This sponsorship is not active yet",
+      status: "This sponsorship is not confirmed yet",
       recipient: "There is no valid recipient email or name",
       proof_pending: "A payment proof is waiting to be verified",
       invalid_ledger: "The month records are incomplete",
@@ -862,19 +881,95 @@ describe("sponsorship copy", () => {
   });
 
   test("every English error says what to do next", () => {
+    const pageErrors = adminPageCopy.en.pledgeReview.errors;
     const errors = [
       ...Object.values(pledgeLaneCopy.en.errors),
       ...Object.values(financeCopy.en.errors),
       ...Object.values(followupBulkCopy.en.errors),
+      ...Object.values(pledgeDrawerCopy.en.proofFileErrors),
+      // The drawer's action errors, apart from the notice-like follow-up one.
+      pageErrors.review,
+      pageErrors.assignAnimal,
+      pageErrors.endAssignment,
+      pageErrors.proofReviewChanged,
+      pageErrors.cancel,
+      pageErrors.recordPayment,
       animalPickerCopy.en.loadFailed,
       reminderDraftCopy.en.failed,
       financeCopy.en.loadFailed,
+      ...Object.values(reminderDraftCopy.en.unavailable),
     ];
     for (const message of errors) {
       expect(message, message).toMatch(
-        /(Try again|try again|Refresh|Reload result|Select the pledges again|Narrow the filters|Clear some)/,
+        /(Try again|try again|Refresh|Reload|Select the pledges again|Narrow the filters|Clear some|Choose another file|Upload a |Check |Verify |Ask finance|Finish the review|no draft is needed)/,
       );
     }
+  });
+
+  test("the drawer's error codes: Chinese keeps its text, English names what failed", () => {
+    const zh = adminPageCopy.zh.pledgeReview.errors;
+    const en = adminPageCopy.en.pledgeReview.errors;
+    // Adding an animal and ending a sponsorship have always shown the review text in Chinese.
+    expect(zh.review).toBe("審核失敗");
+    expect(zh.assignAnimal).toBe("審核失敗");
+    expect(zh.endAssignment).toBe("審核失敗");
+    expect(zh.proofReviewChanged).toBe("付款證明或審批資料已更新，請重新載入。");
+    expect(en.review).toBe("Could not review the payment proof. Refresh the page and try again.");
+    expect(en.assignAnimal).toBe("Could not add the animal. Check the animal UUID and try again.");
+    expect(en.endAssignment).toBe("Could not end the sponsorship. Refresh the page and try again.");
+    expect(en.proofReviewChanged).toBe(
+      "The payment proof or review changed. Reload the pledge and review it again.",
+    );
+    expect(en.assignAnimal).not.toContain("review");
+    expect(en.endAssignment).not.toContain("review");
+  });
+
+  test("a file with no content is named in English; Chinese keeps its text", () => {
+    expect(pledgeDrawerCopy.en.proofFileErrors.too_large).toBe(
+      "The file is empty or larger than the 8MB limit. Choose another file.",
+    );
+    expect(pledgeDrawerCopy.zh.proofFileErrors.too_large).toBe("檔案大小超過上限（8MB）");
+  });
+
+  test("the tier amount is written as money in English", () => {
+    expect(pledgeDrawerCopy.en.tierAmount("300")).toBe("HK$300.00 tier");
+    expect(pledgeDrawerCopy.en.tierAmount("500")).toBe("HK$500.00 tier");
+    expect(pledgeDrawerCopy.en.tierAmount("custom")).toBe("custom");
+    expect(pledgeDrawerCopy.zh.tierAmount("300")).toBe("300");
+  });
+
+  test("an English month is read from the text, so no time zone can move it", () => {
+    const names = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const { month, periodStart } = sponsorshipFormatCopy.en;
+    names.forEach((name, index) => {
+      const mm = String(index + 1).padStart(2, "0");
+      expect(month(`2026-${mm}`), name).toBe(`${name} 2026`);
+      expect(month(`2026-${mm}-01`), name).toBe(`${name} 2026`);
+      expect(periodStart(`2026-${mm}-01`), name).toBe(`${name} 2026`);
+    });
+    // The two months a time zone shift would move: the first of January and the end of December.
+    expect(month("2026-01-01")).toBe("Jan 2026");
+    expect(month("2025-12-31")).toBe("Dec 2025");
+    expect(month("2025-12-01")).toBe("Dec 2025");
+    // Not a month: shown as its first seven characters, as Chinese shows every month.
+    expect(month("2026-13-01")).toBe("2026-13");
+    expect(month("")).toBe("");
+    // Chinese is unchanged.
+    expect(sponsorshipFormatCopy.zh.month("2026-01-01")).toBe("2026-01");
+    expect(sponsorshipFormatCopy.zh.month("2025-12-31")).toBe("2025-12");
   });
 
   test("a count of one reads as singular", () => {
@@ -909,7 +1004,8 @@ describe("sponsorship copy", () => {
     expect(zh.isoDay(null)).toBe("");
     expect(en.isoDay(null)).toBe("");
     expect(zh.periodStart("2026-08-01")).toBe("2026-08-01");
-    expect(en.periodStart("2026-08-01")).toBe("2026-08");
+    expect(en.periodStart("2026-08-01")).toBe("Aug 2026");
+    expect(zh.month("2026-08-01")).toBe("2026-08");
     expect(zh.dateTime("2026-09-28T02:00:00.000Z")).toBe("2026-09-28T02:00:00.000Z");
     expect(en.dateTime("2026-09-28T02:00:00.000Z")).toBe("28 Sep 2026 (Mon) 10:00");
   });

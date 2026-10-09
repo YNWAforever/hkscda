@@ -3,11 +3,37 @@ import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminDate, formatAdminDateTime, formatAdminMoney } from "../i18n/format";
 import { formatDate } from "./pledgeReviewLogic";
 
+const MONTH_NAMES_EN = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+/**
+ * A sponsorship month (`2026-08` or `2026-08-01`) as "Aug 2026". The month is read from the text,
+ * not through a `Date`, so no time zone can move it: it is a calendar month, not a moment. Text
+ * that is not a month is shown as its first seven characters, as Chinese shows every month.
+ */
+function englishMonth(value: string): string {
+  const match = /^(\d{4})-(0[1-9]|1[0-2])/.exec(value);
+  const name = match ? MONTH_NAMES_EN[Number(match[2]) - 1] : undefined;
+  return match && name ? `${name} ${match[1]}` : value.slice(0, 7);
+}
+
 /**
  * How the sponsorship screens write amounts and dates. Chinese keeps what it has always
  * shown: the amount with cents only when there are some, the date as the first ten characters
  * of the timestamp the server sent, and a stored day or month exactly as stored. English uses
- * the admin's Hong Kong formats, with two decimals on an amount.
+ * the admin's Hong Kong formats, with two decimals on an amount, and a month as "Aug 2026".
  */
 export const sponsorshipFormatCopy = defineAdminCopy({
   zh: {
@@ -26,6 +52,8 @@ export const sponsorshipFormatCopy = defineAdminCopy({
     day: (value: string) => value,
     /** A calendar day cut from a timestamp, or nothing when there is none. */
     isoDay: (value: string | null | undefined) => value?.slice(0, 10) ?? "",
+    /** A sponsorship month: `2026-08`. */
+    month: (value: string) => value.slice(0, 7),
     /** The first day of a sponsorship month in a list of allocations, as stored. */
     periodStart: (value: string) => value,
     /** A moment the server sent, such as when a draft was made. */
@@ -38,7 +66,8 @@ export const sponsorshipFormatCopy = defineAdminCopy({
       value?.trim() ? formatAdminDate(value.trim(), "en") : "-",
     day: (value: string) => formatAdminDate(value, "en"),
     isoDay: (value: string | null | undefined) => (value ? formatAdminDate(value, "en") : ""),
-    periodStart: (value: string) => value.slice(0, 7),
+    month: englishMonth,
+    periodStart: englishMonth,
     dateTime: (value: string) => formatAdminDateTime(value, "en"),
   },
 });

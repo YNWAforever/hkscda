@@ -152,8 +152,8 @@ describe("internship management in English", () => {
       " · Email",
       "Details recorded",
       "Outcome",
-      "Ask for more information",
-      "Do not approve",
+      ">Needs more information<",
+      ">Not approved<",
       "Review reason",
       "Veterinary student identity and institution or course verified",
       "Source of verification evidence",
@@ -171,7 +171,7 @@ describe("internship management in English", () => {
       "Title",
       "Vet student internship",
       "Accept new applications",
-      "Shelters",
+      "Venues",
       "Cat shelter",
       "Dog shelter",
       "Opens at (Hong Kong time; leave blank for no limit)",
@@ -250,7 +250,7 @@ describe("internship management in English", () => {
       "Before and after publishing",
       "Vet student internship → New title",
       "Paused → Open",
-      "Shelters: Cat shelter, Dog shelter",
+      "Venues: Cat shelter, Dog shelter",
       "2 existing applications are kept. Submitted details are not rewritten.",
       "Reason for publishing",
       "Publish new version",
@@ -336,10 +336,10 @@ describe("internship management in English", () => {
 describe("internship copy", () => {
   test("the English half has no Chinese", () => {
     const { settings, ...rest } = internshipCopy.en;
-    const { sheltersLine, ...settingsRest } = settings;
+    const { venuesLine, ...settingsRest } = settings;
     expectNoChineseInCopy(rest);
     expectNoChineseInCopy(settingsRest);
-    expectNoChineseText(sheltersLine(["Cat shelter", "Dog shelter"]));
+    expectNoChineseText(venuesLine(["Cat shelter", "Dog shelter"]));
   });
 
   test("the five statuses are the words the public internship page uses", () => {
@@ -367,7 +367,7 @@ describe("internship copy", () => {
     expect(internshipCopy.zh.errors.attachment_failed).toBe("未能開啟私人附件");
     expect(internshipCopy.zh.errors.closes_before_opens).toBe("截止時間必須晚於開放時間");
     expect(internshipCopy.zh.errors.forbidden).toBe("沒有此操作權限");
-    expect(internshipCopy.zh.settings.sheltersLine(["貓舍", "狗舍"])).toBe("場地：貓舍、狗舍");
+    expect(internshipCopy.zh.settings.venuesLine(["貓舍", "狗舍"])).toBe("場地：貓舍、狗舍");
     expect(internshipCopy.zh.settings.preserved(2)).toBe("保留2份既有申請，已提交資料不重寫。");
   });
 

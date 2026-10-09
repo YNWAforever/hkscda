@@ -27,7 +27,7 @@ const INTERNSHIP_ERROR_TEXT: Record<InternshipErrorCode, Record<AdminLanguage, s
   },
   shelter_required: {
     zh: "請至少選擇一個服務場地",
-    en: "Choose at least one shelter, then save again.",
+    en: "Choose at least one venue, then save again.",
   },
   closes_before_opens: {
     zh: "截止時間必須晚於開放時間",
