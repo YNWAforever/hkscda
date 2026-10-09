@@ -649,6 +649,20 @@ describe("adoption information in English", () => {
     }
   });
 
+  test("keeps the conflict sentence apart from its load button with a margin, not with text", async () => {
+    // The panels show only after a conflicting save, which a static render cannot reach, so the
+    // markup is pinned at the source: each load-latest button carries the margin class.
+    const source = await Bun.file(
+      new URL("./AdoptionInformationManagement.tsx", import.meta.url),
+    ).text();
+    const labels = [...source.matchAll(/\{copy\.loadLatest\}/g)].map((match) => match.index);
+    expect(labels).toHaveLength(2);
+    for (const label of labels) {
+      const button = source.slice(source.lastIndexOf("<button", label), label);
+      expect(button, button).toContain('className="ml-2"');
+    }
+  });
+
   test("names the five tabs in both languages", () => {
     const markup = renderAdminInEnglish(
       <AdoptionContentTabs activeTab="rules" onTabChange={noop} />,

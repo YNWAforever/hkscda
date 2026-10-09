@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink, Image, RefreshCw, Save } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   AdoptionCaseDetail,
   CoordinatorStatus,
@@ -202,6 +203,7 @@ function formatBytes(value: number) {
 }
 
 function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
+  const { language } = useAdminPageCopy();
   const copy = useAdminCopy(caseDetailCopy);
 
   const mutation = useMutation<{ url: string }, Error, void>({
@@ -240,7 +242,7 @@ function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
       </Button>
       {mutation.error && (
         <p className="text-xs text-[var(--color-error)]" role="alert">
-          {copy.photoOpenFailed(mutation.error.message)}
+          {copy.photoOpenFailed(adminErrorMessage(mutation.error, language) ?? "")}
         </p>
       )}
     </div>
@@ -619,7 +621,9 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         </Button>
       </div>
 
-      {statusesError && <CaseDetailStatusesError message={statusesError.message} />}
+      {statusesError && (
+        <CaseDetailStatusesError message={adminErrorMessage(statusesError, language) ?? ""} />
+      )}
 
       <Section title={copy.sections.applicant}>
         <DetailGrid
@@ -715,7 +719,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           </div>
           {statusMutation.error && (
             <p className="text-sm text-[var(--color-error)]" role="alert">
-              {statusMutation.error.message}
+              {adminErrorMessage(statusMutation.error, language) ?? ""}
             </p>
           )}
         </form>

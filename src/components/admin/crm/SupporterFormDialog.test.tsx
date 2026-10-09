@@ -172,7 +172,8 @@ describe("supporter form dialog in English", () => {
     expect(loading).not.toContain("Save supporter");
     const failed = show({ mode: "edit", supporter }, { [OPEN]: true, [LOAD_ERROR]: true });
     expectNoChineseText(failed.join("\n"));
-    expect(failed).toContain("Could not load supporters");
+    expect(failed).toContain("Could not load the supporter. Refresh the page or try again.");
+    expect(failed).not.toContain("Could not load supporters");
     expect(failed).toContain("Retry");
   });
 

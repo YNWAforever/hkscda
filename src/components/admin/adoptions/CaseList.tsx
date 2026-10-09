@@ -4,6 +4,7 @@ import { ListChecks, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import {
   addCaseSelection,
   collectMatchingCaseIds,
@@ -186,7 +187,7 @@ export function CaseList() {
           : addCaseSelection(effectiveSelectedIds, [id], language),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : selection.cannotSelect);
+      setSelectionError(adminErrorMessage(cause, language) ?? selection.cannotSelect);
     }
   }
   function selectVisible() {
@@ -202,7 +203,7 @@ export function CaseList() {
         ),
       );
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : selection.cannotSelect);
+      setSelectionError(adminErrorMessage(cause, language) ?? selection.cannotSelect);
     }
   }
   async function selectAllMatching() {
@@ -231,7 +232,7 @@ export function CaseList() {
       setSelectedScope(scope);
       setSelectedIds(ids);
     } catch (cause) {
-      setSelectionError(cause instanceof Error ? cause.message : selection.cannotLockSelection);
+      setSelectionError(adminErrorMessage(cause, language) ?? selection.cannotLockSelection);
     } finally {
       setSelectionBusy(false);
     }
@@ -437,7 +438,10 @@ export function CaseList() {
           </label>
         </div>
         {statusesError && (
-          <CaseListStatusFilterError label={copy.filterError} message={statusesError.message} />
+          <CaseListStatusFilterError
+            label={copy.filterError}
+            message={adminErrorMessage(statusesError, language) ?? ""}
+          />
         )}
       </section>
 

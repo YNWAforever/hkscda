@@ -7,6 +7,7 @@ import type {
   CoordinatorTask,
   CoordinatorTaskPriority,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -48,7 +49,7 @@ function TaskCenterLoadError({ label, message }: { label: string; message: strin
 }
 
 export function TaskCenter() {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.taskCenter;
   const [q, setQ] = useState("");
   const [due, setDue] = useState<TaskCenterDueFilter>("all");
@@ -210,7 +211,7 @@ export function TaskCenter() {
         </div>
         {statusesQuery.error && (
           <TaskPanelAsyncError
-            message={`${copy.loadStatusesError}: ${statusesQuery.error.message}`}
+            message={`${copy.loadStatusesError}: ${adminErrorMessage(statusesQuery.error, language) ?? ""}`}
           />
         )}
       </section>
@@ -236,7 +237,10 @@ export function TaskCenter() {
 
       <section>
         {tasksQuery.error && (
-          <TaskCenterLoadError label={copy.loadTasksError} message={tasksQuery.error.message} />
+          <TaskCenterLoadError
+            label={copy.loadTasksError}
+            message={adminErrorMessage(tasksQuery.error, language) ?? ""}
+          />
         )}
         <TaskPanel
           title={copy.tasks}

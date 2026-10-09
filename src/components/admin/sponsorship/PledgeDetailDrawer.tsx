@@ -1,4 +1,3 @@
-import { AnimalPicker } from "./AnimalPicker";
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import { FinancePanel } from "./FinancePanel";
 import { ReminderDraftPanel } from "./ReminderDraftPanel";

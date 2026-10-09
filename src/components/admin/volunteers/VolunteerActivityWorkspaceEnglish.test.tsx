@@ -20,6 +20,7 @@ const { ActivityDetailBody } = await import("./ActivityDetailSheet");
 const { VolunteerDraftForm } = await import("./VolunteerDraftForm");
 const { activityWorkspaceCopy } = await import("./activityWorkspaceCopy");
 const { activityOperationCopy } = await import("./activityOperationCopy");
+const { volunteerCommonCopy } = await import("./volunteerCommonCopy");
 
 const { FIXTURE } = kit;
 const ALLOW = [FIXTURE.activity, FIXTURE.location, FIXTURE.role, FIXTURE.template];
@@ -246,8 +247,9 @@ describe("the activity table in English", () => {
     );
     expect(markup).toContain('checked=""');
     expect(markup).toContain(FIXTURE.template);
-    // A template with no name is "Unnamed template", and a venue key English has no name for is
-    // "Other venue": English never shows a stored key as a label. Chinese keeps showing both keys.
+    // A template with no name is "Template (name not available)", and a venue key English has no
+    // name for is "Other venue": English never shows a stored key as a label. Chinese keeps showing
+    // both keys.
     const unnamed = renderAdminInEnglish(
       <ActivitySchedule
         rows={[kit.workspaceRows[0], kit.workspaceRows[3]] as never}
@@ -258,7 +260,8 @@ describe("the activity table in English", () => {
       />,
     );
     expectNoChineseText(unnamed, { allow: ALLOW });
-    expect(unnamed).toContain("Unnamed template");
+    expect(unnamed).toContain("Template (name not available)");
+    expect(unnamed).not.toContain("Unnamed template");
     expect(unnamed).toContain("Cat shelter");
     expect(unnamed).toContain("Other venue");
     expect(unnamed).not.toContain("cat_saturday");
@@ -274,7 +277,7 @@ describe("the activity table in English", () => {
     );
     expect(unnamedZh).toContain("cat_saturday");
     expect(unnamedZh).toContain("mystery_shelter");
-    expect(unnamedZh).not.toContain("Unnamed template");
+    expect(unnamedZh).not.toContain("Template (name not available)");
   });
 
   test("shows a calendar for a short period day by day, whatever the date today is", () => {
@@ -296,9 +299,37 @@ describe("the activity table in English", () => {
     expect(october).toContain("Confirmed 8 · Waitlisted 2");
     expect(october).toContain("Cat shelter · Published");
     expect(october).toContain("Dog shelter · Ended");
+    // A venue English has no name for is shown on a card by the activity's own location, which the
+    // card has no other place for; the table shows the location beside "Other venue".
     const november = calendar("2026-11-28", "2026-12-02");
-    expect(november).toContain("Other venue · Cancelled");
+    expect(november).toContain(FIXTURE.location + " · Cancelled");
+    expect(november).not.toContain("Other venue · Cancelled");
     expect(november).not.toContain("mystery_shelter");
+  });
+
+  test("keeps the Chinese calendar card showing a venue key as stored", () => {
+    const november = renderAdminInChinese(
+      <ActivitySchedule
+        rows={kit.workspaceRows as never}
+        view="calendar"
+        from="2026-11-28"
+        until="2026-12-02"
+        ids={[]}
+        onToggle={noop}
+        onOpen={noop}
+      />,
+    );
+    expect(november).toContain("mystery_shelter · 已取消");
+  });
+
+  test("names an unnamed venue on a calendar card by its location, and by Other venue without one", () => {
+    const common = volunteerCommonCopy;
+    expect(common.en.shelterKey("mystery_shelter", FIXTURE.location)).toBe(FIXTURE.location);
+    expect(common.en.shelterKey("mystery_shelter", "  ")).toBe("Other venue");
+    expect(common.en.shelterKey("mystery_shelter")).toBe("Other venue");
+    expect(common.en.shelterKey("cat", FIXTURE.location)).toBe("Cat shelter");
+    expect(common.zh.shelterKey("mystery_shelter", FIXTURE.location)).toBe("mystery_shelter");
+    expect(common.zh.shelterKey("cat", FIXTURE.location)).toBe("cat");
   });
 
   test("shows a calendar for a long period as a list of the days that have sessions", () => {

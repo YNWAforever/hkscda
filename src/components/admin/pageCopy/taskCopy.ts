@@ -127,7 +127,7 @@ export const taskPageCopy = defineAdminCopy({
         nextStep: "Next step",
         volunteer: "Volunteer",
         outcome: "Outcome",
-        remarks: "Remarks",
+        remarks: "Note",
       },
       display: {
         due: "Due",
@@ -137,7 +137,7 @@ export const taskPageCopy = defineAdminCopy({
         volunteer: "Volunteer",
         channel: "Channel",
         outcome: "Outcome",
-        remarks: "Remarks",
+        remarks: "Note",
       },
       placeholders: {
         title: "Post-adoption call",

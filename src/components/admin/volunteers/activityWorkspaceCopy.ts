@@ -103,7 +103,7 @@ export const activityWorkspaceCopy = defineAdminCopy({
       templateUnset: "須對應模板",
       /**
        * A template: Chinese shows its key, as it always has; English shows the name staff gave it, or
-       * "Unnamed template" when the list of templates has none for this key.
+       * "Template (name not available)" when the list of templates has none for this key.
        */
       template: (key: string, _name: string | undefined) => key,
       policyVersion: (revision: number) => `政策 v${revision}`,
@@ -233,7 +233,7 @@ export const activityWorkspaceCopy = defineAdminCopy({
       shelterUnset: "Shelter not set",
       templateUnset: "Needs a template",
       template: (_key: string, name: string | undefined) =>
-        name?.trim() ? name : "Unnamed template",
+        name?.trim() ? name : "Template (name not available)",
       policyVersion: (revision: number) => `Policy v${revision}`,
       policyUnset: "Policy not set",
       scenarios: {

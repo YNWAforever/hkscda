@@ -30,8 +30,9 @@ mock.module("@tanstack/react-query", () => ({
       : { data: role ? { admin: { id: "admin-1", role, status: "active" } } : undefined },
 }));
 
-// The animal list, media queue, payments and pledge panels belong to other areas and still
-// show Chinese; stand-ins keep this test on what the dashboard route itself renders.
+// The animal list, media queue, payments and pledge panels belong to other areas, whose own
+// English tests cover them, including the bulk review table's results; stand-ins keep this test
+// on what the dashboard route itself renders.
 mock.module("../../components/admin/AnimalsTable", () => ({
   AnimalsTable: () => <p>animals table</p>,
 }));

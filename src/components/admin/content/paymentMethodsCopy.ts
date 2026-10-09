@@ -2,7 +2,7 @@ import { defineAdminCopy } from "../i18n/copy";
 
 /** What each payment method code stands for, in English (`PaymentPublicConfigMethod`). */
 const EN_METHOD_NAMES: Record<string, string> = {
-  stripe: "Stripe card",
+  stripe: "Stripe",
   payme: "PayMe",
   fps: "FPS",
   paypal: "PayPal",

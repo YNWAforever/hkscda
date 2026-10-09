@@ -127,6 +127,37 @@ describe("adminPageCopy page headers", () => {
     expect(adminPageCopy.zh.common.notSignedIn).toBe("未登入");
   });
 
+  test("uses the glossary's one English word for each zh term", () => {
+    const en = adminPageCopy.en;
+    const zh = adminPageCopy.zh;
+    // 家庭人數 is "household size", in both of the manual intake's sections.
+    expect(en.manualIntake.fields.householdSize).toBe("Household size");
+    expect(en.manualIntake.fields.familySize).toBe("Household size");
+    expect(zh.manualIntake.fields.householdSize).toBe("家庭人數");
+    expect(zh.manualIntake.fields.familySize).toBe("家庭人數");
+    // 備註 is "note".
+    expect(en.taskPanel.labels.remarks).toBe("Note");
+    expect(en.taskPanel.display.remarks).toBe("Note");
+    expect(en.manualIntake.remarks).toBe("Note");
+    expect(zh.taskPanel.labels.remarks).toBe("備註");
+    // 排序 is "sort order", as a column and as a field.
+    expect(en.statuses.columns.order).toBe("Sort order");
+    expect(en.statuses.fields.sortOrder).toBe("Sort order");
+    // 待審核 is "pending review" wherever a record waits for a review.
+    expect(en.pledgeReview.proofReviewStatuses.pending).toBe("Pending review");
+    expect(en.pledgeReview.statuses.provisional).toBe("Pending review");
+    expect(zh.pledgeReview.proofReviewStatuses.pending).toBe("待審核");
+    // The supporter list and the supporter form each say what failed, and what to do next.
+    expect(en.supporters.loadError).toBe(
+      "Could not load supporters. Refresh the page or try again.",
+    );
+    expect(en.supporters.loadSupporterError).toBe(
+      "Could not load the supporter. Refresh the page or try again.",
+    );
+    expect(zh.supporters.loadError).toBe("無法載入支持者");
+    expect(zh.supporters.loadSupporterError).toBe("無法載入支持者");
+  });
+
   test("counts read the same way in each language", () => {
     expect(adminPageCopy.zh.common.searchMatches(1234)).toBe("1,234 個結果");
     expect(adminPageCopy.en.common.searchMatches(1234)).toBe("1,234 matches");
@@ -146,8 +177,11 @@ describe("adminPageCopy page headers", () => {
     expect(adminPageCopy.zh.statuses.subtitle(1, 1)).toBe("1 個狀態，分布於 1 個分類");
     expect(adminPageCopy.en.common.pageOf(2, 5)).toBe("Page 2 of 5");
     expect(adminPageCopy.zh.pledgeReview.totalCount(12)).toBe("共 12 項");
-    expect(adminPageCopy.en.statuses.deleteConfirm("待處理", "Pending")).toBe(
-      "Delete 待處理 / Pending?",
+    // English names the status by its English label, or its Chinese one when that is empty.
+    expect(adminPageCopy.en.statuses.deleteConfirm("待處理", "Pending")).toBe("Delete Pending?");
+    expect(adminPageCopy.en.statuses.deleteConfirm("待處理", "  ")).toBe("Delete 待處理?");
+    expect(adminPageCopy.zh.statuses.deleteConfirm("待處理", "Pending")).toBe(
+      "刪除 待處理 / Pending？",
     );
   });
 });

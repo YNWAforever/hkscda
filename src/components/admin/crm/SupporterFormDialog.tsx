@@ -217,7 +217,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
         ) : null}
         {loadError ? (
           <div role="alert" className="space-y-2 text-sm text-[var(--color-destructive)]">
-            <p>{copy.loadError}</p>
+            <p>{copy.loadSupporterError}</p>
             <Button
               type="button"
               variant="outline"

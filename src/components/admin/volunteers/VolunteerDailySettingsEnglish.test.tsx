@@ -210,6 +210,48 @@ describe("the daily volunteer quota in English", () => {
     }
   });
 
+  test("numbers the venues it has no name for, so two of them can be told apart", () => {
+    const twoUnknown = {
+      "volunteer-daily-settings": kit.ok({
+        bindings: [
+          binding(KEY, "2026-10-10"),
+          binding("venue-yuen-long:cap", "2026-10-13"),
+          binding("venue-tsuen-wan:cap", "2026-10-14"),
+          // The same venue on another day keeps its number.
+          binding("venue-yuen-long:cap", "2026-10-15"),
+        ],
+        credentials: registry().credentials,
+      }),
+    };
+    const markup = screen("en", {}, twoUnknown);
+    for (const option of [
+      "10 Oct 2026 (Sat) · Dog shelter · Daily quota for Newcomer, Regular",
+      "13 Oct 2026 (Tue) · Other venue 1 · Daily quota for Newcomer, Regular",
+      "14 Oct 2026 (Wed) · Other venue 2 · Daily quota for Newcomer, Regular",
+      "15 Oct 2026 (Thu) · Other venue 1 · Daily quota for Newcomer, Regular",
+    ]) {
+      expect(markup, option).toContain(`>${option}</option>`);
+    }
+    // Chinese shows each venue's key, as before.
+    const chinese = screen("zh", {}, twoUnknown);
+    for (const option of [
+      "2026-10-13 · venue-yuen-long · 新手／恆常每日配額",
+      "2026-10-14 · venue-tsuen-wan · 新手／恆常每日配額",
+      "2026-10-15 · venue-yuen-long · 新手／恆常每日配額",
+    ]) {
+      expect(chinese, option).toContain(`>${option}</option>`);
+    }
+    expect(dailySettingsCopy.en.scopeName("mystery:cap", { position: 2, total: 2 })).toBe(
+      "Other venue 2",
+    );
+    expect(dailySettingsCopy.en.scopeName("cat:cap", { position: 0, total: 2 })).toBe(
+      "Cat shelter",
+    );
+    expect(dailySettingsCopy.zh.scopeName("mystery:cap", { position: 2, total: 2 })).toBe(
+      "mystery",
+    );
+  });
+
   test("agrees the verb with the number of sessions that share the quota", () => {
     const one = {
       "volunteer-daily-settings": kit.ok({

@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminDateTime, pluralCount } from "../i18n/format";
+import type { BulkItemResult } from "./bulkResultsCsv";
 
 /** Copy for the bulk preview and results panels. */
 export const bulkCopy = defineAdminCopy({
@@ -36,6 +37,14 @@ export const bulkCopy = defineAdminCopy({
       applyNextBatch: "套用下一批 25 筆",
       applyPending: "套用待處理項目",
       technicalReference: "技術參考",
+      /** The result of one item: Chinese shows the stored code, as it always has. */
+      status: {
+        pending: "pending",
+        succeeded: "succeeded",
+        skipped: "skipped",
+        conflict: "conflict",
+        failed: "failed",
+      } satisfies Record<BulkItemResult["status"], string>,
     },
   },
   en: {
@@ -69,6 +78,14 @@ export const bulkCopy = defineAdminCopy({
       applyNextBatch: "Apply the next 25",
       applyPending: "Apply pending items",
       technicalReference: "Technical reference",
+      /** The same words as the results summary. */
+      status: {
+        pending: "Pending",
+        succeeded: "Succeeded",
+        skipped: "Skipped",
+        conflict: "Conflict",
+        failed: "Failed",
+      } satisfies Record<BulkItemResult["status"], string>,
     },
   },
 });

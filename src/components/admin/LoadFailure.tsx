@@ -41,7 +41,7 @@ export const STAT_UNAVAILABLE = "—";
 export function errorReference(error: unknown): string {
   const text =
     error instanceof Error
-      ? `${error.name}:${error.message}`
+      ? `${error.name}:${error.message}` // admin-error-render-ok: hashed into the reference, never shown
       : typeof error === "string"
         ? error
         : (() => {

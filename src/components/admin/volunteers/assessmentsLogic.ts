@@ -13,6 +13,7 @@ export function assessmentMessageText(message: AssessmentMessage, language: Admi
   const copy = pickAdminCopy(assessmentsCopy, language);
   if (message.code === "error") {
     if (message.cause instanceof ZodError) {
+      // admin-error-render-ok: a ZodError, never a session error; Chinese shows zod's text as before
       return language === "zh" ? message.cause.message : copy.unreadable;
     }
     return volunteerAdminErrorMessage(message.cause, language) ?? copy.failed;

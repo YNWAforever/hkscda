@@ -9,9 +9,10 @@ import { undecidedSetting } from "../../../lib/volunteers/policy/messages";
 import { getPolicyReadiness, type PolicyDraft } from "../../../lib/volunteers/policy/schemas";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
-import { dailySettingsCopy, type DailyNotice } from "./dailySettingsCopy";
+import { dailySettingsCopy, scopeVenue, type DailyNotice } from "./dailySettingsCopy";
 import { policyCommonCopy } from "./policyCommonCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
+import { isNamedShelter } from "./volunteerCommonCopy";
 type Daily = PolicyDraft["daily_limits"][number];
 type Binding = {
   scope_key: string;
@@ -143,6 +144,20 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
   const lookups = {
     credentials: Object.fromEntries((listing.data?.credentials ?? []).map((c) => [c.key, c.label])),
   };
+  // The venues English has no name for, once each, so the list of dates can tell them apart.
+  const unnamedVenues = [
+    ...new Set(
+      (listing.data?.bindings ?? [])
+        .filter((b) => !b.scope_key.startsWith("all:"))
+        .map((b) => scopeVenue(b.scope_key))
+        .filter((key) => !isNamedShelter(key)),
+    ),
+  ];
+  const scopeLabel = (scopeKey: string) =>
+    copy.scopeName(scopeKey, {
+      position: unnamedVenues.indexOf(scopeVenue(scopeKey)) + 1,
+      total: unnamedVenues.length,
+    });
   return (
     <div className="space-y-6 p-4 md:p-6">
       <header className="space-y-2">
@@ -178,7 +193,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
             >
               {copy.option(
                 format.day(b.service_date),
-                copy.scopeName(b.scope_key),
+                scopeLabel(b.scope_key),
                 b.body.tiers.map((t) => common.tiers[t]).join(copy.tierSeparator),
               )}
             </option>

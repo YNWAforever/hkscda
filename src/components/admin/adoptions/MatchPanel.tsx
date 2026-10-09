@@ -7,6 +7,7 @@ import type {
   CoordinatorStatus,
   MatchableAnimalOption,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
@@ -200,7 +201,11 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
 
       {(animalsError || createMutation.error) && (
         <MatchPanelAsyncError
-          message={animalsError?.message ?? createMutation.error?.message ?? ""}
+          message={
+            adminErrorMessage(animalsError, language) ??
+            adminErrorMessage(createMutation.error, language) ??
+            ""
+          }
         />
       )}
 

@@ -556,7 +556,8 @@ describe("payment method settings in English", () => {
 
   test("names the method behind each setting in English, and shows its stored code in Chinese", () => {
     const methods = [
-      ["stripe", "Stripe card"],
+      // A payment method is named as its product is, with nothing added.
+      ["stripe", "Stripe"],
       ["payme", "PayMe"],
       ["fps", "FPS"],
       ["paypal", "PayPal"],

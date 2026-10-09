@@ -8,7 +8,8 @@ import { expectNoChineseText, renderAdminInEnglish } from "./i18n/testing";
 
 /**
  * The smoke test of the finished English admin: it renders the page behind every destination of
- * the navigation (`ADMIN_NAV_ITEMS`) in English and fails on any Chinese left in the markup.
+ * the navigation (`ADMIN_NAV_ITEMS`), and the task overview the layout links to above them
+ * (`EXTRA_DESTINATIONS`), in English and fails on any Chinese left in the markup.
  *
  * There is no allow-list. Every query is either still loading or has answered with nothing, so
  * no stored Chinese data can reach the page, and the only Chinese that could appear is interface
@@ -133,6 +134,7 @@ const { InternshipManagement } = await import("./internships/InternshipManagemen
 const { GroupEnquiryManagement } = await import("./volunteers/GroupEnquiryManagement");
 const { VolunteerOverview } = await import("./volunteers/VolunteerOverview");
 const { VolunteerPolicySettings } = await import("./volunteers/VolunteerPolicySettings");
+const { TaskOverviewPage } = await import("./operations/TaskOverview");
 
 function dashboard(section: AdminListSearch["section"]): ReactElement {
   return (
@@ -206,22 +208,36 @@ const DESTINATIONS: Record<AdminNavItemId, Destination> = {
   "access-management": { page: () => <AccessManagement />, shows: "Access management" },
 };
 
+/**
+ * Pages the layout links to outside `ADMIN_NAV_ITEMS`. The task overview (`/admin/tasks`) is the
+ * fixed link at the top of the navigation in `AdminLayout`. These are rendered the same way, but
+ * they are not navigation items, so the count check below leaves them out.
+ */
+const EXTRA_DESTINATIONS: Record<"task-overview", Destination> = {
+  "task-overview": { page: () => <TaskOverviewPage />, shows: "Suggested first steps" },
+};
+
 type Rendering = Record<QueryState, string>;
 const renderings = new Map<AdminNavItemId, Rendering>();
+
+/** A page in English, loading and with no data. */
+function renderBoth(destination: Destination): Rendering {
+  const render = (state: QueryState) => {
+    queryState = state;
+    try {
+      return renderAdminInEnglish(destination.page());
+    } finally {
+      queryState = "loading";
+    }
+  };
+  return { loading: render("loading"), empty: render("empty") };
+}
 
 /** The page of one navigation item in English, loading and with no data. Each is rendered once. */
 function rendering(id: AdminNavItemId): Rendering {
   const known = renderings.get(id);
   if (known) return known;
-  const render = (state: QueryState) => {
-    queryState = state;
-    try {
-      return renderAdminInEnglish(DESTINATIONS[id].page());
-    } finally {
-      queryState = "loading";
-    }
-  };
-  const created = { loading: render("loading"), empty: render("empty") };
+  const created = renderBoth(DESTINATIONS[id]);
   renderings.set(id, created);
   return created;
 }
@@ -243,6 +259,16 @@ describe("every admin destination in English", () => {
       expect(empty, `${item.id} should show its English page`).toContain(
         DESTINATIONS[item.id].shows,
       );
+      expectNoChineseText(empty);
+    });
+  }
+
+  for (const [id, destination] of Object.entries(EXTRA_DESTINATIONS)) {
+    test(`${id}, linked outside the navigation items, has no Chinese, loading or empty`, () => {
+      const { loading, empty } = renderBoth(destination);
+      expect(loading.length, `${id} rendered nothing while loading`).toBeGreaterThan(0);
+      expectNoChineseText(loading);
+      expect(empty, `${id} should show its English page`).toContain(destination.shows);
       expectNoChineseText(empty);
     });
   }

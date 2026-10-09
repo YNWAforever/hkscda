@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CheckCircle2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   AnimalMatchSummary,
   CoordinatorStatus,
@@ -292,7 +293,7 @@ export function FinalizationPanel({
 
           {finalizeMutation.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {finalizeMutation.error.message}
+              {adminErrorMessage(finalizeMutation.error, language) ?? ""}
             </p>
           )}
 

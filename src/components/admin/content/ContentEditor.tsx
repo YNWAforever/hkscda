@@ -1934,7 +1934,7 @@ async function publishWithValidation(
       typeof body.error === "string"
         ? body.error
         : typeof body.error?.message === "string"
-          ? body.error.message
+          ? body.error.message // admin-error-render-ok: the server's reason, read into the thrown Error
           : "API request failed",
     );
     throw Object.assign(error, { status: response.status });

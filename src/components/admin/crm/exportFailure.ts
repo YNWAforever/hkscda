@@ -78,7 +78,7 @@ export function failureOfCreateError(error: unknown): ExportFailure {
   if (error instanceof AdminSessionError && error.code === "not_signed_in") {
     return { code: "not_signed_in" };
   }
-  return error instanceof Error
-    ? { code: "create_failed", detail: error.message }
-    : { code: "create_failed" };
+  if (!(error instanceof Error)) return { code: "create_failed" };
+  // admin-error-render-ok: a missing session is handled above; any other reason is shown as sent
+  return { code: "create_failed", detail: error.message };
 }

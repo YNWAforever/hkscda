@@ -384,7 +384,8 @@ describe("the monthly tier assessment in English", () => {
       "1 Jul 2026 (Wed) · Dog shelter · Completed",
       "1 Jun 2026 (Mon) · Other scope · Completed",
       `${POLICY_TEXT.volunteer} · Triggered by a verified attendance · 9 Oct 2026 (Fri) 10:00`,
-      "Unnamed volunteer · Triggered by the monthly assessment · 8 Oct 2026 (Thu) 10:00",
+      // A candidate with no name reads as the volunteer screens write it.
+      "No name entered · Triggered by the monthly assessment · 8 Oct 2026 (Thu) 10:00",
       "Monthly attendance reminder · Failed · Attempts: 3",
       "Service reminder · Delivery evidence received · Attempts: 1",
       "Notification · Unknown status · Attempts: 1,234",

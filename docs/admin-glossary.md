@@ -16,21 +16,21 @@ other way round.
 
 ## People and roles
 
-| zh-HK  | English       | Usage                                                                                              |
-| ------ | ------------- | -------------------------------------------------------------------------------------------------- |
-| 支持者 | supporter     | Anyone in the supporter records: a donor, a sponsor or a contact. Not "customer" or "member".      |
-| 司庫   | treasurer     | The finance role.                                                                                  |
-| 申請人 | applicant     | The person who submitted an adoption or internship application.                                    |
-| 使用者 | admin user    | A person who can sign in to the admin. "User" is fine in a short label.                            |
-| 協調員 | coordinator   | The staff member who runs adoption cases. Not "case worker".                                       |
-| 負責人 | owner         | The person responsible for a case, task or piece of content. The action that sets one is "Assign". |
-| 捐款人 | donor         | A supporter who has made a donation.                                                               |
-| 訪客   | visitor       | A guest at a session who is not a registered volunteer, or a person using the public website.      |
-| 義工   | volunteer     | Never "volunteer worker". 義工營運中心 is "Volunteer operations".                                  |
-| 實習   | internship    | The student placement programme and its applications. 獸醫學生 is "veterinary student".            |
-| 管理員 | administrator | The admin role. "Admin" is fine in a short label.                                                  |
-| 領養人 | adopter       | A person who has adopted an animal or is being matched to one.                                     |
-| 職員   | staff         | An admin user with the staff role. One person is a "staff member".                                 |
+| zh-HK  | English       | Usage                                                                                                                                                        |
+| ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 支持者 | supporter     | Anyone in the supporter records: a donor, a sponsor or a contact. Not "customer" or "member".                                                                |
+| 司庫   | treasurer     | The finance role.                                                                                                                                            |
+| 申請人 | applicant     | The person who submitted an adoption or internship application.                                                                                              |
+| 使用者 | admin user    | A person who can sign in to the admin. "User" is fine in a short label.                                                                                      |
+| 協調員 | coordinator   | The staff member who runs adoption cases. Not "case worker".                                                                                                 |
+| 負責人 | owner         | The person responsible for a case, task or piece of content. The action that sets one is "Assign". As a field label, such as on a task, write "Assigned to". |
+| 捐款人 | donor         | A supporter who has made a donation. Where 捐款人 names the supporter record itself, as in manual intake, write "supporter".                                 |
+| 訪客   | visitor       | A guest at a session who is not a registered volunteer, or a person using the public website.                                                                |
+| 義工   | volunteer     | Never "volunteer worker". 義工營運中心 is "Volunteer operations".                                                                                            |
+| 實習   | internship    | The student placement programme and its applications. 獸醫學生 is "veterinary student".                                                                      |
+| 管理員 | administrator | The admin role. "Admin" is fine in a short label.                                                                                                            |
+| 領養人 | adopter       | A person who has adopted an animal or is being matched to one.                                                                                               |
+| 職員   | staff         | An admin user with the staff role. One person is a "staff member".                                                                                           |
 
 ## Animals and adoption
 
@@ -84,104 +84,104 @@ other way round.
 
 ## Sponsorship, donations and payments
 
-| zh-HK      | English                 | Usage                                                                                    |
-| ---------- | ----------------------- | ---------------------------------------------------------------------------------------- |
-| 入帳       | credit                  | Record a payment as received. 已入帳 is "Credited". 重新入帳 is "credit again".          |
-| 分配       | allocation              | Sharing a verified payment across months. The verb is "allocate", not "assign".          |
-| 手動捐款   | manual donation         | A donation that staff record by hand.                                                    |
-| 付款       | payment                 | The payer's side: 付款方式 is "payment method", 付款參考 is "payment reference".         |
-| 同意       | opted in                | A supporter's consent for a channel. 不同意 is "Opted out" and 未設定 is "Not set".      |
-| 同意紀錄   | consent record          | A supporter's recorded consent to be contacted.                                          |
-| 收款       | payments                | Money received, as on the Payments page. 收款紀錄 is "Payment records".                  |
-| 收據       | receipt                 | The receipt HKSCDA issues for a payment. 收條 is the same thing: always write "receipt". |
-| 作廢       | void                    | Cancel a receipt or record so it no longer counts. The record stays; it is not deleted.  |
-| 助養       | sponsorship             | Regular support for one animal. The people are "sponsors".                               |
-| 助養月份   | sponsorship month       | One month in a pledge's ledger. 已付 is "Paid" and 待付 is "Unpaid".                     |
-| 助養動物   | sponsorship animal      | An animal that can be sponsored.                                                         |
-| 即時匯出   | immediate export        | A CSV that downloads at once. 背景匯出 is "background export": built while you work.     |
-| 快照       | snapshot                | The saved preview of a bulk or bank-match action, applied item by item.                  |
-| 每月意向   | monthly pledge          | What the sponsor intends to pay each month. 非債務 is "not a debt".                      |
-| 身份       | role                    | What kind of supporter someone is: donor, adopter, volunteer or foster.                  |
-| 承諾       | pledge                  | A sponsor's promise to pay. 承諾審核 is "Pledge review".                                 |
-| 金額       | amount                  | Always shown as HK$ with two decimals.                                                   |
-| 候選       | candidate               | A payment that might match a row of a bank statement file.                               |
-| 捐款       | donation                | Money given once or regularly. The verb is "donate". Never "gift".                       |
-| 時間軸     | timeline                | A supporter's activity, newest first.                                                    |
-| 退款       | refund                  |                                                                                          |
-| 送達工作   | delivery job            | A queued job that issues a receipt or sends the acknowledgement email. Not "task".       |
-| 參考編號   | reference               | 銀行參考 is "bank reference".                                                            |
-| 累計       | lifetime                | A supporter's total over all time. 累計捐款 is "Lifetime donations".                     |
-| 逐組確認   | one-by-one confirmation | Confirming each bank match separately after checking it.                                 |
-| 發收條     | issue a receipt         | The action that creates a receipt.                                                       |
-| 傳送       | send                    | A queued notification is "Waiting to send". 傳送失敗 is "Failed to send".                |
-| 匯出       | export                  | Download records as a file.                                                              |
-| 跟進負責人 | follow-up owner         | The staff member responsible for a supporter's follow-up.                                |
-| 對帳       | reconcile               | Match bank lines to payments. 銀行對帳檔 is "bank statement file".                       |
-| 撤銷       | reverse                 | Undo an allocation with a reversing entry. 分配撤銷記錄 is "allocation reversal".        |
-| 標記已收款 | mark as received        | The action on a pending manual payment. 確認收款 is "Confirm payment".                   |
-| 憑證       | proof                   | Evidence of a payment. 付款證明 is the same: "payment proof".                            |
-| 聯絡人     | supporter               | The same record as 支持者. 聯絡人主檔 is "supporter record".                             |
+| zh-HK      | English                 | Usage                                                                                                                                                                     |
+| ---------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 入帳       | credit                  | Record a payment as received. 已入帳 is "Credited". 重新入帳 is "credit again".                                                                                           |
+| 分配       | allocation              | Sharing a verified payment across months. The verb is "allocate", not "assign".                                                                                           |
+| 手動捐款   | manual donation         | A donation that staff record by hand.                                                                                                                                     |
+| 付款       | payment                 | The payer's side: 付款方式 is "payment method", 付款參考 is "payment reference".                                                                                          |
+| 同意       | opted in                | A supporter's consent for a channel. 不同意 is "Opted out" and 未設定 is "Not set".                                                                                       |
+| 同意紀錄   | consent record          | A supporter's recorded consent to be contacted.                                                                                                                           |
+| 收款       | payments                | Money received, as on the Payments page. 收款紀錄 is "Payment records".                                                                                                   |
+| 收據       | receipt                 | The receipt HKSCDA issues for a payment. 收條 is the same thing: always write "receipt".                                                                                  |
+| 作廢       | void                    | Cancel a receipt or record so it no longer counts. The record stays; it is not deleted.                                                                                   |
+| 助養       | sponsorship             | Regular support for one animal. The people are "sponsors".                                                                                                                |
+| 助養月份   | sponsorship month       | One month in a pledge's ledger. 已付 is "Paid" and 待付 is "Unpaid".                                                                                                      |
+| 助養動物   | sponsorship animal      | An animal that can be sponsored.                                                                                                                                          |
+| 即時匯出   | immediate export        | A CSV that downloads at once. 背景匯出 is "background export": built while you work.                                                                                      |
+| 快照       | snapshot                | The saved preview of a bulk or bank-match action, applied item by item.                                                                                                   |
+| 每月意向   | monthly pledge          | What the sponsor intends to pay each month. 非債務 is "not a debt".                                                                                                       |
+| 身份       | role                    | What kind of supporter someone is: donor, adopter, volunteer or foster. In manual intake (手動建案), 身份 is "identity": the supporter or adopter record the case is for. |
+| 承諾       | pledge                  | A sponsor's promise to pay. 承諾審核 is "Pledge review".                                                                                                                  |
+| 金額       | amount                  | Always shown as HK$ with two decimals.                                                                                                                                    |
+| 候選       | candidate               | A payment that might match a row of a bank statement file.                                                                                                                |
+| 捐款       | donation                | Money given once or regularly. The verb is "donate". Never "gift".                                                                                                        |
+| 時間軸     | timeline                | A supporter's activity, newest first.                                                                                                                                     |
+| 退款       | refund                  |                                                                                                                                                                           |
+| 送達工作   | delivery job            | A queued job that issues a receipt or sends the acknowledgement email. Not "task".                                                                                        |
+| 參考編號   | reference               | 銀行參考 is "bank reference".                                                                                                                                             |
+| 累計       | lifetime                | A supporter's total over all time. 累計捐款 is "Lifetime donations".                                                                                                      |
+| 逐組確認   | one-by-one confirmation | Confirming each bank match separately after checking it.                                                                                                                  |
+| 發收條     | issue a receipt         | The action that creates a receipt.                                                                                                                                        |
+| 傳送       | send                    | A queued notification is "Waiting to send". 傳送失敗 is "Failed to send".                                                                                                 |
+| 匯出       | export                  | Download records as a file.                                                                                                                                               |
+| 跟進負責人 | follow-up owner         | The staff member responsible for a supporter's follow-up.                                                                                                                 |
+| 對帳       | reconcile               | Match bank lines to payments. 銀行對帳檔 is "bank statement file".                                                                                                        |
+| 撤銷       | reverse                 | Undo an allocation with a reversing entry. 分配撤銷記錄 is "allocation reversal".                                                                                         |
+| 標記已收款 | mark as received        | The action on a pending manual payment. 確認收款 is "Confirm payment".                                                                                                    |
+| 憑證       | proof                   | Evidence of a payment. 付款證明 is the same: "payment proof".                                                                                                             |
+| 聯絡人     | supporter               | The same record as 支持者. 聯絡人主檔 is "supporter record".                                                                                                              |
 
 ## Volunteers and internships
 
-| zh-HK    | English               | Usage                                                                                                  |
-| -------- | --------------------- | ------------------------------------------------------------------------------------------------------ |
-| 月曆     | calendar              | 義工月曆 is "Volunteer calendar" and 營運月曆 is "Operations calendar".                                |
-| 出席     | attendance            | Whether a registered person came.                                                                      |
-| 出席事實 | attendance record     | A recorded fact of whether and how long someone served. 出席更正 is "attendance correction".           |
-| 未決定   | undecided             | A setting nobody has chosen yet; it blocks publishing. 待設定 is "not set yet".                        |
-| 休息日   | rest day              | A day when no service runs.                                                                            |
-| 名冊     | directory             | 義工名冊 is "Volunteer directory": every volunteer profile, registered for a session or not.           |
-| 名額     | places                | The number of spaces in a session. 義工名額 is "volunteer places".                                     |
-| 收生     | intake                | Opening and closing internship applications. 收生設定 is "intake settings".                            |
-| 收容所   | shelter               | A session's venue key: cat shelter, dog shelter, adoption day (領養日); any other is "Other venue".    |
-| 有效值   | effective value       | The value a setting ends up with after inheritance.                                                    |
-| 佇列     | queue                 | 通知佇列 is "notification queue". 重新排隊 is "Queue again".                                           |
-| 改期     | reschedule            | Move a registration to another session. 團體安排與改期 is "Group arrangements and rescheduling".       |
-| 身份     | profile               | A volunteer's identity record: 義工身份 is "volunteer profile". Not the supporter 身份, "role".        |
-| 身份核實 | identity verification | Staff confirm a profile against evidence. 待核實 is "Awaiting verification".                           |
-| 到期日   | expiry date           | The day a qualification stops being valid.                                                             |
-| 服務時數 | service hours         | The hours a volunteer served, only as recorded.                                                        |
-| 沿用     | inherit               | Takes its value from the venue or the shared default. 回復繼承 is "Revert to inherited".               |
-| 門檻     | threshold             | The number a late release condition compares with.                                                     |
-| 保留名額 | reserved places       | Places of a volunteer role that are held back for it. 保留位 means the same.                           |
-| 恆常     | regular               | Tier `regular`. One screen says 普通 for the same tier; the English is still "regular".                |
-| 政策     | policy                | The rules for sessions, quotas and tiers. 義工政策設定 is "Volunteer policy settings".                 |
-| 政策來源 | policy source         | Where a setting comes from: shared default (共用預設), venue or template.                              |
-| 活動     | activity              | A volunteer activity. It has sessions.                                                                 |
-| 候補     | waitlist              | 候補中 is "Waitlisted". 補位聯絡 is "waitlist contact": telling a waitlisted volunteer a place opened. |
-| 凍結截點 | freeze cut-off        | The time after which a group's size is fixed. A later change is a "late change".                       |
-| 容量     | capacity              | The most a session can take: 場次容量 is "session capacity". The spaces in it are 名額, "places".      |
-| 時段     | time slot             | One slot of a service day.                                                                             |
-| 時間基準 | time basis            | The first or the last session of the day that a daily late release counts from.                        |
-| 晉升     | promotion             | Moving up a tier. 降級 is "demotion" and 年資 is "years of service".                                   |
-| 級別     | tier                  | A volunteer's level: newcomer, regular or senior.                                                      |
-| 配額     | quota                 | A limit set by policy for a tier or a day. 全日配額 is "Daily quota".                                  |
-| 條款     | terms                 | The terms a volunteer agrees to for a session.                                                         |
-| 組       | batch                 | One transaction of a bulk operation on sessions. A group of people is 團體, "group".                   |
-| 報名     | registration          | A person's sign-up for a session. The verb is "register".                                              |
-| 報名窗口 | registration window   | The time when registration is open: from its opening to its closing.                                   |
-| 場地     | venue                 | Where an activity takes place.                                                                         |
-| 場次     | session               | One scheduled time of an activity.                                                                     |
-| 測試模式 | test mode             | Builds the notification queue and sends nothing.                                                       |
-| 無上限   | unlimited             | No limit. 不限 means the same: write "unlimited".                                                      |
-| 評核     | assessment            | The monthly review that can change a volunteer's tier.                                                 |
-| 新手     | newcomer              | Tier `newcomer`.                                                                                       |
-| 補位     | late release          | Rules that open unfilled places to other tiers close to the start. 晚期補位 is "Late release".         |
-| 資格     | qualification         | A recorded permission or certificate to do a duty.                                                     |
-| 資深     | senior                | Tier `senior`.                                                                                         |
-| 團體查詢 | group enquiry         | An enquiry from a group that wants to volunteer together.                                              |
-| 團體情景 | group situation       | Whether the session has a confirmed group. 配對政策 is "paired policies".                              |
-| 領隊     | leader                | The senior volunteer who leads a group session. 輔助 is "assistant".                                   |
-| 撤銷資格 | revoke                | End a qualification record; it stays in the history. 撤銷 for a sponsorship allocation is "reverse".   |
-| 模擬     | simulation            | Tries a scenario without publishing or changing the policy.                                            |
-| 熟手     | experienced volunteer | A regular or a senior volunteer.                                                                       |
-| 貓舍     | cat shelter           | A venue for an internship (服務場地 is "Venues"). 狗舍 is "dog shelter".                               |
-| 職務     | volunteer role        | A duty in a session, such as 職務名額 "volunteer role places". Not the staff access role (角色).       |
-| 覆蓋     | coverage              | Whether the sessions the approved policy calls for exist. 應開場次 is "scheduled sessions".            |
-| 鎖定     | lock                  | Fix a selection of sessions so that sessions added later do not join it.                               |
-| 證據     | evidence              | What shows that a profile or a qualification is real.                                                  |
-| 識別碼   | identifier            | A short code staff type to tell one role, quota or limit from another.                                 |
+| zh-HK    | English               | Usage                                                                                                                                                                     |
+| -------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 月曆     | calendar              | 義工月曆 is "Volunteer calendar" and 營運月曆 is "Operations calendar".                                                                                                   |
+| 出席     | attendance            | Whether a registered person came.                                                                                                                                         |
+| 出席事實 | attendance record     | A recorded fact of whether and how long someone served. 出席更正 is "attendance correction".                                                                              |
+| 未決定   | undecided             | A setting nobody has chosen yet; it blocks publishing. 待設定 is "not set yet".                                                                                           |
+| 休息日   | rest day              | A day when no service runs.                                                                                                                                               |
+| 名冊     | directory             | 義工名冊 is "Volunteer directory": every volunteer profile, registered for a session or not.                                                                              |
+| 名額     | places                | The number of spaces in a session. 義工名額 is "volunteer places".                                                                                                        |
+| 收生     | intake                | Opening and closing internship applications. 收生設定 is "intake settings".                                                                                               |
+| 收容所   | shelter               | A session's venue key: cat shelter, dog shelter, adoption day (領養日); any other is "Other venue".                                                                       |
+| 有效值   | effective value       | The value a setting ends up with after inheritance.                                                                                                                       |
+| 佇列     | queue                 | 通知佇列 is "notification queue". 重新排隊 is "Queue again".                                                                                                              |
+| 改期     | reschedule            | Move a registration to another session. 團體安排與改期 is "Group arrangements and rescheduling".                                                                          |
+| 身份     | profile               | A volunteer's identity record: 義工身份 is "volunteer profile". Not the supporter 身份, "role".                                                                           |
+| 身份核實 | identity verification | Staff confirm a profile against evidence. 待核實 is "Awaiting verification".                                                                                              |
+| 到期日   | expiry date           | The day a qualification stops being valid.                                                                                                                                |
+| 服務時數 | service hours         | The hours a volunteer served, only as recorded.                                                                                                                           |
+| 沿用     | inherit               | Takes its value from the venue or the shared default. 回復繼承 is "Revert to inherited".                                                                                  |
+| 門檻     | threshold             | The number a late release condition compares with.                                                                                                                        |
+| 保留名額 | reserved places       | Places of a volunteer role that are held back for it. 保留位 means the same.                                                                                              |
+| 恆常     | regular               | Tier `regular`. One screen says 普通 for the same tier; the English is still "regular".                                                                                   |
+| 政策     | policy                | The rules for sessions, quotas and tiers. 義工政策設定 is "Volunteer policy settings".                                                                                    |
+| 政策來源 | policy source         | Where a setting comes from: shared default (共用預設), venue or template.                                                                                                 |
+| 活動     | activity              | A volunteer activity. It has sessions. As a content type, 活動 is "Event": an event page. A volunteer activity a piece of content links to is still "Volunteer activity". |
+| 候補     | waitlist              | 候補中 is "Waitlisted". 補位聯絡 is "waitlist contact": telling a waitlisted volunteer a place opened.                                                                    |
+| 凍結截點 | freeze cut-off        | The time after which a group's size is fixed. A later change is a "late change".                                                                                          |
+| 容量     | capacity              | The most a session can take: 場次容量 is "session capacity". The spaces in it are 名額, "places".                                                                         |
+| 時段     | time slot             | One slot of a service day.                                                                                                                                                |
+| 時間基準 | time basis            | The first or the last session of the day that a daily late release counts from.                                                                                           |
+| 晉升     | promotion             | Moving up a tier. 降級 is "demotion" and 年資 is "years of service".                                                                                                      |
+| 級別     | tier                  | A volunteer's level: newcomer, regular or senior.                                                                                                                         |
+| 配額     | quota                 | A limit set by policy for a tier or a day. 全日配額 is "Daily quota".                                                                                                     |
+| 條款     | terms                 | The terms a volunteer agrees to for a session.                                                                                                                            |
+| 組       | batch                 | One transaction of a bulk operation on sessions. A group of people is 團體, "group".                                                                                      |
+| 報名     | registration          | A person's sign-up for a session. The verb is "register".                                                                                                                 |
+| 報名窗口 | registration window   | The time when registration is open: from its opening to its closing.                                                                                                      |
+| 場地     | venue                 | Where an activity takes place.                                                                                                                                            |
+| 場次     | session               | One scheduled time of an activity.                                                                                                                                        |
+| 測試模式 | test mode             | Builds the notification queue and sends nothing.                                                                                                                          |
+| 無上限   | unlimited             | No limit. 不限 means the same: write "unlimited".                                                                                                                         |
+| 評核     | assessment            | The monthly review that can change a volunteer's tier.                                                                                                                    |
+| 新手     | newcomer              | Tier `newcomer`.                                                                                                                                                          |
+| 補位     | late release          | Rules that open unfilled places to other tiers close to the start. 晚期補位 is "Late release".                                                                            |
+| 資格     | qualification         | A recorded permission or certificate to do a duty.                                                                                                                        |
+| 資深     | senior                | Tier `senior`.                                                                                                                                                            |
+| 團體查詢 | group enquiry         | An enquiry from a group that wants to volunteer together.                                                                                                                 |
+| 團體情景 | group situation       | Whether the session has a confirmed group. 配對政策 is "paired policies".                                                                                                 |
+| 領隊     | leader                | The senior volunteer who leads a group session. 輔助 is "assistant".                                                                                                      |
+| 撤銷資格 | revoke                | End a qualification record; it stays in the history. 撤銷 for a sponsorship allocation is "reverse".                                                                      |
+| 模擬     | simulation            | Tries a scenario without publishing or changing the policy.                                                                                                               |
+| 熟手     | experienced volunteer | A regular or a senior volunteer.                                                                                                                                          |
+| 貓舍     | cat shelter           | A venue for an internship (服務場地 is "Venues"). 狗舍 is "dog shelter".                                                                                                  |
+| 職務     | volunteer role        | A duty in a session, such as 職務名額 "volunteer role places". Not the staff access role (角色).                                                                          |
+| 覆蓋     | coverage              | Whether the sessions the approved policy calls for exist. 應開場次 is "scheduled sessions".                                                                               |
+| 鎖定     | lock                  | Fix a selection of sessions so that sessions added later do not join it.                                                                                                  |
+| 證據     | evidence              | What shows that a profile or a qualification is real.                                                                                                                     |
+| 識別碼   | identifier            | A short code staff type to tell one role, quota or limit from another.                                                                                                    |
 
 ## Content and publishing
 
@@ -231,26 +231,28 @@ other way round.
 
 ## Status and workflow
 
-| zh-HK    | English     | Usage                                                                                                                            |
-| -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 已完成   | completed   |                                                                                                                                  |
-| 已取消   | cancelled   | The status. The action 取消 is "Cancel".                                                                                         |
-| 已確認   | confirmed   |                                                                                                                                  |
-| 已關閉   | closed      | 已結案 is "Closed" too.                                                                                                          |
-| 失敗     | failed      | Say what to do next in the message.                                                                                              |
-| 未完成   | incomplete  |                                                                                                                                  |
-| 批量     | bulk        | An action on many records at once.                                                                                               |
-| 到期     | due         | When a task is to be done: 沒有到期日 is "No due date" and 即將到期 is "Upcoming". For a qualification, 到期日 is "expiry date". |
-| 狀態     | status      |                                                                                                                                  |
-| 待處理   | pending     | Waiting for someone to act.                                                                                                      |
-| 停用     | disable     | 已停用 is "Disabled".                                                                                                            |
-| 排序     | sort order  | The position of a record in its list. 次序 is the same: write "sort order".                                                      |
-| 啟用     | enable      | 已啟用 is "Enabled".                                                                                                             |
-| 處理中   | in progress | Being worked on now.                                                                                                             |
-| 逐筆     | one by one  | Per record, not as a batch.                                                                                                      |
-| 逾期     | overdue     | A task past its due date. 已逾期 is "Overdue".                                                                                   |
-| 暫停     | paused      | Temporarily stopped. It can be resumed.                                                                                          |
-| 優先次序 | priority    | Task priority. 緊急 is "Urgent" and 普通 is "Normal".                                                                            |
+| zh-HK    | English        | Usage                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 已完成   | completed      |                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 已取消   | cancelled      | The status. The action 取消 is "Cancel".                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 已確認   | confirmed      |                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 已關閉   | closed         | 已結案 is "Closed" too.                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 失敗     | failed         | Say what to do next in the message.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 未完成   | incomplete     | Not finished. For cases and tasks, 未完成 is "open": see 未完成個案 in "Animals and adoption".                                                                                                                                                                                                                                                                                                                                           |
+| 批量     | bulk           | An action on many records at once.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 到期     | due            | When a task is to be done: 沒有到期日 is "No due date" and 即將到期 is "Upcoming". For a qualification, 到期日 is "expiry date".                                                                                                                                                                                                                                                                                                         |
+| 狀態     | status         |                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 待處理   | pending        | Waiting for someone to act.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 待審核   | pending review | Waiting for a staff member's review: a pledge, a payment proof, a gallery photo or an internship application. Not "Pending" alone, which is 待處理.                                                                                                                                                                                                                                                                                      |
+| 停用     | disable        | 已停用 is "Disabled". As the state of a record, such as a coordinator status, 停用 is "Inactive".                                                                                                                                                                                                                                                                                                                                        |
+| 排序     | sort order     | The position of a record in its list. 次序 is the same: write "sort order".                                                                                                                                                                                                                                                                                                                                                              |
+| 啟用     | enable         | 已啟用 is "Enabled". As the state of a record, such as a coordinator status, 啟用 is "Active".                                                                                                                                                                                                                                                                                                                                           |
+| 處理中   | in progress    | Being worked on now.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| 逐筆     | one by one     | Per record, not as a batch.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 結束     | end            | One English word for each sense. The end of a time range: "End time", "End date", or "End" for the field alone. The end of the period a page is in effect, beside 生效時間 "Effective from": "Effective until". When a case closed: "Closed", as for 已結案. A sponsorship or an activity that has finished: "Ended" (已結束). A coordinator status flagged 結束 closes the case: "Closing". The action: "End", as in "End sponsorship". |
+| 逾期     | overdue        | A task past its due date. 已逾期 is "Overdue".                                                                                                                                                                                                                                                                                                                                                                                           |
+| 暫停     | paused         | Temporarily stopped. It can be resumed.                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 優先次序 | priority       | Task priority. 緊急 is "Urgent" and 普通 is "Normal".                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## Actions
 
@@ -297,20 +299,20 @@ other way round.
 
 ## Pages and bulk actions
 
-| zh-HK        | English             | Usage                                                                                                |
-| ------------ | ------------------- | ---------------------------------------------------------------------------------------------------- |
-| 工作區       | workspace           | The page where a task is done. The link is "Open workspace".                                         |
-| 成功         | succeeded           | The result of one item in a bulk action.                                                             |
-| 技術參考     | technical reference | The operation id of a bulk action, to quote when reporting a problem.                                |
-| 步驟         | step                | A numbered suggestion on the task overview.                                                          |
-| 後台         | admin               | The back office, as in the breadcrumb root "Admin". 後台使用者 is "admin users".                     |
-| 原本／套用後 | before / after      | The value before and after a bulk action.                                                            |
-| 略過         | skipped             | Left out of a bulk action on purpose.                                                                |
-| 項目         | item                | One row of a bulk action or a list.                                                                  |
-| 衝突         | conflict            | The record changed after the preview, so the bulk action left it alone.                              |
-| 錯誤編號     | error reference     | The short code shown with a load failure, so staff can quote it.                                     |
-| 邀請         | invite              | Send an admin user a link to join. 待接受邀請 is "Invite pending" everywhere, in a badge or a count. |
-| 麵包屑導覽   | breadcrumb          | The path shown above a page title.                                                                   |
+| zh-HK        | English             | Usage                                                                                                                                                                                                             |
+| ------------ | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 工作區       | workspace           | The page where a task is done. The link is "Open workspace".                                                                                                                                                      |
+| 成功         | succeeded           | The result of one item in a bulk action.                                                                                                                                                                          |
+| 技術參考     | technical reference | The operation id of a bulk action, to quote when reporting a problem.                                                                                                                                             |
+| 步驟         | step                | A numbered suggestion on the task overview.                                                                                                                                                                       |
+| 後台         | admin               | The back office, as in the breadcrumb root "Admin". 後台使用者 is "admin users".                                                                                                                                  |
+| 原本／套用後 | before / after      | The value before and after a bulk action.                                                                                                                                                                         |
+| 略過         | skipped             | Left out of a bulk action or a reconciliation on purpose: 已略過 is "Skipped". A notification draft a staff member chose not to send is the other sense: 略過 is "Dismiss" and 已略過 "Dismissed" (see 通知草稿). |
+| 項目         | item                | One row of a bulk action or a list.                                                                                                                                                                               |
+| 衝突         | conflict            | The record changed after the preview, so the bulk action left it alone.                                                                                                                                           |
+| 錯誤編號     | error reference     | The short code shown with a load failure, so staff can quote it.                                                                                                                                                  |
+| 邀請         | invite              | Send an admin user a link to join. 待接受邀請 is "Invite pending" everywhere, in a badge or a count.                                                                                                              |
+| 麵包屑導覽   | breadcrumb          | The path shown above a page title.                                                                                                                                                                                |
 
 ## Information pages, FAQ and team
 
@@ -339,6 +341,8 @@ The English follows these rules. They are the same rules the plan and every area
 - **Buttons are verbs:** Save, Publish, Archive, Void, Approve, Reject. Never "OK".
 - **Errors say what to do next.** For example "Could not save. Check the highlighted fields and try again."
 - **Terms** come from this glossary. A new term is added here before it is used.
+- **Product names:** payment method names (Stripe, PayMe, FPS, PayPal, AlipayHK) are product
+  names, written as the product writes them, with nothing added: "Stripe", not "Stripe card".
 - **Spelling and commas:** British spelling, as in Hong Kong English (centre, colour, programme,
   enquiry, finalise). No comma before "and" or "or" in a list: "a, b and c".
 - **Counts:** a count message uses the singular for one and the plural for every other number:

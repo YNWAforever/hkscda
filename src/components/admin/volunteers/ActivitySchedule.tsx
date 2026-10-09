@@ -155,8 +155,10 @@ export function ActivitySchedule({
                   </div>
                   <p>{format.sessionTime(r.starts_at)}</p>
                   <p>
-                    {r.shelter_key === null ? r.location : common.shelterKey(r.shelter_key)} ·{" "}
-                    {status(r)}
+                    {r.shelter_key === null
+                      ? r.location
+                      : common.shelterKey(r.shelter_key, r.location)}{" "}
+                    · {status(r)}
                   </p>
                   <p>{copy.cardStaffing(r.approved, r.waitlisted)}</p>
                   <p>

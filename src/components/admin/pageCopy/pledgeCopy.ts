@@ -168,7 +168,7 @@ export const pledgePageCopy = defineAdminCopy({
         give_asia: "Give.asia",
       },
       proofReviewStatuses: {
-        pending: "Pending",
+        pending: "Pending review",
         approved: "Approved",
         rejected: "Rejected",
       },

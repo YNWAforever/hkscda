@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useSharedAdminCopy } from "../i18n/copy";
+import { useAdminLanguageOrDefault } from "../i18n/languageContext";
 import { BulkResults, type BulkItemResult } from "./BulkResults";
 import { bulkCopy } from "./copy";
 
@@ -20,6 +21,7 @@ export function BulkReview({
   onApply: () => void;
 }) {
   const copy = useSharedAdminCopy(bulkCopy).review;
+  const language = useAdminLanguageOrDefault();
   const [reviewed, setReviewed] = useState(false);
   const [page, setPage] = useState(1);
   const pending = items.filter((item) => item.status === "pending").length;
@@ -56,8 +58,20 @@ export function BulkReview({
                 <td className="p-2">{item.before}</td>
                 <td className="p-2">{item.after}</td>
                 <td className="p-2">
-                  {item.status}
-                  {item.reasonCode ? " · " + item.reasonCode : ""}
+                  {copy.status[item.status]}
+                  {item.reasonCode ? (
+                    // The reason is a technical code, kept as stored. Chinese keeps its plain text.
+                    language === "zh" ? (
+                      " · " + item.reasonCode
+                    ) : (
+                      <>
+                        {" · "}
+                        <code>{item.reasonCode}</code>
+                      </>
+                    )
+                  ) : (
+                    ""
+                  )}
                 </td>
               </tr>
             ))}

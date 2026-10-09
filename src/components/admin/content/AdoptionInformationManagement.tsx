@@ -557,6 +557,7 @@ function FeeEditor({
           {fee.version <= knownVersion.current ? copy.hintSeparator + copy.staleHint : null}
           <button
             type="button"
+            className="ml-2"
             disabled={fee.version <= knownVersion.current}
             onClick={() => {
               knownVersion.current = fee.version;
@@ -716,6 +717,7 @@ export function EstateEditor({
           {estate.version <= knownVersion.current ? copy.hintSeparator + copy.staleHint : null}
           <button
             type="button"
+            className="ml-2"
             disabled={estate.version <= knownVersion.current}
             onClick={() => {
               knownVersion.current = estate.version;

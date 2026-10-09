@@ -135,7 +135,7 @@ export const caseDetailCopy = defineAdminCopy({
       requestedAnimal: "Requested animal",
       animalType: "Animal type",
       housingType: "Housing type",
-      familySize: "Family size",
+      familySize: "Household size",
       existingPets: "Existing pets",
       submitted: "Submitted",
       reason: "Reason",

@@ -371,7 +371,7 @@ describe("supporter list in English", () => {
     };
     const failed = renderAdminInEnglish(<SupporterList />);
     expectNoChineseText(failed);
-    expect(failed).toContain("Could not load supporters");
+    expect(failed).toContain("Could not load supporters. Refresh the page or try again.");
     expect(failed).not.toContain("No supporters found");
     queries["crm-supporters"] = { data: { supporters: [], total: 0 } };
     const empty = renderAdminInEnglish(<SupporterList />);

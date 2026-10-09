@@ -43,6 +43,8 @@ const realRouter = await import("@tanstack/react-router");
 const state = {
   role: "admin" as "admin" | "staff",
   listFails: false,
+  /** The error a failed content list fails with, when it is not the default one. */
+  listError: null as Error | null,
   reviewFails: false,
   editor: "loaded" as "loaded" | "loading" | "missing",
   detail: undefined as ContentDetail | undefined,
@@ -552,7 +554,7 @@ mock.module("@tanstack/react-query", () => ({
         : { ...base, data: { total: 60, items: queueRows(String(options.queryKey[1])) } };
     if (key === "admin-content")
       return state.listFails
-        ? failed
+        ? { ...failed, error: state.listError ?? failed.error }
         : {
             ...base,
             data: {
@@ -642,6 +644,7 @@ const { editorPanelsCopy } = await import("./editorPanelsCopy");
 const { reviewCopy } = await import("./reviewCopy");
 const { cmsStateCopy } = await import("./cmsStateCopy");
 const { ContentAdminError } = await import("./contentErrors");
+const { errorReference } = await import("../LoadFailure");
 
 function expectAll(markup: string, texts: string[]) {
   for (const text of texts) expect(markup, text).toContain(text);
@@ -650,6 +653,7 @@ function expectAll(markup: string, texts: string[]) {
 function reset() {
   state.role = "admin";
   state.listFails = false;
+  state.listError = null;
   state.reviewFails = false;
   state.editor = "loaded";
   state.detail = undefined;
@@ -767,6 +771,20 @@ describe("content list in English", () => {
       "Could not load the list to check. Refresh the page or try again later.",
     );
     expect((markup.match(/—/g) ?? []).length).toBe(4);
+  });
+
+  test("writes a lapsed session in English, and keeps the Chinese reference as it was", () => {
+    reset();
+    state.listFails = true;
+    state.listError = new AdminSessionError("not_signed_in");
+    // The failure shows only a reference made from the error's text, never the text itself, so
+    // the reference is made from the English text in English and from 未登入 in Chinese, as before.
+    const markup = renderAdminInEnglish(<ContentManagement />);
+    expectNoChineseText(markup, { allow: DATA });
+    expect(markup).toContain(`>${errorReference("Not signed in. Sign in again.")}</span>`);
+    const chinese = renderAdminInChinese(<ContentManagement />);
+    expect(chinese).toContain(`>${errorReference("未登入")}</span>`);
+    reset();
   });
 
   test("shows an empty list in English", () => {

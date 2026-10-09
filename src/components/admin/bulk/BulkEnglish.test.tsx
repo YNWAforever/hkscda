@@ -103,6 +103,41 @@ describe("BulkReview", () => {
     expect(markup).not.toContain("Expired");
   });
 
+  test("names each item's result in English and keeps its reason code as a code", () => {
+    const markup = renderAdminInEnglish(review());
+    expectNoChineseText(markup);
+    for (const cell of [
+      '<td class="p-2">Pending</td>',
+      '<td class="p-2">Succeeded</td>',
+      '<td class="p-2">Skipped · <code>no_change</code></td>',
+      '<td class="p-2">Conflict · <code>version_changed</code></td>',
+      '<td class="p-2">Failed · <code>not_found</code></td>',
+    ]) {
+      expect(markup, cell).toContain(cell);
+    }
+    expect(bulkCopy.en.review.status).toEqual({
+      pending: "Pending",
+      succeeded: "Succeeded",
+      skipped: "Skipped",
+      conflict: "Conflict",
+      failed: "Failed",
+    });
+  });
+
+  test("keeps the Chinese result cells as the stored codes, as before", () => {
+    const markup = renderAdminInChinese(review());
+    for (const cell of [
+      '<td class="p-2">pending</td>',
+      '<td class="p-2">succeeded</td>',
+      '<td class="p-2">skipped · no_change</td>',
+      '<td class="p-2">conflict · version_changed</td>',
+      '<td class="p-2">failed · not_found</td>',
+    ]) {
+      expect(markup, cell).toContain(cell);
+    }
+    expect(markup).not.toContain("<code>no_change</code>");
+  });
+
   test("says when the preview has expired and what to do", () => {
     const markup = renderAdminInEnglish(review({ expiresAt: PAST }));
     expectNoChineseText(markup);

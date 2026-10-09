@@ -10,6 +10,7 @@ import type {
   CoordinatorStatus,
   CoordinatorTask,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -27,6 +28,7 @@ import {
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
   hasUnsavedProfileChanges,
+  pipelineReadErrorText,
   readPipelineLookup,
   resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
@@ -269,11 +271,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     sourcesQuery.isFetching ||
     statusesQuery.isFetching;
 
-  const readErrors = [
-    positionsQuery.error?.message,
-    sourcesQuery.error?.message,
-    statusesQuery.error?.message,
-  ].filter(Boolean);
+  const readErrors = [positionsQuery.error, sourcesQuery.error, statusesQuery.error]
+    .map((error) => pipelineReadErrorText(error, language))
+    .filter(Boolean);
 
   const lifecycleMutation = useMutation<void, Error, { animalId: string; status: AnimalStatus }>({
     mutationFn: ({ animalId, status }) =>
@@ -883,7 +883,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
             role="alert"
           >
-            {lifecycleMutation.error.message}
+            {adminErrorMessage(lifecycleMutation.error, language) ?? ""}
           </div>
         )}
       </section>
@@ -893,7 +893,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-error)]"
           role="alert"
         >
-          {pipelineQuery.error.message}
+          {adminErrorMessage(pipelineQuery.error, language) ?? ""}
         </section>
       ) : (
         <div className="space-y-4">
@@ -999,14 +999,14 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         sourceOptions={profileSourceOptions}
         positionOptions={profilePositionOptions}
         saving={saveProfileMutation.isPending}
-        saveError={saveProfileMutation.error?.message ?? null}
+        saveError={adminErrorMessage(saveProfileMutation.error, language)}
         onFieldChange={updateProfileField}
         onSubmit={handleProfileSubmit}
         onRequestClose={requestCloseProfileDialog}
         animalId={selectedAnimalId}
         tasks={selectedAnimalTasks}
         statuses={statuses}
-        tasksError={selectedAnimalTasksQuery.error?.message ?? null}
+        tasksError={adminErrorMessage(selectedAnimalTasksQuery.error, language)}
         onTasksChanged={invalidateSelectedAnimalTasks}
       />
     </div>

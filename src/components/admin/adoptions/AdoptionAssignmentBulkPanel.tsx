@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 
+import { useAdminLanguage } from "../adminI18n";
 import { BulkReview } from "../bulk/BulkReview";
 import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { AdoptionAssignmentBulkOperation } from "../../../routes/api/admin/adoptions/assignment-bulk";
 import { assignmentBulkCopy } from "./copy";
 
@@ -30,6 +32,7 @@ export function AdoptionAssignmentBulkPanel({
   onMinAgeDaysChange: (value: number) => void;
 }) {
   const copy = useAdminCopy(assignmentBulkCopy);
+  const { language } = useAdminLanguage();
   const users = useQuery({
     queryKey: ["admin-access-users"],
     queryFn: () => fetchAdminJson<UsersResponse>("/api/admin/access/users"),
@@ -123,7 +126,7 @@ export function AdoptionAssignmentBulkPanel({
       setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : copy.previewFailed);
+      setError(adminErrorMessage(cause, language) ?? copy.previewFailed);
     } finally {
       setBusy(false);
     }
@@ -140,7 +143,7 @@ export function AdoptionAssignmentBulkPanel({
         }),
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : copy.applyFailed);
+      setError(adminErrorMessage(cause, language) ?? copy.applyFailed);
       try {
         setOperation(
           await fetchAdminJson<AdoptionAssignmentBulkOperation>(

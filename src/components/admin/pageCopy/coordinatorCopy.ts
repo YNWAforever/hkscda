@@ -219,7 +219,7 @@ export const coordinatorPageCopy = defineAdminCopy({
       systemKeyLocked: "System key locked",
       tableEmpty: "No statuses",
       loadError: "Could not load statuses",
-      deleteConfirm: (zh: string, en: string) => `Delete ${zh} / ${en}?`,
+      deleteConfirm: (zh: string, en: string) => `Delete ${en.trim() || zh}?`,
       noChanges: "No changes to save.",
       flags: {
         active: "Active",
@@ -230,7 +230,7 @@ export const coordinatorPageCopy = defineAdminCopy({
       },
       columns: {
         label: "Label",
-        order: "Order",
+        order: "Sort order",
         flags: "Flags",
         category: "Category",
         actions: "Actions",

@@ -12,7 +12,10 @@ export const supporterPageCopy = defineAdminCopy({
       searchPlaceholder: "搜尋姓名、電郵、電話、參考編號或收據",
       roleFilterLabel: "按身份篩選",
       allRoles: "所有身份",
+      /** The supporter list failed to load. */
       loadError: "無法載入支持者",
+      /** The supporter form could not load the one supporter it edits. */
+      loadSupporterError: "無法載入支持者",
       empty: "沒有找到支持者",
       newSupporter: "新增支持者",
       editSupporter: "編輯支持者",
@@ -57,7 +60,8 @@ export const supporterPageCopy = defineAdminCopy({
       searchPlaceholder: "Search name, email, phone, reference or receipt",
       roleFilterLabel: "Filter by role",
       allRoles: "All roles",
-      loadError: "Could not load supporters",
+      loadError: "Could not load supporters. Refresh the page or try again.",
+      loadSupporterError: "Could not load the supporter. Refresh the page or try again.",
       empty: "No supporters found",
       newSupporter: "New supporter",
       editSupporter: "Edit supporter",

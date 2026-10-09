@@ -7,6 +7,7 @@ import type {
   CoordinatorExportKind,
   CoordinatorMonthlySummary,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { supabase } from "../../../lib/supabase";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -214,9 +215,7 @@ export function CoordinatorReports() {
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (nextError) {
-      setDownloadError(
-        nextError instanceof Error ? nextError.message : pageCopy.common.downloadFailed,
-      );
+      setDownloadError(adminErrorMessage(nextError, language) ?? pageCopy.common.downloadFailed);
     } finally {
       setDownloadingId(null);
     }
@@ -363,12 +362,12 @@ export function CoordinatorReports() {
         <div className="space-y-2">
           {summaryQuery.error && (
             <InlineAlert>
-              {copy.loadSummaryError}: {summaryQuery.error.message}
+              {copy.loadSummaryError}: {adminErrorMessage(summaryQuery.error, language) ?? ""}
             </InlineAlert>
           )}
           {historyQuery.error && (
             <InlineAlert>
-              {copy.loadHistoryError}: {historyQuery.error.message}
+              {copy.loadHistoryError}: {adminErrorMessage(historyQuery.error, language) ?? ""}
             </InlineAlert>
           )}
           {downloadError && <InlineAlert>{downloadError}</InlineAlert>}

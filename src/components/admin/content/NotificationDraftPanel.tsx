@@ -86,6 +86,7 @@ export function NotificationDraftPanel({
                           .then(() => onUpdateStatus(draft.id, "copied"))
                           .catch((error: unknown) => {
                             setClipboardError({
+                              // admin-error-render-ok: the browser's clipboard error, never a session error
                               detail: error instanceof Error ? error.message : undefined,
                             });
                           });

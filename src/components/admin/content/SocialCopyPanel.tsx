@@ -180,6 +180,7 @@ function SocialCopyCard({
                 .then(() => onUpdateStatus(copy.id, "copied"))
                 .catch((error: unknown) => {
                   setClipboardError({
+                    // admin-error-render-ok: the browser's clipboard error, never a session error
                     detail: error instanceof Error ? error.message : undefined,
                   });
                 });

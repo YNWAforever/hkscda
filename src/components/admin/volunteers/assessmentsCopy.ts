@@ -168,7 +168,7 @@ export const assessmentsCopy = defineAdminCopy({
     candidates: {
       title: "Senior volunteer candidates (staff must approve)",
       text: "Candidates are only found from the published policy and verified evidence of years of service and of observation as regular. Nobody is promoted automatically.",
-      unnamed: "Unnamed volunteer",
+      unnamed: "No name entered",
       line: (name: string, trigger: string, moment: string) => `${name} · ${trigger} · ${moment}`,
       triggers: {
         verified_attendance: "Triggered by a verified attendance",

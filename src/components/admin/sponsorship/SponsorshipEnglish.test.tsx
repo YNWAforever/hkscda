@@ -54,16 +54,6 @@ mock.module("@tanstack/react-query", () => ({
         data: { assignees: [{ authUserId: "u-1", email: "staff@example.org", role: "staff" }] },
       };
     if (key === "sponsorship-finance") return { ...base, data: financeData };
-    if (key === "sponsorship-assignment-candidates")
-      return {
-        ...base,
-        data: {
-          animals: [
-            { id: "a1", name: "小白", name_en: "Snowy", code: "C100", image_url: null },
-            { id: "a2", name: "小黑", name_en: null, code: null, image_url: null },
-          ],
-        },
-      };
     return { ...base, data: undefined };
   },
 }));
@@ -78,8 +68,7 @@ const { PledgeDetailDrawer } = await import("./PledgeDetailDrawer");
 const { FinancePanel } = await import("./FinancePanel");
 const { ReminderDraftPanel, ReminderDraftPreview } = await import("./ReminderDraftPanel");
 const { SponsorshipFollowupBulkPanel } = await import("./SponsorshipFollowupBulkPanel");
-const { AnimalPicker } = await import("./AnimalPicker");
-const { pledgeLaneCopy, animalPickerCopy } = await import("./copy");
+const { pledgeLaneCopy } = await import("./copy");
 const { pledgeDrawerCopy } = await import("./drawerCopy");
 const { financeCopy } = await import("./financeCopy");
 const { followupBulkCopy, reminderDraftCopy } = await import("./bulkCopy");
@@ -850,26 +839,11 @@ describe("bulk follow-up panel and animal picker in English", () => {
       "建立分派預覽",
     ]);
   });
-
-  test("shows the animal picker with the English name where there is one", () => {
-    const english = renderAdminInEnglish(<AnimalPicker value="a1" onChange={() => {}} />);
-    // Snowy has an English name; the second animal has none, so its Chinese name stands in.
-    expectNoChineseText(english, { allow: [SECOND_ANIMAL] });
-    expectAll(english, [
-      "Search sponsorship animals",
-      'placeholder="Name or reference number"',
-      "Snowy · C100",
-      `${SECOND_ANIMAL} · No public reference number`,
-    ]);
-    const chinese = renderAdminInChinese(<AnimalPicker value="a1" onChange={() => {}} />);
-    expectAll(chinese, ["搜尋助養動物", "名字或動物編號", "小白 · C100", "小黑 · 未有公開編號"]);
-  });
 });
 
 describe("sponsorship copy", () => {
   test("the English halves have no Chinese", () => {
     expectNoChineseInCopy(pledgeLaneCopy.en);
-    expectNoChineseInCopy(animalPickerCopy.en);
     expectNoChineseInCopy(pledgeDrawerCopy.en);
     expectNoChineseInCopy(reminderDraftCopy.en);
     expectNoChineseInCopy(followupBulkCopy.en);
@@ -894,7 +868,6 @@ describe("sponsorship copy", () => {
       pageErrors.proofReviewChanged,
       pageErrors.cancel,
       pageErrors.recordPayment,
-      animalPickerCopy.en.loadFailed,
       reminderDraftCopy.en.failed,
       financeCopy.en.loadFailed,
       ...Object.values(reminderDraftCopy.en.unavailable),

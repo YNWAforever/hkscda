@@ -91,6 +91,8 @@ const { animalPipelineCopy } = await import("./animalPipelineCopy");
 const { adoptionFormatCopy } = await import("./formatCopy");
 const { intakeUrgencyLabel } = await import("./intakeInboxLogic");
 const { bilingualStatusName } = await import("../adminPageCopy");
+const { AdminSessionError } = await import("../../../lib/admin/session");
+const { PipelineLookupError } = await import("./animalPipelineLogic");
 
 const status = (overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus => ({
   id: "st-1",
@@ -602,6 +604,9 @@ describe("case detail in English", () => {
       "Could not load statuses (x). Refresh the page to try again.",
     );
     expect(caseDetailCopy.en.notFinalized).toBe("Not finalised");
+    // 家庭人數 is "household size", as the glossary has it.
+    expect(caseDetailCopy.en.labels.familySize).toBe("Household size");
+    expect(caseDetailCopy.zh.labels.familySize).toBe("家庭人數");
   });
 });
 
@@ -714,6 +719,24 @@ describe("adopter detail in English", () => {
     ]) {
       expect(markup, text).toContain(text);
     }
+  });
+
+  test("writes a lapsed session in the follow-up statuses failure in English", () => {
+    queries = {
+      "adopter-profile": { data: { adopter } },
+      "coordinator-statuses": {
+        data: { statuses },
+        error: new AdminSessionError("not_signed_in"),
+      },
+    };
+    const markup = renderAdminInEnglish(<AdopterDetail adopterId="ad-1" />);
+    expectNoChineseText(markup, { allow: allowed });
+    expect(markup).toContain(
+      "Could not load follow-up statuses (Not signed in. Sign in again.). Refresh the page to try again.",
+    );
+    expect(renderAdminInChinese(<AdopterDetail adopterId="ad-1" />)).toContain(
+      "無法載入跟進狀態: 未登入",
+    );
   });
 
   test("shows the loading, failure and missing states in English", () => {
@@ -1278,6 +1301,71 @@ describe("animal pipeline in English", () => {
     expect(animalPipelineCopy.zh.sourceOption("街頭救援", "Street rescue")).toBe(
       "街頭救援 / Street rescue",
     );
+  });
+});
+
+// A query refetched after the session lapsed fails with a session error, whose message is the
+// Chinese text by design. Each screen writes it in its own language.
+describe("a lapsed session in the adoption screens", () => {
+  const notSignedIn = () => new AdminSessionError("not_signed_in");
+  const english = "Not signed in. Sign in again.";
+
+  test("the case list writes a failed status filter in English, and in Chinese as before", () => {
+    queries = {
+      "admin-me": { data: { admin: { role: "staff" } } },
+      "coordinator-statuses": { data: undefined, error: notSignedIn() },
+      "adoption-cases": { data: { cases: [], total: 0 } },
+    };
+    const markup = renderAdminInEnglish(<CaseList />);
+    expectNoChineseText(markup);
+    expect(markup).toContain(`Could not load status filters: ${english}`);
+    expect(renderAdminInChinese(<CaseList />)).toContain("無法載入狀態篩選: 未登入");
+  });
+
+  test("the case detail writes its failed statuses in English, and in Chinese as before", () => {
+    queries = {
+      "adoption-case": {
+        data: { case: { ...caseDetail, publicAdoption: null, matches: [], followups: [] } },
+      },
+      "coordinator-statuses": { data: undefined, error: notSignedIn() },
+      "admin-active-animal-options": { data: [] },
+    };
+    const markup = renderAdminInEnglish(<CaseDetail caseId="c-1" />);
+    expectNoChineseText(markup, { allow: CASE_FIXTURE_TEXT });
+    expect(markup).toContain(
+      `Could not load statuses (${english}). Refresh the page to try again.`,
+    );
+    expect(renderAdminInChinese(<CaseDetail caseId="c-1" />)).toContain("無法載入狀態: 未登入");
+  });
+
+  test("the match panel writes a failed animal list in English, and in Chinese as before", () => {
+    queries = { "admin-active-animal-options": { data: undefined, error: notSignedIn() } };
+    const match = <MatchPanel caseId="c-1" matches={[]} statuses={statuses as never} />;
+    const markup = renderAdminInEnglish(match);
+    expectNoChineseText(markup);
+    expect(markup).toContain(`role="alert">${english}</div>`);
+    expect(renderAdminInChinese(match)).toContain('role="alert">未登入</div>');
+  });
+
+  test("the animal pipeline names the failed lookup and writes its cause in English", () => {
+    queries = {
+      "coordinator-animal-pipeline": { data: undefined, error: notSignedIn() },
+      "animal-positions": {
+        data: undefined,
+        error: new PipelineLookupError("positions", notSignedIn()),
+      },
+      "arrival-sources": { data: [] },
+      "coordinator-statuses": { data: undefined, error: notSignedIn() },
+    };
+    const markup = renderAdminInEnglish(<AnimalPipeline />);
+    expectNoChineseText(markup);
+    expect(markup).toContain(`Positions could not load: ${english}`);
+    expect(markup).toContain(`<p>${english}</p>`);
+    // The failed pipeline itself.
+    expect(markup).toContain(`role="alert">${english}</section>`);
+    const chinese = renderAdminInChinese(<AnimalPipeline />);
+    expect(chinese).toContain("Positions could not load: 未登入");
+    expect(chinese).toContain('role="alert">未登入</section>');
   });
 });
 

@@ -65,9 +65,10 @@ export const volunteerCommonCopy = defineAdminCopy({
     shelterName: (key: string, _unnamed?: UnnamedVenue) => shelterLabel(key),
     /**
      * A venue key as the activity table has always shown it: the key itself. The Chinese admin has
-     * never shown a name there, so Chinese keeps the key; English shows the name, or "Other venue".
+     * never shown a name there, so Chinese keeps the key; English shows the name, or for a venue it
+     * has no name for, `location` (the activity's own) when one is given and "Other venue" when not.
      */
-    shelterKey: (key: string) => key,
+    shelterKey: (key: string, _location?: string) => key,
     /** A status, kind or reason the screen has no label for, shown as stored. */
     unknown: (stored: string) => stored,
   },
@@ -96,7 +97,8 @@ export const volunteerCommonCopy = defineAdminCopy({
       cleaning_day: "Cleaning day",
     },
     shelterName: (key: string, unnamed?: UnnamedVenue) => englishShelterName(key, unnamed),
-    shelterKey: (key: string) => englishShelterName(key),
+    shelterKey: (key: string, location?: string) =>
+      !isNamedShelter(key) && location?.trim() ? location : englishShelterName(key),
     unknown: () => "Unknown",
   },
 });

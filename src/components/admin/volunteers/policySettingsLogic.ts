@@ -89,7 +89,9 @@ export function policyErrorMessage(error: unknown, language: AdminLanguage): str
   const copy = pickAdminCopy(policySettingsCopy, language).errors;
   if (error instanceof PolicyInputError) return copy[error.code];
   if (isConflict(error)) return copy.conflict;
-  if (error instanceof ZodError)
+  if (error instanceof ZodError) {
+    // admin-error-render-ok: a ZodError, never a session error; Chinese shows zod's text as before
     return language === "zh" ? error.message : englishPolicyProblems(error);
+  }
   return volunteerAdminErrorMessage(error, language) ?? copy.failed;
 }

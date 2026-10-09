@@ -60,19 +60,3 @@ export const pledgeLaneCopy = defineAdminCopy({
     },
   },
 });
-
-/** The sponsorship animal search, a picker that matches an animal to a pledge. */
-export const animalPickerCopy = defineAdminCopy({
-  zh: {
-    searchLabel: "搜尋助養動物",
-    searchPlaceholder: "名字或動物編號",
-    loadFailed: "未能載入可配對動物",
-    noCode: "未有公開編號",
-  },
-  en: {
-    searchLabel: "Search sponsorship animals",
-    searchPlaceholder: "Name or reference number",
-    loadFailed: "Could not load the animals that can be matched. Refresh the page and try again.",
-    noCode: "No public reference number",
-  },
-});

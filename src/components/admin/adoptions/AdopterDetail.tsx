@@ -4,6 +4,7 @@ import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useMemo } from "react";
 import type { ReactNode } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   AdopterDetail as AdopterDetailData,
   CoordinatorStatus,
@@ -571,7 +572,11 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
 
       {statusesError && (
         <section className={sectionClassName()}>
-          <TaskPanelAsyncError message={copy.loadFollowupStatusesError(statusesError.message)} />
+          <TaskPanelAsyncError
+            message={copy.loadFollowupStatusesError(
+              adminErrorMessage(statusesError, language) ?? "",
+            )}
+          />
           <div className="px-4 py-3 text-sm text-[var(--color-text-muted)]">
             {copy.followupStatusHint}
           </div>

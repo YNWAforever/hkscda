@@ -1,4 +1,6 @@
 import type { AnimalStatus, AnimalType } from "../../../types/animal";
+import type { AdminLanguage } from "../../../lib/admin/language";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   AnimalInternalProfile,
   AnimalPipelineRow,
@@ -32,6 +34,35 @@ const PIPELINE_LOOKUP_LABELS = {
   arrivalSources: "Arrival sources",
 } as const;
 
+type PipelineLookup = keyof typeof PIPELINE_LOOKUP_LABELS;
+
+/**
+ * The text of a failed lookup: the lookup's name, then its cause in `language`. A session error
+ * is written in that language, and any other reason is shown as it came.
+ */
+export function pipelineLookupErrorText(
+  lookup: PipelineLookup,
+  cause: unknown,
+  language: AdminLanguage = "zh",
+): string {
+  const reason = adminErrorMessage(cause, language) ?? String(cause);
+  return `${PIPELINE_LOOKUP_LABELS[lookup]} could not load: ${reason}`;
+}
+
+/**
+ * A pipeline lookup that failed. Its message is the text in Chinese, as it always was; it keeps
+ * the lookup and the cause so the screen can write the text again in its own language.
+ */
+export class PipelineLookupError extends Error {
+  constructor(
+    readonly lookup: PipelineLookup,
+    cause: unknown,
+  ) {
+    super(pipelineLookupErrorText(lookup, cause), { cause });
+    this.name = "PipelineLookupError";
+  }
+}
+
 /**
  * Reads one pipeline reference lookup and, on failure, rethrows with the lookup's
  * name in front of the cause. Positions and arrival sources go through the same
@@ -39,15 +70,25 @@ const PIPELINE_LOOKUP_LABELS = {
  * identically for both and the error banner could not say which one failed.
  */
 export async function readPipelineLookup<T>(
-  lookup: keyof typeof PIPELINE_LOOKUP_LABELS,
+  lookup: PipelineLookup,
   read: () => Promise<T>,
 ): Promise<T> {
   try {
     return await read();
   } catch (error) {
-    const cause = error instanceof Error ? error.message : String(error);
-    throw new Error(`${PIPELINE_LOOKUP_LABELS[lookup]} could not load: ${cause}`);
+    throw new PipelineLookupError(lookup, error);
   }
+}
+
+/**
+ * The text to show for a failed read on the pipeline screen, in `language`, or `null` when
+ * nothing failed. A failed lookup keeps its name in front of the cause.
+ */
+export function pipelineReadErrorText(error: unknown, language: AdminLanguage): string | null {
+  if (error instanceof PipelineLookupError) {
+    return pipelineLookupErrorText(error.lookup, error.cause, language);
+  }
+  return adminErrorMessage(error, language);
 }
 
 const STATUS_ORDER: AnimalStatus[] = ["available", "fostered", "adopted"];

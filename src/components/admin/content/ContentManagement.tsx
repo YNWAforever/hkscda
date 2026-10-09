@@ -11,6 +11,7 @@ import type {
   NotificationDraftStatus,
 } from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import {
   parseListPage,
   useListQueryState,
@@ -147,6 +148,7 @@ function ContentManagementRuntime() {
     qualityParam === "demo" || qualityParam === "expired" || qualityParam === "missing_source"
       ? qualityParam
       : "all";
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [createFailed, setCreateFailed] = useState(false);
@@ -253,7 +255,7 @@ function ContentManagementRuntime() {
         mapVisibility={mapVisibility}
         hasUpdate={hasUpdate}
         draftState={draftState}
-        error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
+        error={adminErrorMessage(contentQuery.error, language)}
         onQueryChange={undefined}
         onTypeChange={(value) => changeFilter({ type: value })}
         onStatusChange={(value) => changeFilter({ status: value })}

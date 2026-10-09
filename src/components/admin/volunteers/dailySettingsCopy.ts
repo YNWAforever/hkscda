@@ -1,12 +1,12 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
-import { volunteerCommonCopy } from "./volunteerCommonCopy";
+import { volunteerCommonCopy, type UnnamedVenue } from "./volunteerCommonCopy";
 
 /** What the screen last did, as a code. */
 export type DailyNotice = "preview_updated" | "published";
 
 /** The prefix of a quota's scope key: `all`, or the key of one venue. */
-function scopeVenue(scopeKey: string): string {
+export function scopeVenue(scopeKey: string): string {
   return scopeKey.split(":")[0];
 }
 
@@ -25,8 +25,11 @@ export const dailySettingsCopy = defineAdminCopy({
     },
     choose: "選擇日期及配額",
     pleaseChoose: "請選擇",
-    /** The name of the scope of a quota in the list of dates: all venues, or the venue the key names. */
-    scopeName: (scopeKey: string): string => {
+    /**
+     * The name of the scope of a quota in the list of dates: all venues, or the venue the key names.
+     * English numbers the venues it has no name for, by `unnamed`; Chinese ignores it.
+     */
+    scopeName: (scopeKey: string, _unnamed?: UnnamedVenue): string => {
       if (scopeKey.startsWith("all:")) return "跨場地";
       return volunteerCommonCopy.zh.shelterName(scopeVenue(scopeKey));
     },
@@ -105,9 +108,9 @@ export const dailySettingsCopy = defineAdminCopy({
     },
     choose: "Choose a date and quota",
     pleaseChoose: "Choose",
-    scopeName: (scopeKey: string) => {
+    scopeName: (scopeKey: string, unnamed?: UnnamedVenue) => {
       if (scopeKey.startsWith("all:")) return "All venues";
-      return volunteerCommonCopy.en.shelterName(scopeVenue(scopeKey));
+      return volunteerCommonCopy.en.shelterName(scopeVenue(scopeKey), unnamed);
     },
     tierSeparator: ", ",
     option: (date: string, scope: string, tiers: string) =>
