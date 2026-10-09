@@ -27,21 +27,41 @@ export function onConfirmBodies(text: string): string[] {
   return bodies;
 }
 
+/** Why an `onConfirm` body would not keep the dialog open on failure; empty when it would. */
+export function reasonSiteProblems(body: string): string[] {
+  const problems: string[] = [];
+  if (!/await [\w.]*(mutateAsync|onAction)/.test(body)) problems.push("does not await the request");
+  if (/\.mutate\(/.test(body)) problems.push("fires and forgets with mutate()");
+  // `.catch(` turns a failure into success, so the dialog would close and lose the reason.
+  if (/\.catch\(/.test(body)) problems.push("swallows the rejection with .catch()");
+  return problems;
+}
+
 describe("confirm dialogs that will take a reason wait for the request", () => {
   for (const path of SITES) {
     test(path, async () => {
       const bodies = onConfirmBodies(await Bun.file(path).text());
       expect(bodies.length).toBeGreaterThan(0);
       for (const body of bodies) {
-        expect(body).toMatch(/await [\w.]*(mutateAsync|onAction)/);
-        expect(body).not.toMatch(/\.mutate\(/);
+        expect(reasonSiteProblems(body)).toEqual([]);
       }
     });
   }
 
   test("the check sees a fire-and-forget handler", () => {
     const bad = "<ConfirmActionDialog onConfirm={async () => { m.mutate(x); }} />";
-    expect(onConfirmBodies(bad)[0]).toMatch(/\.mutate\(/);
+    expect(reasonSiteProblems(onConfirmBodies(bad)[0])).not.toEqual([]);
     expect(onConfirmBodies("<Other onConfirm={x} />")).toEqual([]);
+  });
+
+  test("the check sees a rejection swallowed with .catch(", () => {
+    const bad =
+      "<ConfirmActionDialog onConfirm={async () => { await m.mutateAsync(x).catch(() => undefined); }} />";
+    expect(reasonSiteProblems(onConfirmBodies(bad)[0])).not.toEqual([]);
+  });
+
+  test("the check passes a handler that awaits and lets a failure reject", () => {
+    const good = "<ConfirmActionDialog onConfirm={async () => { await m.mutateAsync(x); }} />";
+    expect(reasonSiteProblems(onConfirmBodies(good)[0])).toEqual([]);
   });
 });
