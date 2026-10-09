@@ -25,7 +25,7 @@ const { DESTINATIONS, EXTRA_DESTINATIONS, RECORD_PAGES, VOLUNTEER_PAGES, ADOPTIO
   await loadDestinations();
 
 const LANGUAGES: readonly AdminLanguage[] = ["en", "zh"];
-const PAGE_STATES = ["loading", "empty"] as const satisfies readonly QueryState[];
+const PAGE_STATES = ["loading", "empty", "error"] as const satisfies readonly QueryState[];
 const RECORD_STATES = ["loading", "empty", "error"] as const satisfies readonly QueryState[];
 
 type Allowance = {
@@ -80,24 +80,30 @@ const WORKSPACE_NAV_ITEM: Partial<Record<string, AdminNavItemId>> = {
 };
 
 /** The Chinese heading of each workspace page whose wording differs from its label. Pinned. */
-const WORKSPACE_ZH_PINNED: Partial<Record<string, string>> = {
-  overview: "義工營運總覽",
-  activities: "義工活動工作台",
-  calendar: "義工活動工作台",
-  tasks: "義工今日待辦與通知",
-  operations: "團體申請及義工改期",
-  qualifications: "義工身份與資格核實",
-  "daily-settings": "全日義工配額",
-  assessments: "每月義工級別評核",
-  sources: "共用來源、場地及資格",
-};
+const WORKSPACE_PINNED: Record<string, Allowance> = Object.fromEntries(
+  Object.entries({
+    overview: "義工營運總覽",
+    activities: "義工活動工作台",
+    calendar: "義工活動工作台",
+    tasks: "義工今日待辦與通知",
+    operations: "團體申請及義工改期",
+    qualifications: "義工身份與資格核實",
+    "daily-settings": "全日義工配額",
+    assessments: "每月義工級別評核",
+    sources: "共用來源、場地及資格",
+  }).map(([name, zh]) => [name, { zh, reason: ZH_PENDING_OWNER }]),
+);
 
-function expectedWorkspaceHeading(name: string, language: AdminLanguage): string {
-  if (name === "person") return volunteerWorkspaceCopy[language].intros.person.title;
-  if (language === "zh" && WORKSPACE_ZH_PINNED[name]) return WORKSPACE_ZH_PINNED[name];
+/** The heading a workspace page would have with no pin: its navigation or workspace label. */
+function workspaceLabel(name: string, language: AdminLanguage): string {
   const navItem = WORKSPACE_NAV_ITEM[name];
   if (navItem) return adminCopy[language].navItems[navItem];
   return volunteerWorkspaceCopy[language].pages[name as VolunteerWorkspacePageId].label;
+}
+
+function expectedWorkspaceHeading(name: string, language: AdminLanguage): string {
+  if (name === "person") return volunteerWorkspaceCopy[language].intros.person.title;
+  return WORKSPACE_PINNED[name]?.[language] ?? workspaceLabel(name, language);
 }
 
 const VOLUNTEER_PAGE_STATES: Partial<Record<string, readonly QueryState[]>> = {
@@ -225,16 +231,17 @@ describe("a volunteer workspace page has one h1, from the page or from the frame
   }
 });
 
+const ZH_TAB_HEADINGS: Record<keyof typeof ADOPTION_TABS, Allowance> = {
+  fees: { zh: "領養資料管理", reason: ZH_PENDING_OWNER },
+  page: { zh: "領養資料管理", reason: ZH_PENDING_OWNER },
+  estates: { zh: "領養資料管理", reason: ZH_PENDING_OWNER },
+  rules: { zh: "領養規則管理", reason: ZH_PENDING_OWNER },
+  careTopics: { zh: "動物照顧須知管理", reason: ZH_PENDING_OWNER },
+};
+
 describe("every tab of the adoption information page has one h1", () => {
   // The tabs draw different editors. English heads all of them with the navigation label; the
   // Chinese headings keep today's wording, which differs per tab until the owner approves a label.
-  const ZH_TAB_HEADINGS = {
-    fees: "領養資料管理",
-    page: "領養資料管理",
-    estates: "領養資料管理",
-    rules: "領養規則管理",
-    careTopics: "動物照顧須知管理",
-  } as const;
 
   for (const [tab, page] of Object.entries(ADOPTION_TABS)) {
     for (const language of LANGUAGES) {
@@ -247,10 +254,30 @@ describe("every tab of the adoption information page has one h1", () => {
           expect(heading, where).toBe(
             language === "en"
               ? adminCopy.en.navItems["adoption-information"]
-              : ZH_TAB_HEADINGS[tab as keyof typeof ZH_TAB_HEADINGS],
+              : (ZH_TAB_HEADINGS[tab as keyof typeof ZH_TAB_HEADINGS].zh ?? ""),
           );
         });
       }
     }
   }
+});
+
+describe("a pinned heading is only allowed while it differs from its label", () => {
+  test("every workspace pin has a reason and differs from the label", () => {
+    for (const [name, allowance] of Object.entries(WORKSPACE_PINNED)) {
+      expect(allowance.reason.trim().length, `${name} needs a reason`).toBeGreaterThan(20);
+      expect(allowance.zh, `${name} is pinned but equals its label`).not.toBe(
+        workspaceLabel(name, "zh"),
+      );
+    }
+  });
+
+  test("every adoption tab pin has a reason and differs from the label", () => {
+    for (const [tab, allowance] of Object.entries(ZH_TAB_HEADINGS)) {
+      expect(allowance.reason.trim().length, `${tab} needs a reason`).toBeGreaterThan(20);
+      expect(allowance.zh, `${tab} is pinned but equals its label`).not.toBe(
+        adminCopy.zh.navItems["adoption-information"],
+      );
+    }
+  });
 });

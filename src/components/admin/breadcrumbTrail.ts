@@ -25,21 +25,22 @@ export type BreadcrumbOptions = {
 /** The longest record name a crumb shows, ellipsis included. */
 export const RECORD_NAME_MAX_LENGTH = 80;
 
-const SECTIONS: readonly string[] = [
-  "tasks",
-  "cat",
-  "dog",
-  "sponsor",
-  "applications",
-  "payments",
-  "supporters",
-  "volunteers",
-  "content",
-  "access",
-];
+// A record keyed by the union, so `tsc` fails when a section is added or removed here and not there.
+const SECTION_KEYS: Record<AdminSection, true> = {
+  tasks: true,
+  cat: true,
+  dog: true,
+  sponsor: true,
+  applications: true,
+  payments: true,
+  supporters: true,
+  volunteers: true,
+  content: true,
+  access: true,
+};
 
 function isSection(value: string | null): value is AdminSection {
-  return value !== null && SECTIONS.includes(value);
+  return value !== null && Object.hasOwn(SECTION_KEYS, value);
 }
 
 /**
