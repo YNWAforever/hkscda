@@ -208,3 +208,25 @@ describe("access management in Chinese", () => {
     expect(markup).toContain(">重試<");
   });
 });
+
+/** The text of every status pill (`StatusPill` / `StatusBadge`): the span after its dot. */
+function pillLabels(markup: string): string[] {
+  return [...markup.matchAll(/aria-hidden="true"><\/span><span>([^<]*)<\/span>/g)].map((m) => m[1]);
+}
+
+describe("access status pills", () => {
+  test("shows each user's status as a pill with the same wording in Chinese and English", () => {
+    users = loadedUsers;
+    audit = loadedAudit;
+    expect(pillLabels(renderAdminInChinese(<AccessManagement />))).toEqual([
+      "啟用",
+      "待接受邀請",
+      "已停用",
+    ]);
+    expect(pillLabels(renderAdminInEnglish(<AccessManagement />))).toEqual([
+      "Active",
+      "Invite pending",
+      "Disabled",
+    ]);
+  });
+});
