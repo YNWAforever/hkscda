@@ -224,6 +224,7 @@ mock.module("@tanstack/react-query", () => ({
 }));
 
 const { BoardMemberForm, GovernanceManagement } = await import("./GovernanceManagement");
+const { draftFromMember } = await import("./governanceDraft");
 const { KnowledgeManagement, KnowledgeManagementView } = await import("./KnowledgeManagement");
 const { PaymentMethodsManagement, PaymentMethodsManagementView } =
   await import("./PaymentMethodsManagement");
@@ -245,6 +246,23 @@ function reset() {
 }
 
 const noop = () => {};
+
+describe("a new board member's effective date", () => {
+  const at = (iso: string) => () => new Date(iso);
+
+  test("defaults to today in Hong Kong, across Hong Kong midnight", () => {
+    // 16:30Z on 6 Oct is 00:30 on 7 Oct in Hong Kong; the UTC day would be the 6th.
+    expect(draftFromMember(undefined, at("2026-10-06T16:30:00Z")).effectiveDate).toBe("2026-10-07");
+    expect(draftFromMember(undefined, at("2026-10-07T15:59:00Z")).effectiveDate).toBe("2026-10-07");
+    expect(draftFromMember(undefined, at("2026-10-07T16:00:00Z")).effectiveDate).toBe("2026-10-08");
+    expect(draftFromMember(undefined, at("2026-12-31T16:30:00Z")).effectiveDate).toBe("2027-01-01");
+  });
+
+  test("keeps a member's stored date when editing", () => {
+    const member = { effectiveDate: "2025-01-15" } as BoardMember;
+    expect(draftFromMember(member, at("2026-10-06T16:30:00Z")).effectiveDate).toBe("2025-01-15");
+  });
+});
 
 describe("team and governance in English", () => {
   test("shows the list in English, with the dates in the English format", () => {

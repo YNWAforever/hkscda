@@ -74,10 +74,27 @@ export function formatAdminDateTime(value: Date | string, language: AdminLanguag
   return `${dateText(date, parts, language)} ${parts.hour}:${parts.minute}`;
 }
 
+/**
+ * The shapes a stored date can take: a calendar day (`2026-10-07`), or an ISO date-time with an
+ * optional seconds part, fraction and zone (`2026-10-07T04:00:00Z`, `2026-10-07 04:00:00+00:00`).
+ * Loose text such as "Room 5", which `new Date` would read as 1 May 2001, is not a date.
+ */
+const STORED_DATE_SHAPE =
+  /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}(?::?\d{2})?)?)?$/i;
+
 /** The date of a stored value, or `null` when there is none, it is blank or it is not a date. */
 function storedDate(value: Date | string | null | undefined): Date | null {
   if (value === null || value === undefined) return null;
-  return toDate(typeof value === "string" ? value.trim() : value);
+  if (value instanceof Date) return toDate(value);
+  const text = value.trim();
+  return STORED_DATE_SHAPE.test(text) ? toDate(text) : null;
+}
+
+/** The Hong Kong calendar day of a moment as `YYYY-MM-DD`, for a date input's value. */
+export function hongKongDay(date: Date): string {
+  const parts = hongKongParts(date);
+  const pad = (part: string | undefined) => (part ?? "").padStart(2, "0");
+  return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}`;
 }
 
 /**

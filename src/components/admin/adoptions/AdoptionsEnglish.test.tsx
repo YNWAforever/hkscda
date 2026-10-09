@@ -1030,6 +1030,17 @@ describe("date and fee formats", () => {
     expect(format.money(null)).toBe("-");
   });
 
+  test("the English list day is the Hong Kong day, not the UTC day", () => {
+    const { listDay } = adoptionFormatCopy.en;
+    // 16:30Z on 6 Oct is 00:30 on 7 Oct in Hong Kong.
+    expect(listDay("2026-10-06T16:30:00Z")).toBe("7 Oct 2026 (Wed)");
+    expect(listDay("2026-10-07T04:00:00Z")).toBe("7 Oct 2026 (Wed)");
+    expect(listDay("2026-10-07")).toBe("7 Oct 2026 (Wed)");
+    for (const value of [null, undefined, "", "  ", "not a date"]) {
+      expect(listDay(value)).toBe("-");
+    }
+  });
+
   test("Chinese uses the shared Hong Kong date and the fee with two decimals", () => {
     const format = adoptionFormatCopy.zh;
     expect(format.date("2026-10-06T20:00:00Z")).toBe("2026年10月7日 (三)");

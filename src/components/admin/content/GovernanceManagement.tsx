@@ -6,27 +6,11 @@ import type { BoardMember, BoardMemberInput } from "../../../lib/governance/type
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { governanceCopy } from "./governanceCopy";
+import { draftFromMember, type BoardMemberDraft } from "./governanceDraft";
+
+export type { BoardMemberDraft } from "./governanceDraft";
 
 export const ADMIN_GOVERNANCE_QUERY_KEY = ["admin-governance"] as const;
-
-export type BoardMemberDraft = {
-  id?: string;
-  name: string;
-  roleTitle: string;
-  sortOrder: number;
-  effectiveDate: string;
-};
-
-function draftFromMember(member?: BoardMember): BoardMemberDraft {
-  return {
-    id: member?.id,
-    name: member?.name ?? "",
-    roleTitle: member?.roleTitle ?? "",
-    sortOrder: member?.sortOrder ?? 0,
-    // admin-format-ok: the date input's default value, a form value and not a displayed date
-    effectiveDate: member?.effectiveDate ?? new Date().toISOString().slice(0, 10),
-  };
-}
 
 export function toInput(draft: BoardMemberDraft): BoardMemberInput {
   return {

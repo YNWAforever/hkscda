@@ -275,6 +275,32 @@ describe("adoption status pills keep their wording", () => {
     expect(en).toEqual(["Normal", "High", "Overdue", "Resolved"]);
   });
 
+  test("IntakeInbox shows the Hong Kong day in both languages, across HK midnight", () => {
+    answers.clear();
+    answers.set("adoption-intake-items", {
+      items: [
+        {
+          id: "i1",
+          publicApplicationId: "pub-i1",
+          adoptionCaseId: null,
+          lane: "new_adoption_application",
+          urgency: "normal",
+          // 16:30Z on 6 Oct is 00:30 on 7 Oct in Hong Kong; the UTC day would be the 6th.
+          dueAt: "2026-10-06T16:30:00Z",
+          createdAt: "2026-10-01T02:30:00Z",
+          resolvedAt: null,
+          summary: { applicantName: "Chan" },
+        } satisfies AdoptionIntakeItem,
+      ],
+      total: 1,
+    });
+    const en = renderAdminInEnglish(<IntakeInbox />);
+    expect(en).toContain("7 Oct 2026 (Wed)");
+    expect(en).toContain("1 Oct 2026 (Thu)");
+    expect(en).not.toContain("2026-10-06");
+    expect(renderAdminInChinese(<IntakeInbox />)).toContain("2026年10月7日 (三)");
+  });
+
   test("AnimalPipeline shows each animal's lifecycle status", () => {
     const row = (id: string, animalStatus: AnimalPipelineRow["status"]) =>
       ({

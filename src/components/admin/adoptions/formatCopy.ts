@@ -5,7 +5,6 @@ import {
   formatAdminDateTimeOrNull,
   formatAdminMoney,
 } from "../i18n/format";
-import { formatDate } from "./caseWorkflowLogic";
 
 /** The coordinator report history's English time: the `Intl` medium date with a short time. */
 function englishReportTime(value: string | null | undefined): string {
@@ -24,8 +23,8 @@ function englishReportTime(value: string | null | undefined): string {
 /**
  * How the case, adopter, intake, finalisation and coordinator report screens write dates and
  * fees. Both languages use the admin's Hong Kong formats; Chinese shows the HK$ amount with two
- * decimals, as English does. Two English lines keep the format they had before Chinese moved to
- * the shared one: the intake and adopter lists (`listDay`) and the report history (`reportTime`).
+ * decimals, as English does. The English report history (`reportTime`) keeps the format it had
+ * before Chinese moved to the shared one.
  */
 export const adoptionFormatCopy = defineAdminCopy({
   zh: {
@@ -47,7 +46,7 @@ export const adoptionFormatCopy = defineAdminCopy({
       const text = value?.trim();
       return text ? formatAdminDate(text, "en") : "-";
     },
-    listDay: (value: string | null | undefined) => formatDate(value),
+    listDay: (value: string | null | undefined) => formatAdminDateOrNull(value, "en") ?? "-",
     money: (cents: number | null | undefined) =>
       cents === null || cents === undefined ? "-" : formatAdminMoney(cents / 100, "en"),
     dateRange: (start: string, end: string) =>

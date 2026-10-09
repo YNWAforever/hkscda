@@ -7,7 +7,6 @@ import {
   filterStatusesByCategory,
   findApprovedMatches,
   findDefaultAdoptedOutcomeStatus,
-  formatDate,
   formatFallback,
 } from "./caseWorkflowLogic";
 
@@ -79,11 +78,9 @@ describe("case workflow logic", () => {
     ]);
   });
 
-  test("formats fallback display and the English list date", () => {
+  test("formats fallback display", () => {
     expect(formatFallback("  value  ")).toBe("value");
     expect(formatFallback(null)).toBe("-");
-    expect(formatDate("2026-06-01T12:30:00Z")).toBe("2026-06-01");
-    expect(formatDate(null)).toBe("-");
   });
 
   test("builds finalization payload with cents and nullable optional fields", () => {
