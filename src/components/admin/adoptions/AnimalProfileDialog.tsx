@@ -72,6 +72,8 @@ export type AnimalProfileDialogProps = {
   statuses: CoordinatorStatus[];
   /** The message for a failed task load, or null. */
   tasksError: string | null;
+  /** The error behind `tasksError`, so the failure can be classified from its status. */
+  tasksCause?: unknown;
   /** Re-runs the failed task load. */
   onRetryTasks: () => void;
   onTasksChanged: () => Promise<void>;
@@ -93,6 +95,7 @@ export function AnimalProfileDialog({
   tasks,
   statuses,
   tasksError,
+  tasksCause,
   onRetryTasks,
   onTasksChanged,
 }: AnimalProfileDialogProps) {
@@ -369,16 +372,22 @@ export function AnimalProfileDialog({
               </DialogFooter>
             </form>
 
-            <TaskPanel
-              title={dialog.tasksTitle}
-              subtitle={dialog.tasksSubtitle}
-              tasks={tasks}
-              statuses={statuses}
-              defaultLinks={{ animalId: animalId ?? undefined }}
-              onChanged={onTasksChanged}
-            />
-            {tasksError && (
-              <LoadFailure error={tasksError} onRetry={onRetryTasks} title={tasksError} />
+            {tasksError ? (
+              // A failed load shows as a failure, never as an empty list with a create form.
+              <LoadFailure
+                error={tasksCause ?? tasksError}
+                onRetry={onRetryTasks}
+                title={tasksError}
+              />
+            ) : (
+              <TaskPanel
+                title={dialog.tasksTitle}
+                subtitle={dialog.tasksSubtitle}
+                tasks={tasks}
+                statuses={statuses}
+                defaultLinks={{ animalId: animalId ?? undefined }}
+                onChanged={onTasksChanged}
+              />
             )}
           </>
         )}

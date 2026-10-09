@@ -364,7 +364,7 @@ export function CoordinatorReports() {
             <LoadFailure
               error={summaryQuery.error}
               onRetry={() => void summaryQuery.refetch()}
-              title={copy.loadSummaryError}
+              title={`${copy.loadSummaryError}: ${adminErrorMessage(summaryQuery.error, language) ?? ""}`}
             />
           )}
           {downloadError && <InlineAlert>{downloadError}</InlineAlert>}
@@ -500,7 +500,7 @@ export function CoordinatorReports() {
           empty={copy.empty}
           error={historyQuery.error}
           onRetry={() => void historyQuery.refetch()}
-          failureTitle={copy.loadHistoryError}
+          failureTitle={`${copy.loadHistoryError}: ${adminErrorMessage(historyQuery.error, language) ?? ""}`}
           renderMobileCard={renderExportCard}
         />
       </section>

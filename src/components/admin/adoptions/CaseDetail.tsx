@@ -629,6 +629,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       {/* admin-load-failure-ok: CaseDetailStatusesError renders a LoadFailure with the retry */}
       {statusesError && (
         <CaseDetailStatusesError
+          // admin-load-failure-ok: only the heading of the LoadFailure that CaseDetailStatusesError renders
           message={adminErrorMessage(statusesError, language) ?? ""}
           error={statusesError}
           onRetry={() => void refetchStatuses()}

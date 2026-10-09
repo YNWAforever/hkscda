@@ -183,6 +183,25 @@ describe("admin browser session", () => {
     expect((error as { status?: unknown }).status).toBeNull();
   });
 
+  test("wraps a network error that cannot carry a status, with the same message", async () => {
+    globalThis.fetch = mock(async () => {
+      throw Object.freeze(new TypeError("Failed to fetch"));
+    }) as unknown as typeof fetch;
+    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe("Failed to fetch");
+    expect((error as { status?: unknown }).status).toBeNull();
+  });
+
+  test("leaves an aborted request without a status", async () => {
+    globalThis.fetch = mock(async () => {
+      throw new DOMException("aborted", "AbortError");
+    }) as unknown as typeof fetch;
+    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+    expect((error as Error).name).toBe("AbortError");
+    expect("status" in (error as object)).toBe(false);
+  });
+
   test("omits unsafe structured error codes and invalid field collections", async () => {
     globalThis.fetch = mock(async () =>
       Response.json(
@@ -290,7 +309,7 @@ describe("session errors", () => {
     expect((error as InstanceType<typeof AdminSessionError>).status).toBe(401);
   });
 
-  test("a changed account keeps its zh-HK message and carries a code", async () => {
+  test("a changed account keeps its zh-HK message and carries a code and a 401", async () => {
     getSession.mockResolvedValue({
       data: { session: { access_token: "token-b", user: { id: "auth-b" } } },
     });
@@ -298,6 +317,7 @@ describe("session errors", () => {
     expect(error).toBeInstanceOf(AdminSessionError);
     expect((error as InstanceType<typeof AdminSessionError>).code).toBe("identity_changed");
     expect((error as Error).message).toBe("登入身份已變更，請重新載入頁面。");
+    expect((error as InstanceType<typeof AdminSessionError>).status).toBe(401);
   });
 
   test("adminErrorMessage translates a session error and leaves other messages as sent", () => {

@@ -322,8 +322,10 @@ export function StatusAdmin() {
                   </TableRow>
                 ))}
 
+              {/* admin-load-failure-ok: StatusLoadErrorRow renders a LoadFailure with the retry */}
               {error && !isLoading && (
                 <StatusLoadErrorRow
+                  // admin-load-failure-ok: only the heading of the LoadFailure that StatusLoadErrorRow renders
                   message={`${copy.loadError}: ${adminErrorMessage(error, language) ?? ""}`}
                   error={error}
                   onRetry={() => void refetch()}

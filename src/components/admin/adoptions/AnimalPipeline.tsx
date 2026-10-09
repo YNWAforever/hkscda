@@ -1009,6 +1009,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         statuses={statuses}
         // admin-load-failure-ok: the dialog wraps this message in a LoadFailure with a retry
         tasksError={adminErrorMessage(selectedAnimalTasksQuery.error, language)}
+        tasksCause={selectedAnimalTasksQuery.error}
         onRetryTasks={() => void selectedAnimalTasksQuery.refetch()}
         onTasksChanged={invalidateSelectedAnimalTasks}
       />

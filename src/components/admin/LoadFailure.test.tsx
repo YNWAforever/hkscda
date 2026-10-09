@@ -167,10 +167,26 @@ describe("DataTable failure state", () => {
 });
 
 describe("failureClass", () => {
-  test("maps 401 and 403 to forbidden", () => {
-    expect(failureClass(withStatus(401))).toBe("forbidden");
+  test("maps 401 and every session error to session, and 403 to forbidden", () => {
+    expect(failureClass(withStatus(401))).toBe("session");
+    expect(failureClass(new AdminSessionError("not_signed_in"))).toBe("session");
+    expect(failureClass(new AdminSessionError("identity_changed"))).toBe("session");
     expect(failureClass(withStatus(403))).toBe("forbidden");
-    expect(failureClass(new AdminSessionError("not_signed_in"))).toBe("forbidden");
+  });
+
+  test("classifies a wrapper by its cause, one level down", () => {
+    expect(failureClass(new Error("wrapped", { cause: withStatus(403) }))).toBe("forbidden");
+    expect(failureClass(new Error("wrapped", { cause: withStatus(null) }))).toBe("network");
+    expect(
+      failureClass(new Error("wrapped", { cause: new AdminSessionError("not_signed_in") })),
+    ).toBe("session");
+    // Its own status wins, and only one level is followed.
+    expect(
+      failureClass(Object.assign(new Error("x", { cause: withStatus(404) }), { status: 500 })),
+    ).toBe("server");
+    const deep = new Error("a", { cause: new Error("b", { cause: withStatus(404) }) });
+    expect(failureClass(deep)).toBe("unknown");
+    expect(failureClass(new Error("x", { cause: "text" }))).toBe("unknown");
   });
 
   test("maps 404 to not_found and 5xx to server", () => {
@@ -200,12 +216,14 @@ describe("LoadFailure class lines in English", () => {
 
   test("says what to do for each class", () => {
     const lines: Record<string, string> = {
+      session: "Your session has ended. Sign in again.",
       forbidden: "You don't have access to this. Go to a page your role can open.",
       not_found: "This record could not be found. Go back to the list and check it still exists.",
       server: "The server had a problem. Try again in a moment.",
       network: "Could not reach the server. Check your connection and try again.",
     };
     const errors = {
+      session: withStatus(401),
       forbidden: withStatus(403),
       not_found: withStatus(404),
       server: withStatus(500),
@@ -214,7 +232,8 @@ describe("LoadFailure class lines in English", () => {
     for (const [name, error] of Object.entries(errors)) {
       const markup = render(error);
       expectNoChineseText(markup);
-      expect(markup, name).toContain(lines[name].replace("'", "&#x27;"));
+      // A link inside the line splits the text, so compare the text with the tags taken out.
+      expect(markup.replace(/<[^>]+>/g, ""), name).toContain(lines[name].replace("'", "&#x27;"));
       expect(markup, name).toMatch(/<button[^>]*>Retry<\/button>/);
       expect(markup, name).toMatch(/<span class="font-mono">[0-9A-F]{6}<\/span>/);
     }
@@ -225,6 +244,14 @@ describe("LoadFailure class lines in English", () => {
     expect(markup).toContain("Try again. If the problem continues, quote this error reference:");
     expect(markup).not.toContain("The server had a problem");
     expect(markup).not.toContain("You don&#x27;t have access");
+  });
+
+  test("links a session failure to sign-in, which a 403 never does", () => {
+    const markup = render(new AdminSessionError("not_signed_in"));
+    expect(markup).toContain('href="/admin/login"');
+    expect(markup).toContain("Your session has ended.");
+    expect(markup).not.toContain("You don&#x27;t have access");
+    expect(render(withStatus(403))).not.toContain("/admin/login");
   });
 
   test("links a forbidden failure to the first page the signed-in role can open", () => {

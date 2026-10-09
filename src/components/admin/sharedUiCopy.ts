@@ -11,6 +11,8 @@ export const sharedUiCopy = defineAdminCopy({
       // The Chinese half adds no line by design; wording for it is drafted for the owner in
       // docs/superpowers/plans/sp5b-owner-drafts.md.
       classLines: {
+        session: null as string | null,
+        sessionAction: null as string | null,
         forbidden: null as string | null,
         forbiddenAction: null as string | null,
         notFound: null as string | null,
@@ -39,6 +41,8 @@ export const sharedUiCopy = defineAdminCopy({
       retrying: "Retrying…",
       retry: "Retry",
       classLines: {
+        session: "Your session has ended.",
+        sessionAction: "Sign in again.",
         forbidden: "You don't have access to this.",
         forbiddenAction: "Go to a page your role can open.",
         notFound: "This record could not be found. Go back to the list and check it still exists.",

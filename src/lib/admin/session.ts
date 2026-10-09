@@ -124,10 +124,13 @@ export async function fetchAdminJson<T>(
   }).catch((error: unknown) => {
     // A request that never got a response has no status. The error is rethrown as it was, so
     // its message and class are unchanged.
-    if (error instanceof Error && error.name !== "AbortError") {
+    if (!(error instanceof Error) || error.name === "AbortError") throw error;
+    if (Object.isExtensible(error)) {
       Object.defineProperty(error, "status", { value: null, configurable: true });
+      throw error;
     }
-    throw error;
+    // A frozen error cannot carry a status, so it is wrapped with the same message.
+    throw new AdminHttpError(error.message, null);
   });
 
   if (!response.ok) {

@@ -1,4 +1,5 @@
-import { useContext, type ReactNode } from "react";
+import { useRouter } from "@tanstack/react-router";
+import { useContext, type MouseEvent, type ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
 import { AdminHomeRouteContext } from "./adminHomeRoute";
@@ -125,24 +126,49 @@ export function LoadFailure({
 }
 
 /**
+ * A link to another admin page that moves inside the app when there is a router (no full page
+ * reload), and is a plain link otherwise, or for a click with a modifier key.
+ */
+function InAppLink({ href, children }: { href: string; children: ReactNode }) {
+  const router = useRouter({ warn: false });
+  function follow(event: MouseEvent<HTMLAnchorElement>) {
+    if (!router || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+    event.preventDefault();
+    router.history.push(href);
+  }
+  return (
+    <a className="underline" href={href} onClick={follow}>
+      {children}
+    </a>
+  );
+}
+
+/**
  * The sentence that names a class of failure, in the active language, or `null` when there is
- * none (an unknown failure, or a language whose half carries no line). A forbidden failure
- * links to the first page the signed-in role can open when `AdminLayout` has provided it.
+ * none (an unknown failure, or a language whose half carries no line). A session failure
+ * links to sign-in; a forbidden one links to the first page the signed-in role can open when
+ * `AdminLayout` has provided it.
  */
 function useClassLine(failure: FailureClass): ReactNode {
   const lines = useSharedAdminCopy(sharedUiCopy).loadFailure.classLines;
   const homeRoute = useContext(AdminHomeRouteContext);
   switch (failure) {
+    case "session":
+      if (!lines.session) return null;
+      return lines.sessionAction ? (
+        <>
+          {lines.session} <InAppLink href="/admin/login">{lines.sessionAction}</InAppLink>
+        </>
+      ) : (
+        lines.session
+      );
     case "forbidden": {
       if (!lines.forbidden) return null;
       const action = lines.forbiddenAction;
       if (!action) return lines.forbidden;
       return homeRoute ? (
         <>
-          {lines.forbidden}{" "}
-          <a className="underline" href={homeRoute}>
-            {action}
-          </a>
+          {lines.forbidden} <InAppLink href={homeRoute}>{action}</InAppLink>
         </>
       ) : (
         `${lines.forbidden} ${action}`

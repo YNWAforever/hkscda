@@ -1231,13 +1231,15 @@ describe("animal pipeline in English", () => {
       "Internal remarks",
       ">Cancel<",
       "Save profile",
-      "Animal tasks",
-      "Open coordinator work for this animal",
       "Tasks unavailable",
     ]) {
       expect(markup, text).toContain(text);
     }
     expect(markup).not.toContain("Desex");
+    // A failed task load stands in for the task panel: no empty list or create form beside it.
+    expect(markup).not.toContain("Animal tasks");
+    expect(markup).not.toContain("Open coordinator work for this animal");
+    expect(markup).toMatch(/<button[^>]*>Retry<\/button>/);
 
     const saving = renderAdminInEnglish(
       <AnimalProfileDialog {...props} saving saveError="Save failed" />,
@@ -1258,6 +1260,8 @@ describe("animal pipeline in English", () => {
     expectNoChineseText(bare, { allow: ["致電申請人", "阿明", "跟進備註"] });
     expect(bare).toContain("No arrival sources are configured.");
     expect(bare).toContain("No animal positions are configured.");
+    expect(bare).toContain("Animal tasks");
+    expect(bare).toContain("Open coordinator work for this animal");
   });
 
   test("keeps the Chinese admin's profile dialog as the English screen it always was", () => {

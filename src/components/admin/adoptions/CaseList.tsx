@@ -455,6 +455,7 @@ export function CaseList() {
         {statusesError && (
           <CaseListStatusFilterError
             label={copy.filterError}
+            // admin-load-failure-ok: only the heading of the LoadFailure that CaseListStatusFilterError renders
             message={adminErrorMessage(statusesError, language) ?? ""}
             error={statusesError}
             onRetry={() => void refetchStatuses()}

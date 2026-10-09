@@ -142,7 +142,13 @@ export function IntakeSettings() {
       setBusy(false);
     }
   };
-  if (!value) return <p>{settings.loading}</p>;
+  if (!value) {
+    return q.error ? (
+      <LoadFailure error={q.error} onRetry={() => void q.refetch()} />
+    ) : (
+      <p>{settings.loading}</p>
+    );
+  }
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
     ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
