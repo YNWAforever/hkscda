@@ -30,11 +30,13 @@ export function failureClass(error: unknown): FailureClass {
 }
 
 /**
- * Whether `error` itself says the session has lapsed: an `AdminSessionError` or anything else
- * carrying status 401. The expiry redirect and the query retry policy share this one rule.
+ * Whether `error` says the session has lapsed: an `AdminSessionError` or anything else carrying
+ * status 401, read through one level of `cause` exactly as `failureClass` reads it, so a wrapper
+ * such as `PipelineLookupError` around a 401 counts. The expiry redirect and the query retry
+ * policy share this one rule.
  */
 export function isLapsedSession(error: unknown): boolean {
-  return classOfStatus(error) === "session";
+  return failureClass(error) === "session";
 }
 
 /** React Query's own default number of query retries in the browser. */

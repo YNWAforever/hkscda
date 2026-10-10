@@ -141,6 +141,7 @@ export function getAdminAreaForLocation(input: {
     return input.section === "payments" ? "payments" : "animals";
   }
   if (input.pathname.startsWith("/admin/sponsorships")) return "sponsorshipRead";
+  if (input.pathname.startsWith("/admin/payment-methods")) return "payments";
   if (input.pathname.startsWith("/admin/animals")) return "animals";
   if (input.pathname.startsWith("/admin/applications")) return "adoptionCases";
   if (input.pathname.startsWith("/admin/coordinator/inbox")) return "manualIntake";
