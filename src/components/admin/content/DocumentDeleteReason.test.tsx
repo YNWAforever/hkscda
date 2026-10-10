@@ -77,7 +77,7 @@ describe("deleting a document or an annual report asks for a reason", () => {
         expect(source).toMatch(/mutateAsync\(\{[^}]*reason[^}]*\}\)/);
         // ... and the mutation function builds the request from it and hands the result to the sender.
         expect(source).toContain(screen.builder);
-        expect(source).toContain("return sendDocumentDelete(request)");
+        expect(source).toMatch(/return sendDocumentDelete\(request, (adminLanguage|language)\)/);
       });
 
       test("the dialog shows a reason field in Chinese and in English", () => {
@@ -134,7 +134,7 @@ describe("deleting a document or an annual report asks for a reason", () => {
         fetchCalls.length = 0;
         const request = screen.request(screen.uuid, " duplicate upload ");
         expect(request).not.toBeNull();
-        await sendDocumentDelete(request!);
+        await sendDocumentDelete(request!, "zh");
         expect(fetchCalls).toHaveLength(1);
         expect(fetchCalls[0].url).toBe(`${screen.base}/${screen.uuid}`);
         expect(fetchCalls[0].init?.method).toBe("DELETE");

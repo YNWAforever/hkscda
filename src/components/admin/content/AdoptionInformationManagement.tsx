@@ -169,7 +169,7 @@ function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: Adop
   const mutation = useMutation({
     mutationFn: async (operation: MutationInput) => {
       if (operation.action === "delete-estate") {
-        return sendEstateDelete({ id: operation.id, reason: operation.reason });
+        return sendEstateDelete({ id: operation.id, reason: operation.reason }, language);
       }
       if (operation.action === "move-fees") {
         return fetchAdminJson<{ fees: AdoptionFee[] }>("/api/admin/adoption-information", {

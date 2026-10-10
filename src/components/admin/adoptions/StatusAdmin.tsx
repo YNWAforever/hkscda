@@ -177,7 +177,7 @@ export function StatusAdmin() {
     Error,
     StatusDeleteRequest & { category: CoordinatorStatusCategory }
   >({
-    mutationFn: (variables) => sendStatusDelete(variables),
+    mutationFn: (variables) => sendStatusDelete(variables, language),
     onSuccess: async (_response, status) => {
       await queryClient.invalidateQueries({ queryKey: STATUSES_QUERY_KEY });
       setForm(createBlankStatusForm(status.category));

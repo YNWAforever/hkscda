@@ -25,6 +25,7 @@ import { paymentsCopy } from "./copy";
 import { DonationDeliveryWorklist } from "./DonationDeliveryWorklist";
 import { donationFormatCopy } from "./formatCopy";
 import { ReconcileDialog } from "./ReconcileDialog";
+import { sendReceiptVoid } from "./receiptVoid";
 import {
   buildPaymentExportSearchParams,
   buildPaymentSearchParams,
@@ -156,11 +157,7 @@ export function PaymentsReconcile() {
   });
 
   const voidReceipt = useMutation({
-    mutationFn: ({ receiptId, reason }: VoidReceiptRequest) =>
-      fetchAdminJson(`/api/admin/receipts/${receiptId}/void`, {
-        method: "POST",
-        body: JSON.stringify({ reason }),
-      }),
+    mutationFn: (request: VoidReceiptRequest) => sendReceiptVoid(request, language),
     onSuccess: refresh,
   });
 

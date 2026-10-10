@@ -12,6 +12,7 @@ import { Button } from "../../ui/button";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
 import { voidReceiptRequest, type VoidReceiptRequest } from "../donations/paymentsReconcileLogic";
+import { sendReceiptVoid } from "../donations/receiptVoid";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DestinationHeading } from "../DestinationHeading";
@@ -81,11 +82,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   });
 
   const voidReceiptMutation = useMutation({
-    mutationFn: ({ receiptId, reason }: VoidReceiptRequest) =>
-      fetchAdminJson(`/api/admin/receipts/${receiptId}/void`, {
-        method: "POST",
-        body: JSON.stringify({ supporterId, reason }),
-      }),
+    mutationFn: (request: VoidReceiptRequest) => sendReceiptVoid(request, language, supporterId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crm-supporter", supporterId] });
     },

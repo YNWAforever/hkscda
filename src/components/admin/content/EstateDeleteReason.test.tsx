@@ -52,7 +52,7 @@ describe("deleting an estate asks for a reason", () => {
     fetchCalls.length = 0;
     const request = estateDeleteRequest(ESTATE, " listed in error ");
     expect(request).not.toBeNull();
-    await sendEstateDelete(request!);
+    await sendEstateDelete(request!, "zh");
     expect(fetchCalls).toHaveLength(1);
     expect(fetchCalls[0].url).toBe("/api/admin/adoption-information");
     expect(fetchCalls[0].init?.method).toBe("DELETE");

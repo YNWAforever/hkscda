@@ -89,7 +89,7 @@ function AnnualReportManagementRuntime() {
       if (action === "delete") {
         const request = annualReportDeleteRequest(id, reason ?? null);
         if (!request) throw new Error("A reason is required to delete an annual report");
-        return sendDocumentDelete(request);
+        return sendDocumentDelete(request, language);
       }
       return fetchAdminJson(`/api/admin/annual-reports/${id}/publish`, {
         method: action === "publish" ? "POST" : "DELETE",

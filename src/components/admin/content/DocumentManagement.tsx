@@ -109,7 +109,7 @@ function DocumentManagementRuntime() {
       if (action === "delete") {
         const request = documentDeleteRequest(id, reason ?? null);
         if (!request) throw new Error("A reason is required to delete a document");
-        return sendDocumentDelete(request);
+        return sendDocumentDelete(request, adminLanguage);
       }
       return fetchAdminJson(`/api/admin/documents/${id}/publish`, {
         method: action === "publish" ? "POST" : "DELETE",

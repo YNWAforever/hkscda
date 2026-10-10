@@ -91,7 +91,7 @@ describe("deleting a coordinator status asks for a reason", () => {
     fetchCalls.length = 0;
     const request = statusDeleteRequest(STATUS, " merged into another status ");
     expect(request).not.toBeNull();
-    await sendStatusDelete(request!);
+    await sendStatusDelete(request!, "zh");
     expect(fetchCalls).toHaveLength(1);
     expect(fetchCalls[0].url).toBe(`/api/admin/adoptions/statuses/${STATUS}`);
     expect(fetchCalls[0].init?.method).toBe("DELETE");
