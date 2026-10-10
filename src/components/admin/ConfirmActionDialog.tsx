@@ -38,6 +38,11 @@ export type ConfirmActionDialogProps = {
   reason: ConfirmReason;
   /** Receives the trimmed reason, or null when the dialog asks for none. A rejection keeps the dialog open. */
   onConfirm: (reason: string | null) => Promise<void>;
+  /**
+   * Text the reason field holds each time the dialog opens, such as a note already typed on the
+   * screen, so nothing typed is lost. Capped like typed text. Leave it out for an empty field.
+   */
+  initialReason?: string;
 };
 
 export function ConfirmActionDialog({
@@ -49,16 +54,20 @@ export function ConfirmActionDialog({
   destructive = false,
   reason,
   onConfirm,
+  initialReason,
 }: ConfirmActionDialogProps): JSX.Element {
   const copy = useSharedAdminCopy(confirmActionCopy);
   const language = useAdminLanguageOrDefault();
-  const [state, dispatch] = useReducer(confirmDialogReducer, INITIAL_CONFIRM_STATE);
+  const [state, dispatch] = useReducer(confirmDialogReducer, initialReason, (text) =>
+    confirmDialogReducer(INITIAL_CONFIRM_STATE, { type: "reset", text }),
+  );
   const inFlight = useRef(false);
   const required = reason !== "none";
 
+  // While closed, the dialog waits with the initial text, so it opens already holding it.
   useEffect(() => {
-    if (!open) dispatch({ type: "reset" });
-  }, [open]);
+    if (!open) dispatch({ type: "reset", text: initialReason });
+  }, [open, initialReason]);
 
   const submit = () =>
     runConfirm({ open, reason, state, inFlight, dispatch, onConfirm, onOpenChange });

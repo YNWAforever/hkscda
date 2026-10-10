@@ -22,6 +22,7 @@ import {
   isDestructiveTransition,
   rejectionRequest,
 } from "./volunteerAdminLogic";
+import { sendRegistrationStatusChange } from "./registrationStatusChange";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
@@ -77,10 +78,11 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   const updateStatus = useMutation({
     mutationFn: ({ status, reason }: { status: string; reason?: string }) =>
-      fetchAdminJson(`/api/admin/volunteers/registrations/${registrationId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status, expectedUpdatedAt: data?.registration.updatedAt, reason }),
-      }),
+      sendRegistrationStatusChange(
+        registrationId,
+        { status, expectedUpdatedAt: data?.registration.updatedAt, reason },
+        language,
+      ),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
       void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });

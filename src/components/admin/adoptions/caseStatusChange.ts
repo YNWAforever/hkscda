@@ -33,6 +33,21 @@ export function caseStatusChangeRequest(args: {
   };
 }
 
+/**
+ * The error the status form's inline alert shows. A failed closing change is already shown in the
+ * reason dialog, which stays open on a failure, so the inline alert shows only a failed change to a
+ * status that does not close.
+ */
+export function inlineCaseStatusFailure(
+  statuses: readonly Pick<CoordinatorStatus, "id" | "isClosing">[],
+  error: Error | null,
+  request: CaseStatusChangeRequest | undefined,
+): Error | null {
+  if (!error) return null;
+  if (request && isClosingStatusChoice(statuses, request.body.statusId)) return null;
+  return error;
+}
+
 /** The POST itself, kept apart from the screen so a test can check the request body. */
 export function sendCaseStatusChange(request: CaseStatusChangeRequest) {
   return fetchCoordinatorJson<{ ok: true }>(

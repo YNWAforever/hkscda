@@ -131,7 +131,7 @@ describe("stepping a board member down asks for a reason", () => {
     fetchCalls.length = 0;
     const request = boardMemberDeactivateRequest(MEMBER.id, " term ended ");
     expect(request).not.toBeNull();
-    await sendBoardMemberDeactivate(request!);
+    await sendBoardMemberDeactivate(request!, "zh");
     expect(fetchCalls).toHaveLength(1);
     expect(fetchCalls[0].url).toBe("/api/admin/governance");
     expect(fetchCalls[0].init?.method).toBe("DELETE");

@@ -32,6 +32,7 @@ import { requiredReasonDialog } from "../confirmActionState";
 import { fetchCoordinatorJson } from "./api";
 import {
   caseStatusChangeRequest,
+  inlineCaseStatusFailure,
   isClosingStatusChoice,
   sendCaseStatusChange,
   type CaseStatusChangeRequest,
@@ -515,6 +516,12 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
   });
 
   const closing = isClosingStatusChoice(statuses, selectedStatusId);
+  // A failed closing change shows in its dialog only, not a second time under the form.
+  const inlineFailure = inlineCaseStatusFailure(
+    statuses,
+    statusMutation.error,
+    statusMutation.variables,
+  );
 
   function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -682,6 +689,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       </Section>
 
       <Section title={copy.sections.statusControls}>
+        {/* The inline note is disabled while a closing status is chosen; what it holds opens the dialog's reason. */}
         {/* required-reason: adoption_case.close */}
         <ConfirmActionDialog
           open={closeOpen}
@@ -691,6 +699,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           confirmLabel={copy.saveStatus}
           destructive
           reason={requiredReasonDialog}
+          initialReason={statusNote}
           onConfirm={async (reason) => {
             const request = caseStatusChangeRequest({
               caseId,
@@ -727,6 +736,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
               id="case-status-note"
               value={statusNote}
               onChange={(event) => setStatusNote(event.target.value)}
+              disabled={closing}
               className="min-h-9"
               placeholder={copy.optionalStatusNote}
             />
@@ -737,9 +747,9 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
               {copy.saveStatus}
             </Button>
           </div>
-          {statusMutation.error && (
+          {inlineFailure && (
             <p className="text-sm text-[var(--color-error)]" role="alert">
-              {adminErrorMessage(statusMutation.error, language) ?? ""}
+              {adminErrorMessage(inlineFailure, language) ?? ""}
             </p>
           )}
         </form>

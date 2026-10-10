@@ -27,8 +27,12 @@ const { ConfirmActionDialog } = await import("../ConfirmActionDialog");
 const { INITIAL_CONFIRM_STATE, requiredReasonDialog, runConfirm } =
   await import("../confirmActionState");
 const { caseDetailCopy } = await import("./caseDetailCopy");
-const { caseStatusChangeRequest, isClosingStatusChoice, sendCaseStatusChange } =
-  await import("./caseStatusChange");
+const {
+  caseStatusChangeRequest,
+  inlineCaseStatusFailure,
+  isClosingStatusChoice,
+  sendCaseStatusChange,
+} = await import("./caseStatusChange");
 
 const CASE = "11111111-2222-4333-8444-555555555555";
 const OPEN_STATUS = "33333333-4444-4333-8444-555555555555";
@@ -151,6 +155,71 @@ describe("the case screen asks for a reason before it closes or rejects a case",
         }),
       ).toBeNull();
     }
+  });
+});
+
+describe("nothing typed in the inline note is lost when a closing status is chosen", () => {
+  test("the inline note is disabled while a closing status is selected", async () => {
+    const source = await Bun.file(SOURCE).text();
+    const from = source.indexOf('id="case-status-note"');
+    expect(from).toBeGreaterThan(0);
+    const textarea = source.slice(from, source.indexOf("/>", from));
+    expect(textarea).toContain("disabled={closing}");
+  });
+
+  test("the dialog opens with the inline note already in its reason field", async () => {
+    const source = await Bun.file(SOURCE).text();
+    const from = source.indexOf("open={closeOpen}");
+    const dialog = source.slice(from, source.indexOf("/>", from));
+    expect(dialog).toContain("initialReason={statusNote}");
+  });
+
+  test("so a carried note, confirmed as the reason, is what is sent", () => {
+    // The dialog starts from the inline note; whatever it holds on confirm is the reason.
+    expect(
+      caseStatusChangeRequest({
+        caseId: CASE,
+        statusId: CLOSED_STATUS,
+        closing: true,
+        note: "Home visit passed",
+        reason: "Home visit passed",
+      })?.body,
+    ).toEqual({ statusId: CLOSED_STATUS, note: "Home visit passed" });
+  });
+});
+
+describe("a failed closing change is shown once, inside the dialog", () => {
+  const failure = new Error("Could not change the case status");
+
+  test("the inline alert leaves a failed closing request to the dialog", () => {
+    expect(
+      inlineCaseStatusFailure(STATUSES, failure, {
+        caseId: CASE,
+        body: { statusId: CLOSED_STATUS, note: "applicant withdrew" },
+      }),
+    ).toBeNull();
+  });
+
+  test("the inline alert still shows a failed non-closing request", () => {
+    expect(
+      inlineCaseStatusFailure(STATUSES, failure, {
+        caseId: CASE,
+        body: { statusId: OPEN_STATUS, note: undefined },
+      }),
+    ).toBe(failure);
+  });
+
+  test("no error, no alert", () => {
+    expect(inlineCaseStatusFailure(STATUSES, null, undefined)).toBeNull();
+  });
+
+  test("the screen's inline alert goes through it", async () => {
+    const source = await Bun.file(SOURCE).text();
+    expect(source).toMatch(
+      /inlineCaseStatusFailure\(\s*statuses,\s*statusMutation\.error,\s*statusMutation\.variables,?\s*\)/,
+    );
+    expect(source).toContain("adminErrorMessage(inlineFailure, language)");
+    expect(source).not.toContain("{statusMutation.error && (");
   });
 });
 

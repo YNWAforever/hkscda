@@ -6,10 +6,15 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { BoardMember, BoardMemberInput } from "../../../lib/governance/types";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
+import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { governanceCopy } from "./governanceCopy";
-import { boardMemberDeactivateRequest, sendBoardMemberDeactivate } from "./governanceDeactivate";
+import {
+  boardMemberDeactivateRequest,
+  sendBoardMemberDeactivate,
+  type BoardMemberDeactivateRequest,
+} from "./governanceDeactivate";
 import { draftFromMember, type BoardMemberDraft } from "./governanceDraft";
 
 export type { BoardMemberDraft } from "./governanceDraft";
@@ -34,6 +39,7 @@ export function invalidateGovernanceQueries(client: {
 
 export function GovernanceManagement() {
   const copy = useAdminCopy(governanceCopy);
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<BoardMemberDraft | null>(null);
   const [stepDownTarget, setStepDownTarget] = useState<string | null>(null);
@@ -56,7 +62,8 @@ export function GovernanceManagement() {
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: sendBoardMemberDeactivate,
+    mutationFn: (request: BoardMemberDeactivateRequest) =>
+      sendBoardMemberDeactivate(request, language),
     onSuccess: () => invalidateGovernanceQueries(queryClient),
   });
 

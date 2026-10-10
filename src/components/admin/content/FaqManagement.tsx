@@ -14,7 +14,11 @@ import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure } from "../LoadFailure";
 import { FaqAnswerTester } from "./FaqAnswerTester";
 import { faqCopy } from "./faqCopy";
-import { faqDeactivateRequest } from "./faqDeactivate";
+import {
+  faqDeactivateRequest,
+  sendFaqDeactivate,
+  type FaqDeactivateRequest,
+} from "./faqDeactivate";
 import { FaqSearchGapsReport } from "./FaqSearchGapsReport";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
@@ -136,11 +140,7 @@ export function FaqManagement() {
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: (request: { id: string; reason: string }) =>
-      fetchAdminJson<{ ok: true }>("/api/admin/faq", {
-        method: "DELETE",
-        body: JSON.stringify(request),
-      }),
+    mutationFn: (request: FaqDeactivateRequest) => sendFaqDeactivate(request, language),
     onSuccess: () => invalidateFaqQueries(queryClient),
   });
 

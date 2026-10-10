@@ -36,6 +36,7 @@ import {
   VOLUNTEER_ADMIN_PAGE_SIZE,
   volunteerStatusTone,
 } from "./volunteerAdminLogic";
+import { sendRegistrationStatusChange } from "./registrationStatusChange";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
@@ -269,11 +270,7 @@ export function VolunteerManagement() {
       status: VolunteerRegistrationStatus;
       expectedUpdatedAt: string;
       reason?: string;
-    }) =>
-      fetchAdminJson(`/api/admin/volunteers/registrations/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status, expectedUpdatedAt, reason }),
-      }),
+    }) => sendRegistrationStatusChange(id, { status, expectedUpdatedAt, reason }, language),
     onSettled: refreshAll,
   });
 

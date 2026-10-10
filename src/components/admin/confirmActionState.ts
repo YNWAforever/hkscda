@@ -32,7 +32,8 @@ export type ConfirmDialogAction =
   | { type: "edit"; text: string }
   | { type: "start" }
   | { type: "rejected"; error: unknown }
-  | { type: "reset" };
+  /** Clears the dialog; `text` is what the reason field holds when it next opens. */
+  | { type: "reset"; text?: string };
 
 export const INITIAL_CONFIRM_STATE: ConfirmDialogState = {
   text: "",
@@ -57,7 +58,9 @@ export function confirmDialogReducer(
     case "rejected":
       return { ...state, pending: false, error: action.error, failed: true };
     case "reset":
-      return INITIAL_CONFIRM_STATE;
+      return action.text
+        ? { ...INITIAL_CONFIRM_STATE, text: action.text.slice(0, CONFIRM_REASON_MAX_LENGTH) }
+        : INITIAL_CONFIRM_STATE;
   }
 }
 
