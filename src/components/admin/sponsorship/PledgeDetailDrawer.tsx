@@ -328,8 +328,10 @@ export function PledgeDetailDrawer({
       setSubmitting(true);
       setActionError(null);
     },
-    // The decision is saved by now; a failed refresh must not show the dialog as failed.
+    // The decision is saved by now; a failed refresh must not show the dialog as failed. The
+    // inline note fed the dialog's reason, so clear it before a later proof can reuse it.
     onSuccess: () => {
+      setReviewNote("");
       void refreshAll().catch(() => {});
     },
     onSettled: () => setSubmitting(false),
@@ -948,6 +950,7 @@ export function PledgeDetailDrawer({
           confirmLabel={copy.reviewProof.reject}
           destructive
           reason={requiredReasonDialog}
+          initialReason={reviewNote}
           onConfirm={async (reason) => {
             await rejectMutation.mutateAsync(reason ?? "");
           }}

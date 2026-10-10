@@ -78,6 +78,16 @@ describe("the drawer asks for a reason to reject a proof or cancel a pledge", ()
     expect(source).not.toContain("cancelNote");
     expect(source).toContain('pledgeReviewCommand(pledge.currentProof, "approve", reviewNote)');
   });
+
+  test("a rejection starts from the inline note and clears it once saved, so no later proof reuses it", async () => {
+    const source = await Bun.file(SOURCE).text();
+    const dialogStart = source.indexOf("required-reason: sponsorship_proof.reject");
+    const dialog = source.slice(dialogStart, source.indexOf("/>", dialogStart));
+    expect(dialog).toContain("initialReason={reviewNote}");
+    const reject = source.slice(source.indexOf("const rejectMutation"));
+    const onSuccess = reject.slice(reject.indexOf("onSuccess:"), reject.indexOf("onSettled:"));
+    expect(onSuccess).toContain('setReviewNote("");');
+  });
 });
 
 describe("the dialogs in Chinese and in English", () => {
