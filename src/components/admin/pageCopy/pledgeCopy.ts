@@ -92,6 +92,7 @@ export const pledgePageCopy = defineAdminCopy({
         noteLabel: "備註",
         approve: "核實通過",
         reject: "拒絕",
+        rejectConsequence: "",
       },
       assignments: {
         title: "已確認助養動物",
@@ -121,8 +122,8 @@ export const pledgePageCopy = defineAdminCopy({
         open: (fileName: string) => `開啟付款證明（${fileName}）`,
       },
       cancel: {
-        noteLabel: "取消備註",
         action: "取消助養",
+        confirmConsequence: "",
       },
       proofHistory: {
         title: "付款證明記錄",
@@ -218,6 +219,8 @@ export const pledgePageCopy = defineAdminCopy({
         noteLabel: "Note",
         approve: "Approve",
         reject: "Reject",
+        rejectConsequence:
+          "Rejecting this payment proof moves the sponsorship to follow-up. The supporter is emailed when an address is on file.",
       },
       assignments: {
         title: "Confirmed sponsored animals",
@@ -249,8 +252,9 @@ export const pledgePageCopy = defineAdminCopy({
         open: (fileName: string) => `Open payment proof (${fileName})`,
       },
       cancel: {
-        noteLabel: "Cancellation note",
         action: "Cancel sponsorship",
+        confirmConsequence:
+          "Cancelling ends this sponsorship. The supporter is emailed when an address is on file.",
       },
       proofHistory: {
         title: "Payment proof history",

@@ -430,7 +430,6 @@ describe("pledge detail drawer in English", () => {
       "Approve",
       "Reject",
       // cancel
-      "Cancellation note",
       "Cancel sponsorship",
       // animals
       "Confirmed sponsored animals",

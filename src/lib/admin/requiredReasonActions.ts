@@ -69,6 +69,9 @@ export const PENDING_REQUIRED_REASON_IDS: ReadonlySet<RequiredReasonId> = new Se
       id !== "board_member.deactivate" &&
       id !== "coordinator_status.delete" &&
       id !== "document.delete" &&
-      id !== "annual_report.delete",
+      id !== "annual_report.delete" &&
+      id !== "sponsorship_pledge.cancel" &&
+      id !== "sponsorship_proof.reject" &&
+      id !== "sponsorship_finance.adjust",
   ),
 );

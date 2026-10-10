@@ -241,6 +241,21 @@ describe("reviewPledgeProofSchema", () => {
     expect(result.note).toBe("Blurry receipt");
   });
 
+  test("rejects a reject with no note or a blank note, and accepts an approve with a blank one", () => {
+    const base = {
+      proofId: "33333333-3333-4333-8333-333333333333",
+      expectedRevision: 1,
+      idempotencyKey: "55555555-5555-4555-8555-555555555555",
+    };
+    expect(reviewPledgeProofSchema.safeParse({ ...base, decision: "reject" }).success).toBe(false);
+    expect(
+      reviewPledgeProofSchema.safeParse({ ...base, decision: "reject", note: "  " }).success,
+    ).toBe(false);
+    expect(
+      reviewPledgeProofSchema.safeParse({ ...base, decision: "approve", note: "  " }).success,
+    ).toBe(true);
+  });
+
   test("rejects an invalid decision", () => {
     expect(() =>
       reviewPledgeProofSchema.parse({
@@ -254,13 +269,14 @@ describe("reviewPledgeProofSchema", () => {
 });
 
 describe("cancelPledgeSchema", () => {
-  test("accepts an empty payload", () => {
-    const result = cancelPledgeSchema.parse({});
-    expect(result.note).toBeNull();
+  test("rejects a payload with no note, a blank note or a note over 500 characters", () => {
+    expect(cancelPledgeSchema.safeParse({}).success).toBe(false);
+    expect(cancelPledgeSchema.safeParse({ note: "   " }).success).toBe(false);
+    expect(cancelPledgeSchema.safeParse({ note: "x".repeat(501) }).success).toBe(false);
   });
 
-  test("accepts a note", () => {
-    const result = cancelPledgeSchema.parse({ note: "Sponsor requested cancellation" });
+  test("accepts a note and trims it", () => {
+    const result = cancelPledgeSchema.parse({ note: "  Sponsor requested cancellation " });
     expect(result.note).toBe("Sponsor requested cancellation");
   });
 });
