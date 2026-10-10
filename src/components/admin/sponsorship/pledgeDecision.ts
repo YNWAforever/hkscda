@@ -1,4 +1,9 @@
 import type { PaymentProofRecord } from "../../../lib/sponsorshipAdmin/types";
+import type { AdminLanguage } from "../../../lib/admin/language";
+import {
+  sponsorshipServerErrorCode,
+  sponsorshipServerErrorText,
+} from "../../../lib/sponsorshipAdmin/serverErrors";
 import { fetchCoordinatorJson } from "../adoptions/api";
 
 export type PledgeDecisionRequest = { endpoint: string; body: Record<string, unknown> };
@@ -60,4 +65,14 @@ export function sendPledgeDecision(request: PledgeDecisionRequest) {
     method: "POST",
     body: JSON.stringify(request.body),
   });
+}
+
+/**
+ * The error a decision dialog shows: the sponsorship API's zh-HK message written for the admin's
+ * language, or the error as it came when it is any other message.
+ */
+export function localizedDecisionError(cause: unknown, language: AdminLanguage): Error {
+  const code = sponsorshipServerErrorCode(cause);
+  if (code) return new Error(sponsorshipServerErrorText(code, language));
+  return cause instanceof Error ? cause : new Error(String(cause));
 }

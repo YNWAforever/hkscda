@@ -22,7 +22,6 @@ export type ActionError = {
     | "proofReviewChanged"
     | "followupConflict"
     | "followupUnknown"
-    | "cancel"
     | "recordPayment";
   cause?: unknown;
 };
@@ -33,7 +32,7 @@ export type ActionError = {
  */
 export function actionFailure(
   cause: unknown,
-  fallback: "review" | "assignAnimal" | "endAssignment" | "cancel" | "recordPayment",
+  fallback: "review" | "assignAnimal" | "endAssignment" | "recordPayment",
 ): ActionError {
   const code = sponsorshipServerErrorCode(cause);
   return code ? { code } : { code: fallback, cause };

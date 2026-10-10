@@ -24,6 +24,7 @@ import type {
 } from "../../../lib/sponsorshipAdmin/types";
 import { pledgeDrawerCopy } from "./drawerCopy";
 import {
+  localizedDecisionError,
   pledgeCancelRequest,
   pledgeReviewCommand,
   pledgeReviewRequest,
@@ -314,15 +315,22 @@ export function PledgeDetailDrawer({
         ? pledgeReviewCommand(pledge.currentProof, "reject", reason)
         : null;
       if (!command) throw new Error("A reason is required");
-      return sendPledgeDecision(pledgeReviewRequest(pledgeId, command, reviewKeyFor(command)));
+      try {
+        return await sendPledgeDecision(
+          pledgeReviewRequest(pledgeId, command, reviewKeyFor(command)),
+        );
+      } catch (cause) {
+        // The dialog prints the message as it came, so write the zh-HK server text for this admin.
+        throw localizedDecisionError(cause, language);
+      }
     },
     onMutate: () => {
       setSubmitting(true);
       setActionError(null);
     },
-    onSuccess: async () => {
-      setReviewNote("");
-      await refreshAll();
+    // The decision is saved by now; a failed refresh must not show the dialog as failed.
+    onSuccess: () => {
+      void refreshAll().catch(() => {});
     },
     onSettled: () => setSubmitting(false),
   });
@@ -337,7 +345,9 @@ export function PledgeDetailDrawer({
       setSubmitting(true);
       setActionError(null);
     },
-    onSuccess: refreshAll,
+    onSuccess: () => {
+      void refreshAll().catch(() => {});
+    },
     onSettled: () => setSubmitting(false),
   });
 

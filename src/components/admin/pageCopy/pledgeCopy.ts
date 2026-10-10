@@ -74,7 +74,6 @@ export const pledgePageCopy = defineAdminCopy({
         followup: "跟進分派失敗，請重新載入後再試。",
         followupConflict: "跟進資料已有更新，請核對目前職員後再分派。",
         followupUnknown: "未能確認分派結果；請重新整理或重試原有分派。",
-        cancel: "取消失敗",
         recordPayment: "記錄付款失敗",
       },
       recordPayment: {
@@ -201,7 +200,6 @@ export const pledgePageCopy = defineAdminCopy({
           "Follow-up details changed. Check the current owner before assigning again.",
         followupUnknown:
           "The assignment result could not be confirmed. Refresh or retry the original assignment.",
-        cancel: "Could not cancel the sponsorship. Refresh the page and try again.",
         recordPayment: "Could not record the payment. Check the details and try again.",
       },
       recordPayment: {

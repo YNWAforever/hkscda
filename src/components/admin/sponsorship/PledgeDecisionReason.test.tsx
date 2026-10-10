@@ -116,6 +116,36 @@ describe("the dialogs in Chinese and in English", () => {
   }
 });
 
+describe("a failed decision shows the server message for the admin's language", () => {
+  const zhMessage = "付款證明或審批資料已更新，請重新載入。";
+
+  // required-reason: sponsorship_proof.reject
+  test("the zh-HK stale-proof message is written in English for an English admin", async () => {
+    const { localizedDecisionError } = await import("./pledgeDecision");
+    const { sponsorshipServerErrorText } =
+      await import("../../../lib/sponsorshipAdmin/serverErrors");
+    const cause = new Error(zhMessage);
+    expect(localizedDecisionError(cause, "en").message).toBe(
+      sponsorshipServerErrorText("proofReviewChanged", "en"),
+    );
+    expect(localizedDecisionError(cause, "zh").message).toBe(zhMessage);
+  });
+
+  test("any other error is shown as it came", async () => {
+    const { localizedDecisionError } = await import("./pledgeDecision");
+    const cause = new Error("Sponsorship pledge is already cancelled");
+    expect(localizedDecisionError(cause, "en")).toBe(cause);
+    expect(localizedDecisionError("boom", "en").message).toBe("boom");
+  });
+
+  test("the reject mutation maps the error and the dialog is not failed by a refresh", async () => {
+    const source = await Bun.file(SOURCE).text();
+    expect(source).toContain("throw localizedDecisionError(cause, language)");
+    expect(source).not.toContain("onSuccess: refreshAll");
+    expect(source).toContain("void refreshAll().catch(() => {});");
+  });
+});
+
 describe("what is sent", () => {
   // required-reason: sponsorship_pledge.cancel
   test("cancelling sends the trimmed reason as the note, and closes the dialog", async () => {

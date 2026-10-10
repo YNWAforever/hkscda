@@ -25,7 +25,6 @@ describe("actionFailure", () => {
 
   test("keeps any other caught error under the action's own code, to show as it came", () => {
     const cause = new Error("Sponsorship pledge is already cancelled");
-    expect(actionFailure(cause, "cancel")).toEqual({ code: "cancel", cause });
     // Adding an animal and ending a sponsorship have their own codes, not the review one.
     expect(actionFailure(cause, "assignAnimal")).toEqual({ code: "assignAnimal", cause });
     expect(actionFailure(cause, "endAssignment")).toEqual({ code: "endAssignment", cause });
