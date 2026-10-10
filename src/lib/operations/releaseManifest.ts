@@ -814,6 +814,17 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "set_volunteer_registration_status_with_audit",
+    feature: "volunteers",
+    required: true,
+    arguments:
+      "p_registration_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_status text, p_internal_notes text, p_update_internal_notes boolean, p_reason text",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "mutate_adoption_coordinator_with_audit",
     feature: "release",
     required: true,

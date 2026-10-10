@@ -465,6 +465,7 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         p_status: input.status,
         p_internal_notes: input.internalNotes ?? null,
         p_update_internal_notes: input.internalNotes !== undefined,
+        p_reason: input.reason,
       });
       if (error) throw error;
       requireUpdated(data);

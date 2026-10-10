@@ -9,7 +9,7 @@ const attendanceStatusLabels = volunteerRegistrationCopy.zh.attendanceActions;
 const query = await import("@tanstack/react-query");
 const router = await import("@tanstack/react-router");
 const mutations: Array<{
-  mutationFn: (status: string) => Promise<unknown>;
+  mutationFn: (input: unknown) => Promise<unknown>;
   onSettled: () => void;
 }> = [];
 const requests: Array<{ url: string; body: unknown }> = [];
@@ -48,7 +48,7 @@ mock.module("@tanstack/react-query", () => ({
     refetch: () => {},
   }),
   useMutation: (options: {
-    mutationFn: (status: string) => Promise<unknown>;
+    mutationFn: (input: unknown) => Promise<unknown>;
     onSettled: () => void;
   }) => {
     mutations.push(options);
@@ -76,7 +76,9 @@ test("status callback sends reviewed version and refreshes capacity after a reje
   expect(markup).toContain('role="alert"');
   expect(markup).toContain("活動名額不足");
   expect(markup).toContain("剩餘名額");
-  await expect(mutations[0].mutationFn("approved")).rejects.toThrow("Capacity conflict");
+  await expect(mutations[0].mutationFn({ status: "approved" })).rejects.toThrow(
+    "Capacity conflict",
+  );
   expect(requests[0].body).toEqual({
     status: "approved",
     expectedUpdatedAt: registration.updatedAt,
