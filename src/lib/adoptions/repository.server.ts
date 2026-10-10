@@ -1772,14 +1772,14 @@ export function createSupabaseAdoptionCoordinatorRepository(
       return mapStatus(data as StatusRow);
     },
 
-    async deleteStatus(id, actorUserId) {
+    async deleteStatus(id, actorUserId, reason) {
       if (!actorUserId) throw new Error("Actor user ID required");
       const { error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
         p_actor_user_id: actorUserId,
         p_entity: "coordinator_status",
         p_operation: "delete",
         p_id: id,
-        p_payload: {},
+        p_payload: { reason },
       });
       if (error) throw error;
     },

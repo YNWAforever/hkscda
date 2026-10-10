@@ -730,6 +730,8 @@ describe("createAdoptionCoordinatorHandlers", () => {
     const response = await handlers.deleteStatus({
       request: new Request(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
         method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason: "retired" }),
       }),
       params: { id: statusId },
     });
@@ -757,6 +759,8 @@ describe("createAdoptionCoordinatorHandlers", () => {
     const response = await handlers.deleteStatus({
       request: new Request(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
         method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason: "retired" }),
       }),
       params: { id: statusId },
     });

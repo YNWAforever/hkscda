@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { requiredReasonSchema } from "../admin/requiredReason";
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
 import { assertCanMutateStatus } from "./status";
 import {
@@ -94,7 +95,7 @@ export type AdoptionCoordinatorRepository = {
     input: StatusUpdate,
     actorUserId?: string | null,
   ): Promise<CoordinatorStatus>;
-  deleteStatus(id: string, actorUserId?: string | null): Promise<void>;
+  deleteStatus(id: string, actorUserId: string | null | undefined, reason: string): Promise<void>;
   listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult>;
   listMatchableAnimals(): Promise<MatchableAnimalOption[]>;
   listAnimalPositions(): Promise<AnimalPositionRecord[]>;
@@ -282,12 +283,13 @@ export function createAdoptionCoordinatorService({
       return status;
     },
 
-    async deleteStatus(args: { actorUserId: string | null; statusId: string }) {
+    async deleteStatus(args: { actorUserId: string | null; statusId: string; reason: string }) {
+      const reason = requiredReasonSchema.parse(args.reason);
       const current = await repo.getStatus(args.statusId);
       if (!current) throw new Error("Status not found");
       assertCanMutateStatus(current, { delete: true });
 
-      await repo.deleteStatus(args.statusId, args.actorUserId);
+      await repo.deleteStatus(args.statusId, args.actorUserId, reason);
       if (repo.usesAtomicAudit) return;
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
@@ -295,7 +297,7 @@ export function createAdoptionCoordinatorService({
         entity: "coordinator_status",
         entity_id: args.statusId,
         timestamp: timestamp(now),
-        detail: { category: current.category, key: current.key },
+        detail: { category: current.category, key: current.key, reason },
       });
     },
 

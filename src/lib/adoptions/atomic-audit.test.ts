@@ -47,7 +47,7 @@ describe("adoption coordinator atomic audit mutations", () => {
       actor,
     );
     await repo.updateStatus(id, { labelEn: "Upcoming" }, actor);
-    await repo.deleteStatus(id, actor);
+    await repo.deleteStatus(id, actor, "merged into another status");
     await repo.createTask({
       adoptionCaseId: id,
       title: "Call",
@@ -73,6 +73,8 @@ describe("adoption coordinator atomic audit mutations", () => {
       ["mutate_adoption_coordinator_with_audit", "animal_match", "create"],
     ]);
     expect(calls.every((call) => call.args.p_actor_user_id === actor)).toBe(true);
+    const deleteCall = calls.find((call) => call.args.p_operation === "delete");
+    expect(deleteCall?.args.p_payload).toEqual({ reason: "merged into another status" });
   });
 
   test("service does not add a second audit for an atomic status create", async () => {

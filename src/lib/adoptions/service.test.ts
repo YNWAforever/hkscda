@@ -111,8 +111,8 @@ function createRepo(
       calls.push({ name: "updateStatus", payload: { id, input } });
       return status({ id, ...input });
     },
-    async deleteStatus(id) {
-      calls.push({ name: "deleteStatus", payload: id });
+    async deleteStatus(id, _actorUserId, reason) {
+      calls.push({ name: "deleteStatus", payload: { id, reason } });
     },
     async listAnimalPipeline(input) {
       calls.push({ name: "listAnimalPipeline", payload: input });
@@ -851,11 +851,36 @@ describe("createAdoptionCoordinatorService", () => {
     const repo = createRepo();
     const service = createAdoptionCoordinatorService({ repo });
 
-    await expect(service.deleteStatus({ actorUserId: adminId, statusId })).rejects.toThrow(
-      "System statuses cannot be deleted",
-    );
+    await expect(
+      service.deleteStatus({ actorUserId: adminId, statusId, reason: "retired" }),
+    ).rejects.toThrow("System statuses cannot be deleted");
 
     expect(repo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
+  // required-reason: coordinator_status.delete
+  test("a status delete passes the trimmed reason to the repository", async () => {
+    const repo = createRepo({ getStatus: async (id) => status({ id, isSystem: false }) });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await service.deleteStatus({ actorUserId: adminId, statusId, reason: "  merged  " });
+
+    expect(repo.calls.find((call) => call.name === "deleteStatus")?.payload).toEqual({
+      id: statusId,
+      reason: "merged",
+    });
+  });
+
+  test("a status delete with a blank or over-long reason is rejected before any repository call", async () => {
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({ repo });
+
+    for (const reason of ["   ", "x".repeat(501)]) {
+      await expect(
+        service.deleteStatus({ actorUserId: adminId, statusId, reason }),
+      ).rejects.toThrow();
+    }
+    expect(repo.calls).toEqual([]);
   });
 
   test("changes case status through one atomic repository method", async () => {

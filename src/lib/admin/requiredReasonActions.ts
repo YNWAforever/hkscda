@@ -66,6 +66,7 @@ export const PENDING_REQUIRED_REASON_IDS: ReadonlySet<RequiredReasonId> = new Se
       id !== "internship.reject" &&
       id !== "faq.deactivate" &&
       id !== "estate.delete" &&
-      id !== "board_member.deactivate",
+      id !== "board_member.deactivate" &&
+      id !== "coordinator_status.delete",
   ),
 );
