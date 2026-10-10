@@ -198,14 +198,18 @@ describe("createSupabaseFaqRepository", () => {
   test("deactivate calls the deactivate_faq_entry_with_audit RPC", async () => {
     const { client, rpcCalls } = createFakeClient({ rpcResult: null });
     const repo = createSupabaseFaqRepository(client as never);
-    await repo.deactivate(entryId, actorId);
+    await repo.deactivate(entryId, actorId, "out of date");
     expect(rpcCalls[0]?.fn).toBe("deactivate_faq_entry_with_audit");
-    expect(rpcCalls[0]?.args).toEqual({ p_actor_user_id: actorId, p_id: entryId });
+    expect(rpcCalls[0]?.args).toEqual({
+      p_actor_user_id: actorId,
+      p_id: entryId,
+      p_reason: "out of date",
+    });
   });
 
   test("deactivate throws when the RPC returns an error", async () => {
     const { client } = createFakeClient({ rpcResult: null, rpcError: { message: "boom" } });
     const repo = createSupabaseFaqRepository(client as never);
-    await expect(repo.deactivate(entryId, actorId)).rejects.toBeTruthy();
+    await expect(repo.deactivate(entryId, actorId, "out of date")).rejects.toBeTruthy();
   });
 });

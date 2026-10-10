@@ -135,15 +135,26 @@ describe("createFaqService", () => {
   test("deactivate validates the id and delegates to the repository", async () => {
     const repo = createFakeRepo();
     const service = createFaqService({ repo });
-    await service.deactivate({ actorUserId: actorId, id: entry().id });
-    expect(repo.deactivate).toHaveBeenCalledWith(entry().id, actorId);
+    await service.deactivate({ actorUserId: actorId, id: entry().id, reason: "  out of date " });
+    expect(repo.deactivate).toHaveBeenCalledWith(entry().id, actorId, "out of date");
+  });
+
+  test("deactivate rejects a blank or over-long reason before calling the repository", async () => {
+    const repo = createFakeRepo();
+    const service = createFaqService({ repo });
+    for (const reason of ["   ", "", "x".repeat(501)]) {
+      await expect(
+        service.deactivate({ actorUserId: actorId, id: entry().id, reason }),
+      ).rejects.toBeTruthy();
+    }
+    expect(repo.deactivate).not.toHaveBeenCalled();
   });
 
   test("deactivate rejects a non-uuid id before calling the repository", async () => {
     const repo = createFakeRepo();
     const service = createFaqService({ repo });
     await expect(
-      service.deactivate({ actorUserId: actorId, id: "not-a-uuid" }),
+      service.deactivate({ actorUserId: actorId, id: "not-a-uuid", reason: "out of date" }),
     ).rejects.toBeTruthy();
     expect(repo.deactivate).not.toHaveBeenCalled();
   });

@@ -728,6 +728,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "deactivate_faq_entry_with_audit",
+    feature: "content",
+    required: true,
+    arguments: "p_actor_user_id uuid, p_id uuid, p_reason text",
+    returns: "void",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "update_adoption_fee_content_with_audit",
     feature: "adoption-cms",
     required: true,

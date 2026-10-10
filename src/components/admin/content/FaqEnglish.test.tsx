@@ -207,11 +207,12 @@ describe("the FAQ page in English", () => {
     expect(table).toBeGreaterThan(tester);
   });
 
-  test("says what to do after a failed disable", () => {
+  test("leaves a failed disable to the confirm dialog, with no inline message under the table", () => {
     reset();
     state.mutationError = new Error("boom");
     const markup = renderAdminInEnglish(<FaqManagement />);
-    expect(markup).toContain("Could not disable the question. Try again.");
+    expect(markup).not.toContain("Could not disable the question");
+    expect(markup).not.toContain('role="alert"');
     expectNoChineseText(markup, { allow: DATA });
     reset();
   });
@@ -265,7 +266,7 @@ describe("the FAQ page in English", () => {
     ]);
     expect(markup.indexOf("搜尋未有答案的主題")).toBeLessThan(markup.indexOf("測試答案"));
     state.mutationError = new Error("boom");
-    expect(renderAdminInChinese(<FaqManagement />)).toContain("停用操作失敗，請再試一次。");
+    expect(renderAdminInChinese(<FaqManagement />)).not.toContain("停用操作失敗");
     reset();
   });
 });

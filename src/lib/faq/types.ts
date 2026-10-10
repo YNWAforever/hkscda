@@ -64,5 +64,5 @@ export interface FaqRepository {
   listPublic(): Promise<HelpFaq[]>;
   listAdmin(): Promise<FaqEntry[]>;
   upsert(input: FaqEntryInput, actorUserId: string): Promise<FaqEntry>;
-  deactivate(id: string, actorUserId: string): Promise<void>;
+  deactivate(id: string, actorUserId: string, reason: string): Promise<void>;
 }

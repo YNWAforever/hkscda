@@ -61,6 +61,9 @@ export const REQUIRED_REASON_ACTIONS: readonly RequiredReasonAction[] = [
 export const PENDING_REQUIRED_REASON_IDS: ReadonlySet<RequiredReasonId> = new Set(
   REQUIRED_REASON_ACTIONS.map((action) => action.id).filter(
     (id) =>
-      id !== "receipt.void" && id !== "volunteer_registration.reject" && id !== "internship.reject",
+      id !== "receipt.void" &&
+      id !== "volunteer_registration.reject" &&
+      id !== "internship.reject" &&
+      id !== "faq.deactivate",
   ),
 );
