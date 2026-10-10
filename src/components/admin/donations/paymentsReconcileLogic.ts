@@ -115,3 +115,16 @@ export function applyPaymentFilters(
     return haystack.includes(search);
   });
 }
+
+export type VoidReceiptRequest = { receiptId: string; reason: string };
+
+/**
+ * The request the void dialog's confirm sends: the receipt and the staff's reason. Null when no
+ * receipt is chosen, so a stray confirm sends nothing.
+ */
+export function voidReceiptRequest(
+  target: { id: string } | null,
+  reason: string | null,
+): VoidReceiptRequest | null {
+  return target ? { receiptId: target.id, reason: reason ?? "" } : null;
+}

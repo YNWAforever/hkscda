@@ -47,6 +47,55 @@ function markerPattern(id: string): RegExp {
   return new RegExp(`required-reason: ${escapeRegExp(id)}(?![\\w.])`);
 }
 
+/**
+ * The props of the opening tag whose name ends just before `start`: the text up to the tag's own
+ * `>` or `/>`. Braces, string and template literals and comments are tracked, so a `>` or `/>`
+ * inside a prop value (an arrow, a string, a nested element) does not end the tag early. An
+ * unterminated tag returns the rest of the text.
+ */
+export function openingTagProps(text: string, start: number): string {
+  // "code" is the tag itself or a brace expression; "tpl" is the inside of a template literal.
+  const modes: Array<"code" | "tpl"> = ["code"];
+  const braceStack: number[] = [];
+  let braces = 0;
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (modes[modes.length - 1] === "tpl") {
+      if (ch === "\\") i++;
+      else if (ch === "`") modes.pop();
+      else if (ch === "$" && text[i + 1] === "{") {
+        braceStack.push(braces);
+        braces = 1;
+        modes.push("code");
+        i++;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      for (i++; i < text.length && text[i] !== ch; i++) if (text[i] === "\\") i++;
+    } else if (ch === "`") {
+      modes.push("tpl");
+    } else if (ch === "/" && text[i + 1] === "*") {
+      const end = text.indexOf("*/", i + 2);
+      i = end < 0 ? text.length : end + 1;
+    } else if (ch === "/" && text[i + 1] === "/" && braces > 0) {
+      const end = text.indexOf("\n", i);
+      i = end < 0 ? text.length : end;
+    } else if (ch === "{") {
+      braces++;
+    } else if (ch === "}") {
+      braces--;
+      if (braces === 0 && braceStack.length > 0) {
+        braces = braceStack.pop() ?? 0;
+        modes.pop();
+      }
+    } else if (braces === 0 && ch === ">") {
+      return text.slice(start, i);
+    }
+  }
+  return text.slice(start);
+}
+
 /** Why `text` does not mark the dialog for `id` correctly; empty when it does. */
 export function dialogMarkerProblems(text: string, id: string): string[] {
   const lines = text.split("\n");
@@ -64,7 +113,8 @@ export function dialogMarkerProblems(text: string, id: string): string[] {
       continue;
     }
     const block = lines.slice(dialogLine).join("\n");
-    const props = block.slice(0, block.indexOf("/>") >= 0 ? block.indexOf("/>") : undefined);
+    const tagName = "<ConfirmActionDialog";
+    const props = openingTagProps(block, block.indexOf(tagName) + tagName.length);
     if (!/reason=\{(requiredReasonDialog\}|\{\s*required:\s*true)/.test(props)) {
       problems.push(`dialog on line ${dialogLine + 1} has no required reason prop`);
     }
@@ -167,6 +217,37 @@ describe("the checks themselves", () => {
     expect(dialogMarkerProblems(bad, "x.y")).not.toEqual([]);
     const missing = `// required-reason: x.y\n<ConfirmActionDialog onConfirm={f} />`;
     expect(dialogMarkerProblems(missing, "x.y")).not.toEqual([]);
+  });
+
+  test("a `/>` inside a prop value does not cut the props short", () => {
+    const text = [
+      "// required-reason: x.y",
+      "<ConfirmActionDialog",
+      "  consequence={<b>one<br /></b>}",
+      '  note="a />"',
+      "  onConfirm={async () => { await m(`${'/>'}`); }}",
+      "  reason={requiredReasonDialog}",
+      "/>",
+    ].join("\n");
+    expect(dialogMarkerProblems(text, "x.y")).toEqual([]);
+  });
+
+  test("a dialog that is not self-closing is read up to its own `>`, not a later `/>`", () => {
+    const bad = [
+      "// required-reason: x.y",
+      "<ConfirmActionDialog onConfirm={f}>",
+      "  child",
+      "</ConfirmActionDialog>",
+      "<Other reason={requiredReasonDialog} />",
+    ].join("\n");
+    expect(dialogMarkerProblems(bad, "x.y")).not.toEqual([]);
+    const ok = bad.replace("onConfirm={f}", "reason={requiredReasonDialog}");
+    expect(dialogMarkerProblems(ok, "x.y")).toEqual([]);
+  });
+
+  test("openingTagProps stops at the tag's own end", () => {
+    const text = "<ConfirmActionDialog a={() => 1} b='>' c={`${x}>`} /> <Next />";
+    expect(openingTagProps(text, 20)).toBe(" a={() => 1} b='>' c={`${x}>`} /");
   });
 
   test("a marker two lines above the dialog is rejected", () => {

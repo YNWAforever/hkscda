@@ -29,7 +29,11 @@ export type RequiredReasonAction = {
 };
 
 export const REQUIRED_REASON_ACTIONS: readonly RequiredReasonAction[] = [
-  { id: "receipt.void", kind: "dialog", ui: ["donations/PaymentsReconcile.tsx"] },
+  {
+    id: "receipt.void",
+    kind: "dialog",
+    ui: ["donations/PaymentsReconcile.tsx", "crm/SupporterDetail.tsx"],
+  },
   {
     id: "volunteer_registration.reject",
     kind: "dialog",
@@ -55,5 +59,5 @@ export const REQUIRED_REASON_ACTIONS: readonly RequiredReasonAction[] = [
 
 /** Actions whose reason is not yet wired; a task removes its IDs here as it lands. */
 export const PENDING_REQUIRED_REASON_IDS: ReadonlySet<RequiredReasonId> = new Set(
-  REQUIRED_REASON_ACTIONS.map((action) => action.id),
+  REQUIRED_REASON_ACTIONS.map((action) => action.id).filter((id) => id !== "receipt.void"),
 );

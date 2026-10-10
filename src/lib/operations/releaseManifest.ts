@@ -949,7 +949,7 @@ export const releaseManifest: SchemaRequirement[] = [
     name: "void_receipt_with_audit",
     feature: "finance",
     required: true,
-    arguments: "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+    arguments: "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid, p_reason text",
     returns: "table (receipt_id uuid, pdf_url text)",
     executeRoles: ["service_role"],
   },

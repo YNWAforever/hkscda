@@ -177,10 +177,6 @@ const ALERT_SITES: TagSite[] = [
     file: `${ADMIN}crm/SupporterDetail.tsx`,
     before: /adminErrorMessage\(issueReceiptMutation\.error/,
   },
-  {
-    file: `${ADMIN}crm/SupporterDetail.tsx`,
-    before: /adminErrorMessage\(voidReceiptMutation\.error/,
-  },
   { file: `${ADMIN}donations/PaymentsReconcile.tsx`, before: /\?\? copy\.exportFailed/ },
   { file: `${ADMIN}donations/PaymentsReconcile.tsx`, before: /\{actionError\}/ },
   {

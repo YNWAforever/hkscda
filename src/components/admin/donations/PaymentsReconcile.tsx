@@ -17,6 +17,7 @@ import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { useAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
@@ -36,6 +37,8 @@ import {
   receiptPill,
   type AdminPaymentRow,
   type PaymentFilters,
+  type VoidReceiptRequest,
+  voidReceiptRequest,
 } from "./paymentsReconcileLogic";
 
 type FinanceActivityItem = {
@@ -153,8 +156,11 @@ export function PaymentsReconcile() {
   });
 
   const voidReceipt = useMutation({
-    mutationFn: (receiptId: string) =>
-      fetchAdminJson(`/api/admin/receipts/${receiptId}/void`, { method: "POST" }),
+    mutationFn: ({ receiptId, reason }: VoidReceiptRequest) =>
+      fetchAdminJson(`/api/admin/receipts/${receiptId}/void`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      }),
     onSuccess: refresh,
   });
 
@@ -346,6 +352,7 @@ export function PaymentsReconcile() {
 
   return (
     <div className="space-y-5">
+      {/* required-reason: receipt.void */}
       <ConfirmActionDialog
         open={voidTarget !== null}
         onOpenChange={(open) => {
@@ -355,9 +362,10 @@ export function PaymentsReconcile() {
         consequence={copy.confirmVoid(voidTarget?.receiptNo ?? "")}
         confirmLabel={copy.voidReceipt}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (voidTarget) await voidReceipt.mutateAsync(voidTarget.id);
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = voidReceiptRequest(voidTarget, reason);
+          if (request) await voidReceipt.mutateAsync(request);
         }}
       />
       <section className="grid gap-3 sm:grid-cols-3">
