@@ -131,6 +131,8 @@ describe("postSignInDestination", () => {
     expect(postSignInDestination("/admin/animals?page=2", staff)).toBe("/admin/animals?page=2");
     expect(postSignInDestination("/admin/supporters/s1", admin)).toBe("/admin/supporters/s1");
     expect(postSignInDestination("/admin?section=payments", admin)).toBe("/admin?section=payments");
+    // The payment-methods page grants the payments area, which a treasurer has.
+    expect(postSignInDestination("/admin/payment-methods", admin)).toBe("/admin/payment-methods");
   });
 
   test("uses the role's first allowed page when there is no safe redirect", () => {
