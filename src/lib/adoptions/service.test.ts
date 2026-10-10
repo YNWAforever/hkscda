@@ -906,6 +906,76 @@ describe("createAdoptionCoordinatorService", () => {
     });
   });
 
+  describe("closing or rejecting a case needs a reason", () => {
+    const closingRepo = () =>
+      createRepo({
+        async getStatus(id) {
+          return status({ id, isClosing: true });
+        },
+      });
+
+    // required-reason: adoption_case.close
+    test("a closing status with no note is refused before the repository is called", async () => {
+      const repo = closingRepo();
+      const service = createAdoptionCoordinatorService({ repo });
+
+      await expect(
+        service.changeCaseStatus({ actorUserId: adminId, caseId, input: { statusId } }),
+      ).rejects.toThrow("reason_required");
+      expect(repo.calls.map((call) => call.name)).toEqual([]);
+    });
+
+    // required-reason: adoption_case.close
+    test("a whitespace-only note on a closing status is refused", async () => {
+      const repo = closingRepo();
+      const service = createAdoptionCoordinatorService({ repo });
+
+      await expect(
+        service.changeCaseStatus({
+          actorUserId: adminId,
+          caseId,
+          input: { statusId, note: "   " },
+        }),
+      ).rejects.toThrow("reason_required");
+      expect(repo.calls.map((call) => call.name)).toEqual([]);
+    });
+
+    // required-reason: adoption_case.close
+    test("a closing status with a note reaches the repository trimmed", async () => {
+      const repo = closingRepo();
+      const service = createAdoptionCoordinatorService({
+        repo,
+        now: () => new Date("2026-06-26T08:30:00.000Z"),
+      });
+
+      await service.changeCaseStatus({
+        actorUserId: adminId,
+        caseId,
+        input: { statusId, note: " applicant withdrew " },
+      });
+
+      expect(repo.calls.find((call) => call.name === "changeCaseStatus")?.payload).toEqual({
+        caseId,
+        statusId,
+        closedAt: "2026-06-26T08:30:00.000Z",
+        actorUserId: adminId,
+        note: "applicant withdrew",
+      });
+    });
+
+    // required-reason: adoption_case.close
+    test("a status that does not close a case keeps its note optional", async () => {
+      const repo = createRepo();
+      const service = createAdoptionCoordinatorService({ repo });
+
+      await service.changeCaseStatus({ actorUserId: adminId, caseId, input: { statusId } });
+
+      expect(repo.calls.find((call) => call.name === "changeCaseStatus")?.payload).toMatchObject({
+        note: null,
+      });
+    });
+  });
+
   test("rejects changing a system status category before repository mutation", async () => {
     const repo = createRepo();
     const service = createAdoptionCoordinatorService({ repo });

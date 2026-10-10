@@ -602,12 +602,20 @@ export function createAdoptionCoordinatorService({
       if (!status || status.category !== "adoption_case") throw new Error("Invalid case status");
       if (!status.isActive) throw new Error("Inactive case status");
 
+      // Closing or rejecting a case ends it, so the reason is required and travels as the note.
+      let note = input.note ?? null;
+      if (status.isClosing) {
+        const reason = requiredReasonSchema.safeParse(input.note ?? "");
+        if (!reason.success) throw new Error("reason_required");
+        note = reason.data;
+      }
+
       await repo.changeCaseStatus({
         caseId: args.caseId,
         statusId: input.statusId,
         closedAt: status.isClosing ? timestamp(now) : null,
         actorUserId: args.actorUserId,
-        note: input.note ?? null,
+        note,
       });
     },
 

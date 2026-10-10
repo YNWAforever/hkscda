@@ -72,6 +72,7 @@ export const PENDING_REQUIRED_REASON_IDS: ReadonlySet<RequiredReasonId> = new Se
       id !== "annual_report.delete" &&
       id !== "sponsorship_pledge.cancel" &&
       id !== "sponsorship_proof.reject" &&
-      id !== "sponsorship_finance.adjust",
+      id !== "sponsorship_finance.adjust" &&
+      id !== "adoption_case.close",
   ),
 );
