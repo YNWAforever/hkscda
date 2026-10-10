@@ -406,3 +406,14 @@ No new wording is written. These are for the owner to know about, not to decide.
 - **Headings in states that had none.** Record pages while loading, failed or not found show the destination's label from `adminCommonCopy.zh.navItems` (申請, 領養人, 支持者, 宣傳內容, and for an animal 貓貓 / 狗狗 / 助養), or 活動與報名 for a registration. Files: `adoptions/CaseDetail.tsx`, `adoptions/AdopterDetail.tsx`, `crm/SupporterDetail.tsx`, `content/ContentEditor.tsx`, `volunteers/VolunteerRegistrationDetail.tsx` and `src/routes/admin/animals/$id.edit.tsx`, all through `DestinationHeading.tsx`. Volunteer policy settings, payment methods and about pages, while loading or failed, show the page's own title (義工政策設定, 付款方式設定, 關於頁面管理). The adoption information "page content" tab shows 領養資料管理.
 - **Breadcrumbs change shape.** The one breadcrumb is now `AdminLayout`'s, in the order group / destination / record, with the existing label 導覽路徑. Two old breadcrumbs are gone: the animals list's 後台 / 動物管理 / 貓貓 (label 麵包屑導覽) and the volunteer shell's 義工營運中心 / page / 義工個人詳情 or 報名詳情 (label 麵包屑). The generic detail titles 義工個人詳情 and 報名詳情 no longer appear in a breadcrumb; 義工個人詳情 remains the person page's `h1`.
 - **English copy lines with no zh counterpart yet** are tracked in section 1 (LoadFailure class lines) and DL-1 (reason hint).
+
+## 9. SP-5b-2 additions (Task 2)
+
+The supporter page now asks for a reason before it voids a receipt, in a confirm dialog. All of its Chinese is existing text reused; nothing is newly written. Owner question below.
+
+| ID   | Where (file:line, current)                                                   | zh now (reused)     | English now        | Notes                                                                                               |
+| ---- | ---------------------------------------------------------------------------- | ------------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| SB-1 | `crm/copy.ts:134` `supporterDetailCopy.zh.confirmVoid(receiptNo)`            | 確定作廢收條 {no}？ | Void receipt {no}? | Same sentence as the payments screen (`donations/copy.ts:86`). Title and confirm button reuse 作廢. |
+| SB-2 | Reason field label in the same dialog (`confirmActionCopy.ts` `reasonLabel`) | 原因                | Reason             | The shared label every required-reason dialog uses.                                                 |
+
+Owner question: this screen's other copy says 收據 (`crm/copy.ts` receipts section), while the reused sentence says 收條. The glossary (`docs/admin-glossary.md:96`) treats them as the same thing. Which one should the dialog sentence use? The string is left as it is in code until you decide.

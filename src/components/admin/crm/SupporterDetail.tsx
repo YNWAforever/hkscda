@@ -11,6 +11,7 @@ import type {
 import { Button } from "../../ui/button";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
+import { voidReceiptRequest, type VoidReceiptRequest } from "../donations/paymentsReconcileLogic";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DestinationHeading } from "../DestinationHeading";
@@ -80,7 +81,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   });
 
   const voidReceiptMutation = useMutation({
-    mutationFn: ({ receiptId, reason }: { receiptId: string; reason: string }) =>
+    mutationFn: ({ receiptId, reason }: VoidReceiptRequest) =>
       fetchAdminJson(`/api/admin/receipts/${receiptId}/void`, {
         method: "POST",
         body: JSON.stringify({ supporterId, reason }),
@@ -129,11 +130,8 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
         destructive
         reason={requiredReasonDialog}
         onConfirm={async (reason) => {
-          if (voidTarget)
-            await voidReceiptMutation.mutateAsync({
-              receiptId: voidTarget.id,
-              reason: reason ?? "",
-            });
+          const request = voidReceiptRequest(voidTarget, reason);
+          if (request) await voidReceiptMutation.mutateAsync(request);
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3">

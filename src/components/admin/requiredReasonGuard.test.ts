@@ -51,9 +51,9 @@ function markerPattern(id: string): RegExp {
  * The props of the opening tag whose name ends just before `start`: the text up to the tag's own
  * `>` or `/>`. Braces, string and template literals and comments are tracked, so a `>` or `/>`
  * inside a prop value (an arrow, a string, a nested element) does not end the tag early. An
- * unterminated tag returns the rest of the text.
+ * unterminated tag, or a quoted string that runs past a line end, returns null.
  */
-export function openingTagProps(text: string, start: number): string {
+export function openingTagProps(text: string, start: number): string | null {
   // "code" is the tag itself or a brace expression; "tpl" is the inside of a template literal.
   const modes: Array<"code" | "tpl"> = ["code"];
   const braceStack: number[] = [];
@@ -72,7 +72,12 @@ export function openingTagProps(text: string, start: number): string {
       continue;
     }
     if (ch === '"' || ch === "'") {
-      for (i++; i < text.length && text[i] !== ch; i++) if (text[i] === "\\") i++;
+      i++;
+      while (i < text.length && text[i] !== ch) {
+        if (text[i] === "\n") return null;
+        if (text[i] === "\\") i++;
+        i++;
+      }
     } else if (ch === "`") {
       modes.push("tpl");
     } else if (ch === "/" && text[i + 1] === "*") {
@@ -93,7 +98,7 @@ export function openingTagProps(text: string, start: number): string {
       return text.slice(start, i);
     }
   }
-  return text.slice(start);
+  return null;
 }
 
 /** Why `text` does not mark the dialog for `id` correctly; empty when it does. */
@@ -115,6 +120,10 @@ export function dialogMarkerProblems(text: string, id: string): string[] {
     const block = lines.slice(dialogLine).join("\n");
     const tagName = "<ConfirmActionDialog";
     const props = openingTagProps(block, block.indexOf(tagName) + tagName.length);
+    if (props === null) {
+      problems.push(`dialog on line ${dialogLine + 1}: could not find the end of its opening tag`);
+      continue;
+    }
     if (!/reason=\{(requiredReasonDialog\}|\{\s*required:\s*true)/.test(props)) {
       problems.push(`dialog on line ${dialogLine + 1} has no required reason prop`);
     }
@@ -243,6 +252,16 @@ describe("the checks themselves", () => {
     expect(dialogMarkerProblems(bad, "x.y")).not.toEqual([]);
     const ok = bad.replace("onConfirm={f}", "reason={requiredReasonDialog}");
     expect(dialogMarkerProblems(ok, "x.y")).toEqual([]);
+  });
+
+  test("a tag the scan cannot close is flagged, not read to the end of the file", () => {
+    const text = [
+      "// required-reason: x.y",
+      "<ConfirmActionDialog consequence={<span>Don't</span>} />",
+      "<X reason={requiredReasonDialog} />",
+    ].join("\n");
+    expect(dialogMarkerProblems(text, "x.y")).not.toEqual([]);
+    expect(openingTagProps("<ConfirmActionDialog a={1", 20)).toBeNull();
   });
 
   test("openingTagProps stops at the tag's own end", () => {
