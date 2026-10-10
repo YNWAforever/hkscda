@@ -201,6 +201,7 @@ export function ActivityOperationForm({
       )}
       {!["generate", "copy", "edit"].includes(mode) && (
         <label className="block">
+          {/* required-reason: volunteer_activity.bulk_cancel */}
           {text.reason}
           <input
             className={control + " w-full"}

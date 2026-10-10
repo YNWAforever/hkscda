@@ -2,20 +2,17 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, sep } from "node:path";
 import {
-  PENDING_REQUIRED_REASON_IDS,
   REQUIRED_REASON_ACTIONS,
   type RequiredReasonAction,
   type RequiredReasonId,
 } from "@/lib/admin/requiredReasonActions";
 
 /**
- * Ratchet for SP-5b-2. Each action in the registry starts pending. When a task wires the action
- * it removes the ID from `PENDING_REQUIRED_REASON_IDS`, and from then on this guard requires:
+ * Ratchet for SP-5b-2. Every action in the registry is wired, and this guard requires, for each:
  *   (a) the UI marks the dialog (or the inline reason field) with `required-reason: <id>`, and a
  *       dialog marked that way passes `reason={requiredReasonDialog}` or `reason={{ required: true`;
  *   (b) some test under `src/` carries `// required-reason: <id>`.
- * While every ID is pending, (a) and (b) check nothing; the self-tests below prove the checking
- * functions work and (c) and (d) pin the registry itself.
+ * The self-tests below prove the checking functions work and (c) pins the registry itself.
  */
 
 const ADMIN_UI_ROOT = "src/components/admin";
@@ -177,20 +174,14 @@ describe("required-reason registry", () => {
     expect([...ids].sort()).toEqual([...EXPECTED_IDS].sort());
   });
 
-  test("(d) the pending set is a subset of the registry", () => {
-    const ids = new Set(REQUIRED_REASON_ACTIONS.map((action) => action.id));
-    for (const pending of PENDING_REQUIRED_REASON_IDS) expect(ids.has(pending)).toBe(true);
-  });
-
   test("every action names at least one UI file", () => {
     for (const action of REQUIRED_REASON_ACTIONS) expect(action.ui.length).toBeGreaterThan(0);
   });
 });
 
-describe("wired actions carry a marker and a test", () => {
+describe("every action carries a marker and a test", () => {
   const tests = existsSync("src") ? walkTests("src").map((p) => readFileSync(p, "utf8")) : [];
   for (const action of REQUIRED_REASON_ACTIONS) {
-    if (PENDING_REQUIRED_REASON_IDS.has(action.id)) continue;
     test(`(a) ${action.id} marks its ${action.kind} in the UI`, () => {
       expect(uiProblems(action)).toEqual([]);
     });
