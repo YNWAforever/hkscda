@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import {
@@ -24,6 +25,8 @@ import {
   statusToStatusForm,
 } from "./statusAdminLogic";
 import type { StatusFormState } from "./statusAdminLogic";
+import { sendStatusDelete, statusDeleteRequest } from "./statusDelete";
+import type { StatusDeleteRequest } from "./statusDelete";
 
 type StatusesResponse = {
   statuses: CoordinatorStatus[];
@@ -31,10 +34,6 @@ type StatusesResponse = {
 
 type StatusResponse = {
   status: CoordinatorStatus;
-};
-
-type DeleteResponse = {
-  ok: boolean;
 };
 
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
@@ -173,12 +172,12 @@ export function StatusAdmin() {
   });
 
   const [deleteTarget, setDeleteTarget] = useState<CoordinatorStatus | null>(null);
-  const deleteMutation = useMutation<DeleteResponse, Error, CoordinatorStatus>({
-    mutationFn: (status) =>
-      fetchCoordinatorJson<DeleteResponse>(
-        `/api/admin/adoptions/statuses/${encodeURIComponent(status.id)}`,
-        { method: "DELETE" },
-      ),
+  const deleteMutation = useMutation<
+    unknown,
+    Error,
+    StatusDeleteRequest & { category: CoordinatorStatusCategory }
+  >({
+    mutationFn: (variables) => sendStatusDelete(variables, language),
     onSuccess: async (_response, status) => {
       await queryClient.invalidateQueries({ queryKey: STATUSES_QUERY_KEY });
       setForm(createBlankStatusForm(status.category));
@@ -231,6 +230,7 @@ export function StatusAdmin() {
 
   return (
     <div className="space-y-5 p-6">
+      {/* required-reason: coordinator_status.delete */}
       <ConfirmActionDialog
         open={deleteTarget !== null}
         onOpenChange={(open) => {
@@ -242,9 +242,12 @@ export function StatusAdmin() {
         }
         confirmLabel={pageCopy.common.delete}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (deleteTarget) await deleteMutation.mutateAsync(deleteTarget);
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = statusDeleteRequest(deleteTarget?.id ?? null, reason);
+          if (deleteTarget && request) {
+            await deleteMutation.mutateAsync({ ...request, category: deleteTarget.category });
+          }
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3">

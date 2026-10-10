@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { readAdminJsonObject } from "../http/adminJson.server";
+import { requiredReasonSchema } from "../admin/requiredReason";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminUser } from "../donations/supabase.server";
@@ -71,9 +72,19 @@ export function createAdminFaqHandlers({ requireFaqAdmin, service }: CreateAdmin
     deactivate({ request }: HandlerContext) {
       return withFaqErrors(async () => {
         const admin = await requireFaqAdmin(request);
-        const body = (await jsonBody(request)) as { id?: string };
+        const body = (await jsonBody(request)) as { id?: string; reason?: unknown };
         if (!body.id) return jsonNoStore({ error: "Missing FAQ entry id" }, { status: 400 });
-        await service.deactivate({ actorUserId: admin.authUserId, id: body.id });
+        const reason = requiredReasonSchema.safeParse(body.reason);
+        if (!reason.success)
+          return jsonNoStore(
+            { error: "Deactivating a FAQ entry requires a reason of 1 to 500 characters" },
+            { status: 400 },
+          );
+        await service.deactivate({
+          actorUserId: admin.authUserId,
+          id: body.id,
+          reason: reason.data,
+        });
         return jsonNoStore({ ok: true });
       });
     },

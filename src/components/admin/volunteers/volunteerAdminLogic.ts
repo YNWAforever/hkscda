@@ -64,6 +64,19 @@ export function isDestructiveTransition(status: VolunteerRegistrationStatus) {
   return status === "rejected";
 }
 
+export type RegistrationRejection = { status: VolunteerRegistrationStatus; reason: string };
+
+/**
+ * What the reject dialog's confirm sends: the destructive status and the staff's reason. Null
+ * when no registration is chosen, so a stray confirm sends nothing.
+ */
+export function rejectionRequest(
+  status: VolunteerRegistrationStatus | null,
+  reason: string | null,
+): RegistrationRejection | null {
+  return status === null ? null : { status, reason: reason ?? "" };
+}
+
 /**
  * Attendance is only meaningful once someone is approved and the activity has
  * actually started. Marking attendance on a pending or future booking records

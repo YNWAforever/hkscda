@@ -151,7 +151,7 @@ describe("createDocumentHandlers", () => {
     });
 
     const response = await handlers.deleteAsset({
-      request: new Request("https://example.test/api/admin/documents/asset", { method: "DELETE" }),
+      request: jsonRequest("/api/admin/documents/asset", { reason: "duplicate upload" }, "DELETE"),
       params: { id: "asset" },
     });
 
@@ -244,9 +244,7 @@ describe("createDocumentHandlers", () => {
       params,
     });
     await handlers.deleteAnnualReport({
-      request: new Request("https://example.test/api/admin/annual-reports/report", {
-        method: "DELETE",
-      }),
+      request: jsonRequest("/api/admin/annual-reports/report", { reason: "filed twice" }, "DELETE"),
       params,
     });
 
@@ -259,4 +257,74 @@ describe("createDocumentHandlers", () => {
       "deleteAnnualReport",
     ]);
   });
+});
+
+describe("deleting a document or an annual report needs a reason", () => {
+  type Delete = "deleteAsset" | "deleteAnnualReport";
+  const cases: Array<{ name: Delete; path: string; tag: string }> = [
+    { name: "deleteAsset", path: "/api/admin/documents/asset", tag: "document.delete" },
+    {
+      name: "deleteAnnualReport",
+      path: "/api/admin/annual-reports/report",
+      tag: "annual_report.delete",
+    },
+  ];
+
+  function setup(name: Delete) {
+    const received: unknown[] = [];
+    // createService's overrides only reach the asset methods, so replace the one under test here.
+    const service = {
+      ...createService(),
+      async [name](input: unknown) {
+        received.push(input);
+        return { ok: true };
+      },
+    };
+    const handlers = createDocumentHandlers({ requireDocumentAdmin: async () => admin, service });
+    return { handlers, received, service };
+  }
+
+  for (const { name, path, tag } of cases) {
+    // required-reason: document.delete
+    // required-reason: annual_report.delete
+    test(`${tag}: the trimmed reason passes through to the service`, async () => {
+      const { handlers, received } = setup(name);
+      const response = await handlers[name]({
+        request: jsonRequest(path, { reason: "  duplicate upload  " }, "DELETE"),
+        params: { id: "asset" },
+      });
+      expect(response.status).toBe(200);
+      expect(received).toHaveLength(1);
+      expect(received[0]).toMatchObject({
+        actorUserId: "admin-auth",
+        reason: "duplicate upload",
+      });
+    });
+
+    test(`${tag}: a missing body, a blank reason and a 501-character reason are 400 before the service`, async () => {
+      for (const request of [
+        new Request(`https://example.test${path}`, { method: "DELETE" }),
+        jsonRequest(path, {}, "DELETE"),
+        jsonRequest(path, { reason: "   " }, "DELETE"),
+        jsonRequest(path, { reason: "" }, "DELETE"),
+        jsonRequest(path, { reason: "x".repeat(501) }, "DELETE"),
+        jsonRequest(path, { reason: 5 }, "DELETE"),
+      ]) {
+        const { handlers, received } = setup(name);
+        const response = await handlers[name]({ request, params: { id: "asset" } });
+        expect(response.status).toBe(400);
+        expect(received).toHaveLength(0);
+      }
+    });
+
+    test(`${tag}: a 500-character reason is accepted`, async () => {
+      const { handlers, received } = setup(name);
+      const response = await handlers[name]({
+        request: jsonRequest(path, { reason: "x".repeat(500) }, "DELETE"),
+        params: { id: "asset" },
+      });
+      expect(response.status).toBe(200);
+      expect(received).toHaveLength(1);
+    });
+  }
 });

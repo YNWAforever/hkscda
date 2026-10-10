@@ -20,6 +20,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { pickAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import { StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
@@ -30,10 +31,12 @@ import {
   buildActivitySearchParams,
   buildRegistrationSearchParams,
   isDestructiveTransition,
+  rejectionRequest,
   summarizeActivityCapacity,
   VOLUNTEER_ADMIN_PAGE_SIZE,
   volunteerStatusTone,
 } from "./volunteerAdminLogic";
+import { sendRegistrationStatusChange } from "./registrationStatusChange";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
@@ -261,15 +264,13 @@ export function VolunteerManagement() {
       id,
       status,
       expectedUpdatedAt,
+      reason,
     }: {
       id: string;
       status: VolunteerRegistrationStatus;
       expectedUpdatedAt: string;
-    }) =>
-      fetchAdminJson(`/api/admin/volunteers/registrations/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status, expectedUpdatedAt }),
-      }),
+      reason?: string;
+    }) => sendRegistrationStatusChange(id, { status, expectedUpdatedAt, reason }, language),
     onSettled: refreshAll,
   });
 
@@ -653,6 +654,7 @@ export function VolunteerManagement() {
 
   return (
     <div className="space-y-6 p-6">
+      {/* required-reason: volunteer_registration.reject */}
       <ConfirmActionDialog
         open={rejectTarget !== null}
         onOpenChange={(open) => {
@@ -662,13 +664,14 @@ export function VolunteerManagement() {
         consequence={text.registrations.confirmReject(rejectTarget?.contactName ?? "")}
         confirmLabel={copy.rejectVerb}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (!rejectTarget) return;
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = rejectionRequest(rejectTarget?.status ?? null, reason);
+          if (!rejectTarget || !request) return;
           await updateRegistration.mutateAsync({
             id: rejectTarget.id,
-            status: rejectTarget.status,
             expectedUpdatedAt: rejectTarget.expectedUpdatedAt,
+            ...request,
           });
         }}
       />

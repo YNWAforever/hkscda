@@ -730,6 +730,8 @@ describe("createAdoptionCoordinatorHandlers", () => {
     const response = await handlers.deleteStatus({
       request: new Request(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
         method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason: "retired" }),
       }),
       params: { id: statusId },
     });
@@ -757,6 +759,8 @@ describe("createAdoptionCoordinatorHandlers", () => {
     const response = await handlers.deleteStatus({
       request: new Request(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
         method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason: "retired" }),
       }),
       params: { id: statusId },
     });
@@ -890,6 +894,27 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(response.status).toBe(400);
     expectNoStoreJson(response);
     expect(await response.json()).toEqual({ error: "Invalid case status" });
+  });
+
+  // required-reason: adoption_case.close
+  test("closing a case without a reason returns 400 reason_required", async () => {
+    const { service } = createFakeService({
+      async changeCaseStatus() {
+        throw new Error("reason_required");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.changeCaseStatus({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/cases/${caseId}/status`, {
+        statusId,
+      }),
+      params: { id: caseId },
+    });
+
+    expect(response.status).toBe(400);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ error: "reason_required" });
   });
 
   test("task completion validation errors return 400 JSON from followup create", async () => {

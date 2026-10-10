@@ -54,6 +54,7 @@ export function requiredUuid(params: HandlerContext["params"], key: string) {
 export const badRequestDomainErrors = new Set([
   "Invalid case status",
   "Inactive case status",
+  "reason_required",
   "Invalid match status",
   "Inactive match status",
   "Invalid followup status",

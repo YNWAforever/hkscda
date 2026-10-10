@@ -109,6 +109,7 @@ describe("createGovernanceService", () => {
     await service.deactivate({
       actorUserId: "admin-1",
       id: "11111111-1111-4111-8111-111111111111",
+      reason: "  term ended  ",
     });
 
     expect(deactivateCalls).toEqual(["11111111-1111-4111-8111-111111111111"]);
@@ -118,10 +119,29 @@ describe("createGovernanceService", () => {
         action: "board_member.deactivate",
         entity: "board_member",
         entity_id: "11111111-1111-4111-8111-111111111111",
-        detail: {},
+        detail: { reason: "term ended" },
         timestamp: "2026-08-29T12:00:00.000Z",
       },
     ]);
+  });
+
+  test("deactivate rejects a blank or over-long reason before touching the repository", async () => {
+    const deactivateCalls: string[] = [];
+    const { repo } = createFakeRepo({
+      deactivate: async (id) => {
+        deactivateCalls.push(id);
+      },
+    });
+    const service = createGovernanceService({ repo });
+    const id = "11111111-1111-4111-8111-111111111111";
+
+    await expect(
+      service.deactivate({ actorUserId: "admin-1", id, reason: "   " }),
+    ).rejects.toThrow();
+    await expect(
+      service.deactivate({ actorUserId: "admin-1", id, reason: "x".repeat(501) }),
+    ).rejects.toThrow();
+    expect(deactivateCalls).toEqual([]);
   });
 
   test("upsert rejects invalid input before ever touching the repository", async () => {

@@ -408,14 +408,14 @@ export function createSupabaseAdoptionInformationRepository(
       return mapped;
     },
 
-    async deleteEstate(id: string, actorUserId?: string) {
+    async deleteEstate(id: string, actorUserId: string | undefined, reason: string) {
       if (!actorUserId) throw new Error("Actor user ID required");
       const { error } = await client.rpc("mutate_admin_content_with_audit", {
         p_actor_user_id: actorUserId,
         p_entity: "dog_friendly_estate",
         p_operation: "delete",
         p_id: id,
-        p_payload: {},
+        p_payload: { reason },
       });
       if (error) throwRepositoryError(error);
     },

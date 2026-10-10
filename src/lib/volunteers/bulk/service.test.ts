@@ -50,6 +50,32 @@ test("invalid operation input and excess per-request selection rejected before r
   expect(calls).toBe(0);
 });
 
+// required-reason: volunteer_activity.bulk_cancel
+test("a bulk cancel needs a non-blank reason, which reaches the command trimmed", async () => {
+  const sent: unknown[] = [];
+  const service = createBulkService(async (_actor, command) => {
+    sent.push(command);
+    return {};
+  });
+  const cancel = (reason: string | undefined) => ({
+    action: "preview",
+    operation: "cancel",
+    selection_id: crypto.randomUUID(),
+    input: reason === undefined ? {} : { reason },
+    idempotency_key: crypto.randomUUID(),
+  });
+  for (const blank of [undefined, "", "   ", "\t\n"]) {
+    expect(() => service.command("actor", cancel(blank))).toThrow();
+  }
+  expect(sent).toHaveLength(0);
+  await service.command("actor", cancel("  Session cancelled by the shelter  "));
+  expect(sent).toHaveLength(1);
+  expect(sent[0]).toMatchObject({
+    operation: "cancel",
+    input: { reason: "Session cancelled by the shelter" },
+  });
+});
+
 test("dates that cannot be used are refused with a code, and the zh-HK message is plain text", () => {
   const refusal = (work: () => unknown) => {
     try {

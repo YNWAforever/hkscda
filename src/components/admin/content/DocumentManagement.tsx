@@ -9,9 +9,12 @@ import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionFailure } from "../confirmActionFailure";
+import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
+import { documentDeleteRequest, sendDocumentDelete } from "./documentDelete";
 import { documentsCopy } from "./documentsCopy";
 import { uploadDocumentPdf } from "./documentUpload";
 import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
@@ -98,13 +101,18 @@ function DocumentManagementRuntime() {
     mutationFn: async ({
       id,
       action,
+      reason,
     }: {
       id: string;
       action: "publish" | "unpublish" | "delete";
+      reason?: string;
     }) => {
-      const endpoint =
-        action === "delete" ? `/api/admin/documents/${id}` : `/api/admin/documents/${id}/publish`;
-      return fetchAdminJson(endpoint, {
+      if (action === "delete") {
+        const request = documentDeleteRequest(id, reason ?? null);
+        if (!request) throw confirmActionFailure(null, adminLanguage);
+        return sendDocumentDelete(request, adminLanguage);
+      }
+      return fetchAdminJson(`/api/admin/documents/${id}/publish`, {
         method: action === "publish" ? "POST" : "DELETE",
       });
     },
@@ -171,8 +179,8 @@ function DocumentManagementRuntime() {
       onUploadLanguageChange={setUploadLanguage}
       onFileChange={setFile}
       onUpload={() => uploadMutation.mutate()}
-      onAction={(id, action) => {
-        const run = actionMutation.mutateAsync({ id, action });
+      onAction={(id, action, reason) => {
+        const run = actionMutation.mutateAsync({ id, action, reason });
         // Only a delete waits in its confirm dialog; the other actions show their error on the page.
         if (action === "delete") return run;
         run.catch(() => undefined);
@@ -209,7 +217,11 @@ type ViewProps = {
   onUploadLanguageChange?: (value: DocumentLanguage) => void;
   onFileChange?: (file: File | null) => void;
   onUpload?: () => void;
-  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void | Promise<unknown>;
+  onAction?: (
+    id: string,
+    action: "publish" | "unpublish" | "delete",
+    reason?: string,
+  ) => void | Promise<unknown>;
 };
 
 export function DocumentManagementView({
@@ -247,6 +259,7 @@ export function DocumentManagementView({
   const deleteTitle = rows.find((item) => item.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      {/* required-reason: document.delete */}
       <ConfirmActionDialog
         open={deleteId !== null}
         onOpenChange={(open) => {
@@ -256,9 +269,9 @@ export function DocumentManagementView({
         consequence={copy.table.confirmDelete(deleteTitle)}
         confirmLabel={copy.table.deleteLabel(deleteTitle)}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (deleteId !== null) await onAction?.(deleteId, "delete");
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          if (deleteId !== null && reason !== null) await onAction?.(deleteId, "delete", reason);
         }}
       />
       <header>

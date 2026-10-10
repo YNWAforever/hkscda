@@ -111,8 +111,8 @@ function createRepo(
       calls.push({ name: "updateStatus", payload: { id, input } });
       return status({ id, ...input });
     },
-    async deleteStatus(id) {
-      calls.push({ name: "deleteStatus", payload: id });
+    async deleteStatus(id, _actorUserId, reason) {
+      calls.push({ name: "deleteStatus", payload: { id, reason } });
     },
     async listAnimalPipeline(input) {
       calls.push({ name: "listAnimalPipeline", payload: input });
@@ -851,11 +851,36 @@ describe("createAdoptionCoordinatorService", () => {
     const repo = createRepo();
     const service = createAdoptionCoordinatorService({ repo });
 
-    await expect(service.deleteStatus({ actorUserId: adminId, statusId })).rejects.toThrow(
-      "System statuses cannot be deleted",
-    );
+    await expect(
+      service.deleteStatus({ actorUserId: adminId, statusId, reason: "retired" }),
+    ).rejects.toThrow("System statuses cannot be deleted");
 
     expect(repo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
+  // required-reason: coordinator_status.delete
+  test("a status delete passes the trimmed reason to the repository", async () => {
+    const repo = createRepo({ getStatus: async (id) => status({ id, isSystem: false }) });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await service.deleteStatus({ actorUserId: adminId, statusId, reason: "  merged  " });
+
+    expect(repo.calls.find((call) => call.name === "deleteStatus")?.payload).toEqual({
+      id: statusId,
+      reason: "merged",
+    });
+  });
+
+  test("a status delete with a blank or over-long reason is rejected before any repository call", async () => {
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({ repo });
+
+    for (const reason of ["   ", "x".repeat(501)]) {
+      await expect(
+        service.deleteStatus({ actorUserId: adminId, statusId, reason }),
+      ).rejects.toThrow();
+    }
+    expect(repo.calls).toEqual([]);
   });
 
   test("changes case status through one atomic repository method", async () => {
@@ -878,6 +903,86 @@ describe("createAdoptionCoordinatorService", () => {
       closedAt: null,
       actorUserId: adminId,
       note: "Phone screening completed",
+    });
+  });
+
+  describe("closing or rejecting a case needs a reason", () => {
+    const closingRepo = () =>
+      createRepo({
+        async getStatus(id) {
+          return status({ id, isClosing: true });
+        },
+      });
+
+    // required-reason: adoption_case.close
+    test("a closing status with no note is refused before the repository is called", async () => {
+      const repo = closingRepo();
+      const service = createAdoptionCoordinatorService({ repo });
+
+      await expect(
+        service.changeCaseStatus({ actorUserId: adminId, caseId, input: { statusId } }),
+      ).rejects.toThrow("reason_required");
+      expect(repo.calls.map((call) => call.name)).toEqual([]);
+    });
+
+    // required-reason: adoption_case.close
+    test("a whitespace-only note on a closing status is refused", async () => {
+      const repo = closingRepo();
+      const service = createAdoptionCoordinatorService({ repo });
+
+      await expect(
+        service.changeCaseStatus({
+          actorUserId: adminId,
+          caseId,
+          input: { statusId, note: "   " },
+        }),
+      ).rejects.toThrow("reason_required");
+      expect(repo.calls.map((call) => call.name)).toEqual([]);
+    });
+
+    // required-reason: adoption_case.close
+    test("a closing status with a note reaches the repository trimmed", async () => {
+      const repo = closingRepo();
+      const service = createAdoptionCoordinatorService({
+        repo,
+        now: () => new Date("2026-06-26T08:30:00.000Z"),
+      });
+
+      const reason = " applicant withdrew ";
+      await service.changeCaseStatus({
+        actorUserId: adminId,
+        caseId,
+        input: { statusId, note: reason },
+      });
+
+      // The closing reason travels as the note, trimmed.
+      expect(repo.calls.find((call) => call.name === "changeCaseStatus")?.payload).toEqual({
+        caseId,
+        statusId,
+        closedAt: "2026-06-26T08:30:00.000Z",
+        actorUserId: adminId,
+        note: reason.trim(),
+      });
+    });
+
+    // required-reason: adoption_case.close
+    test("a status that does not close a case keeps its note optional", async () => {
+      const repo = createRepo();
+      const service = createAdoptionCoordinatorService({ repo });
+
+      const refusal = await service
+        .changeCaseStatus({ actorUserId: adminId, caseId, input: { statusId } })
+        .then(
+          () => null,
+          (error: unknown) => (error instanceof Error ? error.message : String(error)),
+        );
+
+      // A status that does not close the case is never refused for a missing reason.
+      expect(refusal).not.toBe("reason_required");
+      expect(refusal).toBeNull();
+      expect(repo.calls.find((call) => call.name === "changeCaseStatus")?.payload).toMatchObject({
+        note: null,
+      });
     });
   });
 

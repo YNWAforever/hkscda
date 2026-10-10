@@ -1,3 +1,4 @@
+import { requiredReasonSchema } from "../admin/requiredReason";
 import {
   adminAdoptionInformationQuerySchema,
   adoptionFeeInputSchema,
@@ -64,7 +65,7 @@ export interface AdoptionInformationRepository {
     input: SetEstatePublicationInput,
     actorUserId: string,
   ): Promise<DogFriendlyEstate>;
-  deleteEstate(id: string, actorUserId?: string): Promise<void>;
+  deleteEstate(id: string, actorUserId: string | undefined, reason: string): Promise<void>;
   upsertRule(input: AdoptionRuleInput, actorUserId: string): Promise<AdoptionRuleContent>;
   upsertCareTopic(input: CareTopicInput, actorUserId: string): Promise<CareTopic>;
   insertAuditLog(input: AdoptionInformationAuditLog): Promise<void>;
@@ -138,16 +139,25 @@ export function createAdoptionInformationService({
       return repo.setEstatePublication(parsed, actorUserId);
     },
 
-    async deleteEstate({ actorUserId, estateId }: { actorUserId: string; estateId: string }) {
+    async deleteEstate({
+      actorUserId,
+      estateId,
+      reason,
+    }: {
+      actorUserId: string;
+      estateId: string;
+      reason: string;
+    }) {
       const id = adoptionInformationIdSchema.parse(estateId);
-      await repo.deleteEstate(id, actorUserId);
+      const parsedReason = requiredReasonSchema.parse(reason);
+      await repo.deleteEstate(id, actorUserId, parsedReason);
       if (repo.usesAtomicAudit) return;
       await audit({
         actor_user_id: actorUserId,
         action: "dog_friendly_estate.delete",
         entity: "dog_friendly_estate",
         entity_id: id,
-        detail: {},
+        detail: { reason: parsedReason },
       });
     },
 

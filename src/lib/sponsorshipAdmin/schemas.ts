@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { AdminRole } from "../admin/access";
+import { requiredReasonSchema } from "../admin/requiredReason";
 import {
   isoDate,
   MAX_PROOF_BYTES,
@@ -56,10 +57,16 @@ export const reviewPledgeProofSchema = z
     decision: z.enum(["approve", "reject"]),
     note: optionalTrimmed,
   })
-  .strict();
+  .strict()
+  .superRefine((value, ctx) => {
+    // Approving keeps its optional note; rejecting needs a reason, which the RPC stores in the audit row.
+    if (value.decision !== "reject") return;
+    if (!requiredReasonSchema.safeParse(value.note ?? "").success)
+      ctx.addIssue({ code: "custom", path: ["note"], message: "A reason is required" });
+  });
 
 export const cancelPledgeSchema = z.object({
-  note: optionalTrimmed,
+  note: requiredReasonSchema,
 });
 
 export const assignAnimalSchema = z.object({

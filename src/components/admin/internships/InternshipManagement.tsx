@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { REQUIRED_REASON_MAX } from "../../../lib/admin/requiredReason";
 import { adminErrorMessage } from "../../../lib/admin/session";
 import { internshipErrorCode, intakeSchema } from "../../../lib/internships/service";
 import type { InternshipApplication, IntakeBody } from "../../site/InternshipForm";
@@ -476,10 +477,11 @@ export function InternshipManagement() {
               </label>
               <label className="block">
                 {copy.review.reason}
+                {/* required-reason: internship.reject */}
                 <textarea
                   required
                   className={field}
-                  maxLength={2000}
+                  maxLength={REQUIRED_REASON_MAX}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                 />

@@ -78,6 +78,8 @@ export type VolunteerRepository = {
     registrationId: string;
     status: VolunteerRegistrationSummary["status"];
     internalNotes?: string | null;
+    /** Why a registration was rejected; audited. Null for any other status. */
+    reason: string | null;
   }): Promise<VolunteerRegistrationDetail>;
   updateAttendance(input: {
     actorUserId: string;
@@ -282,6 +284,7 @@ export function createVolunteerService({
         expectedUpdatedAt: input.expectedUpdatedAt,
         status: input.status,
         internalNotes: input.internalNotes,
+        reason: input.reason,
       });
       return registration;
     },

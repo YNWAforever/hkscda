@@ -32,8 +32,8 @@ test("an audit failure leaves a manually voided receipt issued", async () => {
       from: () => ({ remove: async () => ({ error: null }) }),
     },
   };
-  await expect(voidReceipt(client as never, "receipt-1", "admin-1")).rejects.toThrow(
-    "audit failed",
-  );
+  await expect(
+    voidReceipt(client as never, "receipt-1", "admin-1", { reason: "duplicate" }),
+  ).rejects.toThrow("audit failed");
   expect(status).toBe("issued");
 });

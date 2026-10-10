@@ -135,11 +135,15 @@ describe("faq schemas", () => {
     expect(() => faqEntryIdSchema.parse("not-a-uuid")).toThrow();
   });
 
-  test("deactivateFaqEntrySchema requires an id", () => {
-    expect(() =>
-      deactivateFaqEntrySchema.parse({ id: "11111111-1111-4111-8111-111111111111" }),
-    ).not.toThrow();
-    expect(() => deactivateFaqEntrySchema.parse({})).toThrow();
+  test("deactivateFaqEntrySchema requires an id and a trimmed 1-500 character reason", () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    expect(deactivateFaqEntrySchema.parse({ id, reason: " out of date " }).reason).toBe(
+      "out of date",
+    );
+    expect(() => deactivateFaqEntrySchema.parse({ id })).toThrow();
+    expect(() => deactivateFaqEntrySchema.parse({ id, reason: "   " })).toThrow();
+    expect(() => deactivateFaqEntrySchema.parse({ id, reason: "x".repeat(501) })).toThrow();
+    expect(() => deactivateFaqEntrySchema.parse({ reason: "out of date" })).toThrow();
   });
 
   test("FAQ_CTA_OPTIONS has exactly the 10 keys seeded in the migration, each with a bilingual label", () => {

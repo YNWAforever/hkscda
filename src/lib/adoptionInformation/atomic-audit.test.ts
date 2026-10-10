@@ -60,7 +60,9 @@ describe("admin content atomic audit RPCs", () => {
     const service = createAdoptionInformationService({
       repo: createSupabaseAdoptionInformationRepository(client as never),
     });
-    await expect(service.deleteEstate({ actorUserId: actor, estateId: id })).rejects.toBeTruthy();
+    await expect(
+      service.deleteEstate({ actorUserId: actor, estateId: id, reason: " closed " }),
+    ).rejects.toBeTruthy();
     expect(calls).toEqual([
       {
         name: "mutate_admin_content_with_audit",
@@ -69,7 +71,7 @@ describe("admin content atomic audit RPCs", () => {
           p_entity: "dog_friendly_estate",
           p_operation: "delete",
           p_id: id,
-          p_payload: {},
+          p_payload: { reason: "closed" },
         },
       },
     ]);
@@ -93,11 +95,12 @@ describe("admin content atomic audit RPCs", () => {
       actorUserId: actor,
       input: { name: "Chair", roleTitle: "Chair", effectiveDate: "2026-08-01" },
     });
-    await service.deactivate({ actorUserId: actor, id });
+    await service.deactivate({ actorUserId: actor, id, reason: " term ended " });
     expect(calls.map((call) => [call.name, call.args.p_entity, call.args.p_operation])).toEqual([
       ["mutate_admin_content_with_audit", "board_member", "upsert"],
       ["mutate_admin_content_with_audit", "board_member", "deactivate"],
     ]);
+    expect(calls[1].args.p_payload).toEqual({ reason: "term ended" });
   });
 
   test("knowledge upsert and deletion each use one RPC", async () => {

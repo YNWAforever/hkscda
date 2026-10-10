@@ -93,6 +93,7 @@ export const caseDetailCopy = defineAdminCopy({
     chooseStatus: "選擇狀態",
     optionalStatusNote: "選填狀態備註",
     saveStatus: "儲存狀態",
+    closeConsequence: "",
   },
   en: {
     backToCases: "Back to cases",
@@ -186,5 +187,7 @@ export const caseDetailCopy = defineAdminCopy({
     chooseStatus: "Choose status",
     optionalStatusNote: "Optional status note",
     saveStatus: "Save status",
+    closeConsequence:
+      "This status closes the case. The reason is saved with the status change in the case history.",
   },
 });

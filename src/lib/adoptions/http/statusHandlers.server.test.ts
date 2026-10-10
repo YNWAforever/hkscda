@@ -44,6 +44,14 @@ function jsonRequest(url: string, body: unknown) {
   });
 }
 
+function deleteRequest(id: string, body: unknown) {
+  return new Request(`https://example.test/api/admin/adoptions/statuses/${id}`, {
+    method: "DELETE",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 function createService(overrides: Partial<StatusService> = {}) {
   const calls: Array<{ name: string; payload?: unknown }> = [];
   const service = {
@@ -153,9 +161,7 @@ describe("createStatusHandlers", () => {
       params: { id: statusId },
     });
     const deleteResponse = await handlers.deleteStatus({
-      request: new Request(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
-        method: "DELETE",
-      }),
+      request: deleteRequest(statusId, { reason: "  merged into another status  " }),
       params: { id: statusId },
     });
 
@@ -176,9 +182,45 @@ describe("createStatusHandlers", () => {
       },
       {
         name: "deleteStatus",
-        payload: { actorUserId: statusAdmin.authUserId, statusId },
+        payload: {
+          actorUserId: statusAdmin.authUserId,
+          statusId,
+          reason: "merged into another status",
+        },
       },
     ]);
+  });
+
+  // required-reason: coordinator_status.delete
+  test("a status delete without a usable reason is a 400 before the service runs", async () => {
+    const { calls, service } = createService();
+    const handlers = createStatusHandlers({
+      requireCoordinator: async () => coordinator,
+      requireStatusAdmin: async () => statusAdmin,
+      service,
+    });
+    const bad: Array<Request> = [
+      new Request(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
+        method: "DELETE",
+      }),
+      deleteRequest(statusId, {}),
+      deleteRequest(statusId, { reason: "   " }),
+      deleteRequest(statusId, { reason: "x".repeat(501) }),
+      deleteRequest(statusId, { reason: 42 }),
+    ];
+
+    for (const request of bad) {
+      const response = await handlers.deleteStatus({ request, params: { id: statusId } });
+      expect(response.status).toBe(400);
+    }
+    expect(calls).toEqual([]);
+
+    const ok = await handlers.deleteStatus({
+      request: deleteRequest(statusId, { reason: "x".repeat(500) }),
+      params: { id: statusId },
+    });
+    expect(ok.status).toBe(200);
+    expect(calls).toHaveLength(1);
   });
 
   test("validates the update UUID before status-admin authorization", async () => {

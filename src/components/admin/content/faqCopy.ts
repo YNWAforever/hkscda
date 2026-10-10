@@ -32,6 +32,7 @@ export const faqCopy = defineAdminCopy({
       edit: "編輯",
       disable: "停用",
       disableFailed: "停用操作失敗，請再試一次。",
+      disableConsequence: "",
     },
     form: {
       category: "分類",
@@ -111,6 +112,8 @@ export const faqCopy = defineAdminCopy({
       edit: "Edit",
       disable: "Disable",
       disableFailed: "Could not disable the question. Try again.",
+      disableConsequence:
+        "Disabling hides this question from the /help page. You can show it again by editing the question.",
     },
     form: {
       category: "Category",

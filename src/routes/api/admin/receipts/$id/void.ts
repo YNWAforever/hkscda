@@ -7,6 +7,7 @@ import {
   RequestBodyTooLargeError,
 } from "../../../../../lib/http/publicJson.server";
 
+import { requiredReasonSchema } from "../../../../../lib/admin/requiredReason";
 import { voidReceipt } from "../../../../../lib/donations/reconcile.server";
 import {
   createSupabaseServiceClient,
@@ -15,6 +16,7 @@ import {
 
 const voidReceiptSchema = z.object({
   supporterId: z.string().uuid().optional(),
+  reason: requiredReasonSchema,
 });
 
 const voidReceiptParamsSchema = z.object({
@@ -50,6 +52,7 @@ export const Route = createFileRoute("/api/admin/receipts/$id/void")({
           return jsonResponse(
             await voidReceipt(client, paramsBody.id, admin.authUserId, {
               supporterId: body.supporterId,
+              reason: body.reason,
             }),
           );
         } catch (error) {

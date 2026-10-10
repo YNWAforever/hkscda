@@ -108,6 +108,20 @@ describe("confirmDialogReducer", () => {
     const typed = confirmDialogReducer(INITIAL_CONFIRM_STATE, { type: "edit", text: "abc" });
     expect(confirmDialogReducer(typed, { type: "reset" })).toEqual(INITIAL_CONFIRM_STATE);
   });
+
+  test("a reset can start the next opening from a given text, capped at 500 characters", () => {
+    const rejected = confirmDialogReducer(INITIAL_CONFIRM_STATE, {
+      type: "rejected",
+      error: new Error("x"),
+    });
+    expect(confirmDialogReducer(rejected, { type: "reset", text: "home visit passed" })).toEqual({
+      ...INITIAL_CONFIRM_STATE,
+      text: "home visit passed",
+    });
+    expect(
+      confirmDialogReducer(INITIAL_CONFIRM_STATE, { type: "reset", text: "x".repeat(900) }).text,
+    ).toHaveLength(500);
+  });
 });
 
 describe("ConfirmActionDialog", () => {
@@ -156,6 +170,22 @@ describe("ConfirmActionDialog", () => {
   test("a dialog without a reason has an enabled confirm button", () => {
     const html = renderAdminInEnglish(<ConfirmActionDialog {...base} reason="none" />);
     expect(html).not.toMatch(/<button[^>]*data-action[^>]*disabled/);
+  });
+
+  test("an initial reason fills the field when the dialog opens, and enables the confirm button", () => {
+    const reason = { required: true, minLength: 5 } as const;
+    const html = renderAdminInChinese(
+      <ConfirmActionDialog {...base} reason={reason} initialReason="home visit passed" />,
+    );
+    expect(html).toMatch(/<textarea[^>]*>home visit passed<\/textarea>/);
+    expect(html).not.toMatch(/<button[^>]*data-action[^>]*disabled/);
+  });
+
+  test("without an initial reason the field starts empty, as before", () => {
+    const html = renderAdminInChinese(
+      <ConfirmActionDialog {...base} reason={{ required: true, minLength: 1 }} />,
+    );
+    expect(html).toMatch(/<textarea[^>]*><\/textarea>/);
   });
 
   test("shows no error before the first attempt", () => {

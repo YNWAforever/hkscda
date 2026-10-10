@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { AdminLanguage } from "../admin/language";
+import { requiredReasonSchema } from "../admin/requiredReason";
 import type { FaqCta } from "./types";
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
@@ -109,7 +110,10 @@ export const upsertFaqEntrySchema = z.object({
   isActive: z.coerce.boolean().default(true),
 });
 
-export const deactivateFaqEntrySchema = z.object({ id: faqEntryIdSchema });
+export const deactivateFaqEntrySchema = z.object({
+  id: faqEntryIdSchema,
+  reason: requiredReasonSchema,
+});
 
 // The public search-gap beacon body. Strict: the browser sends exactly these
 // three fields, so anything else is not from our page.

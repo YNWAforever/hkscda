@@ -67,14 +67,24 @@ describe("boardMemberInputSchema", () => {
 });
 
 describe("deactivateBoardMemberSchema", () => {
-  test("accepts a valid uuid", () => {
+  test("accepts a valid uuid with a trimmed reason", () => {
     const parsed = deactivateBoardMemberSchema.parse({
       id: "11111111-1111-4111-8111-111111111111",
+      reason: "  term ended ",
     });
-    expect(parsed.id).toBe("11111111-1111-4111-8111-111111111111");
+    expect(parsed).toEqual({ id: "11111111-1111-4111-8111-111111111111", reason: "term ended" });
   });
 
   test("rejects a non-uuid id", () => {
-    expect(() => deactivateBoardMemberSchema.parse({ id: "not-a-uuid" })).toThrow();
+    expect(() =>
+      deactivateBoardMemberSchema.parse({ id: "not-a-uuid", reason: "term ended" }),
+    ).toThrow();
+  });
+
+  test("rejects a missing, blank or over-long reason", () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    expect(() => deactivateBoardMemberSchema.parse({ id })).toThrow();
+    expect(() => deactivateBoardMemberSchema.parse({ id, reason: "   " })).toThrow();
+    expect(() => deactivateBoardMemberSchema.parse({ id, reason: "x".repeat(501) })).toThrow();
   });
 });

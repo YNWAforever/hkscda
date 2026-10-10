@@ -7,8 +7,11 @@ import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionFailure } from "../confirmActionFailure";
+import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
+import { annualReportDeleteRequest, sendDocumentDelete } from "./documentDelete";
 import { documentsCopy } from "./documentsCopy";
 import { fetchAllAnnualReportAssets } from "./documentManagementLogic";
 
@@ -71,10 +74,12 @@ function AnnualReportManagementRuntime() {
       id,
       action,
       nextSortOrder,
+      reason,
     }: {
       id: string;
       action: "publish" | "unpublish" | "delete" | "order";
       nextSortOrder?: number;
+      reason?: string;
     }) => {
       if (action === "order") {
         return fetchAdminJson(`/api/admin/annual-reports/${id}`, {
@@ -82,11 +87,12 @@ function AnnualReportManagementRuntime() {
           body: JSON.stringify({ sortOrder: nextSortOrder }),
         });
       }
-      const endpoint =
-        action === "delete"
-          ? `/api/admin/annual-reports/${id}`
-          : `/api/admin/annual-reports/${id}/publish`;
-      return fetchAdminJson(endpoint, {
+      if (action === "delete") {
+        const request = annualReportDeleteRequest(id, reason ?? null);
+        if (!request) throw confirmActionFailure(null, language);
+        return sendDocumentDelete(request, language);
+      }
+      return fetchAdminJson(`/api/admin/annual-reports/${id}/publish`, {
         method: action === "publish" ? "POST" : "DELETE",
       });
     },
@@ -129,8 +135,8 @@ function AnnualReportManagementRuntime() {
       actionPending={actionMutation.isPending}
       onSortOrderChange={setSortOrder}
       onCreate={() => createMutation.mutate()}
-      onAction={(id, action, nextSortOrder) => {
-        const run = actionMutation.mutateAsync({ id, action, nextSortOrder });
+      onAction={(id, action, nextSortOrder, reason) => {
+        const run = actionMutation.mutateAsync({ id, action, nextSortOrder, reason });
         // Only a delete waits in its confirm dialog; the other actions show their error on the page.
         if (action === "delete") return run;
         run.catch(() => undefined);
@@ -162,6 +168,7 @@ type ViewProps = {
     id: string,
     action: "publish" | "unpublish" | "delete" | "order",
     nextSortOrder?: number,
+    reason?: string,
   ) => void | Promise<unknown>;
 };
 
@@ -190,6 +197,7 @@ export function AnnualReportManagementView({
   const deleteTitle = rows.find((report) => report.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      {/* required-reason: annual_report.delete */}
       <ConfirmActionDialog
         open={deleteId !== null}
         onOpenChange={(open) => {
@@ -199,9 +207,11 @@ export function AnnualReportManagementView({
         consequence={copy.table.confirmDelete(deleteTitle)}
         confirmLabel={copy.table.deleteLabel(deleteTitle)}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (deleteId !== null) await onAction?.(deleteId, "delete");
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          if (deleteId !== null && reason !== null) {
+            await onAction?.(deleteId, "delete", undefined, reason);
+          }
         }}
       />
       <header>

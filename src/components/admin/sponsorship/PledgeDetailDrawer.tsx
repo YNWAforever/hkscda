@@ -8,6 +8,8 @@ import { useRef, useState } from "react";
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -21,6 +23,14 @@ import type {
   PledgeDetail,
 } from "../../../lib/sponsorshipAdmin/types";
 import { pledgeDrawerCopy } from "./drawerCopy";
+import {
+  localizedDecisionError,
+  pledgeCancelRequest,
+  pledgeReviewCommand,
+  pledgeReviewRequest,
+  sendPledgeDecision,
+  type PledgeReviewCommand,
+} from "./pledgeDecision";
 import { sponsorshipFormatCopy } from "./formatCopy";
 import {
   actionFailure,
@@ -174,7 +184,8 @@ export function PledgeDetailDrawer({
     Record<string, AssignmentEndReason>
   >({});
   const [endNoteByAssignment, setEndNoteByAssignment] = useState<Record<string, string>>({});
-  const [cancelNote, setCancelNote] = useState("");
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHOD_VALUES)[number]>("fps");
   const [reference, setReference] = useState("");
   const [amountHkd, setAmountHkd] = useState("");
@@ -271,24 +282,22 @@ export function PledgeDetailDrawer({
     }
   }
 
-  async function submitReview(decision: "approve" | "reject") {
-    if (!pledge?.currentProof) return;
-    const command = {
-      decision,
-      note: reviewNote || undefined,
-      proofId: pledge.currentProof.id,
-      expectedRevision: pledge.currentProof.revision,
-    };
+  /** The key a retry of the same review command reuses, so the server sees one decision. */
+  function reviewKeyFor(command: PledgeReviewCommand) {
     const fingerprint = JSON.stringify(command);
     if (reviewRetry.current?.fingerprint !== fingerprint)
       reviewRetry.current = { fingerprint, key: crypto.randomUUID() };
+    return reviewRetry.current.key;
+  }
+
+  async function submitApprove() {
+    if (!pledge?.currentProof) return;
+    const command = pledgeReviewCommand(pledge.currentProof, "approve", reviewNote);
+    if (!command) return;
     setSubmitting(true);
     setActionError(null);
     try {
-      await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/review`, {
-        method: "POST",
-        body: JSON.stringify({ ...command, idempotencyKey: reviewRetry.current.key }),
-      });
+      await sendPledgeDecision(pledgeReviewRequest(pledgeId, command, reviewKeyFor(command)));
       setReviewNote("");
       await refreshAll();
     } catch (cause) {
@@ -298,22 +307,51 @@ export function PledgeDetailDrawer({
     }
   }
 
-  async function submitCancel() {
-    setSubmitting(true);
-    setActionError(null);
-    try {
-      await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/cancel`, {
-        method: "POST",
-        body: JSON.stringify({ note: cancelNote || undefined }),
-      });
-      setCancelNote("");
-      await refreshAll();
-    } catch (cause) {
-      setActionError(actionFailure(cause, "cancel"));
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  // The reject and cancel dialogs show a failure themselves and stay open with the typed reason,
+  // so these mutations reject instead of setting the drawer's own error.
+  const rejectMutation = useMutation<unknown, Error, string>({
+    mutationFn: async (reason) => {
+      const command = pledge?.currentProof
+        ? pledgeReviewCommand(pledge.currentProof, "reject", reason)
+        : null;
+      if (!command) throw new Error("A reason is required");
+      try {
+        return await sendPledgeDecision(
+          pledgeReviewRequest(pledgeId, command, reviewKeyFor(command)),
+        );
+      } catch (cause) {
+        // The dialog prints the message as it came, so write the zh-HK server text for this admin.
+        throw localizedDecisionError(cause, language);
+      }
+    },
+    onMutate: () => {
+      setSubmitting(true);
+      setActionError(null);
+    },
+    // The decision is saved by now; a failed refresh must not show the dialog as failed. The
+    // inline note fed the dialog's reason, so clear it before a later proof can reuse it.
+    onSuccess: () => {
+      setReviewNote("");
+      void refreshAll().catch(() => {});
+    },
+    onSettled: () => setSubmitting(false),
+  });
+
+  const cancelMutation = useMutation<unknown, Error, string>({
+    mutationFn: async (reason) => {
+      const request = pledgeCancelRequest(pledgeId, reason);
+      if (!request) throw new Error("A reason is required");
+      return sendPledgeDecision(request);
+    },
+    onMutate: () => {
+      setSubmitting(true);
+      setActionError(null);
+    },
+    onSuccess: () => {
+      void refreshAll().catch(() => {});
+    },
+    onSettled: () => setSubmitting(false),
+  });
 
   async function submitAssign() {
     setSubmitting(true);
@@ -663,17 +701,13 @@ export function PledgeDetailDrawer({
                   onChange={(event) => setReviewNote(event.target.value)}
                 />
                 <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    onClick={() => submitReview("approve")}
-                    disabled={submitting}
-                  >
+                  <Button type="button" onClick={submitApprove} disabled={submitting}>
                     {copy.reviewProof.approve}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => submitReview("reject")}
+                    onClick={() => setRejectOpen(true)}
                     disabled={submitting}
                   >
                     {copy.reviewProof.reject}
@@ -684,16 +718,10 @@ export function PledgeDetailDrawer({
 
             {canMatch && canCancelPledge(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-                <Label htmlFor="pledge-cancel-note">{copy.cancel.noteLabel}</Label>
-                <Input
-                  id="pledge-cancel-note"
-                  value={cancelNote}
-                  onChange={(event) => setCancelNote(event.target.value)}
-                />
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={submitCancel}
+                  onClick={() => setCancelOpen(true)}
                   disabled={submitting}
                 >
                   {copy.cancel.action}
@@ -913,6 +941,33 @@ export function PledgeDetailDrawer({
             </section>
           </div>
         )}
+        {/* required-reason: sponsorship_proof.reject */}
+        <ConfirmActionDialog
+          open={rejectOpen}
+          onOpenChange={setRejectOpen}
+          title={copy.reviewProof.reject}
+          consequence={copy.reviewProof.rejectConsequence}
+          confirmLabel={copy.reviewProof.reject}
+          destructive
+          reason={requiredReasonDialog}
+          initialReason={reviewNote}
+          onConfirm={async (reason) => {
+            await rejectMutation.mutateAsync(reason ?? "");
+          }}
+        />
+        {/* required-reason: sponsorship_pledge.cancel */}
+        <ConfirmActionDialog
+          open={cancelOpen}
+          onOpenChange={setCancelOpen}
+          title={copy.cancel.action}
+          consequence={copy.cancel.confirmConsequence}
+          confirmLabel={copy.cancel.action}
+          destructive
+          reason={requiredReasonDialog}
+          onConfirm={async (reason) => {
+            await cancelMutation.mutateAsync(reason ?? "");
+          }}
+        />
       </SheetContent>
     </Sheet>
   );

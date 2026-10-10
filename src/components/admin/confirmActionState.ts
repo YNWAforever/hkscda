@@ -3,10 +3,15 @@
  * file exports only a component (fast refresh) and tests can drive the logic directly.
  */
 
+import { REQUIRED_REASON_MAX } from "@/lib/admin/requiredReason";
+
 export type ConfirmReason = "none" | { required: true; minLength: number };
 
-/** The longest reason the dialog accepts. */
-export const CONFIRM_REASON_MAX_LENGTH = 500;
+/** The longest reason the dialog accepts; the same cap the server-side reason schema enforces. */
+export const CONFIRM_REASON_MAX_LENGTH = REQUIRED_REASON_MAX;
+
+/** The dialog preset for an action that needs a reason: at least one non-blank character. */
+export const requiredReasonDialog: ConfirmReason = { required: true, minLength: 1 };
 
 /** Whether the confirm button may act: the reason is long enough and nothing is already running. */
 export function canConfirm(reason: ConfirmReason, text: string, pending: boolean): boolean {
@@ -27,7 +32,8 @@ export type ConfirmDialogAction =
   | { type: "edit"; text: string }
   | { type: "start" }
   | { type: "rejected"; error: unknown }
-  | { type: "reset" };
+  /** Clears the dialog; `text` is what the reason field holds when it next opens. */
+  | { type: "reset"; text?: string };
 
 export const INITIAL_CONFIRM_STATE: ConfirmDialogState = {
   text: "",
@@ -52,7 +58,9 @@ export function confirmDialogReducer(
     case "rejected":
       return { ...state, pending: false, error: action.error, failed: true };
     case "reset":
-      return INITIAL_CONFIRM_STATE;
+      return action.text
+        ? { ...INITIAL_CONFIRM_STATE, text: action.text.slice(0, CONFIRM_REASON_MAX_LENGTH) }
+        : INITIAL_CONFIRM_STATE;
   }
 }
 

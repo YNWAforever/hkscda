@@ -665,3 +665,56 @@ test("maps document invariant violations to DocumentConflictError", async () => 
     }),
   ).rejects.toBeInstanceOf(DocumentConflictError);
 });
+
+describe("a delete sends its reason to the audit RPC", () => {
+  function rpcClient() {
+    const rpcCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+    const client = {
+      rpc(name: string, args: Record<string, unknown>) {
+        rpcCalls.push({ name, args });
+        return Promise.resolve({ data: name.includes("annual") ? reportId : assetId, error: null });
+      },
+    } as unknown as SupabaseClient;
+    return { client, rpcCalls };
+  }
+
+  test("deleting a document asset passes { reason } as p_values", async () => {
+    const { client, rpcCalls } = rpcClient();
+    await createSupabaseDocumentRepository(client).deleteAsset(
+      assetId,
+      assetId,
+      "duplicate upload",
+    );
+    expect(rpcCalls).toEqual([
+      {
+        name: "mutate_document_asset_with_audit",
+        args: {
+          p_actor_user_id: assetId,
+          p_operation: "delete",
+          p_id: assetId,
+          p_values: { reason: "duplicate upload" },
+        },
+      },
+    ]);
+  });
+
+  test("deleting an annual report passes { reason } as p_values", async () => {
+    const { client, rpcCalls } = rpcClient();
+    await createSupabaseDocumentRepository(client).deleteAnnualReport(
+      reportId,
+      assetId,
+      "published in error",
+    );
+    expect(rpcCalls).toEqual([
+      {
+        name: "mutate_annual_report_with_audit",
+        args: {
+          p_actor_user_id: assetId,
+          p_operation: "delete",
+          p_id: reportId,
+          p_values: { reason: "published in error" },
+        },
+      },
+    ]);
+  });
+});

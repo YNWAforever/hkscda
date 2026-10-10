@@ -728,6 +728,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "deactivate_faq_entry_with_audit",
+    feature: "content",
+    required: true,
+    arguments: "p_actor_user_id uuid, p_id uuid, p_reason text",
+    returns: "void",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "update_adoption_fee_content_with_audit",
     feature: "adoption-cms",
     required: true,
@@ -809,6 +819,17 @@ export const releaseManifest: SchemaRequirement[] = [
     required: true,
     arguments: "p_source_activity_id uuid, p_actor_user_id uuid, p_starts_at timestamptz",
     returns: "uuid",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
+    name: "set_volunteer_registration_status_with_audit",
+    feature: "volunteers",
+    required: true,
+    arguments:
+      "p_registration_id uuid, p_actor_user_id uuid, p_expected_updated_at timestamp with time zone, p_status text, p_internal_notes text, p_update_internal_notes boolean, p_reason text",
+    returns: "jsonb",
     executeRoles: ["service_role"],
   },
   {
@@ -949,7 +970,7 @@ export const releaseManifest: SchemaRequirement[] = [
     name: "void_receipt_with_audit",
     feature: "finance",
     required: true,
-    arguments: "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid",
+    arguments: "p_receipt_id uuid, p_actor uuid, p_supporter_id uuid, p_reason text",
     returns: "table (receipt_id uuid, pdf_url text)",
     executeRoles: ["service_role"],
   },

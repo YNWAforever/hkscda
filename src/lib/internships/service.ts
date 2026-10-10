@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { AdminLanguage } from "../admin/language";
+import { requiredReasonSchema } from "../admin/requiredReason";
 
 /**
  * The reasons the intake settings form is refused in the browser (`intakeSchema` is parsed
@@ -181,7 +182,7 @@ export const adminCommandSchema = z.discriminatedUnion("action", [
       action: z.literal("review"),
       ...application,
       status: z.enum(["approved", "rejected", "needs_information"]),
-      reason: z.string().trim().min(1).max(2000),
+      reason: requiredReasonSchema,
       student_verified: z.boolean(),
       evidence: z.string().trim().max(2000),
     })

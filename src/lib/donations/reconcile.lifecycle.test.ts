@@ -1394,6 +1394,7 @@ describe("voidReceipt", () => {
 
     const result = await voidReceipt(client as never, "receipt-1", "admin-1", {
       supporterId: "supporter-1",
+      reason: "wrong donor",
     });
 
     expect(result).toEqual({ receiptId: "receipt-1", status: "void" });
@@ -1402,7 +1403,12 @@ describe("voidReceipt", () => {
       {
         table: "void_receipt_with_audit",
         action: "rpc",
-        payload: { p_receipt_id: "receipt-1", p_actor: "admin-1", p_supporter_id: "supporter-1" },
+        payload: {
+          p_receipt_id: "receipt-1",
+          p_actor: "admin-1",
+          p_supporter_id: "supporter-1",
+          p_reason: "wrong donor",
+        },
       },
     ]);
   });

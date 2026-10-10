@@ -185,6 +185,7 @@ export function FinancePanel({
                 .map((r) => ({ number: r.receipt_no, issued: r.status === "issued" })),
             )}
           </p>
+          {/* required-reason: sponsorship_finance.adjust */}
           <label className="block">
             {copy.adjustmentReason}
             <Input value={reason} onChange={(e) => setReason(e.target.value)} />
