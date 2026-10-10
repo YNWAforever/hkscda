@@ -3,10 +3,15 @@
  * file exports only a component (fast refresh) and tests can drive the logic directly.
  */
 
+import { REQUIRED_REASON_MAX } from "@/lib/admin/requiredReason";
+
 export type ConfirmReason = "none" | { required: true; minLength: number };
 
-/** The longest reason the dialog accepts. */
-export const CONFIRM_REASON_MAX_LENGTH = 500;
+/** The longest reason the dialog accepts; the same cap the server-side reason schema enforces. */
+export const CONFIRM_REASON_MAX_LENGTH = REQUIRED_REASON_MAX;
+
+/** The dialog preset for an action that needs a reason: at least one non-blank character. */
+export const requiredReasonDialog: ConfirmReason = { required: true, minLength: 1 };
 
 /** Whether the confirm button may act: the reason is long enough and nothing is already running. */
 export function canConfirm(reason: ConfirmReason, text: string, pending: boolean): boolean {
