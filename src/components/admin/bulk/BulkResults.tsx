@@ -22,7 +22,7 @@ export function BulkResults({ items }: { items: BulkItemResult[] }) {
   }
   return (
     <section aria-label={copy.label} className="space-y-2">
-      <p role="status" className="text-sm">
+      <p role="status" aria-live="polite" aria-atomic="true" className="text-sm">
         {copy.summary(counts)}
       </p>
       <button type="button" className="btn-secondary min-h-11" onClick={download}>

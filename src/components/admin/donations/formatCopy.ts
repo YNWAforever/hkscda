@@ -1,25 +1,26 @@
-import { centsToHkd } from "../../../lib/donations/domain";
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDate, formatAdminDateTime, formatAdminMoney } from "../i18n/format";
+import {
+  formatAdminDate,
+  formatAdminDateOrNull,
+  formatAdminDateTime,
+  formatAdminDateTimeOrNull,
+  formatAdminMoney,
+} from "../i18n/format";
 
 /**
- * How the payments screens write amounts and times. Chinese keeps what it has always shown: the
- * amount with cents only when there are some, the activity time as the zh-HK medium date and
- * time, and the other times and dates exactly as the server sent them. English uses the admin's
- * Hong Kong formats, with two decimals on an amount.
+ * How the payments screens write amounts and times: the admin's Hong Kong formats in both
+ * languages, with two decimals on an amount. A Chinese time or day that is not a date is shown
+ * as the server sent it.
  */
 export const donationFormatCopy = defineAdminCopy({
   zh: {
-    money: (cents: number) => centsToHkd(cents),
+    money: (cents: number) => formatAdminMoney(cents / 100, "zh"),
     /** The time of an entry in the recent activity list. */
-    activityTime: (value: string) =>
-      new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium", timeStyle: "short" }).format(
-        new Date(value),
-      ),
+    activityTime: (value: string) => formatAdminDateTimeOrNull(value, "zh") ?? value,
     /** A timestamp the server sent, such as when a job was created. */
-    timestamp: (value: string) => value,
+    timestamp: (value: string) => formatAdminDateTimeOrNull(value, "zh") ?? value,
     /** A calendar day the server sent, such as the day a bank deposit arrived. */
-    day: (value: string) => value,
+    day: (value: string) => formatAdminDateOrNull(value, "zh") ?? value,
   },
   en: {
     money: (cents: number) => formatAdminMoney(cents / 100, "en"),

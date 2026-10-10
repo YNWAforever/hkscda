@@ -61,14 +61,12 @@ function dashboard(section: AdminListSearch["section"]) {
 }
 
 describe("admin dashboard in English", () => {
-  test("shows the cat section with its breadcrumb, tabs and filter in English", () => {
+  test("shows the cat section with its tabs and filter in English, and leaves the breadcrumb to the layout", () => {
     role = "admin";
     animalsResult = { data: { animals: [], total: 2, page: 1 } };
     const markup = renderAdminInEnglish(dashboard("cat"));
     expectNoChineseText(markup);
     for (const text of [
-      'aria-label="Breadcrumb"',
-      "Animal management",
       "Find and manage cat records, care status and public information.",
       'aria-label="Animal categories"',
       "Cats",
@@ -79,7 +77,9 @@ describe("admin dashboard in English", () => {
     ]) {
       expect(markup, text).toContain(text);
     }
-    expect(markup).toMatch(/<h1[^>]*>Animal management<\/h1>/);
+    // The page is headed with its navigation label, and AdminLayout draws the one breadcrumb.
+    expect(markup).toMatch(/<h1[^>]*>Cats<\/h1>/);
+    expect(markup).not.toContain('aria-label="Breadcrumb"');
   });
 
   test("shows the dog and sponsor sections in English", () => {
@@ -116,7 +116,7 @@ describe("admin dashboard in English", () => {
 
     const payments = renderAdminInEnglish(dashboard("payments"));
     expectNoChineseText(payments);
-    expect(payments).toMatch(/<h1[^>]*>Payment records<\/h1>/);
+    expect(payments).toMatch(/<h1[^>]*>Payments<\/h1>/);
     expect(payments).toContain("Supporter records");
   });
 
@@ -147,8 +147,6 @@ describe("admin dashboard in Chinese", () => {
     animalsResult = { data: { animals: [], total: 2, page: 1 } };
     const markup = renderAdminInChinese(dashboard("cat"));
     for (const text of [
-      'aria-label="麵包屑導覽"',
-      "後台",
       "動物管理",
       "搜尋及管理貓貓記錄、照顧狀態與公開資料。",
       'aria-label="動物分類"',
@@ -161,6 +159,7 @@ describe("admin dashboard in Chinese", () => {
       expect(markup, text).toContain(text);
     }
     expect(markup).toMatch(/<h1[^>]*>動物管理<\/h1>/);
+    expect(markup).not.toContain("麵包屑導覽");
 
     animalsResult = {};
     const applications = renderAdminInChinese(dashboard("applications"));

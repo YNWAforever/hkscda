@@ -153,7 +153,9 @@ export function CrmTagBulkPanel({
           onChange={(event) => setTag(event.target.value)}
         />
       </label>
-      <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"

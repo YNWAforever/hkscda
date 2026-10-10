@@ -90,9 +90,9 @@ describe("task panel logic", () => {
   });
 
   test("formats task datetimes in Hong Kong calendar time", () => {
-    expect(formatTaskDateTime("2026-06-27T16:30:00.000Z")).toBe("2026-06-28 00:30");
-    expect(formatTaskDateTime(null)).toBe("-");
-    expect(formatTaskDateTime("not-a-date")).toBe("-");
+    expect(formatTaskDateTime("2026-06-27T16:30:00.000Z", "en")).toBe("2026-06-28 00:30");
+    expect(formatTaskDateTime(null, "en")).toBe("-");
+    expect(formatTaskDateTime("not-a-date", "en")).toBe("-");
   });
 
   test("builds a trimmed case-linked follow-up create payload", () => {

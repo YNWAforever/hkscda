@@ -38,7 +38,7 @@ mock.module("@tanstack/react-router", () => ({
     );
   },
   useNavigate: () => async () => {},
-  useBlocker: () => {},
+  useBlocker: () => ({ status: "idle", reset() {}, proceed() {} }),
 }));
 
 type QueryState = Record<string, unknown>;
@@ -654,9 +654,8 @@ describe("public photo repair queue", () => {
   test("keeps the Chinese queue and its Hong Kong date format as they were", () => {
     repairQueue = { data: backlog };
     const markup = renderAdminInChinese(<MediaRepairQueue />);
-    const created = new Date("2026-10-01T02:30:00Z").toLocaleString("zh-HK", {
-      timeZone: "Asia/Hong_Kong",
-    });
+    // 02:30Z is 10:30 in Hong Kong, written in the shared admin format.
+    const created = "2026年10月1日 (四) 10:30";
     for (const text of [
       "公開相片修復佇列",
       "待處理 2 · 處理中 1 · 需人工覆核 1 · 最早等待 10 分鐘",

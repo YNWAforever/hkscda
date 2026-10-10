@@ -252,7 +252,9 @@ export function CrmAssignmentBulkPanel({
           ))}
         </select>
       </label>
-      <p className="text-sm">{copy.selectedCount(selectedIds.length)}</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"

@@ -127,7 +127,7 @@ describe("internship management in English", () => {
     const markup = renderAdminInEnglish(<InternshipManagement />);
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      "Veterinary student internship applications",
+      ">Internships</h1>",
       "These applications are separate from volunteer tiers and session places",
       "Search applicants",
       "Application status",

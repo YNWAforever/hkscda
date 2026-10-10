@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 
 /** Copy for the volunteer operations overview (`VolunteerOverview`). */
 export const volunteerOverviewCopy = defineAdminCopy({
@@ -82,7 +83,7 @@ export const volunteerOverviewCopy = defineAdminCopy({
   },
   en: {
     hongKongTime: "Hong Kong time",
-    title: "Volunteer operations overview",
+    title: adminCommonCopy.en.navItems.volunteers,
     intro: "Start from what needs doing, then follow each volunteer, session and service record.",
     findVolunteer: "Find a volunteer",
     cards: {

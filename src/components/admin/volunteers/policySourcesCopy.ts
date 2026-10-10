@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber } from "../i18n/format";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /** Copy for the screen that manages shared sources, venues and qualification names (`VolunteerPolicySources`). */
 export const policySourcesCopy = defineAdminCopy({
@@ -47,7 +48,7 @@ export const policySourcesCopy = defineAdminCopy({
     loadFailed: "未能載入設定。",
   },
   en: {
-    title: "Shared sources, venues and qualifications",
+    title: volunteerWorkspaceCopy.en.pages.sources.label,
     sections: { registry: "Venues and qualifications", publish: "Publish a source" },
     intro:
       "Shared default → venue → template. A source change only affects later policy previews. Sessions that are already published keep their full earlier version.",

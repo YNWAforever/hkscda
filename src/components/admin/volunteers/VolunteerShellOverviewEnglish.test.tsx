@@ -36,8 +36,9 @@ describe("the volunteer shell in English", () => {
       "Volunteer operations",
       "Administrator workspace",
       "Volunteer workspace",
-      "Daily operations",
-      "Administrator settings",
+      "Daily work",
+      "People",
+      "Policy",
       "Workspace navigation · Volunteer directory",
       "Breadcrumb",
     ]) {
@@ -53,22 +54,32 @@ describe("the volunteer shell in English", () => {
     const markup = renderAdminInEnglish(shell("/admin/volunteers"));
     expectNoChineseText(markup, { allow: [TOGGLE_WORD] });
     expect(markup).toContain("Staff workspace");
-    expect(markup).toContain("Daily operations");
-    expect(markup).not.toContain("Administrator settings");
+    expect(markup).toContain("Daily work");
+    expect(markup).toContain("People");
+    expect(markup).not.toContain(">Policy<");
     expect(markup).not.toContain("Session policy");
     kit.state.role = "admin";
   });
 
-  test("names the detail pages and keeps the page that opens them in the breadcrumb", () => {
+  test("draws one breadcrumb, the layout's, and ends it at the page that opens a detail page", () => {
     kit.state.role = "admin";
     const person = renderAdminInEnglish(shell("/admin/volunteers/people/abc"));
     expectNoChineseText(person, { allow: [TOGGLE_WORD] });
-    expect(person).toContain('<span aria-current="page">Volunteer details</span>');
-    expect(person).toContain(">Volunteer directory</a>");
+    // The record has not loaded, so the trail stops at the directory instead of naming a person.
+    expect(person.match(/aria-label="Breadcrumb"/g)).toHaveLength(1);
+    expect(person).toContain('<span class="break-words">Volunteer directory</span>');
     const registration = renderAdminInEnglish(shell("/admin/volunteers/registrations/xyz"));
     expectNoChineseText(registration, { allow: [TOGGLE_WORD] });
-    expect(registration).toContain('<span aria-current="page">Registration details</span>');
-    expect(registration).toContain(">Activities and registrations</a>");
+    expect(registration.match(/aria-label="Breadcrumb"/g)).toHaveLength(1);
+    expect(registration).toContain('<span class="break-words">Activities and registrations</span>');
+  });
+
+  test("gives the shell's pages one h1 at most: the shell writes it only when the page asks", () => {
+    kit.state.role = "admin";
+    const plain = renderAdminInEnglish(shell("/admin/volunteers/tasks"));
+    expect(plain).not.toContain("<h1");
+    const asked = renderAdminInEnglish(shell("/admin/volunteers/people", { intro: "people" }));
+    expect(asked.match(/<h1/g)).toHaveLength(1);
   });
 
   test("writes the heading and the line of the directory and the person page itself", () => {
@@ -118,19 +129,19 @@ describe("the volunteer shell in English", () => {
       "跳至頁面內容",
       "義工營運中心",
       "管理員工作區",
-      "日常營運",
-      "管理員設定",
+      ">日常<",
+      ">人員<",
+      ">政策<",
       "工作區導覽 · 義工名冊",
-      "麵包屑",
+      "導覽路徑",
       "<h1>義工名冊</h1>",
       "<p>查找義工身份、核實資格，並查看報名與服務紀錄。</p>",
     ]) {
       expect(markup, text).toContain(text);
     }
-    expect(renderAdminInChinese(shell("/admin/volunteers/registrations/xyz"))).toContain(
-      "報名詳情",
-    );
-    expect(renderAdminInChinese(shell("/admin/volunteers/people/abc"))).toContain("義工個人詳情");
+    expect(
+      renderAdminInChinese(shell("/admin/volunteers/people/abc", { intro: "person" })),
+    ).toContain("<h1>義工個人詳情</h1>");
     kit.state.role = "staff";
     expect(renderAdminInChinese(shell("/admin/volunteers"))).toContain("職員工作區");
     kit.state.role = "admin";
@@ -228,7 +239,7 @@ describe("the volunteer overview in English", () => {
       expectNoChineseText(markup, { allow: FIXTURE_ALLOW });
       for (const text of [
         "9 Oct 2026 (Fri) · Hong Kong time",
-        "Volunteer operations overview",
+        ">Volunteer operations</h1>",
         "Find a volunteer",
         "Volunteers awaiting verification",
         "Registrations awaiting approval",
@@ -297,7 +308,7 @@ describe("the volunteer overview in English", () => {
     });
   });
 
-  test("says when a figure or the coverage could not be read, and leaves a space before the retry button", () => {
+  test("says when a figure or the coverage could not be read, with a retry", () => {
     kit.withQueries(
       {
         "volunteer-overview": kit.ok({
@@ -313,7 +324,7 @@ describe("the volunteer overview in English", () => {
         expect(markup).toContain("Could not load this figure");
         expect(markup).toContain("Some figures could not be loaded. <button");
         expect(markup).toContain(">Retry figures</button>");
-        expect(markup).toContain("Could not load today&#x27;s sessions. <button");
+        expect(markup).toContain("Could not load today&#x27;s sessions.");
         expect(markup).toContain(">Reload</button>");
         expect(markup).toContain("Do not treat an unknown figure as zero sessions.");
         expect(markup).toContain("Refresh the page to try again.");
@@ -421,12 +432,12 @@ describe("the volunteer overview in English", () => {
         "未來 14／30 日服務覆蓋",
         "已排妥已發布場次",
         "下一個已發布場次：",
-        "2026-10-10 · " + FIXTURE.template + "：尚未建立場次",
+        "2026年10月10日 (六) · " + FIXTURE.template + "：尚未建立場次",
         "今日服務安排",
         FIXTURE.role + " 尚欠 2 人",
         "6 人已確認 · 場次容量 12",
         "職務最低名額已達標",
-        "2026-10-09 · 香港時間",
+        "2026年10月9日 (五) · 香港時間",
         "貓舍",
       ]) {
         expect(markup, text).toContain(text);

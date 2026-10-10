@@ -94,7 +94,7 @@ describe("the qualification verification in English", () => {
     const markup = qualifications("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Volunteer profile and qualification verification",
+      ">Identity and qualification verification</h1>",
       "Tiers and course qualifications are only set from verified evidence.",
       "A Remark that a volunteer fills in themselves does not grant a skill.",
       "Back to the volunteer directory",
@@ -180,15 +180,15 @@ describe("the qualification verification in English", () => {
     );
   });
 
-  test("says when the profiles are loading or could not be loaded, with a button that has room", () => {
+  test("says when the profiles are loading or could not be loaded, with a retry", () => {
     expect(qualifications("en", "", {})).toContain("<p>Loading…</p>");
     const failed = qualifications("en", "", { "volunteer-qualifications": kit.failed() });
-    expect(failed).toContain('<p role="alert">Could not load the profile data. <button');
+    expect(failed).toContain("Could not load the profile data.");
     expect(failed).toContain(">Reload</button>");
     expectNoChineseText(failed);
-    expect(qualifications("zh", "", { "volunteer-qualifications": kit.failed() })).toContain(
-      "未能載入身份資料。<button",
-    );
+    const zhFailed = qualifications("zh", "", { "volunteer-qualifications": kit.failed() });
+    expect(zhFailed).toContain("未能載入身份資料。");
+    expect(zhFailed).toContain(">重新載入</button>");
   });
 
   test("keeps the Chinese screen as it was", () => {
@@ -205,7 +205,7 @@ describe("the qualification verification in English", () => {
       `${POLICY_TEXT.volunteer} · 暫停 · 資深義工`,
       `${POLICY_TEXT.volunteer} · 身份核實`,
       "查看完整義工檔案及服務紀錄",
-      "出生日期：1990-01-01",
+      "出生日期：1990年1月1日 (一)",
       "核實級別",
       "核實／更正理由與證據來源",
       "已核實加入日期（不詳留空）",
@@ -218,7 +218,7 @@ describe("the qualification verification in English", () => {
       "到期日（該日零時失效；可留空）",
       "核實證據紀錄",
       "儲存已核實資格",
-      `${POLICY_TEXT.qualifications[1]} · 已核實 · ${new Date("2027-01-01T00:00:00Z").toLocaleDateString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
+      `${POLICY_TEXT.qualifications[1]} · 已核實 · 2027年1月1日 (五)`,
       `${POLICY_TEXT.qualifications[0]} · 已撤銷 · 未設到期日`,
       "撤銷資格",
       "舊報名身份核對",
@@ -317,7 +317,7 @@ describe("the monthly tier assessment in English", () => {
     const markup = assessments("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Monthly volunteer tier assessment",
+      ">Tier assessment</h1>",
       ">Assessment settings</a>",
       ">Run the assessment</a>",
       ">Approve candidates</a>",
@@ -408,7 +408,7 @@ describe("the monthly tier assessment in English", () => {
     expectNoChineseText(markup, { allow: ["溫馨提示", "關懷"] });
     expect(markup).toContain(">溫馨提示</textarea>");
     expect(markup).toContain(">關懷</textarea>");
-    expect(markup).toContain("Monthly volunteer tier assessment");
+    expect(markup).toContain(">Tier assessment</h1>");
     expect(markup).toContain("Undecided");
     expect(markup).toContain('value="2026-10-09"');
     expect(rawKeysIn(markup)).toEqual([]);
@@ -534,11 +534,11 @@ describe("the monthly tier assessment in English", () => {
       "候選只按已發布政策及已核實年資／恆常觀察證據產生，不會自動晉升。",
       "通知工作",
       "供應商接受不等於已送達；只有回傳送達證據才會顯示已送達。",
-      // The lists show the stored values, as they always did.
-      "2026-09-01 · combined · 已完成",
-      "2026-08-01 · cat · 已完成",
-      `義工 ${POLICY_TEXT.volunteer} · 核實出席觸發 · 2026-10-09T02:00:00Z`,
-      "義工 未命名義工 · 每月評核觸發 · 2026-10-08T02:00:00Z",
+      // The lists show the stored codes, as they always did, and the dates in the shared format.
+      "2026年9月1日 (二) · combined · 已完成",
+      "2026年8月1日 (六) · cat · 已完成",
+      `義工 ${POLICY_TEXT.volunteer} · 核實出席觸發 · 2026年10月9日 (五) 10:00`,
+      "義工 未命名義工 · 每月評核觸發 · 2026年10月8日 (四) 10:00",
       "volunteer_monthly_assessment_notification · failed · 嘗試 3",
       "重新排隊",
       "評核完成：7 人；通知已排入佇列，未標示為已送達",

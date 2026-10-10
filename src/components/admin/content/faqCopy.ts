@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDate, formatAdminNumber } from "../i18n/format";
+import { formatAdminDate, formatAdminDateOrNull, formatAdminNumber } from "../i18n/format";
 
 /**
  * Copy for the FAQ screen: the list and the question form (`FaqManagement`), the answer tester
@@ -80,8 +80,8 @@ export const faqCopy = defineAdminCopy({
       confidence: { none: "沒有答案", low: "配對較弱" },
       /** The number of searches, as Chinese has always shown it. */
       count: (value: number) => String(value),
-      /** The last day a topic was searched: the stored `YYYY-MM-DD` text in Chinese. */
-      day: (value: string) => String(value),
+      /** The last day a topic was searched, a stored `YYYY-MM-DD` Hong Kong day. */
+      day: (value: string) => formatAdminDateOrNull(value, "zh") ?? String(value),
       test: "測試",
       create: "以此新增問題",
       testLabel: (topic: string) => `測試「${topic}」`,

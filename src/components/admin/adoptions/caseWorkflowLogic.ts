@@ -74,21 +74,6 @@ export function formatFallback(value: string | null | undefined) {
   return trimmed(value) || "-";
 }
 
-export function formatDate(value: string | null | undefined) {
-  const nextValue = trimmed(value);
-  if (!nextValue) return "-";
-  return nextValue.slice(0, 10);
-}
-
-export function formatHkdCents(amountCents: number | null | undefined) {
-  if (amountCents === null || amountCents === undefined) return "-";
-  const sign = amountCents < 0 ? "-" : "";
-  const absoluteCents = Math.abs(amountCents);
-  const dollars = Math.floor(absoluteCents / 100).toLocaleString("en-US");
-  const cents = String(absoluteCents % 100).padStart(2, "0");
-  return cents === "00" ? `${sign}HK$${dollars}` : `${sign}HK$${dollars}.${cents}`;
-}
-
 function parseHkdDollarsToCents(value: string) {
   const nextValue = value.trim();
   if (!nextValue) return null;

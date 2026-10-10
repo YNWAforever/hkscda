@@ -105,28 +105,9 @@ export function AdminDashboardContent({
 
   return (
     <div className="min-w-0 space-y-4 p-4 sm:p-6">
-      {animalSection ? (
-        <nav aria-label={page.breadcrumbLabel} className="text-sm text-[var(--color-text-muted)]">
-          <ol className="flex flex-wrap items-center gap-2">
-            <li>{page.breadcrumbRoot}</li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link
-                to="/admin"
-                search={{ section: "cat", ...(tabMemory.cat ?? animalListDefaults) }}
-                className="hover:text-[var(--color-primary)] hover:underline"
-              >
-                {page.animalManagement}
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li aria-current="page">{page.animalTabs[animalSection]}</li>
-          </ol>
-        </nav>
-      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 tabIndex={-1} className="text-xl font-bold">
-          {isAnimalSection ? page.animalManagement : copy.dashboard.title[section]}
+          {animalSection ? page.animalHeadings[animalSection] : copy.dashboard.title[section]}
         </h1>
         {section === "payments" ? (
           canViewSupporters ? (

@@ -9,6 +9,8 @@ let options:
   | undefined;
 const invalidated: string[] = [];
 mock.module("@tanstack/react-query", () => ({
+  // session.ts (read by the confirm dialog) builds its identity query with this.
+  queryOptions: <T,>(value: T) => value,
   useQuery: () => ({ data: { jobs: [], total: 0, page: 1, pageSize: 25 }, isFetching: false }),
   useQueryClient: () => ({
     invalidateQueries: async ({ queryKey }: { queryKey: string[] }) => {

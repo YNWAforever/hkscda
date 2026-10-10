@@ -13,8 +13,10 @@ import { Button } from "../../ui/button";
 import { Switch } from "../../ui/switch";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
-import { formatDate, formatFallback } from "./caseWorkflowLogic";
+import { formatFallback } from "./caseWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import { buildIntakeSearchParams, intakeUrgencyLabel } from "./intakeInboxLogic";
 
 type IntakeItemsResponse = {
@@ -32,11 +34,10 @@ const LANE_FILTERS: LaneFilter[] = [
   "needs_followup",
 ];
 
-const urgencyClasses: Record<AdoptionIntakeUrgency, string> = {
-  normal: "border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  high: "border-[var(--color-warning)] bg-[var(--color-surface-offset)] text-[var(--color-panel)]",
-  overdue:
-    "border-[var(--color-error)] bg-[var(--color-primary-highlight)] text-[var(--color-error)]",
+const URGENCY_TONES: Record<AdoptionIntakeUrgency, StatusTone> = {
+  normal: "neutral",
+  high: "warning",
+  overdue: "danger",
 };
 
 const EMPTY_ITEMS: AdoptionIntakeItem[] = [];
@@ -154,7 +155,9 @@ export function IntakeInbox() {
         <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)]">
             <Inbox className="h-4 w-4" />
-            <span>{error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(total)}</span>
+            <span aria-live="polite" aria-atomic="true">
+              {error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(total)}
+            </span>
           </div>
           {isFetching && (
             <span className="text-xs text-[var(--color-text-muted)]">
@@ -195,17 +198,10 @@ export function IntakeInbox() {
                       >
                         {copy.lanes[item.lane]}
                       </Badge>
-                      <Badge variant="outline" className={urgencyClasses[item.urgency]}>
+                      <StatusPill tone={URGENCY_TONES[item.urgency]}>
                         {intakeUrgencyLabel(item.urgency, language)}
-                      </Badge>
-                      {item.resolvedAt && (
-                        <Badge
-                          variant="outline"
-                          className="border-[var(--color-success)] bg-[var(--color-success-highlight)] text-[var(--color-success)]"
-                        >
-                          {copy.resolved}
-                        </Badge>
-                      )}
+                      </StatusPill>
+                      {item.resolvedAt && <StatusPill tone="success">{copy.resolved}</StatusPill>}
                     </div>
                     <div>
                       <h2 className="text-base font-semibold text-[var(--color-panel)]">
@@ -226,11 +222,11 @@ export function IntakeInbox() {
                     <div>
                       {copy.due}:{" "}
                       <span className="font-medium text-[var(--color-panel)]">
-                        {formatDate(item.dueAt)}
+                        {adoptionFormatCopy[language].listDay(item.dueAt)}
                       </span>
                     </div>
                     <div>
-                      {copy.created}: {formatDate(item.createdAt)}
+                      {copy.created}: {adoptionFormatCopy[language].listDay(item.createdAt)}
                     </div>
                     {item.adoptionCaseId ? (
                       <Button type="button" variant="outline" size="sm" asChild>

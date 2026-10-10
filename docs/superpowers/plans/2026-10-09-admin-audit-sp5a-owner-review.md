@@ -138,7 +138,9 @@ In zh, these screens show a stored timestamp by cutting its first ten characters
 
 The precedent for fixing this is Task 9, which moved the assessments date field to the Hong Kong day (item C9). Changing D1 and D2 the same way changes zh output, so it is your decision.
 
-Related: zh date and number formats differ between screens (`toLocaleString("zh-HK")`, `Intl` medium and short dates, `2026-10-01`), while English uses one format. Task 2 kept each zh format inside its copy module. Switching zh to one format is a one-function change per module (Task 2 named `bulk/copy.ts`, `access/copy.ts` and `operations/copy.ts`; later tasks added `formatCopy.ts` modules for their areas).
+**Status (2026-10-10): D1 and D2 are fixed by SP-5b-1 Task 7** (`fix(admin): one Hong Kong-time zh date and money format everywhere`), with the owner's approval of the one zh format change. Both zh `date` (and the sponsorship `isoDay`) now call the shared `formatAdminDate` in Hong Kong time, so `2026-10-06T16:30:00Z` shows `2026年10月7日 (三)` in zh, the same day English shows. The two `formatDate` slices are gone from the zh path: the sponsorship one is deleted, and the adoptions one is kept only for the unchanged English line of the intake inbox and adopter list. `adminFormatGuard.test.ts` now fails on a new `.slice(0, 10)` date in admin code.
+
+Related: zh date and number formats differ between screens (`toLocaleString("zh-HK")`, `Intl` medium and short dates, `2026-10-01`), while English uses one format. Task 2 kept each zh format inside its copy module. Switching zh to one format is a one-function change per module (Task 2 named `bulk/copy.ts`, `access/copy.ts` and `operations/copy.ts`; later tasks added `formatCopy.ts` modules for their areas). This is also done by SP-5b-1 Task 7: every zh date, date-time and money format in the admin is now the shared one, apart from the times of day and the sponsorship month listed in that task's report.
 
 ## Chinese data shown as stored in English mode
 

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -6,26 +7,11 @@ import type { BoardMember, BoardMemberInput } from "../../../lib/governance/type
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { governanceCopy } from "./governanceCopy";
+import { draftFromMember, type BoardMemberDraft } from "./governanceDraft";
+
+export type { BoardMemberDraft } from "./governanceDraft";
 
 export const ADMIN_GOVERNANCE_QUERY_KEY = ["admin-governance"] as const;
-
-export type BoardMemberDraft = {
-  id?: string;
-  name: string;
-  roleTitle: string;
-  sortOrder: number;
-  effectiveDate: string;
-};
-
-function draftFromMember(member?: BoardMember): BoardMemberDraft {
-  return {
-    id: member?.id,
-    name: member?.name ?? "",
-    roleTitle: member?.roleTitle ?? "",
-    sortOrder: member?.sortOrder ?? 0,
-    effectiveDate: member?.effectiveDate ?? new Date().toISOString().slice(0, 10),
-  };
-}
 
 export function toInput(draft: BoardMemberDraft): BoardMemberInput {
   return {
@@ -123,18 +109,25 @@ export function GovernanceManagement() {
                   {member.isActive ? copy.table.inOffice : copy.table.steppedDown}
                 </td>
                 <td className="py-2">
-                  <button type="button" onClick={() => setDraft(draftFromMember(member))}>
-                    {copy.table.edit}
-                  </button>
-                  {member.isActive ? (
-                    <button
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
                       type="button"
-                      onClick={() => deactivateMutation.mutate(member.id)}
-                      disabled={deactivateMutation.isPending}
+                      onClick={() => setDraft(draftFromMember(member))}
                     >
-                      {copy.table.stepDown}
-                    </button>
-                  ) : null}
+                      {copy.table.edit}
+                    </Button>
+                    {member.isActive ? (
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => deactivateMutation.mutate(member.id)}
+                        disabled={deactivateMutation.isPending}
+                      >
+                        {copy.table.stepDown}
+                      </Button>
+                    ) : null}
+                  </div>
                 </td>
               </tr>
             ))}

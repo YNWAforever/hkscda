@@ -11,7 +11,6 @@ import type {
   CoordinatorStatusCategory,
   PublicAdoptionPhoto,
 } from "../../../lib/adoptions/types";
-import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
@@ -23,6 +22,9 @@ import {
   statusDisplayName,
   useAdminPageCopy,
 } from "../adminPageCopy";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { StatusBadge } from "../StatusBadge";
+import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
@@ -54,37 +56,8 @@ const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
 type CaseDetailCopy = (typeof caseDetailCopy)["zh"];
 
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
-
 function sectionClassName() {
   return "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]";
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{statusDisplayName(status, language)}</span>
-    </Badge>
-  );
 }
 
 function Section({
@@ -109,17 +82,18 @@ function Section({
   );
 }
 
-export function CaseDetailStatusesError({ message }: { message: string }) {
+export function CaseDetailStatusesError({
+  message,
+  error,
+  onRetry,
+}: {
+  message: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
   const copy = useAdminCopy(caseDetailCopy);
 
-  return (
-    <div
-      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-error)]"
-      role="alert"
-    >
-      {copy.statusesError(message)}
-    </div>
-  );
+  return <LoadFailure error={error} onRetry={onRetry} title={copy.statusesError(message)} />;
 }
 
 function DetailGrid({ items }: { items: Array<{ label: string; value: ReactNode }> }) {
@@ -441,7 +415,7 @@ function AuditSummary({
     <Section title={copy.auditSummary} subtitle={copy.auditSubtitle}>
       <DetailGrid
         items={[
-          { label: copy.labels.currentStatus, value: <StatusChip status={adoptionCase.status} /> },
+          { label: copy.labels.currentStatus, value: <StatusBadge status={adoptionCase.status} /> },
           { label: copy.labels.created, value: format.date(adoptionCase.createdAt) },
           { label: copy.labels.closed, value: format.date(adoptionCase.closedAt) },
           {
@@ -496,12 +470,17 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       ),
   });
 
-  const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
+  const {
+    data: statusesData,
+    error: statusesError,
+    refetch: refetchStatuses,
+  } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
 
   const adoptionCase = caseData?.case;
+  useBreadcrumbRecordName(adoptionCase?.applicantName);
   const statuses = useMemo(() => statusesData?.statuses ?? [], [statusesData?.statuses]);
 
   useEffect(() => {
@@ -545,7 +524,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
   if (caseLoading) {
     return (
       <div className="space-y-5 p-6">
-        <div className="h-8 w-52 rounded bg-[var(--color-lavender)]" />
+        <DestinationHeading id="applications" />
         <section className={sectionClassName()}>
           <div className="h-14 border-b border-[var(--color-border)]" />
           <div className="grid gap-3 p-4 md:grid-cols-3">
@@ -568,6 +547,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToCases}
         </Link>
+        <DestinationHeading id="applications" />
         <section className={sectionClassName()}>
           <LoadFailure error={caseError} onRetry={() => void refetch()} className="border-0" />
         </section>
@@ -585,6 +565,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToCases}
         </Link>
+        <DestinationHeading id="applications" />
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
             {copy.notFound}
@@ -621,8 +602,14 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         </Button>
       </div>
 
+      {/* admin-load-failure-ok: CaseDetailStatusesError renders a LoadFailure with the retry */}
       {statusesError && (
-        <CaseDetailStatusesError message={adminErrorMessage(statusesError, language) ?? ""} />
+        <CaseDetailStatusesError
+          // admin-load-failure-ok: only the heading of the LoadFailure that CaseDetailStatusesError renders
+          message={adminErrorMessage(statusesError, language) ?? ""}
+          error={statusesError}
+          onRetry={() => void refetchStatuses()}
+        />
       )}
 
       <Section title={copy.sections.applicant}>
@@ -662,7 +649,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
             { label: copy.labels.closed, value: format.date(adoptionCase.closedAt) },
             {
               label: copy.labels.currentStatus,
-              value: <StatusChip status={adoptionCase.status} />,
+              value: <StatusBadge status={adoptionCase.status} />,
             },
           ]}
         />

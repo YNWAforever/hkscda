@@ -591,7 +591,7 @@ mock.module("@tanstack/react-query", () => ({
 mock.module("@tanstack/react-router", () => ({
   ...realRouter,
   useNavigate: () => () => Promise.resolve(),
-  useBlocker: () => undefined,
+  useBlocker: () => ({ status: "idle", reset() {}, proceed() {} }),
   Link: ({
     children,
     className,
@@ -1752,7 +1752,7 @@ describe("timeline, record picker and the two draft panels in English", () => {
     expect(detail("supporter", "****4567")).toBe("****4567");
     expect(
       editorPanelsCopy.zh.picker.detail("volunteer_activity", "2026-09-14T08:00:00.000Z"),
-    ).toBe("2026-09-14T08:00:00.000Z");
+    ).toBe("2026年9月14日 (一)");
     const picked = renderAdminInEnglish(
       <LinkedRecordPicker linkedType="animal" value="a2" label="（未命名）" onChange={noop} />,
     );

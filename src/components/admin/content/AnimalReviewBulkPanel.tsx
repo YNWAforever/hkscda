@@ -163,7 +163,9 @@ export function AnimalReviewBulkPanel({
           className="mt-1 min-h-24 w-full rounded border p-2"
         />
       </label>
-      <p className="text-sm">{copy.selected(selectedIds.length)}</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selected(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"

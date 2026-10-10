@@ -1,6 +1,6 @@
 import type { AdoptionGuideSpecies } from "../../../lib/adoptionGuideReleases/types";
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDateTime, formatAdminNumber } from "../i18n/format";
+import { formatAdminDateTime, formatAdminDateTimeOrNull, formatAdminNumber } from "../i18n/format";
 
 const EN_SPECIES = { cat: "Cat", dog: "Dog", general: "General" } as const;
 
@@ -89,10 +89,10 @@ export const adoptionGuideCopy = defineAdminCopy({
     history: {
       label: "發佈歷史",
       heading: "歷史",
-      created: (value: string) => `建立：${value}`,
-      submitted: (value: string) => `提交：${value}`,
-      published: (value: string) => `發佈：${value}`,
-      archived: (value: string) => `封存：${value}`,
+      created: (value: string) => `建立：${formatAdminDateTimeOrNull(value, "zh") ?? value}`,
+      submitted: (value: string) => `提交：${formatAdminDateTimeOrNull(value, "zh") ?? value}`,
+      published: (value: string) => `發佈：${formatAdminDateTimeOrNull(value, "zh") ?? value}`,
+      archived: (value: string) => `封存：${formatAdminDateTimeOrNull(value, "zh") ?? value}`,
     },
     actions: {
       save: "儲存草稿",

@@ -376,7 +376,7 @@ describe("about pages in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
       ">Website content</p>",
-      ">About pages management</h1>",
+      ">About pages</h1>",
       ">About us</button>",
       ">TNR</button>",
       ">Main banner</legend>",
@@ -475,7 +475,7 @@ describe("adoption information in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
       ">Adoption</p>",
-      ">Adoption information management</h1>",
+      ">Adoption information</h1>",
       "Manage the public adoption fees and the reference list of dog-friendly estates.",
       ">Post-adoption guide releases</a>",
       'href="/admin/content/adoption-guides"',
@@ -716,7 +716,7 @@ describe("adoption rules and care guidelines in English", () => {
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
       ">Adoption</p>",
-      ">Adoption rules management</h1>",
+      ">Adoption information</h1>",
       ">Adoption rules</h2>",
       "Add rule",
       "1. Keep the animal safe",
@@ -793,7 +793,7 @@ describe("adoption rules and care guidelines in English", () => {
     );
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      ">Animal care guidelines management</h1>",
+      ">Adoption information</h1>",
       'aria-label="Species"',
       ">Cats</button>",
       ">Dogs</button>",
@@ -940,7 +940,11 @@ describe("the adoption instructions page editor in English", () => {
       "Loading page content…",
     );
     expect(
-      renderAdminInEnglish(<AdoptionInstructionsManagementView error="Could not load" />),
+      renderAdminInEnglish(
+        <AdoptionInstructionsManagementView
+          loadFailure={{ error: new Error("x"), heading: "Could not load", onRetry: () => {} }}
+        />,
+      ),
     ).toContain("Could not load");
     expect(renderAdminInEnglish(<AdoptionInstructionsManagementView />)).toContain(
       "Could not load the page content. Check that the page content has been set up, then reload the page.",
@@ -1005,7 +1009,7 @@ describe("the adoption instructions page editor in English", () => {
     );
     expect(chinese(0, "archived", null)).toBe("修訂 0 · 已封存 · ");
     expect(chinese(1, "published", "2026-09-26T00:00:00Z")).toBe(
-      "修訂 1 · 已發布 · 2026-09-26T00:00:00Z",
+      "修訂 1 · 已發布 · 2026年9月26日 (六) 08:00",
     );
   });
 
@@ -1023,7 +1027,7 @@ describe("the adoption instructions page editor in English", () => {
       "編輯中文頁面標題及說明。領養規則及照顧須知的雙語內容，請使用各自的分頁；文件請到",
       ">領養後指南版本</a>管理。",
       "已發布修訂 1 · 草稿版本 4",
-      "最後更新：2026-09-26T00:00:00Z · staff-a",
+      "最後更新：2026年9月26日 (六) 08:00 · staff-a",
       "頁首 / 引題",
       "動物照顧須知 / 貓隻 / 標題",
       ">儲存草稿</button>",
@@ -1031,7 +1035,7 @@ describe("the adoption instructions page editor in English", () => {
       ">發布頁面</button>",
       ">封存草稿（不發布）</button>",
       ">版本紀錄</h3>",
-      "修訂 1 · 已發布 · 2026-09-26T00:00:00Z",
+      "修訂 1 · 已發布 · 2026年9月26日 (六) 08:00",
       ">查看內容</button>",
       ">還原此版本</button>",
       ">查看更多版本</button>",

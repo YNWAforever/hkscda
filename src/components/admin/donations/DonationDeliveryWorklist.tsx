@@ -5,6 +5,7 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DeliveryWorklistResult } from "../../../lib/donations/deliveryWorklist";
 import { Button } from "../../ui/button";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
 import { deliveryWorklistCopy } from "./copy";
 import { donationFormatCopy } from "./formatCopy";
@@ -104,6 +105,7 @@ export function DonationDeliveryWorklist() {
   const [page, setPage] = useState(1);
   // The status the last retry reported; the notice is written from it when it is shown.
   const [noticeStatus, setNoticeStatus] = useState<string | null>(null);
+  const [retryJobId, setRetryJobId] = useState<string | null>(null);
   const query = useQuery({
     queryKey: ["finance-delivery-worklist", page],
     queryFn: () =>
@@ -132,6 +134,21 @@ export function DonationDeliveryWorklist() {
       id="delivery-jobs"
       className="space-y-3 rounded-lg border border-[var(--color-border)] p-4"
     >
+      <ConfirmActionDialog
+        open={retryJobId !== null}
+        onOpenChange={(open) => {
+          if (!open) setRetryJobId(null);
+        }}
+        title={copy.retryJob}
+        consequence={copy.confirmRetry}
+        confirmLabel={copy.retryJob}
+        reason="none"
+        onConfirm={async () => {
+          if (retryJobId === null) return;
+          setNoticeStatus(null);
+          retry.mutate(retryJobId);
+        }}
+      />
       <h3 className="font-semibold text-[var(--color-panel)]">{copy.heading}</h3>
       <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       {query.isLoading && <p role="status">{copy.loading}</p>}
@@ -153,11 +170,7 @@ export function DonationDeliveryWorklist() {
                   ? (retry.variables ?? null)
                   : null
             }
-            onRetry={(jobId) => {
-              if (!window.confirm(copy.confirmRetry)) return;
-              setNoticeStatus(null);
-              retry.mutate(jobId);
-            }}
+            onRetry={setRetryJobId}
           />
           {query.data.total > 25 && (
             <nav aria-label={copy.navLabel} className="flex items-center gap-2">

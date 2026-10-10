@@ -7,7 +7,6 @@ import {
   canRecordPayment,
   canReviewProof,
   formatFallback,
-  formatDate,
   isImageFileType,
   pledgeStatusTone,
   proofHasNoFile,
@@ -106,16 +105,6 @@ describe("formatFallback", () => {
 
   test("returns the trimmed value otherwise", () => {
     expect(formatFallback("  陳小姐  ")).toBe("陳小姐");
-  });
-});
-
-describe("formatDate", () => {
-  test("returns a dash for empty values", () => {
-    expect(formatDate(null)).toBe("-");
-  });
-
-  test("truncates an ISO timestamp to the date portion", () => {
-    expect(formatDate("2026-07-01T00:00:00.000Z")).toBe("2026-07-01");
   });
 });
 

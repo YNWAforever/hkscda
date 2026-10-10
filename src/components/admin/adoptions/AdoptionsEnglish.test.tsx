@@ -312,7 +312,7 @@ describe("case list in English", () => {
     const markup = renderAdminInEnglish(<CaseList />);
     expectNoChineseText(markup, { allow: allowed });
     for (const text of [
-      "Adoption cases",
+      ">Applications</h1>",
       "Coordinator queue, matching, follow-up and finalisation.",
       "Show open cases only",
       ">Applicant<",
@@ -386,7 +386,7 @@ describe("case list in English", () => {
       "清除選取",
       "批量分派領養個案負責職員",
       "已選 0 筆（上限 1000）",
-      "2026-10-01",
+      "2026年10月1日 (四)",
     ]) {
       expect(markup, text).toContain(text);
     }
@@ -580,7 +580,7 @@ describe("case detail in English", () => {
   test("keeps the Chinese case detail, dates and fee as they were", () => {
     load();
     const markup = renderAdminInChinese(<CaseDetail caseId="c-1" />);
-    expect(markup).toContain("2026-10-10 - 2026-10-20");
+    expect(markup).toContain("2026年10月10日 (六) - 2026年10月20日 (二)");
     for (const text of [
       "返回個案",
       "審核摘要",
@@ -588,7 +588,7 @@ describe("case detail in English", () => {
       "動物偏好排序",
       "完成領養",
       "已記錄成功領養",
-      "2026-10-01",
+      "2026年10月1日 (四)",
       "HK$500.50",
       "家居",
     ]) {
@@ -766,8 +766,8 @@ describe("adopter detail in English", () => {
       "已拒絕",
       "1 個相關個案",
       "1 個已完成領養",
-      "HK$500",
-      "2026-10-03",
+      "HK$500.00",
+      "2026年10月3日 (六)",
     ]) {
       expect(markup, text).toContain(text);
     }
@@ -977,7 +977,12 @@ describe("finalisation panel in English", () => {
         successfulAdoption={caseDetail.successfulAdoption as never}
       />,
     );
-    for (const text of ["已記錄成功領養", "2026-10-03", "2026-10-05", "HK$500.50"]) {
+    for (const text of [
+      "已記錄成功領養",
+      "2026年10月3日 (六)",
+      "2026年10月5日 (一)",
+      "HK$500.50",
+    ]) {
       expect(done, text).toContain(text);
     }
   });
@@ -1025,11 +1030,22 @@ describe("date and fee formats", () => {
     expect(format.money(null)).toBe("-");
   });
 
-  test("Chinese keeps the plain date and the fee without trailing zeros", () => {
+  test("the English list day is the Hong Kong day, not the UTC day", () => {
+    const { listDay } = adoptionFormatCopy.en;
+    // 16:30Z on 6 Oct is 00:30 on 7 Oct in Hong Kong.
+    expect(listDay("2026-10-06T16:30:00Z")).toBe("7 Oct 2026 (Wed)");
+    expect(listDay("2026-10-07T04:00:00Z")).toBe("7 Oct 2026 (Wed)");
+    expect(listDay("2026-10-07")).toBe("7 Oct 2026 (Wed)");
+    for (const value of [null, undefined, "", "  ", "not a date"]) {
+      expect(listDay(value)).toBe("-");
+    }
+  });
+
+  test("Chinese uses the shared Hong Kong date and the fee with two decimals", () => {
     const format = adoptionFormatCopy.zh;
-    expect(format.date("2026-10-06T20:00:00Z")).toBe("2026-10-06");
+    expect(format.date("2026-10-06T20:00:00Z")).toBe("2026年10月7日 (三)");
     expect(format.date(undefined)).toBe("-");
-    expect(format.money(123400)).toBe("HK$1,234");
+    expect(format.money(123400)).toBe("HK$1,234.00");
     expect(format.money(123450)).toBe("HK$1,234.50");
     expect(format.money(undefined)).toBe("-");
   });
@@ -1206,6 +1222,7 @@ describe("animal pipeline in English", () => {
       tasks: [task],
       statuses: statuses as never,
       tasksError: "Tasks unavailable",
+      onRetryTasks: () => {},
       onTasksChanged: async () => {},
     };
     const markup = renderAdminInEnglish(<AnimalProfileDialog {...props} />);
@@ -1230,13 +1247,15 @@ describe("animal pipeline in English", () => {
       "Internal remarks",
       ">Cancel<",
       "Save profile",
-      "Animal tasks",
-      "Open coordinator work for this animal",
       "Tasks unavailable",
     ]) {
       expect(markup, text).toContain(text);
     }
     expect(markup).not.toContain("Desex");
+    // A failed task load stands in for the task panel: no empty list or create form beside it.
+    expect(markup).not.toContain("Animal tasks");
+    expect(markup).not.toContain("Open coordinator work for this animal");
+    expect(markup).toMatch(/<button[^>]*>Retry<\/button>/);
 
     const saving = renderAdminInEnglish(
       <AnimalProfileDialog {...props} saving saveError="Save failed" />,
@@ -1251,11 +1270,14 @@ describe("animal pipeline in English", () => {
         sourceOptions={[]}
         positionOptions={[]}
         tasksError={null}
+        onRetryTasks={() => {}}
       />,
     );
     expectNoChineseText(bare, { allow: ["致電申請人", "阿明", "跟進備註"] });
     expect(bare).toContain("No arrival sources are configured.");
     expect(bare).toContain("No animal positions are configured.");
+    expect(bare).toContain("Animal tasks");
+    expect(bare).toContain("Open coordinator work for this animal");
   });
 
   test("keeps the Chinese admin's profile dialog as the English screen it always was", () => {
@@ -1275,6 +1297,7 @@ describe("animal pipeline in English", () => {
         tasks={[]}
         statuses={[]}
         tasksError={null}
+        onRetryTasks={() => {}}
         onTasksChanged={async () => {}}
       />,
     );
@@ -1343,8 +1366,10 @@ describe("a lapsed session in the adoption screens", () => {
     const match = <MatchPanel caseId="c-1" matches={[]} statuses={statuses as never} />;
     const markup = renderAdminInEnglish(match);
     expectNoChineseText(markup);
-    expect(markup).toContain(`role="alert">${english}</div>`);
-    expect(renderAdminInChinese(match)).toContain('role="alert">未登入</div>');
+    // The failed list is a failure state with a retry, titled with the message it always showed.
+    expect(markup).toContain(`>${english}</p>`);
+    expect(markup).toMatch(/<button[^>]*>Retry<\/button>/);
+    expect(renderAdminInChinese(match)).toContain(">未登入</p>");
   });
 
   test("the animal pipeline names the failed lookup and writes its cause in English", () => {
@@ -1360,12 +1385,13 @@ describe("a lapsed session in the adoption screens", () => {
     const markup = renderAdminInEnglish(<AnimalPipeline />);
     expectNoChineseText(markup);
     expect(markup).toContain(`Positions could not load: ${english}`);
-    expect(markup).toContain(`<p>${english}</p>`);
-    // The failed pipeline itself.
-    expect(markup).toContain(`role="alert">${english}</section>`);
+    expect(markup).toContain(`>${english}</p>`);
+    // The pipeline and the two failed lookups (positions, statuses) are each a failure state with
+    // a retry.
+    expect(markup.match(/<button[^>]*>Retry<\/button>/g)).toHaveLength(3);
     const chinese = renderAdminInChinese(<AnimalPipeline />);
     expect(chinese).toContain("Positions could not load: 未登入");
-    expect(chinese).toContain('role="alert">未登入</section>');
+    expect(chinese).toContain(">未登入</p>");
   });
 });
 

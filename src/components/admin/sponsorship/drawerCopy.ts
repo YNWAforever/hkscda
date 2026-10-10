@@ -40,8 +40,9 @@ export const pledgeDrawerCopy = defineAdminCopy({
   zh: {
     /** The pledge could not be loaded: the reason the server gave, as it came. */
     loadFailed: (reason: string) => reason,
-    /** The tier next to the monthly amount: the tier's amount as stored. */
-    tierAmount: (tier: string) => tier,
+    /** The tier next to the monthly amount: its amount in dollars, or the tier as stored. */
+    tierAmount: (tier: string) =>
+      Number.isFinite(Number(tier)) ? formatAdminMoney(Number(tier), "zh") : tier,
     withTier: (monthly: string, tier: string) => `${monthly}（${tier}）`,
     /** A stored payment method is shown as its code, as it always has been. */
     paymentMethodName: (code: string) => code,

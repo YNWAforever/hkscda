@@ -19,6 +19,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionCopy } from "../confirmActionCopy";
+import { LoadFailure } from "../LoadFailure";
 import { useAdminCopy } from "../i18n/copy";
 import { localizedText } from "../i18n/localizedText";
 import { fetchCoordinatorJson } from "./api";
@@ -37,6 +40,7 @@ import {
 } from "./animalPipelineLogic";
 import { animalPipelineCopy } from "./animalPipelineCopy";
 import { AnimalProfileDialog } from "./AnimalProfileDialog";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { ExportButton } from "./ExportButton";
 import { adoptionFormatCopy } from "./formatCopy";
 
@@ -86,12 +90,10 @@ const TYPE_FILTERS = ["all", "cat", "dog", "sponsor"] as const;
 const ADOPTABLE_FILTERS = ["all", "adoptable", "not_adoptable"] as const;
 const SUPPORT_POOL_FILTERS = ["all", "inside", "outside"] as const;
 
-const STATUS_BADGE_CLASSES: Record<AnimalStatus, string> = {
-  available: "border-[var(--color-success)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  fostered:
-    "border-[var(--color-lavender-deep)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  adopted:
-    "border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
+const STATUS_TONES: Record<AnimalStatus, StatusTone> = {
+  available: "success",
+  fostered: "info",
+  adopted: "warning",
 };
 
 function cloneProfile(profile: AnimalInternalProfile): AnimalInternalProfile {
@@ -154,6 +156,7 @@ function useDebouncedValue<T>(value: T, delayMs: number) {
 export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }) {
   const { language } = useAdminLanguage();
   const copy = useAdminCopy(animalPipelineCopy);
+  const shared = useAdminCopy(confirmActionCopy);
   const format = useAdminCopy(adoptionFormatCopy);
   const queryClient = useQueryClient();
   const appliedInitialAnimalId = useRef<string | null>(null);
@@ -168,6 +171,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   });
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState<AnimalInternalProfile | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<(typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]>(25);
   const debouncedQuery = useDebouncedValue(query, PIPELINE_SEARCH_DEBOUNCE_MS);
@@ -271,9 +275,10 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     sourcesQuery.isFetching ||
     statusesQuery.isFetching;
 
-  const readErrors = [positionsQuery.error, sourcesQuery.error, statusesQuery.error]
-    .map((error) => pipelineReadErrorText(error, language))
-    .filter(Boolean);
+  const readFailures = [positionsQuery, sourcesQuery, statusesQuery].flatMap((lookup) => {
+    const message = pipelineReadErrorText(lookup.error, language);
+    return lookup.error && message ? [{ error: lookup.error, message, retry: lookup.refetch }] : [];
+  });
 
   const lifecycleMutation = useMutation<void, Error, { animalId: string; status: AnimalStatus }>({
     mutationFn: ({ animalId, status }) =>
@@ -379,12 +384,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
    */
   function requestCloseProfileDialog() {
     const saved = selectedRow?.profile;
-    if (
-      profileForm &&
-      saved &&
-      hasUnsavedProfileChanges(profileForm, saved) &&
-      !window.confirm(copy.discardConfirm)
-    ) {
+    if (profileForm && saved && hasUnsavedProfileChanges(profileForm, saved)) {
+      setDiscardOpen(true);
       return;
     }
     closeProfileDialog();
@@ -497,9 +498,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           lifecycleMutation.isPending && lifecycleMutation.variables?.animalId === row.id;
         return (
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
+            <StatusPill tone={STATUS_TONES[row.status]}>
               {copy.statusOptions[row.status]}
-            </Badge>
+            </StatusPill>
             <Select
               value={row.status}
               disabled={isUpdatingStatus}
@@ -629,9 +630,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
-            {copy.statusOptions[row.status]}
-          </Badge>
+          <StatusPill tone={STATUS_TONES[row.status]}>{copy.statusOptions[row.status]}</StatusPill>
           <Select
             value={row.status}
             disabled={isUpdatingStatus}
@@ -839,7 +838,11 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]"
+          >
             <Badge
               variant="outline"
               className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
@@ -868,16 +871,15 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           </Tabs>
         </div>
 
-        {readErrors.length > 0 && (
-          <div
-            className="space-y-1 border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
-            role="alert"
-          >
-            {readErrors.map((message, index) => (
-              <p key={`${index}:${message}`}>{message}</p>
-            ))}
-          </div>
-        )}
+        {readFailures.map(({ error, message, retry }) => (
+          <LoadFailure
+            key={message}
+            error={error}
+            onRetry={() => void retry()}
+            title={message}
+            className="rounded-none border-0 border-t"
+          />
+        ))}
         {lifecycleMutation.error && (
           <div
             className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
@@ -889,12 +891,12 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       </section>
 
       {pipelineQuery.error ? (
-        <section
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-error)]"
-          role="alert"
-        >
-          {adminErrorMessage(pipelineQuery.error, language) ?? ""}
-        </section>
+        <LoadFailure
+          error={pipelineQuery.error}
+          onRetry={() => void pipelineQuery.refetch()}
+          title={adminErrorMessage(pipelineQuery.error, language) ?? undefined}
+          className="bg-[var(--color-surface)]"
+        />
       ) : (
         <div className="space-y-4">
           {pipelineQuery.isLoading &&
@@ -992,6 +994,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
       )}
 
+      <ConfirmActionDialog
+        open={discardOpen}
+        onOpenChange={setDiscardOpen}
+        title={shared.discardChanges}
+        consequence={copy.discardConfirm}
+        confirmLabel={shared.discardChanges}
+        destructive
+        reason="none"
+        onConfirm={async () => closeProfileDialog()}
+      />
       <AnimalProfileDialog
         open={Boolean(selectedAnimalId)}
         animalName={selectedRow ? animalName(selectedRow) : null}
@@ -1006,7 +1018,10 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         animalId={selectedAnimalId}
         tasks={selectedAnimalTasks}
         statuses={statuses}
+        // admin-load-failure-ok: the dialog wraps this message in a LoadFailure with a retry
         tasksError={adminErrorMessage(selectedAnimalTasksQuery.error, language)}
+        tasksCause={selectedAnimalTasksQuery.error}
+        onRetryTasks={() => void selectedAnimalTasksQuery.refetch()}
         onTasksChanged={invalidateSelectedAnimalTasks}
       />
     </div>

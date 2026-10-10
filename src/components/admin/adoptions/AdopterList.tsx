@@ -15,7 +15,8 @@ import { DataTable, type DataTableColumn } from "../DataTable";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
-import { formatDate, formatFallback } from "./caseWorkflowLogic";
+import { formatFallback } from "./caseWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import { buildAdopterListSearchParams } from "./adopterWorkflowLogic";
 import { ExportButton } from "./ExportButton";
 
@@ -81,7 +82,7 @@ function LatestCaseCell({ latestCase }: { latestCase: AdopterSummary["latestCase
         params={{ id: latestCase.id }}
         className="font-medium text-[var(--color-primary)] hover:underline"
       >
-        {formatDate(latestCase.createdAt)}
+        {adoptionFormatCopy[language].listDay(latestCase.createdAt)}
       </Link>
       <div className="text-xs text-[var(--color-text-muted)]">
         {latestCaseStatusText(latestCase, language)} ·{" "}
@@ -350,7 +351,11 @@ export function AdopterList() {
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.tableTitle}</h2>
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-xs text-[var(--color-text-muted)]"
+            >
               {isLoading
                 ? pageCopy.common.loading
                 : error

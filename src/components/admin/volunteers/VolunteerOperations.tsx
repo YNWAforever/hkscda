@@ -20,6 +20,7 @@ import type {
   OperationListing,
   OperationPreviewData,
 } from "./volunteerOperationsTypes";
+import { LoadFailure } from "../LoadFailure";
 
 const input =
   "min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2";
@@ -216,7 +217,7 @@ export function OperationsWorkspace({
   const destination = data?.activities.find((a) => a.id === destinationId);
   const busy = mutate.isPending;
   const protectedReady = !publicMode || !turnstileEnabled || !!captcha;
-  const failure = listing.error ?? mutate.error;
+  const failure = mutate.error;
   const activityLabel = (id: string) => {
     const a = data?.activities.find((a) => a.id === id);
     return a ? `${a.title} · ${format.operationsTime(a.starts_at)}` : copy.records.originalSession;
@@ -239,6 +240,17 @@ export function OperationsWorkspace({
         ]}
       />
       {listing.isLoading && <p>{copy.loading}</p>}
+      {listing.error && (
+        <LoadFailure
+          error={listing.error}
+          onRetry={() => void listing.refetch()}
+          title={
+            listing.error instanceof Error
+              ? volunteerAdminErrorMessage(listing.error, language)
+              : copy.notDone
+          }
+        />
+      )}
       {failure && (
         <p role="alert">
           {failure instanceof Error ? volunteerAdminErrorMessage(failure, language) : copy.notDone}

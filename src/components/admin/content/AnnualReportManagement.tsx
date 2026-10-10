@@ -6,6 +6,8 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
 import { documentsCopy } from "./documentsCopy";
 import { fetchAllAnnualReportAssets } from "./documentManagementLogic";
@@ -91,17 +93,30 @@ function AnnualReportManagementRuntime() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-annual-reports"] }),
   });
 
+  const loadError = reportsQuery.error ?? assetsQuery.error;
   const error =
-    documentErrorMessage(reportsQuery.error, language) ??
-    documentErrorMessage(assetsQuery.error, language) ??
     documentErrorMessage(createMutation.error, language) ??
-    documentErrorMessage(actionMutation.error, language);
+    (actionMutation.variables?.action === "delete"
+      ? null
+      : documentErrorMessage(actionMutation.error, language));
 
   return (
     <AnnualReportManagementView
       rows={reportsQuery.data ?? []}
       assets={assetsQuery.data ?? []}
       loading={reportsQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, language),
+              onRetry: () => {
+                void reportsQuery.refetch();
+                void assetsQuery.refetch();
+              },
+            }
+          : null
+      }
       error={error}
       title={title}
       yearLabel={yearLabel}
@@ -114,7 +129,12 @@ function AnnualReportManagementRuntime() {
       actionPending={actionMutation.isPending}
       onSortOrderChange={setSortOrder}
       onCreate={() => createMutation.mutate()}
-      onAction={(id, action, nextSortOrder) => actionMutation.mutate({ id, action, nextSortOrder })}
+      onAction={(id, action, nextSortOrder) => {
+        const run = actionMutation.mutateAsync({ id, action, nextSortOrder });
+        // Only a delete waits in its confirm dialog; the other actions show their error on the page.
+        if (action === "delete") return run;
+        run.catch(() => undefined);
+      }}
     />
   );
 }
@@ -123,6 +143,9 @@ type ViewProps = {
   rows: AnnualReport[];
   assets?: DocumentAsset[];
   loading?: boolean;
+  /** The reports or their documents failed to load. Shown as a failure with a retry. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a create or an action. */
   error?: string | null;
   title?: string;
   yearLabel?: string;
@@ -139,13 +162,14 @@ type ViewProps = {
     id: string,
     action: "publish" | "unpublish" | "delete" | "order",
     nextSortOrder?: number,
-  ) => void;
+  ) => void | Promise<unknown>;
 };
 
 export function AnnualReportManagementView({
   rows,
   assets = [],
   loading = false,
+  loadFailure = null,
   error,
   title = "",
   yearLabel = "",
@@ -162,8 +186,24 @@ export function AnnualReportManagementView({
 }: ViewProps) {
   const common = useAdminCopy(documentsCopy);
   const copy = common.annualReports;
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle = rows.find((report) => report.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={copy.table.deleteLabel(deleteTitle)}
+        consequence={copy.table.confirmDelete(deleteTitle)}
+        confirmLabel={copy.table.deleteLabel(deleteTitle)}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) await onAction?.(deleteId, "delete");
+        }}
+      />
       <header>
         <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
         <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
@@ -235,6 +275,13 @@ export function AnnualReportManagementView({
         </form>
       ) : null}
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -262,7 +309,7 @@ export function AnnualReportManagementView({
                   {copy.table.loading}
                 </td>
               </tr>
-            ) : rows.length === 0 && !error ? (
+            ) : rows.length === 0 && !error && !loadFailure ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
                   {copy.table.empty}
@@ -332,11 +379,7 @@ export function AnnualReportManagementView({
                             type="button"
                             aria-label={copy.table.deleteLabel(report.title)}
                             disabled={actionPending}
-                            onClick={() => {
-                              if (globalThis.confirm?.(copy.table.confirmDelete(report.title))) {
-                                onAction(report.id, "delete");
-                              }
-                            }}
+                            onClick={() => setDeleteId(report.id)}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />

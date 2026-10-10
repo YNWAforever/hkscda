@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -6,6 +7,7 @@ import type { ContentRevisionSummary } from "../../../lib/content/lifecycle";
 import type { ContentDetail } from "../../../lib/content/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
 import { contentCommonCopy } from "./contentCommonCopy";
 import { editorCopy } from "./editorCopy";
@@ -44,6 +46,7 @@ export function ContentRevisionPanel({
       ),
   });
   const [error, setError] = useState<RestoreFailure>();
+  const [restoreOpen, setRestoreOpen] = useState(false);
   const errorText = error ? (adminErrorMessage(error.cause, language) ?? copy.restoreFailed) : "";
   const saved = detail.data?.revision.snapshot.content as Record<string, unknown> | undefined;
   return (
@@ -74,16 +77,22 @@ export function ContentRevisionPanel({
         ))}
       </div>
       <div className="flex gap-3">
-        <button type="button" disabled={cursor === undefined} onClick={() => setCursor(undefined)}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={cursor === undefined}
+          onClick={() => setCursor(undefined)}
+        >
           {copy.latest}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           type="button"
           disabled={history.data?.nextBeforeVersion == null}
           onClick={() => setCursor(history.data?.nextBeforeVersion ?? undefined)}
         >
           {copy.earlier}
-        </button>
+        </Button>
       </div>
       {saved ? (
         <>
@@ -114,19 +123,29 @@ export function ContentRevisionPanel({
           <button
             type="button"
             disabled={disabled}
-            onClick={async () => {
-              if (!selected || !window.confirm(copy.restoreConfirm)) return;
-              try {
-                setError(undefined);
-                await onRestore(selected);
-              } catch (e) {
-                setError({ cause: e });
-              }
-            }}
+            onClick={() => setRestoreOpen(true)}
             className="rounded border px-3 py-2 disabled:opacity-50"
           >
             {copy.restore}
           </button>
+          <ConfirmActionDialog
+            open={restoreOpen}
+            onOpenChange={setRestoreOpen}
+            title={copy.restore}
+            consequence={copy.restoreConfirm}
+            confirmLabel={copy.restore}
+            reason="none"
+            onConfirm={async () => {
+              if (!selected) return;
+              try {
+                setError(undefined);
+                await onRestore(selected);
+              } catch (e) {
+                // The panel shows a failed restore itself, under the list.
+                setError({ cause: e });
+              }
+            }}
+          />
         </>
       ) : null}
       {errorText ? <p role="alert">{errorText}</p> : null}

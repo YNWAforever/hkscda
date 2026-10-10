@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDate, formatAdminNumber } from "../i18n/format";
+import { formatAdminDate, formatAdminDateOrNull, formatAdminNumber } from "../i18n/format";
 
 /**
  * Copy for the panels the content editor is built from: the story update timeline, the linked
@@ -60,8 +60,11 @@ export const editorPanelsCopy = defineAdminCopy({
       placeholder: "搜尋名稱或編號",
       label: "搜尋關聯紀錄",
       selected: (label: string) => `已選擇：${label}`,
-      /** The line under a search result, as the search sent it. */
-      detail: (linkedType: string, detail: string) => detail,
+      /** The line under a search result, as the search sent it; a volunteer activity's date in Hong Kong time. */
+      detail: (linkedType: string, detail: string) =>
+        linkedType === "volunteer_activity" && ISO_TIMESTAMP.test(detail)
+          ? (formatAdminDateOrNull(detail, "zh") ?? detail)
+          : detail,
       failed: "未能載入關聯紀錄，請重試。",
     },
     notifications: {

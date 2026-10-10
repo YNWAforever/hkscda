@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   AdoptionInstructionsManagement,
   type AdoptionInstructionEditorHandle,
@@ -29,6 +30,7 @@ import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
 import { CareTopicsManagement } from "./CareTopicsManagement";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { adoptionInformationCopy } from "./adoptionInformationCopy";
 import {
@@ -40,6 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../ui/alert-dialog";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -77,11 +80,18 @@ export function invalidateAdoptionInformationQueries(client: {
   return client.invalidateQueries({ queryKey: ADOPTION_INFORMATION_QUERY_KEY });
 }
 
-export function AdoptionInformationManagement({ initialData }: { initialData?: InitialData }) {
+export function AdoptionInformationManagement({
+  initialData,
+  initialTab = "fees",
+}: {
+  initialData?: InitialData;
+  /** The tab shown first. The route leaves it at the first tab; tests open the others. */
+  initialTab?: AdoptionContentTab;
+}) {
   if (initialData) {
     return <AdoptionInformationManagementView activeTab="fees" data={initialData.fees} query="" />;
   }
-  return <AdoptionInformationManagementRuntime />;
+  return <AdoptionInformationManagementRuntime initialTab={initialTab} />;
 }
 
 export function AdoptionContentTabs({
@@ -118,14 +128,15 @@ type MutationInput =
   | { action: "delete-estate"; id: string }
   | { action: "move-fees"; input: ReorderFeesInput };
 
-function AdoptionInformationManagementRuntime() {
+function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: AdoptionContentTab }) {
   const copy = useAdminCopy(adoptionInformationCopy);
   const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<AdoptionContentTab>("fees");
+  const [activeTab, setActiveTab] = useState<AdoptionContentTab>(initialTab);
   const [pageDirty, setPageDirty] = useState(false);
   const [pendingTab, setPendingTab] = useState<AdoptionContentTab | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [deleteEstateId, setDeleteEstateId] = useState<string | null>(null);
   const [leaveProblem, setLeaveProblem] = useState<LeaveProblem | null>(null);
   const editorRef = useRef<AdoptionInstructionEditorHandle>(null);
   const reorderInFlight = useRef(false);
@@ -261,12 +272,17 @@ function AdoptionInformationManagementRuntime() {
           <AlertDialogCancel disabled={leaving} onClick={() => cancelLeave()}>
             {copy.leave.cancel}
           </AlertDialogCancel>
-          <button type="button" disabled={leaving} onClick={() => void decideLeave("discard")}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={leaving}
+            onClick={() => void decideLeave("discard")}
+          >
             {copy.leave.discard}
-          </button>
-          <button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
+          </Button>
+          <Button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
             {copy.leave.save}
-          </button>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -275,6 +291,10 @@ function AdoptionInformationManagementRuntime() {
   if (activeTab === "page") {
     return (
       <div>
+        {/* This tab's editor has no heading of its own; the other tabs head their page. */}
+        <div className="px-6 pt-6">
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        </div>
         <AdoptionContentTabs activeTab={activeTab} onTabChange={handleTabChange} />
         <AdoptionInstructionsManagement onDirtyChange={setPageDirty} editorRef={editorRef} />
         {leaveDialog}
@@ -289,77 +309,110 @@ function AdoptionInformationManagementRuntime() {
     return <CareTopicsManagement activeTab={activeTab} onTabChange={handleTabChange} />;
   }
 
+  // Irreversible and triggered from an inline row button; name the estate so the operator can
+  // confirm they hit the row they meant.
+  const estateToDelete = informationQuery.data?.items.find((item) => item.id === deleteEstateId);
+  const estateLabel =
+    estateToDelete && "estateName" in estateToDelete
+      ? (estateToDelete as { estateName?: string }).estateName
+      : null;
+
   return (
-    <AdoptionInformationManagementView
-      activeTab={activeTab}
-      data={informationQuery.data}
-      loading={informationQuery.isLoading}
-      error={
-        adminErrorMessage(informationQuery.error, language) ??
-        adminErrorMessage(mutation.error, language)
-      }
-      query={query}
-      page={page}
-      pending={mutation.isPending}
-      onTabChange={handleTabChange}
-      onQueryChange={(value) => {
-        setQuery(value);
-        setPage(1);
-      }}
-      onPageChange={setPage}
-      onSaveFee={async (input) =>
-        ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee }).fee
-      }
-      onMoveFee={(input, direction) => {
-        if (mutation.isPending || reorderInFlight.current) return;
-        const pair = moveFeeWithinSpecies(informationQuery.data?.items ?? [], input.id, direction);
-        if (pair.length !== 2 || !pair[0] || !pair[1]) return;
-        reorderInFlight.current = true;
-        void mutation
-          .mutateAsync({
-            action: "move-fees",
-            input: {
-              firstId: pair[0].id,
-              secondId: pair[1].id,
-              expectedVersions: { first: pair[0].version, second: pair[1].version },
-            },
-          })
-          .catch(() => undefined)
-          .finally(() => {
-            reorderInFlight.current = false;
-          });
-      }}
-      onCreateEstate={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "create-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onUpdateEstate={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "update-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onSetEstatePublication={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "publish-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onDeleteEstate={(id) => {
-        // Irreversible and triggered from an inline row button; name the estate
-        // so the operator can confirm they hit the row they meant.
-        const estate = informationQuery.data?.items.find((item) => item.id === id);
-        const label =
-          estate && "estateName" in estate ? (estate as { estateName?: string }).estateName : null;
-        if (!window.confirm(copy.estates.confirmDelete(label ?? copy.estates.thisEstate))) return;
-        mutation.mutate({ action: "delete-estate", id });
-      }}
-    />
+    <>
+      <ConfirmActionDialog
+        open={deleteEstateId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteEstateId(null);
+        }}
+        title={copy.estates.delete}
+        consequence={copy.estates.confirmDelete(estateLabel ?? copy.estates.thisEstate)}
+        confirmLabel={copy.estates.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteEstateId !== null)
+            await mutation.mutateAsync({ action: "delete-estate", id: deleteEstateId });
+        }}
+      />
+      <AdoptionInformationManagementView
+        activeTab={activeTab}
+        data={informationQuery.data}
+        loading={informationQuery.isLoading}
+        loadFailure={
+          informationQuery.error
+            ? {
+                error: informationQuery.error,
+                heading: adminErrorMessage(informationQuery.error, language),
+                onRetry: () => void informationQuery.refetch(),
+              }
+            : null
+        }
+        // A failed delete is shown inside its confirm dialog, not twice.
+        error={
+          mutation.variables?.action === "delete-estate"
+            ? null
+            : adminErrorMessage(mutation.error, language)
+        }
+        query={query}
+        page={page}
+        pending={mutation.isPending}
+        onTabChange={handleTabChange}
+        onQueryChange={(value) => {
+          setQuery(value);
+          setPage(1);
+        }}
+        onPageChange={setPage}
+        onSaveFee={async (input) =>
+          ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee })
+            .fee
+        }
+        onMoveFee={(input, direction) => {
+          if (mutation.isPending || reorderInFlight.current) return;
+          const pair = moveFeeWithinSpecies(
+            informationQuery.data?.items ?? [],
+            input.id,
+            direction,
+          );
+          if (pair.length !== 2 || !pair[0] || !pair[1]) return;
+          reorderInFlight.current = true;
+          void mutation
+            .mutateAsync({
+              action: "move-fees",
+              input: {
+                firstId: pair[0].id,
+                secondId: pair[1].id,
+                expectedVersions: { first: pair[0].version, second: pair[1].version },
+              },
+            })
+            .catch(() => undefined)
+            .finally(() => {
+              reorderInFlight.current = false;
+            });
+        }}
+        onCreateEstate={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "create-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onUpdateEstate={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "update-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onSetEstatePublication={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "publish-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onDeleteEstate={setDeleteEstateId}
+      />
+    </>
   );
 }
 
@@ -367,6 +420,9 @@ type ViewProps = {
   activeTab: AdoptionContentTab;
   data?: AdminAdoptionInformationPage;
   loading?: boolean;
+  /** The fees or estates failed to load. Shown instead of the lists. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save. */
   error?: string | null;
   query: string;
   page?: number;
@@ -386,6 +442,7 @@ export function AdoptionInformationManagementView({
   activeTab,
   data,
   loading = false,
+  loadFailure = null,
   error,
   query,
   page = 1,
@@ -435,6 +492,13 @@ export function AdoptionInformationManagementView({
         </label>
       ) : null}
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
@@ -442,7 +506,7 @@ export function AdoptionInformationManagementView({
       ) : null}
       {loading ? <p aria-live="polite">{copy.loading}</p> : null}
 
-      {!loading && activeTab === "fees" ? (
+      {!loading && !loadFailure && activeTab === "fees" ? (
         <section className="space-y-6" aria-label={copy.fees.section}>
           {(["dog", "cat"] as const).map((animalType) => (
             <div key={animalType} className="space-y-3">
@@ -469,7 +533,7 @@ export function AdoptionInformationManagementView({
         </section>
       ) : null}
 
-      {!loading && activeTab === "estates" ? (
+      {!loading && !loadFailure && activeTab === "estates" ? (
         <section className="space-y-4" aria-label={copy.estates.section}>
           <EstateEditor pending={pending} onCreate={onCreateEstate} />
           {estates.length ? (
@@ -496,7 +560,7 @@ export function AdoptionInformationManagementView({
           total={data?.total}
           onPageChange={onPageChange}
           label={copy.estates.pager}
-          failed={Boolean(error)}
+          failed={Boolean(error || loadFailure)}
         />
       ) : null}
     </div>
@@ -590,25 +654,27 @@ function FeeEditor({
           className={inputClass}
         />
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="outline"
             type="button"
             aria-label={copy.moveUp}
             disabled={pending || dirty || conflict}
             onClick={() => onMove?.(draft, -1)}
           >
             <ChevronUp className="h-4 w-4" /> {copy.moveUp}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             type="button"
             aria-label={copy.moveDown}
             disabled={pending || dirty || conflict}
             onClick={() => onMove?.(draft, 1)}
           >
             <ChevronDown className="h-4 w-4" /> {copy.moveDown}
-          </button>
-          <button type="button" disabled={pending || conflict} onClick={() => void save()}>
+          </Button>
+          <Button type="button" disabled={pending || conflict} onClick={() => void save()}>
             {copy.save}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -764,7 +830,7 @@ export function EstateEditor({
         />
       </div>
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
           type="button"
           disabled={pending || conflict || !draft.estateName.trim() || !draft.district.trim()}
           onClick={() => void save()}
@@ -776,19 +842,25 @@ export function EstateEditor({
               <Plus className="inline h-4 w-4" /> {copy.add}
             </>
           )}
-        </button>
+        </Button>
         {estate ? (
           <>
-            <button
+            <Button
+              variant="outline"
               type="button"
               disabled={pending || dirty || conflict}
               onClick={() => void togglePublication()}
             >
               {published ? copy.unpublish : copy.publish}
-            </button>
-            <button type="button" disabled={pending} onClick={() => onDelete?.(estate.id)}>
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              disabled={pending}
+              onClick={() => onDelete?.(estate.id)}
+            >
               <Trash2 className="inline h-4 w-4" /> {copy.delete}
-            </button>
+            </Button>
           </>
         ) : null}
       </div>

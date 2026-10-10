@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { DataTable } from "./DataTable";
@@ -12,17 +13,29 @@ import { LoadFailure, StatFigure } from "./LoadFailure";
 import { sharedUiCopy } from "./sharedUiCopy";
 import { TablePager } from "./TablePager";
 
+const noop = () => {};
 type Row = { name: string };
 const columns = [{ id: "name", header: "Name", cell: (row: Row) => row.name }];
 
-function table(props: Partial<Parameters<typeof DataTable<Row>>[0]> = {}) {
+function table(
+  props: {
+    rows?: Row[];
+    empty?: ReactNode;
+    loading?: boolean;
+    error?: unknown;
+    onRetry?: () => void;
+  } = {},
+) {
+  const { error, onRetry, ...rest } = props;
+  const failure = error === undefined ? {} : { error, onRetry: onRetry ?? noop };
   return (
     <DataTable<Row>
       columns={columns}
       rows={[]}
       getRowKey={(row) => row.name}
       renderMobileCard={(row) => <span>{row.name}</span>}
-      {...props}
+      {...rest}
+      {...failure}
     />
   );
 }
@@ -48,16 +61,18 @@ describe("LoadFailure in English", () => {
   });
 
   test("keeps a title the caller passes, and a caller's null title", () => {
-    expect(renderAdminInEnglish(<LoadFailure error="x" title="Could not load cases" />)).toContain(
-      "Could not load cases",
-    );
-    const none = renderAdminInEnglish(<LoadFailure error="x" title={null} />);
+    expect(
+      renderAdminInEnglish(<LoadFailure error="x" onRetry={noop} title="Could not load cases" />),
+    ).toContain("Could not load cases");
+    const none = renderAdminInEnglish(<LoadFailure error="x" onRetry={noop} title={null} />);
     expect(none).not.toContain("Could not load");
     expect(none).toContain("Try again.");
   });
 
   test("never shows the raw error text", () => {
-    const markup = renderAdminInEnglish(<LoadFailure error={new Error("password=hunter2")} />);
+    const markup = renderAdminInEnglish(
+      <LoadFailure error={new Error("password=hunter2")} onRetry={noop} />,
+    );
     expect(markup).not.toContain("hunter2");
   });
 
@@ -81,7 +96,7 @@ describe("LoadFailure in Chinese", () => {
   });
 
   test("shows Chinese outside the provider, so a parent's own test needs none", () => {
-    expect(renderToStaticMarkup(<LoadFailure error="x" />)).toContain("無法載入");
+    expect(renderToStaticMarkup(<LoadFailure error="x" onRetry={noop} />)).toContain("無法載入");
     expect(renderToStaticMarkup(table())).toContain("沒有結果");
   });
 });

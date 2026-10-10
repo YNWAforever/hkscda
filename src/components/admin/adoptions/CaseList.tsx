@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { bilingualStatusName, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { useAdminCopy } from "../i18n/copy";
-import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { StatusBadge } from "../StatusBadge";
 import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
@@ -51,14 +51,24 @@ const CASE_PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
 const ANIMAL_TYPE_OPTIONS = ["all", "cat", "dog", "sponsor", "unknown"] as const;
 
-export function CaseListStatusFilterError({ label, message }: { label: string; message: string }) {
+export function CaseListStatusFilterError({
+  label,
+  message,
+  error,
+  onRetry,
+}: {
+  label: string;
+  message: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
   return (
-    <div
-      className="border-t border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-error)]"
-      role="alert"
-    >
-      {label}: {message}
-    </div>
+    <LoadFailure
+      error={error}
+      onRetry={onRetry}
+      title={`${label}: ${message}`}
+      className="rounded-none border-0 border-t"
+    />
   );
 }
 
@@ -136,7 +146,11 @@ export function CaseList() {
     setSelectionError("");
   }, [filterKey]);
 
-  const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
+  const {
+    data: statusesData,
+    error: statusesError,
+    refetch: refetchStatuses,
+  } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
@@ -437,10 +451,14 @@ export function CaseList() {
             {copy.openOnly}
           </label>
         </div>
+        {/* admin-load-failure-ok: CaseListStatusFilterError renders a LoadFailure with the retry */}
         {statusesError && (
           <CaseListStatusFilterError
             label={copy.filterError}
+            // admin-load-failure-ok: only the heading of the LoadFailure that CaseListStatusFilterError renders
             message={adminErrorMessage(statusesError, language) ?? ""}
+            error={statusesError}
+            onRetry={() => void refetchStatuses()}
           />
         )}
       </section>
@@ -497,7 +515,11 @@ export function CaseList() {
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.tableTitle}</h2>
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-xs text-[var(--color-text-muted)]"
+            >
               {isLoading
                 ? pageCopy.common.loading
                 : error

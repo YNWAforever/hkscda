@@ -7,9 +7,7 @@ import {
   filterStatusesByCategory,
   findApprovedMatches,
   findDefaultAdoptedOutcomeStatus,
-  formatDate,
   formatFallback,
-  formatHkdCents,
 } from "./caseWorkflowLogic";
 
 function status(overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus {
@@ -80,13 +78,9 @@ describe("case workflow logic", () => {
     ]);
   });
 
-  test("formats fallback display, dates, and HKD cents", () => {
+  test("formats fallback display", () => {
     expect(formatFallback("  value  ")).toBe("value");
     expect(formatFallback(null)).toBe("-");
-    expect(formatDate("2026-06-01T12:30:00Z")).toBe("2026-06-01");
-    expect(formatDate(null)).toBe("-");
-    expect(formatHkdCents(123456)).toBe("HK$1,234.56");
-    expect(formatHkdCents(null)).toBe("-");
   });
 
   test("builds finalization payload with cents and nullable optional fields", () => {

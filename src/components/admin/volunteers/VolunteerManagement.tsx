@@ -19,6 +19,8 @@ import type {
 import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { pickAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { ActivityCreateForm } from "./ActivityCreateForm";
@@ -54,12 +56,15 @@ function toIsoFromLocal(value: string) {
   return new Date(value + ":00+08:00").toISOString();
 }
 
-function statusClass(status: VolunteerRegistrationStatus) {
-  const tone = volunteerStatusTone(status);
-  if (tone === "success") return "bg-[var(--color-success-highlight)] text-[var(--color-success)]";
-  if (tone === "warning") return "bg-[var(--color-surface-offset)] text-[var(--color-warning)]";
-  if (tone === "danger") return "bg-[var(--color-primary-highlight)] text-[var(--color-error)]";
-  return "bg-[var(--color-surface-offset)] text-[var(--color-panel)]";
+const REGISTRATION_TONES = {
+  success: "success",
+  warning: "warning",
+  danger: "danger",
+  default: "neutral",
+} as const satisfies Record<ReturnType<typeof volunteerStatusTone>, StatusTone>;
+
+function registrationTone(status: VolunteerRegistrationStatus): StatusTone {
+  return REGISTRATION_TONES[volunteerStatusTone(status)];
 }
 
 const inputClass =
@@ -131,6 +136,12 @@ export function VolunteerManagement() {
   // below it, which is how you answer "who signed up for this event".
   const [activityFilter, setActivityFilter] = useState<VolunteerActivitySummary | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<{
+    id: string;
+    contactName: string;
+    status: VolunteerRegistrationStatus;
+    expectedUpdatedAt: string;
+  } | null>(null);
   const [activityPage, setActivityPage] = useState(1);
   const [registrationPage, setRegistrationPage] = useState(1);
 
@@ -464,11 +475,9 @@ export function VolunteerManagement() {
       header: text.registrations.columns.status,
       cell: (registration) => (
         <div className="space-y-1">
-          <span
-            className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
-          >
+          <StatusPill tone={registrationTone(registration.status)}>
             {volunteerRegistrationStatusLabel(registration.status, language)}
-          </span>
+          </StatusPill>
           <p className="text-xs text-[var(--color-text-muted)]">
             {text.registrations.attendance(common.attendance[registration.attendanceStatus])}
           </p>
@@ -513,10 +522,13 @@ export function VolunteerManagement() {
                 type="button"
                 disabled={updateRegistration.isPending}
                 onClick={() => {
-                  if (
-                    destructive &&
-                    !window.confirm(text.registrations.confirmReject(registration.contactName))
-                  ) {
+                  if (destructive) {
+                    setRejectTarget({
+                      id: registration.id,
+                      contactName: registration.contactName,
+                      status,
+                      expectedUpdatedAt: registration.updatedAt,
+                    });
                     return;
                   }
                   updateRegistration.mutate({
@@ -575,11 +587,9 @@ export function VolunteerManagement() {
               {registration.contactPhone}
             </p>
           </div>
-          <span
-            className={`shrink-0 rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
-          >
+          <StatusPill tone={registrationTone(registration.status)} className="shrink-0">
             {volunteerRegistrationStatusLabel(registration.status, language)}
-          </span>
+          </StatusPill>
         </div>
 
         {registration.activity ? (
@@ -636,10 +646,32 @@ export function VolunteerManagement() {
     );
   }
 
-  const changeFailure = patchActivity.error ?? updateRegistration.error;
+  // A failed rejection is shown inside its confirm dialog, not twice.
+  const registrationFailure =
+    updateRegistration.variables?.status === "rejected" ? null : updateRegistration.error;
+  const changeFailure = patchActivity.error ?? registrationFailure;
 
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={rejectTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setRejectTarget(null);
+        }}
+        title={copy.rejectVerb}
+        consequence={text.registrations.confirmReject(rejectTarget?.contactName ?? "")}
+        confirmLabel={copy.rejectVerb}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (!rejectTarget) return;
+          await updateRegistration.mutateAsync({
+            id: rejectTarget.id,
+            status: rejectTarget.status,
+            expectedUpdatedAt: rejectTarget.expectedUpdatedAt,
+          });
+        }}
+      />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-panel)]">{text.title}</h1>

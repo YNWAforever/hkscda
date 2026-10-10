@@ -7,6 +7,7 @@ import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors"
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { volunteerTasksCopy } from "./volunteerTasksCopy";
+import { LoadFailure } from "../LoadFailure";
 type Row = {
   id: string;
   kind: string;
@@ -76,12 +77,12 @@ export function VolunteerTasks() {
       />
       {query.isLoading && <p>{copy.loading}</p>}
       {query.error && (
-        <p role="alert">
-          {copy.loadFailed}
-          <button className="min-h-11 px-3 underline" onClick={() => void query.refetch()}>
-            {copy.reload}
-          </button>
-        </p>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+        />
       )}
       {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
       <section className="space-y-3">

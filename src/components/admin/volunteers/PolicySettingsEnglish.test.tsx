@@ -463,7 +463,7 @@ describe("the volunteer policy settings in Chinese", () => {
       "· 衝突：historical_session、capacity_below_occupancy、mystery_conflict",
       '政策影響選取顯示最接近的 500 個未來場次；全部場次可在 <a href="/admin/volunteers/activities" class="underline">活動營運中心</a> 依日期查閱及重新綁定。',
       "複製已發布版本",
-      `${new Date("2026-10-01T00:00:00Z").toLocaleDateString("zh-HK")} · 複製`,
+      "2026年10月1日 (四) · 複製",
       "建立活動",
       'aria-label="建立活動日期"',
       "建立當日活動",

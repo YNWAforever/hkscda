@@ -27,18 +27,16 @@ describe("how the policy screens write dates and times", () => {
     }
   });
 
-  test("Chinese keeps the formats it has always used", () => {
+  test("Chinese writes the shared Hong Kong dates, and keeps its time of day", () => {
     const zh = policyFormatCopy.zh;
-    expect(zh.day("2026-10-10")).toBe("2026-10-10");
-    expect(zh.storedMoment("2026-10-09T02:00:00Z")).toBe("2026-10-09T02:00:00Z");
+    expect(zh.day("2026-10-10")).toBe("2026年10月10日 (六)");
+    expect(zh.storedMoment("2026-10-09T02:00:00Z")).toBe("2026年10月9日 (五) 10:00");
     const moment = "2026-10-10T07:30:00Z";
-    expect(zh.policyVersionDate(moment)).toBe(new Date(moment).toLocaleDateString("zh-HK"));
-    expect(zh.simulationDateTime(moment)).toBe(
-      new Date(moment).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" }),
-    );
-    expect(zh.credentialExpiry(moment)).toBe(
-      new Date(moment).toLocaleDateString("zh-HK", { timeZone: "Asia/Hong_Kong" }),
-    );
+    expect(zh.policyVersionDate(moment)).toBe("2026年10月10日 (六)");
+    // 20:00 UTC on the 1st is already the 2nd in Hong Kong, whatever zone the browser is in.
+    expect(zh.policyVersionDate("2026-10-01T20:00:00Z")).toBe("2026年10月2日 (五)");
+    expect(zh.simulationDateTime(moment)).toBe("2026年10月10日 (六) 15:30");
+    expect(zh.credentialExpiry(moment)).toBe("2026年10月10日 (六)");
     expect(zh.dailyClock(moment, "Asia/Hong_Kong")).toBe(
       new Date(moment).toLocaleTimeString("zh-HK", {
         timeZone: "Asia/Hong_Kong",

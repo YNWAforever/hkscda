@@ -15,11 +15,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Textarea } from "../../ui/textarea";
 import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { StatusBadge } from "../StatusBadge";
 import { useAdminCopy } from "../i18n/copy";
 import { fetchCoordinatorJson } from "./api";
 import { filterStatusesByCategory, formatFallback } from "./caseWorkflowLogic";
 import { matchPanelCopy } from "./copy";
 import { getDefaultMatchStatusId } from "./matchPanelLogic";
+import { LoadFailure } from "../LoadFailure";
 
 type MatchPanelProps = {
   caseId: string;
@@ -34,18 +36,6 @@ type CreateMatchResponse = {
   };
 };
 
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
-
 export function MatchPanelAsyncError({ message }: { message: string }) {
   return (
     <div
@@ -54,23 +44,6 @@ export function MatchPanelAsyncError({ message }: { message: string }) {
     >
       {message}
     </div>
-  );
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      {statusDisplayName(status, language)}
-    </Badge>
   );
 }
 
@@ -100,6 +73,7 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
     data: animals = [],
     error: animalsError,
     isLoading: animalsLoading,
+    refetch: refetchAnimals,
   } = useQuery<MatchableAnimalOption[], Error>({
     queryKey: ["admin-active-animal-options"],
     queryFn: async () =>
@@ -199,14 +173,16 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
         </div>
       </div>
 
-      {(animalsError || createMutation.error) && (
-        <MatchPanelAsyncError
-          message={
-            adminErrorMessage(animalsError, language) ??
-            adminErrorMessage(createMutation.error, language) ??
-            ""
-          }
+      {animalsError && (
+        <LoadFailure
+          error={animalsError}
+          onRetry={() => void refetchAnimals()}
+          title={adminErrorMessage(animalsError, language) ?? undefined}
+          className="rounded-none border-0 border-b"
         />
+      )}
+      {createMutation.error && (
+        <MatchPanelAsyncError message={adminErrorMessage(createMutation.error, language) ?? ""} />
       )}
 
       <Table>
@@ -232,7 +208,7 @@ export function MatchPanel({ caseId, matches, statuses, onChanged }: MatchPanelP
                 {formatFallback(match.animalName)}
               </TableCell>
               <TableCell>
-                <StatusChip status={match.status} />
+                <StatusBadge status={match.status} />
               </TableCell>
               <TableCell>
                 <Badge

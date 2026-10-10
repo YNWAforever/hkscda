@@ -41,7 +41,7 @@ describe("the activity workspace in English", () => {
       const markup = renderAdminInEnglish(<VolunteerActivityWorkspace />);
       expectNoChineseText(markup, { allow: ALLOW });
       for (const text of [
-        "Volunteer activity workspace",
+        ">Activities and registrations</h1>",
         "Manage sessions, registrations and attendance records in Hong Kong time.",
         "Policy settings and rules awaiting confirmation",
         "Create draft",
@@ -150,8 +150,8 @@ describe("the activity workspace in English", () => {
         );
         expect(markup).toContain("The activity list is not available. Reload to try again.");
         expect(markup).toContain("Activities (data not available)");
-        // A space keeps the message and the button from running together.
-        expect(markup).toContain("Contact an administrator. <button");
+        // The failure state keeps the screen's own label on its retry control.
+        expect(markup).toMatch(/<button[^>]*>Reload<\/button>/);
       },
     );
   });
@@ -603,8 +603,8 @@ describe("the bulk operation progress in English", () => {
       "有組別已變更，請重新鎖定範圍並預覽；不要重用舊預覽。",
       "職員跟進：已送達 · ",
       "通知：處理失敗",
-      "第 1 組 · 2026-10-10 · 1 場 · 待確認執行",
-      "第 2 組 · 2026-10-11 · 1 場 · 未完成，可重試",
+      "第 1 組 · 2026年10月10日 (六) · 1 場 · 待確認執行",
+      "第 2 組 · 2026年10月11日 (日) · 1 場 · 未完成，可重試",
       "這個分組未能完成，資料已回復；請查看進度後重試。",
       "政策：" + FIXTURE.template + " · 可執行 · 受影響報名人數待核對",
       "容量：未有現值 → 未有預覽值",
@@ -713,9 +713,7 @@ describe("the activity panel in English", () => {
       error: new AdminApiError({ status: 404, message: "找不到這筆記錄，請返回名單重新選擇。" }),
     });
     expectNoChineseText(failure);
-    expect(failure).toContain(
-      "This record was not found. Go back to the list and choose again. <button",
-    );
+    expect(failure).toContain("This record was not found. Go back to the list and choose again.");
     expect(failure).toContain(">Retry</button>");
   });
 

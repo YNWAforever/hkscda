@@ -4,12 +4,14 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DirectoryDetail } from "../../../lib/volunteers/directory/types";
 import { volunteerRegistrationStatusLabelsFor } from "../../../lib/volunteers/labels";
 import { useAdminLanguage } from "../adminI18n";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { pickAdminCopy } from "../i18n/copy";
 import { directoryQuery, type DirectorySearch } from "./directorySearch";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerPersonCopy } from "./volunteerPersonCopy";
+import { LoadFailure } from "../LoadFailure";
 const card =
   "min-w-0 space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5";
 const action =
@@ -291,14 +293,19 @@ export function VolunteerPersonDetail({
         `/api/admin/volunteers/people?profile_id=${encodeURIComponent(profileId)}`,
       ),
   });
+  // The shell's `h1` ("Volunteer details") stands in every state; the breadcrumb names the person.
+  useBreadcrumbRecordName(query.data?.profile.display_name);
   if (query.isPending) return <p role="status">{copy.loading}</p>;
   if (query.isError)
     return (
-      <div role="alert" className={card}>
-        <p>{copy.loadFailed}</p>
-        <button className={action} onClick={() => void query.refetch()}>
-          {copy.reload}
-        </button>
+      <div className={card}>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+          className="border-0"
+        />
         <a className={action} href={`/admin/volunteers/people?${directoryQuery(search)}`}>
           {copy.back}
         </a>

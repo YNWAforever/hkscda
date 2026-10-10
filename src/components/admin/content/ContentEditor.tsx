@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ContentReviewPanel } from "./ContentReview";
 import {
   createContext,
@@ -10,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
-import { Link, useBlocker } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
@@ -58,6 +59,11 @@ import { ContentTimeline } from "./ContentTimeline";
 import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel, type SocialCopyPatch } from "./SocialCopyPanel";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
+import { LoadFailure } from "../LoadFailure";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { useLeaveConfirm } from "../useLeaveConfirm";
 
 type ContentEditorProps = {
   contentId: string;
@@ -147,10 +153,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     if (!dirty) delete dirtyVersions.current[panel];
     setEditor((current) => editorTransition(current, { type: dirty ? "edit" : "saved", panel }));
   }, []);
-  useBlocker({
-    shouldBlockFn: () => hasDirty && !window.confirm(copy.leaveConfirm),
-    enableBeforeUnload: hasDirty,
-  });
+  const leaveDialog = useLeaveConfirm({ dirty: hasDirty, consequence: copy.leaveConfirm });
+  const [reloadOpen, setReloadOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
   const [pendingPublishedMedia, setPendingPublishedMedia] = useState(0);
@@ -180,6 +185,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const content = contentQuery.data?.content;
+  useBreadcrumbRecordName(content?.title);
   currentVersion.current = content?.version;
   useEffect(() => {
     if (content)
@@ -190,8 +196,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       }));
   }, [content]);
   const [reloadFailed, setReloadFailed] = useState(false);
-  const reload = async () => {
-    if (hasDirty && !window.confirm(copy.reloadConfirm)) return;
+  const requestReload = async () => {
+    if (hasDirty) {
+      setReloadOpen(true);
+      return;
+    }
+    await performReload();
+  };
+  const performReload = async () => {
     const data = await contentQuery.refetch();
     if (!canAcceptEditorReload(data) || !data.data) {
       setReloadFailed(true);
@@ -224,7 +236,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         body: JSON.stringify({ expectedVersion: content?.version }),
       }),
     onSuccess: async () => {
-      await reload();
+      await requestReload();
       void queryClient.invalidateQueries({ queryKey: ["admin-content-revisions", contentId] });
     },
   });
@@ -433,7 +445,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   );
   const publishAllowed = canPublish({ ...editor, pending: editorActionPending, conflict });
   if (contentQuery.isLoading) {
-    return <div className="p-6 text-sm text-[var(--color-text-muted)]">{copy.loading}</div>;
+    return (
+      <div className="space-y-3 p-6">
+        <DestinationHeading id="content" />
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.loading}</p>
+      </div>
+    );
   }
 
   if (!content) {
@@ -446,15 +463,44 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <ArrowLeft className="h-4 w-4" />
           {copy.back}
         </Link>
-        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
-          {copy.notFound}
-        </p>
+        <DestinationHeading id="content" />
+        {contentQuery.error ? (
+          // A failed read is not a missing item: say which it was, and offer the retry.
+          <LoadFailure error={contentQuery.error} onRetry={() => void contentQuery.refetch()} />
+        ) : (
+          <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
+            {copy.notFound}
+          </p>
+        )}
       </div>
     );
   }
 
   return (
     <div className="space-y-6 p-6">
+      {leaveDialog}
+      <ConfirmActionDialog
+        open={reloadOpen}
+        onOpenChange={setReloadOpen}
+        title={copy.conflict.reload}
+        consequence={copy.reloadConfirm}
+        confirmLabel={copy.conflict.reload}
+        destructive
+        reason="none"
+        onConfirm={performReload}
+      />
+      <ConfirmActionDialog
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        title={copy.archive}
+        consequence={copy.archiveConfirm(content.title)}
+        confirmLabel={copy.archive}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          await runOperation("archive", () => archiveContent.mutateAsync()).catch(() => undefined);
+        }}
+      />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link
@@ -478,7 +524,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <button
             type="button"
             disabled={editorActionPending || contentQuery.isFetching}
-            onClick={() => void reload()}
+            onClick={() => void requestReload()}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <RefreshCw className="h-4 w-4" />
@@ -501,14 +547,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <button
             type="button"
             disabled={editorActionPending}
-            onClick={() => {
-              if (!window.confirm(copy.archiveConfirm(content.title))) {
-                return;
-              }
-              void runOperation("archive", () => archiveContent.mutateAsync()).catch(
-                () => undefined,
-              );
-            }}
+            onClick={() => setArchiveOpen(true)}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <Archive className="h-4 w-4" />
@@ -522,20 +561,23 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       {conflict ? (
         <div role="alert" className="rounded border border-[var(--color-warning)] p-3">
           <p>{copy.conflict.message}</p>
-          <button
-            type="button"
-            onClick={async () =>
-              setComparison(
-                (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
-                  .content,
-              )
-            }
-          >
-            {copy.conflict.compare}
-          </button>
-          <button type="button" onClick={() => void reload()}>
-            {copy.conflict.reload}
-          </button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={async () =>
+                setComparison(
+                  (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
+                    .content,
+                )
+              }
+            >
+              {copy.conflict.compare}
+            </Button>
+            <Button variant="outline" type="button" onClick={() => void requestReload()}>
+              {copy.conflict.reload}
+            </Button>
+          </div>
         </div>
       ) : null}
       {comparison ? (
@@ -547,21 +589,23 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         </details>
       ) : null}
       <nav aria-label={copy.history.label} className="flex items-center gap-3">
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={historyPage === 1 || hasDirty || editorActionPending}
           onClick={() => setHistoryPage((page) => page - 1)}
         >
           {copy.history.previous}
-        </button>
+        </Button>
         <span>{copy.history.page(content.history?.page ?? historyPage)}</span>
-        <button
+        <Button
+          variant="outline"
           type="button"
           disabled={!content.history?.hasMore || hasDirty || editorActionPending}
           onClick={() => setHistoryPage((page) => page + 1)}
         >
           {copy.history.next}
-        </button>
+        </Button>
       </nav>
       <StoryUpdateDraftNotice notice={formatAdopterDraftNotice(updateDraftNotice, language)} />
       {content.revisionId && (
@@ -1707,7 +1751,10 @@ export function ActionErrors({ errors }: { errors: unknown[] }) {
   if (visibleErrors.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
+    <div
+      role="alert"
+      className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
+    >
       {visibleErrors.map((error) => {
         const failure = contentFailure(error);
         const message = failure.code

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { fetchAdminJson } from "../../lib/admin/http";
 import { animalListCopy } from "./animalListCopy";
 import { useAdminCopy } from "./i18n/copy";
+import { LoadFailure } from "./LoadFailure";
 
 type RepairItem = {
   kind: "animal" | "content";
@@ -58,12 +59,12 @@ export function MediaRepairQueue() {
       <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       {queue.isLoading ? <p role="status">{copy.loading}</p> : null}
       {queue.isError ? (
-        <div role="alert">
-          <p>{copy.loadFailed}</p>
-          <button type="button" onClick={() => void queue.refetch()} className="underline">
-            {copy.retryLoad}
-          </button>
-        </div>
+        <LoadFailure
+          error={queue.error}
+          onRetry={() => void queue.refetch()}
+          title={copy.loadFailed}
+          retryLabel={copy.retryLoad}
+        />
       ) : null}
       {backlog ? (
         <>

@@ -1,6 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
-import { describeEnglishPolicyLeaf, type PolicyLookups } from "./policyChangeCopy";
+import { describeEnglishPolicyLeaf, policyDay, type PolicyLookups } from "./policyChangeCopy";
 
 const ZH_LABELS: Record<string, string> = {
   timezone: "時區",
@@ -115,12 +115,17 @@ export type SettingOrigin = "common" | "shelter" | "template" | "inherited";
 
 type Described = Record<string, unknown>;
 
-/** The effective value of a setting, as a short phrase. Chinese writes a text or a number as stored. */
-function describeZh(value: unknown): string {
+/**
+ * The effective value of a setting, as a short phrase. Chinese writes a text or a number as stored,
+ * and a day as the shared Chinese date.
+ */
+function describeZh(value: unknown, path: string): string {
   if (value === undefined) return "未設定";
   if (value === null) return "未指定";
   if (typeof value === "boolean") return value ? "是" : "否";
-  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (typeof value === "string" || typeof value === "number") {
+    return policyDay(value, path.split(".").at(-1) ?? path, "zh") ?? String(value);
+  }
   if (Array.isArray(value)) return `${value.length} 項`;
   if (typeof value === "object" && value) {
     const v = value as Described;
@@ -178,7 +183,7 @@ export const policySourceFieldsCopy = defineAdminCopy({
         .split(".")
         .map((segment) => ZH_LABELS[segment] ?? segment)
         .join(" ")}`,
-    describe: (value: unknown, _path: string, _lookups: PolicyLookups) => describeZh(value),
+    describe: (value: unknown, path: string, _lookups: PolicyLookups) => describeZh(value, path),
     incomplete: "部分欄位未完整，請先補齊草稿。",
   },
   en: {

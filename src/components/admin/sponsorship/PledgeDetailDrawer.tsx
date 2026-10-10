@@ -35,6 +35,7 @@ import {
   type ActionError,
   type ProofFileProblem,
 } from "./pledgeReviewLogic";
+import { LoadFailure } from "../LoadFailure";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 type FollowupAssigneesResponse = {
@@ -189,10 +190,11 @@ export function PledgeDetailDrawer({
   });
 
   const pledge = data?.pledge ?? null;
-  const { data: followupChoices, error: followupChoicesError } = useQuery<
-    FollowupAssigneesResponse,
-    Error
-  >({
+  const {
+    data: followupChoices,
+    error: followupChoicesError,
+    refetch: refetchFollowupChoices,
+  } = useQuery<FollowupAssigneesResponse, Error>({
     queryKey: ["sponsorship-followup-assignees"],
     queryFn: () =>
       fetchCoordinatorJson<FollowupAssigneesResponse>("/api/admin/sponsorships/followup-assignees"),
@@ -416,7 +418,7 @@ export function PledgeDetailDrawer({
     ? (adminErrorMessage(actionError.cause, language) ?? copy.errors[actionError.code])
     : "";
   // The reason the pledge could not be loaded, as the server gave it.
-  const loadReason = error ? adminErrorMessage(error, language) : null;
+  const loadReason = error ? adminErrorMessage(error, language) : null; // admin-load-failure-ok: only the heading of the LoadFailure below
 
   return (
     <Sheet
@@ -446,9 +448,14 @@ export function PledgeDetailDrawer({
         {isLoading && (
           <p className="mt-6 text-sm text-[var(--color-text-muted)]">{pageCopy.common.loading}</p>
         )}
-        {loadReason !== null && (
-          <p className="mt-6 text-sm text-[var(--color-error)]">{drawer.loadFailed(loadReason)}</p>
-        )}
+        {error ? (
+          <LoadFailure
+            error={error}
+            onRetry={() => void refetch()}
+            title={loadReason === null ? undefined : drawer.loadFailed(loadReason)}
+            className="mt-6"
+          />
+        ) : null}
 
         {pledge && (
           <div className="mt-6 space-y-6">
@@ -510,7 +517,13 @@ export function PledgeDetailDrawer({
                       )
                     : copy.followup.unassigned}
                 </p>
-                {followupChoicesError || !pledge.followupVersion ? (
+                {followupChoicesError ? (
+                  <LoadFailure
+                    error={followupChoicesError}
+                    onRetry={() => void refetchFollowupChoices()}
+                    title={copy.followup.unavailable}
+                  />
+                ) : !pledge.followupVersion ? (
                   <p role="alert" className="text-sm text-[var(--color-error)]">
                     {copy.followup.unavailable}
                   </p>

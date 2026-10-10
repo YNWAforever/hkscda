@@ -291,12 +291,12 @@ describe("payments reconcile in English", () => {
       "待確認手動收款",
       "待發收條",
       "已確認金額",
-      "HK$1,234",
+      "HK$1,234.00",
       'placeholder="搜尋姓名 / 電郵 / 參考"',
       'aria-label="收款狀態篩選"',
       "匯出 CSV",
       "收款狀態",
-      "已退款 HK$100 · 實收 HK$400.50",
+      "已退款 HK$100.00 · 實收 HK$400.50",
       "general",
       "medical · 其他用途：婚宴回禮",
       "已發 HKSCDA-2026-000001",
@@ -315,7 +315,8 @@ describe("payments reconcile in English", () => {
     ]) {
       expect(markup, text).toContain(text);
     }
-    expect(markup).not.toContain("HK$1,234.00");
+    // The whole-dollar amount now carries its two decimals, as English does.
+    expect(markup).not.toContain("HK$1,234<");
     loadPayments("staff", { payments: [], receipts: [], total: 0 });
     queries["admin-finance-activity"] = { data: { activity: [] } };
     const empty = renderAdminInChinese(<PaymentsReconcile />);
@@ -530,9 +531,9 @@ describe("bank statement dry run in English", () => {
     const preview = renderAdminInChinese(<BankStatementDryRunPreview result={result} page={1} />);
     for (const text of [
       "共 7 筆；資料無效 1、檔內重複 1、已入帳 1、有候選 3、沒有候選 1。",
-      "預覽時間：2026-09-28T00:00:00.000Z。結果不會儲存；付款事實改變後須重新上載並核對。",
-      "2026-09-27",
-      "HK$100",
+      "預覽時間：2026年9月28日 (一) 08:00。結果不會儲存；付款事實改變後須重新上載並核對。",
+      "2026年9月27日 (日)",
+      "HK$100.00",
       "原因：amount",
       "只按金額候選",
       "候選 7 筆；僅顯示前 5 筆",
@@ -641,8 +642,8 @@ describe("failed receipt and notification jobs in English", () => {
     for (const text of [
       "需處理工作 1 項；每頁最多 25 項。",
       "工作 11111111-2222-4333-8444-555555555555",
-      "建立：2026-09-28T00:00:00Z",
-      "下次：2026-09-29T01:00:00Z",
+      "建立：2026年9月28日 (一) 08:00",
+      "下次：2026年9月29日 (二) 09:00",
       "需人工處理",
       "已嘗試 2 次",
       "重試此工作",
@@ -717,23 +718,19 @@ describe("the payments copy modules", () => {
     expect(paymentsCopy.en.purposeLabel("sponsor")).toBe("Sponsorship");
   });
 
-  test("format amounts and times as each language always has", () => {
+  test("format amounts and times in the shared admin formats in both languages", () => {
     const zh = donationFormatCopy.zh;
     const en = donationFormatCopy.en;
-    expect(zh.money(100000)).toBe("HK$1,000");
+    expect(zh.money(100000)).toBe("HK$1,000.00");
     expect(zh.money(50050)).toBe("HK$500.50");
     expect(en.money(100000)).toBe("HK$1,000.00");
     expect(en.money(50050)).toBe("HK$500.50");
-    expect(zh.timestamp("2026-09-28T00:00:00Z")).toBe("2026-09-28T00:00:00Z");
+    expect(zh.timestamp("2026-09-28T00:00:00Z")).toBe("2026年9月28日 (一) 08:00");
     expect(en.timestamp("2026-09-28T00:00:00Z")).toBe("28 Sep 2026 (Mon) 08:00");
     expect(en.timestamp("not a date")).toBe("not a date");
-    expect(zh.day("2026-09-27")).toBe("2026-09-27");
+    expect(zh.day("2026-09-27")).toBe("2026年9月27日 (日)");
     expect(en.day("2026-09-27")).toBe("27 Sep 2026 (Sun)");
-    expect(zh.activityTime("2026-10-01T02:30:00Z")).toBe(
-      new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium", timeStyle: "short" }).format(
-        new Date("2026-10-01T02:30:00Z"),
-      ),
-    );
+    expect(zh.activityTime("2026-10-01T02:30:00Z")).toBe("2026年10月1日 (四) 10:30");
     expect(en.activityTime("2026-10-01T02:30:00Z")).toBe("1 Oct 2026 (Thu) 10:30");
   });
 });

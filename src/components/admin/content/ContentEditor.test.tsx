@@ -16,7 +16,7 @@ type MockLinkProps = {
 
 mock.module("@tanstack/react-router", () => ({
   ...realReactRouter,
-  useBlocker: () => undefined,
+  useBlocker: () => ({ status: "idle", reset() {}, proceed() {} }),
   Link: ({ children, className, to }: MockLinkProps) => (
     <a data-router-link="true" href={to} className={className}>
       {children}

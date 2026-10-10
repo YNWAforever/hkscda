@@ -63,7 +63,11 @@ export function TablePager({
       aria-label={copy.navLabel(label ?? copy.defaultLabel)}
       className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-3"
     >
-      <p aria-live="polite" className="text-xs tabular-nums text-[var(--color-text-muted)]">
+      <p
+        aria-live="polite"
+        aria-atomic="true"
+        className="text-xs tabular-nums text-[var(--color-text-muted)]"
+      >
         {knownTotal ? copy.range(first, last, total) : copy.rangeOfUnknownTotal(page, first, last)}
       </p>
       <div className="flex items-center gap-2">

@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
@@ -75,6 +76,7 @@ export function PaymentsReconcile() {
     search: "",
   });
   const [page, setPage] = useState(1);
+  const [voidTarget, setVoidTarget] = useState<{ id: string; receiptNo: string } | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   // The caught error, written for the current language when it is shown.
   const [exportFailure, setExportFailure] = useState<{ cause: unknown } | null>(null);
@@ -192,7 +194,8 @@ export function PaymentsReconcile() {
     }
   }
 
-  const actionFailure = issueReceipt.error ?? voidReceipt.error;
+  // A failed void is shown inside its confirm dialog, with the reason kept.
+  const actionFailure = issueReceipt.error;
   const actionError = actionFailure ? (adminErrorMessage(actionFailure, language) ?? "") : "";
 
   function rowActions(payment: AdminPaymentRow) {
@@ -224,10 +227,7 @@ export function PaymentsReconcile() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => {
-              if (window.confirm(copy.confirmVoid(issued.receipt_no)))
-                voidReceipt.mutate(issued.id);
-            }}
+            onClick={() => setVoidTarget({ id: issued.id, receiptNo: issued.receipt_no })}
             disabled={voidReceipt.isPending}
           >
             <FileX className="h-4 w-4" />
@@ -346,6 +346,20 @@ export function PaymentsReconcile() {
 
   return (
     <div className="space-y-5">
+      <ConfirmActionDialog
+        open={voidTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setVoidTarget(null);
+        }}
+        title={copy.voidReceipt}
+        consequence={copy.confirmVoid(voidTarget?.receiptNo ?? "")}
+        confirmLabel={copy.voidReceipt}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (voidTarget) await voidReceipt.mutateAsync(voidTarget.id);
+        }}
+      />
       <section className="grid gap-3 sm:grid-cols-3">
         {summaryCards.map(([label, value]) => (
           <div
@@ -418,14 +432,18 @@ export function PaymentsReconcile() {
             {pageCopy.common.exportCsv}
           </Button>
           {exportFailure && (
-            <p className="text-xs text-[var(--color-error)]">
+            <p role="alert" className="text-xs text-[var(--color-error)]">
               {adminErrorMessage(exportFailure.cause, language) ?? copy.exportFailed}
             </p>
           )}
         </div>
       </section>
 
-      {actionError && <p className="text-sm text-[var(--color-error)]">{actionError}</p>}
+      {actionError && (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {actionError}
+        </p>
+      )}
 
       <DataTable
         columns={columns}

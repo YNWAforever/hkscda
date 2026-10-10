@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 
 /**
  * Page copy for the coordinator case screens: the case list, the application inbox and manual
@@ -143,7 +144,7 @@ export const casePageCopy = defineAdminCopy({
   },
   en: {
     caseList: {
-      title: "Adoption cases",
+      title: adminCommonCopy.en.navItems.applications,
       subtitle: "Coordinator queue, matching, follow-up and finalisation.",
       searchLabel: "Search cases",
       searchPlaceholder: "Search applicant, phone or email",
@@ -166,7 +167,7 @@ export const casePageCopy = defineAdminCopy({
       },
     },
     intakeInbox: {
-      title: "Application inbox",
+      title: adminCommonCopy.en.navItems["coordinator-inbox"],
       subtitle: "Review public adoption applications, photos and visit follow-ups.",
       openOnly: "Open only",
       openOnlyLabel: "Show unresolved inbox items only",

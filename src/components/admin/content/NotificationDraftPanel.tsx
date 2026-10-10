@@ -39,7 +39,10 @@ export function NotificationDraftPanel({
       </div>
 
       {clipboardError ? (
-        <p className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
+        <p
+          role="alert"
+          className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
+        >
           {common.clipboardFailed(clipboardError.detail)}
         </p>
       ) : null}

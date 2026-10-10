@@ -84,4 +84,14 @@ describe("CoordinatorReports", () => {
     expect((markup.match(/disabled=""/g) ?? []).length).toBeGreaterThanOrEqual(1);
     historyError = null;
   });
+
+  test("keeps the cause in each load failure's heading, as the banners did", () => {
+    summaryError = new Error("摘要出錯");
+    historyError = new Error("紀錄出錯");
+    const markup = render();
+    expect(markup).toContain("無法載入每月摘要: 摘要出錯");
+    expect(markup).toContain("無法載入匯出紀錄: 紀錄出錯");
+    summaryError = null;
+    historyError = null;
+  });
 });

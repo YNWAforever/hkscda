@@ -8,12 +8,16 @@ import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors"
 import { volunteerRegistrationStatusLabel } from "../../../lib/volunteers/labels";
 import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
 import { useAdminLanguage } from "../adminI18n";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
 import { pickAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
 import { availableRegistrationTransitions, isDestructiveTransition } from "./volunteerAdminLogic";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 type RegistrationResponse = {
   registration: VolunteerRegistrationDetailType;
@@ -45,11 +49,19 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
   const queryClient = useQueryClient();
   const [correctionReason, setCorrectionReason] = useState("");
   const [isCorrection, setIsCorrection] = useState(false);
+  const [rejectStatus, setRejectStatus] = useState<string | null>(null);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["volunteer-registration", registrationId],
     queryFn: () =>
       fetchAdminJson<RegistrationResponse>(`/api/admin/volunteers/registrations/${registrationId}`),
   });
+  useBreadcrumbRecordName(data?.registration?.contactName);
+  // A registration belongs to the activities page; that is the heading until it loads.
+  const destination = (
+    <DestinationHeading
+      label={pickAdminCopy(volunteerWorkspaceCopy, language).pages.activities.label}
+    />
+  );
 
   const correctionEnabled =
     isCorrection &&
@@ -90,17 +102,26 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   if (isLoading)
     return (
-      <div className="p-6 text-sm text-[var(--color-text-muted)]">{shared.common.loading}</div>
+      <div className="space-y-3 p-6">
+        {destination}
+        <p className="text-sm text-[var(--color-text-muted)]">{shared.common.loading}</p>
+      </div>
     );
   if (error) {
     return (
-      <div className="p-6">
+      <div className="space-y-3 p-6">
+        {destination}
         <LoadFailure error={error} onRetry={() => void refetch()} />
       </div>
     );
   }
   if (!data?.registration) {
-    return <div className="p-6 text-sm text-[var(--color-primary)]">{text.notFound}</div>;
+    return (
+      <div className="space-y-3 p-6">
+        {destination}
+        <p className="text-sm text-[var(--color-primary)]">{text.notFound}</p>
+      </div>
+    );
   }
 
   const registration = data.registration;
@@ -134,6 +155,20 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   return (
     <div className="space-y-5 p-6">
+      <ConfirmActionDialog
+        open={rejectStatus !== null}
+        onOpenChange={(open) => {
+          if (!open) setRejectStatus(null);
+        }}
+        title={copy.rejectVerb}
+        consequence={copy.confirmReject(registration.contactName)}
+        confirmLabel={copy.rejectVerb}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (rejectStatus !== null) await updateStatus.mutateAsync(rejectStatus);
+        }}
+      />
       <Link
         to="/admin/volunteers/activities"
         className="text-sm font-semibold text-[var(--color-primary)]"
@@ -191,7 +226,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           <DetailItem label={text.notes} value={registration.notes ?? text.none} />
         </div>
 
-        {updateStatus.error && (
+        {updateStatus.error && updateStatus.variables !== "rejected" && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
             {volunteerAdminErrorMessage(updateStatus.error, language)}
           </p>
@@ -234,10 +269,8 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
               type="button"
               disabled={updateStatus.isPending}
               onClick={() => {
-                if (
-                  isDestructiveTransition(status) &&
-                  !window.confirm(copy.confirmReject(registration.contactName))
-                ) {
+                if (isDestructiveTransition(status)) {
+                  setRejectStatus(status);
                   return;
                 }
                 updateStatus.mutate(status);

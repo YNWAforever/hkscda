@@ -186,16 +186,12 @@ describe("access management in Chinese", () => {
     expect(markup).toMatch(/<h1[^>]*>權限管理<\/h1>/);
   });
 
-  test("keeps the medium date and short time of the Chinese screen", () => {
+  test("writes the Chinese times in the shared Hong Kong date and time", () => {
     users = loadedUsers;
     audit = loadedAudit;
     const markup = renderAdminInChinese(<AccessManagement />);
-    const expected = new Intl.DateTimeFormat("zh-HK", {
-      dateStyle: "medium",
-      timeStyle: "short",
-      timeZone: "Asia/Hong_Kong",
-    }).format(new Date(SENT));
-    expect(markup).toContain(expected);
+    // SENT is 02:30Z, 10:30 in Hong Kong.
+    expect(markup).toContain("2026年10月1日 (四) 10:30");
     expect(accessCopy.zh.dateTime(null)).toBe("—");
   });
 
@@ -206,5 +202,27 @@ describe("access management in Chinese", () => {
     expect(markup).toContain("無法載入");
     expect(markup).toContain("未能載入紀錄。");
     expect(markup).toContain(">重試<");
+  });
+});
+
+/** The text of every status pill (`StatusPill` / `StatusBadge`): the span after its dot. */
+function pillLabels(markup: string): string[] {
+  return [...markup.matchAll(/aria-hidden="true"><\/span><span>([^<]*)<\/span>/g)].map((m) => m[1]);
+}
+
+describe("access status pills", () => {
+  test("shows each user's status as a pill with the same wording in Chinese and English", () => {
+    users = loadedUsers;
+    audit = loadedAudit;
+    expect(pillLabels(renderAdminInChinese(<AccessManagement />))).toEqual([
+      "啟用",
+      "待接受邀請",
+      "已停用",
+    ]);
+    expect(pillLabels(renderAdminInEnglish(<AccessManagement />))).toEqual([
+      "Active",
+      "Invite pending",
+      "Disabled",
+    ]);
   });
 });

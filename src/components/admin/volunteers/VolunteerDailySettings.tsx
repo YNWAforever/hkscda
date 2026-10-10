@@ -13,6 +13,7 @@ import { dailySettingsCopy, scopeVenue, type DailyNotice } from "./dailySettings
 import { policyCommonCopy } from "./policyCommonCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
 import { isNamedShelter } from "./volunteerCommonCopy";
+import { LoadFailure } from "../LoadFailure";
 type Daily = PolicyDraft["daily_limits"][number];
 type Binding = {
   scope_key: string;
@@ -90,7 +91,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
       setReason("");
     }
   }, [binding]);
-  useUnsavedVolunteerDraft(dirty);
+  const leaveDialog = useUnsavedVolunteerDraft(dirty);
   const quota = draft?.daily_limits.find((q) => q.key === binding?.body.key);
   const edit = (change: (p: PolicyDraft) => void) => {
     if (!draft) return;
@@ -140,7 +141,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
     },
     onError: () => setPreview(undefined),
   });
-  const error = listing.error ?? pre.error ?? publish.error;
+  const error = pre.error ?? publish.error;
   const lookups = {
     credentials: Object.fromEntries((listing.data?.credentials ?? []).map((c) => [c.key, c.label])),
   };
@@ -160,6 +161,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
     });
   return (
     <div className="space-y-6 p-4 md:p-6">
+      {leaveDialog}
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
@@ -175,6 +177,13 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
         ]}
       />
       {listing.isLoading && <p>{copy.loading}</p>}
+      {listing.error && (
+        <LoadFailure
+          error={listing.error}
+          onRetry={() => void listing.refetch()}
+          title={volunteerAdminErrorMessage(listing.error, language) ?? copy.failed}
+        />
+      )}
       {error && <p role="alert">{volunteerAdminErrorMessage(error, language) ?? copy.failed}</p>}
       {notice && <p role="status">{copy.notices[notice]}</p>}
       <span id="daily-quota" />

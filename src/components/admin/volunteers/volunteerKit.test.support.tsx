@@ -99,7 +99,7 @@ mock.module("@tanstack/react-router", () => ({
     </a>
   ),
   useNavigate: () => async () => {},
-  useBlocker: () => {},
+  useBlocker: () => ({ status: "idle", reset() {}, proceed() {} }),
   useRouterState: ({ select }: { select: (value: unknown) => unknown }) =>
     select({ location: { pathname: state.pathname } }),
 }));

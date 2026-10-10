@@ -5,7 +5,11 @@ import { useState, type ReactNode } from "react";
 import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { AdminLayout } from "./AdminLayout";
 import { useAdminCopy } from "./i18n/copy";
-import { getVolunteerNavigation, getVolunteerWorkspacePage } from "./volunteerWorkspace";
+import {
+  getVolunteerNavigation,
+  getVolunteerWorkspacePage,
+  VOLUNTEER_WORKSPACE_GROUPS,
+} from "./volunteerWorkspace";
 import { volunteerWorkspaceCopy } from "./volunteerWorkspaceCopy";
 import "./volunteer-workspace.css";
 
@@ -27,20 +31,24 @@ export function VolunteerAdminShell(props: ShellProps) {
   );
 }
 
-function VolunteerWorkspaceFrame({ children, title, description, intro, actions }: ShellProps) {
+export function VolunteerWorkspaceFrame({
+  children,
+  title,
+  description,
+  intro,
+  actions,
+}: ShellProps) {
   const copy = useAdminCopy(volunteerWorkspaceCopy);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { data: identity } = useQuery(adminIdentityQueryOptions());
   const [navigationOpen, setNavigationOpen] = useState(false);
   const page = getVolunteerWorkspacePage(pathname);
   const items = getVolunteerNavigation(identity?.admin.role ?? null);
-  const isDetail = Boolean(page && pathname.replace(/\/+$/, "") !== page.to);
   const pageLabel = page ? copy.pages[page.id].label : undefined;
-  const detailTitle =
-    page?.id === "people" ? copy.detailTitles.person : copy.detailTitles.registration;
+  // The shell writes the one `h1` only for a page that asks for it (`title` or `intro`); every
+  // other page draws its own. The breadcrumb is `AdminLayout`'s, so it is not repeated here.
   const heading = title ?? (intro ? copy.intros[intro].title : undefined);
   const lead = description ?? (intro ? copy.intros[intro].description : undefined);
-  const pageTitle = heading ?? (isDetail ? detailTitle : pageLabel) ?? copy.brand;
 
   return (
     <div className="volunteer-workspace">
@@ -74,7 +82,7 @@ function VolunteerWorkspaceFrame({ children, title, description, intro, actions 
             data-open={navigationOpen}
             aria-label={copy.navigationLabel}
           >
-            {(["operations", "settings"] as const).map((group) => {
+            {VOLUNTEER_WORKSPACE_GROUPS.map((group) => {
               const groupItems = items.filter((item) => item.group === group);
               if (!groupItems.length) return null;
               return (
@@ -99,25 +107,6 @@ function VolunteerWorkspaceFrame({ children, title, description, intro, actions 
           </nav>
         </aside>
         <div className="vw-page">
-          <nav aria-label={copy.breadcrumb} className="vw-breadcrumb">
-            <Link to="/admin/volunteers">{copy.brand}</Link>
-            {page?.id !== "overview" && (
-              <>
-                <ChevronRight size={14} aria-hidden="true" />
-                {isDetail && page ? (
-                  <Link to={page.to}>{copy.pages[page.id].label}</Link>
-                ) : (
-                  <span aria-current="page">{pageTitle}</span>
-                )}
-              </>
-            )}
-            {isDetail && (
-              <>
-                <ChevronRight size={14} aria-hidden="true" />
-                <span aria-current="page">{pageTitle}</span>
-              </>
-            )}
-          </nav>
           {(heading || lead || actions) && (
             <header className="vw-page-header">
               <div>

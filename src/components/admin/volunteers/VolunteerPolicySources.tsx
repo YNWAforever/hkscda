@@ -5,6 +5,7 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
 import { useAdminCopy } from "../i18n/copy";
 import { policySourcesCopy } from "./policySourcesCopy";
+import { LoadFailure } from "../LoadFailure";
 const api = <T,>(body: unknown) =>
   fetchAdminJson<T>("/api/admin/volunteers/sources/", {
     method: "POST",
@@ -293,7 +294,9 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
         {publish.error && <p role="alert">{copy.publish.failed}</p>}
         {publish.isSuccess && <p role="status">{copy.publish.published}</p>}
       </section>
-      {q.error && <p role="alert">{copy.loadFailed}</p>}
+      {q.error && (
+        <LoadFailure error={q.error} onRetry={() => void q.refetch()} title={copy.loadFailed} />
+      )}
     </section>
   );
 }

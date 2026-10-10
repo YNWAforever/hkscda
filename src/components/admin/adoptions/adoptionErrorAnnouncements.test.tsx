@@ -10,10 +10,19 @@ process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 const caseListModule = await import("./CaseList");
 const caseDetailModule = await import("./CaseDetail");
 const { CaseListStatusFilterError } = caseListModule as typeof caseListModule & {
-  CaseListStatusFilterError?: (props: { message: string }) => JSX.Element;
+  CaseListStatusFilterError?: (props: {
+    label: string;
+    message: string;
+    error: unknown;
+    onRetry: () => void;
+  }) => JSX.Element;
 };
 const { CaseDetailStatusesError } = caseDetailModule as typeof caseDetailModule & {
-  CaseDetailStatusesError?: (props: { message: string }) => JSX.Element;
+  CaseDetailStatusesError?: (props: {
+    message: string;
+    error: unknown;
+    onRetry: () => void;
+  }) => JSX.Element;
 };
 
 describe("adoption async error announcements", () => {
@@ -22,7 +31,12 @@ describe("adoption async error announcements", () => {
 
     const markup = renderToStaticMarkup(
       CaseListStatusFilterError ? (
-        <CaseListStatusFilterError message="Statuses unavailable" />
+        <CaseListStatusFilterError
+          label="Filter"
+          message="Statuses unavailable"
+          error={new Error("boom")}
+          onRetry={() => {}}
+        />
       ) : (
         <div />
       ),
@@ -38,7 +52,11 @@ describe("adoption async error announcements", () => {
     const markup = renderToStaticMarkup(
       <AdminLanguageProvider>
         {CaseDetailStatusesError ? (
-          <CaseDetailStatusesError message="Status options unavailable" />
+          <CaseDetailStatusesError
+            message="Status options unavailable"
+            error={new Error("boom")}
+            onRetry={() => {}}
+          />
         ) : (
           <div />
         )}

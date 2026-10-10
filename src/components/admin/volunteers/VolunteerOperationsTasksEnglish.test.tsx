@@ -86,7 +86,7 @@ describe("the group requests and rescheduling screen in English", () => {
       const markup = renderAdminInEnglish(<OperationsWorkspace userId="user-1" />);
       expectNoChineseText(markup, { allow: ALLOW });
       for (const text of [
-        "Group requests and volunteer rescheduling",
+        ">Group arrangements and rescheduling</h1>",
         "All times are Hong Kong time.",
         "Back to the volunteer calendar",
         'aria-label="Steps on this page"',
@@ -240,7 +240,7 @@ describe("the group requests and rescheduling screen in English", () => {
   test("shows the names of the checking state, and keeps the public page in Chinese", () => {
     const admin = renderAdminInEnglish(<VolunteerOperations />);
     expectNoChineseText(admin);
-    expect(admin).toContain("Group requests and volunteer rescheduling");
+    expect(admin).toContain(">Group arrangements and rescheduling</h1>");
     expect(admin).toContain("Checking your sign-in…");
     const publicInEnglish = renderAdminInEnglish(<VolunteerOperations publicMode />);
     expect(publicInEnglish).toContain("團體申請及義工改期");
@@ -293,7 +293,7 @@ describe("the group requests and rescheduling screen in English", () => {
       <OperationsSignInGate publicMode={false} checking={false} />,
     );
     expectNoChineseText(signedOut);
-    expect(signedOut).toContain("Group requests and volunteer rescheduling");
+    expect(signedOut).toContain(">Group arrangements and rescheduling</h1>");
     expect(signedOut).toContain("Not signed in. Sign in again.");
     expect(signedOut).toContain('href="/admin/login"');
     expect(signedOut).toContain("Back to sign in");
@@ -371,7 +371,7 @@ describe("today's volunteer tasks in English", () => {
       const markup = renderAdminInEnglish(<VolunteerTasks />);
       expectNoChineseText(markup, { allow: [FIXTURE.volunteer, FIXTURE.activity, FIXTURE.error] });
       for (const text of [
-        "Volunteer tasks and notifications for today",
+        ">Today&#x27;s tasks</h1>",
         "Recording a contact or follow-up result does not change qualifications",
         'aria-label="Steps on this page"',
         "Awaiting approval",
@@ -421,7 +421,7 @@ describe("today's volunteer tasks in English", () => {
     );
     kit.withQueries({ "volunteer-tasks": kit.failed() }, () => {
       const markup = renderAdminInEnglish(<VolunteerTasks />);
-      expect(markup).toContain("Could not load the tasks. <button");
+      expect(markup).toContain("Could not load the tasks.");
       expect(markup).toContain(">Reload</button>");
     });
     kit.withQueries({}, () => {

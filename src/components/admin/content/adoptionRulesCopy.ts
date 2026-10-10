@@ -1,3 +1,4 @@
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 import { defineAdminCopy } from "../i18n/copy";
 
 /**
@@ -66,7 +67,7 @@ export const adoptionRulesCopy = defineAdminCopy({
       pager: "Records",
     },
     rules: {
-      title: "Adoption rules management",
+      title: adminCommonCopy.en.navItems["adoption-information"],
       heading: "Adoption rules",
       add: "Add rule",
       loading: "Loading adoption rules…",
@@ -76,7 +77,7 @@ export const adoptionRulesCopy = defineAdminCopy({
       contentEn: "Rule content (English)",
     },
     careTopics: {
-      title: "Animal care guidelines management",
+      title: adminCommonCopy.en.navItems["adoption-information"],
       speciesLabel: "Species",
       cats: "Cats",
       dogs: "Dogs",

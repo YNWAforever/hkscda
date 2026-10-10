@@ -90,10 +90,10 @@ export function TaskOverviewPage() {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(operationsCopy, language).page;
   return (
-    <main className="space-y-5 p-4 sm:p-6">
+    <div className="space-y-5 p-4 sm:p-6">
       <h1 className="text-2xl font-bold">{copy.title}</h1>
       <p className="text-[var(--color-text-muted)]">{copy.description}</p>
       <TaskOverview />
-    </main>
+    </div>
   );
 }

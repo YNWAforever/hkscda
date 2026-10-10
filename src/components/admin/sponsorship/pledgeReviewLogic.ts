@@ -92,12 +92,6 @@ export function formatFallback(value: string | null | undefined) {
   return trimmed(value) || "-";
 }
 
-export function formatDate(value: string | null | undefined) {
-  const nextValue = trimmed(value);
-  if (!nextValue) return "-";
-  return nextValue.slice(0, 10);
-}
-
 const PLEDGE_STATUS_TONE: Record<PledgeStatus, StatusTone> = {
   pending_payment: "warning",
   provisional: "info",

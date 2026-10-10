@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDateTime } from "../i18n/format";
+import { formatAdminDateTime, formatAdminDateTimeOrNull } from "../i18n/format";
 
 /**
  * Copy for the task overview page. The text of each card (its label and guidance) is not
@@ -17,9 +17,8 @@ export const operationsCopy = defineAdminCopy({
       intro: "依目前職員權限列出常用步驟；按個案情況核對資料後再處理。",
       step: (position: number) => `步驟 ${position}`,
       unavailable: "未能讀取",
-      // Kept as the legacy zh-HK date and time, so the Chinese screen is unchanged.
       oldest: (oldestAt: string) =>
-        `最早：${new Date(oldestAt).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`,
+        `最早：${formatAdminDateTimeOrNull(oldestAt, "zh") ?? oldestAt}`,
       openWorkspace: "開啟工作區",
     },
     states: {

@@ -1,6 +1,7 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { formatAdminNumber, pluralCount } from "../i18n/format";
 import { volunteerCommonCopy, type UnnamedVenue } from "./volunteerCommonCopy";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /** What the screen last did, as a code. */
 export type DailyNotice = "preview_updated" | "published";
@@ -94,7 +95,7 @@ export const dailySettingsCopy = defineAdminCopy({
     },
   },
   en: {
-    title: "Daily volunteer quota",
+    title: volunteerWorkspaceCopy.en.pages["daily-settings"].label,
     intro:
       "Sessions in the same scope and on the same date share one quota. Preview the effect on the whole day's list first, then publish. Existing registrations are not cancelled automatically.",
     back: "Back to volunteer policy settings",

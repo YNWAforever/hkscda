@@ -1,5 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
-import { formatAdminDate } from "../i18n/format";
+import { formatAdminDate, formatAdminDateOrNull } from "../i18n/format";
 
 /**
  * Copy the content screens share: the content types, statuses and update kinds, the date, the
@@ -48,9 +48,8 @@ export const contentCommonCopy = defineAdminCopy({
       public: "公開",
       internal: "內部",
     },
-    /** A date from a timestamp the server sent: the medium date of the browser's own time zone. */
-    date: (value: string) =>
-      new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium" }).format(new Date(value)),
+    /** A date from a timestamp the server sent, in Hong Kong time; text that is not a date as sent. */
+    date: (value: string) => formatAdminDateOrNull(value, "zh") ?? value,
     /** The sentence for a failed copy to the clipboard; `detail` is the browser's reason, if any. */
     clipboardFailed: (detail?: string) =>
       detail === undefined ? "複製失敗，請手動選取文字。" : `複製失敗：${detail}`,

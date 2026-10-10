@@ -9,6 +9,7 @@ import type { InternshipApplication, IntakeBody } from "../../site/InternshipFor
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { INTERNSHIP_STATUS_KEYS, internshipCopy } from "./copy";
+import { LoadFailure } from "../LoadFailure";
 const field = "block w-full rounded border border-[var(--color-border)] p-2";
 const post = <T,>(body: object) =>
   fetchAdminJson<T>("/api/admin/internships", { method: "POST", body: JSON.stringify(body) });
@@ -141,7 +142,13 @@ export function IntakeSettings() {
       setBusy(false);
     }
   };
-  if (!value) return <p>{settings.loading}</p>;
+  if (!value) {
+    return q.error ? (
+      <LoadFailure error={q.error} onRetry={() => void q.refetch()} />
+    ) : (
+      <p>{settings.loading}</p>
+    );
+  }
   // A reason the caught error gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
     ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
@@ -377,13 +384,17 @@ export function InternshipManagement() {
         />
       )}
       {detail.error && (
-        <p role="alert">
-          {copy.detailFailed}
-          <button onClick={() => void detail.refetch()}>{copy.retry}</button>
-        </p>
+        <LoadFailure
+          error={detail.error}
+          onRetry={() => void detail.refetch()}
+          title={copy.detailFailed}
+          retryLabel={copy.retry}
+        />
       )}
       {q.isLoading && <p>{copy.loading}</p>}
-      {q.error && <p role="alert">{copy.listFailed}</p>}
+      {q.error && (
+        <LoadFailure error={q.error} onRetry={() => void q.refetch()} title={copy.listFailed} />
+      )}
       {app && (
         <article className="space-y-4 rounded border p-4">
           <h2 className="font-semibold">

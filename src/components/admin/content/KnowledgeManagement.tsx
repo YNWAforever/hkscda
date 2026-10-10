@@ -1,6 +1,9 @@
+import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { adminErrorMessage } from "../../../lib/admin/session";
@@ -102,7 +105,7 @@ function toInput(
 
 export function KnowledgeManagement() {
   const copy = useAdminCopy(knowledgeCopy);
-  const { language } = useAdminLanguage();
+  const { language, copy: common } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [documentPage, setDocumentPage] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
@@ -156,8 +159,30 @@ export function KnowledgeManagement() {
     onSuccess: () => invalidateKnowledgeQueries(queryClient),
   });
 
+  const loadError = knowledgeQuery.error ?? ownershipQuery.error ?? documentsQuery.error;
+  // Irreversible, and the trigger sits inline in a list where a mis-click is easy. Name the
+  // post so the operator can tell which row they hit.
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle =
+    knowledgeQuery.data?.posts.find((post) => post.id === deleteId)?.title ??
+    copy.editor.thisArticle;
+
   return (
     <>
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={common.common.delete}
+        consequence={copy.editor.confirmDelete(deleteTitle)}
+        confirmLabel={common.common.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) mutation.mutate({ action: "delete", id: deleteId });
+        }}
+      />
       <section className="m-6 space-y-3 rounded border p-4">
         <h2>{copy.picker.heading}</h2>
         <label>
@@ -191,26 +216,26 @@ export function KnowledgeManagement() {
         status={status}
         loading={knowledgeQuery.isLoading || ownershipQuery.isLoading}
         pending={mutation.isPending}
-        error={
-          adminErrorMessage(knowledgeQuery.error, language) ??
-          adminErrorMessage(ownershipQuery.error, language) ??
-          adminErrorMessage(documentsQuery.error, language) ??
-          adminErrorMessage(mutation.error, language)
+        loadFailure={
+          loadError
+            ? {
+                error: loadError,
+                heading: adminErrorMessage(loadError, language),
+                onRetry: () => {
+                  void knowledgeQuery.refetch();
+                  void ownershipQuery.refetch();
+                  void documentsQuery.refetch();
+                },
+              }
+            : null
         }
+        error={adminErrorMessage(mutation.error, language)}
         onQueryChange={withPageReset(setQuery)}
         onStatusChange={withPageReset(setStatus)}
         onPageChange={setPage}
         fetching={knowledgeQuery.isFetching}
         onSave={(draft) => mutation.mutate({ action: "save", draft })}
-        onDelete={(id) => {
-          // Irreversible, and the trigger sits inline in a list where a mis-click
-          // is easy. Name the post so the operator can tell which row they hit.
-          const title =
-            knowledgeQuery.data?.posts.find((post) => post.id === id)?.title ??
-            copy.editor.thisArticle;
-          if (!window.confirm(copy.editor.confirmDelete(title))) return;
-          mutation.mutate({ action: "delete", id });
-        }}
+        onDelete={setDeleteId}
       />
     </>
   );
@@ -225,6 +250,7 @@ export function KnowledgeManagementView({
   status = "all",
   loading = false,
   pending = false,
+  loadFailure = null,
   error,
   onQueryChange,
   onStatusChange,
@@ -241,6 +267,9 @@ export function KnowledgeManagementView({
   status?: AdminKnowledgeStatus;
   loading?: boolean;
   pending?: boolean;
+  /** The articles, their ownership or the documents failed to load. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save or a delete. */
   error?: string | null;
   onQueryChange?: (value: string) => void;
   onStatusChange?: (value: AdminKnowledgeStatus) => void;
@@ -282,6 +311,13 @@ export function KnowledgeManagementView({
         </label>
       </div>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
@@ -294,7 +330,9 @@ export function KnowledgeManagementView({
         <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
       ) : null}
 
-      {!loading && ownershipReady && posts.length === 0 && !error ? <p>{copy.empty}</p> : null}
+      {!loading && ownershipReady && posts.length === 0 && !error && !loadFailure ? (
+        <p>{copy.empty}</p>
+      ) : null}
       {!loading &&
         ownershipReady &&
         posts.map((post) => (
@@ -494,17 +532,22 @@ function EditableKnowledgeEditor({
         </label>
       </div>
       <div className="flex gap-2">
-        <button
+        <Button
           type="button"
           disabled={pending || !draft.title.trim() || !draft.shortIntro.trim()}
           onClick={() => onSave?.(draft)}
         >
           {copy.save}
-        </button>
+        </Button>
         {post ? (
-          <button type="button" disabled={pending} onClick={() => onDelete?.(post.id)}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={pending}
+            onClick={() => onDelete?.(post.id)}
+          >
             {copy.delete}
-          </button>
+          </Button>
         ) : null}
       </div>
     </section>

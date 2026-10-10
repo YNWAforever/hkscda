@@ -110,7 +110,7 @@ export function ReconcileDialog({
             />
           </div>
           {mutation.error && (
-            <p className="text-sm text-[var(--color-error)]">
+            <p role="alert" className="text-sm text-[var(--color-error)]">
               {adminErrorMessage(mutation.error, language)}
             </p>
           )}

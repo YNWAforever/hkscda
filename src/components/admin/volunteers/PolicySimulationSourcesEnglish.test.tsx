@@ -230,7 +230,7 @@ describe("the policy simulation in English", () => {
         "模擬香港時間",
         "執行模擬",
         `${POLICY_TEXT.templates[3]}（草稿版本 3）`,
-        `${new Date("2026-10-10T01:00:00Z").toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })} · ${kit.FIXTURE.activity}`,
+        `2026年10月10日 (六) 09:00 · ${kit.FIXTURE.activity}`,
         `${POLICY_TEXT.volunteer}（普通）`,
         `${POLICY_TEXT.volunteer}（資深）`,
         `${POLICY_TEXT.volunteer}（）`,
@@ -273,7 +273,7 @@ describe("the shared sources, venues and qualifications in English", () => {
     const markup = sources("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
-      "Shared sources, venues and qualifications",
+      ">Venues and qualifications</h1>",
       ">Venues and qualifications</a>",
       ">Publish a source</a>",
       "Shared default → venue → template.",

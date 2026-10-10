@@ -1,5 +1,6 @@
 import { canRoleAccessAdminNavItem } from "../../lib/admin/access";
 import type { AdminRole } from "../../lib/admin/access";
+import type { VolunteerWorkspacePageId } from "./volunteerWorkspaceCopy";
 import {
   BarChart3,
   Banknote,
@@ -75,6 +76,21 @@ export type AdminNavItemId =
   | "about-pages"
   | "access-management";
 
+/** The three groups of the volunteer workspace sidebar, in the order it lists them. */
+export type AdminNavChildGroup = "daily" | "people" | "policy";
+
+/**
+ * A page that sits under a navigation item without being a destination of its own in the main
+ * navigation. Its label is copy (`volunteerWorkspaceCopy.pages`), keyed by `id`.
+ */
+export type AdminNavChild = {
+  id: VolunteerWorkspacePageId;
+  to: string;
+  group: AdminNavChildGroup;
+  /** The roles that may open the page; the test suite checks them against `lib/admin/access.ts`. */
+  roles: readonly AdminRole[];
+};
+
 export type AdminNavItem = {
   id: AdminNavItemId;
   section: AdminSection;
@@ -82,7 +98,49 @@ export type AdminNavItem = {
   icon: LucideIcon;
   to: string;
   activePath?: string;
+  /** Pages under this item, listed by the item's own workspace sidebar. */
+  children?: readonly AdminNavChild[];
 };
+
+const DAILY_ROLES: readonly AdminRole[] = ["staff", "admin"];
+const POLICY_ROLES: readonly AdminRole[] = ["admin"];
+const VOLUNTEERS = "/admin/volunteers";
+
+/**
+ * The thirteen pages of the volunteer workspace, in the order its sidebar lists them. The daily
+ * and people pages are open to staff and administrators (`volunteerManagement`); the policy
+ * pages to administrators only (`volunteerPolicyManagement`).
+ */
+const VOLUNTEER_CHILDREN: readonly AdminNavChild[] = [
+  { id: "overview", to: VOLUNTEERS, group: "daily", roles: DAILY_ROLES },
+  { id: "tasks", to: `${VOLUNTEERS}/tasks`, group: "daily", roles: DAILY_ROLES },
+  { id: "calendar", to: `${VOLUNTEERS}/calendar`, group: "daily", roles: DAILY_ROLES },
+  { id: "activities", to: `${VOLUNTEERS}/activities`, group: "daily", roles: DAILY_ROLES },
+  { id: "operations", to: `${VOLUNTEERS}/operations`, group: "daily", roles: DAILY_ROLES },
+  {
+    id: "group-enquiries",
+    to: `${VOLUNTEERS}/group-enquiries`,
+    group: "daily",
+    roles: DAILY_ROLES,
+  },
+  { id: "people", to: `${VOLUNTEERS}/people`, group: "people", roles: DAILY_ROLES },
+  {
+    id: "qualifications",
+    to: `${VOLUNTEERS}/qualifications`,
+    group: "people",
+    roles: DAILY_ROLES,
+  },
+  { id: "settings", to: `${VOLUNTEERS}/settings`, group: "policy", roles: POLICY_ROLES },
+  {
+    id: "daily-settings",
+    to: `${VOLUNTEERS}/daily-settings`,
+    group: "policy",
+    roles: POLICY_ROLES,
+  },
+  { id: "assessments", to: `${VOLUNTEERS}/assessments`, group: "policy", roles: POLICY_ROLES },
+  { id: "sources", to: `${VOLUNTEERS}/sources`, group: "policy", roles: POLICY_ROLES },
+  { id: "simulation", to: `${VOLUNTEERS}/simulation`, group: "policy", roles: POLICY_ROLES },
+];
 
 export const ADMIN_NAV_GROUPS: {
   id: AdminNavGroup;
@@ -197,6 +255,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: CalendarDays,
     to: "/admin/volunteers",
     activePath: "/admin/volunteers",
+    children: VOLUNTEER_CHILDREN,
   },
   {
     id: "volunteer-settings",
@@ -305,6 +364,23 @@ export function getActiveAdminNavItemIds(
   if (matches[0]) return [matches[0].item.id];
   const fallback = items.find((item) => !item.activePath && item.section === activeSection);
   return fallback ? [fallback.id] : [];
+}
+
+/**
+ * The child of `item` that owns `pathname`, if any. The item's own path matches only exactly, so
+ * the workspace overview does not claim every page under it; a registration detail belongs to the
+ * activities page it is reached from.
+ */
+export function getAdminNavChild(item: AdminNavItem, pathname: string): AdminNavChild | undefined {
+  const children = item.children;
+  if (!children) return undefined;
+  const path = pathname.replace(/\/+$/, "");
+  if (item.id === "volunteers" && path.startsWith(`${VOLUNTEERS}/registrations/`)) {
+    return children.find((child) => child.id === "activities");
+  }
+  return children.find(
+    (child) => path === child.to || (child.to !== item.to && path.startsWith(`${child.to}/`)),
+  );
 }
 
 export type AdminNavigationGroup = {

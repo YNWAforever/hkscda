@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 import { useSharedAdminCopy } from "../i18n/copy";
@@ -80,15 +81,25 @@ export function BulkReview({
       </div>
       {pageCount > 1 && (
         <nav aria-label={copy.pagerLabel} className="flex items-center gap-3">
-          <button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage(page - 1)}
+          >
             {copy.previous}
-          </button>
+          </Button>
           <span>
             {page} / {pageCount}
           </span>
-          <button type="button" disabled={page >= pageCount} onClick={() => setPage(page + 1)}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={page >= pageCount}
+            onClick={() => setPage(page + 1)}
+          >
             {copy.next}
-          </button>
+          </Button>
         </nav>
       )}
       <label className="flex items-center gap-2">

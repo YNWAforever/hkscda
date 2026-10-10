@@ -5,6 +5,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { policySimulationCopy } from "./policySimulationCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 type Listing = {
   drafts: {
     template_key: string;
@@ -75,7 +76,13 @@ export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulat
       <a className="underline" href="/admin/volunteers/settings">
         {copy.back}
       </a>
-      {listing.error && <p role="alert">{copy.loadFailed}</p>}
+      {listing.error && (
+        <LoadFailure
+          error={listing.error}
+          onRetry={() => void listing.refetch()}
+          title={copy.loadFailed}
+        />
+      )}
       <form
         className="grid gap-4 md:grid-cols-2"
         onSubmit={(e) => {

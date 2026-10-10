@@ -14,13 +14,16 @@ import { Button } from "../../ui/button";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import type { AdminLanguage } from "../adminI18n";
 import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { StatusBadge } from "../StatusBadge";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { adopterDetailCopy } from "./adopterDetailCopy";
 import { fetchCoordinatorJson } from "./api";
 import { formatFallback } from "./caseWorkflowLogic";
 import { adoptionFormatCopy } from "./formatCopy";
-import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
+import { TaskPanel } from "./TaskPanel";
 
 type AdopterCaseHistoryRow = AdopterDetailData["cases"][number];
 type AdopterSuccessfulAdoptionRow = AdopterDetailData["successfulAdoptions"][number];
@@ -40,18 +43,6 @@ type StatusesResponse = {
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
 type AdopterDetailCopy = (typeof adopterDetailCopy)["zh"];
-
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
 
 function sectionClassName() {
   return "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]";
@@ -105,23 +96,6 @@ function LatestCaseLink({
         {latestCase.requestedAnimalName ? ` · ${latestCase.requestedAnimalName}` : ""}
       </div>
     </div>
-  );
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{statusDisplayName(status, language)}</span>
-    </Badge>
   );
 }
 
@@ -192,7 +166,7 @@ function DetailGrid({ items }: { items: Array<{ label: string; value: ReactNode 
 function LoadingState() {
   return (
     <div className="space-y-5 p-6">
-      <div className="h-8 w-56 rounded bg-[var(--color-lavender)]" />
+      <DestinationHeading id="coordinator-adopters" />
       <section className={sectionClassName()}>
         <div className="h-14 border-b border-[var(--color-border)]" />
         <div className="grid gap-3 p-4 md:grid-cols-3">
@@ -226,12 +200,17 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       ),
   });
 
-  const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
+  const {
+    data: statusesData,
+    error: statusesError,
+    refetch: refetchStatuses,
+  } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
 
   const adopter = adopterData?.adopter;
+  useBreadcrumbRecordName(adopter?.displayName);
   const statuses = useMemo(() => statusesData?.statuses ?? [], [statusesData?.statuses]);
 
   async function invalidateAdopter() {
@@ -288,7 +267,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       id: "status",
       header: copy.labels.status,
       className: "min-w-48",
-      cell: (c) => <StatusChip status={c.status} />,
+      cell: (c) => <StatusBadge status={c.status} />,
     },
     {
       id: "action",
@@ -323,7 +302,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
                 formatFallback(c.animalType)}
             </div>
           </div>
-          <StatusChip status={c.status} />
+          <StatusBadge status={c.status} />
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
           {formatFallback(c.requestedAnimalName)}
@@ -412,6 +391,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToAdopters}
         </Link>
+        <DestinationHeading id="coordinator-adopters" />
         <section className={sectionClassName()}>
           <LoadFailure error={adopterError} onRetry={() => void refetch()} className="border-0" />
         </section>
@@ -429,6 +409,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
           <ArrowLeft className="h-4 w-4" />
           {copy.backToAdopters}
         </Link>
+        <DestinationHeading id="coordinator-adopters" />
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
             {copy.notFound}
@@ -572,10 +553,10 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
 
       {statusesError && (
         <section className={sectionClassName()}>
-          <TaskPanelAsyncError
-            message={copy.loadFollowupStatusesError(
-              adminErrorMessage(statusesError, language) ?? "",
-            )}
+          <LoadFailure
+            error={statusesError}
+            onRetry={() => void refetchStatuses()}
+            title={copy.loadFollowupStatusesError(adminErrorMessage(statusesError, language) ?? "")}
           />
           <div className="px-4 py-3 text-sm text-[var(--color-text-muted)]">
             {copy.followupStatusHint}

@@ -23,8 +23,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../../ui/switch";
 import { Textarea } from "../../ui/textarea";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure } from "../LoadFailure";
 import { animalPipelineCopy } from "./animalPipelineCopy";
-import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
+import { TaskPanel } from "./TaskPanel";
 
 type NullableBooleanSelect = "unknown" | "yes" | "no";
 const BOOLEAN_SELECT_VALUES = ["unknown", "yes", "no"] as const;
@@ -69,7 +70,12 @@ export type AnimalProfileDialogProps = {
   animalId: string | null;
   tasks: CoordinatorTask[];
   statuses: CoordinatorStatus[];
+  /** The message for a failed task load, or null. */
   tasksError: string | null;
+  /** The error behind `tasksError`, so the failure can be classified from its status. */
+  tasksCause?: unknown;
+  /** Re-runs the failed task load. */
+  onRetryTasks: () => void;
   onTasksChanged: () => Promise<void>;
 };
 
@@ -89,6 +95,8 @@ export function AnimalProfileDialog({
   tasks,
   statuses,
   tasksError,
+  tasksCause,
+  onRetryTasks,
   onTasksChanged,
 }: AnimalProfileDialogProps) {
   const copy = useAdminCopy(animalPipelineCopy);
@@ -364,15 +372,23 @@ export function AnimalProfileDialog({
               </DialogFooter>
             </form>
 
-            <TaskPanel
-              title={dialog.tasksTitle}
-              subtitle={dialog.tasksSubtitle}
-              tasks={tasks}
-              statuses={statuses}
-              defaultLinks={{ animalId: animalId ?? undefined }}
-              onChanged={onTasksChanged}
-            />
-            {tasksError && <TaskPanelAsyncError message={tasksError} />}
+            {tasksError ? (
+              // A failed load shows as a failure, never as an empty list with a create form.
+              <LoadFailure
+                error={tasksCause ?? tasksError}
+                onRetry={onRetryTasks}
+                title={tasksError}
+              />
+            ) : (
+              <TaskPanel
+                title={dialog.tasksTitle}
+                subtitle={dialog.tasksSubtitle}
+                tasks={tasks}
+                statuses={statuses}
+                defaultLinks={{ animalId: animalId ?? undefined }}
+                onChanged={onTasksChanged}
+              />
+            )}
           </>
         )}
       </DialogContent>

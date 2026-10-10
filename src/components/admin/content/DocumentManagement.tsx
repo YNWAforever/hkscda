@@ -8,6 +8,8 @@ import { pageAfterDelete } from "./documentManagementLogic";
 import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
 import { documentsCopy } from "./documentsCopy";
@@ -115,17 +117,31 @@ function DocumentManagementRuntime() {
     },
   });
 
+  const loadError = documentsQuery.error ?? ownershipQuery.error;
+
   return (
     <DocumentManagementView
       data={documentsQuery.data}
       ownershipReady={ownershipQuery.isSuccess}
       ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByAssetId}
       loading={documentsQuery.isLoading || ownershipQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, adminLanguage),
+              onRetry: () => {
+                void documentsQuery.refetch();
+                void ownershipQuery.refetch();
+              },
+            }
+          : null
+      }
       error={
-        documentErrorMessage(documentsQuery.error, adminLanguage) ??
-        documentErrorMessage(ownershipQuery.error, adminLanguage) ??
         documentErrorMessage(uploadMutation.error, adminLanguage) ??
-        documentErrorMessage(actionMutation.error, adminLanguage)
+        (actionMutation.variables?.action === "delete"
+          ? null
+          : documentErrorMessage(actionMutation.error, adminLanguage))
       }
       query={query}
       kind={kind}
@@ -155,7 +171,12 @@ function DocumentManagementRuntime() {
       onUploadLanguageChange={setUploadLanguage}
       onFileChange={setFile}
       onUpload={() => uploadMutation.mutate()}
-      onAction={(id, action) => actionMutation.mutate({ id, action })}
+      onAction={(id, action) => {
+        const run = actionMutation.mutateAsync({ id, action });
+        // Only a delete waits in its confirm dialog; the other actions show their error on the page.
+        if (action === "delete") return run;
+        run.catch(() => undefined);
+      }}
     />
   );
 }
@@ -165,6 +186,9 @@ type ViewProps = {
   ownershipReady?: boolean;
   ownerReleaseIds?: Readonly<Record<string, string>>;
   loading?: boolean;
+  /** The list or its ownership failed to load. Shown as a failure with a retry. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of an upload or an action. */
   error?: string | null;
   query?: string;
   kind?: DocumentKind | "all";
@@ -185,7 +209,7 @@ type ViewProps = {
   onUploadLanguageChange?: (value: DocumentLanguage) => void;
   onFileChange?: (file: File | null) => void;
   onUpload?: () => void;
-  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void;
+  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void | Promise<unknown>;
 };
 
 export function DocumentManagementView({
@@ -193,6 +217,7 @@ export function DocumentManagementView({
   ownershipReady = true,
   ownerReleaseIds = {},
   loading = false,
+  loadFailure = null,
   error,
   query = "",
   kind = "all",
@@ -218,8 +243,24 @@ export function DocumentManagementView({
   const common = useAdminCopy(documentsCopy);
   const copy = common.documents;
   const rows = data?.items ?? [];
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle = rows.find((item) => item.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={copy.table.deleteLabel(deleteTitle)}
+        consequence={copy.table.confirmDelete(deleteTitle)}
+        confirmLabel={copy.table.deleteLabel(deleteTitle)}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) await onAction?.(deleteId, "delete");
+        }}
+      />
       <header>
         <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
         <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
@@ -334,6 +375,13 @@ export function DocumentManagementView({
         </select>
       </div>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -361,7 +409,7 @@ export function DocumentManagementView({
                   {copy.table.loading}
                 </td>
               </tr>
-            ) : rows.length === 0 && !error ? (
+            ) : rows.length === 0 && !error && !loadFailure ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
                   {copy.table.empty}
@@ -415,11 +463,7 @@ export function DocumentManagementView({
                             type="button"
                             aria-label={copy.table.deleteLabel(item.title)}
                             disabled={actionPending}
-                            onClick={() => {
-                              if (globalThis.confirm?.(copy.table.confirmDelete(item.title))) {
-                                onAction(item.id, "delete");
-                              }
-                            }}
+                            onClick={() => setDeleteId(item.id)}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -441,7 +485,7 @@ export function DocumentManagementView({
           total={data?.total}
           onPageChange={onPageChange}
           label={copy.table.pager}
-          failed={Boolean(error)}
+          failed={Boolean(error || loadFailure)}
         />
       ) : null}
     </div>

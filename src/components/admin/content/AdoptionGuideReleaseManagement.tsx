@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -14,6 +15,7 @@ import type {
 } from "../../../lib/adoptionGuideReleases/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { adoptionGuideCopy } from "./adoptionGuideCopy";
 import { cmsStateCopy } from "./cmsStateCopy";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
@@ -207,13 +209,13 @@ export function AdoptionGuideReleaseManagement({
       : actionMutation.isPending
         ? actionMutation.variables?.operation
         : undefined;
-  const combinedError =
-    adoptionGuideFailureText(localError, copy.errors, language) ??
-    documentErrorMessage(identityQuery.error, language) ??
-    documentErrorMessage(releasesQuery.error, language) ??
-    documentErrorMessage(linkedReleaseQuery.error, language) ??
-    documentErrorMessage(assetsQuery.error, language) ??
-    documentErrorMessage(previewQuery.error, language);
+  const combinedError = adoptionGuideFailureText(localError, copy.errors, language);
+  const loadError =
+    identityQuery.error ??
+    releasesQuery.error ??
+    linkedReleaseQuery.error ??
+    assetsQuery.error ??
+    previewQuery.error;
 
   const actorRole = identityQuery.data?.admin.role === "admin" ? "admin" : "staff";
 
@@ -230,6 +232,21 @@ export function AdoptionGuideReleaseManagement({
       pageSize={releasesQuery.data?.pageSize ?? filters.pageSize ?? 25}
       filters={filters}
       loading={releasesQuery.isLoading || linkedReleaseQuery.isLoading || identityQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, language),
+              onRetry: () => {
+                void identityQuery.refetch();
+                void releasesQuery.refetch();
+                void linkedReleaseQuery.refetch();
+                void assetsQuery.refetch();
+                void previewQuery.refetch();
+              },
+            }
+          : null
+      }
       error={combinedError}
       pendingAction={pendingAction}
       onFiltersChange={setFilters}
@@ -291,6 +308,9 @@ export type AdoptionGuideReleaseManagementViewProps = {
   page?: number;
   pageSize?: number;
   loading?: boolean;
+  /** A release list, its preview or the documents failed to load. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save or another action. */
   error?: string | null;
   pendingAction?: string;
   onSelect?: (id: string) => void;
@@ -318,6 +338,7 @@ export function AdoptionGuideReleaseManagementView({
   page = 1,
   pageSize = 25,
   loading = false,
+  loadFailure = null,
   error,
   pendingAction,
   onSelect,
@@ -425,6 +446,13 @@ export function AdoptionGuideReleaseManagementView({
         </label>
       </section>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -443,7 +471,7 @@ export function AdoptionGuideReleaseManagementView({
             {copy.list.heading}
           </h2>
           {loading ? <p className="p-4 text-sm">{copy.list.loading}</p> : null}
-          {!loading && releases.length === 0 ? (
+          {!loading && !loadFailure && releases.length === 0 ? (
             <p className="p-4 text-sm text-[var(--color-text-muted)]">{copy.list.empty}</p>
           ) : null}
           <ul className="divide-y divide-[var(--color-border)]">
@@ -471,21 +499,23 @@ export function AdoptionGuideReleaseManagementView({
               aria-label={copy.list.pagerLabel}
               className="flex items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-3 text-sm"
             >
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={locked || page <= 1}
                 onClick={() => onPageChange?.(page - 1)}
               >
                 {copy.list.previous}
-              </button>
+              </Button>
               <span>{copy.list.pageOf(page, Math.max(1, Math.ceil(total / pageSize)))}</span>
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={locked || page >= Math.ceil(total / pageSize)}
                 onClick={() => onPageChange?.(page + 1)}
               >
                 {copy.list.next}
-              </button>
+              </Button>
             </nav>
           ) : null}
         </section>
@@ -629,18 +659,22 @@ export function AdoptionGuideReleaseManagementView({
                     enUrl={preview?.knowledgeCard.enUrl}
                   />
                 </div>
-                {readiness && !readiness.ready ? (
-                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]">
-                    {readiness.issues.map((issue) => (
-                      <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
-                    ))}
-                  </ul>
-                ) : null}
-                {workflow?.blocker ? (
-                  <p className="mt-3 text-sm text-[var(--color-error)]">
-                    {copy.blockers[workflow.blocker]}
-                  </p>
-                ) : null}
+                {/* Derived from the loaded release, not from something the editor just did, so it is
+                    a polite status, never an alert. The wrapper is always mounted. */}
+                <div role="status" data-testid="readiness-status">
+                  {readiness && !readiness.ready ? (
+                    <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]">
+                      {readiness.issues.map((issue) => (
+                        <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {workflow?.blocker ? (
+                    <p className="mt-3 text-sm text-[var(--color-error)]">
+                      {copy.blockers[workflow.blocker]}
+                    </p>
+                  ) : null}
+                </div>
               </EditorSection>
 
               <section

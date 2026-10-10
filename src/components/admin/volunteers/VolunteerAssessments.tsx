@@ -9,6 +9,7 @@ import { assessmentsCopy, type AssessmentMessage } from "./assessmentsCopy";
 import { assessmentMessageText } from "./assessmentsLogic";
 import { policyFormatCopy } from "./policyFormatCopy";
 import { WorkflowSections } from "./WorkflowSections";
+import { LoadFailure } from "../LoadFailure";
 type P = typeof initialMonthlyPolicy;
 export type AssessmentJob = {
   id: string;
@@ -79,20 +80,23 @@ export function VolunteerAssessments({
     [effective, setEffective] = useState(hkDate(now())),
     [month, setMonth] = useState(""),
     [scope, setScope] = useState(initial?.scope ?? "combined"),
-    [jobs, setJobs] = useState<AssessmentJob[]>(initial?.jobs ?? []);
+    [jobs, setJobs] = useState<AssessmentJob[]>(initial?.jobs ?? []),
+    // The error of loading the page, kept apart from the message of an action so it can be retried.
+    [loadError, setLoadError] = useState<{ cause: unknown } | undefined>(undefined);
   const fail = (cause: unknown) => setMessage({ code: "error", cause });
   // Only state setters, which never change, are used here, so loading once on mount depends on nothing.
   const load = useCallback(
     () =>
       cmd({ kind: "list" })
         .then((x) => {
+          setLoadError(undefined);
           setData(x);
           if (x.draft) {
             setP(monthlyPolicySchema.parse(x.draft.body));
             setRev(x.draft.revision);
           }
         })
-        .catch((cause: unknown) => setMessage({ code: "error", cause })),
+        .catch((cause: unknown) => setLoadError({ cause })),
     [],
   );
   const loadJobs = () =>
@@ -462,6 +466,13 @@ export function VolunteerAssessments({
           ))}
         </ul>
       </section>
+      {loadError ? (
+        <LoadFailure
+          error={loadError.cause}
+          onRetry={() => void load()}
+          title={assessmentMessageText({ code: "error", cause: loadError.cause }, language)}
+        />
+      ) : null}
       {text && <p role="status">{text}</p>}
     </div>
   );

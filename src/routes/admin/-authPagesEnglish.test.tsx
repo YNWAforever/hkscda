@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, mock, test } from "bun:test";
 
 import {
@@ -18,10 +19,20 @@ mock.module("@tanstack/react-router", () => ({
     useSearch: () => search,
   }),
   useNavigate: () => async () => {},
+  useRouter: () => ({ history: { push: () => {} } }),
 }));
 
 const { AdminLoginPage } = await import("./login");
 const { AdminResetPasswordForm, AdminResetPasswordPage } = await import("./reset-password");
+
+// The login page reads the query cache to find the signed-in admin after sign-in.
+function LoginPage() {
+  return (
+    <QueryClientProvider client={new QueryClient()}>
+      <AdminLoginPage />
+    </QueryClientProvider>
+  );
+}
 
 // The language toggle names each language in its own language, so it keeps this one word.
 const TOGGLE_WORD = "中文";
@@ -29,7 +40,7 @@ const TOGGLE_WORD = "中文";
 describe("/admin/login as a whole page", () => {
   test("is in English without Chinese, apart from the language toggle", () => {
     search = {};
-    const markup = renderAdminInEnglish(<AdminLoginPage />);
+    const markup = renderAdminInEnglish(<LoginPage />);
     expectNoChineseText(markup, { allow: [TOGGLE_WORD] });
     for (const text of [
       "Admin sign in",
@@ -47,14 +58,14 @@ describe("/admin/login as a whole page", () => {
 
   test("shows the password updated message in English after a reset", () => {
     search = { passwordReset: "success" };
-    const markup = renderAdminInEnglish(<AdminLoginPage />);
+    const markup = renderAdminInEnglish(<LoginPage />);
     expectNoChineseText(markup, { allow: [TOGGLE_WORD] });
     expect(markup).toContain("Your password has been updated. Sign in with your new password.");
   });
 
   test("is unchanged in Chinese", () => {
     search = {};
-    const markup = renderAdminInChinese(<AdminLoginPage />);
+    const markup = renderAdminInChinese(<LoginPage />);
     for (const text of ["管理後台登入", "電郵", "密碼", "忘記密碼？", ">登入<"]) {
       expect(markup, text).toContain(text);
     }

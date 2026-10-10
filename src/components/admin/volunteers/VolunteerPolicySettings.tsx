@@ -27,6 +27,9 @@ import {
 import { policySettingsCopy } from "./policySettingsCopy";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionCopy } from "../confirmActionCopy";
+import { LoadFailure } from "../LoadFailure";
 type D = { template_key: string; body: PolicyDraft; revision: number };
 type V = { id: string; template_key: string; effective_from: string; reason: string };
 type A = {
@@ -125,7 +128,9 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
       setIds([]);
     }
   }, [row, base, key]);
-  useUnsavedVolunteerDraft(dirty);
+  const leaveDialog = useUnsavedVolunteerDraft(dirty);
+  const [switchKey, setSwitchKey] = useState<string | null>(null);
+  const shared = pickAdminCopy(confirmActionCopy, language);
   const ready = useMemo(
     () => (draft ? getPolicyReadiness(draft, language) : null),
     [draft, language],
@@ -197,11 +202,18 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     });
   if (q.isError)
     return (
-      <p role="alert" className="p-6 text-[var(--color-error)]">
-        {copy.loadFailed}
-      </p>
+      <div className="space-y-3 p-6">
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <LoadFailure error={q.error} onRetry={() => void q.refetch()} title={copy.loadFailed} />
+      </div>
     );
-  if (q.isLoading || !draft || !q.data) return <p className="p-6">{copy.loading}</p>;
+  if (q.isLoading || !draft || !q.data)
+    return (
+      <div className="space-y-3 p-6">
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p>{copy.loading}</p>
+      </div>
+    );
   const activities = q.data.activities.filter(
       (x) => x.template_key === key || x.template_key === null,
     ),
@@ -228,6 +240,21 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     };
   return (
     <div className="space-y-6 p-4 md:p-6">
+      {leaveDialog}
+      <ConfirmActionDialog
+        open={switchKey !== null}
+        onOpenChange={(open) => {
+          if (!open) setSwitchKey(null);
+        }}
+        title={shared.discardChanges}
+        consequence={copy.confirmSwitch}
+        confirmLabel={shared.discardChanges}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (switchKey !== null) setKey(switchKey);
+        }}
+      />
       <header>
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <a className="inline-block min-h-11 py-2 underline" href="/admin/volunteers/sources">
@@ -275,7 +302,8 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
               className={ic}
               value={key}
               onChange={(e) => {
-                if (!dirty || window.confirm(copy.confirmSwitch)) setKey(e.target.value);
+                if (dirty) setSwitchKey(e.target.value);
+                else setKey(e.target.value);
               }}
             >
               {[
@@ -620,11 +648,15 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         {preview ? (
           <div className="rounded bg-[var(--color-surface-offset)] p-3 text-sm">
             <b>{copy.publish.previewTitle(preview.previous?.name, preview.candidate.name)}</b>
-            {preview.issues.map((x, i) => (
-              <p key={i} className="text-[var(--color-error)]">
-                {copy.publish.issueLine(x)}
-              </p>
-            ))}
+            {preview.issues.length > 0 && (
+              <div role="alert">
+                {preview.issues.map((x, i) => (
+                  <p key={i} className="text-[var(--color-error)]">
+                    {copy.publish.issueLine(x)}
+                  </p>
+                ))}
+              </div>
+            )}
             <PolicyChangeSummary
               before={preview.previous}
               after={preview.candidate}

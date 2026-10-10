@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { pluralCount } from "../i18n/format";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /** Copy for today's volunteer tasks and notifications (`VolunteerTasks`). */
 export const volunteerTasksCopy = defineAdminCopy({
@@ -53,7 +54,7 @@ export const volunteerTasksCopy = defineAdminCopy({
     otherStatus: "待核實",
   },
   en: {
-    title: "Volunteer tasks and notifications for today",
+    title: volunteerWorkspaceCopy.en.pages.tasks.label,
     intro:
       "Recording a contact or follow-up result does not change qualifications, places or approval results, and does not mean a message was delivered.",
     calendarLink: "Calendar: see shortfalls, qualification exceptions and session details",

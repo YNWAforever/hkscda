@@ -16,7 +16,7 @@ export type DataTableColumn<T> = {
   align?: "left" | "right" | "center";
 };
 
-type DataTableProps<T> = {
+type DataTableBaseProps<T> = {
   columns: DataTableColumn<T>[];
   rows: T[];
   getRowKey: (row: T) => string;
@@ -25,17 +25,6 @@ type DataTableProps<T> = {
   skeletonRows?: number;
   /** Shown when there are no rows and not loading. */
   empty?: ReactNode;
-  /**
-   * The load failure, when the query that produces `rows` errored.
-   *
-   * Takes precedence over `empty`: a failed fetch leaves `rows` empty, and
-   * rendering that as the "No results" empty state tells the operator there is
-   * no work waiting when in fact nothing was read. Pass the query's `error`
-   * straight through.
-   */
-  error?: unknown;
-  /** Re-runs the failed query. Shown as a retry control in the failure state. */
-  onRetry?: () => void;
   onRowClick?: (row: T) => void;
   /**
    * Optional per-row mobile renderer. When provided, the table is hidden below
@@ -44,9 +33,36 @@ type DataTableProps<T> = {
    */
   renderMobileCard?: (row: T) => ReactNode;
   className?: string;
+  /**
+   * Replaces the default heading of the failure state when a screen already worded its own
+   * ("Could not load the supporters."). The guidance and the retry control stay the same.
+   */
+  failureTitle?: ReactNode;
   /** Names a keyboard-focusable table inside its horizontal scroll container. */
   accessibleLabel?: string;
+  /**
+   * The result count ("12 supporters"). It sits in a polite, atomic live region so a screen
+   * reader hears the whole phrase when a filter or page changes it. Leave it out when the
+   * screen shows its count elsewhere.
+   */
+  resultCount?: ReactNode;
 };
+
+/**
+ * The load failure and the way to retry it come together. `error` is the query's error,
+ * passed straight through: it takes precedence over `empty`, because a failed fetch leaves
+ * `rows` empty, and rendering that as "No results" tells the operator there is no work
+ * waiting when in fact nothing was read. A table that passes `error` must also pass
+ * `onRetry`, which re-runs the failed query; a table with no query passes neither.
+ */
+type DataTableFailureProps =
+  | { error?: undefined; onRetry?: undefined }
+  | { error: unknown; onRetry: () => void };
+
+type DataTableProps<T> = DataTableBaseProps<T> & DataTableFailureProps;
+
+/** Stands in for a retry that the types make unreachable: a failure always comes with one. */
+const NO_RETRY = () => {};
 
 const ALIGN_CLASS = {
   left: "text-left",
@@ -65,10 +81,12 @@ export function DataTable<T>({
   empty: emptyProp,
   error,
   onRetry,
+  failureTitle,
   onRowClick,
   renderMobileCard,
   className,
   accessibleLabel,
+  resultCount,
 }: DataTableProps<T>) {
   const copy = useSharedAdminCopy(sharedUiCopy).dataTable;
   const empty = emptyProp === undefined ? copy.empty : emptyProp;
@@ -76,7 +94,14 @@ export function DataTable<T>({
   // before the rows.length === 0 branch, otherwise an outage is rendered as
   // the empty state -- the defect this prop exists to close.
   const failed = !loading && error != null;
-  const failureCell = <LoadFailure error={error} onRetry={onRetry} className="border-0" />;
+  const failureCell = (
+    <LoadFailure
+      error={error}
+      onRetry={onRetry ?? NO_RETRY}
+      title={failureTitle}
+      className="border-0"
+    />
+  );
   const table = (
     <Table
       className={className}
@@ -155,8 +180,24 @@ export function DataTable<T>({
     </Table>
   );
 
+  const count =
+    resultCount === undefined ? null : (
+      <p
+        aria-live="polite"
+        aria-atomic="true"
+        className="px-3 py-2 text-xs text-[var(--color-text-muted)]"
+      >
+        {resultCount}
+      </p>
+    );
+
   if (!renderMobileCard) {
-    return table;
+    return (
+      <>
+        {table}
+        {count}
+      </>
+    );
   }
 
   return (
@@ -191,6 +232,7 @@ export function DataTable<T>({
           ))
         )}
       </div>
+      {count}
     </>
   );
 }

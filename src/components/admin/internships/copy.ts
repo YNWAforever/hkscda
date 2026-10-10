@@ -1,6 +1,7 @@
 import { internshipErrorText } from "../../../lib/internships/service";
 import { defineAdminCopy } from "../i18n/copy";
 import { pluralCount } from "../i18n/format";
+import { adminCommonCopy } from "../i18n/adminCommonCopy";
 
 /**
  * Copy for the internship application screen: the applications, the review form and the
@@ -99,7 +100,7 @@ export const internshipCopy = defineAdminCopy({
     },
   },
   en: {
-    title: "Veterinary student internship applications",
+    title: adminCommonCopy.en.navItems.internships,
     intro:
       "These applications are separate from volunteer tiers and session places. Verify each applicant's identity against their student proof and application details.",
     searchLabel: "Search applicants",

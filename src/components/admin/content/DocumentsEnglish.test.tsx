@@ -672,7 +672,7 @@ describe("post-adoption guide releases in English", () => {
       "選擇 中文版 PDF",
       "只可上傳 PDF 檔案；此欄只顯示 adoption_guide 的 zh-HK 文件。",
       "English PDF 尚未準備",
-      "建立：2026-07-31T00:00:00.000Z",
+      "建立：2026年7月31日 (五) 08:00",
       "儲存草稿",
       "提交審閱",
       "重新整理預覽",

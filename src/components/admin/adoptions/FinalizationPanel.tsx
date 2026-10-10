@@ -44,7 +44,7 @@ type FinalizeResponse = {
 function todayInputValue() {
   const now = new Date();
   const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-  return localNow.toISOString().slice(0, 10);
+  return localNow.toISOString().slice(0, 10); // admin-format-ok: the date input's default value
 }
 
 function emptyForm(): FinalizationFormState {

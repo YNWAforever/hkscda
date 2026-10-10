@@ -1,4 +1,5 @@
 import { defineAdminCopy } from "../i18n/copy";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 /** Copy for verifying a volunteer's identity, tier and qualifications (`VolunteerQualifications`). */
 export const qualificationsCopy = defineAdminCopy({
@@ -48,7 +49,7 @@ export const qualificationsCopy = defineAdminCopy({
     saved: "更新已保存，核實歷史及未來場次跟進任務已保留。",
   },
   en: {
-    title: "Volunteer profile and qualification verification",
+    title: volunteerWorkspaceCopy.en.pages.qualifications.label,
     intro:
       "Tiers and course qualifications are only set from verified evidence. A Remark that a volunteer fills in themselves does not grant a skill. Existing attendance and lists are kept.",
     links: { directory: "Back to the volunteer directory", calendar: "Volunteer calendar" },

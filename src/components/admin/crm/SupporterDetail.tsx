@@ -9,7 +9,9 @@ import type {
   SupporterDetail as SupporterDetailData,
 } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { ConsentEditor } from "./ConsentEditor";
@@ -85,13 +87,21 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
     },
   });
 
+  useBreadcrumbRecordName(data?.name);
+
   if (isLoading) {
-    return <div className="p-6 text-sm text-[var(--color-text-muted)]">{copy.loading}</div>;
+    return (
+      <div className="space-y-3 p-6">
+        <DestinationHeading id="supporters" />
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.loading}</p>
+      </div>
+    );
   }
 
   if (error || !data) {
     return (
-      <div className="p-6">
+      <div className="space-y-3 p-6">
+        <DestinationHeading id="supporters" />
         <LoadFailure error={error} onRetry={() => void refetch()} title={copy.loadError} />
       </div>
     );
@@ -120,7 +130,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
       <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
         <SupporterProfileSidebar supporter={data} language={language} roleLabels={roleLabels} />
 
-        <main className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-6">
           <SupporterActivitySummary
             language={language}
             lifetimeAmountCents={data.lifetimeAmountCents}
@@ -215,7 +225,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
               ))}
             </div>
             {issueReceiptMutation.error && (
-              <p className="mt-3 text-sm text-[var(--color-destructive)]">
+              <p role="alert" className="mt-3 text-sm text-[var(--color-destructive)]">
                 {adminErrorMessage(issueReceiptMutation.error, language)}
               </p>
             )}
@@ -259,12 +269,12 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
               ))}
             </div>
             {voidReceiptMutation.error && (
-              <p className="mt-3 text-sm text-[var(--color-destructive)]">
+              <p role="alert" className="mt-3 text-sm text-[var(--color-destructive)]">
                 {adminErrorMessage(voidReceiptMutation.error, language)}
               </p>
             )}
           </section>
-        </main>
+        </div>
       </div>
     </div>
   );

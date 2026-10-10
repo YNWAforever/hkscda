@@ -11,6 +11,7 @@ import type { PublicAdoptionPageData } from "../../../lib/adoptionInformation/pu
 import { loadAdoptionInstructionPreview } from "../../../lib/adoptionInstructions/preview";
 import type { AdoptionInstructionRevision } from "../../../lib/adoptionInstructions/types";
 import { adoptionPreviewCopy } from "./-adoptionPreviewCopy";
+import { LoadFailure } from "../../../components/admin/LoadFailure";
 
 export const Route = createFileRoute("/admin/content/adoption-preview")({
   ssr: false,
@@ -45,8 +46,23 @@ function AdoptionInstructionsPreview() {
     return <p className="p-6 text-[var(--color-text-muted)]">{copy.loading}</p>;
   }
 
-  if (preview.error || !preview.data) {
-    return <p className="p-6 text-[var(--color-danger)]">{copy.failed}</p>;
+  if (preview.error) {
+    return (
+      <LoadFailure
+        error={preview.error}
+        onRetry={() => void preview.refetch()}
+        title={copy.failed}
+        className="m-6"
+      />
+    );
+  }
+
+  if (!preview.data) {
+    return (
+      <p role="alert" className="p-6 text-[var(--color-error)]">
+        {copy.failed}
+      </p>
+    );
   }
 
   return <AdoptionInstructionsContent data={preview.data} />;
