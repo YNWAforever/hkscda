@@ -16,15 +16,26 @@ import {
  *         parameter (the reason) and uses it in its body;
  *       - an inline marker is followed, within INLINE_FIELD_LINES lines, by an `<input`, `<Input`,
  *         `<textarea` or `<Textarea` whose `value` or `onChange` names a reason;
- *   (b) some test under `src/` carries `// required-reason: <id>`, and every test file carrying it
- *       exercises the reason: it has the over-long case (`.repeat(501)`), uses
- *       `requiredReasonSchema`, or has an `expect(...)` statement that names `reason` (or the
- *       `reason_required` code);
+ *   (b) some test under `src/` carries `// required-reason: <id>`, and every such marker sits
+ *       directly above a `test(`/`it(` whose own body exercises the reason: it has the over-long
+ *       case (`.repeat(501)`), uses `requiredReasonSchema`, or has an `expect(...)` statement that
+ *       names `reason` (or the `p_reason` RPC argument, or the `reason_required` code);
  *   (d) no non-test file under src/components/admin sends one of the action's routes (names a
- *       string or template literal matching the route's path, and has `method: ... "<METHOD>"`)
- *       unless it is in the action's `ui`, `helpers` or `sentBy`, and some listed file does send it;
+ *       string or template literal matching the route's path, or a quoted `/api/...` literal with
+ *       `+ expr` parts, and has `method: ... "<METHOD>"` or the `method` shorthand beside that
+ *       string) unless it is in the action's `ui`, `helpers` or `sentBy`, and some listed file
+ *       does send it;
  *   (e) a request helper is imported only by the `ui` files of the actions that list it.
  * The self-tests below prove the checking functions work and (c) pins the registry itself.
+ *
+ * Limits of (d) and (e), which are heuristics over source text, not a type-aware call graph:
+ *   - the method is matched per file, not per call;
+ *   - a path built from a non-literal base (`${base}/x`, `base + "/x"`) or prefixed with an
+ *     origin (`https://...`/`${origin}/api/...`) is not seen;
+ *   - a generic helper that takes any path (`fetchAdminJson` itself, or a new wrapper that is not
+ *     listed in `helpers`) is not followed to its callers;
+ *   - a dynamic `import()` of a helper is not seen by (e);
+ *   - only src/components/admin is scanned; routes, hooks or lib code elsewhere are not.
  */
 
 const ADMIN_UI_ROOT = "src/components/admin";
@@ -126,19 +137,55 @@ export function braceExpression(text: string, open: number): string | null {
   return text[open] === "{" ? scanJsx(text, open, "brace") : null;
 }
 
-/** The expression of prop `name` in `props` (`name={...}`), or null when it has none. */
+/**
+ * `props` with everything below the tag's own level blanked out: the inside of each `{...}`, of
+ * each quoted value and of each comment becomes spaces (the braces and quotes stay), so an index
+ * into the result is an index into `props` and a match in it is a prop of this tag, never one of
+ * an element nested inside another prop's value.
+ */
+export function topLevelProps(props: string): string {
+  let out = "";
+  for (let i = 0; i < props.length; i++) {
+    const ch = props[i];
+    if (ch === "{") {
+      const inside = braceExpression(props, i);
+      if (inside === null) return out + " ".repeat(props.length - i);
+      out += `{${inside.replace(/[^\n]/g, " ")}}`;
+      i += inside.length + 1;
+    } else if (ch === '"' || ch === "'") {
+      const end = props.indexOf(ch, i + 1);
+      if (end < 0) return out + " ".repeat(props.length - i);
+      out += ch + " ".repeat(end - i - 1) + ch;
+      i = end;
+    } else if (ch === "/" && props[i + 1] === "*") {
+      const end = props.indexOf("*/", i + 2);
+      const stop = end < 0 ? props.length : end + 2;
+      out += props.slice(i, stop).replace(/[^\n]/g, " ");
+      i = stop - 1;
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
+
+/**
+ * The expression of this tag's own prop `name` (`name={...}`), or null when it has none. Only a
+ * prop at the tag's top level counts (see `topLevelProps`).
+ */
 function propExpression(props: string, name: string): string | null {
-  const match = new RegExp(`(?<![\\w$])${name}=\\{`).exec(props);
+  const match = new RegExp(`(?<![\\w$])${name}=\\{`).exec(topLevelProps(props));
   return match ? braceExpression(props, match.index + match[0].length - 1) : null;
 }
 
 /**
  * Why a dialog's `onConfirm` does not pass the reason on; empty when it does. It must be an inline
  * arrow (`async (reason) => ...`, `(reason: string | null) => ...` or `reason => ...`) whose body
- * names that parameter as an identifier of its own (not as `x.reason`).
+ * names that parameter as an identifier of its own (not as `x.reason`). Only the dialog's own
+ * `onConfirm` counts, not one on an element nested in another prop.
  */
 export function onConfirmProblems(props: string): string[] {
-  if (!/(?<![\w$])onConfirm=\{/.test(props)) return ["has no onConfirm"];
+  if (!/(?<![\w$])onConfirm=\{/.test(topLevelProps(props))) return ["has no onConfirm"];
   const handler = propExpression(props, "onConfirm");
   if (handler === null) return ["onConfirm could not be read"];
   const head =
@@ -175,7 +222,8 @@ export function dialogMarkerProblems(text: string, id: string): string[] {
       problems.push(`dialog on line ${dialogLine + 1}: could not find the end of its opening tag`);
       continue;
     }
-    if (!/reason=\{(requiredReasonDialog\}|\{\s*required:\s*true)/.test(props)) {
+    const reasonProp = propExpression(props, "reason");
+    if (reasonProp === null || !/^(requiredReasonDialog$|\{\s*required:\s*true)/.test(reasonProp)) {
       problems.push(`dialog on line ${dialogLine + 1} has no required reason prop`);
     }
     for (const problem of onConfirmProblems(props)) {
@@ -231,8 +279,8 @@ export function hasTestMarker(testSources: readonly string[], id: string): boole
 
 /**
  * Whether a test source exercises the reason contract: it has the over-long case (`.repeat(501)`),
- * uses `requiredReasonSchema`, or has an `expect(` statement (up to its `;`) naming `reason` or
- * the `reason_required` code.
+ * uses `requiredReasonSchema`, or has an `expect(` statement (up to its `;`) naming `reason`, the
+ * `p_reason` RPC argument or the `reason_required` code.
  */
 export function exercisesReason(source: string): boolean {
   if (source.includes(".repeat(501)") || /(?<![\w$])requiredReasonSchema(?![\w$])/.test(source)) {
@@ -241,36 +289,86 @@ export function exercisesReason(source: string): boolean {
   for (let at = source.indexOf("expect("); at >= 0; at = source.indexOf("expect(", at + 1)) {
     const end = source.indexOf(";", at);
     const statement = source.slice(at, end < 0 ? source.length : end);
-    if (/\breason(_required)?\b/.test(statement)) return true;
+    if (/\b(p_)?reason(_required)?\b/.test(statement)) return true;
   }
   return false;
 }
 
 /**
- * Why the tests do not cover `id`; empty when they do. Some test must carry the marker, and every
- * test that carries it must exercise the reason, so a gutted test cannot keep a bare marker.
+ * The body of the `test(`/`it(` call that a marker on line `index` sits directly above: the lines
+ * between them may only be blank or other `//` comments (such as a second marker). Null when the
+ * next code line is not a test call, or its callback body cannot be read.
+ */
+export function markedTestBody(lines: readonly string[], index: number): string | null {
+  let next = index + 1;
+  while (next < lines.length && /^\s*(\/\/.*)?$/.test(lines[next])) next++;
+  if (!/^\s*(test|it)(\.\w+)?\(/.test(lines[next] ?? "")) return null;
+  const text = lines.slice(next).join("\n");
+  const arrow = text.indexOf("=>");
+  if (arrow < 0) return null;
+  const open = text.slice(arrow + 2).search(/\S/) + arrow + 2;
+  return braceExpression(text, open);
+}
+
+/**
+ * Why the tests do not cover `id`; empty when they do. Some test file must carry the marker, and
+ * each marker must sit directly above a `test(`/`it(` whose own body exercises the reason
+ * (`exercisesReason`), so a gutted test cannot keep its marker by sitting beside a strong one.
  */
 export function testMarkerProblems(
   tests: ReadonlyArray<{ path: string; text: string }>,
   id: string,
 ): string[] {
-  const marked = tests.filter((file) => testMarkerPattern(id).test(file.text));
+  const pattern = testMarkerPattern(id);
+  const marked = tests.filter((file) => pattern.test(file.text));
   if (marked.length === 0) return [`no test carries "// required-reason: ${id}"`];
-  return marked
-    .filter((file) => !exercisesReason(file.text))
-    .map(
-      (file) =>
-        `${file.path}: carries the marker but has no .repeat(501), requiredReasonSchema or expect(...) naming the reason`,
-    );
+  const problems: string[] = [];
+  for (const file of marked) {
+    const lines = file.text.split("\n");
+    lines.forEach((line, index) => {
+      if (!pattern.test(line)) return;
+      const body = markedTestBody(lines, index);
+      if (body === null) {
+        problems.push(`${file.path}:${index + 1}: the marker is not directly above a test( or it(`);
+      } else if (!exercisesReason(body)) {
+        problems.push(
+          `${file.path}:${index + 1}: the marked test has no .repeat(501), requiredReasonSchema or expect(...) naming the reason`,
+        );
+      }
+    });
+  }
+  return problems;
+}
+
+/**
+ * What a quoted literal ending at `at` has concatenated after it: each `+ "text"` part as its
+ * text and each `+ expr` part (an identifier, member access or call) as `:param`.
+ */
+function concatenatedParts(text: string, at: number): string {
+  let path = "";
+  for (;;) {
+    const plus = /^\s*\+\s*/.exec(text.slice(at));
+    if (!plus) return path;
+    at += plus[0].length;
+    const part =
+      /^(["'])([^"'\n]*)\1/.exec(text.slice(at)) ??
+      /^[A-Za-z_$][\w$]*(?:\??\.[A-Za-z_$][\w$]*|\([^()\n]*\))*/.exec(text.slice(at));
+    if (!part) return path;
+    path += part[2] ?? ":param";
+    at += part[0].length;
+  }
 }
 
 /**
  * The API paths a source names: every string or template literal that starts with `/api/`, with
- * each `${...}` written `:param` and any query string dropped.
+ * each `${...}`, and each `+ expr` concatenated after a quoted literal, written `:param`, and any
+ * query string dropped.
  */
 export function apiPathLiterals(text: string): string[] {
   const paths: string[] = [];
-  for (const match of text.matchAll(/(["'])(\/api\/[^"'\n]*)\1/g)) paths.push(match[2]);
+  for (const match of text.matchAll(/(["'])(\/api\/[^"'\n]*)\1/g)) {
+    paths.push(match[2] + concatenatedParts(text, match.index + match[0].length));
+  }
   for (let at = text.indexOf("`/api/"); at >= 0; at = text.indexOf("`/api/", at + 1)) {
     let path = "";
     let i = at + 1;
@@ -299,11 +397,21 @@ export function pathMatches(pattern: string, literal: string): boolean {
   );
 }
 
-/** Whether `text` sends `route`: it names the path and has a `method:` that can be its method. */
+/**
+ * Whether `text` can send `route`'s method: a `method:` whose value (possibly on the next line,
+ * possibly a ternary) can be it, or the `method` shorthand (`{ method, body }`) in a file that
+ * names the method as a string.
+ */
+export function sendsMethod(text: string, method: RequiredReasonRoute["method"]): boolean {
+  if (new RegExp(`(?<![\\w$.])method:\\s*[^,};]*["']${method}["']`).test(text)) return true;
+  return /[{,]\s*method\s*[,}]/.test(text) && new RegExp(`["']${method}["']`).test(text);
+}
+
+/** Whether `text` sends `route`: it names the path and can send its method. */
 export function sendsRoute(text: string, route: RequiredReasonRoute): boolean {
-  const method = new RegExp(`(?<![\\w$])method:[^,}\\n]*["']${route.method}["']`);
   return (
-    method.test(text) && apiPathLiterals(text).some((literal) => pathMatches(route.path, literal))
+    sendsMethod(text, route.method) &&
+    apiPathLiterals(text).some((literal) => pathMatches(route.path, literal))
   );
 }
 
@@ -602,8 +710,9 @@ describe("M12: the dialog's onConfirm must take and use the reason", () => {
   });
 });
 
-describe("M12: a test marker counts only in a test that exercises the reason", () => {
+describe("M12/M4: a test marker counts only above a test that exercises the reason", () => {
   const marker = "// required-reason: x.y\n";
+  const wrap = (body: string) => `${marker}test("t", async () => {\n${body}\n});`;
 
   test("the over-long case, the schema or an expect naming the reason makes a test count", () => {
     for (const body of [
@@ -612,30 +721,104 @@ describe("M12: a test marker counts only in a test that exercises the reason", (
       'expect(sent).toEqual({ id, reason: "listed in error" });',
       "expect(\n  calls[0],\n).toMatchObject({ input: { reason: 'r' } });",
       'expect(await response.json()).toEqual({ error: "reason_required" });',
+      'expect(rpcCalls.map(({ args }) => args.p_reason)).toEqual(["r"]);',
     ]) {
       expect(exercisesReason(body)).toBe(true);
-      expect(testMarkerProblems([{ path: "a.test.ts", text: marker + body }], "x.y")).toEqual([]);
+      expect(testMarkerProblems([{ path: "a.test.ts", text: wrap(body) }], "x.y")).toEqual([]);
     }
   });
 
-  test("a bare marker, or one beside assertions that never name the reason, is reported", () => {
+  test("a bare marker, or one above assertions that never name the reason, is reported", () => {
     expect(exercisesReason("test('x', () => { expect(1).toBe(1); });")).toBe(false);
     expect(exercisesReason("const reasonLabel = 1; expect(reasonLabel).toBe(1);")).toBe(false);
-    expect(
-      testMarkerProblems([{ path: "bare.test.ts", text: `${marker}test("x", () => {});` }], "x.y"),
-    ).toEqual([
-      "bare.test.ts: carries the marker but has no .repeat(501), requiredReasonSchema or expect(...) naming the reason",
+    expect(testMarkerProblems([{ path: "bare.test.ts", text: wrap("") }], "x.y")).toEqual([
+      "bare.test.ts:1: the marked test has no .repeat(501), requiredReasonSchema or expect(...) naming the reason",
     ]);
   });
 
-  test("every file with the marker must count, not just one of them", () => {
+  test("a gutted marked test next to a strong unmarked test in the same file fails", () => {
+    const text = [
+      'test("strong, unmarked", () => {',
+      '  expect(send("x".repeat(501))).toEqual({ reason: "r" });',
+      "});",
+      "",
+      "// required-reason: x.y",
+      'test("gutted", () => {',
+      "  expect(true).toBe(true);",
+      "});",
+    ].join("\n");
+    expect(testMarkerProblems([{ path: "mixed.test.ts", text }], "x.y")).toEqual([
+      "mixed.test.ts:5: the marked test has no .repeat(501), requiredReasonSchema or expect(...) naming the reason",
+    ]);
+  });
+
+  test("the body read is the marked test's own, past nested braces and a stacked marker", () => {
+    const text = [
+      "// required-reason: x.y",
+      "// required-reason: x.z",
+      '  it.each([1])("t %d", async (n) => {',
+      "    const o = { a: { b: n } };",
+      '    expect(o).toEqual({ reason: "r" });',
+      "  });",
+      'test("next", () => { expect(1).toBe(1); });',
+    ].join("\n");
+    expect(markedTestBody(text.split("\n"), 0)).toContain('{ reason: "r" }');
+    expect(markedTestBody(text.split("\n"), 0)).not.toContain("next");
+    expect(testMarkerProblems([{ path: "s.test.ts", text }], "x.y")).toEqual([]);
+    expect(testMarkerProblems([{ path: "s.test.ts", text }], "x.z")).toEqual([]);
+  });
+
+  test("a marker that is not directly above a test is reported", () => {
+    const text = `${marker}const fixture = 1;\ntest("t", () => { expect({ reason: 1 }).toBeTruthy(); });`;
+    expect(testMarkerProblems([{ path: "far.test.ts", text }], "x.y")).toEqual([
+      "far.test.ts:1: the marker is not directly above a test( or it(",
+    ]);
+  });
+
+  test("every marked file must count, not just one of them", () => {
     const tests = [
-      { path: "good.test.ts", text: `${marker}expect(x).toEqual({ reason: "r" });` },
-      { path: "gutted.test.ts", text: `${marker}expect(true).toBe(true);` },
+      { path: "good.test.ts", text: wrap('expect(x).toEqual({ reason: "r" });') },
+      { path: "gutted.test.ts", text: wrap("expect(true).toBe(true);") },
     ];
     expect(testMarkerProblems(tests, "x.y")).toHaveLength(1);
-    expect(testMarkerProblems(tests, "x.y")[0]).toStartWith("gutted.test.ts:");
+    expect(testMarkerProblems(tests, "x.y")[0]).toStartWith("gutted.test.ts:1:");
     expect(testMarkerProblems([], "x.y")).toEqual(['no test carries "// required-reason: x.y"']);
+  });
+});
+
+describe("M3: only the dialog's own onConfirm counts", () => {
+  test("an onConfirm on an element nested in another prop does not satisfy the rule", () => {
+    const text = [
+      "// required-reason: x.y",
+      "<ConfirmActionDialog",
+      "  reason={requiredReasonDialog}",
+      "  consequence={<Inner onConfirm={async (reason) => { await send(reason); }} />}",
+      "/>",
+    ].join("\n");
+    expect(dialogMarkerProblems(text, "x.y")).toEqual(["dialog on line 2: has no onConfirm"]);
+    const own = `${text.slice(0, -2)}  onConfirm={async (r) => { await go(r); }}\n/>`;
+    expect(dialogMarkerProblems(own, "x.y")).toEqual([]);
+  });
+
+  test("a nested reason prop does not count as the dialog's own", () => {
+    const text = [
+      "// required-reason: x.y",
+      '<ConfirmActionDialog reason="none"',
+      "  consequence={<X reason={requiredReasonDialog} />}",
+      "  onConfirm={async (r) => { await go(r); }}",
+      "/>",
+    ].join("\n");
+    expect(dialogMarkerProblems(text, "x.y")).toEqual([
+      "dialog on line 2 has no required reason prop",
+    ]);
+  });
+
+  test("topLevelProps keeps indices and blanks nested values, strings and comments", () => {
+    const props = ' a={<b onConfirm={f} />} c="onConfirm={x}" /* onConfirm={y} */ d={1}';
+    const masked = topLevelProps(props);
+    expect(masked).toHaveLength(props.length);
+    expect(masked).not.toContain("onConfirm");
+    expect(masked).toContain("d={ }");
   });
 });
 
@@ -750,6 +933,53 @@ describe("M13: only registered files send a reason-required route", () => {
       ["content/Reports.tsx", 'import { sendDocumentDelete } from "./documentDelete";'],
     ]);
     expect(helperImporterProblems(files, actions)).toEqual([]);
+  });
+});
+
+describe("M2: concatenated paths and other method spellings", () => {
+  const voidRoute = { method: "POST", path: "/api/admin/receipts/:id/void" } as const;
+  const docRoute = { method: "DELETE", path: "/api/admin/documents/:id" } as const;
+
+  test("a quoted literal followed by + parts is a path with :param segments", () => {
+    expect(apiPathLiterals('f("/api/admin/documents/" + id)')).toEqual([
+      "/api/admin/documents/:param",
+    ]);
+    expect(apiPathLiterals("f('/api/admin/receipts/' + target.id + '/void', o)")).toEqual([
+      "/api/admin/receipts/:param/void",
+    ]);
+    expect(apiPathLiterals('f("/api/admin/receipts/" + encodeURIComponent(id) + "/void")')).toEqual(
+      ["/api/admin/receipts/:param/void"],
+    );
+    expect(apiPathLiterals('f("/api/admin/adoption-information?" + search)')).toEqual([
+      "/api/admin/adoption-information",
+    ]);
+  });
+
+  test("concatenation that does not make the route's path does not match", () => {
+    expect(
+      sendsRoute('f("/api/admin/documents/" + id + "/publish", { method: "DELETE" })', docRoute),
+    ).toBe(false);
+    expect(sendsRoute('f("/api/admin/receipts/" + id, { method: "POST" })', voidRoute)).toBe(false);
+    expect(sendsRoute('f("/api/admin/receipts/" + id + "/void")', voidRoute)).toBe(false);
+  });
+
+  test("concatenated paths are swept like template literals", () => {
+    const text = 'fetchAdminJson("/api/admin/receipts/" + id + "/void", { method: "POST" })';
+    expect(sendsRoute(text, voidRoute)).toBe(true);
+    expect(sendsRoute('f("/api/admin/documents/" + id, { method: "DELETE" })', docRoute)).toBe(
+      true,
+    );
+  });
+
+  test("`method:` on the next line, and the `method` shorthand, are read", () => {
+    expect(sendsMethod('f(p, {\n  method:\n    "DELETE",\n})', "DELETE")).toBe(true);
+    expect(sendsMethod('const method = "DELETE";\nf(p, { method, body })', "DELETE")).toBe(true);
+    expect(sendsMethod('const method = "PATCH";\nf(p, { method })', "DELETE")).toBe(false);
+    expect(sendsMethod("f(p, { methodName, body })", "DELETE")).toBe(false);
+    expect(sendsMethod('f(p, { method: "POST" }); g({ x: "DELETE" })', "DELETE")).toBe(false);
+    const shorthand =
+      'const method = "POST";\nf("/api/admin/receipts/" + id + "/void", { method });';
+    expect(sendsRoute(shorthand, voidRoute)).toBe(true);
   });
 });
 

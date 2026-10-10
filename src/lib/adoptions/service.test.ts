@@ -948,18 +948,20 @@ describe("createAdoptionCoordinatorService", () => {
         now: () => new Date("2026-06-26T08:30:00.000Z"),
       });
 
+      const reason = " applicant withdrew ";
       await service.changeCaseStatus({
         actorUserId: adminId,
         caseId,
-        input: { statusId, note: " applicant withdrew " },
+        input: { statusId, note: reason },
       });
 
+      // The closing reason travels as the note, trimmed.
       expect(repo.calls.find((call) => call.name === "changeCaseStatus")?.payload).toEqual({
         caseId,
         statusId,
         closedAt: "2026-06-26T08:30:00.000Z",
         actorUserId: adminId,
-        note: "applicant withdrew",
+        note: reason.trim(),
       });
     });
 
@@ -968,8 +970,16 @@ describe("createAdoptionCoordinatorService", () => {
       const repo = createRepo();
       const service = createAdoptionCoordinatorService({ repo });
 
-      await service.changeCaseStatus({ actorUserId: adminId, caseId, input: { statusId } });
+      const refusal = await service
+        .changeCaseStatus({ actorUserId: adminId, caseId, input: { statusId } })
+        .then(
+          () => null,
+          (error: unknown) => (error instanceof Error ? error.message : String(error)),
+        );
 
+      // A status that does not close the case is never refused for a missing reason.
+      expect(refusal).not.toBe("reason_required");
+      expect(refusal).toBeNull();
       expect(repo.calls.find((call) => call.name === "changeCaseStatus")?.payload).toMatchObject({
         note: null,
       });

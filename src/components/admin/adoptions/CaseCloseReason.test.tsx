@@ -73,27 +73,29 @@ describe("the case screen asks for a reason before it closes or rejects a case",
   test("confirming sends the status with the trimmed reason as the note", async () => {
     const mutate = mock(async (_request: unknown) => undefined);
     const closed: boolean[] = [];
+    const reason = " applicant withdrew ";
     await runConfirm({
       open: true,
       reason: requiredReasonDialog,
-      state: { ...INITIAL_CONFIRM_STATE, text: " applicant withdrew " },
+      state: { ...INITIAL_CONFIRM_STATE, text: reason },
       inFlight: { current: false },
       dispatch: () => {},
-      onConfirm: async (reason) => {
+      onConfirm: async (typed) => {
         const request = caseStatusChangeRequest({
           caseId: CASE,
           statusId: CLOSED_STATUS,
           closing: true,
           note: "ignored inline note",
-          reason,
+          reason: typed,
         });
         if (request) await mutate(request);
       },
       onOpenChange: (open) => closed.push(open),
     });
+    // The dialog's reason, trimmed, replaces the inline note.
     expect(mutate.mock.calls[0][0]).toEqual({
       caseId: CASE,
-      body: { statusId: CLOSED_STATUS, note: "applicant withdrew" },
+      body: { statusId: CLOSED_STATUS, note: reason.trim() },
     });
     expect(closed).toEqual([false]);
   });
@@ -101,12 +103,13 @@ describe("the case screen asks for a reason before it closes or rejects a case",
   // required-reason: adoption_case.close
   test("the POST body carries the reason as the note", async () => {
     fetchCalls.length = 0;
+    const reason = " applicant withdrew ";
     const request = caseStatusChangeRequest({
       caseId: CASE,
       statusId: CLOSED_STATUS,
       closing: true,
       note: "",
-      reason: " applicant withdrew ",
+      reason,
     });
     expect(request).not.toBeNull();
     await sendCaseStatusChange(request!);
@@ -115,7 +118,7 @@ describe("the case screen asks for a reason before it closes or rejects a case",
     expect(fetchCalls[0].init?.method).toBe("POST");
     expect(JSON.parse(String(fetchCalls[0].init?.body))).toEqual({
       statusId: CLOSED_STATUS,
-      note: "applicant withdrew",
+      note: reason.trim(),
     });
   });
 

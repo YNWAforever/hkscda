@@ -8,10 +8,10 @@ import { describe, expect, mock, test } from "bun:test";
  * fetch, in Chinese and in English.
  */
 
-const calls: Array<{ url: string; method: string | undefined }> = [];
+const calls: Array<{ url: string; method: string | undefined; body: unknown }> = [];
 let failure: unknown = null;
 const failingFetch = async (url: string, init?: RequestInit) => {
-  calls.push({ url, method: init?.method });
+  calls.push({ url, method: init?.method, body: JSON.parse(String(init?.body)) });
   if (failure !== null) throw failure;
   return { ok: true };
 };
@@ -41,6 +41,8 @@ const screens: Array<{
   call: RegExp;
   url: string;
   method: string;
+  /** The JSON body the helper sends, parsed. */
+  body: unknown;
   send: (language: Language) => Promise<unknown>;
 }> = [
   {
@@ -49,6 +51,7 @@ const screens: Array<{
     call: /sendReceiptVoid\(request, language\)/,
     url: `/api/admin/receipts/${ID}/void`,
     method: "POST",
+    body: { reason: "wrong donor" },
     send: (language) => sendReceiptVoid({ receiptId: ID, reason: "wrong donor" }, language),
   },
   {
@@ -57,6 +60,7 @@ const screens: Array<{
     call: /sendReceiptVoid\(request, language, supporterId\)/,
     url: `/api/admin/receipts/${ID}/void`,
     method: "POST",
+    body: { supporterId: "supporter-1", reason: "wrong donor" },
     send: (language) =>
       sendReceiptVoid({ receiptId: ID, reason: "wrong donor" }, language, "supporter-1"),
   },
@@ -66,6 +70,7 @@ const screens: Array<{
     call: /sendEstateDelete\(\{ id: operation\.id, reason: operation\.reason \}, language\)/,
     url: "/api/admin/adoption-information",
     method: "DELETE",
+    body: { id: ID, reason: "listed in error" },
     send: (language) => sendEstateDelete({ id: ID, reason: "listed in error" }, language),
   },
   {
@@ -74,6 +79,7 @@ const screens: Array<{
     call: /sendStatusDelete\(variables, language\)/,
     url: `/api/admin/adoptions/statuses/${ID}`,
     method: "DELETE",
+    body: { reason: "merged" },
     send: (language) => sendStatusDelete({ id: ID, reason: "merged" }, language),
   },
   {
@@ -82,6 +88,7 @@ const screens: Array<{
     call: /sendDocumentDelete\(request, adminLanguage\)/,
     url: `/api/admin/documents/${ID}`,
     method: "DELETE",
+    body: { reason: "duplicate" },
     send: (language) => sendDocumentDelete(documentDeleteRequest(ID, "duplicate")!, language),
   },
   {
@@ -90,6 +97,7 @@ const screens: Array<{
     call: /sendDocumentDelete\(request, language\)/,
     url: `/api/admin/annual-reports/${ID}`,
     method: "DELETE",
+    body: { reason: "duplicate" },
     send: (language) => sendDocumentDelete(annualReportDeleteRequest(ID, "duplicate")!, language),
   },
 ];
@@ -134,10 +142,19 @@ for (const screen of screens) {
       expect(await Bun.file(screen.file).text()).toMatch(screen.call);
     });
 
+    test("a successful request sends the screen's own body, reason included", async () => {
+      calls.length = 0;
+      await screen.send("en");
+      expect(calls).toEqual([{ url: screen.url, method: screen.method, body: screen.body }]);
+      // Exact key order, too: the payments screen sends only the reason, the supporter page the
+      // supporter's id first.
+      expect(JSON.stringify(calls[0].body)).toBe(JSON.stringify(screen.body));
+    });
+
     test("a zh admin sees the failure in Chinese, not the server's English", async () => {
       const cause = new AdminHttpError("Document asset is still referenced", 409);
       const error = await rejection(() => screen.send("zh"), cause);
-      expect(calls).toEqual([{ url: screen.url, method: screen.method }]);
+      expect(calls).toEqual([{ url: screen.url, method: screen.method, body: screen.body }]);
       expect(adminErrorMessage(error, "zh")).toBe(confirmActionCopy.zh.failed);
       expect(adminErrorMessage(error, "zh")).not.toContain("referenced");
     });

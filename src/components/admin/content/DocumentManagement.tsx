@@ -9,6 +9,7 @@ import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionFailure } from "../confirmActionFailure";
 import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
@@ -108,7 +109,7 @@ function DocumentManagementRuntime() {
     }) => {
       if (action === "delete") {
         const request = documentDeleteRequest(id, reason ?? null);
-        if (!request) throw new Error("A reason is required to delete a document");
+        if (!request) throw confirmActionFailure(null, adminLanguage);
         return sendDocumentDelete(request, adminLanguage);
       }
       return fetchAdminJson(`/api/admin/documents/${id}/publish`, {

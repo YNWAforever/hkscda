@@ -7,6 +7,7 @@ import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionFailure } from "../confirmActionFailure";
 import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
@@ -88,7 +89,7 @@ function AnnualReportManagementRuntime() {
       }
       if (action === "delete") {
         const request = annualReportDeleteRequest(id, reason ?? null);
-        if (!request) throw new Error("A reason is required to delete an annual report");
+        if (!request) throw confirmActionFailure(null, language);
         return sendDocumentDelete(request, language);
       }
       return fetchAdminJson(`/api/admin/annual-reports/${id}/publish`, {

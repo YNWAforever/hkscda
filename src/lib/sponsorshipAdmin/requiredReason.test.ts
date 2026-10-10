@@ -107,7 +107,8 @@ describe("cancelling a sponsorship pledge needs a reason", () => {
         request: post(note === undefined ? {} : { note }),
         params: { id: pledgeId },
       });
-      expect(response.status).toBe(400);
+      // Labelled, so a failure names the reason input that got through.
+      expect({ reason: label, status: response.status }).toEqual({ reason: label, status: 400 });
       expect(repo.getPledgeDetail).not.toHaveBeenCalled();
       expect(repo.cancelPledge).not.toHaveBeenCalled();
     });
@@ -116,26 +117,29 @@ describe("cancelling a sponsorship pledge needs a reason", () => {
   // required-reason: sponsorship_pledge.cancel
   test("the trimmed note reaches the repository", async () => {
     const { repo, handlers } = setup();
+    const reason = "  Sponsor asked to stop  ";
     const response = await handlers.cancelPledge({
-      request: post({ note: "  Sponsor asked to stop  " }),
+      request: post({ note: reason }),
       params: { id: pledgeId },
     });
     expect(response.status).toBe(200);
     expect(repo.cancelPledge).toHaveBeenCalledWith({
       pledgeId,
       actorUserId: admin.authUserId,
-      note: "Sponsor asked to stop",
+      note: reason.trim(),
     });
   });
 
   // required-reason: sponsorship_pledge.cancel
   test("a 500-character note passes", async () => {
-    const { handlers } = setup();
+    const { repo, handlers } = setup();
+    const reason = "x".repeat(500);
     const response = await handlers.cancelPledge({
-      request: post({ note: "x".repeat(500) }),
+      request: post({ note: reason }),
       params: { id: pledgeId },
     });
     expect(response.status).toBe(200);
+    expect(repo.cancelPledge).toHaveBeenCalledWith(expect.objectContaining({ note: reason }));
   });
 });
 
@@ -154,7 +158,8 @@ describe("rejecting a payment proof needs a reason; approving does not", () => {
         request: post(command("reject", note)),
         params: { id: pledgeId },
       });
-      expect(response.status).toBe(400);
+      // Labelled, so a failure names the reason input that got through.
+      expect({ reason: label, status: response.status }).toEqual({ reason: label, status: 400 });
       expect(repo.getPledgeDetail).not.toHaveBeenCalled();
       expect(repo.reviewProof).not.toHaveBeenCalled();
     });
@@ -163,13 +168,14 @@ describe("rejecting a payment proof needs a reason; approving does not", () => {
   // required-reason: sponsorship_proof.reject
   test("the trimmed reject note reaches the repository", async () => {
     const { repo, handlers } = setup();
+    const reason = "  Blurry receipt  ";
     const response = await handlers.reviewProof({
-      request: post(command("reject", "  Blurry receipt  ")),
+      request: post(command("reject", reason)),
       params: { id: pledgeId },
     });
     expect(response.status).toBe(200);
     expect(repo.reviewProof).toHaveBeenCalledWith(
-      expect.objectContaining({ decision: "reject", note: "Blurry receipt" }),
+      expect.objectContaining({ decision: "reject", note: reason.trim() }),
     );
   });
 
@@ -181,7 +187,8 @@ describe("rejecting a payment proof needs a reason; approving does not", () => {
         request: post(command("approve", note)),
         params: { id: pledgeId },
       });
-      expect(response.status).toBe(200);
+      // Approving needs no reason: absent or blank, the review goes through.
+      expect({ reason: note, status: response.status }).toEqual({ reason: note, status: 200 });
       expect(repo.reviewProof).toHaveBeenCalledWith(
         expect.objectContaining({ decision: "approve", note: null }),
       );

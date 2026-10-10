@@ -129,6 +129,10 @@ describe("a failed decision shows the server message for the admin's language", 
       sponsorshipServerErrorText("proofReviewChanged", "en"),
     );
     expect(localizedDecisionError(cause, "zh").message).toBe(zhMessage);
+    // The rejection that met the stale proof still carries its reason, so the retry after a reload
+    // sends the same reason again.
+    const reason = "Blurry receipt";
+    expect(pledgeReviewCommand(PROOF, "reject", reason)?.note).toBe(reason);
   });
 
   test("any other error is shown as it came", async () => {
@@ -151,14 +155,15 @@ describe("what is sent", () => {
   test("cancelling sends the trimmed reason as the note, and closes the dialog", async () => {
     fetchCalls.length = 0;
     const closed: boolean[] = [];
+    const reason = " Sponsor moved overseas ";
     await runConfirm({
       open: true,
       reason: requiredReasonDialog,
-      state: { ...INITIAL_CONFIRM_STATE, text: " Sponsor moved overseas " },
+      state: { ...INITIAL_CONFIRM_STATE, text: reason },
       inFlight: { current: false },
       dispatch: () => {},
-      onConfirm: async (reason) => {
-        const request = pledgeCancelRequest(PLEDGE, reason);
+      onConfirm: async (typed) => {
+        const request = pledgeCancelRequest(PLEDGE, typed);
         if (request) await sendPledgeDecision(request);
       },
       onOpenChange: (open) => closed.push(open),
@@ -167,7 +172,7 @@ describe("what is sent", () => {
     expect(fetchCalls[0].url).toBe(`/api/admin/sponsorships/pledges/${PLEDGE}/cancel`);
     expect(fetchCalls[0].init?.method).toBe("POST");
     expect(JSON.parse(String(fetchCalls[0].init?.body))).toEqual({
-      note: "Sponsor moved overseas",
+      note: reason.trim(),
     });
     expect(closed).toEqual([false]);
   });
@@ -175,14 +180,15 @@ describe("what is sent", () => {
   // required-reason: sponsorship_proof.reject
   test("rejecting sends the trimmed reason as the note with the review key", async () => {
     fetchCalls.length = 0;
+    const reason = " Blurry receipt ";
     await runConfirm({
       open: true,
       reason: requiredReasonDialog,
-      state: { ...INITIAL_CONFIRM_STATE, text: " Blurry receipt " },
+      state: { ...INITIAL_CONFIRM_STATE, text: reason },
       inFlight: { current: false },
       dispatch: () => {},
-      onConfirm: async (reason) => {
-        const command = pledgeReviewCommand(PROOF, "reject", reason);
+      onConfirm: async (typed) => {
+        const command = pledgeReviewCommand(PROOF, "reject", typed);
         if (command) await sendPledgeDecision(pledgeReviewRequest(PLEDGE, command, KEY));
       },
       onOpenChange: () => {},
@@ -190,7 +196,7 @@ describe("what is sent", () => {
     expect(fetchCalls[0].url).toBe(`/api/admin/sponsorships/pledges/${PLEDGE}/review`);
     expect(JSON.parse(String(fetchCalls[0].init?.body))).toEqual({
       decision: "reject",
-      note: "Blurry receipt",
+      note: reason.trim(),
       proofId: PROOF.id,
       expectedRevision: 4,
       idempotencyKey: KEY,
@@ -202,21 +208,26 @@ describe("what is sent", () => {
   test("a rejection keeps the typed text and leaves the dialog open", async () => {
     const actions: string[] = [];
     const closed: boolean[] = [];
-    const state = { ...INITIAL_CONFIRM_STATE, text: "Blurry receipt" };
+    const received: Array<string | null> = [];
+    const reason = "Blurry receipt";
+    const state = { ...INITIAL_CONFIRM_STATE, text: reason };
     await runConfirm({
       open: true,
       reason: requiredReasonDialog,
       state,
       inFlight: { current: false },
       dispatch: (action) => actions.push(action.type),
-      onConfirm: async () => {
+      onConfirm: async (typed) => {
+        received.push(typed);
         throw new Error("Sponsorship pledge is already cancelled");
       },
       onOpenChange: (open) => closed.push(open),
     });
     expect(actions).toEqual(["start", "rejected"]);
     expect(closed).toEqual([]);
-    expect(state.text).toBe("Blurry receipt");
+    // The reason reached the failed request and is still in the field for a retry.
+    expect(received).toEqual([reason]);
+    expect(state.text).toBe(reason);
   });
 
   test("approving builds a request with or without a note; a blank reject or cancel builds none", () => {
