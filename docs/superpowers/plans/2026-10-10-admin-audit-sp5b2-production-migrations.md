@@ -4,15 +4,19 @@ This runbook is for the owner. It covers the six migrations that SP-5b-2 (requir
 
 ## Summary
 
-- Apply all six migrations to production **before** this branch's app deploys.
-- The migrations are backward compatible (plan D1): every new argument is `p_reason text default null`, and the RPCs that take a jsonb payload read `payload->>'reason'`. The app that is deployed today sends no reason and keeps working against the migrated database.
-- If the app ships first, it still works, but the reasons for estate deletes, board member step-downs and coordinator status deletes are silently dropped, because the old RPC bodies ignore the payload key. The app's zod schemas still demand the reason, so staff are asked for it and the answer is lost.
+- **The order is fixed.** Apply all six migrations to production first, run each verification query and the release schema check, then merge and deploy. The app on this branch must not reach production before the migrations.
+- The migrations are backward compatible (plan D1): every new argument is `p_reason text default null`, and the RPCs that take a jsonb payload read `payload->>'reason'`. The app that is deployed today sends no reason and keeps working against the migrated database, so there is no hurry between applying the migrations and the deploy.
+- The new app does **not** work against the old database for M1, M2 and M4. It names `p_reason` when it calls `void_receipt_with_audit`, `set_volunteer_registration_status_with_audit` and `deactivate_faq_entry_with_audit`, and PostgREST matches a call by its named arguments. Against the old functions it finds no match and answers `PGRST202` (404, "could not find the function"). Until M1, M2 and M4 are applied, every receipt void, every FAQ deactivation and every volunteer registration status change (approve and waitlist included, not only reject) fails. The release schema check reports `incompatible` until they are applied, which is why it must be green before the merge.
+- For M5 and M6 the new app would keep working against the old database, but the reasons for estate deletes, board member step-downs and coordinator status deletes would be silently dropped, because the old RPC bodies ignore the payload key. That is not a reason to change the order above.
 - The database itself does not require a reason after these migrations. Making the database reject a missing reason is a follow-up migration, to be written after this branch has been deployed and the old app is gone.
 
 ## Before you start
 
 - Use a database connection you trust. Do not paste a connection string into a chat, a ticket or this file.
-- Apply the migrations in the order below with your usual process (`supabase db push` against the linked project, or the SQL editor, one file at a time). Each file is self-contained and idempotent for its own identity (`drop function if exists` followed by `create function`, or `create or replace function`).
+- Apply the migrations in the order below with your usual process (`supabase db push` against the linked project, or the SQL editor, one file at a time). Each file is self-contained.
+- Apply each file once. M1, M2 and M4 drop the old identity and then `create function` the new one, so a re-run errors (42723, the function already exists) and changes nothing; that error is harmless. M3, M5 and M6 use `create or replace` and may be re-run.
+- Run each file inside one transaction, so there is no instant when neither the old nor the new identity of a function exists. `supabase db push` and the SQL editor both do this for a file.
+- M1, M2 and M4 change an RPC signature, so PostgREST must reload its schema cache. Supabase does this on its own through its DDL event trigger. If a call made after the migration still answers `PGRST202`, run `notify pgrst, 'reload schema';` and try again.
 - Do not run them against the shared local stack on port 55321.
 
 ## Database tests have not been run
@@ -32,7 +36,7 @@ Each file reads its own variable (grep the file for `process.env` to confirm the
 
 ## The six migrations, in order
 
-For every migration, run its verification query on production after applying it. The queries are read-only.
+For every migration, run its verification query on production after applying it. The queries are read-only. In each `like` pattern the underscore is escaped (`\_`), because a bare `_` matches any single character.
 
 ### M1. `20261010130000_sp5b2_receipt_void_reason.sql`
 
@@ -46,7 +50,7 @@ where proname = 'void_receipt_with_audit'
   and pronamespace = 'public'::regnamespace;
 -- expect one row: p_receipt_id uuid, p_actor uuid, p_supporter_id uuid, p_reason text
 
-select prosrc like '%p_reason%' as records_reason
+select prosrc like '%p\_reason%' as records_reason
 from pg_proc
 where proname = 'void_receipt_with_audit'
   and pronamespace = 'public'::regnamespace;
@@ -65,7 +69,7 @@ where proname = 'set_volunteer_registration_status_with_audit'
   and pronamespace = 'public'::regnamespace;
 -- expect one row, ending in: p_update_internal_notes boolean, p_reason text
 
-select prosrc like '%p_reason%' as records_reason
+select prosrc like '%p\_reason%' as records_reason
 from pg_proc
 where proname = 'set_volunteer_registration_status_with_audit'
   and pronamespace = 'public'::regnamespace;
@@ -75,6 +79,7 @@ where proname = 'set_volunteer_registration_status_with_audit'
 ### M3. `20261010130200_sp5b2_internship_review_audit_reason.sql`
 
 - **Changes:** `internship_command` keeps its identity `(p_actor uuid, p_command jsonb)`. The `review` audit detail adds `status` and `reason`. The stored replay result is unchanged.
+- **App change that ships with it:** the length cap on an internship review reason (approve, reject and needs_information) moves from 2000 to 500 characters (Ruling 5, the shared reason contract). A longer reason gets a 400; staff must shorten it.
 - **Verify:**
 
 ```sql
@@ -84,7 +89,7 @@ where proname = 'internship_command'
   and pronamespace = 'public'::regnamespace;
 -- expect one row: p_actor uuid, p_command jsonb
 
-select prosrc like '%''status'', p_command->>''status'', ''reason''%' as records_status_and_reason
+select prosrc like '%''status'', p\_command->>''status'', ''reason''%' as records_status_and_reason
 from pg_proc
 where proname = 'internship_command'
   and pronamespace = 'public'::regnamespace;
@@ -103,7 +108,7 @@ where proname = 'deactivate_faq_entry_with_audit'
   and pronamespace = 'public'::regnamespace;
 -- expect one row: p_actor_user_id uuid, p_id uuid, p_reason text
 
-select prosrc like '%p_reason%' as records_reason
+select prosrc like '%p\_reason%' as records_reason
 from pg_proc
 where proname = 'deactivate_faq_entry_with_audit'
   and pronamespace = 'public'::regnamespace;
@@ -112,7 +117,7 @@ where proname = 'deactivate_faq_entry_with_audit'
 
 ### M5. `20261010130400_sp5b2_admin_content_delete_reason.sql`
 
-- **Changes:** `mutate_admin_content_with_audit` keeps its identity. For every operation other than `upsert`, the audit detail now records `payload.reason` (the delete of an estate and the step-down of a board member). Without a reason the detail is `{}` as before. This is the migration whose reasons are lost if the app ships first.
+- **Changes:** `mutate_admin_content_with_audit` keeps its identity. For every operation other than `upsert`, the audit detail now records `payload.reason` (the delete of an estate and the step-down of a board member). Without a reason the detail is `{}` as before. Against the old body, the new app's reasons would be dropped (see Summary).
 - **Verify:**
 
 ```sql
@@ -122,7 +127,7 @@ where proname = 'mutate_admin_content_with_audit'
   and pronamespace = 'public'::regnamespace;
 -- expect one row: p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb
 
-select prosrc like '%p_payload->>''reason''%' as records_reason
+select prosrc like '%p\_payload->>''reason''%' as records_reason
 from pg_proc
 where proname = 'mutate_admin_content_with_audit'
   and pronamespace = 'public'::regnamespace;
@@ -131,7 +136,7 @@ where proname = 'mutate_admin_content_with_audit'
 
 ### M6. `20261010130500_sp5b2_coordinator_status_delete_reason.sql`
 
-- **Changes:** `mutate_adoption_coordinator_with_audit` keeps its identity. The status delete branch's audit detail records the reason beside `category` and `key`. Without a reason the detail is `{category, key}` as before. Also lost if the app ships first.
+- **Changes:** `mutate_adoption_coordinator_with_audit` keeps its identity. The status delete branch's audit detail records the reason beside `category` and `key`. Without a reason the detail is `{category, key}` as before. Against the old body, the new app's reasons would be dropped (see Summary).
 - **Verify:**
 
 ```sql
@@ -141,7 +146,7 @@ where proname = 'mutate_adoption_coordinator_with_audit'
   and pronamespace = 'public'::regnamespace;
 -- expect one row: p_actor_user_id uuid, p_entity text, p_operation text, p_id uuid, p_payload jsonb
 
-select prosrc like '%p_payload->>''reason''%' as records_reason
+select prosrc like '%p\_payload->>''reason''%' as records_reason
 from pg_proc
 where proname = 'mutate_adoption_coordinator_with_audit'
   and pronamespace = 'public'::regnamespace;
@@ -165,21 +170,21 @@ The manifest on this branch lists the new identities for `void_receipt_with_audi
 1. Apply M1 to M6 in order and run each verification query.
 2. Run `bun scripts/check-release-schema.ts` and confirm it is green.
 3. Get release approval. Merge order is SP-5a (#207), then SP-5b-1 (#206), then this branch. Merging to `main` deploys to production.
-4. After the deploy, tell staff to **reload any open admin page**. A browser tab that was open before the deploy still runs the old bundle, which sends no reason, so its delete, reject and void calls are refused with a 400 until the page is reloaded.
+4. After the deploy, tell staff to **reload any open admin page**. A browser tab that was open before the deploy still runs the old bundle, which sends no reason, so its delete, reject and void calls are refused with a 400 until the page is reloaded. Tell them too that the internship review reason cap has moved from 2000 to 500 characters: a stale tab may still let them type up to 2000, and the server refuses anything over 500.
 
 ## Where each reason is stored
 
 Most reasons land in `audit_log.detail.reason`. The exceptions:
 
-| Action                                            | Where the reason lands                                       |
-| ------------------------------------------------- | ------------------------------------------------------------ |
-| Pledge cancel, pledge proof reject                | `audit_log.detail.note` (existing RPCs)                      |
-| Closing an adoption case                          | `audit_log.detail.note` (`change_adoption_case_status`)      |
-| Sponsorship finance (reverse, reallocate, refund) | The existing reason columns of those records                 |
-| Document delete, annual report delete             | `audit_log.detail.reason`, through `p_values` (no migration) |
-| Internship reject                                 | `audit_log.detail.reason` and `detail.status` (M3)           |
-| Volunteer activity bulk cancel                    | Already required by zod and SQL; unchanged by SP-5b-2        |
-| Everything else (M1, M2, M4, M5, M6)              | `audit_log.detail.reason`                                    |
+| Action                                            | Where the reason lands                                                                                                           |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Pledge cancel, pledge proof reject                | `audit_log.detail.note` (existing RPCs)                                                                                          |
+| Closing an adoption case                          | `audit_log.detail.note` (`change_adoption_case_status`)                                                                          |
+| Sponsorship finance (reverse, reallocate, refund) | The existing reason columns of those records; a refund also writes it to `audit_log.detail.reason` (`record_sponsorship_refund`) |
+| Document delete, annual report delete             | `audit_log.detail.reason`, through `p_values` (no migration)                                                                     |
+| Internship reject                                 | `audit_log.detail.reason` and `detail.status` (M3)                                                                               |
+| Volunteer activity bulk cancel                    | Already required by zod and SQL; unchanged by SP-5b-2                                                                            |
+| Everything else (M1, M2, M4, M5, M6)              | `audit_log.detail.reason`                                                                                                        |
 
 ## Known limits
 
