@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { requiredReasonSchema } from "../admin/requiredReason";
+
 export const documentKinds = [
   "annual_report",
   "wedding_form",
@@ -85,3 +87,6 @@ export type AnnualReportInput = z.infer<typeof annualReportInputSchema>;
 export type DocumentSlotInput = z.infer<typeof documentSlotInputSchema>;
 export type DocumentListSearch = z.infer<typeof documentListSearchSchema>;
 export type UploadTarget = z.infer<typeof uploadTargetSchema>;
+
+/** The body of a document or annual report DELETE: the reason staff gave, trimmed, 1 to 500 characters. */
+export const documentDeleteSchema = z.object({ reason: requiredReasonSchema });
