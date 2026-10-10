@@ -42,10 +42,55 @@ describe("createAdoptionInformationHandlers.upsert", () => {
     const response = await handlers.deleteEstate({
       request: request("http://localhost/x", {
         method: "DELETE",
-        body: JSON.stringify({ id: "22222222-2222-4222-8222-222222222222" }),
+        body: JSON.stringify({ id: "22222222-2222-4222-8222-222222222222", reason: "closed" }),
       }),
     });
     expect(response.status).toBe(404);
+  });
+
+  // required-reason: estate.delete
+  test("estate deletion passes the trimmed reason to the service", async () => {
+    const service = createService();
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const response = await handlers.deleteEstate({
+      request: request("http://localhost/x", {
+        method: "DELETE",
+        body: JSON.stringify({
+          id: "22222222-2222-4222-8222-222222222222",
+          reason: " closed ",
+        }),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(service.deleteEstate).toHaveBeenCalledWith({
+      actorUserId: admin.authUserId,
+      estateId: "22222222-2222-4222-8222-222222222222",
+      reason: "closed",
+    });
+  });
+
+  // required-reason: estate.delete
+  test("estate deletion rejects a missing, blank or over-long reason with 400 before the service", async () => {
+    const service = createService();
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const id = "22222222-2222-4222-8222-222222222222";
+    for (const body of [{ id }, { id, reason: "   " }, { id, reason: "x".repeat(501) }]) {
+      const response = await handlers.deleteEstate({
+        request: request("http://localhost/x", { method: "DELETE", body: JSON.stringify(body) }),
+      });
+      expect(response.status).toBe(400);
+    }
+    const noBody = await handlers.deleteEstate({
+      request: request("http://localhost/x", { method: "DELETE" }),
+    });
+    expect(noBody.status).toBe(400);
+    expect(service.deleteEstate).not.toHaveBeenCalled();
   });
 
   test("resource=fee returns 201 with { fee } and calls service.upsertFee", async () => {

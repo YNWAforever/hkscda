@@ -4,9 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { BoardMember, BoardMemberInput } from "../../../lib/governance/types";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { governanceCopy } from "./governanceCopy";
+import { boardMemberDeactivateRequest, sendBoardMemberDeactivate } from "./governanceDeactivate";
 import { draftFromMember, type BoardMemberDraft } from "./governanceDraft";
 
 export type { BoardMemberDraft } from "./governanceDraft";
@@ -33,6 +36,7 @@ export function GovernanceManagement() {
   const copy = useAdminCopy(governanceCopy);
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<BoardMemberDraft | null>(null);
+  const [stepDownTarget, setStepDownTarget] = useState<string | null>(null);
 
   const membersQuery = useQuery({
     queryKey: ADMIN_GOVERNANCE_QUERY_KEY,
@@ -52,11 +56,7 @@ export function GovernanceManagement() {
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: (id: string) =>
-      fetchAdminJson<{ ok: true }>("/api/admin/governance", {
-        method: "DELETE",
-        body: JSON.stringify({ id }),
-      }),
+    mutationFn: sendBoardMemberDeactivate,
     onSuccess: () => invalidateGovernanceQueries(queryClient),
   });
 
@@ -64,6 +64,22 @@ export function GovernanceManagement() {
 
   return (
     <div className="space-y-6">
+      {/* required-reason: board_member.deactivate */}
+      <ConfirmActionDialog
+        open={stepDownTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setStepDownTarget(null);
+        }}
+        title={copy.table.stepDown}
+        consequence={copy.stepDownConsequence}
+        confirmLabel={copy.table.stepDown}
+        destructive
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = boardMemberDeactivateRequest(stepDownTarget, reason);
+          if (request) await deactivateMutation.mutateAsync(request);
+        }}
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{copy.title}</h1>
         <button
@@ -121,7 +137,7 @@ export function GovernanceManagement() {
                       <Button
                         variant="outline"
                         type="button"
-                        onClick={() => deactivateMutation.mutate(member.id)}
+                        onClick={() => setStepDownTarget(member.id)}
                         disabled={deactivateMutation.isPending}
                       >
                         {copy.table.stepDown}
@@ -133,11 +149,6 @@ export function GovernanceManagement() {
             ))}
           </tbody>
         </table>
-      ) : null}
-      {deactivateMutation.isError ? (
-        <p role="alert" className="text-sm text-[var(--color-error)]">
-          {copy.stepDownFailed}
-        </p>
       ) : null}
 
       {draft ? (

@@ -43,6 +43,6 @@ export interface GovernanceRepository {
   listPublicRoster(): Promise<PublicBoardRoster>;
   listAdmin(): Promise<BoardMember[]>;
   upsert(input: BoardMemberInput, actorUserId: string): Promise<BoardMember>;
-  deactivate(id: string, actorUserId?: string): Promise<void>;
+  deactivate(id: string, actorUserId: string | undefined, reason: string): Promise<void>;
   insertAuditLog(input: GovernanceAuditLog): Promise<void>;
 }

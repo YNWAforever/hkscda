@@ -1,5 +1,6 @@
 // src/lib/governance/schemas.ts
 import { z } from "zod";
+import { requiredReasonSchema } from "../admin/requiredReason";
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
 
@@ -13,6 +14,9 @@ export const boardMemberInputSchema = z.object({
   effectiveDate: z.string().date(),
 });
 
-export const deactivateBoardMemberSchema = z.object({ id: boardMemberIdSchema });
+export const deactivateBoardMemberSchema = z.object({
+  id: boardMemberIdSchema,
+  reason: requiredReasonSchema,
+});
 
 export type BoardMemberInput = z.infer<typeof boardMemberInputSchema>;

@@ -127,6 +127,7 @@ describe("adoption information service", () => {
     await service.deleteEstate({
       actorUserId: "actor-1",
       estateId: "22222222-2222-4222-8222-222222222222",
+      reason: "listed in error",
     });
     expect(
       calls

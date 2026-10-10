@@ -37,16 +37,24 @@ export function createGovernanceService({
       return member;
     },
 
-    async deactivate({ actorUserId, id }: { actorUserId: string; id: string }) {
-      const parsed = deactivateBoardMemberSchema.parse({ id });
-      await repo.deactivate(parsed.id, actorUserId);
+    async deactivate({
+      actorUserId,
+      id,
+      reason,
+    }: {
+      actorUserId: string;
+      id: string;
+      reason: string;
+    }) {
+      const parsed = deactivateBoardMemberSchema.parse({ id, reason });
+      await repo.deactivate(parsed.id, actorUserId, parsed.reason);
       if (repo.usesAtomicAudit) return;
       await audit({
         actor_user_id: actorUserId,
         action: "board_member.deactivate",
         entity: "board_member",
         entity_id: parsed.id,
-        detail: {},
+        detail: { reason: parsed.reason },
       });
     },
   };

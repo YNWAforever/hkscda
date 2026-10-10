@@ -43,6 +43,8 @@ import {
   AlertDialogTitle,
 } from "../../ui/alert-dialog";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
+import { estateDeleteRequest, sendEstateDelete } from "./estateDelete";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -125,7 +127,7 @@ type MutationInput =
   | { action: "create-estate"; input: CreateEstateInput }
   | { action: "update-estate"; input: UpdateEstateInput }
   | { action: "publish-estate"; input: SetEstatePublicationInput }
-  | { action: "delete-estate"; id: string }
+  | { action: "delete-estate"; id: string; reason: string }
   | { action: "move-fees"; input: ReorderFeesInput };
 
 function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: AdoptionContentTab }) {
@@ -167,10 +169,7 @@ function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: Adop
   const mutation = useMutation({
     mutationFn: async (operation: MutationInput) => {
       if (operation.action === "delete-estate") {
-        return fetchAdminJson("/api/admin/adoption-information", {
-          method: "DELETE",
-          body: JSON.stringify({ id: operation.id }),
-        });
+        return sendEstateDelete({ id: operation.id, reason: operation.reason });
       }
       if (operation.action === "move-fees") {
         return fetchAdminJson<{ fees: AdoptionFee[] }>("/api/admin/adoption-information", {
@@ -319,6 +318,7 @@ function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: Adop
 
   return (
     <>
+      {/* required-reason: estate.delete */}
       <ConfirmActionDialog
         open={deleteEstateId !== null}
         onOpenChange={(open) => {
@@ -328,10 +328,10 @@ function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: Adop
         consequence={copy.estates.confirmDelete(estateLabel ?? copy.estates.thisEstate)}
         confirmLabel={copy.estates.delete}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (deleteEstateId !== null)
-            await mutation.mutateAsync({ action: "delete-estate", id: deleteEstateId });
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = estateDeleteRequest(deleteEstateId, reason);
+          if (request) await mutation.mutateAsync({ action: "delete-estate", ...request });
         }}
       />
       <AdoptionInformationManagementView

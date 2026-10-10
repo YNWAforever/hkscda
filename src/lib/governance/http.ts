@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { requiredReasonSchema } from "../admin/requiredReason";
 import { readAdminJsonObject } from "../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
@@ -70,9 +71,19 @@ export function createAdminGovernanceHandlers({
     deactivate({ request }: HandlerContext) {
       return withGovernanceErrors(async () => {
         const admin = await requireGovernanceAdmin(request);
-        const body = (await jsonBody(request)) as { id?: string };
+        const body = (await jsonBody(request)) as { id?: string; reason?: unknown };
         if (!body.id) return jsonNoStore({ error: "Missing board member id" }, { status: 400 });
-        await service.deactivate({ actorUserId: admin.authUserId, id: body.id });
+        const reason = requiredReasonSchema.safeParse(body.reason);
+        if (!reason.success)
+          return jsonNoStore(
+            { error: "Stepping a board member down requires a reason of 1 to 500 characters" },
+            { status: 400 },
+          );
+        await service.deactivate({
+          actorUserId: admin.authUserId,
+          id: body.id,
+          reason: reason.data,
+        });
         return jsonNoStore({ ok: true });
       });
     },

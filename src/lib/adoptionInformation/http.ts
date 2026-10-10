@@ -20,7 +20,7 @@ type HandlerService = {
   createEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   updateEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   setEstatePublication(input: { actorUserId: string; input: unknown }): Promise<unknown>;
-  deleteEstate(input: { actorUserId: string; estateId: string }): Promise<void>;
+  deleteEstate(input: { actorUserId: string; estateId: string; reason: string }): Promise<void>;
   upsertRule(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   upsertCareTopic(input: { actorUserId: string; input: unknown }): Promise<unknown>;
 };
@@ -204,7 +204,11 @@ export function createAdoptionInformationHandlers({
       return withErrors(request, async (id) => {
         const admin = await requireAdoptionInformationAdmin(request);
         const body = deleteEstateRequestSchema.parse(await jsonBody(request, id));
-        await service.deleteEstate({ actorUserId: admin.authUserId, estateId: body.id });
+        await service.deleteEstate({
+          actorUserId: admin.authUserId,
+          estateId: body.id,
+          reason: body.reason,
+        });
         return jsonResponse({ ok: true }, id);
       });
     },

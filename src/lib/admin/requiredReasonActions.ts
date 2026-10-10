@@ -64,6 +64,8 @@ export const PENDING_REQUIRED_REASON_IDS: ReadonlySet<RequiredReasonId> = new Se
       id !== "receipt.void" &&
       id !== "volunteer_registration.reject" &&
       id !== "internship.reject" &&
-      id !== "faq.deactivate",
+      id !== "faq.deactivate" &&
+      id !== "estate.delete" &&
+      id !== "board_member.deactivate",
   ),
 );
