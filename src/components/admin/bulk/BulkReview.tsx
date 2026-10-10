@@ -1,6 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
+import { useSharedAdminCopy } from "../i18n/copy";
+import { useAdminLanguageOrDefault } from "../i18n/languageContext";
 import { BulkResults, type BulkItemResult } from "./BulkResults";
+import { bulkCopy } from "./copy";
 
 export function BulkReview({
   title,
@@ -17,6 +21,8 @@ export function BulkReview({
   busy: boolean;
   onApply: () => void;
 }) {
+  const copy = useSharedAdminCopy(bulkCopy).review;
+  const language = useAdminLanguageOrDefault();
   const [reviewed, setReviewed] = useState(false);
   const [page, setPage] = useState(1);
   const pending = items.filter((item) => item.status === "pending").length;
@@ -27,19 +33,23 @@ export function BulkReview({
     <section className="space-y-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <h2 className="text-lg font-bold">{title}</h2>
       <p className="text-sm text-[var(--color-text-muted)]">
-        預覽到期：
-        {new Date(expiresAt).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}
-        {expired ? " · 已過期，請重新預覽" : ""}
+        {copy.expires(expiresAt)}
+        {expired ? copy.expiredNotice : ""}
       </p>
       <BulkResults items={items} />
-      <div className="max-h-96 overflow-auto" role="region" aria-label="逐筆套用差異" tabIndex={0}>
+      <div
+        className="max-h-96 overflow-auto"
+        role="region"
+        aria-label={copy.diffLabel}
+        tabIndex={0}
+      >
         <table className="w-full min-w-[34rem] text-left text-sm">
           <thead>
             <tr>
-              <th scope="col">項目</th>
-              <th scope="col">原本</th>
-              <th scope="col">套用後</th>
-              <th scope="col">結果</th>
+              <th scope="col">{copy.columns.item}</th>
+              <th scope="col">{copy.columns.before}</th>
+              <th scope="col">{copy.columns.after}</th>
+              <th scope="col">{copy.columns.result}</th>
             </tr>
           </thead>
           <tbody>
@@ -49,8 +59,20 @@ export function BulkReview({
                 <td className="p-2">{item.before}</td>
                 <td className="p-2">{item.after}</td>
                 <td className="p-2">
-                  {item.status}
-                  {item.reasonCode ? " · " + item.reasonCode : ""}
+                  {copy.status[item.status]}
+                  {item.reasonCode ? (
+                    // The reason is a technical code, kept as stored. Chinese keeps its plain text.
+                    language === "zh" ? (
+                      " · " + item.reasonCode
+                    ) : (
+                      <>
+                        {" · "}
+                        <code>{item.reasonCode}</code>
+                      </>
+                    )
+                  ) : (
+                    ""
+                  )}
                 </td>
               </tr>
             ))}
@@ -58,16 +80,26 @@ export function BulkReview({
         </table>
       </div>
       {pageCount > 1 && (
-        <nav aria-label="批量預覽分頁" className="flex items-center gap-3">
-          <button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-            上一頁
-          </button>
+        <nav aria-label={copy.pagerLabel} className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage(page - 1)}
+          >
+            {copy.previous}
+          </Button>
           <span>
             {page} / {pageCount}
           </span>
-          <button type="button" disabled={page >= pageCount} onClick={() => setPage(page + 1)}>
-            下一頁
-          </button>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={page >= pageCount}
+            onClick={() => setPage(page + 1)}
+          >
+            {copy.next}
+          </Button>
         </nav>
       )}
       <label className="flex items-center gap-2">
@@ -76,7 +108,7 @@ export function BulkReview({
           checked={reviewed}
           onChange={(event) => setReviewed(event.target.checked)}
         />
-        確認已核對所選範圍及套用前後差異
+        {copy.confirmChecked}
       </label>
       <button
         type="button"
@@ -84,10 +116,10 @@ export function BulkReview({
         disabled={!reviewed || busy || expired || pending === 0}
         onClick={onApply}
       >
-        {busy ? "處理中…" : pending > 25 ? "套用下一批 25 筆" : "套用待處理項目"}
+        {busy ? copy.busy : pending > 25 ? copy.applyNextBatch : copy.applyPending}
       </button>
       <details className="text-xs text-[var(--color-text-muted)]">
-        <summary>技術參考</summary>
+        <summary>{copy.technicalReference}</summary>
         <code className="break-all">{operationId}</code>
       </details>
     </section>

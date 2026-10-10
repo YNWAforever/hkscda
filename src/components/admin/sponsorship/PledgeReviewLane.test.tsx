@@ -1,17 +1,8 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
-const realAdminPageCopy = await import("../adminPageCopy");
-
-// mock.module patches the shared module registry for the whole process, not
-// just this file, so the language is pinned here explicitly rather than left
-// to whatever AdminLanguageProvider default happens to be live relative to
-// other test files' mocks.
-mock.module("../adminPageCopy", () => ({
-  ...realAdminPageCopy,
-  useAdminPageCopy: () => ({ language: "zh", pageCopy: realAdminPageCopy.adminPageCopy.zh }),
-}));
 
 let pledgesError: Error | null = null;
 let mockRole: "staff" | "treasurer" = "treasurer";
@@ -37,7 +28,8 @@ mock.module("@tanstack/react-query", () => ({
 const { PledgeReviewLane } = await import("./PledgeReviewLane");
 const { PLEDGE_ROUTE } = await import("./pledgeListRoute");
 
-const render = () => renderToStaticMarkup(<PledgeReviewLane />);
+// The language is chosen by the provider, so the screen reads Chinese whatever else is mocked.
+const render = () => renderAdminInChinese(<PledgeReviewLane />);
 
 describe("PledgeReviewLane", () => {
   test("direct task URL restores the proof queue filter and clears it on all", () => {

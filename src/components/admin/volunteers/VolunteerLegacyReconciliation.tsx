@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { legacyReconciliationCopy } from "./legacyReconciliationCopy";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { LoadFailure } from "../LoadFailure";
 type LegacyRow = {
   id: string;
   contact_name: string;
@@ -21,6 +27,9 @@ export function VolunteerLegacyReconciliation({
 }: {
   profiles: { id: string; display_name: string; status: string }[];
 }) {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(legacyReconciliationCopy, language);
+  const format = pickAdminCopy(volunteerFormatCopy, language);
   const cache = useQueryClient();
   const query = useQuery({
     queryKey: ["volunteer-legacy-identities"],
@@ -50,52 +59,43 @@ export function VolunteerLegacyReconciliation({
   const cls = "min-h-11 w-full rounded border p-2";
   return (
     <section className="space-y-4 rounded-lg border p-5">
-      <h2 className="text-lg font-semibold">舊報名身份核對</h2>
-      <p>
-        只連結有證據的同一人，不會以相同姓名或電郵自動合併。原有姓名、備註、報名政策及條款紀錄會保留；連結不代表批准。團體與已完成紀錄不在此更改。
-      </p>
+      <h2 className="text-lg font-semibold">{copy.title}</h2>
+      <p>{copy.hint}</p>
       {query.error && (
-        <div role="alert">
-          <p>未能載入待核對名單，請重試。</p>
-          <button
-            type="button"
-            className={cls}
-            disabled={query.isFetching}
-            onClick={() => void query.refetch()}
-          >
-            重新載入
-          </button>
-        </div>
+        <LoadFailure
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          retrying={query.isFetching}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+        />
       )}
-      {query.isLoading && <p role="status">正在載入待核對名單…</p>}
+      {query.isLoading && <p role="status">{copy.loading}</p>}
       <label className="block">
-        待核對個人報名
+        {copy.registration}
         <select
           className={cls}
           value={registrationId}
           onChange={(e) => setRegistrationId(e.target.value)}
         >
-          <option value="">請選擇</option>
+          <option value="">{copy.choose}</option>
           {query.data?.registrations.map((r) => (
             <option key={r.id} value={r.id}>
-              {r.contact_name} · {r.title} ·{" "}
-              {new Date(r.starts_at).toLocaleDateString("zh-HK", { timeZone: "Asia/Hong_Kong" })}
+              {r.contact_name} · {r.title} · {format.legacyDate(r.starts_at)}
             </option>
           ))}
         </select>
       </label>
       {row && (
         <p>
-          原報名聯絡：{row.contact_email}。
-          {row.policy_bound
-            ? "已有政策；連結後請義工登入並確認此場次最新條款，再由職員按政策審批。"
-            : "尚未綁定政策；管理員須先在設定中心預覽並發佈套用於此場次的政策。"}
+          {copy.contact(row.contact_email)}
+          {row.policy_bound ? copy.policyBound : copy.policyNotBound}
         </p>
       )}
       <label className="block">
-        已核實義工
+        {copy.profile}
         <select className={cls} value={profileId} onChange={(e) => setProfileId(e.target.value)}>
-          <option value="">請選擇已核實身份</option>
+          <option value="">{copy.chooseProfile}</option>
           {profiles
             .filter((p) => p.status === "active")
             .map((p) => (
@@ -106,7 +106,7 @@ export function VolunteerLegacyReconciliation({
         </select>
       </label>
       <label className="block">
-        身份相符證據及核對理由
+        {copy.reason}
         <textarea
           className={cls}
           maxLength={1000}
@@ -119,10 +119,10 @@ export function VolunteerLegacyReconciliation({
         disabled={!row || !profileId || !reason.trim() || mutation.isPending}
         onClick={() => mutation.mutate()}
       >
-        記錄核對並連結身份
+        {copy.submit}
       </button>
-      {mutation.error && <p role="alert">{mutation.error.message}</p>}
-      {mutation.isSuccess && <p role="status">身份已連結；請完成政策及本人條款確認後審批。</p>}
+      {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
+      {mutation.isSuccess && <p role="status">{copy.linked}</p>}
     </section>
   );
 }

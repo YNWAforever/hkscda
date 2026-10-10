@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
 
 import type { BankMatchOperation } from "../../../lib/donations/bankMatchConfirmation";
+import { renderAdminInChinese } from "../i18n/testing";
 import { BankMatchOperationReview } from "./BankMatchOperationReview";
 
 const operation: BankMatchOperation = {
@@ -37,7 +37,7 @@ const operation: BankMatchOperation = {
 };
 
 test("finance match review exposes only per-pending-item confirmed action and downloadable results", () => {
-  const html = renderToStaticMarkup(
+  const html = renderAdminInChinese(
     <BankMatchOperationReview operation={operation} onApply={() => {}} pendingOrdinal={null} />,
   );
   expect(html).toContain("逐組確認");

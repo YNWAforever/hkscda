@@ -4,6 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
+import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
+import { documentsCopy } from "./documentsCopy";
 import { fetchAllAnnualReportAssets } from "./documentManagementLogic";
 
 type AssetListResponse = { items: DocumentAsset[]; total: number };
@@ -14,6 +20,7 @@ export function AnnualReportManagement({ initialRows }: { initialRows?: AnnualRe
 }
 
 function AnnualReportManagementRuntime() {
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [yearLabel, setYearLabel] = useState("");
@@ -37,7 +44,7 @@ function AnnualReportManagementRuntime() {
   const createMutation = useMutation({
     mutationFn: () => {
       if (!title.trim() || !yearLabel.trim() || !documentAssetId) {
-        throw new Error("請填寫標題、年度並選擇 PDF");
+        throw new DocumentAdminError("report_fields_required");
       }
       return fetchAdminJson("/api/admin/annual-reports", {
         method: "POST",
@@ -86,17 +93,30 @@ function AnnualReportManagementRuntime() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-annual-reports"] }),
   });
 
+  const loadError = reportsQuery.error ?? assetsQuery.error;
   const error =
-    (reportsQuery.error instanceof Error ? reportsQuery.error.message : null) ??
-    (assetsQuery.error instanceof Error ? assetsQuery.error.message : null) ??
-    (createMutation.error instanceof Error ? createMutation.error.message : null) ??
-    (actionMutation.error instanceof Error ? actionMutation.error.message : null);
+    documentErrorMessage(createMutation.error, language) ??
+    (actionMutation.variables?.action === "delete"
+      ? null
+      : documentErrorMessage(actionMutation.error, language));
 
   return (
     <AnnualReportManagementView
       rows={reportsQuery.data ?? []}
       assets={assetsQuery.data ?? []}
       loading={reportsQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, language),
+              onRetry: () => {
+                void reportsQuery.refetch();
+                void assetsQuery.refetch();
+              },
+            }
+          : null
+      }
       error={error}
       title={title}
       yearLabel={yearLabel}
@@ -109,7 +129,12 @@ function AnnualReportManagementRuntime() {
       actionPending={actionMutation.isPending}
       onSortOrderChange={setSortOrder}
       onCreate={() => createMutation.mutate()}
-      onAction={(id, action, nextSortOrder) => actionMutation.mutate({ id, action, nextSortOrder })}
+      onAction={(id, action, nextSortOrder) => {
+        const run = actionMutation.mutateAsync({ id, action, nextSortOrder });
+        // Only a delete waits in its confirm dialog; the other actions show their error on the page.
+        if (action === "delete") return run;
+        run.catch(() => undefined);
+      }}
     />
   );
 }
@@ -118,6 +143,9 @@ type ViewProps = {
   rows: AnnualReport[];
   assets?: DocumentAsset[];
   loading?: boolean;
+  /** The reports or their documents failed to load. Shown as a failure with a retry. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a create or an action. */
   error?: string | null;
   title?: string;
   yearLabel?: string;
@@ -134,13 +162,14 @@ type ViewProps = {
     id: string,
     action: "publish" | "unpublish" | "delete" | "order",
     nextSortOrder?: number,
-  ) => void;
+  ) => void | Promise<unknown>;
 };
 
 export function AnnualReportManagementView({
   rows,
   assets = [],
   loading = false,
+  loadFailure = null,
   error,
   title = "",
   yearLabel = "",
@@ -155,12 +184,30 @@ export function AnnualReportManagementView({
   onCreate,
   onAction,
 }: ViewProps) {
+  const common = useAdminCopy(documentsCopy);
+  const copy = common.annualReports;
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle = rows.find((report) => report.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={copy.table.deleteLabel(deleteTitle)}
+        consequence={copy.table.confirmDelete(deleteTitle)}
+        confirmLabel={copy.table.deleteLabel(deleteTitle)}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) await onAction?.(deleteId, "delete");
+        }}
+      />
       <header>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳內容</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">年度報告</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">安排公開報告年度、次序及發佈狀態。</p>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </header>
 
       {onCreate ? (
@@ -172,7 +219,7 @@ export function AnnualReportManagementView({
           }}
         >
           <label className="space-y-1 text-sm font-semibold">
-            標題
+            {copy.form.title}
             <input
               value={title}
               onChange={(event) => onTitleChange?.(event.target.value)}
@@ -180,31 +227,31 @@ export function AnnualReportManagementView({
             />
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            年度
+            {copy.form.year}
             <input
               value={yearLabel}
               onChange={(event) => onYearLabelChange?.(event.target.value)}
-              placeholder="2025/26"
+              placeholder={copy.form.yearPlaceholder}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             />
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            PDF
+            {copy.form.pdf}
             <select
               value={documentAssetId}
               onChange={(event) => onDocumentAssetChange?.(event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              <option value="">選擇文件</option>
+              <option value="">{copy.form.choose}</option>
               {assets.map((asset) => (
                 <option key={asset.id} value={asset.id}>
-                  {asset.title} · {asset.isPublished ? "已發佈" : "草稿"}
+                  {copy.form.assetOption(asset.title, asset.isPublished)}
                 </option>
               ))}
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            次序
+            {copy.form.order}
             <input
               type="number"
               min={0}
@@ -223,11 +270,18 @@ export function AnnualReportManagementView({
             ) : (
               <Plus className="h-4 w-4" />
             )}
-            新增
+            {copy.form.submit}
           </button>
         </form>
       ) : null}
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -241,24 +295,24 @@ export function AnnualReportManagementView({
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
-              <th className="px-3 py-3">報告</th>
-              <th className="px-3 py-3">PDF</th>
-              <th className="px-3 py-3">次序</th>
-              <th className="px-3 py-3">狀態</th>
-              <th className="px-3 py-3 text-right">操作</th>
+              <th className="px-3 py-3">{copy.table.report}</th>
+              <th className="px-3 py-3">{copy.table.pdf}</th>
+              <th className="px-3 py-3">{copy.table.order}</th>
+              <th className="px-3 py-3">{copy.table.status}</th>
+              <th className="px-3 py-3 text-right">{copy.table.actions}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center">
-                  載入中...
+                  {copy.table.loading}
                 </td>
               </tr>
-            ) : rows.length === 0 && !error ? (
+            ) : rows.length === 0 && !error && !loadFailure ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
-                  尚未建立年度報告
+                  {copy.table.empty}
                 </td>
               </tr>
             ) : (
@@ -282,7 +336,7 @@ export function AnnualReportManagementView({
                       </span>
                       {!canPublish ? (
                         <span className="mt-1 block text-xs font-semibold text-[var(--color-warning)]">
-                          請先發佈 PDF
+                          {copy.table.publishPdfFirst}
                         </span>
                       ) : null}
                     </td>
@@ -290,7 +344,7 @@ export function AnnualReportManagementView({
                       {onAction ? (
                         <input
                           disabled={actionPending}
-                          aria-label={`${report.title} 次序`}
+                          aria-label={copy.table.orderLabel(report.title)}
                           type="number"
                           min={0}
                           defaultValue={report.sortOrder}
@@ -305,7 +359,9 @@ export function AnnualReportManagementView({
                         report.sortOrder
                       )}
                     </td>
-                    <td className="px-3 py-3">{report.isPublished ? "已發佈" : "草稿"}</td>
+                    <td className="px-3 py-3">
+                      {report.isPublished ? copy.table.published : copy.table.draft}
+                    </td>
                     <td className="px-3 py-3">
                       <div className="flex justify-end gap-2">
                         <button
@@ -316,22 +372,14 @@ export function AnnualReportManagementView({
                           }
                           className="rounded-md border border-[var(--color-border)] px-3 py-1.5 font-semibold disabled:cursor-not-allowed disabled:opacity-40"
                         >
-                          {report.isPublished ? "取消發佈" : "發佈"}
+                          {report.isPublished ? copy.table.unpublish : copy.table.publish}
                         </button>
                         {onAction ? (
                           <button
                             type="button"
-                            aria-label={`刪除 ${report.title}`}
+                            aria-label={copy.table.deleteLabel(report.title)}
                             disabled={actionPending}
-                            onClick={() => {
-                              if (
-                                globalThis.confirm?.(
-                                  `確定刪除「${report.title}」？此操作無法復原。`,
-                                )
-                              ) {
-                                onAction(report.id, "delete");
-                              }
-                            }}
+                            onClick={() => setDeleteId(report.id)}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />

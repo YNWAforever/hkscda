@@ -6,25 +6,17 @@ import {
   BANK_STATEMENT_HEADER,
   BANK_STATEMENT_MAX_BYTES,
   type BankStatementDryRunResult,
-  type BankStatementPreviewRow,
 } from "../../../lib/donations/bankStatementDryRun";
-import { centsToHkd } from "../../../lib/donations/domain";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { useAdminCopy } from "../i18n/copy";
 import { BankMatchOperationReview } from "./BankMatchOperationReview";
+import { bankPanelCopy, bankPreviewCopy, bankReviewCopy } from "./bankCopy";
+import { donationFormatCopy } from "./formatCopy";
 
 const PAGE_SIZE = 25;
-
-const statusCopy: Record<BankStatementPreviewRow["status"], string> = {
-  invalid: "資料無效",
-  duplicate_file: "檔內重複",
-  already_credited: "相同銀行參考已入帳",
-  candidate_exact: "付款參考相符候選",
-  candidate_amount_only: "只按金額候選",
-  ambiguous: "多個候選，須人工核對",
-  unmatched: "沒有候選",
-};
 
 export function BankStatementDryRunPreview({
   result,
@@ -37,45 +29,42 @@ export function BankStatementDryRunPreview({
   selectedOrdinals?: number[];
   onToggle?: (ordinal: number) => void;
 }) {
+  const copy = useAdminCopy(bankPreviewCopy);
+  const format = useAdminCopy(donationFormatCopy);
   const start = (page - 1) * PAGE_SIZE;
   const rows = result.rows.slice(start, start + PAGE_SIZE);
   return (
     <div className="space-y-3 text-sm text-[var(--color-panel)]">
-      <p role="status">
-        共 {result.summary.total} 筆；資料無效 {result.summary.invalid}、檔內重複{" "}
-        {result.summary.duplicate}、已入帳 {result.summary.credited}、有候選{" "}
-        {result.summary.candidates}、沒有候選 {result.summary.unmatched}。
-      </p>
+      <p role="status">{copy.summary(result.summary)}</p>
       <p className="text-xs text-[var(--color-text-muted)]">
-        檔案 SHA-256：{result.fileSha256} · 預覽時間：{result.generatedAt}
-        。結果不會儲存；付款事實改變後須重新上載並核對。
+        {copy.fileLine(result.fileSha256, format.timestamp(result.generatedAt))}
       </p>
       <div
         role="region"
-        aria-label="銀行候選預覽表格"
+        aria-label={copy.regionLabel}
         tabIndex={0}
         className="max-h-[32rem] overflow-auto rounded-md border border-[var(--color-border)]"
       >
         <table className="w-full min-w-[44rem] text-left">
-          <caption className="sr-only">銀行對帳檔第 {page} 頁候選預覽</caption>
+          <caption className="sr-only">{copy.caption(page)}</caption>
           <thead className="bg-[var(--color-surface)]">
             <tr>
               {onToggle ? (
                 <th scope="col" className="p-2">
-                  選取
+                  {copy.columns.select}
                 </th>
               ) : null}
               <th scope="col" className="p-2">
-                行
+                {copy.columns.row}
               </th>
               <th scope="col" className="p-2">
-                銀行參考／日期
+                {copy.columns.reference}
               </th>
               <th scope="col" className="p-2">
-                金額
+                {copy.columns.amount}
               </th>
               <th scope="col" className="p-2">
-                結果及候選
+                {copy.columns.result}
               </th>
             </tr>
           </thead>
@@ -89,7 +78,7 @@ export function BankStatementDryRunPreview({
                     row.candidates.length === 1 ? (
                       <input
                         type="checkbox"
-                        aria-label={`選取第 ${row.ordinal} 行作確認預覽`}
+                        aria-label={copy.selectRow(row.ordinal)}
                         checked={selectedOrdinals.includes(row.ordinal)}
                         onChange={() => onToggle(row.ordinal)}
                       />
@@ -99,21 +88,25 @@ export function BankStatementDryRunPreview({
                 <td className="p-2">{row.ordinal}</td>
                 <td className="p-2">
                   <span className="block break-all">{row.bankReference || "—"}</span>
-                  <span className="text-xs text-[var(--color-text-muted)]">{row.receivedOn}</span>
+                  <span className="text-xs text-[var(--color-text-muted)]">
+                    {format.day(row.receivedOn)}
+                  </span>
                 </td>
                 <td className="p-2">
-                  {row.amountCents === null ? "—" : centsToHkd(row.amountCents)}
+                  {row.amountCents === null ? "—" : format.money(row.amountCents)}
                 </td>
                 <td className="p-2">
-                  <span className="font-medium">{statusCopy[row.status]}</span>
-                  {row.invalidReason && <span className="block">原因：{row.invalidReason}</span>}
+                  <span className="font-medium">{copy.statuses[row.status]}</span>
+                  {row.invalidReason && (
+                    <span className="block">{copy.invalidReason(row.invalidReason)}</span>
+                  )}
                   {row.candidateCount > 0 && (
-                    <span className="block">候選 {row.candidateCount} 筆；僅顯示前 5 筆</span>
+                    <span className="block">{copy.candidateCount(row.candidateCount)}</span>
                   )}
                   {row.candidates.map((candidate) => (
                     <span key={candidate.id} className="block break-all text-xs">
                       {candidate.id} · {candidate.provider.toUpperCase()} ·{" "}
-                      {candidate.providerRef || "無付款參考"}
+                      {candidate.providerRef || copy.noPaymentReference}
                     </span>
                   ))}
                 </td>
@@ -129,7 +122,15 @@ export function BankStatementDryRunPreview({
 const operationStoragePrefix = "hkscda-finance-bank-match-operation";
 const operationUrl = "/api/admin/finance/bank-match-operations";
 
+/** Why the preview of the file failed. Kept as a code and written when the panel renders. */
+type PreviewError = "file_too_large" | "preview_failed";
+/** Why the confirmation snapshot could not be made, read or applied. */
+type OperationError = "restore_failed" | "create_failed" | "refresh_failed" | "apply_failed";
+
 export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string }) {
+  const copy = useAdminCopy(bankPanelCopy);
+  const review = useAdminCopy(bankReviewCopy);
+  const format = useAdminCopy(donationFormatCopy);
   const fetchForActor = <T,>(path: string, init?: RequestInit) =>
     fetchAdminJson<T>(path, init, actorUserId);
   const operationStorageKey = `${operationStoragePrefix}:${actorUserId}`;
@@ -142,8 +143,9 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
   const [pending, setPending] = useState(false);
   const [operationPending, setOperationPending] = useState(false);
   const [applyingOrdinal, setApplyingOrdinal] = useState<number | null>(null);
-  const [error, setError] = useState("");
-  const [operationError, setOperationError] = useState("");
+  const [confirmOrdinal, setConfirmOrdinal] = useState<number | null>(null);
+  const [error, setError] = useState<PreviewError | null>(null);
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [operationReadFailed, setOperationReadFailed] = useState(false);
   const requestGeneration = useRef(0);
@@ -174,7 +176,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
         .catch(() => {
           if (mounted.current && operationGeneration.current === generation) {
             setOperationReadFailed(true);
-            setOperationError("未能恢復上次確認快照；請先重新讀取確認結果。");
+            setOperationError("restore_failed");
           }
         })
         .finally(() => {
@@ -198,9 +200,9 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     setResult(null);
     setCsvText(null);
     setSelectedOrdinals([]);
-    setError("");
+    setError(null);
     if (file.size > BANK_STATEMENT_MAX_BYTES) {
-      setError("檔案超過 256 KiB 上限。");
+      setError("file_too_large");
       return;
     }
     setPending(true);
@@ -220,8 +222,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       setResult(response);
       setPage(1);
     } catch {
-      if (requestGeneration.current === generation)
-        setError("無法預覽對帳檔；請檢查 UTF-8 格式或聯絡財務管理員。");
+      if (requestGeneration.current === generation) setError("preview_failed");
     } finally {
       if (requestGeneration.current === generation) setPending(false);
     }
@@ -242,7 +243,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     const current = () => mounted.current && operationGeneration.current === generation;
     operationBusy.current = true;
     setOperationPending(true);
-    setOperationError("");
+    setOperationError(null);
     try {
       const saved = await fetchForActor<BankMatchOperation>(operationUrl, {
         method: "POST",
@@ -253,7 +254,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       setRecoveryId(saved.operationId);
       sessionStorage.setItem(operationStorageKey, saved.operationId);
     } catch {
-      if (current()) setOperationError("無法建立確認預覽；請檢查所選項目、權限及目前付款狀態。");
+      if (current()) setOperationError("create_failed");
     } finally {
       if (current()) {
         operationBusy.current = false;
@@ -268,7 +269,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     const current = () => mounted.current && operationGeneration.current === generation;
     operationBusy.current = true;
     setOperationPending(true);
-    setOperationError("");
+    setOperationError(null);
     try {
       const saved = await fetchForActor<BankMatchOperation>(
         `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
@@ -279,7 +280,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     } catch {
       if (current()) {
         setOperationReadFailed(true);
-        setOperationError("未能重新讀取快照；請稍後再試。");
+        setOperationError("refresh_failed");
       }
     } finally {
       if (current()) {
@@ -289,27 +290,27 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     }
   }
 
-  async function applyOne(ordinal: number) {
+  /** The pending item that can be applied now, or undefined when nothing may be applied. */
+  function applicableItem(ordinal: number) {
     const item = operation?.items.find((entry) => entry.ordinal === ordinal);
-    if (
-      !operation ||
-      !item ||
-      item.status !== "pending" ||
-      operationBusy.current ||
-      operationReadFailed
-    )
-      return;
-    if (
-      !window.confirm(
-        `請核對銀行參考 ${item.bankReference}、付款 ${item.paymentId}、付款參考 ${item.paymentHint} 及 ${centsToHkd(item.amountCents)}，確定只確認此筆入帳？`,
-      )
-    )
-      return;
+    if (!operation || !item || item.status !== "pending" || operationBusy.current) return undefined;
+    return operationReadFailed ? undefined : item;
+  }
+
+  /** Asks first: confirming a match credits a payment, so the person sees what it is. */
+  function requestApply(ordinal: number) {
+    if (applicableItem(ordinal)) setConfirmOrdinal(ordinal);
+  }
+
+  const confirmItem = operation?.items.find((entry) => entry.ordinal === confirmOrdinal);
+
+  async function applyOne(ordinal: number) {
+    if (!operation || !applicableItem(ordinal)) return;
     const generation = ++operationGeneration.current;
     const current = () => mounted.current && operationGeneration.current === generation;
     operationBusy.current = true;
     setApplyingOrdinal(ordinal);
-    setOperationError("");
+    setOperationError(null);
     try {
       await fetchForActor(operationUrl, {
         method: "PATCH",
@@ -326,7 +327,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     } catch {
       if (current()) {
         setOperationReadFailed(true);
-        setOperationError("未能確認或更新此筆結果；請先重新讀取快照，勿重複使用另一銀行參考入帳。");
+        setOperationError("apply_failed");
       }
     } finally {
       if (current()) {
@@ -336,19 +337,46 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
     }
   }
 
+  const previewErrorText = error === "file_too_large" ? copy.fileTooLarge : copy.previewFailed;
+  const operationErrorText = {
+    restore_failed: copy.restoreFailed,
+    create_failed: copy.createFailed,
+    refresh_failed: copy.refreshFailed,
+    apply_failed: copy.applyFailed,
+  };
+
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-      <h3 className="font-semibold text-[var(--color-panel)]">銀行對帳檔預覽與逐組確認</h3>
-      <p className="text-sm text-[var(--color-text-muted)]">
-        第一步只作預覽與候選搜尋，不會確認入帳、退款或發送通知。銀行原始格式須先轉成內部標準
-        CSV；每檔最多 1,000 筆，僅接受 HKD
-        入款。只有建立快照後逐筆確認，才會記錄入帳及可恢復的收條工作。
-      </p>
+      <ConfirmActionDialog
+        open={confirmOrdinal !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmOrdinal(null);
+        }}
+        title={review.confirmThis}
+        consequence={
+          confirmItem
+            ? copy.confirmApply(
+                confirmItem.bankReference,
+                confirmItem.paymentId,
+                confirmItem.paymentHint,
+                format.money(confirmItem.amountCents),
+              )
+            : ""
+        }
+        confirmLabel={review.confirmThis}
+        reason="none"
+        onConfirm={async () => {
+          if (confirmOrdinal !== null) await applyOne(confirmOrdinal);
+        }}
+      />
+      <h3 className="font-semibold text-[var(--color-panel)]">{copy.heading}</h3>
+      <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       <p className="break-all text-xs text-[var(--color-text-muted)]">
-        標準欄位：<code>{BANK_STATEMENT_HEADER}</code>
+        {copy.standardColumns}
+        <code>{BANK_STATEMENT_HEADER}</code>
       </p>
       <div className="space-y-1">
-        <Label htmlFor="bank-statement-csv">選擇標準 CSV</Label>
+        <Label htmlFor="bank-statement-csv">{copy.chooseFile}</Label>
         <Input
           id="bank-statement-csv"
           type="file"
@@ -361,16 +389,16 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
             setCsvText(null);
             setResult(null);
             setSelectedOrdinals([]);
-            setError("");
+            setError(null);
           }}
         />
       </div>
       <Button type="button" variant="outline" disabled={!file || pending} onClick={preview}>
-        {pending ? "正在核對…" : "產生唯讀預覽"}
+        {pending ? copy.checking : copy.preview}
       </Button>
       {error ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {previewErrorText}
         </p>
       ) : null}
       {result ? (
@@ -381,9 +409,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
             selectedOrdinals={selectedOrdinals}
             onToggle={toggle}
           />
-          <p role="status">
-            已選取 {selectedOrdinals.length} 筆付款參考相符候選；其他結果不能建立入帳快照。
-          </p>
+          <p role="status">{copy.selected(selectedOrdinals.length)}</p>
           <Button
             type="button"
             variant="outline"
@@ -395,28 +421,26 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
             }
             onClick={() => void createOperation()}
           >
-            {operationPending ? "正在處理快照…" : "建立逐組確認預覽"}
+            {operationPending ? copy.processingSnapshot : copy.createOperation}
           </Button>
           {result.rows.length > PAGE_SIZE ? (
-            <nav aria-label="銀行預覽分頁" className="flex items-center gap-2">
+            <nav aria-label={copy.pagerLabel} className="flex items-center gap-2">
               <Button
                 type="button"
                 variant="outline"
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
               >
-                上一頁
+                {copy.previous}
               </Button>
-              <span>
-                第 {page} / {Math.ceil(result.rows.length / PAGE_SIZE)} 頁
-              </span>
+              <span>{copy.pageOf(page, Math.ceil(result.rows.length / PAGE_SIZE))}</span>
               <Button
                 type="button"
                 variant="outline"
                 disabled={page * PAGE_SIZE >= result.rows.length}
                 onClick={() => setPage(page + 1)}
               >
-                下一頁
+                {copy.next}
               </Button>
             </nav>
           ) : null}
@@ -424,7 +448,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       ) : null}
       {operationError ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {operationError}
+          {operationErrorText[operationError]}
         </p>
       ) : null}
       {recoveryId ? (
@@ -434,14 +458,14 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
           disabled={operationPending || applyingOrdinal !== null}
           onClick={() => void refreshOperation(recoveryId)}
         >
-          重新讀取確認結果
+          {copy.reload}
         </Button>
       ) : null}
       {operation ? (
         <BankMatchOperationReview
           key={operation.operationId}
           operation={operation}
-          onApply={(ordinal) => void applyOne(ordinal)}
+          onApply={requestApply}
           pendingOrdinal={applyingOrdinal}
           disabled={operationPending || operationReadFailed}
         />

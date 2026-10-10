@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
 
 import type { DeliveryWorklistResult } from "../../../lib/donations/deliveryWorklist";
+import { renderAdminInChinese } from "../i18n/testing";
 import { DonationDeliveryWorklistView } from "./DonationDeliveryWorklist";
 
 function result(status: "succeeded" | "refunded"): DeliveryWorklistResult {
@@ -26,7 +26,7 @@ function result(status: "succeeded" | "refunded"): DeliveryWorklistResult {
 }
 
 test("failed receipt job is inspectable but only succeeded payment offers per-item retry", () => {
-  const paid = renderToStaticMarkup(
+  const paid = renderAdminInChinese(
     <DonationDeliveryWorklistView
       result={result("succeeded")}
       retryingId={null}
@@ -37,7 +37,7 @@ test("failed receipt job is inspectable but only succeeded payment offers per-it
   expect(paid).toContain("22222222-3333-4444-8555-666666666666");
   expect(paid).toContain("重試此工作");
   expect(paid).not.toContain("批量重試");
-  const refunded = renderToStaticMarkup(
+  const refunded = renderAdminInChinese(
     <DonationDeliveryWorklistView
       result={result("refunded")}
       retryingId={null}

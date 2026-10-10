@@ -3,15 +3,29 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "../../ui/button";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { getAdminAccessToken } from "./api";
-import { classifyExportFailure, type ExportLanguage } from "./exportFailure";
+import { exportCopy } from "./exportCopy";
+import {
+  classifyExportFailure,
+  CsvExportError,
+  failureOfCreateError,
+  failureOfExportError,
+  type ExportFailure,
+} from "./exportFailure";
 
 type ExportBarProps = { search: URLSearchParams; busy?: boolean };
 type ExportKind = "supporters" | "donations";
 export type ExportState =
   | { phase: "idle" }
   | { phase: "exporting"; kind: ExportKind; snapshot: string }
-  | { phase: "error"; kind: ExportKind; snapshot: string; message: string; overLimit?: boolean }
+  | {
+      phase: "error";
+      kind: ExportKind;
+      snapshot: string;
+      failure: ExportFailure;
+      overLimit?: boolean;
+    }
   | { phase: "success"; kind: ExportKind };
 type BackgroundState =
   | { phase: "idle" | "creating" }
@@ -22,7 +36,7 @@ type BackgroundState =
       total: number;
       processed: number;
     }
-  | { phase: "error"; message: string };
+  | { phase: "error"; failure: ExportFailure };
 const savedJobKey = "hkscda-crm-export-job";
 function saveBackgroundJob(job: { id: string; kind: ExportKind; total: number }) {
   try {
@@ -65,24 +79,17 @@ type ExportCopy = {
   retry: string;
   downloaded: string;
   backgroundExport: string;
+  /** The message for a failure, in the language the bar is shown in. */
+  failure: (failure: ExportFailure) => string;
 };
 
-class CsvExportError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-  ) {
-    super(message);
-  }
-}
-
-async function downloadCsv(path: string, filename: string, language: ExportLanguage) {
+async function downloadCsv(path: string, filename: string) {
   const token = await getAdminAccessToken();
   const response = await fetch(path, {
     headers: { authorization: "Bearer " + token },
   });
   if (!response.ok)
-    throw new CsvExportError(await classifyExportFailure(response, language), response.status);
+    throw new CsvExportError(await classifyExportFailure(response), response.status);
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -147,7 +154,7 @@ export function ExportBarView({
       ) : null}
       {state.phase === "error" ? (
         <div role="alert" className="space-y-2 text-sm text-[var(--color-error)]">
-          <p>{state.message}</p>
+          <p>{copy.failure(state.failure)}</p>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onRetry}>
               {copy.retry}
@@ -171,7 +178,8 @@ export function ExportBarView({
 }
 
 export function ExportBar({ search, busy = false }: ExportBarProps) {
-  const { language, pageCopy } = useAdminPageCopy();
+  const { pageCopy } = useAdminPageCopy();
+  const text = useAdminCopy(exportCopy);
   const [state, setState] = useState<ExportState>({ phase: "idle" });
   const inFlight = useRef(false);
   const [background, setBackground] = useState<BackgroundState>({ phase: "idle" });
@@ -195,10 +203,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
           headers: { authorization: "Bearer " + token },
         });
         if (!response.ok)
-          throw new CsvExportError(
-            await classifyExportFailure(response, language),
-            response.status,
-          );
+          throw new CsvExportError(await classifyExportFailure(response), response.status);
         const job = (await response.json()) as {
           status: BackgroundState["phase"];
           kind: ExportKind;
@@ -216,13 +221,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
           });
         else {
           clearBackgroundJob();
-          setBackground({
-            phase: "error",
-            message:
-              language === "zh"
-                ? "背景匯出未能完成，請重新建立。"
-                : "Background export failed. Create it again.",
-          });
+          setBackground({ phase: "error", failure: { code: "background_failed" } });
         }
       } catch (error) {
         if (active) {
@@ -230,12 +229,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
             clearBackgroundJob();
           setBackground({
             phase: "error",
-            message:
-              error instanceof CsvExportError
-                ? error.message
-                : language === "zh"
-                  ? "無法更新匯出進度，請重新整理後再試。"
-                  : "Could not refresh export progress. Reload and retry.",
+            failure: error instanceof CsvExportError ? error.failure : { code: "progress_failed" },
           });
         }
       } finally {
@@ -246,7 +240,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
       active = false;
       window.clearInterval(timer);
     };
-  }, [background.phase, backgroundId, language]);
+  }, [background.phase, backgroundId]);
   const searchKey = search.toString();
   useEffect(() => {
     setState((current) =>
@@ -257,9 +251,10 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
     supportersCsv: pageCopy.common.supportersCsv,
     donationsCsv: pageCopy.common.donationsCsv,
     exporting: pageCopy.common.exporting,
-    retry: language === "zh" ? "重試相同條件" : "Retry same filters",
-    downloaded: language === "zh" ? "下載已開始。" : "Download started.",
-    backgroundExport: language === "zh" ? "建立背景匯出" : "Create background export",
+    retry: text.retry,
+    downloaded: text.downloaded,
+    backgroundExport: text.backgroundExport,
+    failure: text.failure,
   };
   async function run(kind: ExportKind, snapshot: string) {
     if (busy || inFlight.current) return;
@@ -268,24 +263,14 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
     const suffix = snapshot ? "?" + snapshot : "";
     const filename = kind + ".csv";
     try {
-      await downloadCsv("/api/admin/exports/" + filename + suffix, filename, language);
+      await downloadCsv("/api/admin/exports/" + filename + suffix, filename);
       setState({ phase: "success", kind });
     } catch (error) {
-      const message =
-        error instanceof CsvExportError
-          ? error.message
-          : error instanceof Error && error.message === "未登入"
-            ? language === "zh"
-              ? "請登入後再試。"
-              : "Sign in before exporting."
-            : language === "zh"
-              ? "網絡或下載失敗，請檢查連線後重試。"
-              : "Network or download failed. Check your connection and retry.";
       setState({
         phase: "error",
         kind,
         snapshot,
-        message,
+        failure: failureOfExportError(error),
         overLimit: error instanceof CsvExportError && error.status === 413,
       });
     } finally {
@@ -305,7 +290,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
         body: JSON.stringify({ kind, filters: Object.fromEntries(new URLSearchParams(snapshot)) }),
       });
       if (!response.ok)
-        throw new CsvExportError(await classifyExportFailure(response, language), response.status);
+        throw new CsvExportError(await classifyExportFailure(response), response.status);
       const job = (await response.json()) as { id: string; kind: ExportKind; total: number };
       saveBackgroundJob(job);
       setBackground({
@@ -317,15 +302,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
       });
       setState({ phase: "idle" });
     } catch (error) {
-      setBackground({
-        phase: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : language === "zh"
-              ? "無法建立背景匯出。"
-              : "Could not create background export.",
-      });
+      setBackground({ phase: "error", failure: failureOfCreateError(error) });
     } finally {
       inFlight.current = false;
     }
@@ -343,13 +320,7 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
       clearBackgroundJob();
       setBackground({ phase: "idle" });
     } catch {
-      setBackground({
-        phase: "error",
-        message:
-          language === "zh"
-            ? "取消失敗，請重新整理後再試。"
-            : "Cancellation failed. Reload and retry.",
-      });
+      setBackground({ phase: "error", failure: { code: "cancel_failed" } });
     }
   }
   async function downloadBackground() {
@@ -358,17 +329,10 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
       await downloadCsv(
         "/api/admin/exports/jobs/" + background.id + "/download",
         background.kind + ".csv",
-        language,
       );
       setState({ phase: "success", kind: background.kind });
     } catch {
-      setBackground({
-        phase: "error",
-        message:
-          language === "zh"
-            ? "下載失敗，請確認權限後再試。"
-            : "Download failed. Check your access and retry.",
-      });
+      setBackground({ phase: "error", failure: { code: "download_failed" } });
     }
   }
   return (
@@ -384,43 +348,27 @@ export function ExportBar({ search, busy = false }: ExportBarProps) {
             void run(state.kind, state.snapshot);
         }}
       />
-      {background.phase === "creating" ? (
-        <p role="status">
-          {language === "zh" ? "正在建立背景匯出…" : "Creating background export…"}
-        </p>
-      ) : null}
+      {background.phase === "creating" ? <p role="status">{text.creatingBackground}</p> : null}
       {background.phase === "pending" ||
       background.phase === "processing" ||
       background.phase === "ready" ? (
         <div className="flex flex-wrap items-center gap-2 text-sm" role="status">
           <span>
-            {language === "zh"
-              ? "背景匯出：" +
-                background.processed +
-                "/" +
-                background.total +
-                " 筆；" +
-                (background.phase === "ready" ? "可下載" : "處理中")
-              : "Background export: " +
-                background.processed +
-                "/" +
-                background.total +
-                " rows; " +
-                (background.phase === "ready" ? "ready" : "processing")}
+            {text.progress(background.processed, background.total, background.phase === "ready")}
           </span>
           {background.phase === "ready" ? (
             <Button type="button" size="sm" onClick={() => void downloadBackground()}>
-              {language === "zh" ? "下載完整 CSV" : "Download complete CSV"}
+              {text.downloadComplete}
             </Button>
           ) : null}
           <Button type="button" variant="outline" size="sm" onClick={() => void cancelBackground()}>
-            {language === "zh" ? "取消" : "Cancel"}
+            {text.cancel}
           </Button>
         </div>
       ) : null}
       {background.phase === "error" ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {background.message}
+          {text.failure(background.failure)}
         </p>
       ) : null}
     </div>

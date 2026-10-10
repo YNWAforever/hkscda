@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 import { DirectoryResults } from "./VolunteerDirectory";
 import { parseDirectorySearch } from "./directorySearch";
 
@@ -20,7 +20,7 @@ const profile = {
 };
 describe("volunteer directory", () => {
   test("shows zero-registration profiles and distinguishes verified email from pending identity", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       createElement(DirectoryResults, {
         data: { profiles: [profile], total: 51, page: 2, limit: 25 },
         search: { q: "fixture", page: 2 },
@@ -38,10 +38,10 @@ describe("volunteer directory", () => {
       data: { profiles: [profile], total: 1, page: 1, limit: 25 },
       search: { page: 1 },
     };
-    expect(renderToStaticMarkup(createElement(DirectoryResults, props))).not.toContain(
+    expect(renderAdminInChinese(createElement(DirectoryResults, props))).not.toContain(
       'type="checkbox"',
     );
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       createElement(DirectoryResults, {
         ...props,
         selection: { ids: [profile.id], disabled: false, toggle: () => {} },
@@ -53,12 +53,12 @@ describe("volunteer directory", () => {
   test("distinguishes no search results from empty directory", () => {
     const data = { profiles: [], total: 0, page: 1, limit: 25 };
     expect(
-      renderToStaticMarkup(
+      renderAdminInChinese(
         createElement(DirectoryResults, { data, search: { q: "missing", page: 1 } }),
       ),
     ).toContain("找不到符合條件的義工");
     expect(
-      renderToStaticMarkup(createElement(DirectoryResults, { data, search: { page: 1 } })),
+      renderAdminInChinese(createElement(DirectoryResults, { data, search: { page: 1 } })),
     ).toContain("尚未有義工身份");
   });
   test("normalizes invalid URL filters and clamps untrusted query length", () => {

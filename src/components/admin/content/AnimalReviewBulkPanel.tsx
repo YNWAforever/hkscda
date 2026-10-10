@@ -1,19 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { AnimalReviewBulkOperation } from "../../../routes/api/admin/animals/review-bulk";
-import { BulkReview } from "../bulk/BulkReview";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { reviewCopy } from "./reviewCopy";
+import { ReviewBulkOperation } from "./ReviewBulkOperation";
 
 const endpoint = "/api/admin/animals/review-bulk";
 const savedOperationKey = "animal-review-bulk-operation";
-const label = (value: string | null) =>
-  value === "needs_review"
-    ? "待核實"
-    : value === "approved"
-      ? "已核實"
-      : value === "demo"
-        ? "示範資料"
-        : "未分類";
+
+/**
+ * Why the panel shows an error. It is kept as a code (the key of `copy.errors`), with the caught
+ * error where the server may have given a reason, and written when the panel renders.
+ */
+type PanelError = {
+  code: "restore_failed" | "reload_failed" | "preview_failed" | "apply_failed";
+  cause?: unknown;
+};
 
 export function AnimalReviewBulkPanel({
   selectedIds,
@@ -24,11 +29,13 @@ export function AnimalReviewBulkPanel({
   filterKey: string;
   selectionDisabled: boolean;
 }) {
+  const copy = useAdminCopy(reviewCopy).bulk;
+  const { language } = useAdminLanguage();
   const [evidence, setEvidence] = useState("");
   const [operation, setOperation] = useState<AnimalReviewBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<PanelError | null>(null);
   const mounted = useRef(false);
   useEffect(() => {
     mounted.current = true;
@@ -50,7 +57,7 @@ export function AnimalReviewBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+        if (active) setError({ code: "restore_failed" });
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -63,7 +70,7 @@ export function AnimalReviewBulkPanel({
   async function reloadOperation() {
     if (!recoveryId || busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       setOperation(
         await fetchAdminJson<AnimalReviewBulkOperation>(
@@ -71,7 +78,7 @@ export function AnimalReviewBulkPanel({
         ),
       );
     } catch {
-      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+      setError({ code: "reload_failed" });
     } finally {
       setBusy(false);
     }
@@ -88,7 +95,7 @@ export function AnimalReviewBulkPanel({
     )
       return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const bytes = new TextEncoder().encode(JSON.stringify({ filterKey, ids: selectedIds }));
       const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -104,7 +111,7 @@ export function AnimalReviewBulkPanel({
       setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法建立送審預覽");
+      setError({ code: "preview_failed", cause });
     } finally {
       setBusy(false);
     }
@@ -113,7 +120,7 @@ export function AnimalReviewBulkPanel({
   async function apply() {
     if (!operation || busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       setOperation(
         await fetchAdminJson<AnimalReviewBulkOperation>(endpoint, {
@@ -122,7 +129,7 @@ export function AnimalReviewBulkPanel({
         }),
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法套用；請重新讀取結果");
+      setError({ code: "apply_failed", cause });
       try {
         setOperation(
           await fetchAdminJson<AnimalReviewBulkOperation>(
@@ -137,15 +144,17 @@ export function AnimalReviewBulkPanel({
     }
   }
 
+  // A reason the server gave is shown as it came; otherwise the message for the code.
+  const errorMessage = error
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    : "";
+
   return (
-    <section aria-label="動物草稿批量送審" className="space-y-3 rounded-lg border p-4">
-      <h2 className="text-lg font-bold">批量送交動物草稿來源審核</h2>
-      <p className="text-sm text-[var(--color-text-muted)]">
-        只為未公開、未分類的已儲存草稿建立待核實記錄；不修改公開狀態、照片或動物配對。
-        套用時逐筆重查職員權限、草稿版本及現有分類。
-      </p>
+    <section aria-label={copy.animal.panelLabel} className="space-y-3 rounded-lg border p-4">
+      <h2 className="text-lg font-bold">{copy.animal.heading}</h2>
+      <p className="text-sm text-[var(--color-text-muted)]">{copy.animal.intro}</p>
       <label className="block text-sm">
-        送審來源及理由
+        {copy.evidenceLabel}
         <textarea
           disabled={busy}
           maxLength={2000}
@@ -154,7 +163,9 @@ export function AnimalReviewBulkPanel({
           className="mt-1 min-h-24 w-full rounded border p-2"
         />
       </label>
-      <p className="text-sm">已選 {selectedIds.length} 筆（最多 1000）</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selected(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -168,11 +179,11 @@ export function AnimalReviewBulkPanel({
         }
         onClick={preview}
       >
-        {busy ? "處理中…" : "建立送審預覽"}
+        {busy ? copy.processing : copy.preview}
       </button>
-      {error && (
+      {errorMessage && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {errorMessage}
         </p>
       )}
       {recoveryId && (
@@ -182,28 +193,11 @@ export function AnimalReviewBulkPanel({
           disabled={busy}
           onClick={reloadOperation}
         >
-          重新讀取結果
+          {copy.reload}
         </button>
       )}
       {operation && (
-        <>
-          <p className="break-words text-sm">本次理由：{operation.evidence}</p>
-          <BulkReview
-            key={operation.operationId}
-            title={"動物草稿送審 · " + operation.items.length + " 筆"}
-            operationId={operation.operationId}
-            expiresAt={operation.expiresAt}
-            items={operation.items.map((item) => ({
-              entityId: item.entityId,
-              status: item.status,
-              reasonCode: item.reasonCode,
-              before: label(item.beforeClassification),
-              after: label(item.afterClassification),
-            }))}
-            busy={busy}
-            onApply={apply}
-          />
-        </>
+        <ReviewBulkOperation kind="animal" operation={operation} busy={busy} onApply={apply} />
       )}
     </section>
   );

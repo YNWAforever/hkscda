@@ -2,11 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { ConsentStatus } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
 import { consentChanges } from "../../../lib/crm/consentChanges";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "./api";
+import { consentEditorCopy } from "./profileCopy";
 
 type ConsentEditorProps = {
   supporterId: string;
@@ -14,36 +17,9 @@ type ConsentEditorProps = {
   whatsappConsent: ConsentStatus | null;
 };
 
-const CONSENT_COPY = {
-  zh: {
-    title: "通訊同意",
-    subtitle: "更新捐款人通訊的同意狀態。",
-    save: "儲存",
-    saveAria: "儲存通訊同意設定",
-    email: "電郵",
-    emailDescription: "收據更新",
-    emailAria: "電郵通訊同意",
-    whatsapp: "WhatsApp",
-    whatsappDescription: "付款更新",
-    whatsappAria: "WhatsApp 通訊同意",
-  },
-  en: {
-    title: "Consent",
-    subtitle: "Update opt-in status for supporter communications.",
-    save: "Save",
-    saveAria: "Save consent preferences",
-    email: "Email",
-    emailDescription: "Receipt updates",
-    emailAria: "Email consent opt-in",
-    whatsapp: "WhatsApp",
-    whatsappDescription: "Payment updates",
-    whatsappAria: "WhatsApp consent opt-in",
-  },
-} as const;
-
 export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: ConsentEditorProps) {
   const { language } = useAdminPageCopy();
-  const copy = CONSENT_COPY[language];
+  const copy = useAdminCopy(consentEditorCopy);
   const queryClient = useQueryClient();
   const [email, setEmail] = useState<ConsentStatus | null>(emailConsent);
   const [whatsapp, setWhatsapp] = useState<ConsentStatus | null>(whatsappConsent);
@@ -107,10 +83,10 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
             aria-label={copy.emailAria}
           >
             <option value="unknown" disabled={emailConsent !== null}>
-              {language === "zh" ? "未有記錄" : "Unknown"}
+              {copy.notSet}
             </option>
-            <option value="opt_in">{language === "zh" ? "同意" : "Opt in"}</option>
-            <option value="opt_out">{language === "zh" ? "不同意" : "Opt out"}</option>
+            <option value="opt_in">{copy.optIn}</option>
+            <option value="opt_out">{copy.optOut}</option>
           </select>
         </label>
         <label className="flex items-center justify-between gap-4 rounded-md border border-[var(--color-border)] p-3">
@@ -131,15 +107,17 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
             aria-label={copy.whatsappAria}
           >
             <option value="unknown" disabled={whatsappConsent !== null}>
-              {language === "zh" ? "未有記錄" : "Unknown"}
+              {copy.notSet}
             </option>
-            <option value="opt_in">{language === "zh" ? "同意" : "Opt in"}</option>
-            <option value="opt_out">{language === "zh" ? "不同意" : "Opt out"}</option>
+            <option value="opt_in">{copy.optIn}</option>
+            <option value="opt_out">{copy.optOut}</option>
           </select>
         </label>
       </div>
       {mutation.error && (
-        <p className="mt-3 text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
+        <p role="alert" className="mt-3 text-sm text-[var(--color-destructive)]">
+          {adminErrorMessage(mutation.error, language)}
+        </p>
       )}
     </div>
   );

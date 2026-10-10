@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DeliveryWorklistResult } from "../../../lib/donations/deliveryWorklist";
 import { Button } from "../../ui/button";
+import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
+import { deliveryWorklistCopy } from "./copy";
+import { donationFormatCopy } from "./formatCopy";
 
 export function DonationDeliveryWorklistView({
   result,
@@ -15,30 +19,32 @@ export function DonationDeliveryWorklistView({
   retryingId: string | null;
   onRetry: (jobId: string) => void;
 }) {
+  const copy = useAdminCopy(deliveryWorklistCopy);
+  const format = useAdminCopy(donationFormatCopy);
   return (
     <div className="space-y-3 text-sm text-[var(--color-panel)]">
-      <p role="status">需處理工作 {result.total} 項；每頁最多 25 項。</p>
+      <p role="status">{copy.summary(result.total)}</p>
       <div
         role="region"
-        aria-label="收條及通知工作表格"
+        aria-label={copy.regionLabel}
         tabIndex={0}
         className="overflow-auto rounded-md border border-[var(--color-border)]"
       >
         <table className="w-full min-w-[44rem] text-left">
-          <caption className="sr-only">收條及通知工作第 {result.page} 頁</caption>
+          <caption className="sr-only">{copy.caption(result.page)}</caption>
           <thead className="bg-[var(--color-surface)]">
             <tr>
               <th scope="col" className="p-2">
-                工作／付款
+                {copy.columns.job}
               </th>
               <th scope="col" className="p-2">
-                狀態／嘗試
+                {copy.columns.status}
               </th>
               <th scope="col" className="p-2">
-                失敗原因
+                {copy.columns.reason}
               </th>
               <th scope="col" className="p-2">
-                操作
+                {copy.columns.actions}
               </th>
             </tr>
           </thead>
@@ -49,16 +55,22 @@ export function DonationDeliveryWorklistView({
               return (
                 <tr key={job.id} className="border-t border-[var(--color-border)] align-top">
                   <td className="p-2 break-all">
-                    <span className="block">工作 {job.id}</span>
-                    <span className="block">付款 {job.paymentId}</span>
-                    <span className="block text-xs">建立：{job.createdAt}</span>
+                    <span className="block">{copy.job(job.id)}</span>
+                    <span className="block">{copy.payment(job.paymentId)}</span>
+                    <span className="block text-xs">
+                      {copy.created(format.timestamp(job.createdAt))}
+                    </span>
                   </td>
                   <td className="p-2">
                     <span className="block">
-                      {job.status === "attention_required" ? "需人工處理" : "可重試"}
+                      {job.status === "attention_required" ? copy.needsManual : copy.canRetry}
                     </span>
-                    <span className="block">已嘗試 {job.attempts} 次</span>
-                    {job.nextAttemptAt && <span className="block">下次：{job.nextAttemptAt}</span>}
+                    <span className="block">{copy.attempts(job.attempts)}</span>
+                    {job.nextAttemptAt && (
+                      <span className="block">
+                        {copy.nextAttempt(format.timestamp(job.nextAttemptAt))}
+                      </span>
+                    )}
                   </td>
                   <td className="p-2 break-all">{job.errorCode || "—"}</td>
                   <td className="p-2">
@@ -70,10 +82,10 @@ export function DonationDeliveryWorklistView({
                         disabled={retryingId !== null}
                         onClick={() => onRetry(job.id)}
                       >
-                        重試此工作
+                        {copy.retryJob}
                       </Button>
                     ) : (
-                      <span>付款狀態已變更，不能重試</span>
+                      <span>{copy.paymentChanged}</span>
                     )}
                   </td>
                 </tr>
@@ -82,15 +94,18 @@ export function DonationDeliveryWorklistView({
           </tbody>
         </table>
       </div>
-      {result.total === 0 && <p>目前沒有失敗工作。</p>}
+      {result.total === 0 && <p>{copy.noJobs}</p>}
     </div>
   );
 }
 
 export function DonationDeliveryWorklist() {
+  const copy = useAdminCopy(deliveryWorklistCopy);
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [notice, setNotice] = useState("");
+  // The status the last retry reported; the notice is written from it when it is shown.
+  const [noticeStatus, setNoticeStatus] = useState<string | null>(null);
+  const [retryJobId, setRetryJobId] = useState<string | null>(null);
   const query = useQuery({
     queryKey: ["finance-delivery-worklist", page],
     queryFn: () =>
@@ -102,7 +117,7 @@ export function DonationDeliveryWorklist() {
         method: "POST",
       }),
     onSuccess: (result) => {
-      setNotice(`工作最新狀態：${result.deliveryStatus}。付款記錄不會重複入帳。`);
+      setNoticeStatus(result.deliveryStatus);
     },
     onSettled: () =>
       Promise.all([
@@ -119,11 +134,24 @@ export function DonationDeliveryWorklist() {
       id="delivery-jobs"
       className="space-y-3 rounded-lg border border-[var(--color-border)] p-4"
     >
-      <h3 className="font-semibold text-[var(--color-panel)]">收條／通知失敗工作</h3>
-      <p className="text-sm text-[var(--color-text-muted)]">
-        只顯示既有失敗工作。只有付款仍成功入帳才可重試；請先核對付款及收件資料。此清單不會自動補發、重新入帳、退款或作廢收條。
-      </p>
-      {query.isLoading && <p role="status">正在讀取工作…</p>}
+      <ConfirmActionDialog
+        open={retryJobId !== null}
+        onOpenChange={(open) => {
+          if (!open) setRetryJobId(null);
+        }}
+        title={copy.retryJob}
+        consequence={copy.confirmRetry}
+        confirmLabel={copy.retryJob}
+        reason="none"
+        onConfirm={async () => {
+          if (retryJobId === null) return;
+          setNoticeStatus(null);
+          retry.mutate(retryJobId);
+        }}
+      />
+      <h3 className="font-semibold text-[var(--color-panel)]">{copy.heading}</h3>
+      <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
+      {query.isLoading && <p role="status">{copy.loading}</p>}
       {query.isError && (
         <LoadFailure
           error={query.error}
@@ -142,40 +170,33 @@ export function DonationDeliveryWorklist() {
                   ? (retry.variables ?? null)
                   : null
             }
-            onRetry={(jobId) => {
-              if (!window.confirm("確認重試這一筆既有收條及確認電郵工作？請先核對付款及收件資料。"))
-                return;
-              setNotice("");
-              retry.mutate(jobId);
-            }}
+            onRetry={setRetryJobId}
           />
           {query.data.total > 25 && (
-            <nav aria-label="送達工作分頁" className="flex items-center gap-2">
+            <nav aria-label={copy.navLabel} className="flex items-center gap-2">
               <Button
                 type="button"
                 variant="outline"
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
               >
-                上一頁
+                {copy.previous}
               </Button>
-              <span>
-                第 {page} / {totalPages} 頁
-              </span>
+              <span>{copy.pageOf(page, totalPages)}</span>
               <Button
                 type="button"
                 variant="outline"
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
               >
-                下一頁
+                {copy.next}
               </Button>
             </nav>
           )}
         </>
       )}
-      {notice && <p role="status">{notice}</p>}
-      {retry.error && <p role="alert">未能確認重試結果；請按最新清單核對，勿假定工作未執行。</p>}
+      {noticeStatus && <p role="status">{copy.latestStatus(noticeStatus)}</p>}
+      {retry.error && <p role="alert">{copy.retryUnconfirmed}</p>}
     </section>
   );
 }

@@ -6,21 +6,15 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import { getSupabaseClient } from "../../../lib/supabase";
 import { pageAfterDelete } from "./documentManagementLogic";
 import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
+import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
+import { documentsCopy } from "./documentsCopy";
 import { uploadDocumentPdf } from "./documentUpload";
 import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
-
-const kindLabels: Record<DocumentKind, string> = {
-  annual_report: "年度報告",
-  wedding_form: "婚宴回禮表格",
-  adoption_guide: "領養指南",
-  sponsorship_terms: "助養條款",
-};
-const languageLabels: Record<DocumentLanguage, string> = {
-  "zh-HK": "中文",
-  en: "English",
-  bilingual: "中英雙語",
-};
 
 export type DocumentListData = { items: DocumentAsset[]; total: number };
 
@@ -30,6 +24,7 @@ export function DocumentManagement({ initialData }: { initialData?: DocumentList
 }
 
 function DocumentManagementRuntime() {
+  const { language: adminLanguage } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<DocumentKind | "all">("all");
@@ -61,7 +56,7 @@ function DocumentManagementRuntime() {
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
-      if (!file || !title.trim()) throw new Error("請填寫標題並選擇 PDF 檔案");
+      if (!file || !title.trim()) throw new DocumentAdminError("title_and_file_required");
       const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`;
       const objectPath = `${uploadKind}/${id}.pdf`;
       return uploadDocumentPdf({
@@ -122,17 +117,31 @@ function DocumentManagementRuntime() {
     },
   });
 
+  const loadError = documentsQuery.error ?? ownershipQuery.error;
+
   return (
     <DocumentManagementView
       data={documentsQuery.data}
       ownershipReady={ownershipQuery.isSuccess}
       ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByAssetId}
       loading={documentsQuery.isLoading || ownershipQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, adminLanguage),
+              onRetry: () => {
+                void documentsQuery.refetch();
+                void ownershipQuery.refetch();
+              },
+            }
+          : null
+      }
       error={
-        (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
-        (ownershipQuery.error instanceof Error ? ownershipQuery.error.message : null) ??
-        (uploadMutation.error instanceof Error ? uploadMutation.error.message : null) ??
-        (actionMutation.error instanceof Error ? actionMutation.error.message : null)
+        documentErrorMessage(uploadMutation.error, adminLanguage) ??
+        (actionMutation.variables?.action === "delete"
+          ? null
+          : documentErrorMessage(actionMutation.error, adminLanguage))
       }
       query={query}
       kind={kind}
@@ -162,7 +171,12 @@ function DocumentManagementRuntime() {
       onUploadLanguageChange={setUploadLanguage}
       onFileChange={setFile}
       onUpload={() => uploadMutation.mutate()}
-      onAction={(id, action) => actionMutation.mutate({ id, action })}
+      onAction={(id, action) => {
+        const run = actionMutation.mutateAsync({ id, action });
+        // Only a delete waits in its confirm dialog; the other actions show their error on the page.
+        if (action === "delete") return run;
+        run.catch(() => undefined);
+      }}
     />
   );
 }
@@ -172,6 +186,9 @@ type ViewProps = {
   ownershipReady?: boolean;
   ownerReleaseIds?: Readonly<Record<string, string>>;
   loading?: boolean;
+  /** The list or its ownership failed to load. Shown as a failure with a retry. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of an upload or an action. */
   error?: string | null;
   query?: string;
   kind?: DocumentKind | "all";
@@ -192,7 +209,7 @@ type ViewProps = {
   onUploadLanguageChange?: (value: DocumentLanguage) => void;
   onFileChange?: (file: File | null) => void;
   onUpload?: () => void;
-  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void;
+  onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void | Promise<unknown>;
 };
 
 export function DocumentManagementView({
@@ -200,6 +217,7 @@ export function DocumentManagementView({
   ownershipReady = true,
   ownerReleaseIds = {},
   loading = false,
+  loadFailure = null,
   error,
   query = "",
   kind = "all",
@@ -222,13 +240,31 @@ export function DocumentManagementView({
   onUpload,
   onAction,
 }: ViewProps) {
+  const common = useAdminCopy(documentsCopy);
+  const copy = common.documents;
   const rows = data?.items ?? [];
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle = rows.find((item) => item.id === deleteId)?.title ?? "";
   return (
     <div className="space-y-6 p-6">
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={copy.table.deleteLabel(deleteTitle)}
+        consequence={copy.table.confirmDelete(deleteTitle)}
+        confirmLabel={copy.table.deleteLabel(deleteTitle)}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) await onAction?.(deleteId, "delete");
+        }}
+      />
       <header>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳內容</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">文件</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">管理公開 PDF、語言版本與發佈狀態。</p>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </header>
 
       {onUpload ? (
@@ -240,7 +276,7 @@ export function DocumentManagementView({
           }}
         >
           <label className="space-y-1 text-sm font-semibold">
-            標題
+            {copy.upload.title}
             <input
               value={title}
               onChange={(event) => onTitleChange?.(event.target.value)}
@@ -248,13 +284,13 @@ export function DocumentManagementView({
             />
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            類型
+            {copy.upload.kind}
             <select
               value={uploadKind}
               onChange={(event) => onUploadKindChange?.(event.target.value as DocumentKind)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              {Object.entries(kindLabels).map(([value, label]) => (
+              {Object.entries(common.kinds).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
@@ -262,13 +298,13 @@ export function DocumentManagementView({
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            語言
+            {copy.upload.language}
             <select
               value={uploadLanguage}
               onChange={(event) => onUploadLanguageChange?.(event.target.value as DocumentLanguage)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
             >
-              {Object.entries(languageLabels).map(([value, label]) => (
+              {Object.entries(common.languages).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
@@ -276,7 +312,7 @@ export function DocumentManagementView({
             </select>
           </label>
           <label className="space-y-1 text-sm font-semibold">
-            PDF 檔案
+            {copy.upload.file}
             <input
               type="file"
               accept="application/pdf,.pdf"
@@ -295,7 +331,7 @@ export function DocumentManagementView({
             ) : (
               <Upload className="h-4 w-4" />
             )}
-            上載
+            {copy.upload.submit}
           </button>
         </form>
       ) : null}
@@ -304,34 +340,34 @@ export function DocumentManagementView({
         <label className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
-            aria-label="搜尋文件"
+            aria-label={copy.filters.searchLabel}
             value={query}
             onChange={(event) => onQueryChange?.(event.target.value)}
-            placeholder="搜尋標題或檔案路徑"
+            placeholder={copy.filters.searchPlaceholder}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] py-2 pl-9 pr-3 text-sm"
           />
         </label>
         <select
-          aria-label="文件類型"
+          aria-label={copy.filters.kindLabel}
           value={kind}
           onChange={(event) => onKindChange?.(event.target.value as DocumentKind | "all")}
           className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
         >
-          <option value="all">全部類型</option>
-          {Object.entries(kindLabels).map(([value, label]) => (
+          <option value="all">{copy.filters.allKinds}</option>
+          {Object.entries(common.kinds).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
             </option>
           ))}
         </select>
         <select
-          aria-label="文件語言"
+          aria-label={copy.filters.languageLabel}
           value={language}
           onChange={(event) => onLanguageChange?.(event.target.value as DocumentLanguage | "all")}
           className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
         >
-          <option value="all">全部語言</option>
-          {Object.entries(languageLabels).map(([value, label]) => (
+          <option value="all">{copy.filters.allLanguages}</option>
+          {Object.entries(common.languages).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -339,6 +375,13 @@ export function DocumentManagementView({
         </select>
       </div>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -352,24 +395,24 @@ export function DocumentManagementView({
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
-              <th className="px-3 py-3">文件</th>
-              <th className="px-3 py-3">類型 / 語言</th>
-              <th className="px-3 py-3">大小</th>
-              <th className="px-3 py-3">狀態</th>
-              <th className="px-3 py-3 text-right">操作</th>
+              <th className="px-3 py-3">{copy.table.document}</th>
+              <th className="px-3 py-3">{copy.table.kindAndLanguage}</th>
+              <th className="px-3 py-3">{copy.table.size}</th>
+              <th className="px-3 py-3">{copy.table.status}</th>
+              <th className="px-3 py-3 text-right">{copy.table.actions}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center">
-                  載入中...
+                  {copy.table.loading}
                 </td>
               </tr>
-            ) : rows.length === 0 && !error ? (
+            ) : rows.length === 0 && !error && !loadFailure ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
-                  沒有文件
+                  {copy.table.empty}
                 </td>
               </tr>
             ) : (
@@ -388,18 +431,20 @@ export function DocumentManagementView({
                         href={`/admin/content/adoption-guides?releaseId=${encodeURIComponent(ownerReleaseIds[item.id])}`}
                         className="mt-1 block text-xs font-semibold text-[var(--color-primary)] underline"
                       >
-                        {"\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406"}
+                        {copy.table.managedByReleases}
                       </a>
                     ) : null}
                   </td>
                   <td className="px-3 py-3">
-                    {kindLabels[item.kind]}
+                    {common.kinds[item.kind]}
                     <span className="block text-xs text-[var(--color-text-muted)]">
-                      {languageLabels[item.language]}
+                      {common.languages[item.language]}
                     </span>
                   </td>
                   <td className="px-3 py-3">{formatBytes(item.byteSize)}</td>
-                  <td className="px-3 py-3">{item.isPublished ? "已發佈" : "未發佈"}</td>
+                  <td className="px-3 py-3">
+                    {item.isPublished ? copy.table.published : copy.table.notPublished}
+                  </td>
                   <td className="px-3 py-3">
                     <div className="flex justify-end gap-2">
                       {ownershipReady && onAction && !ownerReleaseIds[item.id] ? (
@@ -412,19 +457,13 @@ export function DocumentManagementView({
                             className="rounded-md border border-[var(--color-border)] px-3 py-1.5 font-semibold"
                             disabled={actionPending}
                           >
-                            {item.isPublished ? "取消發佈" : "發佈"}
+                            {item.isPublished ? copy.table.unpublish : copy.table.publish}
                           </button>
                           <button
                             type="button"
-                            aria-label={`刪除 ${item.title}`}
+                            aria-label={copy.table.deleteLabel(item.title)}
                             disabled={actionPending}
-                            onClick={() => {
-                              if (
-                                globalThis.confirm?.(`確定刪除「${item.title}」？此操作無法復原。`)
-                              ) {
-                                onAction(item.id, "delete");
-                              }
-                            }}
+                            onClick={() => setDeleteId(item.id)}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -445,8 +484,8 @@ export function DocumentManagementView({
           pageSize={25}
           total={data?.total}
           onPageChange={onPageChange}
-          label="文件"
-          failed={Boolean(error)}
+          label={copy.table.pager}
+          failed={Boolean(error || loadFailure)}
         />
       ) : null}
     </div>

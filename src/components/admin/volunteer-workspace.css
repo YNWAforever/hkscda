@@ -87,18 +87,6 @@
   padding: 24px 32px 48px;
   min-width: 0;
 }
-.vw-breadcrumb {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-.vw-breadcrumb a:hover {
-  color: var(--color-primary);
-  text-decoration: underline;
-}
 .vw-page-header {
   display: flex;
   align-items: flex-start;
@@ -122,9 +110,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-.vw-breadcrumb + .vw-content {
-  margin-top: 24px;
 }
 .vw-content {
   min-width: 0;

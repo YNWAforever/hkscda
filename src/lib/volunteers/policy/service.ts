@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { policyValidationMessage } from "./messages";
 import { policyDraftSchema } from "./schemas";
 
 const templateKey = z.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
@@ -58,7 +59,11 @@ export function createPolicyService(
       const command = policyCommandSchema.parse(raw);
       if (command.action === "save" && command.body.template_key !== command.template_key) {
         throw new z.ZodError([
-          { code: "custom", path: ["template_key"], message: "模板識別不一致" },
+          {
+            code: "custom",
+            path: ["template_key"],
+            message: policyValidationMessage("template_mismatch"),
+          },
         ]);
       }
       return execute(actorUserId, command);

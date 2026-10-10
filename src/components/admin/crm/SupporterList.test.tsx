@@ -1,11 +1,10 @@
-import { afterAll, describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, mock, test } from "bun:test";
 
 import type { SupporterSummary } from "../../../lib/crm/types";
+import { renderAdminInChinese, renderAdminInEnglish } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 const realReactRouter = await import("@tanstack/react-router");
-const realAdminPageCopy = await import("../adminPageCopy");
 
 const supporter: SupporterSummary = {
   id: "supporter-1",
@@ -68,23 +67,6 @@ mock.module("@tanstack/react-router", () => ({
   ),
 }));
 
-mock.module("../adminPageCopy", () => ({
-  ...realAdminPageCopy,
-  useAdminPageCopy: () => ({
-    language: "en",
-    pageCopy: realAdminPageCopy.adminPageCopy.en,
-  }),
-}));
-
-// bun's mock.module patches the shared module registry for the rest of the
-// process, not just this file -- without restoring it, every other test file
-// that imports "../adminPageCopy" after this one (via any relative path
-// resolving to the same module) would silently get this hardcoded English
-// stub instead of the real, language-aware hook.
-afterAll(() => {
-  mock.module("../adminPageCopy", () => realAdminPageCopy);
-});
-
 mock.module("./ExportBar", () => ({
   ExportBar: () => <span>export</span>,
 }));
@@ -98,7 +80,8 @@ const { SupporterList } = await import("./SupporterList");
 describe("SupporterList", () => {
   test("assignment UI hides a stale cached actor after another tab changes identity", () => {
     liveActor = "other-finance";
-    expect(renderToStaticMarkup(<SupporterList />)).not.toContain("批量指派跟進負責人");
+    expect(renderAdminInChinese(<SupporterList />)).not.toContain("批量指派跟進負責人");
+    expect(renderAdminInEnglish(<SupporterList />)).not.toContain("Bulk assign follow-up owners");
     liveActor = "fixture-finance";
   });
   test("assignment UI requires the current active finance identity", () => {
@@ -109,15 +92,25 @@ describe("SupporterList", () => {
     ]) {
       identityRole = role!;
       identityStatus = status!;
-      expect(renderToStaticMarkup(<SupporterList />)).not.toContain("批量指派跟進負責人");
+      expect(renderAdminInChinese(<SupporterList />)).not.toContain("批量指派跟進負責人");
+      expect(renderAdminInEnglish(<SupporterList />)).not.toContain("Bulk assign follow-up owners");
     }
     identityRole = "admin";
     identityStatus = "active";
   });
   test("renders an explicit open action for supporter details", () => {
-    const markup = renderToStaticMarkup(<SupporterList />);
+    const markup = renderAdminInEnglish(<SupporterList />);
 
     expect(markup).toContain("Open");
+    expect(markup).toContain("Bulk assign follow-up owners");
+    expect(markup).toContain("Bulk follow-up owner");
+    expect(markup).toContain('href="/admin/supporters/supporter-1"');
+  });
+
+  test("keeps the Chinese list as it was", () => {
+    const markup = renderAdminInChinese(<SupporterList />);
+
+    expect(markup).toContain("開啟");
     expect(markup).toContain("批量指派跟進負責人");
     expect(markup).toContain("批量跟進負責人");
     expect(markup).toContain('href="/admin/supporters/supporter-1"');
@@ -128,7 +121,7 @@ describe("SupporterList", () => {
     // showed "Could not load supporters" directly above "No supporters found"
     // -- the same screen asserting both a failure and a confirmed empty result.
     supportersError = new Error("boom");
-    const markup = renderToStaticMarkup(<SupporterList />);
+    const markup = renderAdminInEnglish(<SupporterList />);
     expect(markup).toContain("Could not load supporters");
     expect(markup).not.toContain("No supporters found");
     supportersError = null;

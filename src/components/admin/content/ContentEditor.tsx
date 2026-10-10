@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ContentReviewPanel } from "./ContentReview";
 import {
   createContext,
@@ -10,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
-import { Link, useBlocker } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
@@ -29,7 +30,12 @@ import type {
   StoryUpdateVisibility,
 } from "../../../lib/content/types";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
+import type { AdminLanguage } from "../../../lib/admin/language";
+import { contentServerMessage } from "../../../lib/content/serverMessages";
 import { getSupabaseClient } from "../../../lib/supabase";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy, useAdminCopy } from "../i18n/copy";
 import { uploadContentMediaImage } from "./contentMediaUpload";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
@@ -38,6 +44,9 @@ import {
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
+import { contentCommonCopy } from "./contentCommonCopy";
+import { ContentAdminError, contentFailure } from "./contentErrors";
+import { editorCopy } from "./editorCopy";
 import {
   createEditorState,
   editorTransition,
@@ -50,6 +59,11 @@ import { ContentTimeline } from "./ContentTimeline";
 import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel, type SocialCopyPatch } from "./SocialCopyPanel";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
+import { LoadFailure } from "../LoadFailure";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { useLeaveConfirm } from "../useLeaveConfirm";
 
 type ContentEditorProps = {
   contentId: string;
@@ -58,59 +72,6 @@ type ContentEditorProps = {
 
 type ContentDetailResponse = {
   content: ContentDetail & { mediaPending?: number };
-};
-
-const statusLabels: Record<ContentStatus, string> = {
-  draft: "草稿",
-  published: "已發布",
-  archived: "已封存",
-};
-
-const animalTypeLabels: Record<AnimalStoryType, string> = {
-  cat: "貓",
-  dog: "狗",
-  mixed: "貓狗",
-  unknown: "未分類",
-};
-
-const publicStatusLabels: Record<RescuePublicStatus, string> = {
-  rescued: "已救援",
-  medical_care: "醫療照護",
-  foster_recovery: "暫養康復",
-  ready_for_adoption: "準備領養",
-  adopted: "已領養",
-  sponsor_needed: "需要助養",
-  closed: "已完結",
-};
-
-const storyUpdateKindLabels: Record<StoryUpdateKind, string> = {
-  medical: "醫療",
-  care: "照顧",
-  photo: "相片",
-  foster: "寄養",
-  adoption: "領養",
-  general: "一般",
-};
-
-const storyUpdateVisibilityLabels: Record<StoryUpdateVisibility, string> = {
-  public: "公開",
-  internal: "內部",
-};
-
-const linkTypeLabels: Record<ContentLinkType, string> = {
-  animal: "動物",
-  adoption_case: "領養申請",
-  successful_adoption: "成功領養",
-  supporter: "支持者",
-  volunteer_activity: "義工活動",
-};
-
-const linkRelationshipLabels: Record<ContentLinkRelationship, string> = {
-  primary_subject: "主要主角",
-  related_case: "相關個案",
-  adopter: "領養人",
-  volunteer_context: "義工背景",
-  other: "其他",
 };
 
 const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
@@ -124,13 +85,19 @@ export type AdopterDraftNotice = {
   warning: string | null;
 };
 
+/**
+ * The notice to show after a story update is saved. The server sends a zh-HK warning when it
+ * could not create the drafts; it is written in `language` when it is one of the known messages
+ * and shown as it came otherwise. zh-HK when no language is given.
+ */
 export function formatAdopterDraftNotice(
   drafts: AdopterDraftNotice | null | undefined,
+  language: AdminLanguage = "zh",
 ): string | null {
   if (!drafts) return null;
-  if (drafts.warning) return drafts.warning;
+  if (drafts.warning) return contentServerMessage(drafts.warning, language);
   if (drafts.created === 0) return null;
-  return `已建立 ${drafts.created} 份通知草稿`;
+  return pickAdminCopy(editorCopy, language).draftNotice.created(drafts.created);
 }
 
 export function StoryUpdateDraftNotice({ notice }: { notice: string | null }) {
@@ -163,6 +130,9 @@ function useDirtyPanel(panel: string) {
 }
 
 export function ContentEditor({ contentId, initialContent }: ContentEditorProps) {
+  const copy = useAdminCopy(editorCopy);
+  const common = useAdminCopy(contentCommonCopy);
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [editor, setEditor] = useState(() =>
     createEditorState(initialContent?.version, initialContent?.revisionId ?? undefined),
@@ -183,10 +153,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     if (!dirty) delete dirtyVersions.current[panel];
     setEditor((current) => editorTransition(current, { type: dirty ? "edit" : "saved", panel }));
   }, []);
-  useBlocker({
-    shouldBlockFn: () => hasDirty && !window.confirm("離開會捨棄未儲存的內容，確定離開？"),
-    enableBeforeUnload: hasDirty,
-  });
+  const leaveDialog = useLeaveConfirm({ dirty: hasDirty, consequence: copy.leaveConfirm });
+  const [reloadOpen, setReloadOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
   const [pendingPublishedMedia, setPendingPublishedMedia] = useState(0);
@@ -194,7 +163,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   const [savingCopyId, setSavingCopyId] = useState<string | null>(null);
   const [pendingDraftId, setPendingDraftId] = useState<string | null>(null);
   const [generatingUpdateId, setGeneratingUpdateId] = useState<string | null>(null);
-  const [updateDraftNotice, setUpdateDraftNotice] = useState<string | null>(null);
+  // What the server said about the notification drafts of the last saved update. The notice is
+  // written from it when the page renders, so it follows the admin's language.
+  const [updateDraftNotice, setUpdateDraftNotice] = useState<AdopterDraftNotice | null>(null);
 
   // TanStack Router keeps this component mounted when only the `contentId`
   // param changes, so a stale draft notice must be cleared on id change.
@@ -214,6 +185,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const content = contentQuery.data?.content;
+  useBreadcrumbRecordName(content?.title);
   currentVersion.current = content?.version;
   useEffect(() => {
     if (content)
@@ -223,15 +195,21 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         revisionId: content.revisionId ?? undefined,
       }));
   }, [content]);
-  const [reloadError, setReloadError] = useState<string>();
-  const reload = async () => {
-    if (hasDirty && !window.confirm("重新載入會捨棄所有未儲存內容，確定繼續？")) return;
-    const data = await contentQuery.refetch();
-    if (!canAcceptEditorReload(data) || !data.data) {
-      setReloadError("未能重新載入，未儲存內容已保留，請重試。");
+  const [reloadFailed, setReloadFailed] = useState(false);
+  const requestReload = async () => {
+    if (hasDirty) {
+      setReloadOpen(true);
       return;
     }
-    setReloadError(undefined);
+    await performReload();
+  };
+  const performReload = async () => {
+    const data = await contentQuery.refetch();
+    if (!canAcceptEditorReload(data) || !data.data) {
+      setReloadFailed(true);
+      return;
+    }
+    setReloadFailed(false);
     if (data.data) {
       setEditor(
         createEditorState(data.data.content.version, data.data.content.revisionId ?? undefined),
@@ -258,7 +236,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         body: JSON.stringify({ expectedVersion: content?.version }),
       }),
     onSuccess: async () => {
-      await reload();
+      await requestReload();
       void queryClient.invalidateQueries({ queryKey: ["admin-content-revisions", contentId] });
     },
   });
@@ -351,7 +329,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         },
       ),
     onSuccess: (result) => {
-      setUpdateDraftNotice(formatAdopterDraftNotice(result.notificationDrafts));
+      setUpdateDraftNotice(result.notificationDrafts ?? null);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
     },
   });
@@ -467,7 +445,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   );
   const publishAllowed = canPublish({ ...editor, pending: editorActionPending, conflict });
   if (contentQuery.isLoading) {
-    return <div className="p-6 text-sm text-[var(--color-text-muted)]">載入宣傳內容...</div>;
+    return (
+      <div className="space-y-3 p-6">
+        <DestinationHeading id="content" />
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.loading}</p>
+      </div>
+    );
   }
 
   if (!content) {
@@ -478,17 +461,46 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
-          返回宣傳內容
+          {copy.back}
         </Link>
-        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
-          找不到宣傳內容。
-        </p>
+        <DestinationHeading id="content" />
+        {contentQuery.error ? (
+          // A failed read is not a missing item: say which it was, and offer the retry.
+          <LoadFailure error={contentQuery.error} onRetry={() => void contentQuery.refetch()} />
+        ) : (
+          <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
+            {copy.notFound}
+          </p>
+        )}
       </div>
     );
   }
 
   return (
     <div className="space-y-6 p-6">
+      {leaveDialog}
+      <ConfirmActionDialog
+        open={reloadOpen}
+        onOpenChange={setReloadOpen}
+        title={copy.conflict.reload}
+        consequence={copy.reloadConfirm}
+        confirmLabel={copy.conflict.reload}
+        destructive
+        reason="none"
+        onConfirm={performReload}
+      />
+      <ConfirmActionDialog
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        title={copy.archive}
+        consequence={copy.archiveConfirm(content.title)}
+        confirmLabel={copy.archive}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          await runOperation("archive", () => archiveContent.mutateAsync()).catch(() => undefined);
+        }}
+      />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link
@@ -496,27 +508,27 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-primary)]"
           >
             <ArrowLeft className="h-4 w-4" />
-            返回宣傳內容
+            {copy.back}
           </Link>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold text-[var(--color-panel)]">{content.title}</h1>
             <StatusPill tone={toneMap[contentStatusTone(content.status)]}>
-              {statusLabels[content.status]}
+              {common.statuses[content.status]}
             </StatusPill>
           </div>
           <p className="text-sm text-[var(--color-text-muted)]">
-            {formatContentTypeLabel(content.type, "zh")} · {content.slug}
+            {formatContentTypeLabel(content.type, language)} · {content.slug}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             disabled={editorActionPending || contentQuery.isFetching}
-            onClick={() => void reload()}
+            onClick={() => void requestReload()}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <RefreshCw className="h-4 w-4" />
-            重新整理
+            {copy.refresh}
           </button>
           <button
             type="button"
@@ -530,80 +542,72 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
             <Send className="h-4 w-4" />
-            發布
+            {copy.publish}
           </button>
           <button
             type="button"
             disabled={editorActionPending}
-            onClick={() => {
-              if (!window.confirm(`確定封存「${content.title}」？封存後將不再於公開頁面顯示。`)) {
-                return;
-              }
-              void runOperation("archive", () => archiveContent.mutateAsync()).catch(
-                () => undefined,
-              );
-            }}
+            onClick={() => setArchiveOpen(true)}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <Archive className="h-4 w-4" />
-            封存
+            {copy.archive}
           </button>
         </div>
       </div>
 
-      {reloadError ? <p role="alert">{reloadError}</p> : null}
-      <p role="status">
-        {hasDirty
-          ? "尚有未儲存變更，請先儲存各面板後發布。"
-          : `已儲存草稿 · 版本 ${content.version ?? "—"}`}
-      </p>
+      {reloadFailed ? <p role="alert">{copy.reloadFailed}</p> : null}
+      <p role="status">{hasDirty ? copy.unsaved : copy.saved(content.version)}</p>
       {conflict ? (
         <div role="alert" className="rounded border border-[var(--color-warning)] p-3">
-          <p>
-            內容已有較新版本或發布網址衝突。你的輸入已保留，請比較最新內容；重新載入前請先複製要保留的文字。
-          </p>
-          <button
-            type="button"
-            onClick={async () =>
-              setComparison(
-                (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
-                  .content,
-              )
-            }
-          >
-            比較最新內容
-          </button>
-          <button type="button" onClick={() => void reload()}>
-            重新載入最新版本
-          </button>
+          <p>{copy.conflict.message}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={async () =>
+                setComparison(
+                  (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
+                    .content,
+                )
+              }
+            >
+              {copy.conflict.compare}
+            </Button>
+            <Button variant="outline" type="button" onClick={() => void requestReload()}>
+              {copy.conflict.reload}
+            </Button>
+          </div>
         </div>
       ) : null}
       {comparison ? (
         <details open>
-          <summary>伺服器最新版本 {comparison.version}（本機輸入保留於下方）</summary>
+          <summary>{copy.conflict.latest(comparison.version)}</summary>
           <p>{comparison.title}</p>
           <p>{comparison.summary}</p>
           <pre className="whitespace-pre-wrap">{comparison.body}</pre>
         </details>
       ) : null}
-      <nav aria-label="內容歷史分頁" className="flex items-center gap-3">
-        <button
+      <nav aria-label={copy.history.label} className="flex items-center gap-3">
+        <Button
+          variant="outline"
           type="button"
           disabled={historyPage === 1 || hasDirty || editorActionPending}
           onClick={() => setHistoryPage((page) => page - 1)}
         >
-          上一頁紀錄
-        </button>
-        <span>紀錄第 {content.history?.page ?? historyPage} 頁 · 每類最多 20 筆</span>
-        <button
+          {copy.history.previous}
+        </Button>
+        <span>{copy.history.page(content.history?.page ?? historyPage)}</span>
+        <Button
+          variant="outline"
           type="button"
           disabled={!content.history?.hasMore || hasDirty || editorActionPending}
           onClick={() => setHistoryPage((page) => page + 1)}
         >
-          下一頁紀錄
-        </button>
+          {copy.history.next}
+        </Button>
       </nav>
-      <StoryUpdateDraftNotice notice={updateDraftNotice} />
+      <StoryUpdateDraftNotice notice={formatAdopterDraftNotice(updateDraftNotice, language)} />
       {content.revisionId && (
         <ContentReviewPanel
           key={content.revisionId}
@@ -623,7 +627,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           role="status"
           className="rounded-md border border-[var(--color-warning)] bg-[var(--color-warning-highlight)] p-3 text-sm text-[var(--color-warning)]"
         >
-          內容已發布，{pendingPublishedMedia} 張圖片正在同步；系統會自動重試。
+          {copy.syncingMedia(pendingPublishedMedia)}
         </p>
       ) : null}
       {validationIssues.length > 0 ? <PublishValidationPanel issues={validationIssues} /> : null}
@@ -737,6 +741,7 @@ function PublicationMetadataForm({
   pending: boolean;
   onSave: (value: PublicationMetadataFormState) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorCopy).metadata;
   const panelState = useDirtyPanel("metadata");
   const initial = useMemo<PublicationMetadataFormState>(
     () => ({
@@ -775,13 +780,11 @@ function PublicationMetadataForm({
       }}
     >
       <div>
-        <h2 className="text-lg font-bold text-[var(--color-panel)]">發布資格與來源</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          既有未分類內容維持可讀並列入待審。標記為示範或設定生效日期會立即影響公開位置；請先核對批准清單。
-        </p>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
       <div className="grid gap-3 md:grid-cols-3">
-        <Field label="內容分類">
+        <Field label={copy.classification}>
           <select
             value={form.contentClass}
             onChange={(event) =>
@@ -792,12 +795,12 @@ function PublicationMetadataForm({
             }
             className="w-full rounded-md border p-2"
           >
-            <option value="unreviewed">待核實</option>
-            <option value="verified">已核實</option>
-            <option value="demo">示範（不公開）</option>
+            <option value="unreviewed">{copy.classes.unreviewed}</option>
+            <option value="verified">{copy.classes.verified}</option>
+            <option value="demo">{copy.classes.demo}</option>
           </select>
         </Field>
-        <Field label="資料來源／批准記錄">
+        <Field label={copy.source}>
           <input
             value={form.sourceReference}
             onChange={(event) => update("sourceReference", event.target.value)}
@@ -805,7 +808,7 @@ function PublicationMetadataForm({
             className="w-full rounded-md border p-2"
           />
         </Field>
-        <Field label="內容負責人">
+        <Field label={copy.owner}>
           <input
             value={form.contentOwner}
             onChange={(event) => update("contentOwner", event.target.value)}
@@ -813,7 +816,7 @@ function PublicationMetadataForm({
             className="w-full rounded-md border p-2"
           />
         </Field>
-        <Field label="生效時間">
+        <Field label={copy.effectiveFrom}>
           <input
             type="datetime-local"
             value={form.effectiveFrom}
@@ -821,7 +824,7 @@ function PublicationMetadataForm({
             className="w-full rounded-md border p-2"
           />
         </Field>
-        <Field label="結束時間">
+        <Field label={copy.effectiveUntil}>
           <input
             type="datetime-local"
             value={form.effectiveUntil}
@@ -835,7 +838,7 @@ function PublicationMetadataForm({
         disabled={pending || !panelState.dirty}
         className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-[var(--color-primary-foreground)] disabled:opacity-60"
       >
-        儲存發布資格
+        {copy.save}
       </button>
     </form>
   );
@@ -900,6 +903,7 @@ export function ContentAuthoringPanels({
   onGenerateDrafts,
   onCreateMedia,
 }: ContentAuthoringPanelsProps) {
+  const copy = useAdminCopy(editorCopy).updates;
   return (
     <>
       <section className="grid gap-4 lg:grid-cols-2">
@@ -908,7 +912,7 @@ export function ContentAuthoringPanels({
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-[var(--color-panel)]">故事更新</h2>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
         <StoryUpdateCreateForm pending={pending} onCreate={onCreateStoryUpdate} />
         <ContentTimeline
           updates={content.updates}
@@ -932,6 +936,8 @@ function ContentEditorForm({
   pending: boolean;
   onSave: (form: ContentFormState) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorCopy).form;
+  const { language } = useAdminLanguage();
   const panelState = useDirtyPanel("content");
   const initialForm = useMemo(() => formFromContent(content), [content]);
   const [form, setForm] = useState(initialForm);
@@ -974,8 +980,8 @@ function ContentEditorForm({
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-panel)]">基本內容</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">標題、摘要、SEO 與 CTA 設定。</p>
+          <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
         <button
           type="submit"
@@ -983,12 +989,12 @@ function ContentEditorForm({
           className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Save className="h-4 w-4" />
-          {pending ? "儲存中" : "儲存草稿"}
+          {pending ? copy.saving : copy.save}
         </button>
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
-        <Field label="標題">
+        <Field label={copy.title}>
           <input
             required
             value={form.title}
@@ -996,7 +1002,7 @@ function ContentEditorForm({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="Slug">
+        <Field label={copy.slug}>
           <input
             required
             value={form.slug}
@@ -1004,7 +1010,7 @@ function ContentEditorForm({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="類型">
+        <Field label={copy.type}>
           <select
             value={form.type}
             onChange={(event) => updateField("type", event.target.value as ContentType)}
@@ -1013,13 +1019,13 @@ function ContentEditorForm({
             {(["rescue_story", "event", "charity_market", "report"] as ContentType[]).map(
               (type) => (
                 <option key={type} value={type}>
-                  {formatContentTypeLabel(type, "zh")}
+                  {formatContentTypeLabel(type, language)}
                 </option>
               ),
             )}
           </select>
         </Field>
-        <Field label="副標題">
+        <Field label={copy.subtitle}>
           <input
             value={form.subtitle}
             onChange={(event) => updateField("subtitle", event.target.value)}
@@ -1028,7 +1034,7 @@ function ContentEditorForm({
         </Field>
       </div>
 
-      <Field label="摘要">
+      <Field label={copy.summary}>
         <textarea
           required
           rows={3}
@@ -1037,7 +1043,7 @@ function ContentEditorForm({
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
         />
       </Field>
-      <Field label="內文">
+      <Field label={copy.body}>
         <textarea
           rows={7}
           value={form.body}
@@ -1047,42 +1053,42 @@ function ContentEditorForm({
       </Field>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <Field label="CTA 文字">
+        <Field label={copy.ctaLabel}>
           <input
             value={form.ctaLabel}
             onChange={(event) => updateField("ctaLabel", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="CTA 連結">
+        <Field label={copy.ctaUrl}>
           <input
             value={form.ctaUrl}
             onChange={(event) => updateField("ctaUrl", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="SEO 標題">
+        <Field label={copy.seoTitle}>
           <input
             value={form.seoTitle}
             onChange={(event) => updateField("seoTitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="SEO 描述">
+        <Field label={copy.seoDescription}>
           <input
             value={form.seoDescription}
             onChange={(event) => updateField("seoDescription", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="OG 標題">
+        <Field label={copy.ogTitle}>
           <input
             value={form.ogTitle}
             onChange={(event) => updateField("ogTitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="OG 描述">
+        <Field label={copy.ogDescription}>
           <input
             value={form.ogDescription}
             onChange={(event) => updateField("ogDescription", event.target.value)}
@@ -1103,6 +1109,8 @@ function LinkedRecords({
   pending: boolean;
   onCreate: (form: ContentLinkFormState) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorCopy).links;
+  const { language } = useAdminLanguage();
   const panelState = useDirtyPanel("link");
   const [form, setForm] = useState<ContentLinkFormState>({
     linkedType: "adoption_case",
@@ -1113,7 +1121,7 @@ function LinkedRecords({
 
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-      <h2 className="text-lg font-bold text-[var(--color-panel)]">關聯紀錄</h2>
+      <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
       <form
         onChangeCapture={panelState.mark}
         className="mt-3 grid gap-3 md:grid-cols-[1fr_1.2fr_1fr_auto]"
@@ -1129,7 +1137,7 @@ function LinkedRecords({
           setLinkedLabel("");
         }}
       >
-        <Field label="類型">
+        <Field label={copy.type}>
           <select
             value={form.linkedType}
             onChange={(event) => {
@@ -1152,12 +1160,12 @@ function LinkedRecords({
               ] as ContentLinkType[]
             ).map((linkedType) => (
               <option key={linkedType} value={linkedType}>
-                {linkTypeLabels[linkedType]}
+                {copy.types[linkedType]}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="關聯紀錄">
+        <Field label={copy.record}>
           <LinkedRecordPicker
             linkedType={form.linkedType}
             value={form.linkedId}
@@ -1169,7 +1177,7 @@ function LinkedRecords({
             }}
           />
         </Field>
-        <Field label="關係">
+        <Field label={copy.relationship}>
           <select
             value={form.relationship}
             onChange={(event) =>
@@ -1190,7 +1198,7 @@ function LinkedRecords({
               ] as ContentLinkRelationship[]
             ).map((relationship) => (
               <option key={relationship} value={relationship}>
-                {linkRelationshipLabels[relationship]}
+                {copy.relationships[relationship]}
               </option>
             ))}
           </select>
@@ -1201,12 +1209,12 @@ function LinkedRecords({
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
-          新增關聯紀錄
+          {copy.add}
         </button>
       </form>
       <div className="mt-3 space-y-2">
         {content.links.length === 0 ? (
-          <p className="text-sm text-[var(--color-text-muted)]">未連結任何紀錄。</p>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.empty}</p>
         ) : (
           content.links.map((link) => (
             <div
@@ -1214,10 +1222,10 @@ function LinkedRecords({
               className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-3 text-sm"
             >
               <p className="font-semibold text-[var(--color-panel)]">
-                {link.label ?? link.linkedId}
+                {link.label == null ? link.linkedId : contentServerMessage(link.label, language)}
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
-                {linkTypeLabels[link.linkedType]} · {linkRelationshipLabels[link.relationship]}
+                {copy.types[link.linkedType]} · {copy.relationships[link.relationship]}
               </p>
             </div>
           ))
@@ -1236,6 +1244,7 @@ function StoryWallSettings({
   pending: boolean;
   onSave: (form: StoryProfileFormState) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorCopy).wall;
   const panelState = useDirtyPanel("profile");
   const initialForm = useMemo(() => storyProfileFormFromContent(content), [content]);
   const [form, setForm] = useState(initialForm);
@@ -1247,15 +1256,15 @@ function StoryWallSettings({
   if (content.type !== "rescue_story") {
     return (
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <h2 className="text-lg font-bold text-[var(--color-panel)]">故事牆設定</h2>
-        <p className="mt-3 text-sm text-[var(--color-text-muted)]">只有救援故事需要故事牆設定。</p>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
+        <p className="mt-3 text-sm text-[var(--color-text-muted)]">{copy.notNeeded}</p>
       </section>
     );
   }
 
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-      <h2 className="text-lg font-bold text-[var(--color-panel)]">故事牆設定</h2>
+      <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
       <form
         onChangeCapture={panelState.mark}
         className="mt-3 space-y-3"
@@ -1270,7 +1279,7 @@ function StoryWallSettings({
         }}
       >
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="動物">
+          <Field label={copy.animal}>
             <select
               value={form.animalType}
               onChange={(event) =>
@@ -1283,12 +1292,12 @@ function StoryWallSettings({
             >
               {(["cat", "dog", "mixed", "unknown"] as AnimalStoryType[]).map((animalType) => (
                 <option key={animalType} value={animalType}>
-                  {animalTypeLabels[animalType]}
+                  {copy.animalTypes[animalType]}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="公開狀態">
+          <Field label={copy.publicStatus}>
             <select
               value={form.publicStatus}
               onChange={(event) =>
@@ -1311,12 +1320,12 @@ function StoryWallSettings({
                 ] as RescuePublicStatus[]
               ).map((publicStatus) => (
                 <option key={publicStatus} value={publicStatus}>
-                  {publicStatusLabels[publicStatus]}
+                  {copy.publicStatuses[publicStatus]}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="救援地區">
+          <Field label={copy.region}>
             <input
               required
               value={form.rescueRegion}
@@ -1326,7 +1335,7 @@ function StoryWallSettings({
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             />
           </Field>
-          <Field label="救援日期">
+          <Field label={copy.date}>
             <input
               type="date"
               value={form.rescueDate}
@@ -1336,7 +1345,7 @@ function StoryWallSettings({
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             />
           </Field>
-          <Field label="地圖標籤">
+          <Field label={copy.mapLabel}>
             <input
               value={form.publicMapLabel}
               onChange={(event) =>
@@ -1345,7 +1354,7 @@ function StoryWallSettings({
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             />
           </Field>
-          <Field label="公開緯度">
+          <Field label={copy.latitude}>
             <input
               inputMode="decimal"
               value={form.publicLat}
@@ -1355,7 +1364,7 @@ function StoryWallSettings({
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             />
           </Field>
-          <Field label="公開經度">
+          <Field label={copy.longitude}>
             <input
               inputMode="decimal"
               value={form.publicLng}
@@ -1365,7 +1374,7 @@ function StoryWallSettings({
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             />
           </Field>
-          <Field label="內部地址">
+          <Field label={copy.address}>
             <input
               value={form.internalAddress}
               onChange={(event) =>
@@ -1375,7 +1384,7 @@ function StoryWallSettings({
             />
           </Field>
         </div>
-        <Field label="內部位置備註">
+        <Field label={copy.notes}>
           <textarea
             rows={2}
             value={form.internalLocationNotes}
@@ -1394,7 +1403,7 @@ function StoryWallSettings({
                 setForm((current) => ({ ...current, showOnMap: event.target.checked }))
               }
             />
-            顯示於公開地圖
+            {copy.showOnMap}
           </label>
           <label className="inline-flex items-center gap-2">
             <input
@@ -1404,7 +1413,7 @@ function StoryWallSettings({
                 setForm((current) => ({ ...current, isFeatured: event.target.checked }))
               }
             />
-            精選故事
+            {copy.featured}
           </label>
         </div>
         <button
@@ -1413,7 +1422,7 @@ function StoryWallSettings({
           className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Save className="h-4 w-4" />
-          儲存故事設定
+          {copy.save}
         </button>
       </form>
     </section>
@@ -1427,6 +1436,8 @@ function StoryUpdateCreateForm({
   pending: boolean;
   onCreate: (form: StoryUpdateFormState) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorCopy).updates;
+  const common = useAdminCopy(contentCommonCopy);
   const panelState = useDirtyPanel("update");
   const [form, setForm] = useState<StoryUpdateFormState>({
     kind: "general",
@@ -1460,7 +1471,7 @@ function StoryUpdateCreateForm({
       }}
     >
       <div className="grid gap-3 md:grid-cols-[1fr_1.4fr_1fr_1fr]">
-        <Field label="類型">
+        <Field label={copy.type}>
           <select
             value={form.kind}
             onChange={(event) =>
@@ -1472,12 +1483,12 @@ function StoryUpdateCreateForm({
               ["medical", "care", "photo", "foster", "adoption", "general"] as StoryUpdateKind[]
             ).map((kind) => (
               <option key={kind} value={kind}>
-                {storyUpdateKindLabels[kind]}
+                {common.updateKinds[kind]}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="標題">
+        <Field label={copy.title}>
           <input
             required
             value={form.title}
@@ -1485,7 +1496,7 @@ function StoryUpdateCreateForm({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="發生時間">
+        <Field label={copy.occurredAt}>
           <input
             required
             type="datetime-local"
@@ -1496,7 +1507,7 @@ function StoryUpdateCreateForm({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="可見度">
+        <Field label={copy.visibility}>
           <select
             value={form.visibility}
             onChange={(event) =>
@@ -1509,13 +1520,13 @@ function StoryUpdateCreateForm({
           >
             {(["public", "internal"] as StoryUpdateVisibility[]).map((visibility) => (
               <option key={visibility} value={visibility}>
-                {storyUpdateVisibilityLabels[visibility]}
+                {common.visibility[visibility]}
               </option>
             ))}
           </select>
         </Field>
       </div>
-      <Field label="內容">
+      <Field label={copy.body}>
         <textarea
           rows={3}
           value={form.body}
@@ -1535,7 +1546,7 @@ function StoryUpdateCreateForm({
               }))
             }
           />
-          發佈後可產生領養人通知草稿
+          {copy.allowDrafts}
         </label>
         <button
           type="submit"
@@ -1543,7 +1554,7 @@ function StoryUpdateCreateForm({
           className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
-          新增故事更新
+          {copy.add}
         </button>
       </div>
     </form>
@@ -1559,6 +1570,7 @@ function ContentMediaPanel({
   pending: boolean;
   onCreate: (form: ContentMediaFormState) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorCopy).media;
   const panelState = useDirtyPanel("media");
   const [form, setForm] = useState<ContentMediaFormState>({
     file: null,
@@ -1573,13 +1585,9 @@ function ContentMediaPanel({
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <div>
-        <h2 className="text-lg font-bold text-[var(--color-panel)]">媒體與相片</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          上傳圖片作為封面或故事更新相片（JPG、PNG 或 WEBP，8 MiB 以內）。
-        </p>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          圖片先儲存為私密媒體；內部更新的圖片不會公開。
-        </p>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro1}</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro2}</p>
       </div>
       <form
         onChangeCapture={panelState.mark}
@@ -1603,7 +1611,7 @@ function ContentMediaPanel({
           if (fileInputRef.current) fileInputRef.current.value = "";
         }}
       >
-        <Field label="圖片檔案">
+        <Field label={copy.file}>
           <input
             required
             type="file"
@@ -1615,7 +1623,7 @@ function ContentMediaPanel({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="關聯更新">
+        <Field label={copy.update}>
           <select
             value={form.storyUpdateId}
             onChange={(event) =>
@@ -1623,16 +1631,15 @@ function ContentMediaPanel({
             }
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
-            <option value="">整篇內容</option>
+            <option value="">{copy.whole}</option>
             {content.updates.map((update) => (
               <option key={update.id} value={update.id}>
-                {update.title}
-                {update.visibility === "internal" ? "（內部）" : ""}
+                {copy.updateOption(update.title, update.visibility === "internal")}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="Alt text">
+        <Field label={copy.altText}>
           <input
             required
             value={form.altText}
@@ -1642,7 +1649,7 @@ function ContentMediaPanel({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="說明">
+        <Field label={copy.caption}>
           <input
             value={form.caption}
             onChange={(event) =>
@@ -1651,7 +1658,7 @@ function ContentMediaPanel({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label="排序">
+        <Field label={copy.sortOrder}>
           <input
             inputMode="numeric"
             value={form.sortOrder}
@@ -1669,7 +1676,7 @@ function ContentMediaPanel({
               setForm((current) => ({ ...current, isCover: event.target.checked }))
             }
           />
-          設為封面
+          {copy.cover}
         </label>
         <button
           type="submit"
@@ -1677,12 +1684,12 @@ function ContentMediaPanel({
           className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
-          新增媒體
+          {copy.add}
         </button>
       </form>
       <div className="grid gap-3 md:grid-cols-3">
         {content.media.length === 0 ? (
-          <p className="text-sm text-[var(--color-text-muted)]">尚未有媒體。</p>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.empty}</p>
         ) : (
           content.media.map((item) => <MediaCard key={item.id} item={item} />)
         )}
@@ -1692,6 +1699,7 @@ function ContentMediaPanel({
 }
 
 function MediaCard({ item }: { item: ContentMedia }) {
+  const copy = useAdminCopy(editorCopy).media;
   return (
     <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-3 text-sm">
       {item.url ? (
@@ -1704,21 +1712,25 @@ function MediaCard({ item }: { item: ContentMedia }) {
       <p className="font-semibold text-[var(--color-panel)]">{item.altText}</p>
       <p className="break-all text-xs text-[var(--color-text-muted)]">{item.storagePath}</p>
       {item.isCover ? (
-        <p className="mt-1 text-xs font-semibold text-[var(--color-primary)]">封面</p>
+        <p className="mt-1 text-xs font-semibold text-[var(--color-primary)]">{copy.coverBadge}</p>
       ) : null}
     </div>
   );
 }
 
-function PublishValidationPanel({ issues }: { issues: PublishValidationIssue[] }) {
+/** The checks that stopped a publish, each naming the field. The messages come from the server. */
+export function PublishValidationPanel({ issues }: { issues: PublishValidationIssue[] }) {
+  const copy = useAdminCopy(editorCopy).publishIssues;
   return (
     <section className="rounded-lg border border-[var(--color-warning)] bg-[var(--color-surface)] p-4">
-      <h2 className="font-bold text-[var(--color-panel)]">發布前需要修正</h2>
+      <h2 className="font-bold text-[var(--color-panel)]">{copy.heading}</h2>
       <ul className="mt-2 space-y-1 text-sm text-[var(--color-text)]">
         {issues.map((issue) => (
           <li key={`${issue.field}-${issue.message}`}>
-            <span className="font-semibold text-[var(--color-warning)]">{issue.field}</span>:{" "}
-            {issue.message}
+            <span className="font-semibold text-[var(--color-warning)]">
+              {copy.field(issue.field)}
+            </span>
+            : {issue.message}
           </li>
         ))}
       </ul>
@@ -1726,17 +1738,30 @@ function PublishValidationPanel({ issues }: { issues: PublishValidationIssue[] }
   );
 }
 
-function ActionErrors({ errors }: { errors: unknown[] }) {
+/**
+ * What the editor's actions failed with. A content error is written from its code, a session
+ * error is translated, and any other reason (the server's, in English) is shown as it came.
+ */
+export function ActionErrors({ errors }: { errors: unknown[] }) {
+  const common = useAdminCopy(contentCommonCopy);
+  const { language } = useAdminLanguage();
   const visibleErrors = errors.filter(
     (error): error is Error => error instanceof Error && !(error instanceof PublishValidationError),
   );
   if (visibleErrors.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
-      {visibleErrors.map((error) => (
-        <p key={error.message}>{error.message}</p>
-      ))}
+    <div
+      role="alert"
+      className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
+    >
+      {visibleErrors.map((error) => {
+        const failure = contentFailure(error);
+        const message = failure.code
+          ? common.errors[failure.code]
+          : (adminErrorMessage(failure.cause, language) ?? "");
+        return <p key={error.message}>{message}</p>;
+      })}
     </div>
   );
 }
@@ -1842,8 +1867,8 @@ export async function createContentMediaWithUpload(
   body: ContentMediaFormState,
   expectedVersion?: number,
 ) {
-  if (!body.file) throw new Error("請選擇圖片");
-  if (expectedVersion === undefined) throw new Error("請重新載入內容後再上傳圖片");
+  if (!body.file) throw new ContentAdminError("choose_image");
+  if (expectedVersion === undefined) throw new ContentAdminError("reload_before_upload");
   const cacheKey = `${contentId}:${expectedVersion}:${body.storyUpdateId}`;
   const sessions = pendingMediaUploads.get(body.file) ?? new Map<string, CachedMediaUpload>();
   pendingMediaUploads.set(body.file, sessions);
@@ -1879,7 +1904,7 @@ export async function createContentMediaWithUpload(
           { method: "POST", body: JSON.stringify({ ...input, expectedVersion }) },
         );
         if (allocated.bucket !== "content-media-private" || !allocated.uploadSessionId)
-          throw new Error("無法取得私密媒體上傳位置");
+          throw new ContentAdminError("no_upload_target");
         target = { ...allocated, uploaded: false };
         sessions.set(cacheKey, target);
       }
@@ -1933,7 +1958,7 @@ async function publishWithValidation(
   revisionId?: string | null,
 ) {
   if (expectedVersion === undefined || !revisionId)
-    throw new Error("請先儲存內容並重新載入後再發布");
+    throw new ContentAdminError("save_before_publish");
   const token = await getAdminAccessToken();
   const response = await fetch(`/api/admin/content/${contentId}/publish`, {
     method: "POST",
@@ -1956,7 +1981,7 @@ async function publishWithValidation(
       typeof body.error === "string"
         ? body.error
         : typeof body.error?.message === "string"
-          ? body.error.message
+          ? body.error.message // admin-error-render-ok: the server's reason, read into the thrown Error
           : "API request failed",
     );
     throw Object.assign(error, { status: response.status });

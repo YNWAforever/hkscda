@@ -5,6 +5,7 @@ import {
   AdminLanguageToggle,
   useAdminLanguage,
 } from "../../components/admin/adminI18n";
+import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
 import {
   completeAdminPasswordReset,
   type PasswordRecoveryFailure,
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/admin/reset-password")({
   component: AdminResetPasswordPage,
 });
 
-function AdminResetPasswordPage() {
+export function AdminResetPasswordPage() {
   const navigate = useNavigate();
 
   return (
@@ -114,7 +115,7 @@ export function AdminResetPasswordForm({
   onSubmit,
   onBack,
 }: AdminResetPasswordFormProps) {
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
 
@@ -124,7 +125,10 @@ export function AdminResetPasswordForm({
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4">
+    <main
+      className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4"
+      lang={adminLanguageTag(language)}
+    >
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>

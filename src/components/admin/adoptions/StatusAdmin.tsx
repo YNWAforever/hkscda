@@ -3,6 +3,7 @@ import { Lock, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { CoordinatorStatus, CoordinatorStatusCategory } from "../../../lib/adoptions/types";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -13,6 +14,8 @@ import { Switch } from "../../ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildStatusMutationPayload,
@@ -83,16 +86,25 @@ function FlagBadge({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function StatusLoadErrorRow({ message }: { message: string }) {
+export function StatusLoadErrorRow({
+  message,
+  error,
+  onRetry,
+}: {
+  message: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
   return (
-    <TableRow className="h-16">
-      <TableCell colSpan={5} className="px-4 text-[var(--color-error)]">
-        <span role="alert">{message}</span>
+    <TableRow>
+      <TableCell colSpan={5} className="px-4 py-4">
+        <LoadFailure error={error} onRetry={onRetry} title={message} className="border-0" />
       </TableCell>
     </TableRow>
   );
 }
 
+// admin-status-ok: a form field error message for the status editor, not a status colour
 export function StatusFieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
 
@@ -105,7 +117,7 @@ export function StatusFieldError({ id, message }: { id: string; message?: string
 
 export function StatusAdmin() {
   const categoryPanelId = useId();
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.statuses;
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] =
@@ -113,7 +125,7 @@ export function StatusAdmin() {
   const [form, setForm] = useState<StatusFormState>(() => createBlankStatusForm("adoption_case"));
   const [originalForm, setOriginalForm] = useState<StatusFormState | null>(null);
 
-  const { data, error, isLoading } = useQuery<StatusesResponse, Error>({
+  const { data, error, isLoading, refetch } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: () => fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses"),
   });
@@ -160,6 +172,7 @@ export function StatusAdmin() {
     },
   });
 
+  const [deleteTarget, setDeleteTarget] = useState<CoordinatorStatus | null>(null);
   const deleteMutation = useMutation<DeleteResponse, Error, CoordinatorStatus>({
     mutationFn: (status) =>
       fetchCoordinatorJson<DeleteResponse>(
@@ -213,12 +226,27 @@ export function StatusAdmin() {
 
   function handleDelete(status: CoordinatorStatus) {
     if (status.isSystem || deleteMutation.isPending) return;
-    if (!window.confirm(copy.deleteConfirm(status.labelZh, status.labelEn))) return;
-    deleteMutation.mutate(status);
+    setDeleteTarget(status);
   }
 
   return (
     <div className="space-y-5 p-6">
+      <ConfirmActionDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title={pageCopy.common.delete}
+        consequence={
+          deleteTarget ? copy.deleteConfirm(deleteTarget.labelZh, deleteTarget.labelEn) : ""
+        }
+        confirmLabel={pageCopy.common.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteTarget) await deleteMutation.mutateAsync(deleteTarget);
+        }}
+      />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
@@ -264,7 +292,11 @@ export function StatusAdmin() {
               <h2 className="text-base font-semibold text-[var(--color-panel)]">
                 {selectedCategoryLabel}
               </h2>
-              <p className="text-xs text-[var(--color-text-muted)]">
+              <p
+                aria-live="polite"
+                aria-atomic="true"
+                className="text-xs text-[var(--color-text-muted)]"
+              >
                 {pageCopy.common.rowsCount(visibleStatuses.length)}
               </p>
             </div>
@@ -312,8 +344,14 @@ export function StatusAdmin() {
                   </TableRow>
                 ))}
 
+              {/* admin-load-failure-ok: StatusLoadErrorRow renders a LoadFailure with the retry */}
               {error && !isLoading && (
-                <StatusLoadErrorRow message={`${copy.loadError}: ${error.message}`} />
+                <StatusLoadErrorRow
+                  // admin-load-failure-ok: only the heading of the LoadFailure that StatusLoadErrorRow renders
+                  message={`${copy.loadError}: ${adminErrorMessage(error, language) ?? ""}`}
+                  error={error}
+                  onRetry={() => void refetch()}
+                />
               )}
 
               {!isLoading && !error && visibleStatuses.length === 0 && (
@@ -585,12 +623,7 @@ export function StatusAdmin() {
 
           {saveMutation.error && (
             <p role="alert" className="text-sm text-[var(--color-error)]">
-              {saveMutation.error.message}
-            </p>
-          )}
-          {deleteMutation.error && (
-            <p role="alert" className="text-sm text-[var(--color-error)]">
-              {deleteMutation.error.message}
+              {adminErrorMessage(saveMutation.error, language) ?? ""}
             </p>
           )}
 

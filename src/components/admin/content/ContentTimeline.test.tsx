@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 import { ContentTimeline } from "./ContentTimeline";
 import type { StoryUpdate } from "../../../lib/content/types";
 test("unloaded history body is read-only and requires explicit expansion", () => {
@@ -17,7 +17,7 @@ test("unloaded history body is read-only and requires explicit expansion", () =>
     createdAt: "2026-09-01",
     updatedAt: "2026-09-01",
   } as StoryUpdate;
-  const html = renderToStaticMarkup(<ContentTimeline updates={[update]} />);
+  const html = renderAdminInChinese(<ContentTimeline updates={[update]} />);
   expect(html).toContain("閱讀更新正文");
   expect(html).not.toContain("沒有正文");
   expect(html).not.toContain("<textarea");

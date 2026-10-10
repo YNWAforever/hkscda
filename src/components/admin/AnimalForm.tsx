@@ -1,21 +1,27 @@
+import { Button } from "@/components/ui/button";
 import { ContentReviewPanel } from "./content/ContentReview";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useBlocker, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchAdminJson } from "../../lib/admin/http";
 import { AdminApiError } from "../../lib/admin/session";
 import {
   buildPublicProfile,
-  PUBLIC_PROFILE_LABELS,
+  isPublicProfileField,
+  publicProfileLabel,
   toPublicProfileFields,
   type PublicProfileFields,
 } from "../../lib/animals/publicProfileInput";
 import type { Animal } from "../../types/animal";
 import { AnimalGalleryEditor, type EditableGalleryItem } from "./AnimalGalleryEditor";
 import { useAdminLanguage } from "./adminI18n";
+import { animalFormCopy } from "./animalFormCopy";
 import { uploadAnimalPhoto } from "./animalPhotoUpload";
+import { useAdminCopy } from "./i18n/copy";
+import { useLeaveConfirm } from "./useLeaveConfirm";
+import { localizedText } from "./i18n/localizedText";
 
 function buildAnimalSchema(messages: { name: string; age: string }) {
   return z.object({
@@ -54,7 +60,8 @@ interface AnimalFormProps {
 
 export function AnimalForm({ existing }: AnimalFormProps) {
   const navigate = useNavigate();
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
+  const formCopy = useAdminCopy(animalFormCopy);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gallery, setGallery] = useState<EditableGalleryItem[]>(() => existing?.gallery ?? []);
   const [saving, setSaving] = useState(false);
@@ -70,17 +77,20 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     setPreviewId(null);
     setPreviewBody(null);
   };
-  useBlocker({
-    shouldBlockFn: () => dirty && !window.confirm("離開會捨棄未儲存的內容，確定離開？"),
-    enableBeforeUnload: dirty,
-  });
+  const leaveDialog = useLeaveConfirm({ dirty, consequence: formCopy.leaveConfirm });
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [publishReason, setPublishReason] = useState("");
   const [versions, setVersions] = useState<
     Array<{ id: string; revision: number; created_at: string }>
   >([]);
   const [animalId] = useState(() => existing?.id ?? crypto.randomUUID());
-  const [error, setError] = useState<string | null>(null);
+  // One message at a time: a failure is announced as an alert in the error colour, a success as a status in the success colour.
+  const [message, setMessage] = useState<{ tone: "error" | "status"; text: string } | null>(null);
+  const setError = useCallback(
+    (text: string | null) => setMessage(text === null ? null : { tone: "error", text }),
+    [],
+  );
+  const setNotice = useCallback((text: string) => setMessage({ tone: "status", text }), []);
   const [draftLoad, setDraftLoad] = useState<"loading" | "ready" | "failed">(
     existing ? "loading" : "ready",
   );
@@ -138,6 +148,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   });
 
   const hasExisting = Boolean(existing);
+  // Read inside the effect without making a language change reload the draft.
+  const draftLoadError = useRef(formCopy.draft.loadError);
+  draftLoadError.current = formCopy.draft.loadError;
   useEffect(() => {
     if (!hasExisting) return;
     let cancelled = false;
@@ -181,12 +194,12 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       .catch(() => {
         if (cancelled) return;
         setDraftLoad("failed");
-        setError("未能載入已儲存草稿。");
+        setError(draftLoadError.current);
       });
     return () => {
       cancelled = true;
     };
-  }, [animalId, hasExisting, reset]);
+  }, [animalId, hasExisting, reset, setError]);
 
   async function copyVersion(versionId: string) {
     try {
@@ -196,10 +209,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       });
       setDraftRevision(result.revision);
       setPreviewId(null);
-      setError("已複製版本為新草稿，請檢查及重新預覽。");
+      setNotice(formCopy.versions.copied);
       window.location.reload();
     } catch {
-      setError("未能複製版本。");
+      setError(formCopy.versions.copyFailed);
     }
   }
   function optionalText(value?: string) {
@@ -219,9 +232,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     const profileResult = buildPublicProfile(profileFields);
     if (!profileResult.ok) {
       setError(
-        `以下欄位不符合公開資料規則（不可包含網址、電郵、電話或 < > 符號）：${profileResult.rejected
-          .map((key) => PUBLIC_PROFILE_LABELS[key])
-          .join("、")}`,
+        formCopy.profileRejected(
+          ...profileResult.rejected.map((key) => publicProfileLabel(key, language)),
+        ),
       );
       setSaving(false);
       return;
@@ -259,7 +272,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       if (item.file) {
         const uploaded = await uploadAnimalPhoto({ animalId, file: item.file });
         if (!uploaded.ok) {
-          setError("相片集上載失敗。");
+          setError(formCopy.galleryUploadFailed);
           setSaving(false);
           return;
         }
@@ -321,7 +334,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         reset(values);
       }
       setPreviewId(null);
-      setError("草稿已儲存。請在發布前先預覽；公開資料尚未改動。");
+      setNotice(formCopy.draft.saved);
       setSaving(false);
       return;
     } catch {
@@ -333,6 +346,8 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
   async function previewDraft() {
     if (dirty || saving) return;
+    // Clear first so the same text is announced again on a repeat.
+    setMessage(null);
     try {
       const result = await fetchAdminJson<{
         preview_id: string;
@@ -344,9 +359,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       });
       setPreviewId(result.preview_id);
       setPreviewBody(result.body);
-      setError("預覽已建立；如再儲存草稿，必須重新預覽。");
+      setNotice(formCopy.publish.previewCreated);
     } catch {
-      setError("未能建立預覽。");
+      setError(formCopy.publish.previewFailed);
     }
   }
   async function publishDraft() {
@@ -366,18 +381,18 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       );
       if (result.media_pending) {
         setPreviewId(null);
-        setError("動物資料已發布，圖片仍在處理中；請稍後重新整理。");
+        setError(formCopy.publish.mediaPending);
         return;
       }
       navigate({ to: "/admin" });
     } catch (error) {
       if (error instanceof AdminApiError && [403, 404, 409, 422].includes(error.status)) {
-        setError("草稿已變更或發布失敗，請重新預覽。");
+        setError(formCopy.publish.conflict);
         setPreviewId(null);
       } else {
         // A lost HTTP response may follow a committed publish. Keep the
         // preview ID so the idempotent publish command can be retried.
-        setError("未能確認發布結果。請重試發布；不會建立重複版本。");
+        setError(formCopy.publish.unconfirmed);
       }
     }
   }
@@ -407,559 +422,628 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     return (
       <section aria-busy={draftLoad === "loading"} className="space-y-3 p-6">
         <p role={draftLoad === "failed" ? "alert" : "status"}>
-          {draftLoad === "loading" ? "正在載入已儲存草稿…" : "未能載入已儲存草稿，請重試後編輯。"}
+          {draftLoad === "loading" ? formCopy.draft.loading : formCopy.draft.loadFailed}
         </p>
         {draftLoad === "failed" && (
-          <button type="button" onClick={() => window.location.reload()}>
-            重新載入草稿
-          </button>
+          <Button variant="outline" type="button" onClick={() => window.location.reload()}>
+            {formCopy.draft.reload}
+          </Button>
         )}
       </section>
     );
 
   return (
-    <form
-      onChange={(event) => {
-        if ((event.target as HTMLElement).id !== "animal-publish-reason") markDirty();
-      }}
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-3xl space-y-5"
-    >
-      <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
-          {copy.form.chineseGroup}
-        </legend>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseName}</label>
-            <input
-              {...register("name")}
-              aria-label={copy.form.chineseName}
-              placeholder={copy.form.namePlaceholder}
-              className={field}
-            />
-            {errors.name && (
-              <p className="text-[var(--color-error)] text-xs mt-1">{errors.name.message}</p>
-            )}
+    <>
+      {leaveDialog}
+      <form
+        onChange={(event) => {
+          if ((event.target as HTMLElement).id !== "animal-publish-reason") markDirty();
+        }}
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-3xl space-y-5"
+      >
+        <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
+            {copy.form.chineseGroup}
+          </legend>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.chineseName}</label>
+              <input
+                {...register("name")}
+                aria-label={copy.form.chineseName}
+                placeholder={copy.form.namePlaceholder}
+                className={field}
+              />
+              {errors.name && (
+                <p role="alert" className="text-[var(--color-error)] text-xs mt-1">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.chineseAge}</label>
+              <input
+                {...register("age")}
+                aria-label={copy.form.chineseAge}
+                placeholder={copy.form.agePlaceholder}
+                className={field}
+              />
+              {errors.age && (
+                <p role="alert" className="text-[var(--color-error)] text-xs mt-1">
+                  {errors.age.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.chineseNotes}</label>
+              <input
+                {...register("notes")}
+                aria-label={copy.form.chineseNotes}
+                placeholder={copy.form.notesPlaceholder}
+                className={field}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                {copy.form.chineseDescription}
+              </label>
+              <textarea
+                {...register("description")}
+                aria-label={copy.form.chineseDescription}
+                rows={4}
+                placeholder={copy.form.descriptionPlaceholder}
+                className={field}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseAge}</label>
-            <input
-              {...register("age")}
-              aria-label={copy.form.chineseAge}
-              placeholder={copy.form.agePlaceholder}
-              className={field}
-            />
-            {errors.age && (
-              <p className="text-[var(--color-error)] text-xs mt-1">{errors.age.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseNotes}</label>
-            <input
-              {...register("notes")}
-              aria-label={copy.form.chineseNotes}
-              placeholder={copy.form.notesPlaceholder}
-              className={field}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">{copy.form.chineseDescription}</label>
-            <textarea
-              {...register("description")}
-              aria-label={copy.form.chineseDescription}
-              rows={4}
-              placeholder={copy.form.descriptionPlaceholder}
-              className={field}
-            />
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
-          {copy.form.englishGroup}
-        </legend>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.englishName}</label>
-            <input
-              {...register("name_en")}
-              aria-label={copy.form.englishName}
-              placeholder={copy.form.englishNamePlaceholder}
-              className={field}
-            />
+        <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
+            {copy.form.englishGroup}
+          </legend>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.englishName}</label>
+              <input
+                {...register("name_en")}
+                aria-label={copy.form.englishName}
+                placeholder={copy.form.englishNamePlaceholder}
+                className={field}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.englishAge}</label>
+              <input
+                {...register("age_en")}
+                aria-label={copy.form.englishAge}
+                placeholder={copy.form.englishAgePlaceholder}
+                className={field}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{copy.form.englishNotes}</label>
+              <input
+                {...register("notes_en")}
+                aria-label={copy.form.englishNotes}
+                placeholder={copy.form.englishNotesPlaceholder}
+                className={field}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                {copy.form.englishDescription}
+              </label>
+              <textarea
+                {...register("description_en")}
+                aria-label={copy.form.englishDescription}
+                rows={4}
+                placeholder={copy.form.englishDescriptionPlaceholder}
+                className={field}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.englishAge}</label>
-            <input
-              {...register("age_en")}
-              aria-label={copy.form.englishAge}
-              placeholder={copy.form.englishAgePlaceholder}
-              className={field}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.englishNotes}</label>
-            <input
-              {...register("notes_en")}
-              aria-label={copy.form.englishNotes}
-              placeholder={copy.form.englishNotesPlaceholder}
-              className={field}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">{copy.form.englishDescription}</label>
-            <textarea
-              {...register("description_en")}
-              aria-label={copy.form.englishDescription}
-              rows={4}
-              placeholder={copy.form.englishDescriptionPlaceholder}
-              className={field}
-            />
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
-          {copy.form.adminGroup}
-        </legend>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <label htmlFor="animal-type" className="block text-sm font-medium mb-1">
-              {copy.form.type}
-            </label>
-            <select id="animal-type" {...register("type")} className={selectField}>
-              {typeOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={Boolean("disabled" in option && option.disabled)}
-                  style={optionStyle}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
+        <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
+            {copy.form.adminGroup}
+          </legend>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div>
+              <label htmlFor="animal-type" className="block text-sm font-medium mb-1">
+                {copy.form.type}
+              </label>
+              <select id="animal-type" {...register("type")} className={selectField}>
+                {typeOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={Boolean("disabled" in option && option.disabled)}
+                    style={optionStyle}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="animal-gender" className="block text-sm font-medium mb-1">
+                {copy.form.gender}
+              </label>
+              <select id="animal-gender" {...register("gender")} className={selectField}>
+                {genderOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={Boolean("disabled" in option && option.disabled)}
+                    style={optionStyle}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="animal-status" className="block text-sm font-medium mb-1">
+                {copy.form.status}
+              </label>
+              <select id="animal-status" {...register("status")} className={selectField}>
+                {statusOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={Boolean("disabled" in option && option.disabled)}
+                    style={optionStyle}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label htmlFor="animal-gender" className="block text-sm font-medium mb-1">
-              {copy.form.gender}
-            </label>
-            <select id="animal-gender" {...register("gender")} className={selectField}>
-              {genderOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={Boolean("disabled" in option && option.disabled)}
-                  style={optionStyle}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="animal-status" className="block text-sm font-medium mb-1">
-              {copy.form.status}
-            </label>
-            <select id="animal-status" {...register("status")} className={selectField}>
-              {statusOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={Boolean("disabled" in option && option.disabled)}
-                  style={optionStyle}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Adoption and sponsorship are independent: both may be ticked, and an
+          {/* Adoption and sponsorship are independent: both may be ticked, and an
             animal with neither is visible to staff but appears in no public
             catalogue (the "public read available" RLS policy requires one). */}
-        {/* Publication is its own axis. Withholding a record must never require
+          {/* Publication is its own axis. Withholding a record must never require
             claiming the animal was adopted or fostered. */}
-        <div className="mt-4">
-          <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
-            公開狀態
-          </label>
-          <select id="publication-state" {...register("publication_state")} className={selectField}>
-            <option value="draft" style={optionStyle}>
-              草稿（未曾公開）
-            </option>
-            <option value="published" style={optionStyle}>
-              已公開
-            </option>
-            <option value="unpublished" style={optionStyle}>
-              暫停公開
-            </option>
-          </select>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            與上方的狀態（可領養／已領養／寄養中）獨立。暫停公開不會更改動物的照顧記錄。
-          </p>
-        </div>
+          <div className="mt-4">
+            <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
+              {formCopy.publication.label}
+            </label>
+            <select
+              id="publication-state"
+              {...register("publication_state")}
+              className={selectField}
+            >
+              <option value="draft" style={optionStyle}>
+                {formCopy.publication.draft}
+              </option>
+              <option value="published" style={optionStyle}>
+                {formCopy.publication.published}
+              </option>
+              <option value="unpublished" style={optionStyle}>
+                {formCopy.publication.unpublished}
+              </option>
+            </select>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {formCopy.publication.hint}
+            </p>
+          </div>
 
-        <div className="mt-4 space-y-2">
-          <span className="block text-sm font-medium">刊登範圍</span>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
-            可供領養（顯示於領養頁面）
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
-            可供助養（顯示於助養區）
-          </label>
-        </div>
-      </fieldset>
+          <div className="mt-4 space-y-2">
+            <span className="block text-sm font-medium">{formCopy.listing.label}</span>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
+              {formCopy.listing.adoption}
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
+              {formCopy.listing.sponsorship}
+            </label>
+          </div>
+        </fieldset>
 
-      {/* The only animal facts the public site renders. Everything outside this
+        {/* The only animal facts the public site renders. Everything outside this
           set stays internal: the database CHECK constraint refuses any other
           key, and refuses URLs, email addresses, phone numbers and angle
           brackets inside these ones, so contact details cannot leak into a
           public page through a free-text box. */}
-      <fieldset className="space-y-4 rounded-lg border border-[var(--color-border)] p-4">
-        <legend className="px-1 text-sm font-semibold">公開資料</legend>
-        <p className="text-xs text-[var(--color-text-muted)]">
-          這些內容會直接在公開網站顯示。請勿填寫網址、電郵、電話或個人聯絡資料。
+        <fieldset className="space-y-4 rounded-lg border border-[var(--color-border)] p-4">
+          <legend className="px-1 text-sm font-semibold">{formCopy.profile.heading}</legend>
+          <p className="text-xs text-[var(--color-text-muted)]">{formCopy.profile.intro}</p>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-code">
+                {formCopy.profile.code}
+              </label>
+              <input
+                id="profile-code"
+                className={field}
+                value={profileFields.code}
+                onChange={(e) => setProfileField("code", e.target.value)}
+                placeholder={formCopy.profile.codePlaceholder}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-birthday">
+                {formCopy.profile.birthday}
+              </label>
+              <input
+                id="profile-birthday"
+                type="date"
+                className={field}
+                value={profileFields.birthday}
+                onChange={(e) => setProfileField("birthday", e.target.value)}
+              />
+              {/* Age is derived from this one source rather than kept as a second
+                copy that can disagree with it. */}
+              <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                {formCopy.profile.birthdayHint}
+              </p>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-neutered">
+                {formCopy.profile.neutered}
+              </label>
+              <select
+                id="profile-neutered"
+                className={selectField}
+                value={profileFields.neutered}
+                onChange={(e) => setProfileField("neutered", e.target.value)}
+              >
+                <option value="" style={optionStyle}>
+                  {formCopy.profile.notRecorded}
+                </option>
+                <option value="yes" style={optionStyle}>
+                  {formCopy.profile.neuteredYes}
+                </option>
+                <option value="no" style={optionStyle}>
+                  {formCopy.profile.neuteredNo}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-suitability">
+                {formCopy.profile.suitability}
+              </label>
+              <select
+                id="profile-suitability"
+                className={selectField}
+                value={profileFields.suitability}
+                onChange={(e) => setProfileField("suitability", e.target.value)}
+              >
+                <option value="" style={optionStyle}>
+                  {formCopy.profile.notRecorded}
+                </option>
+                <option value="newbie" style={optionStyle}>
+                  {formCopy.profile.suitabilityNewbie}
+                </option>
+                <option value="experienced" style={optionStyle}>
+                  {formCopy.profile.suitabilityExperienced}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-record-date">
+                {formCopy.profile.recordDate}
+              </label>
+              <input
+                id="profile-record-date"
+                type="date"
+                className={field}
+                value={profileFields.recordDate}
+                onChange={(e) => setProfileField("recordDate", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-personality">
+              {formCopy.profile.personality}
+            </label>
+            <textarea
+              id="profile-personality"
+              rows={3}
+              className={field}
+              value={profileFields.personality}
+              onChange={(e) => setProfileField("personality", e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-health">
+              {formCopy.profile.health}
+            </label>
+            <textarea
+              id="profile-health"
+              rows={3}
+              className={field}
+              value={profileFields.health}
+              onChange={(e) => setProfileField("health", e.target.value)}
+            />
+            {/* Simplifying the public page must not drop what an applicant needs
+              to know before applying. */}
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {formCopy.profile.healthHint}
+            </p>
+          </div>
+          {watch("sponsorship_eligible") ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium" htmlFor="profile-sponsor-use">
+                  {formCopy.profile.sponsorUse}
+                </label>
+                <textarea
+                  id="profile-sponsor-use"
+                  rows={3}
+                  className={field}
+                  value={profileFields.sponsorUse}
+                  onChange={(event) => setProfileField("sponsorUse", event.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium" htmlFor="profile-recent-progress">
+                  {formCopy.profile.recentProgress}
+                </label>
+                <textarea
+                  id="profile-recent-progress"
+                  rows={3}
+                  className={field}
+                  value={profileFields.recentProgress}
+                  onChange={(event) => setProfileField("recentProgress", event.target.value)}
+                />
+              </div>
+            </div>
+          ) : null}
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
+              {formCopy.profile.story}
+            </label>
+            <textarea
+              id="profile-story"
+              rows={6}
+              className={field}
+              value={profileFields.story}
+              onChange={(e) => setProfileField("story", e.target.value)}
+            />
+          </div>
+        </fieldset>
+
+        <AnimalGalleryEditor
+          items={gallery}
+          onChange={(items) => {
+            setGallery(items);
+            setPreviewId(null);
+          }}
+        />
+
+        <div>
+          <label htmlFor="animal-photo" className="block text-sm font-medium mb-1">
+            {copy.form.photo}
+          </label>
+          <input
+            id="animal-photo"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+            className="text-sm"
+          />
+          {imageFile || gallery.some((item) => item.file) ? (
+            <UploadCheckNotice
+              existing={existing}
+              animalId={animalId}
+              imageFileName={imageFile?.name ?? null}
+              galleryFiles={gallery.flatMap((item) =>
+                item.file ? [{ id: item.id, name: item.file.name }] : [],
+              )}
+            />
+          ) : null}
+          {existing?.image_url && !imageFile && (
+            <img
+              src={existing.image_url}
+              alt={copy.form.imageAlt}
+              className="w-20 h-20 object-cover rounded mt-2"
+            />
+          )}
+        </div>
+
+        {versions.length > 0 && (
+          <section className="rounded-lg border p-3">
+            <h2 className="font-bold">{formCopy.versions.heading}</h2>
+            {versions.map((version) => (
+              <button
+                key={version.id}
+                type="button"
+                className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
+                onClick={() => copyVersion(version.id)}
+              >
+                {formCopy.versions.duplicate(version.revision)}
+              </button>
+            ))}
+          </section>
+        )}
+        {message?.tone === "error" && (
+          <p role="alert" className="text-[var(--color-error)] text-sm">
+            {message.text}
+          </p>
+        )}
+        {/* Always mounted, so a polite announcement fires when the text arrives. */}
+        <p role="status" className="text-[var(--color-success)] text-sm">
+          {message?.tone === "status" ? message.text : ""}
         </p>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-code">
-              編號
-            </label>
-            <input
-              id="profile-code"
-              className={field}
-              value={profileFields.code}
-              onChange={(e) => setProfileField("code", e.target.value)}
-              placeholder="例如 C3761"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-birthday">
-              出生日期
-            </label>
-            <input
-              id="profile-birthday"
-              type="date"
-              className={field}
-              value={profileFields.birthday}
-              onChange={(e) => setProfileField("birthday", e.target.value)}
-            />
-            {/* Age is derived from this one source rather than kept as a second
-                copy that can disagree with it. */}
-            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-              填寫後，公開頁面會以此推算年齡。
-            </p>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-neutered">
-              絕育狀態
-            </label>
-            <select
-              id="profile-neutered"
-              className={selectField}
-              value={profileFields.neutered}
-              onChange={(e) => setProfileField("neutered", e.target.value)}
-            >
-              <option value="" style={optionStyle}>
-                未有記錄
-              </option>
-              <option value="yes" style={optionStyle}>
-                已絕育
-              </option>
-              <option value="no" style={optionStyle}>
-                未絕育
-              </option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-suitability">
-              適合的領養者
-            </label>
-            <select
-              id="profile-suitability"
-              className={selectField}
-              value={profileFields.suitability}
-              onChange={(e) => setProfileField("suitability", e.target.value)}
-            >
-              <option value="" style={optionStyle}>
-                未有記錄
-              </option>
-              <option value="newbie" style={optionStyle}>
-                適合新手
-              </option>
-              <option value="experienced" style={optionStyle}>
-                適合有經驗者
-              </option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="profile-record-date">
-              記錄日期
-            </label>
-            <input
-              id="profile-record-date"
-              type="date"
-              className={field}
-              value={profileFields.recordDate}
-              onChange={(e) => setProfileField("recordDate", e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="profile-personality">
-            性格（最多 1000 字）
-          </label>
-          <textarea
-            id="profile-personality"
-            rows={3}
-            className={field}
-            value={profileFields.personality}
-            onChange={(e) => setProfileField("personality", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="profile-health">
-            照顧與健康需要（最多 2000 字）
-          </label>
-          <textarea
-            id="profile-health"
-            rows={3}
-            className={field}
-            value={profileFields.health}
-            onChange={(e) => setProfileField("health", e.target.value)}
-          />
-          {/* Simplifying the public page must not drop what an applicant needs
-              to know before applying. */}
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            申請人在提交申請前需要知道的照顧需要，請在此說明。
-          </p>
-        </div>
-        {watch("sponsorship_eligible") ? (
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium" htmlFor="profile-sponsor-use">
-                助養用途（經批准後公開）
-              </label>
-              <textarea
-                id="profile-sponsor-use"
-                rows={3}
-                className={field}
-                value={profileFields.sponsorUse}
-                onChange={(event) => setProfileField("sponsorUse", event.target.value)}
+        {draftRevision > 0 && (
+          <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+            <h2 className="font-bold">{formCopy.publish.heading}</h2>
+            <div onChange={(event) => event.stopPropagation()}>
+              <ContentReviewPanel
+                key={draftRevision}
+                kind="animal"
+                id={animalId}
+                revision={String(draftRevision)}
+                disabled={dirty || saving}
               />
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium" htmlFor="profile-recent-progress">
-                近況（經批准後公開）
-              </label>
-              <textarea
-                id="profile-recent-progress"
-                rows={3}
-                className={field}
-                value={profileFields.recentProgress}
-                onChange={(event) => setProfileField("recentProgress", event.target.value)}
-              />
-            </div>
-          </div>
-        ) : null}
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
-            牠的故事（最多 8000 字）
-          </label>
-          <textarea
-            id="profile-story"
-            rows={6}
-            className={field}
-            value={profileFields.story}
-            onChange={(e) => setProfileField("story", e.target.value)}
-          />
-        </div>
-      </fieldset>
-
-      <AnimalGalleryEditor
-        items={gallery}
-        onChange={(items) => {
-          setGallery(items);
-          setPreviewId(null);
-        }}
-      />
-
-      <div>
-        <label htmlFor="animal-photo" className="block text-sm font-medium mb-1">
-          {copy.form.photo}
-        </label>
-        <input
-          id="animal-photo"
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-          className="text-sm"
-        />
-        {imageFile || gallery.some((item) => item.file) ? (
-          <div
-            role="status"
-            className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
-          >
-            <p className="font-semibold">上載前核對檔案 → 動物</p>
-            <p>
-              {existing?.public_profile?.code ? `#${existing.public_profile.code} · ` : ""}
-              {existing?.name ?? "新動物草稿"} · ID {animalId}
-            </p>
-            <ul className="mt-2 list-inside list-disc break-all">
-              {imageFile ? <li>{imageFile.name} → 主相片</li> : null}
-              {gallery
-                .filter((item) => item.file)
-                .map((item) => (
-                  <li key={item.id}>{item.file!.name} → 相片集</li>
-                ))}
-            </ul>
-            <p className="mt-2 text-[var(--color-text-muted)]">
-              先儲存草稿及預覽；只有已批准的相片在發布完成後公開。
-            </p>
-          </div>
-        ) : null}
-        {existing?.image_url && !imageFile && (
-          <img
-            src={existing.image_url}
-            alt={copy.form.imageAlt}
-            className="w-20 h-20 object-cover rounded mt-2"
-          />
-        )}
-      </div>
-
-      {versions.length > 0 && (
-        <section className="rounded-lg border p-3">
-          <h2 className="font-bold">已發布版本</h2>
-          {versions.map((version) => (
+            {dirty && <p role="status">{formCopy.publish.dirty}</p>}
+            {previewBody && <SavedVersionPreview body={previewBody} revision={draftRevision} />}
             <button
-              key={version.id}
               type="button"
-              className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
-              onClick={() => copyVersion(version.id)}
-            >
-              版本 {version.revision} · 複製為草稿
-            </button>
-          ))}
-        </section>
-      )}
-      {error && <p className="text-[var(--color-error)] text-sm">{error}</p>}
-
-      {draftRevision > 0 && (
-        <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-          <h2 className="font-bold">預覽及發布</h2>
-          <div onChange={(event) => event.stopPropagation()}>
-            <ContentReviewPanel
-              key={draftRevision}
-              kind="animal"
-              id={animalId}
-              revision={String(draftRevision)}
+              onClick={previewDraft}
               disabled={dirty || saving}
-            />
-          </div>
-          {dirty && <p role="status">內容已變更，請先儲存，再重新預覽。</p>}
-          {previewBody && (
-            <article
-              aria-label="已儲存版本預覽"
-              className="space-y-3 rounded-lg bg-[var(--color-surface)] p-4"
+              className="rounded-lg border px-4 py-2 text-sm"
             >
-              <p>已儲存版本 {draftRevision}</p>
-              <h3 className="text-2xl font-bold">{String(previewBody.name ?? "")}</h3>
-              {typeof previewBody.preview_image_url === "string" && (
-                <img
-                  src={previewBody.preview_image_url}
-                  alt={String(previewBody.name ?? "")}
-                  className="w-full max-h-96 rounded-lg object-contain"
-                />
-              )}
-              <p>{String(previewBody.age ?? "")}</p>
-              <p className="whitespace-pre-wrap">{String(previewBody.description ?? "")}</p>
-              <p className="whitespace-pre-wrap">{String(previewBody.notes ?? "")}</p>
-              {previewBody.public_profile && typeof previewBody.public_profile === "object"
-                ? Object.entries(previewBody.public_profile)
-                    .filter(([, value]) => value !== null && value !== "")
-                    .map(([key, value]) => (
-                      <p key={key}>
-                        {PUBLIC_PROFILE_LABELS[key as keyof PublicProfileFields] ?? key}：
-                        {String(value)}
-                      </p>
-                    ))
-                : null}
-              {Array.isArray(previewBody.gallery) && (
-                <div className="grid grid-cols-2 gap-3">
-                  {previewBody.gallery.map((item: Record<string, unknown>) =>
-                    typeof item.preview_url === "string" ? (
-                      <figure key={String(item.id)}>
-                        <img
-                          src={item.preview_url}
-                          alt={String(item.alt_zh ?? "")}
-                          className="w-full rounded-lg"
-                        />
-                        <figcaption>
-                          {String(item.alt_zh ?? "")}
-                          {item.review_status !== "approved" ? "（未核准，不會公開）" : ""}
-                        </figcaption>
-                      </figure>
-                    ) : null,
-                  )}
-                </div>
-              )}
-            </article>
-          )}
-          <button
-            type="button"
-            onClick={previewDraft}
-            disabled={dirty || saving}
-            className="rounded-lg border px-4 py-2 text-sm"
-          >
-            建立發布預覽
-          </button>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="animal-publish-reason">
-              發布原因
-            </label>
-            <input
-              id="animal-publish-reason"
-              className={field}
-              value={publishReason}
-              onChange={(event) => setPublishReason(event.target.value)}
-            />
-          </div>
-          <button
-            type="button"
-            disabled={dirty || saving || !previewId || !publishReason.trim()}
-            onClick={publishDraft}
-            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
-          >
-            發布此版本
-          </button>
-        </section>
-      )}
+              {formCopy.publish.createPreview}
+            </button>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="animal-publish-reason">
+                {formCopy.publish.reason}
+              </label>
+              <input
+                id="animal-publish-reason"
+                className={field}
+                value={publishReason}
+                onChange={(event) => setPublishReason(event.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              disabled={dirty || saving || !previewId || !publishReason.trim()}
+              onClick={publishDraft}
+              className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+            >
+              {formCopy.publish.publishVersion}
+            </button>
+          </section>
+        )}
 
-      <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={saving}
-          className="px-6 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
-        >
-          {saving ? copy.common.saving : copy.common.save}
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/admin" })}
-          className="px-6 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-surface-offset)]"
-        >
-          {copy.common.cancel}
-        </button>
-      </div>
-    </form>
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
+          >
+            {saving ? copy.common.saving : copy.common.save}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/admin" })}
+            className="px-6 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-surface-offset)]"
+          >
+            {copy.common.cancel}
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}
+
+/**
+ * The saved version of a draft as the public site would show it, from the body the preview
+ * request returned. In English each text shows its English column when it has one.
+ */
+export function SavedVersionPreview({
+  body,
+  revision,
+}: {
+  body: Record<string, unknown>;
+  revision: number;
+}) {
+  const { language } = useAdminLanguage();
+  const formCopy = useAdminCopy(animalFormCopy);
+  const text = (key: string) => String(body[key] ?? "");
+  const englishText = (key: string) => (typeof body[key] === "string" ? String(body[key]) : null);
+  const localized = (key: string) => localizedText(text(key), englishText(`${key}_en`), language);
+  return (
+    <article
+      aria-label={formCopy.publish.previewLabel}
+      className="space-y-3 rounded-lg bg-[var(--color-surface)] p-4"
+    >
+      <p>{formCopy.publish.savedVersion(revision)}</p>
+      <h3 className="text-2xl font-bold">{localized("name")}</h3>
+      {typeof body.preview_image_url === "string" && (
+        <img
+          src={body.preview_image_url}
+          alt={localized("name")}
+          className="w-full max-h-96 rounded-lg object-contain"
+        />
+      )}
+      <p>{localized("age")}</p>
+      <p className="whitespace-pre-wrap">{localized("description")}</p>
+      <p className="whitespace-pre-wrap">{localized("notes")}</p>
+      {body.public_profile && typeof body.public_profile === "object"
+        ? Object.entries(body.public_profile)
+            .filter(([, value]) => value !== null && value !== "")
+            .map(([key, value]) => (
+              <p key={key}>
+                {formCopy.publish.profileLine(
+                  isPublicProfileField(key) ? publicProfileLabel(key, language) : key,
+                  String(value),
+                )}
+              </p>
+            ))
+        : null}
+      {Array.isArray(body.gallery) && (
+        <div className="grid grid-cols-2 gap-3">
+          {body.gallery.map((item: Record<string, unknown>) => {
+            if (typeof item.preview_url !== "string") return null;
+            const alt = localizedText(
+              String(item.alt_zh ?? ""),
+              typeof item.alt_en === "string" ? item.alt_en : null,
+              language,
+            );
+            return (
+              <figure key={String(item.id)}>
+                <img src={item.preview_url} alt={alt} className="w-full rounded-lg" />
+                <figcaption>
+                  {alt}
+                  {item.review_status !== "approved" ? formCopy.publish.notApprovedSuffix : ""}
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
+      )}
+    </article>
+  );
+}
+
+/** Names the animal and the files before they are uploaded, so staff can check them first. */
+export function UploadCheckNotice({
+  existing,
+  animalId,
+  imageFileName,
+  galleryFiles,
+}: {
+  existing?: Animal;
+  animalId: string;
+  imageFileName: string | null;
+  galleryFiles: Array<{ id: string; name: string }>;
+}) {
+  const { language } = useAdminLanguage();
+  const formCopy = useAdminCopy(animalFormCopy);
+  return (
+    <div
+      role="status"
+      className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
+    >
+      <p className="font-semibold">{formCopy.upload.checkHeading}</p>
+      <p>
+        {existing?.public_profile?.code ? `#${existing.public_profile.code} · ` : ""}
+        {existing
+          ? localizedText(existing.name, existing.name_en, language)
+          : formCopy.upload.newAnimalDraft}{" "}
+        · ID {animalId}
+      </p>
+      <ul className="mt-2 list-inside list-disc break-all">
+        {imageFileName ? <li>{formCopy.upload.mainPhoto(imageFileName)}</li> : null}
+        {galleryFiles.map((file) => (
+          <li key={file.id}>{formCopy.upload.galleryPhoto(file.name)}</li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[var(--color-text-muted)]">{formCopy.upload.hint}</p>
+    </div>
   );
 }

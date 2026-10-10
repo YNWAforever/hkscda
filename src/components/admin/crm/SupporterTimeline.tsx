@@ -1,80 +1,34 @@
 import { Link } from "@tanstack/react-router";
 
+import type { AdminLanguage } from "../../../lib/admin/language";
 import type { SupporterTimelineItem } from "../../../lib/crm/types";
-import { formatAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
+import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { StatusPill } from "../StatusBadge";
+import { crmLabelCopy, timelineCopy } from "./copy";
+import { crmFormatCopy } from "./formatCopy";
 
 type SupporterTimelineProps = {
   items: SupporterTimelineItem[];
 };
 
-const TIMELINE_COPY = {
-  zh: {
-    empty: "尚未有時間軸活動。",
-    kinds: {
-      donation: "捐款",
-      payment: "付款",
-      receipt: "收據",
-      consent: "通訊同意",
-      supporter: "捐款人",
-      adoption_case: "領養個案",
-      adoption_followup: "跟進",
-      successful_adoption: "成功領養",
-      message: "訊息",
-      audit: "系統紀錄",
-    },
-    statuses: {
-      pending: "待處理",
-      succeeded: "成功",
-      failed: "失敗",
-      issued: "已發出",
-      voided: "已作廢",
-    },
-  },
-  en: {
-    empty: "No timeline activity yet.",
-    kinds: {
-      donation: "Donation",
-      payment: "Payment",
-      receipt: "Receipt",
-      consent: "Consent",
-      supporter: "Supporter",
-      adoption_case: "Adoption case",
-      adoption_followup: "Follow-up",
-      successful_adoption: "Successful adoption",
-      message: "Message",
-      audit: "System record",
-    },
-    statuses: {
-      pending: "Pending",
-      succeeded: "Succeeded",
-      failed: "Failed",
-      issued: "Issued",
-      voided: "Voided",
-    },
-  },
-} as const;
-
-function formatHkd(amountCents: number, language: keyof typeof TIMELINE_COPY) {
-  return new Intl.NumberFormat(language === "zh" ? "zh-HK" : "en-HK", {
-    style: "currency",
-    currency: "HKD",
-    maximumFractionDigits: 0,
-  }).format(amountCents / 100);
-}
-
-function timelineKind(kind: string, language: keyof typeof TIMELINE_COPY) {
-  const labels = TIMELINE_COPY[language].kinds as Record<string, string>;
-  return labels[kind] ?? kind;
-}
-
-function timelineStatus(status: string, language: keyof typeof TIMELINE_COPY) {
-  const labels = TIMELINE_COPY[language].statuses as Record<string, string>;
-  return labels[status] ?? status;
+/**
+ * What to show under a timeline item's title. The server writes a message's delivery state in
+ * zh-HK at the end of its description, so English shows the subject and writes the state itself.
+ */
+function timelineDescription(item: SupporterTimelineItem, language: AdminLanguage) {
+  if (language === "zh" || item.kind !== "message" || item.subject === undefined) {
+    return item.description;
+  }
+  return [item.subject, deliveryLabel(item.deliveryState, language)].filter(Boolean).join(" · ");
 }
 
 export function SupporterTimeline({ items }: SupporterTimelineProps) {
-  const { language } = useAdminPageCopy();
-  const copy = TIMELINE_COPY[language];
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(timelineCopy, language);
+  const labels = pickAdminCopy(crmLabelCopy, language);
+  const format = pickAdminCopy(crmFormatCopy, language);
 
   if (items.length === 0) {
     return (
@@ -89,7 +43,7 @@ export function SupporterTimeline({ items }: SupporterTimelineProps) {
       {items.map((item) => (
         <li key={item.id} className="grid gap-3 p-4 sm:grid-cols-[10rem_1fr]">
           <time className="text-xs font-medium text-[var(--color-text-muted)]">
-            {formatAdminDateTime(item.at, language)}
+            {format.dateTime(item.at)}
           </time>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -105,18 +59,16 @@ export function SupporterTimeline({ items }: SupporterTimelineProps) {
                 <p className="font-semibold text-[var(--color-panel)]">{item.title}</p>
               )}
               <span className="rounded-full bg-[var(--color-accent-soft)] px-2 py-0.5 text-xs text-[var(--color-panel)]">
-                {timelineKind(item.kind, language)}
+                {copy.kind(item.kind)}
               </span>
-              {item.status && (
-                <span className="rounded-full border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">
-                  {timelineStatus(item.status, language)}
-                </span>
-              )}
+              {item.status && <StatusPill>{labels.status(item.status)}</StatusPill>}
             </div>
-            <p className="mt-1 text-sm text-[var(--color-text-muted)]">{item.description}</p>
+            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+              {timelineDescription(item, language)}
+            </p>
             {item.amountCents !== undefined && (
               <p className="mt-1 text-sm font-semibold text-[var(--color-panel)]">
-                {formatHkd(item.amountCents, language)}
+                {format.money(item.amountCents)}
               </p>
             )}
           </div>

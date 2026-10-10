@@ -1,8 +1,12 @@
-﻿import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { DocumentAsset } from "../../../lib/documents/types";
 import type {
   AdminKnowledgePage,
@@ -10,7 +14,10 @@ import type {
   KnowledgePost,
   KnowledgePostInput,
 } from "../../../lib/knowledge/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
+import { knowledgeCopy } from "./knowledgeCopy";
 
 export const ADMIN_KNOWLEDGE_QUERY_KEY = ["admin-knowledge"] as const;
 
@@ -97,6 +104,8 @@ function toInput(
 }
 
 export function KnowledgeManagement() {
+  const copy = useAdminCopy(knowledgeCopy);
+  const { language, copy: common } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [documentPage, setDocumentPage] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
@@ -150,12 +159,34 @@ export function KnowledgeManagement() {
     onSuccess: () => invalidateKnowledgeQueries(queryClient),
   });
 
+  const loadError = knowledgeQuery.error ?? ownershipQuery.error ?? documentsQuery.error;
+  // Irreversible, and the trigger sits inline in a list where a mis-click is easy. Name the
+  // post so the operator can tell which row they hit.
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteTitle =
+    knowledgeQuery.data?.posts.find((post) => post.id === deleteId)?.title ??
+    copy.editor.thisArticle;
+
   return (
     <>
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={common.common.delete}
+        consequence={copy.editor.confirmDelete(deleteTitle)}
+        confirmLabel={common.common.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteId !== null) mutation.mutate({ action: "delete", id: deleteId });
+        }}
+      />
       <section className="m-6 space-y-3 rounded border p-4">
-        <h2>參考文件選擇</h2>
+        <h2>{copy.picker.heading}</h2>
         <label>
-          搜尋文件
+          {copy.picker.search}
           <input
             className={inputClass}
             value={documentSearch}
@@ -171,10 +202,10 @@ export function KnowledgeManagement() {
             pageSize={50}
             total={documentsQuery.data.total}
             onPageChange={setDocumentPage}
-            label="參考文件"
+            label={copy.picker.pager}
           />
         )}
-        <p>只可選擇已發布 PDF。切換文件頁面會保留目前所選文件。</p>
+        <p>{copy.picker.note}</p>
       </section>
       <KnowledgeManagementView
         data={knowledgeQuery.data}
@@ -185,25 +216,26 @@ export function KnowledgeManagement() {
         status={status}
         loading={knowledgeQuery.isLoading || ownershipQuery.isLoading}
         pending={mutation.isPending}
-        error={
-          (knowledgeQuery.error instanceof Error ? knowledgeQuery.error.message : null) ??
-          (ownershipQuery.error instanceof Error ? ownershipQuery.error.message : null) ??
-          (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
-          (mutation.error instanceof Error ? mutation.error.message : null)
+        loadFailure={
+          loadError
+            ? {
+                error: loadError,
+                heading: adminErrorMessage(loadError, language),
+                onRetry: () => {
+                  void knowledgeQuery.refetch();
+                  void ownershipQuery.refetch();
+                  void documentsQuery.refetch();
+                },
+              }
+            : null
         }
+        error={adminErrorMessage(mutation.error, language)}
         onQueryChange={withPageReset(setQuery)}
         onStatusChange={withPageReset(setStatus)}
         onPageChange={setPage}
         fetching={knowledgeQuery.isFetching}
         onSave={(draft) => mutation.mutate({ action: "save", draft })}
-        onDelete={(id) => {
-          // Irreversible, and the trigger sits inline in a list where a mis-click
-          // is easy. Name the post so the operator can tell which row they hit.
-          const title =
-            knowledgeQuery.data?.posts.find((post) => post.id === id)?.title ?? "此文章";
-          if (!window.confirm(`確定刪除「${title}」？此操作無法復原。`)) return;
-          mutation.mutate({ action: "delete", id });
-        }}
+        onDelete={setDeleteId}
       />
     </>
   );
@@ -218,6 +250,7 @@ export function KnowledgeManagementView({
   status = "all",
   loading = false,
   pending = false,
+  loadFailure = null,
   error,
   onQueryChange,
   onStatusChange,
@@ -234,6 +267,9 @@ export function KnowledgeManagementView({
   status?: AdminKnowledgeStatus;
   loading?: boolean;
   pending?: boolean;
+  /** The articles, their ownership or the documents failed to load. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save or a delete. */
   error?: string | null;
   onQueryChange?: (value: string) => void;
   onStatusChange?: (value: AdminKnowledgeStatus) => void;
@@ -242,20 +278,19 @@ export function KnowledgeManagementView({
   onSave?: (draft: KnowledgeDraft) => void;
   onDelete?: (id: string) => void;
 }) {
+  const copy = useAdminCopy(knowledgeCopy);
   const posts = data?.posts ?? [];
   return (
     <div className="space-y-6 p-6">
       <header>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">Content</p>
-        <h1 className="text-2xl font-bold text-[var(--color-panel)]">知識專區</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          管理公開領養資訊、寵物照顧及參考連結。
-        </p>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.eyebrow}</p>
+        <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </header>
 
       <div className="grid gap-3 md:grid-cols-[1fr_14rem]">
         <label className="space-y-1 text-sm font-semibold">
-          Search
+          {copy.filters.search}
           <input
             value={query}
             onChange={(event) => onQueryChange?.(event.target.value)}
@@ -263,33 +298,40 @@ export function KnowledgeManagementView({
           />
         </label>
         <label className="space-y-1 text-sm font-semibold">
-          Publication
+          {copy.filters.publication}
           <select
             value={status}
             onChange={(event) => onStatusChange?.(event.target.value as AdminKnowledgeStatus)}
             className={inputClass}
           >
-            <option value="all">All</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
+            <option value="all">{copy.filters.all}</option>
+            <option value="published">{copy.filters.published}</option>
+            <option value="draft">{copy.filters.draft}</option>
           </select>
         </label>
       </div>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
         </p>
       ) : null}
-      {loading ? <p aria-live="polite">Loading knowledge posts...</p> : null}
-      {!loading && !ownershipReady ? <p role="alert">無法核實擁有權。</p> : null}
+      {loading ? <p aria-live="polite">{copy.loading}</p> : null}
+      {!loading && !ownershipReady ? <p role="alert">{copy.ownershipUnknown}</p> : null}
 
       {!loading && ownershipReady ? (
         <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
       ) : null}
 
-      {!loading && ownershipReady && posts.length === 0 && !error ? (
-        <p>尚未有知識庫文章。</p>
+      {!loading && ownershipReady && posts.length === 0 && !error && !loadFailure ? (
+        <p>{copy.empty}</p>
       ) : null}
       {!loading &&
         ownershipReady &&
@@ -311,7 +353,7 @@ export function KnowledgeManagementView({
           total={data.total}
           onPageChange={onPageChange}
           busy={fetching}
-          label="知識文章"
+          label={copy.pager}
         />
       ) : null}
     </div>
@@ -330,6 +372,7 @@ function KnowledgeEditor({
   onSave?: (draft: KnowledgeDraft) => void;
   onDelete?: (id: string) => void;
 }) {
+  const copy = useAdminCopy(knowledgeCopy).managed;
   if (post && (ownerReleaseId || post.destination.kind === "document_pair")) {
     return (
       <section
@@ -342,25 +385,21 @@ function KnowledgeEditor({
             href={`/admin/content/adoption-guides?releaseId=${encodeURIComponent(ownerReleaseId)}`}
             className="text-sm font-semibold text-[var(--color-primary)] underline"
           >
-            {"\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406"}
+            {copy.byReleases}
           </a>
         ) : (
-          <p className="text-sm font-semibold text-[var(--color-primary)]">
-            {"\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406"}
-          </p>
+          <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.byReleases}</p>
         )}
-        <p className="text-sm text-[var(--color-text-muted)]">
-          This bilingual post is read-only here. Update it through the release workflow.
-        </p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.readOnly}</p>
         <dl className="grid gap-3 text-sm md:grid-cols-2">
           <div>
-            <dt className="font-semibold">Chinese asset ID</dt>
+            <dt className="font-semibold">{copy.chineseAsset}</dt>
             <dd className="break-all font-mono">
               {post.destination.kind === "document_pair" ? post.destination.zhHkAssetId : "?"}
             </dd>
           </div>
           <div>
-            <dt className="font-semibold">English asset ID</dt>
+            <dt className="font-semibold">{copy.englishAsset}</dt>
             <dd className="break-all font-mono">
               {post.destination.kind === "document_pair" ? post.destination.enAssetId : "?"}
             </dd>
@@ -386,13 +425,14 @@ function EditableKnowledgeEditor({
   onSave?: (draft: KnowledgeDraft) => void;
   onDelete?: (id: string) => void;
 }) {
+  const copy = useAdminCopy(knowledgeCopy).editor;
   const [draft, setDraft] = useState(() => draftFromPost(post));
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-      <h2 className="font-bold">{post ? post.title : "新增知識文章"}</h2>
+      <h2 className="font-bold">{post ? post.title : copy.addHeading}</h2>
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-1 text-sm font-semibold">
-          Title
+          {copy.title}
           <input
             className={inputClass}
             value={draft.title}
@@ -400,7 +440,7 @@ function EditableKnowledgeEditor({
           />
         </label>
         <label className="space-y-1 text-sm font-semibold">
-          Topic
+          {copy.topic}
           <input
             className={inputClass}
             value={draft.topic}
@@ -409,7 +449,7 @@ function EditableKnowledgeEditor({
         </label>
       </div>
       <label className="block space-y-1 text-sm font-semibold">
-        簡介
+        {copy.intro}
         <textarea
           className={inputClass}
           value={draft.shortIntro}
@@ -418,7 +458,7 @@ function EditableKnowledgeEditor({
       </label>
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-1 text-sm font-semibold">
-          連結方式
+          {copy.linkType}
           <select
             className={inputClass}
             value={draft.destinationMode}
@@ -426,33 +466,33 @@ function EditableKnowledgeEditor({
               setDraft({ ...draft, destinationMode: event.target.value as DraftDestinationMode })
             }
           >
-            <option value="external">外部網址</option>
-            <option value="document">PDF 文件</option>
+            <option value="external">{copy.external}</option>
+            <option value="document">{copy.document}</option>
           </select>
         </label>
         {draft.destinationMode === "external" ? (
           <label className="space-y-1 text-sm font-semibold">
-            外部網址
+            {copy.externalUrl}
             <input
               className={inputClass}
               value={draft.externalUrl}
               onChange={(event) => setDraft({ ...draft, externalUrl: event.target.value })}
               placeholder="https://"
             />
-            <span className="text-xs text-[var(--color-text-muted)]">只接受 HTTPS 網址</span>
+            <span className="text-xs text-[var(--color-text-muted)]">{copy.httpsOnly}</span>
           </label>
         ) : (
           <label className="space-y-1 text-sm font-semibold">
-            PDF 文件
+            {copy.documentLabel}
             <select
               className={inputClass}
               value={draft.documentAssetId}
               onChange={(event) => setDraft({ ...draft, documentAssetId: event.target.value })}
             >
-              <option value="">選擇已發布 PDF</option>
+              <option value="">{copy.choosePdf}</option>
               {draft.documentAssetId &&
                 !documents.some((asset) => asset.id === draft.documentAssetId) && (
-                  <option value={draft.documentAssetId}>目前已選文件（其他頁面）</option>
+                  <option value={draft.documentAssetId}>{copy.currentChoice}</option>
                 )}
               {documents.map((asset) => (
                 <option key={asset.id} value={asset.id}>
@@ -465,7 +505,7 @@ function EditableKnowledgeEditor({
       </div>
       <div className="grid gap-3 md:grid-cols-3">
         <label className="space-y-1 text-sm font-semibold">
-          Source
+          {copy.source}
           <input
             className={inputClass}
             value={draft.sourceName}
@@ -473,7 +513,7 @@ function EditableKnowledgeEditor({
           />
         </label>
         <label className="space-y-1 text-sm font-semibold">
-          排序
+          {copy.sortOrder}
           <input
             className={inputClass}
             type="number"
@@ -488,21 +528,26 @@ function EditableKnowledgeEditor({
             checked={draft.isPublished}
             onChange={(event) => setDraft({ ...draft, isPublished: event.target.checked })}
           />
-          {draft.isPublished ? "Published" : "Draft"}
+          {draft.isPublished ? copy.published : copy.draft}
         </label>
       </div>
       <div className="flex gap-2">
-        <button
+        <Button
           type="button"
           disabled={pending || !draft.title.trim() || !draft.shortIntro.trim()}
           onClick={() => onSave?.(draft)}
         >
-          Save
-        </button>
+          {copy.save}
+        </Button>
         {post ? (
-          <button type="button" disabled={pending} onClick={() => onDelete?.(post.id)}>
-            Delete
-          </button>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={pending}
+            onClick={() => onDelete?.(post.id)}
+          >
+            {copy.delete}
+          </Button>
         ) : null}
       </div>
     </section>

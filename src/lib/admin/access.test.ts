@@ -49,6 +49,7 @@ describe("admin role access mapping", () => {
   test("maps admin locations to the same access areas used by nav filtering", () => {
     expect(getAdminAreaForLocation({ pathname: "/admin", section: "dog" })).toBe("animals");
     expect(getAdminAreaForLocation({ pathname: "/admin", section: "payments" })).toBe("payments");
+    expect(getAdminAreaForLocation({ pathname: "/admin/payment-methods" })).toBe("payments");
     expect(getAdminAreaForLocation({ pathname: "/admin/applications" })).toBe("adoptionCases");
     expect(getAdminAreaForLocation({ pathname: "/admin/coordinator/intake" })).toBe("manualIntake");
     expect(getAdminAreaForLocation({ pathname: "/admin/coordinator/statuses" })).toBe(

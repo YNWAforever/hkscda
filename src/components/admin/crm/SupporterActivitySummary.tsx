@@ -1,7 +1,11 @@
 import { formatAdminNumber } from "../adminPageCopy";
+import type { AdminLanguage } from "../i18n/copy";
+import { pickAdminCopy } from "../i18n/copy";
+import { activitySummaryCopy } from "./copy";
+import { crmFormatCopy } from "./formatCopy";
 
 type SupporterActivitySummaryProps = {
-  language: "zh" | "en";
+  language: AdminLanguage;
   lifetimeAmountCents: number;
   donationCount: number;
   receiptCount: number;
@@ -10,35 +14,6 @@ type SupporterActivitySummaryProps = {
   openFollowupCount: number;
   successfulAdoptionCount: number;
 };
-
-const ACTIVITY_COPY = {
-  zh: {
-    lifetime: "累計捐款",
-    donations: "捐款",
-    receipts: "收據",
-    pendingPayments: "待處理付款",
-    adoptionCases: "領養個案",
-    openFollowups: "未完成跟進",
-    successfulAdoptions: "成功領養",
-  },
-  en: {
-    lifetime: "Lifetime",
-    donations: "Donations",
-    receipts: "Receipts",
-    pendingPayments: "Pending payments",
-    adoptionCases: "Adoption cases",
-    openFollowups: "Open follow-ups",
-    successfulAdoptions: "Successful adoptions",
-  },
-} as const;
-
-function formatHkd(amountCents: number, language: "zh" | "en") {
-  return new Intl.NumberFormat(language === "zh" ? "zh-HK" : "en-HK", {
-    style: "currency",
-    currency: "HKD",
-    maximumFractionDigits: 0,
-  }).format(amountCents / 100);
-}
 
 export function SupporterActivitySummary({
   language,
@@ -50,9 +25,10 @@ export function SupporterActivitySummary({
   openFollowupCount,
   successfulAdoptionCount,
 }: SupporterActivitySummaryProps) {
-  const copy = ACTIVITY_COPY[language];
+  const copy = pickAdminCopy(activitySummaryCopy, language);
+  const format = pickAdminCopy(crmFormatCopy, language);
   const stats = [
-    { label: copy.lifetime, value: formatHkd(lifetimeAmountCents, language), wide: true },
+    { label: copy.lifetime, value: format.money(lifetimeAmountCents), wide: true },
     { label: copy.donations, value: formatAdminNumber(donationCount, language) },
     { label: copy.receipts, value: formatAdminNumber(receiptCount, language) },
     { label: copy.pendingPayments, value: formatAdminNumber(pendingPaymentCount, language) },

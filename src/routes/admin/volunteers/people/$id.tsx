@@ -15,10 +15,7 @@ function PersonPage() {
   const { id } = Route.useParams();
   const search = Route.useSearch();
   return (
-    <VolunteerAdminShell
-      title="義工個人詳情"
-      description="按已記錄的身份、證據與事實處理義工服務。"
-    >
+    <VolunteerAdminShell intro="person">
       <VolunteerPersonDetail profileId={id} search={search} />
     </VolunteerAdminShell>
   );

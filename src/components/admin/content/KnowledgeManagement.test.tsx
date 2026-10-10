@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { DocumentAsset } from "../../../lib/documents/types";
 import {
@@ -62,7 +62,7 @@ describe("KnowledgeManagement", () => {
   });
 
   test("renders external and document modes, HTTPS warning, publish toggle, ordering, and states", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <KnowledgeManagementView
         data={{
           posts: [
@@ -104,7 +104,7 @@ describe("KnowledgeManagement", () => {
   test("renders release-managed bilingual posts read-only with both asset IDs", () => {
     const zhHkAssetId = "11111111-2222-4333-8444-555555555555";
     const enAssetId = "66666666-7777-4888-8999-000000000000";
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <KnowledgeManagementView
         data={{
           posts: [
@@ -149,7 +149,7 @@ describe("KnowledgeManagement", () => {
   });
 
   test("keeps unrelated Knowledge controls and fails closed while ownership is unknown", () => {
-    const unrelated = renderToStaticMarkup(
+    const unrelated = renderAdminInChinese(
       <KnowledgeManagementView
         data={{ posts: [post], total: 1, page: 1, pageSize: 50 }}
         documents={[documentAsset]}
@@ -163,7 +163,7 @@ describe("KnowledgeManagement", () => {
     expect(unrelated).toContain("Delete");
     expect(unrelated).not.toContain("/admin/content/adoption-guides?releaseId=");
 
-    const unknown = renderToStaticMarkup(
+    const unknown = renderAdminInChinese(
       <KnowledgeManagementView
         data={{ posts: [post], total: 1, page: 1, pageSize: 50 }}
         documents={[documentAsset]}
@@ -179,12 +179,12 @@ describe("KnowledgeManagement", () => {
 
   test("renders loading and empty states", () => {
     expect(
-      renderToStaticMarkup(
+      renderAdminInChinese(
         <KnowledgeManagementView loading data={undefined} documents={[]} query="" />,
       ),
     ).toContain("Loading knowledge posts");
     expect(
-      renderToStaticMarkup(
+      renderAdminInChinese(
         <KnowledgeManagementView
           data={{ posts: [], total: 0, page: 1, pageSize: 50 }}
           documents={[]}
@@ -198,7 +198,7 @@ describe("KnowledgeManagement", () => {
     // posts defaulted to [] on a rejected query, so the empty-state text
     // rendered directly alongside the error banner -- a failure asserted as a
     // confirmed empty knowledge base.
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <KnowledgeManagementView
         data={{ posts: [], total: 0, page: 1, pageSize: 50 }}
         documents={[]}

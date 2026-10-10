@@ -1,4 +1,5 @@
 import { fetchAdminJson } from "../../../lib/admin/http";
+import type { AdminLanguage } from "../../../lib/admin/language";
 import { AdminApiError } from "../../../lib/admin/session";
 import type {
   AdoptionGuidePublishResult,
@@ -12,6 +13,7 @@ import type {
   AdoptionGuideReleaseState,
   AdoptionGuideSpecies,
 } from "../../../lib/adoptionGuideReleases/types";
+import { documentErrorMessage } from "./documentErrors";
 
 export type ReleaseFilters = {
   q?: string;
@@ -21,12 +23,13 @@ export type ReleaseFilters = {
   pageSize?: number;
 };
 
+/** The five steps of the editor. The name of each is in `adoptionGuideCopy`, by its id. */
 export const ADOPTION_GUIDE_EDITOR_STEPS = [
-  { id: "topic", label: "主題及物種" },
-  { id: "chinese_pdf", label: "中文 PDF" },
-  { id: "english_pdf", label: "English PDF" },
-  { id: "knowledge", label: "知識庫內容" },
-  { id: "preview", label: "預覽及發佈" },
+  { id: "topic" },
+  { id: "chinese_pdf" },
+  { id: "english_pdf" },
+  { id: "knowledge" },
+  { id: "preview" },
 ] as const;
 
 export type AdoptionGuideEditorStepId = (typeof ADOPTION_GUIDE_EDITOR_STEPS)[number]["id"];
@@ -56,16 +59,54 @@ export type AdoptionGuideReadinessPresentation = {
   issues: Array<AdoptionGuideReadinessIssue & { step: AdoptionGuideEditorStepId }>;
 };
 
+/**
+ * Why a save, submit, withdraw, return or publish failed. The text is written when the screen
+ * renders (see `adoptionGuideFailureText`), so it follows the admin's language. `cause` is the
+ * error the server or the browser gave, kept only when it has a message to show.
+ */
 export type AdoptionGuideMutationError<T> =
   | {
       kind: "conflict";
-      message: string;
       preservedDraft: T;
     }
   | {
       kind: "error";
-      message: string;
+      cause?: unknown;
     };
+
+export type AdoptionGuideErrorCode = "conflict" | "save_failed";
+
+/**
+ * An error as the screen keeps it: a code for the text to show when there is no better one, and the
+ * `cause` (the caught error) whose own message is shown first. The text of the codes is in
+ * `adoptionGuideCopy.errors`.
+ */
+export type AdoptionGuideFailure = { code?: AdoptionGuideErrorCode; cause?: unknown };
+
+/** The failure to keep for a resolved mutation error. */
+export function adoptionGuideFailureOf<T>(
+  resolved: AdoptionGuideMutationError<T>,
+): AdoptionGuideFailure {
+  return resolved.kind === "conflict"
+    ? { code: "conflict" }
+    : { code: "save_failed", cause: resolved.cause };
+}
+
+/**
+ * The message for a failure in `language`, or `undefined` when there is nothing to show. A cause
+ * with a message shows that message (a session error is translated); otherwise the code's text,
+ * taken from `errors`, which is `adoptionGuideCopy.errors` for the language.
+ */
+export function adoptionGuideFailureText(
+  failure: AdoptionGuideFailure | undefined,
+  errors: Record<AdoptionGuideErrorCode, string>,
+  language: AdminLanguage,
+): string | undefined {
+  if (!failure) return undefined;
+  const fromCause = documentErrorMessage(failure.cause, language);
+  if (fromCause !== null) return fromCause;
+  return failure.code ? errors[failure.code] : undefined;
+}
 
 export function buildAdoptionGuideReleaseSearchParams(input: ReleaseFilters = {}) {
   const params = new URLSearchParams();
@@ -131,19 +172,9 @@ export function resolveMutationError<T>(
       ? error.status === 409 && error.code === "conflict"
       : hasStructuredConflict(error);
 
-  if (isConflict) {
-    return {
-      kind: "conflict",
-      message: "This release changed elsewhere. Reload before saving again.",
-      preservedDraft: localDraft,
-    };
-  }
+  if (isConflict) return { kind: "conflict", preservedDraft: localDraft };
 
-  return {
-    kind: "error",
-    message:
-      error instanceof Error && error.message ? error.message : "Unable to save this release.",
-  };
+  return { kind: "error", cause: error instanceof Error && error.message ? error : undefined };
 }
 
 export async function fetchAdoptionGuideReleases(
@@ -256,13 +287,16 @@ export type AdoptionGuideReleaseDraft = Pick<
   | "sortOrder"
 >;
 
+/** Why the release cannot be submitted or published yet. The text is in `adoptionGuideCopy.blockers`. */
+export type AdoptionGuideBlocker = "unsaved_changes" | "stale_preview" | "not_ready";
+
 export type AdoptionGuideReleaseWorkflowState = {
   dirty: boolean;
   previewFresh: boolean;
   ready: boolean;
   canSubmit: boolean;
   canPublish: boolean;
-  message: string | null;
+  blocker: AdoptionGuideBlocker | null;
 };
 
 export function evaluateAdoptionGuideReleaseWorkflow(input: {
@@ -279,13 +313,7 @@ export function evaluateAdoptionGuideReleaseWorkflow(input: {
     input.preview.release.version === input.release.version,
   );
   const ready = previewFresh && input.preview!.readiness.ready;
-  const message = dirty
-    ? "請先儲存變更，然後重新整理預覽。"
-    : !previewFresh
-      ? "請先重新整理預覽，確認目前版本。"
-      : !ready
-        ? "請先完成預覽中的準備項目。"
-        : null;
+  const blocker = blockerOf({ dirty, previewFresh, ready });
 
   return {
     dirty,
@@ -293,8 +321,23 @@ export function evaluateAdoptionGuideReleaseWorkflow(input: {
     ready,
     canSubmit: input.release.state === "draft" && !dirty && ready,
     canPublish: input.release.state === "in_review" && !dirty && ready,
-    message,
+    blocker,
   };
+}
+
+function blockerOf({
+  dirty,
+  previewFresh,
+  ready,
+}: {
+  dirty: boolean;
+  previewFresh: boolean;
+  ready: boolean;
+}): AdoptionGuideBlocker | null {
+  if (dirty) return "unsaved_changes";
+  if (!previewFresh) return "stale_preview";
+  if (!ready) return "not_ready";
+  return null;
 }
 
 export function isAdoptionGuideReleaseDirty(
@@ -354,6 +397,7 @@ export function buildAdoptionGuideUploadMetadata(
 ) {
   return {
     kind: "adoption_guide" as const,
+    // admin-copy-exempt: the stored title of the uploaded document, not interface text
     title: `${release.topic} ${language === "zh-HK" ? "中文" : "English"} PDF`,
     language,
     sortOrder: release.sortOrder,
@@ -402,7 +446,7 @@ export function createAdoptionGuideReleaseRuntimeController({
   createIdempotencyKey = () => crypto.randomUUID(),
 }: {
   queryClient: AdoptionGuideReleaseRuntimeQueryClient;
-  setLocalError: (message: string | undefined) => void;
+  setLocalError: (failure: AdoptionGuideFailure | undefined) => void;
   createIdempotencyKey?: () => string;
 }) {
   let publishAttempt: {
@@ -423,7 +467,7 @@ export function createAdoptionGuideReleaseRuntimeController({
     },
     onActionError<T>(error: unknown, localDraft: T) {
       const resolved = resolveMutationError(error, localDraft);
-      setLocalError(resolved.message);
+      setLocalError(adoptionGuideFailureOf(resolved));
       return resolved;
     },
     async onActionSuccess({

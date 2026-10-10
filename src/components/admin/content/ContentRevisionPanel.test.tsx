@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
 
 import type { ContentDetail } from "../../../lib/content/types";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 
@@ -52,7 +52,7 @@ const content: ContentDetail = {
 describe("ContentRevisionPanel", () => {
   test("shows a retry control instead of the old unclickable reload message on failure", () => {
     historyError = new Error("boom");
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <ContentRevisionPanel content={content} disabled={false} onRestore={async () => {}} />,
     );
     expect(markup).toContain("無法載入版本紀錄");

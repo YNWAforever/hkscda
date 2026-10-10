@@ -2,10 +2,23 @@ import { useEffect, useState } from "react";
 
 import { BulkReview } from "../bulk/BulkReview";
 import type { CrmTagBulkOperation } from "../../../routes/api/admin/supporters/tag-bulk";
+import { adminErrorMessage } from "../../../lib/admin/session";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "./api";
+import { tagBulkCopy } from "./bulkCopy";
 
 const endpoint = "/api/admin/supporters/tag-bulk";
 const savedOperationKey = "crm-tag-bulk-operation";
+
+/**
+ * Why the panel shows an error. It is kept as a code (the key of `copy.errors`), with the caught
+ * error where the server may have given a reason, and written when the panel renders.
+ */
+type PanelError = {
+  code: "restore_failed" | "reload_failed" | "preview_failed" | "apply_failed";
+  cause?: unknown;
+};
 
 export function CrmTagBulkPanel({
   selectedIds,
@@ -18,11 +31,13 @@ export function CrmTagBulkPanel({
   roleFilter: string;
   selectionDisabled: boolean;
 }) {
+  const copy = useAdminCopy(tagBulkCopy);
+  const { language } = useAdminLanguage();
   const [tag, setTag] = useState("");
   const [operation, setOperation] = useState<CrmTagBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<PanelError | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
@@ -35,7 +50,7 @@ export function CrmTagBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+        if (active) setError({ code: "restore_failed" });
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -48,7 +63,7 @@ export function CrmTagBulkPanel({
   async function reloadOperation() {
     if (!recoveryId || busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       setOperation(
         await fetchAdminJson<CrmTagBulkOperation>(
@@ -56,7 +71,7 @@ export function CrmTagBulkPanel({
         ),
       );
     } catch {
-      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+      setError({ code: "reload_failed" });
     } finally {
       setBusy(false);
     }
@@ -65,7 +80,7 @@ export function CrmTagBulkPanel({
   async function preview() {
     if (busy || selectionDisabled || selectedIds.length < 1 || selectedIds.length > 1000) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const bytes = new TextEncoder().encode(
         JSON.stringify({ query, roleFilter, ids: selectedIds }),
@@ -82,7 +97,7 @@ export function CrmTagBulkPanel({
       setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法建立預覽");
+      setError({ code: "preview_failed", cause });
     } finally {
       setBusy(false);
     }
@@ -91,7 +106,7 @@ export function CrmTagBulkPanel({
   async function apply() {
     if (!operation || busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const result = await fetchAdminJson<CrmTagBulkOperation>(endpoint, {
         method: "POST",
@@ -99,7 +114,7 @@ export function CrmTagBulkPanel({
       });
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法套用；請重新讀取結果");
+      setError({ code: "apply_failed", cause });
       try {
         setOperation(
           await fetchAdminJson<CrmTagBulkOperation>(
@@ -114,28 +129,33 @@ export function CrmTagBulkPanel({
     }
   }
 
+  // A reason the server gave is shown as it came; otherwise the message for the code.
+  const errorMessage = error
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    : "";
+
   return (
     <section
-      aria-label="支持者標籤批量操作"
+      aria-label={copy.panelLabel}
       className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
       <div>
-        <h2 className="text-lg font-bold">批量加入支持者標籤</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          先固定選取範圍並預覽逐筆差異。套用時會重新核對權限和每筆版本；不會更改身份、同意紀錄或付款。
-        </p>
+        <h2 className="text-lg font-bold">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
       <label className="block max-w-sm text-sm">
-        要加入的標籤
+        {copy.tagLabel}
         <input
-          aria-label="批量標籤"
+          aria-label={copy.tagAria}
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           value={tag}
           maxLength={40}
           onChange={(event) => setTag(event.target.value)}
         />
       </label>
-      <p className="text-sm">已選 {selectedIds.length} 筆（上限 1000）</p>
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -148,7 +168,7 @@ export function CrmTagBulkPanel({
         }
         onClick={preview}
       >
-        {busy ? "處理中…" : "建立預覽"}
+        {busy ? copy.processing : copy.preview}
       </button>
       {recoveryId && (
         <button
@@ -157,26 +177,26 @@ export function CrmTagBulkPanel({
           disabled={busy}
           onClick={reloadOperation}
         >
-          重新讀取結果
+          {copy.reload}
         </button>
       )}
-      {error && (
+      {errorMessage && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {errorMessage}
         </p>
       )}
       {operation && (
         <BulkReview
           key={operation.operationId}
-          title={"標籤：" + operation.tag + " · " + operation.items.length + " 筆"}
+          title={copy.reviewTitle(operation.tag, operation.items.length)}
           operationId={operation.operationId}
           expiresAt={operation.expiresAt}
           items={operation.items.map((item) => ({
             entityId: item.entityId,
             status: item.status,
             reasonCode: item.reasonCode,
-            before: item.beforeTags.join("、"),
-            after: item.afterTags.join("、"),
+            before: copy.joinTags(item.beforeTags),
+            after: copy.joinTags(item.afterTags),
           }))}
           busy={busy}
           onApply={apply}

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import { AnnualReportManagement, AnnualReportManagementView } from "./AnnualReportManagement";
 
@@ -31,7 +31,7 @@ const draftReport = {
 
 describe("AnnualReportManagement", () => {
   test("disables report publication while its PDF asset is unpublished", () => {
-    const markup = renderToStaticMarkup(<AnnualReportManagement initialRows={[draftReport]} />);
+    const markup = renderAdminInChinese(<AnnualReportManagement initialRows={[draftReport]} />);
 
     expect(markup).toContain("年度報告");
     expect(markup).toContain("Annual Report 2025/26");
@@ -40,7 +40,7 @@ describe("AnnualReportManagement", () => {
   });
 
   test("locks ordering while a report action is pending", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AnnualReportManagementView rows={[draftReport]} actionPending onAction={() => undefined} />,
     );
 
@@ -50,7 +50,7 @@ describe("AnnualReportManagement", () => {
   test("does not claim no reports exist underneath a load error", () => {
     // rows=[] on a failed fetch used to render "尚未建立年度報告" directly
     // below the error banner -- a failure asserted as a confirmed empty list.
-    const markup = renderToStaticMarkup(<AnnualReportManagementView rows={[]} error="boom" />);
+    const markup = renderAdminInChinese(<AnnualReportManagementView rows={[]} error="boom" />);
 
     expect(markup).toContain("boom");
     expect(markup).not.toContain("尚未建立年度報告");

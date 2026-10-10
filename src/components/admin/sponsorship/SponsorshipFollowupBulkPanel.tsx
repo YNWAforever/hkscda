@@ -3,12 +3,26 @@ import { useEffect, useRef, useState } from "react";
 
 import { BulkReview } from "../bulk/BulkReview";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { FollowupAssignee } from "../../../lib/sponsorshipAdmin/followupAssignment.server";
 import type { SponsorshipFollowupBulkOperation } from "../../../routes/api/admin/sponsorships/followup-bulk";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { followupBulkCopy } from "./bulkCopy";
+import { LoadFailure } from "../LoadFailure";
 
 const endpoint = "/api/admin/sponsorships/followup-bulk";
 const savedOperationKey = "sponsorship-followup-bulk-operation";
 type AssigneesResponse = { assignees: FollowupAssignee[] };
+
+/**
+ * Why the panel shows an error. It is kept as a code (the key of `copy.errors`), with the caught
+ * error where the server may have given a reason, and written when the panel renders.
+ */
+type PanelError = {
+  code: "restore_failed" | "reload_failed" | "preview_failed" | "apply_failed";
+  cause?: unknown;
+};
 
 export function SponsorshipFollowupBulkPanel({
   selectedIds,
@@ -21,6 +35,8 @@ export function SponsorshipFollowupBulkPanel({
   selectionDisabled: boolean;
   onApplied: () => void;
 }) {
+  const copy = useAdminCopy(followupBulkCopy);
+  const { language } = useAdminLanguage();
   const assignees = useQuery({
     queryKey: ["sponsorship-followup-assignees"],
     queryFn: () => fetchAdminJson<AssigneesResponse>("/api/admin/sponsorships/followup-assignees"),
@@ -28,7 +44,7 @@ export function SponsorshipFollowupBulkPanel({
   const [assigneeUserId, setAssigneeUserId] = useState("");
   const [operation, setOperation] = useState<SponsorshipFollowupBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<PanelError | null>(null);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const mounted = useRef(false);
   useEffect(() => {
@@ -51,7 +67,7 @@ export function SponsorshipFollowupBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+        if (active) setError({ code: "restore_failed" });
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -64,14 +80,14 @@ export function SponsorshipFollowupBulkPanel({
   async function reloadOperation() {
     if (!recoveryId || busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const result = await fetchAdminJson<SponsorshipFollowupBulkOperation>(
         endpoint + "?operationId=" + encodeURIComponent(recoveryId),
       );
       if (mounted.current) setOperation(result);
     } catch {
-      if (mounted.current) setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+      if (mounted.current) setError({ code: "reload_failed" });
     } finally {
       if (mounted.current) setBusy(false);
     }
@@ -87,7 +103,7 @@ export function SponsorshipFollowupBulkPanel({
     )
       return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       const bytes = new TextEncoder().encode(JSON.stringify({ filterKey, ids: selectedIds }));
       const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -103,7 +119,7 @@ export function SponsorshipFollowupBulkPanel({
       setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法建立預覽");
+      setError({ code: "preview_failed", cause });
     } finally {
       setBusy(false);
     }
@@ -112,7 +128,7 @@ export function SponsorshipFollowupBulkPanel({
   async function apply() {
     if (!operation || busy) return;
     setBusy(true);
-    setError("");
+    setError(null);
     try {
       setOperation(
         await fetchAdminJson<SponsorshipFollowupBulkOperation>(endpoint, {
@@ -122,7 +138,7 @@ export function SponsorshipFollowupBulkPanel({
       );
       onApplied();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法套用；請重新讀取結果");
+      setError({ code: "apply_failed", cause });
       try {
         setOperation(
           await fetchAdminJson<SponsorshipFollowupBulkOperation>(
@@ -138,30 +154,33 @@ export function SponsorshipFollowupBulkPanel({
   }
 
   const assigneeLabel = (id: string | null) =>
-    id ? (assignees.data?.assignees.find((user) => user.authUserId === id)?.email ?? id) : "未分派";
+    id
+      ? (assignees.data?.assignees.find((user) => user.authUserId === id)?.email ?? id)
+      : copy.unassigned;
+  // A reason the server gave is shown as it came; otherwise the message for the code.
+  const errorMessage = error
+    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    : "";
 
   return (
     <section
-      aria-label="助養跟進批量分派"
+      aria-label={copy.panelLabel}
       className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
       <div>
-        <h2 className="text-lg font-bold">批量分派助養跟進</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          只改負責職員；不確認付款、不審核憑證、不發送提醒。預覽有效 15
-          分鐘；套用時逐筆檢查狀態、版本及職員權限。
-        </p>
+        <h2 className="text-lg font-bold">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
       <label className="block max-w-sm text-sm">
-        負責職員
+        {copy.ownerLabel}
         <select
           disabled={busy}
-          aria-label="批量分派負責職員"
+          aria-label={copy.ownerAria}
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           value={assigneeUserId}
           onChange={(event) => setAssigneeUserId(event.target.value)}
         >
-          <option value="">選擇已啟用的職員</option>
+          <option value="">{copy.chooseOwner}</option>
           {assignees.data?.assignees.map((user) => (
             <option key={user.authUserId} value={user.authUserId}>
               {user.email}
@@ -169,8 +188,16 @@ export function SponsorshipFollowupBulkPanel({
           ))}
         </select>
       </label>
-      {assignees.isError && <p role="alert">無法載入職員名單，請重試。</p>}
-      <p className="text-sm">已選 {selectedIds.length} 筆（上限 1000）</p>
+      {assignees.isError && (
+        <LoadFailure
+          error={assignees.error}
+          onRetry={() => void assignees.refetch()}
+          title={copy.pickerFailed}
+        />
+      )}
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -184,11 +211,11 @@ export function SponsorshipFollowupBulkPanel({
         }
         onClick={preview}
       >
-        {busy ? "處理中…" : "建立分派預覽"}
+        {busy ? copy.processing : copy.preview}
       </button>
-      {error && (
+      {errorMessage && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          {error}
+          {errorMessage}
         </p>
       )}
       {recoveryId && (
@@ -198,19 +225,13 @@ export function SponsorshipFollowupBulkPanel({
           disabled={busy}
           onClick={reloadOperation}
         >
-          重新讀取結果
+          {copy.reload}
         </button>
       )}
       {operation && (
         <BulkReview
           key={operation.operationId}
-          title={
-            "負責職員：" +
-            assigneeLabel(operation.assigneeUserId) +
-            " · " +
-            operation.items.length +
-            " 筆"
-          }
+          title={copy.reviewTitle(assigneeLabel(operation.assigneeUserId), operation.items.length)}
           operationId={operation.operationId}
           expiresAt={operation.expiresAt}
           items={operation.items.map((item) => ({

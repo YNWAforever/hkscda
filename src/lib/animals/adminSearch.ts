@@ -4,8 +4,8 @@ import { parsePublicAnimalProfile } from "./publicProfile";
 /**
  * Admin animal list search and archive handling.
  *
- * The list matched only `name` and `name_en`, so 荃海棠 found its record and
- * C3761 -- the reference number printed on the animal's own public page and the
+ * The list matched only `name` and `name_en`, so an animal's Chinese name found its record
+ * and C3761 -- the reference number printed on the animal's own public page and the
  * identifier staff and the original site actually use -- found nothing. The two
  * must resolve to the same animal, which is the point of keeping the reference
  * number at all.

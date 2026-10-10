@@ -14,8 +14,12 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "./api";
+import { crmLabelCopy } from "./copy";
+import { manualDonationCopy } from "./formCopy";
 import { ManualGiftOutcome, type GiftDeliveryStatus } from "./ManualGiftOutcome";
 
 type ManualDonationDialogProps = {
@@ -26,72 +30,10 @@ function amountToCents(amountHkd: string) {
   return Math.round(Number(amountHkd) * 100);
 }
 
-const MANUAL_DONATION_COPY = {
-  zh: {
-    title: "手動捐款",
-    amount: "金額 HKD",
-    purpose: "用途",
-    purposeAria: "捐款用途",
-    method: "方式",
-    methodAria: "付款方式",
-    paymentStatus: "付款狀態",
-    paymentStatusAria: "付款狀態",
-    bankReference: "銀行參考編號",
-    required: "必填",
-    optional: "選填",
-    receiptRequested: "需要收據",
-    receiptAria: "需要收據",
-    save: "儲存手動捐款",
-    purposes: {
-      general: "一般捐款",
-      medical: "醫療",
-      sponsor: "助養",
-    },
-    methods: {
-      manual: "手動",
-      fps: "轉數快",
-      payme: "PayMe",
-    },
-    statuses: {
-      pending: "待處理",
-      succeeded: "成功",
-    },
-  },
-  en: {
-    title: "Manual gift",
-    amount: "Amount HKD",
-    purpose: "Purpose",
-    purposeAria: "Donation purpose",
-    method: "Method",
-    methodAria: "Payment method",
-    paymentStatus: "Payment status",
-    paymentStatusAria: "Payment status",
-    bankReference: "Bank reference",
-    required: "Required",
-    optional: "Optional",
-    receiptRequested: "Receipt requested",
-    receiptAria: "Receipt requested",
-    save: "Save manual gift",
-    purposes: {
-      general: "General",
-      medical: "Medical",
-      sponsor: "Sponsor",
-    },
-    methods: {
-      manual: "Manual",
-      fps: "FPS",
-      payme: "PayMe",
-    },
-    statuses: {
-      pending: "Pending",
-      succeeded: "Succeeded",
-    },
-  },
-} as const;
-
 export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps) {
   const { language } = useAdminPageCopy();
-  const copy = MANUAL_DONATION_COPY[language];
+  const copy = useAdminCopy(manualDonationCopy);
+  const labels = useAdminCopy(crmLabelCopy);
   const queryClient = useQueryClient();
   const requestId = useRef(crypto.randomUUID());
   const [open, setOpen] = useState(false);
@@ -193,7 +135,7 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
             language={language}
             {...recorded}
             retrying={retry.isPending}
-            error={retry.error?.message}
+            error={retry.error}
             onRetry={() => retry.mutate()}
             onDone={() => {
               setRecorded(null);
@@ -226,9 +168,9 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="general">{copy.purposes.general}</SelectItem>
-                    <SelectItem value="medical">{copy.purposes.medical}</SelectItem>
-                    <SelectItem value="sponsor">{copy.purposes.sponsor}</SelectItem>
+                    <SelectItem value="general">{labels.purpose("general")}</SelectItem>
+                    <SelectItem value="medical">{labels.purpose("medical")}</SelectItem>
+                    <SelectItem value="sponsor">{labels.purpose("sponsor")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -242,9 +184,9 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="manual">{copy.methods.manual}</SelectItem>
-                    <SelectItem value="fps">{copy.methods.fps}</SelectItem>
-                    <SelectItem value="payme">PayMe</SelectItem>
+                    <SelectItem value="manual">{labels.method("manual")}</SelectItem>
+                    <SelectItem value="fps">{labels.method("fps")}</SelectItem>
+                    <SelectItem value="payme">{labels.method("payme")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -260,8 +202,8 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">{copy.statuses.pending}</SelectItem>
-                    <SelectItem value="succeeded">{copy.statuses.succeeded}</SelectItem>
+                    <SelectItem value="pending">{labels.status("pending")}</SelectItem>
+                    <SelectItem value="succeeded">{labels.status("succeeded")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -286,7 +228,9 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
               />
             </label>
             {mutation.error && (
-              <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
+              <p role="alert" className="text-sm text-[var(--color-destructive)]">
+                {adminErrorMessage(mutation.error, language)}
+              </p>
             )}
             <Button type="submit" disabled={!canSubmit || mutation.isPending}>
               {copy.save}

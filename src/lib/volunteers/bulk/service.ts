@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AdminLanguage } from "../../admin/language";
 export const hkDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -140,17 +141,48 @@ export function addHkDays(date: string, days: number) {
   value.setUTCDate(value.getUTCDate() + days);
   return hkDate(value);
 }
+/** Why `generationDates` refused its dates. */
+export type BulkInputErrorCode = "invalid_date" | "range_too_long";
+
+const BULK_INPUT_ERROR_TEXT: Record<BulkInputErrorCode, Record<AdminLanguage, string>> = {
+  invalid_date: {
+    zh: "日期無效",
+    en: "Enter a valid date for both the start and the end, then preview again.",
+  },
+  range_too_long: {
+    zh: "日期範圍須在一年內",
+    en: "The date range must be within one year, and the end must not be before the start. Change the dates and preview again.",
+  },
+};
+
+/** The message for a bulk input error code. Defaults to zh-HK. */
+export function bulkInputErrorText(code: BulkInputErrorCode, language: AdminLanguage = "zh") {
+  return BULK_INPUT_ERROR_TEXT[code][language];
+}
+
+/**
+ * Thrown by `generationDates`. Its `message` is the zh-HK text, so code that shows it as it is keeps
+ * working; a screen reads `code` and writes the message for the admin's language with
+ * `bulkInputErrorText`.
+ */
+export class BulkInputError extends Error {
+  constructor(readonly code: BulkInputErrorCode) {
+    super(bulkInputErrorText(code));
+    this.name = "BulkInputError";
+  }
+}
+
 export function generationDates(
   from: string,
   until: string,
   weekdays: number[],
   exclusions: string[],
 ) {
-  hkDateSchema.parse(from);
-  hkDateSchema.parse(until);
+  if (!hkDateSchema.safeParse(from).success || !hkDateSchema.safeParse(until).success)
+    throw new BulkInputError("invalid_date");
   const result: string[] = [];
   if (until < from || Date.parse(until) - Date.parse(from) > 365 * 86400000)
-    throw new Error("日期範圍須在一年內");
+    throw new BulkInputError("range_too_long");
   for (let date = from; date <= until; date = addHkDays(date, 1)) {
     if (
       weekdays.includes(new Date(date + "T12:00:00+08:00").getUTCDay()) &&

@@ -3,6 +3,8 @@ import type {
   CoordinatorTaskContactChannel,
   CoordinatorTaskPriority,
 } from "../../../lib/adoptions/types";
+import type { AdminLanguage } from "../../../lib/admin/language";
+import { formatAdminDateTimeOrNull } from "../i18n/format";
 import { filterStatusesByCategory } from "./caseWorkflowLogic";
 
 export type CreateTaskFormState = {
@@ -68,6 +70,7 @@ function trimmed(value: string | null | undefined) {
   return value?.trim() ?? "";
 }
 
+// admin-format-ok: the parts of the English task time, `2026-10-07 15:30`
 const taskDateTimeFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Hong_Kong",
   year: "numeric",
@@ -127,7 +130,12 @@ export function datetimeLocalToIso(value: string | null | undefined, emptyMode: 
   return date.toISOString();
 }
 
-export function formatTaskDateTime(value: string | null | undefined) {
+/**
+ * A task's due, scheduled, completed or next-step time, or a dash when there is none or it is
+ * not a date. Chinese is the shared Hong Kong date and time; English keeps `2026-10-07 15:30`.
+ */
+export function formatTaskDateTime(value: string | null | undefined, language: AdminLanguage) {
+  if (language === "zh") return formatAdminDateTimeOrNull(value, "zh") ?? "-";
   const nextValue = trimmed(value);
   if (!nextValue) return "-";
 

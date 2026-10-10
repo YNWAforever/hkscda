@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 import { initialAdoptionInstructionContent as content } from "../../../lib/adoptionInstructions/content";
 import type { AdoptionInstructionAdminPage } from "../../../lib/adoptionInstructions/repository.server";
 import {
@@ -42,7 +42,7 @@ export const page: AdoptionInstructionAdminPage = {
 };
 describe("adoption page editor", () => {
   test("staff can save and preview but cannot publish or restore", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionInstructionsManagementView data={page} role="staff" />,
     );
     expect(html).toContain("儲存草稿");
@@ -55,7 +55,7 @@ describe("adoption page editor", () => {
     expect(html).toContain('name="care.cat.title"');
   });
   test("admin can publish valid saved drafts and cannot restore over an active draft", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionInstructionsManagementView data={page} role="admin" />,
     );
     expect(html).toMatch(/<button[^>]*>發布頁面<\/button>/);
@@ -67,7 +67,7 @@ describe("adoption page editor", () => {
       ...page,
       draft: { ...page.draft!, content: { ...content, hero: { ...content.hero, title: "" } } },
     };
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionInstructionsManagementView data={invalid} role="admin" />,
     );
     expect(html).toContain('aria-invalid="true"');
@@ -75,7 +75,7 @@ describe("adoption page editor", () => {
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*>發布頁面<\/button>/);
   });
   test("shows paged summaries and loads full content only when selected", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       <AdoptionInstructionsManagementView
         data={{ ...page, historyNextCursor: "1:" + published.id }}
         role="staff"

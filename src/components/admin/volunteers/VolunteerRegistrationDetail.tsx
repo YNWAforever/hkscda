@@ -4,21 +4,28 @@ import { Link } from "@tanstack/react-router";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { volunteerActionEligibility } from "../../../lib/volunteers/actionEligibility";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import { volunteerRegistrationStatusLabel } from "../../../lib/volunteers/labels";
 import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
+import { DestinationHeading } from "../DestinationHeading";
+import { pickAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
-import {
-  attendanceStatusLabels,
-  availableRegistrationTransitions,
-  isDestructiveTransition,
-  registrationStatusLabels,
-  registrationTypeLabels,
-} from "./volunteerAdminLogic";
+import { availableRegistrationTransitions, isDestructiveTransition } from "./volunteerAdminLogic";
+import { volunteerCommonCopy } from "./volunteerCommonCopy";
+import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 
 type RegistrationResponse = {
   registration: VolunteerRegistrationDetailType;
 };
 
 export function RegistrationProfileLink({ profileId }: { profileId?: string | null }) {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(volunteerRegistrationCopy, language).detail;
   return (
     <a
       className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--color-primary)] underline"
@@ -28,20 +35,33 @@ export function RegistrationProfileLink({ profileId }: { profileId?: string | nu
           : "/admin/volunteers/qualifications"
       }
     >
-      {profileId ? "查看義工個人詳情" : "身份未連結：前往舊報名身份核對"}
+      {profileId ? copy.viewProfile : copy.profileNotLinked}
     </a>
   );
 }
 
 export function VolunteerRegistrationDetail({ registrationId }: { registrationId: string }) {
+  const { copy: shared, language } = useAdminLanguage();
+  const copy = pickAdminCopy(volunteerRegistrationCopy, language);
+  const text = copy.detail;
+  const common = pickAdminCopy(volunteerCommonCopy, language);
+  const format = pickAdminCopy(volunteerFormatCopy, language);
   const queryClient = useQueryClient();
   const [correctionReason, setCorrectionReason] = useState("");
   const [isCorrection, setIsCorrection] = useState(false);
+  const [rejectStatus, setRejectStatus] = useState<string | null>(null);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["volunteer-registration", registrationId],
     queryFn: () =>
       fetchAdminJson<RegistrationResponse>(`/api/admin/volunteers/registrations/${registrationId}`),
   });
+  useBreadcrumbRecordName(data?.registration?.contactName);
+  // A registration belongs to the activities page; that is the heading until it loads.
+  const destination = (
+    <DestinationHeading
+      label={pickAdminCopy(volunteerWorkspaceCopy, language).pages.activities.label}
+    />
+  );
 
   const correctionEnabled =
     isCorrection &&
@@ -80,16 +100,28 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     },
   });
 
-  if (isLoading) return <div className="p-6 text-sm text-[var(--color-text-muted)]">載入中...</div>;
+  if (isLoading)
+    return (
+      <div className="space-y-3 p-6">
+        {destination}
+        <p className="text-sm text-[var(--color-text-muted)]">{shared.common.loading}</p>
+      </div>
+    );
   if (error) {
     return (
-      <div className="p-6">
+      <div className="space-y-3 p-6">
+        {destination}
         <LoadFailure error={error} onRetry={() => void refetch()} />
       </div>
     );
   }
   if (!data?.registration) {
-    return <div className="p-6 text-sm text-[var(--color-primary)]">找不到義工報名。</div>;
+    return (
+      <div className="space-y-3 p-6">
+        {destination}
+        <p className="text-sm text-[var(--color-primary)]">{text.notFound}</p>
+      </div>
+    );
   }
 
   const registration = data.registration;
@@ -123,11 +155,25 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   return (
     <div className="space-y-5 p-6">
+      <ConfirmActionDialog
+        open={rejectStatus !== null}
+        onOpenChange={(open) => {
+          if (!open) setRejectStatus(null);
+        }}
+        title={copy.rejectVerb}
+        consequence={copy.confirmReject(registration.contactName)}
+        confirmLabel={copy.rejectVerb}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (rejectStatus !== null) await updateStatus.mutateAsync(rejectStatus);
+        }}
+      />
       <Link
         to="/admin/volunteers/activities"
         className="text-sm font-semibold text-[var(--color-primary)]"
       >
-        返回義工管理
+        {text.back}
       </Link>
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -141,44 +187,53 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           </div>
           <div className="text-right text-sm">
             <p className="font-bold text-[var(--color-panel)]">
-              {registrationStatusLabels[registration.status]}
+              {volunteerRegistrationStatusLabel(registration.status, language)}
             </p>
             <p className="text-[var(--color-text-muted)]">
-              出席：{attendanceStatusLabels[registration.attendanceStatus]}
+              {text.attendance(common.attendance[registration.attendanceStatus])}
             </p>
           </div>
         </div>
 
         <RegistrationProfileLink profileId={registration.profileId} />
         <div className="mt-5 grid gap-4 md:grid-cols-3">
-          <DetailItem label="活動" value={registration.activity.title} />
+          <DetailItem label={text.activity} value={registration.activity.title} />
           <DetailItem
-            label="日期"
-            value={new Date(registration.activity.startsAt).toLocaleString("zh-HK", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
+            label={text.date}
+            value={format.registrationDateTime(registration.activity.startsAt)}
           />
-          <DetailItem label="人數" value={String(registration.participantCount)} />
-          <DetailItem label="類型" value={registrationTypeLabels[registration.registrationType]} />
-          <DetailItem label="團體" value={registration.organizationName ?? "-"} />
           <DetailItem
-            label="年齡"
-            value={String(registration.declaredAge ?? registration.youngestAge ?? "-")}
+            label={text.participants}
+            value={format.number(registration.participantCount)}
           />
-          <DetailItem label="負責成人" value={registration.guardianName ?? "-"} />
-          <DetailItem label="義工時數" value={String(registration.volunteerHours ?? "-")} />
-          <DetailItem label="備註" value={registration.notes ?? "-"} />
+          <DetailItem
+            label={text.type}
+            value={common.registrationType[registration.registrationType]}
+          />
+          <DetailItem label={text.group} value={registration.organizationName ?? text.none} />
+          <DetailItem
+            label={text.age}
+            value={String(registration.declaredAge ?? registration.youngestAge ?? text.none)}
+          />
+          <DetailItem
+            label={text.responsibleAdult}
+            value={registration.guardianName ?? text.none}
+          />
+          <DetailItem
+            label={text.volunteerHours}
+            value={String(registration.volunteerHours ?? text.none)}
+          />
+          <DetailItem label={text.notes} value={registration.notes ?? text.none} />
         </div>
 
-        {updateStatus.error && (
+        {updateStatus.error && updateStatus.variables !== "rejected" && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
-            {updateStatus.error.message}
+            {volunteerAdminErrorMessage(updateStatus.error, language)}
           </p>
         )}
         {updateAttendance.error && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
-            {updateAttendance.error.message}
+            {volunteerAdminErrorMessage(updateAttendance.error, language)}
           </p>
         )}
         {registration.attendanceStatus !== "not_marked" ? (
@@ -188,12 +243,12 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
               checked={isCorrection}
               onChange={(event) => setIsCorrection(event.target.checked)}
             />
-            更正出席事實（保留原紀錄）
+            {text.correct}
           </label>
         ) : null}
         {correctionEnabled ? (
           <label className="mt-3 block text-sm">
-            更正原因
+            {text.correctionReason}
             <textarea
               value={correctionReason}
               onChange={(event) => setCorrectionReason(event.target.value)}
@@ -203,7 +258,10 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
             />
           </label>
         ) : null}
-        <DetailItem label="剩餘名額" value={String(registration.activity.remainingCapacity)} />
+        <DetailItem
+          label={text.placesLeft}
+          value={format.number(registration.activity.remainingCapacity)}
+        />
         <div className="mt-5 flex flex-wrap gap-2">
           {statusActions.map((status) => (
             <button
@@ -211,10 +269,8 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
               type="button"
               disabled={updateStatus.isPending}
               onClick={() => {
-                if (
-                  isDestructiveTransition(status) &&
-                  !window.confirm("確定拒絕 " + registration.contactName + " 的報名？")
-                ) {
+                if (isDestructiveTransition(status)) {
+                  setRejectStatus(status);
                   return;
                 }
                 updateStatus.mutate(status);
@@ -225,7 +281,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
                   : "rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-medium"
               }
             >
-              {registrationStatusLabels[status]}
+              {copy.transitions[status]}
             </button>
           ))}
           {attendanceActions.map((attendanceStatus) => (
@@ -240,11 +296,11 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
               onClick={() => updateAttendance.mutate(attendanceStatus)}
               className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-medium"
             >
-              {attendanceStatusLabels[attendanceStatus]}
+              {copy.attendanceActions[attendanceStatus]}
             </button>
           ))}
           {statusActions.length === 0 && attendanceActions.length === 0 ? (
-            <span className="text-sm text-[var(--color-text-muted)]">無需處理</span>
+            <span className="text-sm text-[var(--color-text-muted)]">{copy.nothingToDo}</span>
           ) : null}
         </div>
       </section>

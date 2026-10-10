@@ -1,6 +1,9 @@
 import { createElement } from "react";
 
 import type { SupporterTimelineItem, SupporterTimelineKind } from "../../../lib/crm/types";
+import type { AdminLanguage } from "../i18n/copy";
+import { pickAdminCopy } from "../i18n/copy";
+import { timelineCopy } from "./copy";
 
 export const timelineFilterOptions = [
   { id: "all", labelKey: "all" },
@@ -33,38 +36,17 @@ export function filterTimelineItems(
 }
 
 type SupporterTimelineFiltersProps = {
-  language: "zh" | "en";
+  language: AdminLanguage;
   value: TimelineFilter;
   onChange: (value: TimelineFilter) => void;
 };
-
-const filterCopy = {
-  zh: {
-    all: "全部",
-    donations: "捐款",
-    receipts: "收據",
-    communication: "通訊",
-    adoption: "領養",
-    followups: "跟進",
-    system: "系統",
-  },
-  en: {
-    all: "All",
-    donations: "Donations",
-    receipts: "Receipts",
-    communication: "Communication",
-    adoption: "Adoption",
-    followups: "Follow-ups",
-    system: "System",
-  },
-} as const;
 
 export function SupporterTimelineFilters({
   language,
   value,
   onChange,
 }: SupporterTimelineFiltersProps) {
-  const copy = filterCopy[language];
+  const copy = pickAdminCopy(timelineCopy, language);
 
   return createElement(
     "div",
@@ -72,7 +54,7 @@ export function SupporterTimelineFilters({
       className:
         "grid w-full grid-cols-2 gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] p-1 sm:w-auto sm:grid-cols-4 xl:grid-cols-7",
       role: "group",
-      "aria-label": language === "zh" ? "時間軸篩選" : "Timeline filters",
+      "aria-label": copy.filtersLabel,
     },
     timelineFilterOptions.map((option) => {
       const selected = option.id === value;
@@ -91,7 +73,7 @@ export function SupporterTimelineFilters({
           "aria-pressed": selected,
           onClick: () => onChange(option.id),
         },
-        copy[option.labelKey],
+        copy.filters[option.labelKey],
       );
     }),
   );

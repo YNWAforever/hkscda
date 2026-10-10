@@ -1,6 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "../ui/button";
+import { useSharedAdminCopy } from "./i18n/copy";
+import { sharedUiCopy } from "./sharedUiCopy";
 
 type TablePagerProps = {
   page: number;
@@ -36,9 +38,10 @@ export function TablePager({
   total,
   onPageChange,
   busy,
-  label = "資料",
+  label,
   failed = false,
 }: TablePagerProps) {
+  const copy = useSharedAdminCopy(sharedUiCopy).tablePager;
   // Without a total we can't know whether a next page exists. Assume there is
   // one whenever the current page came back full — stopping early would hide
   // rows, which is the bug this component exists to fix. `failed` overrides
@@ -57,19 +60,15 @@ export function TablePager({
 
   return (
     <nav
-      aria-label={`${label}分頁`}
+      aria-label={copy.navLabel(label ?? copy.defaultLabel)}
       className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-3"
     >
-      <p aria-live="polite" className="text-xs tabular-nums text-[var(--color-text-muted)]">
-        {knownTotal ? (
-          <>
-            顯示第 {first}–{last} 項，共 {total} 項
-          </>
-        ) : (
-          <>
-            第 {page} 頁（第 {first}–{last} 項）
-          </>
-        )}
+      <p
+        aria-live="polite"
+        aria-atomic="true"
+        className="text-xs tabular-nums text-[var(--color-text-muted)]"
+      >
+        {knownTotal ? copy.range(first, last, total) : copy.rangeOfUnknownTotal(page, first, last)}
       </p>
       <div className="flex items-center gap-2">
         <Button
@@ -80,7 +79,7 @@ export function TablePager({
           onClick={() => onPageChange(Math.max(1, page - 1))}
         >
           <ChevronLeft className="h-4 w-4" />
-          上一頁
+          {copy.previous}
         </Button>
         <span className="text-xs tabular-nums text-[var(--color-text-muted)]">
           {knownTotal ? `${page} / ${lastPage}` : page}
@@ -92,7 +91,7 @@ export function TablePager({
           disabled={!hasNext || busy}
           onClick={() => onPageChange(page + 1)}
         >
-          下一頁
+          {copy.next}
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

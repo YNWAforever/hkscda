@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { useAdminLanguage } from "../adminI18n";
 import { BulkReview } from "../bulk/BulkReview";
+import { useAdminCopy } from "../i18n/copy";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { AdoptionAssignmentBulkOperation } from "../../../routes/api/admin/adoptions/assignment-bulk";
+import { assignmentBulkCopy } from "./copy";
+import { LoadFailure } from "../LoadFailure";
 
 const endpoint = "/api/admin/adoptions/assignment-bulk";
 const savedOperationKey = "adoption-assignment-bulk-operation";
@@ -27,6 +32,8 @@ export function AdoptionAssignmentBulkPanel({
   minAgeDays: number;
   onMinAgeDaysChange: (value: number) => void;
 }) {
+  const copy = useAdminCopy(assignmentBulkCopy);
+  const { language } = useAdminLanguage();
   const users = useQuery({
     queryKey: ["admin-access-users"],
     queryFn: () => fetchAdminJson<UsersResponse>("/api/admin/access/users"),
@@ -40,6 +47,9 @@ export function AdoptionAssignmentBulkPanel({
   const [busy, setBusy] = useState(false);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  // Read when the saved operation is restored on mount, which a language change must not repeat.
+  const savedOperationFailed = useRef(copy.savedOperationFailed);
+  savedOperationFailed.current = copy.savedOperationFailed;
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
@@ -54,7 +64,7 @@ export function AdoptionAssignmentBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+        if (active) setError(savedOperationFailed.current);
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -75,7 +85,7 @@ export function AdoptionAssignmentBulkPanel({
         ),
       );
     } catch {
-      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+      setError(copy.reloadFailed);
     } finally {
       setBusy(false);
     }
@@ -117,7 +127,7 @@ export function AdoptionAssignmentBulkPanel({
       setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法建立預覽");
+      setError(adminErrorMessage(cause, language) ?? copy.previewFailed);
     } finally {
       setBusy(false);
     }
@@ -134,7 +144,7 @@ export function AdoptionAssignmentBulkPanel({
         }),
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "無法套用；請重新讀取結果");
+      setError(adminErrorMessage(cause, language) ?? copy.applyFailed);
       try {
         setOperation(
           await fetchAdminJson<AdoptionAssignmentBulkOperation>(
@@ -149,29 +159,26 @@ export function AdoptionAssignmentBulkPanel({
     }
   }
   const assigneeLabel = (id: string | null) =>
-    id ? (users.data?.users.find((user) => user.authUserId === id)?.email ?? id) : "未分派";
+    id ? (users.data?.users.find((user) => user.authUserId === id)?.email ?? id) : copy.unassigned;
   return (
     <section
-      aria-label="領養個案批量分派"
+      aria-label={copy.panelLabel}
       className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
       <div>
-        <h2 className="text-lg font-bold">批量分派領養個案負責職員</h2>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          只分派個案負責職員，不會批准領養、覆寫配對、發送通知或改變個案狀態。預覽有效 15
-          分鐘，套用時逐筆重新核對個案版本、階段、等待時間及職員權限。
-        </p>
+        <h2 className="text-lg font-bold">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{copy.intro}</p>
       </div>
       <label className="block max-w-sm text-sm">
-        負責職員
+        {copy.assignee}
         <select
-          aria-label="負責職員"
+          aria-label={copy.assignee}
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           disabled={busy}
           value={assigneeUserId}
           onChange={(event) => setAssigneeUserId(event.target.value)}
         >
-          <option value="">選擇已啟用的職員</option>
+          <option value="">{copy.chooseAssignee}</option>
           {assignees.map((user) => (
             <option key={user.authUserId} value={user.authUserId}>
               {user.email}
@@ -179,23 +186,31 @@ export function AdoptionAssignmentBulkPanel({
           ))}
         </select>
       </label>
-      {users.isError && <p role="alert">無法載入職員名單，請重試。</p>}
+      {users.isError && (
+        <LoadFailure
+          error={users.error}
+          onRetry={() => void users.refetch()}
+          title={copy.usersLoadFailed}
+        />
+      )}
       <label className="block max-w-sm text-sm">
-        最少等待日數
+        {copy.minAgeDays}
         <input
           type="number"
           min={0}
           max={3650}
           step={1}
-          aria-label="最少等待日數"
+          aria-label={copy.minAgeDays}
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
           disabled={busy}
           value={minAgeDays}
           onChange={(event) => onMinAgeDaysChange(Number(event.target.value))}
         />
       </label>
-      {!statusEligible && <p role="status">請先選擇一個仍開放的待處理階段。</p>}
-      <p className="text-sm">已選 {selectedIds.length} 筆（上限 1000）</p>
+      {!statusEligible && <p role="status">{copy.needStage}</p>}
+      <p aria-live="polite" aria-atomic="true" className="text-sm">
+        {copy.selectedCount(selectedIds.length)}
+      </p>
       <button
         type="button"
         className="btn-secondary min-h-11"
@@ -213,7 +228,7 @@ export function AdoptionAssignmentBulkPanel({
         }
         onClick={preview}
       >
-        {busy ? "處理中…" : "建立分派預覽"}
+        {busy ? copy.processing : copy.preview}
       </button>
       {recoveryId && (
         <button
@@ -222,7 +237,7 @@ export function AdoptionAssignmentBulkPanel({
           disabled={busy}
           onClick={reloadOperation}
         >
-          重新讀取結果
+          {copy.reload}
         </button>
       )}
       {error && (
@@ -233,13 +248,7 @@ export function AdoptionAssignmentBulkPanel({
       {operation && (
         <BulkReview
           key={operation.operationId}
-          title={
-            "負責職員：" +
-            assigneeLabel(operation.assigneeUserId) +
-            " · " +
-            operation.items.length +
-            " 筆"
-          }
+          title={copy.reviewTitle(assigneeLabel(operation.assigneeUserId), operation.items.length)}
           operationId={operation.operationId}
           expiresAt={operation.expiresAt}
           items={operation.items.map((item) => ({

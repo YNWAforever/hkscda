@@ -3,15 +3,17 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { AdminApiError } from "../../../lib/admin/session";
+import { AdminApiError, adminErrorMessage } from "../../../lib/admin/session";
 import type { ContentType } from "../../../lib/content/types";
-import {
-  contentOptionalFieldLabels,
-  formatContentTypeLabel,
-  suggestSlug,
-} from "./contentAdminLogic";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy, useAdminCopy, type AdminLanguage } from "../i18n/copy";
+import { contentCommonCopy } from "./contentCommonCopy";
+import { formatContentTypeLabel, suggestSlug } from "./contentAdminLogic";
+import { managementCopy } from "./managementCopy";
 
 const contentTypes: ContentType[] = ["rescue_story", "event", "charity_market", "report"];
+
+type OptionalFieldKey = keyof typeof contentCommonCopy.zh.optionalFields;
 
 export type ContentCreateFormState = {
   type: ContentType;
@@ -19,7 +21,7 @@ export type ContentCreateFormState = {
   slug: string;
   summary: string;
   body: string;
-  optional: Record<keyof typeof contentOptionalFieldLabels, string>;
+  optional: Record<OptionalFieldKey, string>;
 };
 
 export function buildCreateContentPayload(form: ContentCreateFormState) {
@@ -34,20 +36,24 @@ export function buildCreateContentPayload(form: ContentCreateFormState) {
   };
 }
 
-export function createErrorMessage(error: unknown): string {
+/** The message for an error from creating content, in `language` (zh-HK when none is given). */
+export function createErrorMessage(error: unknown, language: AdminLanguage = "zh"): string {
+  const copy = pickAdminCopy(managementCopy, language).createForm;
   if (error instanceof AdminApiError) {
-    if (error.status === 409) return "此網址已被使用，請改用其他 slug。";
+    if (error.status === 409) return copy.slugTaken;
     if (error.fields) {
       return Object.entries(error.fields)
         .flatMap(([field, messages]) => messages.map((message) => `${field}: ${message}`))
         .join("\n");
     }
   }
-  if (error instanceof Error) return error.message;
-  return "建立失敗，請重試。";
+  return adminErrorMessage(error, language) ?? copy.failed;
 }
 
 export function ContentCreateForm() {
+  const copy = useAdminCopy(managementCopy).createForm;
+  const common = useAdminCopy(contentCommonCopy);
+  const { language } = useAdminLanguage();
   const navigate = useNavigate();
   const [type, setType] = useState<ContentType>("rescue_story");
   const [title, setTitle] = useState("");
@@ -80,8 +86,8 @@ export function ContentCreateForm() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">新增宣傳內容</h1>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
       </div>
       <form
         className="max-w-2xl space-y-4"
@@ -91,7 +97,7 @@ export function ContentCreateForm() {
         }}
       >
         <label className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-          類型
+          {copy.type}
           <select
             value={type}
             onChange={(event) => setType(event.target.value as ContentType)}
@@ -99,13 +105,13 @@ export function ContentCreateForm() {
           >
             {contentTypes.map((option) => (
               <option key={option} value={option}>
-                {formatContentTypeLabel(option, "zh")}
+                {formatContentTypeLabel(option, language)}
               </option>
             ))}
           </select>
         </label>
         <label className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-          標題
+          {copy.titleLabel}
           <input
             required
             value={title}
@@ -117,7 +123,7 @@ export function ContentCreateForm() {
           />
         </label>
         <label className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-          網址 slug（小寫英數字與連字號）
+          {copy.slug}
           <input
             required
             value={slug}
@@ -130,7 +136,7 @@ export function ContentCreateForm() {
           />
         </label>
         <label className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-          摘要
+          {copy.summary}
           <textarea
             required
             maxLength={320}
@@ -140,7 +146,7 @@ export function ContentCreateForm() {
           />
         </label>
         <label className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]">
-          正文（可稍後填寫）
+          {copy.body}
           <textarea
             value={body}
             onChange={(event) => setBody(event.target.value)}
@@ -149,14 +155,12 @@ export function ContentCreateForm() {
           />
         </label>
 
-        {(
-          Object.keys(contentOptionalFieldLabels) as Array<keyof typeof contentOptionalFieldLabels>
-        ).map((key) => (
+        {(Object.keys(common.optionalFields) as OptionalFieldKey[]).map((key) => (
           <label
             key={key}
             className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]"
           >
-            {contentOptionalFieldLabels[key]}
+            {common.optionalFields[key]}
             <input
               value={optional[key]}
               onChange={(event) =>
@@ -180,7 +184,7 @@ export function ContentCreateForm() {
                 )}
               </ul>
             ) : (
-              <p>{createErrorMessage(create.error)}</p>
+              <p>{createErrorMessage(create.error, language)}</p>
             )}
           </div>
         ) : null}
@@ -191,7 +195,7 @@ export function ContentCreateForm() {
             disabled={create.isPending}
             className="rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
-            {create.isPending ? "建立中" : "建立草稿"}
+            {create.isPending ? copy.busy : copy.submit}
           </button>
         </div>
       </form>

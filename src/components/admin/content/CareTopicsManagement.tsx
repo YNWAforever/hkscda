@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { AdoptionContentTab } from "./AdoptionInformationManagement";
 import { TablePager } from "../TablePager";
 import { useState } from "react";
@@ -9,14 +10,18 @@ import type {
   AdoptionAnimalType,
   CareTopic,
 } from "../../../lib/adoptionInformation/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { localizedText } from "../i18n/localizedText";
 import { LoadFailure } from "../LoadFailure";
+import { adoptionRulesCopy } from "./adoptionRulesCopy";
 import {
   ADOPTION_INFORMATION_QUERY_KEY,
   AdoptionContentTabs,
   invalidateAdoptionInformationQueries,
 } from "./AdoptionInformationManagement";
 
-type CareTopicDraft = {
+export type CareTopicDraft = {
   id?: string;
   animalType: AdoptionAnimalType;
   labelZh: string;
@@ -58,6 +63,9 @@ export function CareTopicsManagement({
   activeTab: AdoptionContentTab;
   onTabChange: (tab: AdoptionContentTab) => void;
 }) {
+  const common = useAdminCopy(adoptionRulesCopy);
+  const copy = common.careTopics;
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [species, setSpecies] = useState<AdoptionAnimalType>("cat");
@@ -90,13 +98,13 @@ export function CareTopicsManagement({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">領養</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">動物照顧須知管理</h1>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
       </div>
 
       <AdoptionContentTabs activeTab={activeTab} onTabChange={onTabChange} />
 
-      <div className="flex gap-2" role="tablist" aria-label="物種">
+      <div className="flex gap-2" role="tablist" aria-label={copy.speciesLabel}>
         {(["cat", "dog"] as const).map((value) => (
           <button
             key={value}
@@ -109,28 +117,30 @@ export function CareTopicsManagement({
             }}
             className="px-3 py-2 text-sm font-semibold aria-selected:underline"
           >
-            {value === "cat" ? "貓隻" : "狗隻"}
+            {value === "cat" ? copy.cats : copy.dogs}
           </button>
         ))}
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">{species === "cat" ? "養貓需知" : "養狗需知"}</h2>
+        <h2 className="text-lg font-bold">
+          {species === "cat" ? copy.catHeading : copy.dogHeading}
+        </h2>
         <button
           type="button"
           className="btn-primary min-h-11 px-4"
           onClick={() => setDraft(draftFromTopic(species))}
         >
-          新增主題
+          {copy.add}
         </button>
       </div>
 
-      {topicsQuery.isLoading ? <p aria-live="polite">載入照顧須知中…</p> : null}
+      {topicsQuery.isLoading ? <p aria-live="polite">{copy.loading}</p> : null}
       {topicsQuery.isError ? (
         <LoadFailure
           error={topicsQuery.error}
           onRetry={() => void topicsQuery.refetch()}
-          title="無法載入照顧須知"
+          title={copy.loadFailed}
         />
       ) : null}
 
@@ -145,16 +155,20 @@ export function CareTopicsManagement({
                 className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] pb-2"
               >
                 <span>
-                  {topic.label["zh-HK"]}
-                  {topic.isPublished ? null : "（已停用）"}
+                  {localizedText(topic.label["zh-HK"], topic.label.en, language)}
+                  {topic.isPublished ? null : common.list.disabledSuffix}
                 </span>
-                <button type="button" onClick={() => setDraft(draftFromTopic(species, topic))}>
-                  編輯
-                </button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setDraft(draftFromTopic(species, topic))}
+                >
+                  {common.list.edit}
+                </Button>
               </li>
             ))}
           {topics.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-muted)]">沒有照顧須知資料</p>
+            <p className="text-sm text-[var(--color-text-muted)]">{copy.empty}</p>
           ) : null}
         </ul>
       ) : null}
@@ -165,111 +179,132 @@ export function CareTopicsManagement({
           pageSize={50}
           total={topicsQuery.data.total}
           onPageChange={setPage}
-          label="資料"
+          label={common.list.pager}
         />
       )}
       {draft ? (
-        <form
-          className="space-y-3 border border-[var(--color-border)] p-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            upsertMutation.mutate(toCareTopicInput(draft));
-          }}
-        >
-          <label className="block">
-            物種
-            <select
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.animalType}
-              onChange={(event) =>
-                setDraft({ ...draft, animalType: event.target.value as AdoptionAnimalType })
-              }
-            >
-              <option value="cat">貓隻</option>
-              <option value="dog">狗隻</option>
-            </select>
-          </label>
-          <label className="block">
-            主題名稱（中文）
-            <input
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.labelZh}
-              onChange={(event) => setDraft({ ...draft, labelZh: event.target.value })}
-              maxLength={40}
-              required
-            />
-          </label>
-          <label className="block">
-            Topic label (English)
-            <input
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.labelEn}
-              onChange={(event) => setDraft({ ...draft, labelEn: event.target.value })}
-              maxLength={40}
-              required
-            />
-          </label>
-          <label className="block">
-            內容（中文）
-            <textarea
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.contentZh}
-              onChange={(event) => setDraft({ ...draft, contentZh: event.target.value })}
-              maxLength={1000}
-              required
-            />
-          </label>
-          <label className="block">
-            Content (English)
-            <textarea
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.contentEn}
-              onChange={(event) => setDraft({ ...draft, contentEn: event.target.value })}
-              maxLength={1000}
-              required
-            />
-          </label>
-          <label className="block max-w-[8rem]">
-            排序
-            <input
-              type="number"
-              min={0}
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.sortOrder}
-              onChange={(event) => setDraft({ ...draft, sortOrder: Number(event.target.value) })}
-            />
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={draft.isPublished}
-              onChange={(event) => setDraft({ ...draft, isPublished: event.target.checked })}
-            />
-            在領養須知頁面顯示
-          </label>
-          {upsertMutation.isError ? (
-            <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-              儲存失敗，請檢查資料後再試一次。
-            </p>
-          ) : null}
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="btn-primary min-h-11 px-4"
-              disabled={upsertMutation.isPending}
-            >
-              儲存
-            </button>
-            <button
-              type="button"
-              className="btn-secondary min-h-11 px-4"
-              onClick={() => setDraft(null)}
-            >
-              取消
-            </button>
-          </div>
-        </form>
+        <CareTopicForm
+          draft={draft}
+          onDraftChange={setDraft}
+          onSubmit={() => upsertMutation.mutate(toCareTopicInput(draft))}
+          onCancel={() => setDraft(null)}
+          pending={upsertMutation.isPending}
+          failed={upsertMutation.isError}
+        />
       ) : null}
     </div>
+  );
+}
+
+export function CareTopicForm({
+  draft,
+  onDraftChange,
+  onSubmit,
+  onCancel,
+  pending,
+  failed,
+}: {
+  draft: CareTopicDraft;
+  onDraftChange: (draft: CareTopicDraft) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  pending: boolean;
+  failed: boolean;
+}) {
+  const common = useAdminCopy(adoptionRulesCopy);
+  const copy = common.careTopics;
+  return (
+    <form
+      className="space-y-3 border border-[var(--color-border)] p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit();
+      }}
+    >
+      <label className="block">
+        {copy.species}
+        <select
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.animalType}
+          onChange={(event) =>
+            onDraftChange({ ...draft, animalType: event.target.value as AdoptionAnimalType })
+          }
+        >
+          <option value="cat">{copy.catOption}</option>
+          <option value="dog">{copy.dogOption}</option>
+        </select>
+      </label>
+      <label className="block">
+        {copy.labelZh}
+        <input
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.labelZh}
+          onChange={(event) => onDraftChange({ ...draft, labelZh: event.target.value })}
+          maxLength={40}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.labelEn}
+        <input
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.labelEn}
+          onChange={(event) => onDraftChange({ ...draft, labelEn: event.target.value })}
+          maxLength={40}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.contentZh}
+        <textarea
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.contentZh}
+          onChange={(event) => onDraftChange({ ...draft, contentZh: event.target.value })}
+          maxLength={1000}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.contentEn}
+        <textarea
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.contentEn}
+          onChange={(event) => onDraftChange({ ...draft, contentEn: event.target.value })}
+          maxLength={1000}
+          required
+        />
+      </label>
+      <label className="block max-w-[8rem]">
+        {common.form.sortOrder}
+        <input
+          type="number"
+          min={0}
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.sortOrder}
+          onChange={(event) => onDraftChange({ ...draft, sortOrder: Number(event.target.value) })}
+        />
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={draft.isPublished}
+          onChange={(event) => onDraftChange({ ...draft, isPublished: event.target.checked })}
+        />
+        {common.form.showOnPage}
+      </label>
+      {failed ? (
+        <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
+          {common.form.saveFailed}
+        </p>
+      ) : null}
+      <div className="flex gap-3">
+        <button type="submit" className="btn-primary min-h-11 px-4" disabled={pending}>
+          {common.form.save}
+        </button>
+        <button type="button" className="btn-secondary min-h-11 px-4" onClick={onCancel}>
+          {common.form.cancel}
+        </button>
+      </div>
+    </form>
   );
 }

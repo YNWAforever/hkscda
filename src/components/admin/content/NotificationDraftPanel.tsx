@@ -5,16 +5,11 @@ import type {
   NotificationDraftStatus,
   RecipientNotificationDraft,
 } from "../../../lib/content/types";
+import { useAdminCopy } from "../i18n/copy";
 import { StatusPill } from "../StatusBadge";
+import { contentCommonCopy } from "./contentCommonCopy";
 import { copyTextToClipboard } from "./contentAdminLogic";
-
-// These are database enums; the panel rendered them raw next to Chinese copy.
-const notificationDraftStatusLabels: Record<NotificationDraftStatus, string> = {
-  draft: "草稿",
-  copied: "已複製",
-  sent_manually: "已人手發送",
-  dismissed: "已略過",
-};
+import { editorPanelsCopy } from "./editorPanelsCopy";
 
 type NotificationDraftPanelProps = {
   drafts: RecipientNotificationDraft[];
@@ -23,30 +18,38 @@ type NotificationDraftPanelProps = {
   disabled?: boolean;
 };
 
+/** A failed copy to the clipboard: the browser's reason when it gave one, written when it renders. */
+type ClipboardFailure = { detail?: string };
+
 export function NotificationDraftPanel({
   drafts,
   onUpdateStatus,
   pendingDraftId,
   disabled = false,
 }: NotificationDraftPanelProps) {
-  const [clipboardError, setClipboardError] = useState<string | null>(null);
+  const copy = useAdminCopy(editorPanelsCopy).notifications;
+  const common = useAdminCopy(contentCommonCopy);
+  const [clipboardError, setClipboardError] = useState<ClipboardFailure | null>(null);
 
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-lg font-bold text-[var(--color-panel)]">通知草稿</h2>
-        <p className="text-sm text-[var(--color-text-muted)]">給領養人或支持者的手動通知草稿。</p>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
       </div>
 
       {clipboardError ? (
-        <p className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
-          {clipboardError}
+        <p
+          role="alert"
+          className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
+        >
+          {common.clipboardFailed(clipboardError.detail)}
         </p>
       ) : null}
 
       {drafts.length === 0 ? (
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
-          尚未有通知草稿。
+          {copy.empty}
         </p>
       ) : (
         <div className="space-y-3">
@@ -59,7 +62,7 @@ export function NotificationDraftPanel({
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusPill tone={draft.status === "sent_manually" ? "success" : "neutral"}>
-                      {notificationDraftStatusLabels[draft.status]}
+                      {copy.statuses[draft.status]}
                     </StatusPill>
                     <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-text-muted)]">
                       {draft.channel === "email" ? (
@@ -67,7 +70,7 @@ export function NotificationDraftPanel({
                       ) : (
                         <MessageCircle className="h-3 w-3" />
                       )}
-                      {draft.channel}
+                      {copy.channel(draft.channel)}
                     </span>
                   </div>
                   <h3 className="mt-2 font-bold text-[var(--color-panel)]">
@@ -84,14 +87,17 @@ export function NotificationDraftPanel({
                         setClipboardError(null);
                         void copyTextToClipboard(draft.body)
                           .then(() => onUpdateStatus(draft.id, "copied"))
-                          .catch((error) => {
-                            setClipboardError(clipboardErrorMessage(error));
+                          .catch((error: unknown) => {
+                            setClipboardError({
+                              // admin-error-render-ok: the browser's clipboard error, never a session error
+                              detail: error instanceof Error ? error.message : undefined,
+                            });
                           });
                       }}
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
                       <Copy className="h-3 w-3" />
-                      複製
+                      {copy.copy}
                     </button>
                     <button
                       type="button"
@@ -100,7 +106,7 @@ export function NotificationDraftPanel({
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
                       <CheckCircle2 className="h-3 w-3" />
-                      已手動送出
+                      {copy.markSent}
                     </button>
                     <button
                       type="button"
@@ -109,7 +115,7 @@ export function NotificationDraftPanel({
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
                       <XCircle className="h-3 w-3" />
-                      略過
+                      {copy.dismiss}
                     </button>
                   </div>
                 ) : null}
@@ -128,9 +134,4 @@ export function NotificationDraftPanel({
       )}
     </section>
   );
-}
-
-function clipboardErrorMessage(error: unknown) {
-  if (error instanceof Error) return `複製失敗：${error.message}`;
-  return "複製失敗，請手動選取文字。";
 }

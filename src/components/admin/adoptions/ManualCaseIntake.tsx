@@ -8,6 +8,7 @@ import type {
   CoordinatorTaskPriority,
   ManualCaseIdentityCandidate,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
@@ -16,6 +17,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
 import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildIdentitySearchParams,
@@ -447,7 +449,7 @@ export function ManualCaseIntake() {
     identityMode === "new_supporter"
       ? supporterForm.name.trim() || copy.newSupporter
       : selectedCandidate?.displayName || copy.existingIdentity;
-  const submitFailure = submitError ?? createCaseMutation.error?.message;
+  const submitFailure = submitError ?? adminErrorMessage(createCaseMutation.error, language);
   const isSubmitting = createCaseMutation.isPending;
 
   return (
@@ -463,14 +465,18 @@ export function ManualCaseIntake() {
       </div>
 
       {caseStatusesQuery.error && (
-        <InlineAlert>
-          {copy.loadCaseStatusesError}: {caseStatusesQuery.error.message}
-        </InlineAlert>
+        <LoadFailure
+          error={caseStatusesQuery.error}
+          onRetry={() => void caseStatusesQuery.refetch()}
+          title={`${copy.loadCaseStatusesError}: ${adminErrorMessage(caseStatusesQuery.error, language) ?? ""}`}
+        />
       )}
       {followupStatusesQuery.error && initialTask.enabled && (
-        <InlineAlert>
-          {copy.loadFollowupStatusesError}: {followupStatusesQuery.error.message}
-        </InlineAlert>
+        <LoadFailure
+          error={followupStatusesQuery.error}
+          onRetry={() => void followupStatusesQuery.refetch()}
+          title={`${copy.loadFollowupStatusesError}: ${adminErrorMessage(followupStatusesQuery.error, language) ?? ""}`}
+        />
       )}
       {submitFailure && <InlineAlert>{submitFailure}</InlineAlert>}
 
@@ -496,18 +502,24 @@ export function ManualCaseIntake() {
         </div>
 
         {identitySearchQuery.error && searchText && (
-          <InlineAlert>
-            {copy.searchIdentitiesError}: {identitySearchQuery.error.message}
-          </InlineAlert>
+          <LoadFailure
+            error={identitySearchQuery.error}
+            onRetry={() => void identitySearchQuery.refetch()}
+            title={`${copy.searchIdentitiesError}: ${adminErrorMessage(identitySearchQuery.error, language) ?? ""}`}
+          />
         )}
 
-        {searchText && (
+        {searchText && !identitySearchQuery.error && (
           <div className="rounded-md border border-[var(--color-border)]">
             <div className="flex min-h-11 items-center justify-between border-b border-[var(--color-border)] px-3">
               <div className="text-sm font-medium text-[var(--color-panel)]">
                 {copy.searchResults}
               </div>
-              <div className="text-xs text-[var(--color-text-muted)]">
+              <div
+                aria-live="polite"
+                aria-atomic="true"
+                className="text-xs text-[var(--color-text-muted)]"
+              >
                 {identitySearchQuery.isFetching
                   ? copy.searching
                   : pageCopy.common.searchMatches(identitySearchQuery.data?.total ?? 0)}

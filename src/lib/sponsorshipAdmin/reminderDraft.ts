@@ -113,6 +113,10 @@ export function buildSponsorshipReminderDraft(
   if (!candidate) return { kind: "unavailable", reason: "no_past_open_period" };
 
   const monthLabel = candidate.periodMonth.slice(0, 7);
+  // The draft is outward copy: it goes to the supporter in the supporter's own language
+  // (`pledge.language`), not the admin's. The admin language never changes it, so the Chinese
+  // below stays in the code and is not moved into an admin copy module. It is not interface
+  // text; the admin only labels the draft (`bulkCopy.ts`).
   const english = pledge.language === "en";
   return {
     kind: "draft",

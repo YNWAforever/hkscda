@@ -35,6 +35,16 @@ mock.module("react", () => ({
     }
   },
 }));
+// The language hook reads React context, which this test does not mount, so it answers Chinese.
+const realLanguage = await import("../adminI18n");
+mock.module("../adminI18n", () => ({
+  ...realLanguage,
+  useAdminLanguage: () => ({
+    language: "zh" as const,
+    copy: realLanguage.adminCopy.zh,
+    setLanguage: () => {},
+  }),
+}));
 let fetcher: (url: string, options?: { method?: string; body?: string }) => Promise<unknown>;
 mock.module("./api", () => ({
   fetchAdminJson: (url: string, options?: { method?: string; body?: string }) =>

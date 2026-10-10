@@ -1,29 +1,17 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { BoardMember, BoardMemberInput } from "../../../lib/governance/types";
+import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
+import { governanceCopy } from "./governanceCopy";
+import { draftFromMember, type BoardMemberDraft } from "./governanceDraft";
+
+export type { BoardMemberDraft } from "./governanceDraft";
 
 export const ADMIN_GOVERNANCE_QUERY_KEY = ["admin-governance"] as const;
-
-type BoardMemberDraft = {
-  id?: string;
-  name: string;
-  roleTitle: string;
-  sortOrder: number;
-  effectiveDate: string;
-};
-
-function draftFromMember(member?: BoardMember): BoardMemberDraft {
-  return {
-    id: member?.id,
-    name: member?.name ?? "",
-    roleTitle: member?.roleTitle ?? "",
-    sortOrder: member?.sortOrder ?? 0,
-    effectiveDate: member?.effectiveDate ?? new Date().toISOString().slice(0, 10),
-  };
-}
 
 export function toInput(draft: BoardMemberDraft): BoardMemberInput {
   return {
@@ -42,6 +30,7 @@ export function invalidateGovernanceQueries(client: {
 }
 
 export function GovernanceManagement() {
+  const copy = useAdminCopy(governanceCopy);
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<BoardMemberDraft | null>(null);
 
@@ -76,24 +65,24 @@ export function GovernanceManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">團隊與管治</h1>
+        <h1 className="text-xl font-bold">{copy.title}</h1>
         <button
           type="button"
           className="btn-primary min-h-11 px-4"
           onClick={() => setDraft(draftFromMember())}
         >
-          新增成員
+          {copy.add}
         </button>
       </div>
 
       {membersQuery.isLoading ? (
-        <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.loading}</p>
       ) : null}
       {membersQuery.isError ? (
         <LoadFailure
           error={membersQuery.error}
           onRetry={() => void membersQuery.refetch()}
-          title="無法載入團隊名單"
+          title={copy.loadFailed}
         />
       ) : null}
 
@@ -101,11 +90,11 @@ export function GovernanceManagement() {
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b text-left">
-              <th className="py-2">姓名</th>
-              <th className="py-2">職銜</th>
-              <th className="py-2">排序</th>
-              <th className="py-2">生效日期</th>
-              <th className="py-2">狀態</th>
+              <th className="py-2">{copy.table.name}</th>
+              <th className="py-2">{copy.table.position}</th>
+              <th className="py-2">{copy.table.sortOrder}</th>
+              <th className="py-2">{copy.table.effectiveDate}</th>
+              <th className="py-2">{copy.table.status}</th>
               <th className="py-2" />
             </tr>
           </thead>
@@ -115,21 +104,30 @@ export function GovernanceManagement() {
                 <td className="py-2">{member.name}</td>
                 <td className="py-2">{member.roleTitle}</td>
                 <td className="py-2">{member.sortOrder}</td>
-                <td className="py-2">{member.effectiveDate}</td>
-                <td className="py-2">{member.isActive ? "在任" : "已卸任"}</td>
+                <td className="py-2">{copy.table.date(member.effectiveDate)}</td>
                 <td className="py-2">
-                  <button type="button" onClick={() => setDraft(draftFromMember(member))}>
-                    編輯
-                  </button>
-                  {member.isActive ? (
-                    <button
+                  {member.isActive ? copy.table.inOffice : copy.table.steppedDown}
+                </td>
+                <td className="py-2">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
                       type="button"
-                      onClick={() => deactivateMutation.mutate(member.id)}
-                      disabled={deactivateMutation.isPending}
+                      onClick={() => setDraft(draftFromMember(member))}
                     >
-                      卸任
-                    </button>
-                  ) : null}
+                      {copy.table.edit}
+                    </Button>
+                    {member.isActive ? (
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => deactivateMutation.mutate(member.id)}
+                        disabled={deactivateMutation.isPending}
+                      >
+                        {copy.table.stepDown}
+                      </Button>
+                    ) : null}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -138,78 +136,98 @@ export function GovernanceManagement() {
       ) : null}
       {deactivateMutation.isError ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          卸任操作失敗，請再試一次。
+          {copy.stepDownFailed}
         </p>
       ) : null}
 
       {draft ? (
-        <form
-          className="space-y-3 border p-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            upsertMutation.mutate(toInput(draft));
-          }}
-        >
-          <label className="block">
-            姓名
-            <input
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.name}
-              onChange={(event) => setDraft({ ...draft, name: event.target.value })}
-              required
-            />
-          </label>
-          <label className="block">
-            職銜
-            <input
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.roleTitle}
-              onChange={(event) => setDraft({ ...draft, roleTitle: event.target.value })}
-              required
-            />
-          </label>
-          <label className="block">
-            排序
-            <input
-              type="number"
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.sortOrder}
-              onChange={(event) => setDraft({ ...draft, sortOrder: Number(event.target.value) })}
-            />
-          </label>
-          <label className="block">
-            生效日期
-            <input
-              type="date"
-              className="mt-1 block w-full border px-3 py-2"
-              value={draft.effectiveDate}
-              onChange={(event) => setDraft({ ...draft, effectiveDate: event.target.value })}
-              required
-            />
-          </label>
-          {upsertMutation.isError ? (
-            <p role="alert" className="text-sm text-[var(--color-error)]">
-              儲存失敗，請檢查資料後再試一次。
-            </p>
-          ) : null}
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="btn-primary min-h-11 px-4"
-              disabled={upsertMutation.isPending}
-            >
-              儲存
-            </button>
-            <button
-              type="button"
-              className="btn-secondary min-h-11 px-4"
-              onClick={() => setDraft(null)}
-            >
-              取消
-            </button>
-          </div>
-        </form>
+        <BoardMemberForm
+          draft={draft}
+          onDraftChange={setDraft}
+          onSubmit={() => upsertMutation.mutate(toInput(draft))}
+          onCancel={() => setDraft(null)}
+          pending={upsertMutation.isPending}
+          failed={upsertMutation.isError}
+        />
       ) : null}
     </div>
+  );
+}
+
+export function BoardMemberForm({
+  draft,
+  onDraftChange,
+  onSubmit,
+  onCancel,
+  pending,
+  failed,
+}: {
+  draft: BoardMemberDraft;
+  onDraftChange: (draft: BoardMemberDraft) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  pending: boolean;
+  failed: boolean;
+}) {
+  const copy = useAdminCopy(governanceCopy).form;
+  return (
+    <form
+      className="space-y-3 border p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit();
+      }}
+    >
+      <label className="block">
+        {copy.name}
+        <input
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.name}
+          onChange={(event) => onDraftChange({ ...draft, name: event.target.value })}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.position}
+        <input
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.roleTitle}
+          onChange={(event) => onDraftChange({ ...draft, roleTitle: event.target.value })}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.sortOrder}
+        <input
+          type="number"
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.sortOrder}
+          onChange={(event) => onDraftChange({ ...draft, sortOrder: Number(event.target.value) })}
+        />
+      </label>
+      <label className="block">
+        {copy.effectiveDate}
+        <input
+          type="date"
+          className="mt-1 block w-full border px-3 py-2"
+          value={draft.effectiveDate}
+          onChange={(event) => onDraftChange({ ...draft, effectiveDate: event.target.value })}
+          required
+        />
+      </label>
+      {failed ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {copy.saveFailed}
+        </p>
+      ) : null}
+      <div className="flex gap-3">
+        <button type="submit" className="btn-primary min-h-11 px-4" disabled={pending}>
+          {copy.save}
+        </button>
+        <button type="button" className="btn-secondary min-h-11 px-4" onClick={onCancel}>
+          {copy.cancel}
+        </button>
+      </div>
+    </form>
   );
 }

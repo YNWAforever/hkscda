@@ -1,17 +1,10 @@
+import type { AdminLanguage } from "../../../lib/admin/language";
 import type {
   ContentStatus,
   ContentType,
   NotificationDraftStatus,
 } from "../../../lib/content/types";
-
-export const contentOptionalFieldLabels = {
-  ctaLabel: "CTA 標籤",
-  ctaUrl: "CTA 連結",
-  seoTitle: "SEO 標題",
-  seoDescription: "SEO 描述",
-  ogTitle: "OG 標題",
-  ogDescription: "OG 描述",
-} as const;
+import { contentCommonCopy } from "./contentCommonCopy";
 
 export type ContentSearchInput = {
   q?: string;
@@ -71,15 +64,8 @@ export function contentStatusTone(status: ContentStatus): ContentStatusTone {
   return "muted";
 }
 
-export function formatContentTypeLabel(type: ContentType, language: "zh" | "en") {
-  const labels: Record<ContentType, Record<"zh" | "en", string>> = {
-    rescue_story: { zh: "救援故事", en: "Rescue Story" },
-    event: { zh: "活動", en: "Event" },
-    charity_market: { zh: "慈善市集", en: "Charity Market" },
-    report: { zh: "報告", en: "Report" },
-  };
-
-  return labels[type][language];
+export function formatContentTypeLabel(type: ContentType, language: AdminLanguage) {
+  return contentCommonCopy[language].types[type];
 }
 
 export function suggestSlug(title: string) {

@@ -1,4 +1,5 @@
 import type { DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
+import { DocumentAdminError } from "./documentErrors";
 
 const MAX_DOCUMENT_BYTES = 50 * 1024 * 1024;
 
@@ -30,10 +31,10 @@ export async function uploadDocumentPdf({
   createAsset,
 }: UploadDocumentPdfArgs) {
   if (file.type !== "application/pdf" || !file.name.toLowerCase().endsWith(".pdf")) {
-    throw new Error("請選擇 PDF 檔案");
+    throw new DocumentAdminError("not_pdf");
   }
   if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) {
-    throw new Error("PDF 檔案不可超過 50 MiB");
+    throw new DocumentAdminError("too_large");
   }
 
   const checksumSha256 =

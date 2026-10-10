@@ -1,9 +1,9 @@
 import { afterAll, describe, expect, mock, test } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderToStaticMarkup } from "react-dom/server";
 
 import { AdminApiError } from "../../../lib/admin/session";
-import { contentOptionalFieldLabels } from "./contentAdminLogic";
+import { renderAdminInChinese } from "../i18n/testing";
+import { contentCommonCopy } from "./contentCommonCopy";
 
 // `mock.module` mocks are process-global in Bun's test runner and outlive this
 // file, so capture the real module first and put it back in `afterAll` (the
@@ -22,7 +22,7 @@ afterAll(() => {
 describe("ContentCreateForm", () => {
   test("renders the required fields and every optional label", async () => {
     const { ContentCreateForm } = await import("./ContentCreateForm");
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <QueryClientProvider client={new QueryClient()}>
         <ContentCreateForm />
       </QueryClientProvider>,
@@ -32,7 +32,7 @@ describe("ContentCreateForm", () => {
     expect(markup).toContain("標題");
     expect(markup).toContain("網址 slug");
     expect(markup).toContain("摘要");
-    for (const label of Object.values(contentOptionalFieldLabels)) {
+    for (const label of Object.values(contentCommonCopy.zh.optionalFields)) {
       expect(markup).toContain(label);
     }
   });

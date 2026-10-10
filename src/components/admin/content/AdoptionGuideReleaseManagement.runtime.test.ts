@@ -16,6 +16,7 @@ import {
   resolveLinkedAdoptionGuideRelease,
   selectAdoptionGuideAssetsForLanguage,
   resolveMutationError,
+  type AdoptionGuideFailure,
 } from "./adoptionGuideReleaseLogic";
 
 const release: AdoptionGuideRelease = {
@@ -89,7 +90,7 @@ describe("adoption guide release workspace runtime helpers", () => {
         preview,
         previewSucceeded: true,
       }),
-    ).toMatchObject({ dirty: true, canSubmit: false, message: "請先儲存變更，然後重新整理預覽。" });
+    ).toMatchObject({ dirty: true, canSubmit: false, blocker: "unsaved_changes" });
 
     expect(
       evaluateAdoptionGuideReleaseWorkflow({
@@ -177,7 +178,7 @@ describe("adoption guide release workspace runtime helpers", () => {
     expect(typeof createAdoptionGuideReleaseRuntimeController).toBe("function");
 
     const calls: Array<{ kind: "invalidate" | "refetch"; key: unknown }> = [];
-    const errors: Array<string | undefined> = [];
+    const errors: Array<AdoptionGuideFailure | undefined> = [];
     let keyNumber = 0;
     let uploadInput: unknown;
     const controller = createAdoptionGuideReleaseRuntimeController({
@@ -189,7 +190,7 @@ describe("adoption guide release workspace runtime helpers", () => {
           calls.push({ kind: "refetch", key: queryKey });
         },
       },
-      setLocalError: (message: string | undefined) => errors.push(message),
+      setLocalError: (failure) => errors.push(failure),
       createIdempotencyKey: () => `publish-${++keyNumber}`,
     });
 
@@ -199,7 +200,7 @@ describe("adoption guide release workspace runtime helpers", () => {
       localDraft,
     );
     expect(conflict).toMatchObject({ kind: "conflict", preservedDraft: localDraft });
-    expect(errors.at(-1)).toBe("This release changed elsewhere. Reload before saving again.");
+    expect(errors.at(-1)).toEqual({ code: "conflict" });
 
     const firstPublish = controller.getPublishPayload(release);
     controller.onActionError(new Error("publish failed"), firstPublish);

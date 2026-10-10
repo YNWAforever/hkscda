@@ -1,6 +1,7 @@
 import { Download } from "lucide-react";
 import { useState } from "react";
 
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { CoordinatorExportKind } from "../../../lib/adoptions/types";
 import { supabase } from "../../../lib/supabase";
 import { Button } from "../../ui/button";
@@ -20,7 +21,7 @@ export function ExportButton({
   label,
   busy = false,
 }: ExportButtonProps) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState("");
 
@@ -56,7 +57,7 @@ export function ExportButton({
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : pageCopy.common.exportFailed);
+      setError(adminErrorMessage(nextError, language) ?? pageCopy.common.exportFailed);
     } finally {
       setIsExporting(false);
     }

@@ -4,18 +4,33 @@ import { ListTodo, LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-re
 import { useEffect, useRef, useState, type ReactNode, type MouseEvent } from "react";
 
 import { supabase } from "../../lib/supabase";
+import { getFirstAllowedAdminRoute } from "../../lib/admin/access";
+import { signOutAndLeave } from "../../lib/admin/signInFlow";
 import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { cn } from "../../lib/utils";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { AdminLanguageProvider, AdminLanguageToggle, useAdminLanguage } from "./adminI18n";
+import { AdminHomeRouteContext } from "./adminHomeRoute";
+import { AdminBreadcrumb } from "./AdminBreadcrumb";
+import { breadcrumbTrail } from "./breadcrumbTrail";
+import { BreadcrumbRecordContext } from "./adminBreadcrumbRecord";
 import { getAdminNavigation, getActiveAdminNavItemIds } from "./adminNav";
 import type { AdminNavigationGroup, AdminSection } from "./adminNav";
+import { adminLanguageTag } from "./i18n/pageLanguage";
+import { focusPageHeading } from "./focusPageHeading";
+import { useSessionExpiryRedirect } from "./useSessionExpiryRedirect";
 
 const COLLAPSE_KEY = "hkscda-admin-sidebar-collapsed";
 
 interface AdminLayoutProps {
   children: ReactNode;
   activeSection: AdminSection;
+  /**
+   * The name of the record this page shows, for the last crumb. A page that owns its record passes
+   * it here. A page whose record is loaded by a child reports it with `useBreadcrumbRecordName`.
+   * Nothing, empty or blank ends the breadcrumb at the destination.
+   */
+  recordName?: string | null;
 }
 
 function NavList({
@@ -29,7 +44,7 @@ function NavList({
   collapsed: boolean;
   onNavigate?: (event: MouseEvent<HTMLAnchorElement>, to: string) => void;
 }) {
-  const { copy, language } = useAdminLanguage();
+  const { copy } = useAdminLanguage();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <nav
@@ -39,7 +54,7 @@ function NavList({
       <Link
         to="/admin/tasks"
         onClick={onNavigate ? (event) => onNavigate(event, "/admin/tasks") : undefined}
-        aria-label={language === "zh" ? "待辦總覽" : "Task overview"}
+        aria-label={copy.layout.taskOverview}
         aria-current={pathname === "/admin/tasks" ? "page" : undefined}
         className={cn(
           "mb-2 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--color-text-inverse)] hover:bg-[var(--color-panel-2)]",
@@ -47,9 +62,7 @@ function NavList({
         )}
       >
         <ListTodo className="h-[18px] w-[18px] shrink-0" aria-hidden />
-        <span className={cn(collapsed && "md:hidden")}>
-          {language === "zh" ? "待辦總覽" : "Task overview"}
-        </span>
+        <span className={cn(collapsed && "md:hidden")}>{copy.layout.taskOverview}</span>
       </Link>
       {groups.map((group) => {
         const Icon = group.icon;
@@ -94,22 +107,7 @@ function WorkspaceNavigation({
       : group.items;
   const activeItem = group.items.find((item) => activeIds.has(item.id));
   return (
-    <div className="min-w-0 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 md:px-8">
-      <nav aria-label={copy.layout.breadcrumb} className="text-xs text-[var(--color-text-muted)]">
-        <ol className="flex flex-wrap items-center gap-2">
-          <li>
-            <Link to={group.to} className="underline underline-offset-4">
-              {copy.navGroups[group.id]}
-            </Link>
-          </li>
-          {activeItem && (
-            <li aria-current="page">
-              <span aria-hidden> / </span>
-              {copy.navItems[activeItem.id]}
-            </li>
-          )}
-        </ol>
-      </nav>
+    <>
       <p className="mt-2 text-sm text-[var(--color-text-muted)]">
         {copy.navDescriptions[group.id]}
       </p>
@@ -140,7 +138,7 @@ function WorkspaceNavigation({
           );
         })}
       </nav>
-    </div>
+    </>
   );
 }
 
@@ -178,22 +176,28 @@ function AccountFooter({
   );
 }
 
-export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
+export function AdminLayout({ children, activeSection, recordName }: AdminLayoutProps) {
   return (
     <AdminLanguageProvider>
-      <AdminLayoutShell activeSection={activeSection}>{children}</AdminLayoutShell>
+      <AdminLayoutShell activeSection={activeSection} recordName={recordName}>
+        {children}
+      </AdminLayoutShell>
     </AdminLanguageProvider>
   );
 }
 
-function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
+function AdminLayoutShell({ children, activeSection, recordName }: AdminLayoutProps) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  // The record name a child page reports once it has loaded (see `useBreadcrumbRecordName`).
+  const [reportedRecordName, setReportedRecordName] = useState<string | null>(null);
   const focusPageOnClose = useRef(false);
   const queryClient = useQueryClient();
+  // A lapsed session sends staff to sign-in and back to this page; a deliberate logout must not.
+  const suppressSessionExpiry = useSessionExpiryRedirect(queryClient);
   // beforeLoad already primed this entry for the current navigation, so this is
   // a cache hit with no request. It used to be a second GET /api/admin/me.
   const { data: identity } = useQuery(adminIdentityQueryOptions());
@@ -213,11 +217,19 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut();
-    // Otherwise the next admin to sign in on this tab reads the previous one's
-    // cached identity.
-    queryClient.clear();
-    navigate({ to: "/admin/login" });
+    try {
+      await signOutAndLeave({
+        suppressSessionExpiry,
+        signOut: () => supabase.auth.signOut(),
+        queryClient,
+        push: () => {
+          void navigate({ to: "/admin/login" });
+        },
+      });
+    } catch (error) {
+      // The user has still been sent to sign-in; the failure is only worth a log.
+      console.error("Sign-out failed", error);
+    }
   }
 
   const { groups, activeGroupId } = getAdminNavigation(adminRole, pathname, activeSection);
@@ -231,6 +243,9 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   );
   const animalRoot =
     (pathname === "/admin" || pathname === "/admin/") && activeGroupId === "animals";
+  // Until the role is known no group is offered, so the group crumb names it without a link.
+  const trailOptions = { activeSection, groupTo: activeGroup?.to ?? null };
+  const showBar = breadcrumbTrail(pathname, language, null, trailOptions).length > 0;
 
   async function handleMobileNavigate(event: MouseEvent<HTMLAnchorElement>, to: string) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
@@ -242,17 +257,11 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
     if (window.location.href === before && new URL(to, before).href !== before) return;
     focusPageOnClose.current = true;
     setMobileOpen(false);
-    requestAnimationFrame(() => {
-      const heading = document.querySelector<HTMLElement>("main h1");
-      if (heading) {
-        heading.tabIndex = -1;
-        heading.focus();
-      }
-    });
+    requestAnimationFrame(() => focusPageHeading(document));
   }
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="flex min-h-dvh" lang={adminLanguageTag(language)}>
       <aside
         className={cn(
           "hidden flex-shrink-0 flex-col bg-[var(--color-panel)] text-[var(--color-text-inverse)] transition-[width] duration-200 md:flex",
@@ -332,10 +341,25 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
         </header>
 
         <main className="min-w-0 flex-1 bg-[var(--color-bg)]">
-          {activeGroup && !animalRoot && (
-            <WorkspaceNavigation group={activeGroup} activeIds={activeIds} />
+          {showBar && (
+            <div className="min-w-0 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 md:px-8">
+              <AdminBreadcrumb
+                pathname={pathname}
+                recordName={recordName ?? reportedRecordName}
+                {...trailOptions}
+              />
+              {activeGroup && !animalRoot && (
+                <WorkspaceNavigation group={activeGroup} activeIds={activeIds} />
+              )}
+            </div>
           )}
-          {children}
+          <BreadcrumbRecordContext.Provider value={setReportedRecordName}>
+            <AdminHomeRouteContext.Provider
+              value={identity ? getFirstAllowedAdminRoute(identity.admin.role) : null}
+            >
+              {children}
+            </AdminHomeRouteContext.Provider>
+          </BreadcrumbRecordContext.Provider>
         </main>
       </div>
     </div>

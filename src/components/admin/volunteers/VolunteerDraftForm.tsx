@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import { useAdminLanguage } from "../adminI18n";
+import { pickAdminCopy } from "../i18n/copy";
+import { activityWorkspaceCopy } from "./activityWorkspaceCopy";
 const input = "min-h-11 w-full rounded border border-[var(--color-border)] px-3 py-2";
 export function VolunteerDraftForm() {
+  const { language } = useAdminLanguage();
+  const copy = pickAdminCopy(activityWorkspaceCopy, language).draft;
   const [open, setOpen] = useState(false);
   const [key, setKey] = useState(() => crypto.randomUUID());
   const [title, setTitle] = useState("");
@@ -39,7 +45,7 @@ export function VolunteerDraftForm() {
   return (
     <section>
       <button className={input + " w-auto"} onClick={() => setOpen((v) => !v)}>
-        建立草稿
+        {copy.open}
       </button>
       {open && (
         <form
@@ -49,11 +55,9 @@ export function VolunteerDraftForm() {
             save.mutate();
           }}
         >
-          <p className="sm:col-span-2">
-            草稿不接受報名。發布場次前須選定模板、日期及已核准的政策。
-          </p>
+          <p className="sm:col-span-2">{copy.note}</p>
           <label>
-            活動名稱
+            {copy.title}
             <input
               required
               className={input}
@@ -62,7 +66,7 @@ export function VolunteerDraftForm() {
             />
           </label>
           <label>
-            地點
+            {copy.location}
             <input
               required
               className={input}
@@ -71,7 +75,7 @@ export function VolunteerDraftForm() {
             />
           </label>
           <label>
-            開始時間（香港）
+            {copy.startsAt}
             <input
               required
               type="datetime-local"
@@ -81,7 +85,7 @@ export function VolunteerDraftForm() {
             />
           </label>
           <label>
-            結束時間（香港）
+            {copy.endsAt}
             <input
               type="datetime-local"
               min={start}
@@ -91,7 +95,7 @@ export function VolunteerDraftForm() {
             />
           </label>
           <label>
-            預計人數
+            {copy.capacity}
             <input
               required
               type="number"
@@ -103,9 +107,9 @@ export function VolunteerDraftForm() {
             />
           </label>
           <button disabled={save.isPending} className={input} type="submit">
-            儲存草稿
+            {copy.save}
           </button>
-          {save.isError && <p role="alert">{save.error.message}</p>}
+          {save.isError && <p role="alert">{volunteerAdminErrorMessage(save.error, language)}</p>}
         </form>
       )}
     </section>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { AdoptionContentTab } from "./AdoptionInformationManagement";
 import { TablePager } from "../TablePager";
 import { useState } from "react";
@@ -8,14 +9,18 @@ import type {
   AdminAdoptionInformationPage,
   AdoptionRuleContent,
 } from "../../../lib/adoptionInformation/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { localizedText } from "../i18n/localizedText";
 import { LoadFailure } from "../LoadFailure";
+import { adoptionRulesCopy } from "./adoptionRulesCopy";
 import {
   ADOPTION_INFORMATION_QUERY_KEY,
   AdoptionContentTabs,
   invalidateAdoptionInformationQueries,
 } from "./AdoptionInformationManagement";
 
-type RuleDraft = {
+export type RuleDraft = {
   id?: string;
   contentZh: string;
   contentEn: string;
@@ -49,6 +54,9 @@ export function AdoptionRulesManagement({
   activeTab: AdoptionContentTab;
   onTabChange: (tab: AdoptionContentTab) => void;
 }) {
+  const common = useAdminCopy(adoptionRulesCopy);
+  const copy = common.rules;
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [draft, setDraft] = useState<RuleDraft | null>(null);
@@ -78,29 +86,29 @@ export function AdoptionRulesManagement({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">領養</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">領養規則管理</h1>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{common.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
       </div>
 
       <AdoptionContentTabs activeTab={activeTab} onTabChange={onTabChange} />
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">領養規則</h2>
+        <h2 className="text-lg font-bold">{copy.heading}</h2>
         <button
           type="button"
           className="btn-primary min-h-11 px-4"
           onClick={() => setDraft(draftFromRule())}
         >
-          新增規則
+          {copy.add}
         </button>
       </div>
 
-      {rulesQuery.isLoading ? <p aria-live="polite">載入領養規則中…</p> : null}
+      {rulesQuery.isLoading ? <p aria-live="polite">{copy.loading}</p> : null}
       {rulesQuery.isError ? (
         <LoadFailure
           error={rulesQuery.error}
           onRetry={() => void rulesQuery.refetch()}
-          title="無法載入領養規則"
+          title={copy.loadFailed}
         />
       ) : null}
 
@@ -115,16 +123,21 @@ export function AdoptionRulesManagement({
                 className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] pb-2"
               >
                 <span>
-                  {rule.sortOrder + 1}. {rule.content["zh-HK"]}
-                  {rule.isPublished ? null : "（已停用）"}
+                  {rule.sortOrder + 1}.{" "}
+                  {localizedText(rule.content["zh-HK"], rule.content.en, language)}
+                  {rule.isPublished ? null : common.list.disabledSuffix}
                 </span>
-                <button type="button" onClick={() => setDraft(draftFromRule(rule))}>
-                  編輯
-                </button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setDraft(draftFromRule(rule))}
+                >
+                  {common.list.edit}
+                </Button>
               </li>
             ))}
           {rules.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-muted)]">沒有領養規則資料</p>
+            <p className="text-sm text-[var(--color-text-muted)]">{copy.empty}</p>
           ) : null}
         </ol>
       ) : null}
@@ -135,78 +148,99 @@ export function AdoptionRulesManagement({
           pageSize={50}
           total={rulesQuery.data.total}
           onPageChange={setPage}
-          label="資料"
+          label={common.list.pager}
         />
       )}
       {draft ? (
-        <form
-          className="space-y-3 border border-[var(--color-border)] p-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            upsertMutation.mutate(toRuleInput(draft));
-          }}
-        >
-          <label className="block">
-            規則內容（中文）
-            <textarea
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.contentZh}
-              onChange={(event) => setDraft({ ...draft, contentZh: event.target.value })}
-              maxLength={500}
-              required
-            />
-          </label>
-          <label className="block">
-            Rule content (English)
-            <textarea
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.contentEn}
-              onChange={(event) => setDraft({ ...draft, contentEn: event.target.value })}
-              maxLength={500}
-              required
-            />
-          </label>
-          <label className="block max-w-[8rem]">
-            排序
-            <input
-              type="number"
-              min={0}
-              className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
-              value={draft.sortOrder}
-              onChange={(event) => setDraft({ ...draft, sortOrder: Number(event.target.value) })}
-            />
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={draft.isPublished}
-              onChange={(event) => setDraft({ ...draft, isPublished: event.target.checked })}
-            />
-            在領養須知頁面顯示
-          </label>
-          {upsertMutation.isError ? (
-            <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-              儲存失敗，請檢查資料後再試一次。
-            </p>
-          ) : null}
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="btn-primary min-h-11 px-4"
-              disabled={upsertMutation.isPending}
-            >
-              儲存
-            </button>
-            <button
-              type="button"
-              className="btn-secondary min-h-11 px-4"
-              onClick={() => setDraft(null)}
-            >
-              取消
-            </button>
-          </div>
-        </form>
+        <AdoptionRuleForm
+          draft={draft}
+          onDraftChange={setDraft}
+          onSubmit={() => upsertMutation.mutate(toRuleInput(draft))}
+          onCancel={() => setDraft(null)}
+          pending={upsertMutation.isPending}
+          failed={upsertMutation.isError}
+        />
       ) : null}
     </div>
+  );
+}
+
+export function AdoptionRuleForm({
+  draft,
+  onDraftChange,
+  onSubmit,
+  onCancel,
+  pending,
+  failed,
+}: {
+  draft: RuleDraft;
+  onDraftChange: (draft: RuleDraft) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  pending: boolean;
+  failed: boolean;
+}) {
+  const common = useAdminCopy(adoptionRulesCopy);
+  const copy = common.rules;
+  return (
+    <form
+      className="space-y-3 border border-[var(--color-border)] p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit();
+      }}
+    >
+      <label className="block">
+        {copy.contentZh}
+        <textarea
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.contentZh}
+          onChange={(event) => onDraftChange({ ...draft, contentZh: event.target.value })}
+          maxLength={500}
+          required
+        />
+      </label>
+      <label className="block">
+        {copy.contentEn}
+        <textarea
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.contentEn}
+          onChange={(event) => onDraftChange({ ...draft, contentEn: event.target.value })}
+          maxLength={500}
+          required
+        />
+      </label>
+      <label className="block max-w-[8rem]">
+        {common.form.sortOrder}
+        <input
+          type="number"
+          min={0}
+          className="mt-1 block w-full border border-[var(--color-border)] px-3 py-2"
+          value={draft.sortOrder}
+          onChange={(event) => onDraftChange({ ...draft, sortOrder: Number(event.target.value) })}
+        />
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={draft.isPublished}
+          onChange={(event) => onDraftChange({ ...draft, isPublished: event.target.checked })}
+        />
+        {common.form.showOnPage}
+      </label>
+      {failed ? (
+        <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
+          {common.form.saveFailed}
+        </p>
+      ) : null}
+      <div className="flex gap-3">
+        <button type="submit" className="btn-primary min-h-11 px-4" disabled={pending}>
+          {common.form.save}
+        </button>
+        <button type="button" className="btn-secondary min-h-11 px-4" onClick={onCancel}>
+          {common.form.cancel}
+        </button>
+      </div>
+    </form>
   );
 }

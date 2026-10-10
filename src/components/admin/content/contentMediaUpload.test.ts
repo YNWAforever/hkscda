@@ -45,6 +45,27 @@ describe("uploadContentMediaImage", () => {
     expect(calls).toEqual([]);
   });
 
+  test("refuses with a code, so a screen can write the reason in the admin's language", async () => {
+    const attempt = (file: File) =>
+      uploadContentMediaImage({
+        file,
+        contentId: "content-1",
+        storyUpdateId: null,
+        requestUploadTarget: async (input) => ({ token: "t", path: input.objectPath }),
+        uploadToSignedUrl: async () => undefined,
+      }).catch((error: unknown) => error);
+    expect(await attempt(fakeFile("notes.pdf", "application/pdf", 1024))).toMatchObject({
+      name: "ContentAdminError",
+      code: "media_type",
+    });
+    expect(await attempt(fakeFile("empty.jpg", "image/jpeg", 0))).toMatchObject({
+      code: "media_size",
+    });
+    expect(await attempt(fakeFile("big.jpg", "image/jpeg", 9 * 1024 * 1024))).toMatchObject({
+      code: "media_size",
+    });
+  });
+
   test("uploads a valid image under the content item's own folder and returns the resulting path", async () => {
     const calls: Array<{ step: string; arg: unknown }> = [];
     const path = await uploadContentMediaImage({

@@ -7,18 +7,20 @@ import type {
   CoordinatorExportKind,
   CoordinatorMonthlySummary,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { supabase } from "../../../lib/supabase";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { formatAdminDateTime, formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
+import { formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
-import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { getCoordinatorExportFilename } from "./adopterWorkflowLogic";
+import { adoptionFormatCopy } from "./formatCopy";
 import {
   buildExportHistorySearchParams,
   buildMonthlySummarySearchParams,
@@ -214,9 +216,7 @@ export function CoordinatorReports() {
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (nextError) {
-      setDownloadError(
-        nextError instanceof Error ? nextError.message : pageCopy.common.downloadFailed,
-      );
+      setDownloadError(adminErrorMessage(nextError, language) ?? pageCopy.common.downloadFailed);
     } finally {
       setDownloadingId(null);
     }
@@ -229,7 +229,7 @@ export function CoordinatorReports() {
       id: "timestamp",
       header: copy.columns.timestamp,
       className: "min-w-44 px-4 font-medium text-[var(--color-panel)]",
-      cell: (row) => formatAdminDateTime(row.timestamp, language),
+      cell: (row) => adoptionFormatCopy[language].reportTime(row.timestamp),
     },
     {
       id: "actor",
@@ -295,7 +295,7 @@ export function CoordinatorReports() {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="font-medium text-[var(--color-panel)]">
-              {formatAdminDateTime(row.timestamp, language)}
+              {adoptionFormatCopy[language].reportTime(row.timestamp)}
             </div>
             <div className="truncate text-xs text-[var(--color-text-muted)]">{actorLabel(row)}</div>
           </div>
@@ -359,17 +359,14 @@ export function CoordinatorReports() {
         </Button>
       </div>
 
-      {(summaryQuery.error || historyQuery.error || downloadError) && (
+      {(summaryQuery.error || downloadError) && (
         <div className="space-y-2">
           {summaryQuery.error && (
-            <InlineAlert>
-              {copy.loadSummaryError}: {summaryQuery.error.message}
-            </InlineAlert>
-          )}
-          {historyQuery.error && (
-            <InlineAlert>
-              {copy.loadHistoryError}: {historyQuery.error.message}
-            </InlineAlert>
+            <LoadFailure
+              error={summaryQuery.error}
+              onRetry={() => void summaryQuery.refetch()}
+              title={`${copy.loadSummaryError}: ${adminErrorMessage(summaryQuery.error, language) ?? ""}`}
+            />
           )}
           {downloadError && <InlineAlert>{downloadError}</InlineAlert>}
         </div>
@@ -463,7 +460,11 @@ export function CoordinatorReports() {
             <h2 className="text-base font-semibold text-[var(--color-panel)]">
               {copy.exportHistory}
             </h2>
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-xs text-[var(--color-text-muted)]"
+            >
               {historyQuery.isLoading
                 ? pageCopy.common.loading
                 : pageCopy.common.totalRecords(total)}
@@ -501,7 +502,10 @@ export function CoordinatorReports() {
           getRowKey={(row) => row.id}
           loading={historyQuery.isLoading}
           skeletonRows={5}
-          empty={historyQuery.error ? null : copy.empty}
+          empty={copy.empty}
+          error={historyQuery.error}
+          onRetry={() => void historyQuery.refetch()}
+          failureTitle={`${copy.loadHistoryError}: ${adminErrorMessage(historyQuery.error, language) ?? ""}`}
           renderMobileCard={renderExportCard}
         />
       </section>

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 import { PersonRecords } from "./VolunteerPersonDetail";
 import type { DirectoryDetail } from "../../../lib/volunteers/directory/types";
 const data: DirectoryDetail = {
@@ -34,7 +34,7 @@ const data: DirectoryDetail = {
 };
 describe("person detail", () => {
   test("links canonical identity to qualifications and preserves directory filters", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       createElement(PersonRecords, { data, search: { q: "fixture", page: 3 } }),
     );
     expect(html).toContain("qualifications?profile_id=canonical-profile");
@@ -43,7 +43,7 @@ describe("person detail", () => {
     expect(html).toContain("待核實");
   });
   test("does not infer service history or hours from missing facts", () => {
-    const html = renderToStaticMarkup(
+    const html = renderAdminInChinese(
       createElement(PersonRecords, { data, search: { page: 1 }, initialTab: "attendance" }),
     );
     expect(html).toContain("未設定歷史覆蓋起點");

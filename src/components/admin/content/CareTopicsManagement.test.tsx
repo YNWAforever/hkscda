@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 
@@ -23,7 +23,7 @@ const { CareTopicsManagement, toCareTopicInput } = await import("./CareTopicsMan
 describe("CareTopicsManagement", () => {
   test("shows a retry control instead of the old unclickable reload message on failure", () => {
     topicsError = new Error("boom");
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <CareTopicsManagement activeTab="careTopics" onTabChange={() => {}} />,
     );
     expect(markup).toContain("無法載入照顧須知");

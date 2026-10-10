@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { GroupEnquiry, GroupEnquirySummary } from "../../../lib/groupEnquiries/types";
 
@@ -71,7 +71,7 @@ mock.module("@tanstack/react-query", () => ({
 
 const { GroupEnquiryManagement } = await import("./GroupEnquiryManagement");
 
-const render = () => renderToStaticMarkup(<GroupEnquiryManagement />);
+const render = () => renderAdminInChinese(<GroupEnquiryManagement />);
 
 describe("GroupEnquiryManagement", () => {
   test("renders without throwing on realistic data", () => {

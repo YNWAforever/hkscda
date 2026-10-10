@@ -50,3 +50,35 @@ test("select-all keeps the default all-animal scope across pages", async () => {
   });
   expect(ids).toEqual(cases.map((item) => item.id));
 });
+
+test("the selection messages default to what the Chinese admin has always shown", () => {
+  const current = Array.from({ length: 1000 }, (_, i) => "id-" + i);
+  expect(() => addCaseSelection(current, ["id-1000"])).toThrow("最多只能選取 1000 筆領養個案");
+  expect(() => addCaseSelection(current, ["id-1000"], "zh")).toThrow(
+    "最多只能選取 1000 筆領養個案",
+  );
+});
+
+test("the selection messages are English in English, and say what to do next", async () => {
+  const current = Array.from({ length: 1000 }, (_, i) => "id-" + i);
+  expect(() => addCaseSelection(current, ["id-1000"], "en")).toThrow(
+    "You can select at most 1,000 adoption cases. Clear some and try again.",
+  );
+  await expect(
+    collectMatchingCaseIds(1001, async () => ({ total: 0, cases: [] }), 50, "en"),
+  ).rejects.toThrow("Select between 1 and 1,000 adoption cases.");
+  await expect(
+    collectMatchingCaseIds(2, async () => ({ total: 3, cases: [{ id: "a" }] }), 50, "en"),
+  ).rejects.toThrow(
+    "The case list changed while the cases were being selected. Select them again.",
+  );
+});
+
+test("two selection messages were English before the English admin, and stay as they were in zh", async () => {
+  await expect(collectMatchingCaseIds(0, async () => ({ total: 0, cases: [] }))).rejects.toThrow(
+    "Adoption bulk selection must contain 1 to 1000 profiles",
+  );
+  await expect(
+    collectMatchingCaseIds(2, async () => ({ total: 3, cases: [{ id: "a" }] })),
+  ).rejects.toThrow("Adoption case list changed during bulk selection");
+});

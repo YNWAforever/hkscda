@@ -7,17 +7,18 @@ import type {
   CoordinatorTask,
   CoordinatorTaskPriority,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
 import { useAdminPageCopy } from "../adminPageCopy";
-import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { ExportButton } from "./ExportButton";
-import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
+import { TaskPanel } from "./TaskPanel";
 import {
   TASK_CENTER_DUE_FILTER_OPTIONS,
   buildTaskCenterSummary,
@@ -43,12 +44,8 @@ const EMPTY_TASKS: CoordinatorTask[] = [];
 
 const SUMMARY_ITEMS = ["overdue", "today", "upcoming", "none", "done", "urgent"] as const;
 
-function TaskCenterLoadError({ label, message }: { label: string; message: string }) {
-  return <TaskPanelAsyncError message={`${label}: ${message}`} />;
-}
-
 export function TaskCenter() {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.taskCenter;
   const [q, setQ] = useState("");
   const [due, setDue] = useState<TaskCenterDueFilter>("all");
@@ -209,8 +206,10 @@ export function TaskCenter() {
           </Button>
         </div>
         {statusesQuery.error && (
-          <TaskPanelAsyncError
-            message={`${copy.loadStatusesError}: ${statusesQuery.error.message}`}
+          <LoadFailure
+            error={statusesQuery.error}
+            onRetry={() => void statusesQuery.refetch()}
+            title={`${copy.loadStatusesError}: ${adminErrorMessage(statusesQuery.error, language) ?? ""}`}
           />
         )}
       </section>
@@ -235,26 +234,27 @@ export function TaskCenter() {
       </section>
 
       <section>
-        {tasksQuery.error && (
-          <TaskCenterLoadError label={copy.loadTasksError} message={tasksQuery.error.message} />
+        {tasksQuery.error ? (
+          <LoadFailure
+            error={tasksQuery.error}
+            onRetry={() => void tasksQuery.refetch()}
+            title={`${copy.loadTasksError}: ${adminErrorMessage(tasksQuery.error, language) ?? ""}`}
+          />
+        ) : (
+          <TaskPanel
+            title={copy.tasks}
+            subtitle={
+              tasksQuery.isLoading ? pageCopy.common.loading : pageCopy.common.totalCount(total)
+            }
+            tasks={tasks}
+            statuses={statuses}
+            showCreateForm={false}
+            emptyMessage={copy.empty}
+            onChanged={async () => {
+              await tasksQuery.refetch();
+            }}
+          />
         )}
-        <TaskPanel
-          title={copy.tasks}
-          subtitle={
-            tasksQuery.isLoading
-              ? pageCopy.common.loading
-              : tasksQuery.isError
-                ? STAT_UNAVAILABLE
-                : pageCopy.common.totalCount(total)
-          }
-          tasks={tasks}
-          statuses={statuses}
-          showCreateForm={false}
-          emptyMessage={copy.empty}
-          onChanged={async () => {
-            await tasksQuery.refetch();
-          }}
-        />
       </section>
 
       <TablePager

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   AdoptionInstructionsManagement,
   type AdoptionInstructionEditorHandle,
@@ -8,6 +9,7 @@ import { ChevronDown, ChevronUp, Plus, Search, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type {
   ReorderFeesInput,
   UpdateFeeContentInput,
@@ -26,7 +28,11 @@ import type {
 } from "../../../lib/adoptionInformation/types";
 import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
 import { CareTopicsManagement } from "./CareTopicsManagement";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
+import { adoptionInformationCopy } from "./adoptionInformationCopy";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -36,10 +42,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../ui/alert-dialog";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
 export type AdoptionContentTab = AdoptionInformationResource | "page";
+
+type LeaveProblemCode = keyof typeof adoptionInformationCopy.zh.leave.problems;
+/** Why the leave dialog stays open: a code, and the error the save gave, if any. */
+type LeaveProblem = { code: LeaveProblemCode; cause?: unknown };
 
 type InitialData = {
   fees: AdminAdoptionInformationPage;
@@ -69,11 +80,18 @@ export function invalidateAdoptionInformationQueries(client: {
   return client.invalidateQueries({ queryKey: ADOPTION_INFORMATION_QUERY_KEY });
 }
 
-export function AdoptionInformationManagement({ initialData }: { initialData?: InitialData }) {
+export function AdoptionInformationManagement({
+  initialData,
+  initialTab = "fees",
+}: {
+  initialData?: InitialData;
+  /** The tab shown first. The route leaves it at the first tab; tests open the others. */
+  initialTab?: AdoptionContentTab;
+}) {
   if (initialData) {
     return <AdoptionInformationManagementView activeTab="fees" data={initialData.fees} query="" />;
   }
-  return <AdoptionInformationManagementRuntime />;
+  return <AdoptionInformationManagementRuntime initialTab={initialTab} />;
 }
 
 export function AdoptionContentTabs({
@@ -83,17 +101,10 @@ export function AdoptionContentTabs({
   activeTab: AdoptionContentTab;
   onTabChange: (tab: AdoptionContentTab) => void;
 }) {
+  const copy = useAdminCopy(adoptionInformationCopy);
   return (
     <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
-      {(
-        [
-          ["fees", "領養費用"],
-          ["page", "頁面內容"],
-          ["estates", "可養狗屋苑"],
-          ["rules", "領養規則"],
-          ["careTopics", "動物照顧須知"],
-        ] as const
-      ).map(([value, label]) => (
+      {(["fees", "page", "estates", "rules", "careTopics"] as const).map((value) => (
         <button
           key={value}
           type="button"
@@ -102,7 +113,7 @@ export function AdoptionContentTabs({
           onClick={() => onTabChange(value)}
           className="px-4 py-3 text-sm font-semibold aria-selected:border-b-2 aria-selected:border-[var(--color-primary)] aria-selected:text-[var(--color-primary)]"
         >
-          {label}
+          {copy.tabs[value]}
         </button>
       ))}
     </div>
@@ -117,13 +128,16 @@ type MutationInput =
   | { action: "delete-estate"; id: string }
   | { action: "move-fees"; input: ReorderFeesInput };
 
-function AdoptionInformationManagementRuntime() {
+function AdoptionInformationManagementRuntime({ initialTab }: { initialTab: AdoptionContentTab }) {
+  const copy = useAdminCopy(adoptionInformationCopy);
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<AdoptionContentTab>("fees");
+  const [activeTab, setActiveTab] = useState<AdoptionContentTab>(initialTab);
   const [pageDirty, setPageDirty] = useState(false);
   const [pendingTab, setPendingTab] = useState<AdoptionContentTab | null>(null);
   const [leaving, setLeaving] = useState(false);
-  const [leaveProblem, setLeaveProblem] = useState<string | null>(null);
+  const [deleteEstateId, setDeleteEstateId] = useState<string | null>(null);
+  const [leaveProblem, setLeaveProblem] = useState<LeaveProblem | null>(null);
   const editorRef = useRef<AdoptionInstructionEditorHandle>(null);
   const reorderInFlight = useRef(false);
   const blocker = useBlocker({
@@ -229,9 +243,9 @@ function AdoptionInformationManagementRuntime() {
     setLeaving(true);
     try {
       if (await editorRef.current?.saveDraft()) completeLeave();
-      else setLeaveProblem("儲存未成功，仍留在原頁。請關閉此對話框檢查草稿錯誤。");
+      else setLeaveProblem({ code: "not_saved_check_draft" });
     } catch (error) {
-      setLeaveProblem(error instanceof Error ? error.message : "儲存未成功，仍留在原頁。");
+      setLeaveProblem({ code: "not_saved", cause: error });
     } finally {
       setLeaving(false);
     }
@@ -245,22 +259,30 @@ function AdoptionInformationManagementRuntime() {
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>尚有未儲存的頁面內容</AlertDialogTitle>
-          <AlertDialogDescription>
-            你可以先儲存草稿、捨棄本機修改，或取消並繼續編輯。
-          </AlertDialogDescription>
+          <AlertDialogTitle>{copy.leave.title}</AlertDialogTitle>
+          <AlertDialogDescription>{copy.leave.description}</AlertDialogDescription>
         </AlertDialogHeader>
-        {leaveProblem && <p role="alert">{leaveProblem}</p>}
+        {leaveProblem && (
+          <p role="alert">
+            {adminErrorMessage(leaveProblem.cause, language) ??
+              copy.leave.problems[leaveProblem.code]}
+          </p>
+        )}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={leaving} onClick={() => cancelLeave()}>
-            取消
+            {copy.leave.cancel}
           </AlertDialogCancel>
-          <button type="button" disabled={leaving} onClick={() => void decideLeave("discard")}>
-            捨棄並離開
-          </button>
-          <button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
-            儲存並離開
-          </button>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={leaving}
+            onClick={() => void decideLeave("discard")}
+          >
+            {copy.leave.discard}
+          </Button>
+          <Button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
+            {copy.leave.save}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -269,6 +291,10 @@ function AdoptionInformationManagementRuntime() {
   if (activeTab === "page") {
     return (
       <div>
+        {/* This tab's editor has no heading of its own; the other tabs head their page. */}
+        <div className="px-6 pt-6">
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        </div>
         <AdoptionContentTabs activeTab={activeTab} onTabChange={handleTabChange} />
         <AdoptionInstructionsManagement onDirtyChange={setPageDirty} editorRef={editorRef} />
         {leaveDialog}
@@ -283,77 +309,110 @@ function AdoptionInformationManagementRuntime() {
     return <CareTopicsManagement activeTab={activeTab} onTabChange={handleTabChange} />;
   }
 
+  // Irreversible and triggered from an inline row button; name the estate so the operator can
+  // confirm they hit the row they meant.
+  const estateToDelete = informationQuery.data?.items.find((item) => item.id === deleteEstateId);
+  const estateLabel =
+    estateToDelete && "estateName" in estateToDelete
+      ? (estateToDelete as { estateName?: string }).estateName
+      : null;
+
   return (
-    <AdoptionInformationManagementView
-      activeTab={activeTab}
-      data={informationQuery.data}
-      loading={informationQuery.isLoading}
-      error={
-        (informationQuery.error instanceof Error ? informationQuery.error.message : null) ??
-        (mutation.error instanceof Error ? mutation.error.message : null)
-      }
-      query={query}
-      page={page}
-      pending={mutation.isPending}
-      onTabChange={handleTabChange}
-      onQueryChange={(value) => {
-        setQuery(value);
-        setPage(1);
-      }}
-      onPageChange={setPage}
-      onSaveFee={async (input) =>
-        ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee }).fee
-      }
-      onMoveFee={(input, direction) => {
-        if (mutation.isPending || reorderInFlight.current) return;
-        const pair = moveFeeWithinSpecies(informationQuery.data?.items ?? [], input.id, direction);
-        if (pair.length !== 2 || !pair[0] || !pair[1]) return;
-        reorderInFlight.current = true;
-        void mutation
-          .mutateAsync({
-            action: "move-fees",
-            input: {
-              firstId: pair[0].id,
-              secondId: pair[1].id,
-              expectedVersions: { first: pair[0].version, second: pair[1].version },
-            },
-          })
-          .catch(() => undefined)
-          .finally(() => {
-            reorderInFlight.current = false;
-          });
-      }}
-      onCreateEstate={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "create-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onUpdateEstate={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "update-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onSetEstatePublication={async (input) =>
-        (
-          (await mutation.mutateAsync({ action: "publish-estate", input })) as {
-            estate: DogFriendlyEstate;
-          }
-        ).estate
-      }
-      onDeleteEstate={(id) => {
-        // Irreversible and triggered from an inline row button; name the estate
-        // so the operator can confirm they hit the row they meant.
-        const estate = informationQuery.data?.items.find((item) => item.id === id);
-        const label =
-          estate && "estateName" in estate ? (estate as { estateName?: string }).estateName : null;
-        if (!window.confirm(`確定刪除「${label ?? "此屋苑"}」？此操作無法復原。`)) return;
-        mutation.mutate({ action: "delete-estate", id });
-      }}
-    />
+    <>
+      <ConfirmActionDialog
+        open={deleteEstateId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteEstateId(null);
+        }}
+        title={copy.estates.delete}
+        consequence={copy.estates.confirmDelete(estateLabel ?? copy.estates.thisEstate)}
+        confirmLabel={copy.estates.delete}
+        destructive
+        reason="none"
+        onConfirm={async () => {
+          if (deleteEstateId !== null)
+            await mutation.mutateAsync({ action: "delete-estate", id: deleteEstateId });
+        }}
+      />
+      <AdoptionInformationManagementView
+        activeTab={activeTab}
+        data={informationQuery.data}
+        loading={informationQuery.isLoading}
+        loadFailure={
+          informationQuery.error
+            ? {
+                error: informationQuery.error,
+                heading: adminErrorMessage(informationQuery.error, language),
+                onRetry: () => void informationQuery.refetch(),
+              }
+            : null
+        }
+        // A failed delete is shown inside its confirm dialog, not twice.
+        error={
+          mutation.variables?.action === "delete-estate"
+            ? null
+            : adminErrorMessage(mutation.error, language)
+        }
+        query={query}
+        page={page}
+        pending={mutation.isPending}
+        onTabChange={handleTabChange}
+        onQueryChange={(value) => {
+          setQuery(value);
+          setPage(1);
+        }}
+        onPageChange={setPage}
+        onSaveFee={async (input) =>
+          ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee })
+            .fee
+        }
+        onMoveFee={(input, direction) => {
+          if (mutation.isPending || reorderInFlight.current) return;
+          const pair = moveFeeWithinSpecies(
+            informationQuery.data?.items ?? [],
+            input.id,
+            direction,
+          );
+          if (pair.length !== 2 || !pair[0] || !pair[1]) return;
+          reorderInFlight.current = true;
+          void mutation
+            .mutateAsync({
+              action: "move-fees",
+              input: {
+                firstId: pair[0].id,
+                secondId: pair[1].id,
+                expectedVersions: { first: pair[0].version, second: pair[1].version },
+              },
+            })
+            .catch(() => undefined)
+            .finally(() => {
+              reorderInFlight.current = false;
+            });
+        }}
+        onCreateEstate={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "create-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onUpdateEstate={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "update-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onSetEstatePublication={async (input) =>
+          (
+            (await mutation.mutateAsync({ action: "publish-estate", input })) as {
+              estate: DogFriendlyEstate;
+            }
+          ).estate
+        }
+        onDeleteEstate={setDeleteEstateId}
+      />
+    </>
   );
 }
 
@@ -361,6 +420,9 @@ type ViewProps = {
   activeTab: AdoptionContentTab;
   data?: AdminAdoptionInformationPage;
   loading?: boolean;
+  /** The fees or estates failed to load. Shown instead of the lists. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save. */
   error?: string | null;
   query: string;
   page?: number;
@@ -380,6 +442,7 @@ export function AdoptionInformationManagementView({
   activeTab,
   data,
   loading = false,
+  loadFailure = null,
   error,
   query,
   page = 1,
@@ -394,22 +457,21 @@ export function AdoptionInformationManagementView({
   onSetEstatePublication,
   onDeleteEstate,
 }: ViewProps) {
+  const copy = useAdminCopy(adoptionInformationCopy);
   const fees = data?.items.filter(isFee) ?? [];
   const estates = data?.items.filter(isEstate) ?? [];
 
   return (
     <div className="space-y-6 p-6">
       <div>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">領養</p>
-        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">領養資料管理</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          管理公開領養費用及可養狗屋苑參考名單。
-        </p>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         <a
           href="/admin/content/adoption-guides"
           className="mt-3 inline-flex rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
         >
-          {"\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c"}
+          {copy.guideReleases}
         </a>
       </div>
 
@@ -418,30 +480,39 @@ export function AdoptionInformationManagementView({
       {activeTab === "estates" ? (
         <label className="block max-w-xl space-y-1 text-sm font-semibold">
           <span className="inline-flex items-center gap-2">
-            <Search className="h-4 w-4" /> 搜尋屋苑
+            <Search className="h-4 w-4" /> {copy.searchEstates}
           </span>
           <input
             value={query}
             onChange={(event) => onQueryChange?.(event.target.value)}
             maxLength={180}
             className={inputClass}
-            placeholder="屋苑或地區"
+            placeholder={copy.searchPlaceholder}
           />
         </label>
       ) : null}
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
         </p>
       ) : null}
-      {loading ? <p aria-live="polite">載入領養資料中…</p> : null}
+      {loading ? <p aria-live="polite">{copy.loading}</p> : null}
 
-      {!loading && activeTab === "fees" ? (
-        <section className="space-y-6" aria-label="領養費用">
+      {!loading && !loadFailure && activeTab === "fees" ? (
+        <section className="space-y-6" aria-label={copy.fees.section}>
           {(["dog", "cat"] as const).map((animalType) => (
             <div key={animalType} className="space-y-3">
-              <h2 className="text-lg font-bold">{animalType === "dog" ? "狗隻" : "貓隻"}</h2>
+              <h2 className="text-lg font-bold">
+                {animalType === "dog" ? copy.fees.dogs : copy.fees.cats}
+              </h2>
               {fees.filter((fee) => fee.animalType === animalType).length ? (
                 fees
                   .filter((fee) => fee.animalType === animalType)
@@ -455,15 +526,15 @@ export function AdoptionInformationManagementView({
                     />
                   ))
               ) : (
-                <p className="text-sm text-[var(--color-text-muted)]">沒有領養費用資料</p>
+                <p className="text-sm text-[var(--color-text-muted)]">{copy.fees.empty}</p>
               )}
             </div>
           ))}
         </section>
       ) : null}
 
-      {!loading && activeTab === "estates" ? (
-        <section className="space-y-4" aria-label="可養狗屋苑">
+      {!loading && !loadFailure && activeTab === "estates" ? (
+        <section className="space-y-4" aria-label={copy.estates.section}>
           <EstateEditor pending={pending} onCreate={onCreateEstate} />
           {estates.length ? (
             estates.map((estate) => (
@@ -477,7 +548,7 @@ export function AdoptionInformationManagementView({
               />
             ))
           ) : (
-            <p className="text-sm text-[var(--color-text-muted)]">沒有可養狗屋苑資料</p>
+            <p className="text-sm text-[var(--color-text-muted)]">{copy.estates.empty}</p>
           )}
         </section>
       ) : null}
@@ -488,8 +559,8 @@ export function AdoptionInformationManagementView({
           pageSize={50}
           total={data?.total}
           onPageChange={onPageChange}
-          label="可養狗屋苑"
-          failed={Boolean(error)}
+          label={copy.estates.pager}
+          failed={Boolean(error || loadFailure)}
         />
       ) : null}
     </div>
@@ -507,6 +578,7 @@ function FeeEditor({
   onSave?: (input: UpdateFeeContentInput) => Promise<AdoptionFee>;
   onMove?: (fee: AdoptionFee, direction: -1 | 1) => void;
 }) {
+  const copy = useAdminCopy(adoptionInformationCopy).fees;
   const [draft, setDraft] = useState(fee);
   const [dirty, setDirty] = useState(false);
   const [conflict, setConflict] = useState(false);
@@ -545,10 +617,11 @@ function FeeEditor({
     <div className="space-y-2">
       {conflict ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          領養費用已由其他人更新。請檢查最新版本後重新輸入。
-          {fee.version <= knownVersion.current ? "最新資料暫未載入，請重新整理頁面。" : null}
+          {copy.conflict}
+          {fee.version <= knownVersion.current ? copy.hintSeparator + copy.staleHint : null}
           <button
             type="button"
+            className="ml-2"
             disabled={fee.version <= knownVersion.current}
             onClick={() => {
               knownVersion.current = fee.version;
@@ -557,13 +630,13 @@ function FeeEditor({
               setConflict(false);
             }}
           >
-            載入最新費用
+            {copy.loadLatest}
           </button>
         </p>
       ) : null}
       <div className="grid gap-2 md:grid-cols-[1fr_12rem_auto]">
         <input
-          aria-label="費用項目"
+          aria-label={copy.itemLabel}
           value={draft.itemName}
           onChange={(event) => {
             setDraft({ ...draft, itemName: event.target.value });
@@ -572,7 +645,7 @@ function FeeEditor({
           className={inputClass}
         />
         <input
-          aria-label="價格"
+          aria-label={copy.priceLabel}
           value={draft.priceHkd}
           onChange={(event) => {
             setDraft({ ...draft, priceHkd: event.target.value });
@@ -581,25 +654,27 @@ function FeeEditor({
           className={inputClass}
         />
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="outline"
             type="button"
-            aria-label="上移"
+            aria-label={copy.moveUp}
             disabled={pending || dirty || conflict}
             onClick={() => onMove?.(draft, -1)}
           >
-            <ChevronUp className="h-4 w-4" /> 上移
-          </button>
-          <button
+            <ChevronUp className="h-4 w-4" /> {copy.moveUp}
+          </Button>
+          <Button
+            variant="outline"
             type="button"
-            aria-label="下移"
+            aria-label={copy.moveDown}
             disabled={pending || dirty || conflict}
             onClick={() => onMove?.(draft, 1)}
           >
-            <ChevronDown className="h-4 w-4" /> 下移
-          </button>
-          <button type="button" disabled={pending || conflict} onClick={() => void save()}>
-            儲存
-          </button>
+            <ChevronDown className="h-4 w-4" /> {copy.moveDown}
+          </Button>
+          <Button type="button" disabled={pending || conflict} onClick={() => void save()}>
+            {copy.save}
+          </Button>
         </div>
       </div>
     </div>
@@ -630,6 +705,7 @@ export function EstateEditor({
   onPublication?: (input: SetEstatePublicationInput) => Promise<DogFriendlyEstate>;
   onDelete?: (id: string) => void;
 }) {
+  const copy = useAdminCopy(adoptionInformationCopy).estates;
   const [createId, setCreateId] = useState(() => crypto.randomUUID());
   const [draft, setDraft] = useState<EstateContentFields>(
     estate ? estateFields(estate) : { estateName: "", district: "", notes: null, sortOrder: 0 },
@@ -700,13 +776,14 @@ export function EstateEditor({
 
   return (
     <div className="space-y-2 border-b border-[var(--color-border)] pb-4">
-      <h2 className="font-bold">{estate ? "編輯屋苑" : "新增屋苑"}</h2>
+      <h2 className="font-bold">{estate ? copy.editHeading : copy.addHeading}</h2>
       {conflict && estate ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          此屋苑已由其他人更新。請先檢查最新版本，再重新輸入你的修改。
-          {estate.version <= knownVersion.current ? "最新資料暫未載入，請重新整理頁面。" : null}
+          {copy.conflict}
+          {estate.version <= knownVersion.current ? copy.hintSeparator + copy.staleHint : null}
           <button
             type="button"
+            className="ml-2"
             disabled={estate.version <= knownVersion.current}
             onClick={() => {
               knownVersion.current = estate.version;
@@ -716,68 +793,74 @@ export function EstateEditor({
               setConflict(false);
             }}
           >
-            載入最新版本
+            {copy.loadLatest}
           </button>
         </p>
       ) : null}
       <div className="grid gap-2 md:grid-cols-3">
         <input
-          aria-label="屋苑名稱"
+          aria-label={copy.nameLabel}
           value={draft.estateName}
           onChange={(event) => {
             setDraft({ ...draft, estateName: event.target.value });
             setDirty(true);
           }}
           className={inputClass}
-          placeholder="屋苑名稱"
+          placeholder={copy.nameLabel}
         />
         <input
-          aria-label="地區"
+          aria-label={copy.districtLabel}
           value={draft.district}
           onChange={(event) => {
             setDraft({ ...draft, district: event.target.value });
             setDirty(true);
           }}
           className={inputClass}
-          placeholder="地區"
+          placeholder={copy.districtLabel}
         />
         <input
-          aria-label="備註"
+          aria-label={copy.notesLabel}
           value={draft.notes ?? ""}
           onChange={(event) => {
             setDraft({ ...draft, notes: event.target.value || null });
             setDirty(true);
           }}
           className={inputClass}
-          placeholder="備註（選填）"
+          placeholder={copy.notesPlaceholder}
         />
       </div>
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
           type="button"
           disabled={pending || conflict || !draft.estateName.trim() || !draft.district.trim()}
           onClick={() => void save()}
         >
           {estate ? (
-            "編輯"
+            copy.save
           ) : (
             <>
-              <Plus className="inline h-4 w-4" /> 新增屋苑
+              <Plus className="inline h-4 w-4" /> {copy.add}
             </>
           )}
-        </button>
+        </Button>
         {estate ? (
           <>
-            <button
+            <Button
+              variant="outline"
               type="button"
               disabled={pending || dirty || conflict}
               onClick={() => void togglePublication()}
             >
-              {published ? "取消發佈" : "發佈"}
-            </button>
-            <button type="button" disabled={pending} onClick={() => onDelete?.(estate.id)}>
-              <Trash2 className="inline h-4 w-4" /> 刪除
-            </button>
+              {published ? copy.unpublish : copy.publish}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              disabled={pending}
+              onClick={() => onDelete?.(estate.id)}
+            >
+              <Trash2 className="inline h-4 w-4" /> {copy.delete}
+            </Button>
           </>
         ) : null}
       </div>

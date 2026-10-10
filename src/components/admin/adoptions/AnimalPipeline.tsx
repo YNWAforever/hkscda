@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit3, RefreshCcw, Save, Search } from "lucide-react";
+import { Edit3, RefreshCcw, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
@@ -10,24 +10,20 @@ import type {
   CoordinatorStatus,
   CoordinatorTask,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../../ui/dialog";
 import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Switch } from "../../ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
-import { Textarea } from "../../ui/textarea";
+import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { confirmActionCopy } from "../confirmActionCopy";
+import { LoadFailure } from "../LoadFailure";
+import { useAdminCopy } from "../i18n/copy";
+import { localizedText } from "../i18n/localizedText";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildAnimalPipelineExportSearchParams,
@@ -35,14 +31,18 @@ import {
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
   hasUnsavedProfileChanges,
+  pipelineReadErrorText,
   readPipelineLookup,
   resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
   type AnimalPipelineRow,
 } from "./animalPipelineLogic";
+import { animalPipelineCopy } from "./animalPipelineCopy";
+import { AnimalProfileDialog } from "./AnimalProfileDialog";
+import { StatusPill, type StatusTone } from "../StatusBadge";
 import { ExportButton } from "./ExportButton";
-import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
+import { adoptionFormatCopy } from "./formatCopy";
 
 type InternalProfileResponse = {
   profile: AnimalInternalProfile;
@@ -84,79 +84,25 @@ const EMPTY_STATUSES: CoordinatorStatus[] = [];
 const EMPTY_TASKS: CoordinatorTask[] = [];
 const EMPTY_PIPELINE_ROWS: AnimalPipelineRow[] = [];
 
-const STATUS_OPTIONS: Array<{ value: AnimalStatus | "all"; label: string }> = [
-  { value: "all", label: "All statuses" },
-  { value: "available", label: "Available" },
-  { value: "fostered", label: "Fostered" },
-  { value: "adopted", label: "Adopted" },
-];
+const STATUS_FILTERS = ["all", "available", "fostered", "adopted"] as const;
+const LIFECYCLE_STATUSES = ["available", "fostered", "adopted"] as const;
+const TYPE_FILTERS = ["all", "cat", "dog", "sponsor"] as const;
+const ADOPTABLE_FILTERS = ["all", "adoptable", "not_adoptable"] as const;
+const SUPPORT_POOL_FILTERS = ["all", "inside", "outside"] as const;
 
-const STATUS_ACTIONS: Array<{ value: AnimalStatus; label: string }> = [
-  { value: "available", label: "Available" },
-  { value: "fostered", label: "Fostered" },
-  { value: "adopted", label: "Adopted" },
-];
-
-const TYPE_OPTIONS: Array<{ value: AnimalType | "all"; label: string }> = [
-  { value: "all", label: "All types" },
-  { value: "cat", label: "Cats" },
-  { value: "dog", label: "Dogs" },
-  { value: "sponsor", label: "Sponsor" },
-];
-
-const ADOPTABLE_OPTIONS: Array<{ value: AnimalPipelineFilters["adoptable"]; label: string }> = [
-  { value: "all", label: "Any adoptable flag" },
-  { value: "adoptable", label: "Adoptable" },
-  { value: "not_adoptable", label: "Not adoptable" },
-];
-
-const SUPPORT_POOL_OPTIONS: Array<{
-  value: AnimalPipelineFilters["supportPool"];
-  label: string;
-}> = [
-  { value: "all", label: "Any support pool flag" },
-  { value: "inside", label: "Inside support pool" },
-  { value: "outside", label: "Outside support pool" },
-];
-
-const BOOLEAN_SELECT_OPTIONS = [
-  { value: "unknown", label: "Unknown" },
-  { value: "yes", label: "Yes" },
-  { value: "no", label: "No" },
-] as const;
-
-const STATUS_BADGE_CLASSES: Record<AnimalStatus, string> = {
-  available: "border-[var(--color-success)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  fostered:
-    "border-[var(--color-lavender-deep)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
-  adopted:
-    "border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
+const STATUS_TONES: Record<AnimalStatus, StatusTone> = {
+  available: "success",
+  fostered: "info",
+  adopted: "warning",
 };
 
 function cloneProfile(profile: AnimalInternalProfile): AnimalInternalProfile {
   return { ...profile };
 }
 
-function nullableBooleanToSelect(value: boolean | null) {
-  if (value === true) return "yes";
-  if (value === false) return "no";
-  return "unknown";
-}
-
-function selectToNullableBoolean(value: string) {
-  if (value === "yes") return true;
-  if (value === "no") return false;
-  return null;
-}
-
 function formatFallback(value: string | null | undefined) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : "-";
-}
-
-function formatDate(value: string | null | undefined) {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed.slice(0, 10) : "-";
 }
 
 async function readAnimalPipeline(searchParams: URLSearchParams) {
@@ -196,19 +142,6 @@ async function readAnimalTasks(animalId: string) {
   return response.tasks;
 }
 
-function statusLabel(status: AnimalStatus) {
-  return STATUS_ACTIONS.find((option) => option.value === status)?.label ?? status;
-}
-
-function ProfileFieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return (
-    <p role="alert" className="text-xs text-[var(--color-error)]">
-      {message}
-    </p>
-  );
-}
-
 function useDebouncedValue<T>(value: T, delayMs: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -221,6 +154,10 @@ function useDebouncedValue<T>(value: T, delayMs: number) {
 }
 
 export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }) {
+  const { language } = useAdminLanguage();
+  const copy = useAdminCopy(animalPipelineCopy);
+  const shared = useAdminCopy(confirmActionCopy);
+  const format = useAdminCopy(adoptionFormatCopy);
   const queryClient = useQueryClient();
   const appliedInitialAnimalId = useRef<string | null>(null);
   const [query, setQuery] = useState("");
@@ -234,6 +171,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   });
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState<AnimalInternalProfile | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<(typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]>(25);
   const debouncedQuery = useDebouncedValue(query, PIPELINE_SEARCH_DEBOUNCE_MS);
@@ -337,11 +275,10 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     sourcesQuery.isFetching ||
     statusesQuery.isFetching;
 
-  const readErrors = [
-    positionsQuery.error?.message,
-    sourcesQuery.error?.message,
-    statusesQuery.error?.message,
-  ].filter(Boolean);
+  const readFailures = [positionsQuery, sourcesQuery, statusesQuery].flatMap((lookup) => {
+    const message = pipelineReadErrorText(lookup.error, language);
+    return lookup.error && message ? [{ error: lookup.error, message, retry: lookup.refetch }] : [];
+  });
 
   const lifecycleMutation = useMutation<void, Error, { animalId: string; status: AnimalStatus }>({
     mutationFn: ({ animalId, status }) =>
@@ -447,12 +384,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
    */
   function requestCloseProfileDialog() {
     const saved = selectedRow?.profile;
-    if (
-      profileForm &&
-      saved &&
-      hasUnsavedProfileChanges(profileForm, saved) &&
-      !window.confirm("尚未儲存的變更將會遺失，確定關閉？")
-    ) {
+    if (profileForm && saved && hasUnsavedProfileChanges(profileForm, saved)) {
+      setDiscardOpen(true);
       return;
     }
     closeProfileDialog();
@@ -485,7 +418,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       ? [
           {
             id: profileForm.current_position_id,
-            name: "Unknown position",
+            name: copy.unknownPosition,
             type: "unknown",
             for_cat: true,
             for_dog: true,
@@ -504,7 +437,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       ? [
           {
             id: profileForm.arrival_source_id,
-            name_zh: "Unknown source",
+            name_zh: copy.unknownSource,
             name_en: null,
             is_active: false,
           },
@@ -519,10 +452,14 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     supportPoolOnPage: rows.filter((row) => row.profile.is_inside_support_pool).length,
   };
 
+  const animalName = (row: AnimalPipelineRow) => localizedText(row.name, row.name_en, language);
+  const arrivalSourceName = (row: AnimalPipelineRow) =>
+    localizedText(row.arrivalSource?.name_zh, row.arrivalSource?.name_en, language);
+
   const animalColumns: DataTableColumn<AnimalPipelineRow>[] = [
     {
       id: "animal",
-      header: "Animal",
+      header: copy.columns.animal,
       className: "w-[28%] px-4",
       cell: (row) => (
         <div className="flex min-w-0 items-center gap-3">
@@ -538,9 +475,15 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             </div>
           )}
           <div className="min-w-0">
-            <div className="truncate font-semibold text-[var(--color-panel)]">{row.name}</div>
+            <div className="truncate font-semibold text-[var(--color-panel)]">
+              {animalName(row)}
+            </div>
             <div className="truncate text-xs text-[var(--color-text-muted)]">
-              {formatFallback(row.name_en)} / {row.type} / {row.age}
+              {copy.animalSubline(
+                formatFallback(row.name_en),
+                copy.animalTypeLabels[row.type],
+                row.age,
+              )}
             </div>
           </div>
         </div>
@@ -548,16 +491,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     },
     {
       id: "lifecycle",
-      header: "Lifecycle",
+      header: copy.columns.lifecycle,
       className: "w-44",
       cell: (row) => {
         const isUpdatingStatus =
           lifecycleMutation.isPending && lifecycleMutation.variables?.animalId === row.id;
         return (
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
-              {statusLabel(row.status)}
-            </Badge>
+            <StatusPill tone={STATUS_TONES[row.status]}>
+              {copy.statusOptions[row.status]}
+            </StatusPill>
             <Select
               value={row.status}
               disabled={isUpdatingStatus}
@@ -565,13 +508,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                 lifecycleMutation.mutate({ animalId: row.id, status: value as AnimalStatus })
               }
             >
-              <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="h-8 w-28">
+              <SelectTrigger
+                aria-label={copy.updateLifecycle(animalName(row))}
+                className="h-8 w-28"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {STATUS_ACTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                {LIFECYCLE_STATUSES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {copy.statusOptions[value]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -582,58 +528,58 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     },
     {
       id: "flags",
-      header: "Flags",
+      header: copy.columns.flags,
       cell: (row) => (
         <div className="flex min-h-8 flex-wrap items-center gap-1.5">
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {row.profile.is_adoptable ? "Adoptable" : "Not adoptable"}
+            {row.profile.is_adoptable ? copy.flags.adoptable : copy.flags.notAdoptable}
           </Badge>
           {row.profile.is_inside_support_pool && (
             <Badge
               variant="outline"
               className="border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
             >
-              Support pool
+              {copy.flags.supportPool}
             </Badge>
           )}
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
           >
-            Chip {row.profile.has_chip === null ? "-" : row.profile.has_chip ? "Y" : "N"}
+            {copy.flags.chip(row.profile.has_chip)}
           </Badge>
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
           >
-            Desex {row.profile.is_desexed === null ? "-" : row.profile.is_desexed ? "Y" : "N"}
+            {copy.flags.neutered(row.profile.is_desexed)}
           </Badge>
         </div>
       ),
     },
     {
       id: "position",
-      header: "Position",
+      header: copy.columns.position,
       cell: (row) => (
         <div className="text-sm text-[var(--color-panel)]">
           <div>{formatFallback(row.currentPosition?.name)}</div>
           <div className="text-xs text-[var(--color-text-muted)]">
-            Cage {formatFallback(row.profile.cage)}
+            {copy.cage(formatFallback(row.profile.cage))}
           </div>
         </div>
       ),
     },
     {
       id: "arrival",
-      header: "Arrival",
+      header: copy.columns.arrival,
       cell: (row) => (
         <div className="text-sm text-[var(--color-panel)]">
-          <div>{formatDate(row.profile.arrival_date)}</div>
+          <div>{format.date(row.profile.arrival_date)}</div>
           <div className="text-xs text-[var(--color-text-muted)]">
-            {formatFallback(row.arrivalSource?.name_zh)}
+            {formatFallback(arrivalSourceName(row))}
             {row.profile.internal_code ? ` / ${row.profile.internal_code}` : ""}
           </div>
         </div>
@@ -641,13 +587,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     },
     {
       id: "profile",
-      header: "Profile",
+      header: copy.columns.profile,
       className: "w-32 text-right",
       cell: (row) => (
         <div className="flex justify-end">
           <Button type="button" size="sm" variant="outline" onClick={() => openProfileDialog(row)}>
             <Edit3 className="h-4 w-4" />
-            Edit
+            {copy.edit}
           </Button>
         </div>
       ),
@@ -672,17 +618,19 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             </div>
           )}
           <div className="min-w-0">
-            <div className="font-semibold text-[var(--color-panel)]">{row.name}</div>
+            <div className="font-semibold text-[var(--color-panel)]">{animalName(row)}</div>
             <div className="text-xs text-[var(--color-text-muted)]">
-              {formatFallback(row.name_en)} / {row.type} / {row.age}
+              {copy.animalSubline(
+                formatFallback(row.name_en),
+                copy.animalTypeLabels[row.type],
+                row.age,
+              )}
             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
-            {statusLabel(row.status)}
-          </Badge>
+          <StatusPill tone={STATUS_TONES[row.status]}>{copy.statusOptions[row.status]}</StatusPill>
           <Select
             value={row.status}
             disabled={isUpdatingStatus}
@@ -692,13 +640,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           >
             {/* min-h-11 to match the Edit button below it; h-10 left this the
                 one sub-44px touch target in the card. */}
-            <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="min-h-11 w-40">
+            <SelectTrigger
+              aria-label={copy.updateLifecycle(animalName(row))}
+              className="min-h-11 w-40"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {STATUS_ACTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {LIFECYCLE_STATUSES.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {copy.statusOptions[value]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -710,45 +661,45 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {row.profile.is_adoptable ? "Adoptable" : "Not adoptable"}
+            {row.profile.is_adoptable ? copy.flags.adoptable : copy.flags.notAdoptable}
           </Badge>
           {row.profile.is_inside_support_pool && (
             <Badge
               variant="outline"
               className="border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
             >
-              Support pool
+              {copy.flags.supportPool}
             </Badge>
           )}
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
           >
-            Chip {row.profile.has_chip === null ? "-" : row.profile.has_chip ? "Y" : "N"}
+            {copy.flags.chip(row.profile.has_chip)}
           </Badge>
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
           >
-            Desex {row.profile.is_desexed === null ? "-" : row.profile.is_desexed ? "Y" : "N"}
+            {copy.flags.neutered(row.profile.is_desexed)}
           </Badge>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <div className="text-xs text-[var(--color-text-muted)]">Position</div>
+            <div className="text-xs text-[var(--color-text-muted)]">{copy.columns.position}</div>
             <div className="text-[var(--color-panel)]">
               {formatFallback(row.currentPosition?.name)}
             </div>
             <div className="text-xs text-[var(--color-text-muted)]">
-              Cage {formatFallback(row.profile.cage)}
+              {copy.cage(formatFallback(row.profile.cage))}
             </div>
           </div>
           <div>
-            <div className="text-xs text-[var(--color-text-muted)]">Arrival</div>
-            <div className="text-[var(--color-panel)]">{formatDate(row.profile.arrival_date)}</div>
+            <div className="text-xs text-[var(--color-text-muted)]">{copy.columns.arrival}</div>
+            <div className="text-[var(--color-panel)]">{format.date(row.profile.arrival_date)}</div>
             <div className="text-xs text-[var(--color-text-muted)]">
-              {formatFallback(row.arrivalSource?.name_zh)}
+              {formatFallback(arrivalSourceName(row))}
               {row.profile.internal_code ? ` / ${row.profile.internal_code}` : ""}
             </div>
           </div>
@@ -761,7 +712,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           className="min-h-[44px] w-full"
         >
           <Edit3 className="h-4 w-4" />
-          Edit profile
+          {copy.editProfile}
         </Button>
       </div>
     );
@@ -771,16 +722,14 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Animal pipeline</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Internal lifecycle, placement, support pool, and medical readiness.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <ExportButton kind="animals" searchParams={exportSearchParams} />
           <Button type="button" variant="outline" onClick={refetchAll} disabled={isFetching}>
             <RefreshCcw className="h-4 w-4" />
-            Refresh
+            {copy.refresh}
           </Button>
         </div>
       </div>
@@ -795,9 +744,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                 setQuery(event.target.value);
                 setPage(1);
               }}
-              aria-label="Search animal pipeline"
+              aria-label={copy.searchLabel}
               className="h-9 pl-9"
-              placeholder="Search name, code, cage, position"
+              placeholder={copy.searchPlaceholder}
             />
           </label>
 
@@ -805,13 +754,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             value={filters.status}
             onValueChange={(value) => updateFilter("status", value as AnimalStatus | "all")}
           >
-            <SelectTrigger aria-label="Filter by lifecycle status" className="h-9">
+            <SelectTrigger aria-label={copy.filters.statusLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {STATUS_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {STATUS_FILTERS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {copy.statusOptions[value]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -821,13 +770,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             value={filters.type}
             onValueChange={(value) => updateFilter("type", value as AnimalType | "all")}
           >
-            <SelectTrigger aria-label="Filter by animal type" className="h-9">
+            <SelectTrigger aria-label={copy.filters.typeLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {TYPE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {TYPE_FILTERS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {copy.typeOptions[value]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -839,13 +788,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               updateFilter("adoptable", value as AnimalPipelineFilters["adoptable"])
             }
           >
-            <SelectTrigger aria-label="Filter by adoptable flag" className="h-9">
+            <SelectTrigger aria-label={copy.filters.adoptableLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {ADOPTABLE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {ADOPTABLE_FILTERS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {copy.adoptableOptions[value]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -857,13 +806,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               updateFilter("supportPool", value as AnimalPipelineFilters["supportPool"])
             }
           >
-            <SelectTrigger aria-label="Filter by support pool flag" className="h-9">
+            <SelectTrigger aria-label={copy.filters.supportPoolLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {SUPPORT_POOL_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {SUPPORT_POOL_FILTERS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {copy.supportPoolOptions[value]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -873,12 +822,12 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             value={filters.positionId}
             onValueChange={(value) => updateFilter("positionId", value)}
           >
-            <SelectTrigger aria-label="Filter by current position" className="h-9">
+            <SelectTrigger aria-label={copy.filters.positionLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All positions</SelectItem>
-              <SelectItem value="none">No position</SelectItem>
+              <SelectItem value="all">{copy.filters.allPositions}</SelectItem>
+              <SelectItem value="none">{copy.filters.noPosition}</SelectItem>
               {positionOptions.map((position) => (
                 <SelectItem key={position.id} value={position.id}>
                   {position.name}
@@ -889,16 +838,20 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]"
+          >
             <Badge
               variant="outline"
               className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
             >
-              {counts.shown} shown
+              {copy.counts.shown(counts.shown)}
             </Badge>
-            <span>{counts.total} matching total</span>
-            <span>{counts.adoptableOnPage} adoptable on page</span>
-            <span>{counts.supportPoolOnPage} in support pool on page</span>
+            <span>{copy.counts.matching(counts.total)}</span>
+            <span>{copy.counts.adoptable(counts.adoptableOnPage)}</span>
+            <span>{copy.counts.supportPool(counts.supportPoolOnPage)}</span>
           </div>
           <Tabs value={groupBy} onValueChange={(value) => setGroupBy(value as typeof groupBy)}>
             <TabsList className="h-8 rounded-lg bg-[var(--color-lavender)] p-1">
@@ -906,45 +859,44 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                 value="status"
                 className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
               >
-                Status
+                {copy.groupBy.status}
               </TabsTrigger>
               <TabsTrigger
                 value="position"
                 className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
               >
-                Position
+                {copy.groupBy.position}
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        {readErrors.length > 0 && (
-          <div
-            className="space-y-1 border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
-            role="alert"
-          >
-            {readErrors.map((message, index) => (
-              <p key={`${index}:${message}`}>{message}</p>
-            ))}
-          </div>
-        )}
+        {readFailures.map(({ error, message, retry }) => (
+          <LoadFailure
+            key={message}
+            error={error}
+            onRetry={() => void retry()}
+            title={message}
+            className="rounded-none border-0 border-t"
+          />
+        ))}
         {lifecycleMutation.error && (
           <div
             className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
             role="alert"
           >
-            {lifecycleMutation.error.message}
+            {adminErrorMessage(lifecycleMutation.error, language) ?? ""}
           </div>
         )}
       </section>
 
       {pipelineQuery.error ? (
-        <section
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-error)]"
-          role="alert"
-        >
-          {pipelineQuery.error.message}
-        </section>
+        <LoadFailure
+          error={pipelineQuery.error}
+          onRetry={() => void pipelineQuery.refetch()}
+          title={adminErrorMessage(pipelineQuery.error, language) ?? undefined}
+          className="bg-[var(--color-surface)]"
+        />
       ) : (
         <div className="space-y-4">
           {pipelineQuery.isLoading &&
@@ -966,7 +918,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
 
           {!pipelineQuery.isLoading && groups.length === 0 && (
             <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-sm text-[var(--color-text-muted)]">
-              沒有符合篩選條件的動物。
+              {copy.empty}
             </section>
           )}
 
@@ -982,7 +934,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                     {group.label}
                   </h2>
                   <p className="text-xs text-[var(--color-text-muted)]">
-                    {group.rows.length} animals
+                    {copy.animalCount(group.rows.length)}
                   </p>
                 </div>
               </div>
@@ -998,9 +950,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
 
           {!pipelineQuery.isLoading && (
             <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
-              <span>
-                第 {resolvedPage} 頁，共 {totalPages} 頁
-              </span>
+              <span>{copy.page(resolvedPage, totalPages)}</span>
               <div className="flex items-center gap-2">
                 <Select
                   value={String(resolvedPageSize)}
@@ -1009,7 +959,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                     setPage(1);
                   }}
                 >
-                  <SelectTrigger aria-label="Rows per page" className="h-8 w-20">
+                  <SelectTrigger aria-label={copy.rowsPerPage} className="h-8 w-20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1027,7 +977,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
                   disabled={resolvedPage <= 1 || isFetching}
                 >
-                  上一頁
+                  {copy.previous}
                 </Button>
                 <Button
                   type="button"
@@ -1036,7 +986,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
                   disabled={resolvedPage >= totalPages || isFetching}
                 >
-                  下一頁
+                  {copy.next}
                 </Button>
               </div>
             </div>
@@ -1044,307 +994,36 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         </div>
       )}
 
-      <Dialog
+      <ConfirmActionDialog
+        open={discardOpen}
+        onOpenChange={setDiscardOpen}
+        title={shared.discardChanges}
+        consequence={copy.discardConfirm}
+        confirmLabel={shared.discardChanges}
+        destructive
+        reason="none"
+        onConfirm={async () => closeProfileDialog()}
+      />
+      <AnimalProfileDialog
         open={Boolean(selectedAnimalId)}
-        onOpenChange={(open) => !open && requestCloseProfileDialog()}
-      >
-        <DialogContent className="max-h-[86vh] max-w-4xl overflow-y-auto border-[var(--color-border)] bg-[var(--color-surface)]">
-          <DialogHeader>
-            <DialogTitle className="text-[var(--color-panel)]">
-              Internal profile{selectedRow ? `: ${selectedRow.name}` : ""}
-            </DialogTitle>
-            <DialogDescription className="text-[var(--color-text-muted)]">
-              Placement, intake, medical, and coordinator-only notes.
-            </DialogDescription>
-          </DialogHeader>
-
-          {profileForm && (
-            <>
-              <form className="space-y-5" onSubmit={handleProfileSubmit}>
-                <section className="grid gap-4 md:grid-cols-3">
-                  <div className="grid gap-2">
-                    <Label htmlFor="internal-code">Internal code</Label>
-                    <Input
-                      id="internal-code"
-                      value={profileForm.internal_code ?? ""}
-                      onChange={(event) => updateProfileField("internal_code", event.target.value)}
-                      placeholder="CAT-001"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="arrival-date">Arrival date</Label>
-                    <Input
-                      id="arrival-date"
-                      type="date"
-                      className="h-11"
-                      value={profileForm.arrival_date ?? ""}
-                      onChange={(event) => updateProfileField("arrival_date", event.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="arrival-source">Arrival source</Label>
-                    <Select
-                      value={profileForm.arrival_source_id ?? "none"}
-                      disabled={profileSourceOptions.length === 0}
-                      onValueChange={(value) =>
-                        updateProfileField("arrival_source_id", value === "none" ? null : value)
-                      }
-                    >
-                      <SelectTrigger id="arrival-source" aria-label="Arrival source">
-                        <SelectValue
-                          placeholder={
-                            profileSourceOptions.length === 0
-                              ? "No sources configured"
-                              : "Arrival source"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No source</SelectItem>
-                        {profileSourceOptions.map((source) => (
-                          <SelectItem key={source.id} value={source.id}>
-                            {source.name_zh}
-                            {source.name_en ? ` / ${source.name_en}` : ""}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {profileSourceOptions.length === 0 && (
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        No arrival sources are configured.
-                      </p>
-                    )}
-                  </div>
-                </section>
-
-                <section className="grid gap-4 md:grid-cols-[minmax(0,1fr)_160px]">
-                  <div className="grid gap-2">
-                    <Label htmlFor="current-position">Current position</Label>
-                    <Select
-                      value={profileForm.current_position_id ?? "none"}
-                      disabled={profilePositionOptions.length === 0}
-                      onValueChange={(value) =>
-                        updateProfileField("current_position_id", value === "none" ? null : value)
-                      }
-                    >
-                      <SelectTrigger id="current-position" aria-label="Current position">
-                        <SelectValue
-                          placeholder={
-                            profilePositionOptions.length === 0
-                              ? "No positions configured"
-                              : "Current position"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No position</SelectItem>
-                        {profilePositionOptions.map((position) => (
-                          <SelectItem key={position.id} value={position.id}>
-                            {position.name} ({position.type})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {profilePositionOptions.length === 0 && (
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        No animal positions are configured.
-                      </p>
-                    )}
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="cage">Cage</Label>
-                    <Input
-                      id="cage"
-                      value={profileForm.cage ?? ""}
-                      onChange={(event) => updateProfileField("cage", event.target.value)}
-                      placeholder="A-12"
-                    />
-                  </div>
-                </section>
-
-                <section className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-3 rounded-md border border-[var(--color-border)] p-3">
-                    <div className="grid gap-2">
-                      <Label htmlFor="has-chip">Microchip</Label>
-                      <Select
-                        value={nullableBooleanToSelect(profileForm.has_chip)}
-                        onValueChange={(value) =>
-                          updateProfileField("has_chip", selectToNullableBoolean(value))
-                        }
-                      >
-                        <SelectTrigger id="has-chip" aria-label="Microchip status">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {BOOLEAN_SELECT_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="chip-remarks">Chip remarks</Label>
-                      <Textarea
-                        id="chip-remarks"
-                        value={profileForm.chip_remarks ?? ""}
-                        onChange={(event) => updateProfileField("chip_remarks", event.target.value)}
-                        rows={3}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 rounded-md border border-[var(--color-border)] p-3">
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="grid gap-2">
-                        <Label htmlFor="is-desexed">Desexed</Label>
-                        <Select
-                          value={nullableBooleanToSelect(profileForm.is_desexed)}
-                          onValueChange={(value) =>
-                            updateProfileField("is_desexed", selectToNullableBoolean(value))
-                          }
-                        >
-                          <SelectTrigger id="is-desexed" aria-label="Desexed status">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {BOOLEAN_SELECT_OPTIONS.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="desexed-at">Desexed date</Label>
-                        <Input
-                          id="desexed-at"
-                          type="date"
-                          className="h-11"
-                          value={profileForm.desexed_at ?? ""}
-                          onChange={(event) => updateProfileField("desexed_at", event.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="desex-remarks">Desex remarks</Label>
-                      <Textarea
-                        id="desex-remarks"
-                        value={profileForm.desex_remarks ?? ""}
-                        onChange={(event) =>
-                          updateProfileField("desex_remarks", event.target.value)
-                        }
-                        rows={3}
-                      />
-                    </div>
-                  </div>
-                </section>
-
-                <section className="grid gap-3 md:grid-cols-2">
-                  <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-                    <span>
-                      <span className="block text-sm font-medium text-[var(--color-panel)]">
-                        Adoptable
-                      </span>
-                      <span className="text-xs text-[var(--color-text-muted)]">
-                        Controls internal readiness filters.
-                      </span>
-                    </span>
-                    <Switch
-                      checked={profileForm.is_adoptable}
-                      onCheckedChange={(checked) => updateProfileField("is_adoptable", checked)}
-                      aria-label="Adoptable"
-                    />
-                  </label>
-                  <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-                    <span>
-                      <span className="block text-sm font-medium text-[var(--color-panel)]">
-                        Support pool
-                      </span>
-                      <span className="text-xs text-[var(--color-text-muted)]">
-                        Marks animals needing internal support.
-                      </span>
-                    </span>
-                    <Switch
-                      checked={profileForm.is_inside_support_pool}
-                      onCheckedChange={(checked) =>
-                        updateProfileField("is_inside_support_pool", checked)
-                      }
-                      aria-label="Inside support pool"
-                    />
-                  </label>
-                </section>
-
-                <section className="grid gap-4 md:grid-cols-2">
-                  <div className="grid gap-2">
-                    <Label htmlFor="adopted-at">Adopted date</Label>
-                    <Input
-                      id="adopted-at"
-                      type="date"
-                      className="h-11"
-                      value={profileForm.adopted_at ?? ""}
-                      onChange={(event) => updateProfileField("adopted_at", event.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="deceased-at">Deceased date</Label>
-                    <Input
-                      id="deceased-at"
-                      type="date"
-                      className="h-11"
-                      value={profileForm.deceased_at ?? ""}
-                      onChange={(event) => updateProfileField("deceased_at", event.target.value)}
-                    />
-                  </div>
-                </section>
-
-                <section className="grid gap-2">
-                  <Label htmlFor="internal-remarks">Internal remarks</Label>
-                  <Textarea
-                    id="internal-remarks"
-                    value={profileForm.internal_remarks ?? ""}
-                    onChange={(event) => updateProfileField("internal_remarks", event.target.value)}
-                    rows={4}
-                  />
-                </section>
-
-                {saveProfileMutation.error && (
-                  <ProfileFieldError message={saveProfileMutation.error.message} />
-                )}
-
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={requestCloseProfileDialog}
-                    disabled={saveProfileMutation.isPending}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={saveProfileMutation.isPending}>
-                    <Save className="h-4 w-4" />
-                    {saveProfileMutation.isPending ? "Saving" : "Save profile"}
-                  </Button>
-                </DialogFooter>
-              </form>
-
-              <TaskPanel
-                title="Animal tasks"
-                subtitle="Open coordinator work for this animal"
-                tasks={selectedAnimalTasks}
-                statuses={statuses}
-                defaultLinks={{ animalId: selectedAnimalId ?? undefined }}
-                onChanged={invalidateSelectedAnimalTasks}
-              />
-              {selectedAnimalTasksQuery.error && (
-                <TaskPanelAsyncError message={selectedAnimalTasksQuery.error.message} />
-              )}
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+        animalName={selectedRow ? animalName(selectedRow) : null}
+        profileForm={profileForm}
+        sourceOptions={profileSourceOptions}
+        positionOptions={profilePositionOptions}
+        saving={saveProfileMutation.isPending}
+        saveError={adminErrorMessage(saveProfileMutation.error, language)}
+        onFieldChange={updateProfileField}
+        onSubmit={handleProfileSubmit}
+        onRequestClose={requestCloseProfileDialog}
+        animalId={selectedAnimalId}
+        tasks={selectedAnimalTasks}
+        statuses={statuses}
+        // admin-load-failure-ok: the dialog wraps this message in a LoadFailure with a retry
+        tasksError={adminErrorMessage(selectedAnimalTasksQuery.error, language)}
+        tasksCause={selectedAnimalTasksQuery.error}
+        onRetryTasks={() => void selectedAnimalTasksQuery.refetch()}
+        onTasksChanged={invalidateSelectedAnimalTasks}
+      />
     </div>
   );
 }

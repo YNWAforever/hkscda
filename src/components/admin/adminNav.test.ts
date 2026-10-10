@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
+import { canRoleAccessAdminArea, getAdminAreaForLocation } from "../../lib/admin/access";
+import type { AdminRole } from "../../lib/admin/access";
 import { adminCopy } from "./adminI18n";
 import {
   ADMIN_NAV_GROUPS,
@@ -125,17 +127,34 @@ describe("admin nav active state", () => {
   });
 
   test("uses the approved Traditional Chinese adoption information label", () => {
-    const item = ADMIN_NAV_ITEMS.find((candidate) => candidate.id === "adoption-information");
-
-    expect(item?.label).toBe("領養資訊");
     expect(adminCopy.zh.navItems["adoption-information"]).toBe("領養資訊");
-    expect(item?.label).not.toContain("?");
+    expect(adminCopy.zh.navItems["adoption-information"]).not.toContain("?");
   });
 
   test("has bilingual labels for every nav item", () => {
     for (const item of ADMIN_NAV_ITEMS) {
       expect(adminCopy.zh.navItems[item.id], `zh nav label for ${item.id}`).toBeString();
       expect(adminCopy.en.navItems[item.id], `en nav label for ${item.id}`).toBeString();
+    }
+  });
+
+  test("has a nav item for every label in the copy, and the same labels in both languages", () => {
+    // tsc keys the copy by AdminNavItemId, so a missing label already fails to compile; this
+    // catches the other direction, a label for an item that no longer exists.
+    const ids = ADMIN_NAV_ITEMS.map((item) => item.id).sort();
+    expect(Object.keys(adminCopy.zh.navItems).sort()).toEqual(ids);
+    expect(Object.keys(adminCopy.en.navItems).sort()).toEqual(ids);
+    const groups = ADMIN_NAV_GROUPS.map((group) => group.id).sort();
+    for (const language of ["zh", "en"] as const) {
+      expect(Object.keys(adminCopy[language].navGroups).sort()).toEqual(groups);
+      expect(Object.keys(adminCopy[language].navDescriptions).sort()).toEqual(groups);
+    }
+  });
+
+  test("every group's entry item is one of its own items", () => {
+    for (const group of ADMIN_NAV_GROUPS) {
+      const entry = ADMIN_NAV_ITEMS.find((item) => item.id === group.defaultItemId);
+      expect(entry?.group, `entry item of ${group.id}`).toBe(group.id);
     }
   });
 });
@@ -214,5 +233,56 @@ describe("grouped admin navigation", () => {
         "volunteers",
       ),
     ).toEqual(["volunteer-group-enquiries"]);
+  });
+});
+
+describe("the volunteer workspace pages in the navigation model", () => {
+  const volunteers = ADMIN_NAV_ITEMS.find((item) => item.id === "volunteers");
+  const children = volunteers?.children ?? [];
+  const ROLES: readonly AdminRole[] = ["staff", "treasurer", "admin"];
+
+  test("registers all thirteen pages as children of the volunteers item", () => {
+    expect(children.map((child) => child.id)).toEqual([
+      "overview",
+      "tasks",
+      "calendar",
+      "activities",
+      "operations",
+      "group-enquiries",
+      "people",
+      "qualifications",
+      "settings",
+      "daily-settings",
+      "assessments",
+      "sources",
+      "simulation",
+    ]);
+    expect(new Set(children.map((child) => child.to)).size).toBe(children.length);
+  });
+
+  test("keeps the top level at one entry per destination", () => {
+    expect(ADMIN_NAV_ITEMS.filter((item) => item.children)).toHaveLength(1);
+    expect(ADMIN_NAV_ITEMS).toHaveLength(25);
+  });
+
+  test("gives every child the roles that access.ts grants for its path", () => {
+    for (const child of children) {
+      const area = getAdminAreaForLocation({ pathname: child.to });
+      const granted = ROLES.filter((role) => canRoleAccessAdminArea(role, area));
+      expect([...child.roles].sort(), child.id).toEqual([...granted].sort());
+    }
+  });
+
+  test("a child that is also a top-level item has that item's roles", () => {
+    for (const child of children) {
+      const twin = ADMIN_NAV_ITEMS.find((item) => item.to === child.to);
+      if (!twin) continue;
+      const allowed = ROLES.filter((role) =>
+        getAdminNavigation(role, "/admin", "cat").groups.some((group) =>
+          group.items.some((item) => item.id === twin.id),
+        ),
+      );
+      expect([...child.roles].sort(), child.id).toEqual([...allowed].sort());
+    }
   });
 });

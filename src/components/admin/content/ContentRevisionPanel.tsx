@@ -1,10 +1,22 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import type { ContentRevisionSummary } from "../../../lib/content/lifecycle";
 import type { ContentDetail } from "../../../lib/content/types";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
+import { contentCommonCopy } from "./contentCommonCopy";
+import { editorCopy } from "./editorCopy";
+import { editorPanelsCopy } from "./editorPanelsCopy";
 type Revision = { id: string; version: number; snapshot: Record<string, unknown> };
+
+/** Why a restore failed: the caught error, whose reason is written when the panel renders. */
+type RestoreFailure = { cause: unknown };
+
 export function ContentRevisionPanel({
   content,
   disabled,
@@ -14,6 +26,8 @@ export function ContentRevisionPanel({
   disabled: boolean;
   onRestore: (id: string) => Promise<void>;
 }) {
+  const copy = useAdminCopy(editorPanelsCopy).revision;
+  const { language } = useAdminLanguage();
   const [cursor, setCursor] = useState<number>();
   const [selected, setSelected] = useState<string>();
   const history = useQuery({
@@ -31,14 +45,14 @@ export function ContentRevisionPanel({
         `/api/admin/content/${content.id}/revisions?revisionId=${selected}`,
       ),
   });
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<RestoreFailure>();
+  const [restoreOpen, setRestoreOpen] = useState(false);
+  const errorText = error ? (adminErrorMessage(error.cause, language) ?? copy.restoreFailed) : "";
   const saved = detail.data?.revision.snapshot.content as Record<string, unknown> | undefined;
   return (
-    <section className="space-y-3 rounded-lg border p-4" aria-label="版本紀錄與比較">
-      <h2 className="text-lg font-bold">版本紀錄與比較</h2>
-      <p className="text-sm">
-        目前已儲存版本 {content.version ?? "—"}；還原會建立新草稿，公開版本保持不變。
-      </p>
+    <section className="space-y-3 rounded-lg border p-4" aria-label={copy.heading}>
+      <h2 className="text-lg font-bold">{copy.heading}</h2>
+      <p className="text-sm">{copy.intro(content.version)}</p>
       {history.isError || detail.isError ? (
         <LoadFailure
           error={history.error ?? detail.error}
@@ -46,7 +60,7 @@ export function ContentRevisionPanel({
             void history.refetch();
             void detail.refetch();
           }}
-          title="無法載入版本紀錄"
+          title={copy.loadFailed}
         />
       ) : null}
       <div className="flex flex-wrap gap-2">
@@ -58,37 +72,42 @@ export function ContentRevisionPanel({
             className="rounded border px-3 py-2 text-sm"
             onClick={() => setSelected(row.id)}
           >
-            版本 {row.version} · {row.operation}
-            {row.isPublished ? " · 曾發布" : ""}
+            {copy.version(row.version, copy.operation(row.operation), row.isPublished)}
           </button>
         ))}
       </div>
       <div className="flex gap-3">
-        <button type="button" disabled={cursor === undefined} onClick={() => setCursor(undefined)}>
-          最新版本
-        </button>
-        <button
+        <Button
+          variant="outline"
+          type="button"
+          disabled={cursor === undefined}
+          onClick={() => setCursor(undefined)}
+        >
+          {copy.latest}
+        </Button>
+        <Button
+          variant="outline"
           type="button"
           disabled={history.data?.nextBeforeVersion == null}
           onClick={() => setCursor(history.data?.nextBeforeVersion ?? undefined)}
         >
-          較早版本
-        </button>
+          {copy.earlier}
+        </Button>
       </div>
       {saved ? (
         <>
           <table className="w-full text-left text-sm">
             <thead>
               <tr>
-                <th>欄位</th>
-                <th>目前已儲存</th>
-                <th>所選版本</th>
+                <th>{copy.columns.field}</th>
+                <th>{copy.columns.saved}</th>
+                <th>{copy.columns.selected}</th>
               </tr>
             </thead>
             <tbody>
               {(["title", "slug", "summary", "body"] as const).map((field) => (
                 <tr key={field}>
-                  <th>{{ title: "標題", slug: "網址", summary: "摘要", body: "正文" }[field]}</th>
+                  <th>{copy.fields[field]}</th>
                   <td className="max-w-64 whitespace-pre-wrap break-words">{content[field]}</td>
                   <td className="max-w-64 whitespace-pre-wrap break-words">
                     {String(saved[field] ?? "")}
@@ -98,28 +117,38 @@ export function ContentRevisionPanel({
             </tbody>
           </table>
           <details>
-            <summary>所選版本的故事設定、更新與媒體資料</summary>
+            <summary>{copy.details}</summary>
             <RevisionChildren snapshot={detail.data?.revision.snapshot ?? {}} />
           </details>
           <button
             type="button"
             disabled={disabled}
-            onClick={async () => {
-              if (!selected || !window.confirm("將此版本還原為新草稿？公開內容不會改變。")) return;
+            onClick={() => setRestoreOpen(true)}
+            className="rounded border px-3 py-2 disabled:opacity-50"
+          >
+            {copy.restore}
+          </button>
+          <ConfirmActionDialog
+            open={restoreOpen}
+            onOpenChange={setRestoreOpen}
+            title={copy.restore}
+            consequence={copy.restoreConfirm}
+            confirmLabel={copy.restore}
+            reason="none"
+            onConfirm={async () => {
+              if (!selected) return;
               try {
                 setError(undefined);
                 await onRestore(selected);
               } catch (e) {
-                setError(e instanceof Error ? e.message : "還原失敗，請重試。");
+                // The panel shows a failed restore itself, under the list.
+                setError({ cause: e });
               }
             }}
-            className="rounded border px-3 py-2 disabled:opacity-50"
-          >
-            還原為新草稿
-          </button>
+          />
         </>
       ) : null}
-      {error ? <p role="alert">{error}</p> : null}
+      {errorText ? <p role="alert">{errorText}</p> : null}
     </section>
   );
 }
@@ -132,7 +161,15 @@ function records(value: unknown): Record<string, unknown>[] {
       )
     : [];
 }
-function RevisionChildren({ snapshot }: { snapshot: Record<string, unknown> }) {
+
+/**
+ * The story wall settings, updates, media and linked records of a saved version. Exported so a
+ * test can show it for a snapshot, which a static render of the panel only does after a click.
+ */
+export function RevisionChildren({ snapshot }: { snapshot: Record<string, unknown> }) {
+  const copy = useAdminCopy(editorPanelsCopy).revision.children;
+  const common = useAdminCopy(contentCommonCopy);
+  const linkTypes = useAdminCopy(editorCopy).links.types as Record<string, string>;
   const profile =
     snapshot.profile && typeof snapshot.profile === "object"
       ? (snapshot.profile as Record<string, unknown>)
@@ -144,49 +181,42 @@ function RevisionChildren({ snapshot }: { snapshot: Record<string, unknown> }) {
     <div className="space-y-3 text-sm">
       {profile ? (
         <dl>
-          <dt>救援地區</dt>
-          <dd>{String(profile.rescue_region ?? "未填寫")}</dd>
-          <dt>公開地圖</dt>
-          <dd>{profile.show_on_map ? String(profile.public_map_label ?? "未填寫") : "不顯示"}</dd>
-          <dt>內部地址</dt>
-          <dd>{String(profile.internal_address ?? "未填寫")}</dd>
+          <dt>{copy.region}</dt>
+          <dd>{String(profile.rescue_region ?? copy.notEntered)}</dd>
+          <dt>{copy.map}</dt>
+          <dd>
+            {profile.show_on_map ? String(profile.public_map_label ?? copy.notEntered) : copy.noMap}
+          </dd>
+          <dt>{copy.address}</dt>
+          <dd>{String(profile.internal_address ?? copy.notEntered)}</dd>
         </dl>
       ) : (
-        <p>沒有故事設定</p>
+        <p>{copy.noProfile}</p>
       )}
-      <h3>故事更新（{updates.length}）</h3>
+      <h3>{copy.updates(updates.length)}</h3>
       <ul>
         {updates.map((row, index) => (
           <li key={index}>
-            {String(row.title ?? "未命名更新")} · {row.visibility === "internal" ? "內部" : "公開"}
+            {String(row.title ?? copy.untitledUpdate)} ·{" "}
+            {row.visibility === "internal" ? common.visibility.internal : common.visibility.public}
             <p>{String(row.body ?? "")}</p>
           </li>
         ))}
       </ul>
-      <h3>媒體（{media.length}）</h3>
+      <h3>{copy.media(media.length)}</h3>
       <ul>
         {media.map((row, index) => (
           <li key={index}>
-            {String(row.alt_text ?? "未命名圖片")}
-            {row.is_cover ? " · 封面" : ""}
+            {String(row.alt_text ?? copy.untitledImage)}
+            {row.is_cover ? copy.cover : ""}
             {row.caption ? <p>{String(row.caption)}</p> : null}
           </li>
         ))}
       </ul>
-      <h3>關聯紀錄（{links.length}）</h3>
+      <h3>{copy.links(links.length)}</h3>
       <ul>
         {links.map((row, index) => (
-          <li key={index}>
-            {(
-              {
-                animal: "動物",
-                adoption_case: "領養申請",
-                successful_adoption: "成功領養",
-                supporter: "支持者",
-                volunteer_activity: "義工活動",
-              } as Record<string, string>
-            )[String(row.linked_type)] ?? "相關紀錄"}
-          </li>
+          <li key={index}>{linkTypes[String(row.linked_type)] ?? copy.relatedRecord}</li>
         ))}
       </ul>
     </div>

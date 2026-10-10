@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type {
   AboutPageContent,
@@ -117,7 +117,7 @@ const noopDraftHandlers = {
 
 describe("AboutPagesManagementView", () => {
   test("renders the about tab's fields, including every journey step and help path", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}
@@ -155,7 +155,7 @@ describe("AboutPagesManagementView", () => {
   });
 
   test("renders the tnr tab's fields, including every stage and chapter bullet", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="tnr"
         onTabChange={() => {}}
@@ -183,7 +183,7 @@ describe("AboutPagesManagementView", () => {
   });
 
   test("retired CCCP draft has no visible editor", () => {
-    const markup = renderToStaticMarkup(
+    const markup = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="cccp"
         onTabChange={() => {}}
@@ -199,7 +199,7 @@ describe("AboutPagesManagementView", () => {
   });
 
   test("shows the save-error message only when isSaveError is true", () => {
-    const withError = renderToStaticMarkup(
+    const withError = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}
@@ -213,7 +213,7 @@ describe("AboutPagesManagementView", () => {
     expect(withError).toContain('role="alert"');
     expect(withError).toContain("儲存失敗");
 
-    const withoutError = renderToStaticMarkup(
+    const withoutError = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}
@@ -258,7 +258,7 @@ describe("AboutPagesManagementView", () => {
     };
     const draftsWithUnsavedEdit = { ...allPages, about: editedAbout };
 
-    const tnrMarkup = renderToStaticMarkup(
+    const tnrMarkup = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="tnr"
         onTabChange={() => {}}
@@ -273,7 +273,7 @@ describe("AboutPagesManagementView", () => {
     // live in `drafts` rather than being discarded the moment it's not shown.
     expect(tnrMarkup).not.toContain("Edited While Admin Was Mid-Typing");
 
-    const aboutMarkupAfterSwitchingBack = renderToStaticMarkup(
+    const aboutMarkupAfterSwitchingBack = renderAdminInChinese(
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}

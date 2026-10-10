@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { SearchGap, SearchGapReport } from "../../../lib/faq/searchGaps";
 
@@ -58,7 +58,7 @@ const weakGap: SearchGap = {
 
 function render(state: Partial<typeof queryState>) {
   queryState = { data: undefined, error: null, isLoading: false, isError: false, ...state };
-  return renderToStaticMarkup(<FaqSearchGapsReport onTest={() => {}} onCreate={() => {}} />);
+  return renderAdminInChinese(<FaqSearchGapsReport onTest={() => {}} onCreate={() => {}} />);
 }
 
 // Visible text only, so assertions do not depend on the element structure.
@@ -109,7 +109,7 @@ describe("FaqSearchGapsReport", () => {
     expect(first).toContain("沒有答案");
     expect(first).toContain("中文");
     expect(first).toContain("12");
-    expect(first).toContain("2026-10-07");
+    expect(first).toContain("2026年10月7日 (三)");
     expect(first).toContain("測試");
     expect(first).toContain("以此新增問題");
 
@@ -117,7 +117,7 @@ describe("FaqSearchGapsReport", () => {
     expect(second).toContain("配對較弱");
     expect(second).toContain("English");
     expect(second).toContain("3");
-    expect(second).toContain("2026-09-29");
+    expect(second).toContain("2026年9月29日 (二)");
     expect(second).toContain("測試");
     expect(second).toContain("以此新增問題");
 

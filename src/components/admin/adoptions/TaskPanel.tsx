@@ -8,6 +8,7 @@ import type {
   CoordinatorTaskContactChannel,
   CoordinatorTaskPriority,
 } from "../../../lib/adoptions/types";
+import { adminErrorMessage } from "../../../lib/admin/session";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -15,6 +16,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
 import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { StatusBadge } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
 import { formatFallback } from "./caseWorkflowLogic";
 import {
@@ -60,18 +62,6 @@ const CONTACT_CHANNELS: CoordinatorTaskContactChannel[] = [
 
 const EMPTY_DEFAULT_LINKS: TaskPanelDefaultLinks = {};
 
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
-
 function emptyCreateForm(
   defaultLinks: TaskPanelDefaultLinks = {},
   statusId = "",
@@ -102,23 +92,6 @@ function updateFormFromTask(task: CoordinatorTask): UpdateTaskFormState {
     nextStepAt: isoToDatetimeLocal(task.nextStepAt),
     remarks: task.remarks ?? "",
   };
-}
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  const { language } = useAdminPageCopy();
-
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{statusDisplayName(status, language)}</span>
-    </Badge>
-  );
 }
 
 function priorityLabel(
@@ -251,7 +224,7 @@ function TaskItem({
   statuses: CoordinatorStatus[];
   onChanged?: () => Promise<void> | void;
 }) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.taskPanel;
   const [form, setForm] = useState<UpdateTaskFormState>(() => updateFormFromTask(task));
 
@@ -285,7 +258,7 @@ function TaskItem({
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-semibold text-[var(--color-panel)]">{task.title}</h3>
-              <StatusChip status={task.status} />
+              <StatusBadge status={task.status} />
               <Badge
                 variant="outline"
                 className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
@@ -295,16 +268,16 @@ function TaskItem({
             </div>
             <div className="grid gap-2 text-xs text-[var(--color-text-muted)] sm:grid-cols-2">
               <span>
-                {copy.display.due}: {formatTaskDateTime(task.dueAt)}
+                {copy.display.due}: {formatTaskDateTime(task.dueAt, language)}
               </span>
               <span>
-                {copy.display.scheduled}: {formatTaskDateTime(task.scheduledAt)}
+                {copy.display.scheduled}: {formatTaskDateTime(task.scheduledAt, language)}
               </span>
               <span>
-                {copy.display.completed}: {formatTaskDateTime(task.completedAt)}
+                {copy.display.completed}: {formatTaskDateTime(task.completedAt, language)}
               </span>
               <span>
-                {copy.display.nextStep}: {formatTaskDateTime(task.nextStepAt)}
+                {copy.display.nextStep}: {formatTaskDateTime(task.nextStepAt, language)}
               </span>
               <span>
                 {copy.display.volunteer}: {formatFallback(task.volunteer ?? task.assignedTo)}
@@ -449,7 +422,7 @@ function TaskItem({
               className="text-sm text-[var(--color-error)] md:col-span-2 xl:col-span-3"
               role="alert"
             >
-              {updateMutation.error.message}
+              {adminErrorMessage(updateMutation.error, language) ?? ""}
             </p>
           )}
         </div>
@@ -468,7 +441,7 @@ export function TaskPanel({
   emptyMessage,
   onChanged,
 }: TaskPanelProps) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.taskPanel;
   const defaultStatusId = useMemo(() => getDefaultFollowupStatusId(statuses), [statuses]);
   const followupStatuses = useMemo(() => statusesForTaskControl(statuses), [statuses]);
@@ -518,7 +491,11 @@ export function TaskPanel({
           <h2 className="text-base font-semibold text-[var(--color-panel)]">
             {title ?? copy.defaultTitle}
           </h2>
-          <p className="text-xs text-[var(--color-text-muted)]">
+          <p
+            aria-live="polite"
+            aria-atomic="true"
+            className="text-xs text-[var(--color-text-muted)]"
+          >
             {subtitle ?? pageCopy.common.scheduledOrCompleted(tasks.length)}
           </p>
         </div>
@@ -619,7 +596,7 @@ export function TaskPanel({
       )}
 
       {showCreateForm && createMutation.error && (
-        <TaskPanelAsyncError message={createMutation.error.message} />
+        <TaskPanelAsyncError message={adminErrorMessage(createMutation.error, language) ?? ""} />
       )}
       {showCreateForm && followupStatuses.length === 0 && (
         <TaskPanelAsyncError message={copy.addStatusFirst} />

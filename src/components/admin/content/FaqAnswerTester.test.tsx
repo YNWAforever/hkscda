@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderAdminInChinese } from "../i18n/testing";
 
 import type { HelpFaq } from "../../../lib/faq/types";
 import { FaqAnswerTester } from "./FaqAnswerTester";
@@ -27,7 +27,7 @@ const faqs: HelpFaq[] = [
 type Props = Parameters<typeof FaqAnswerTester>[0];
 
 function render(overrides: Partial<Props> = {}) {
-  return renderToStaticMarkup(
+  return renderAdminInChinese(
     <FaqAnswerTester
       faqs={faqs}
       draftHidden={false}

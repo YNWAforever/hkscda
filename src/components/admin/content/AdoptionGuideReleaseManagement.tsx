@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -12,10 +13,16 @@ import type {
   AdoptionGuideReleaseState,
   AdoptionGuideSpecies,
 } from "../../../lib/adoptionGuideReleases/types";
-import { CMS_STATE_LABELS } from "./cmsStateLabels";
+import { useAdminLanguage } from "../adminI18n";
+import { useAdminCopy } from "../i18n/copy";
+import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
+import { adoptionGuideCopy } from "./adoptionGuideCopy";
+import { cmsStateCopy } from "./cmsStateCopy";
+import { DocumentAdminError, documentErrorMessage } from "./documentErrors";
 import { uploadDocumentPdf } from "./documentUpload";
 import {
   ADOPTION_GUIDE_EDITOR_STEPS,
+  adoptionGuideFailureText,
   createAdoptionGuideReleaseRuntimeController,
   evaluateAdoptionGuideReleaseWorkflow,
   fetchAllAdoptionGuideAssets,
@@ -25,6 +32,7 @@ import {
   presentAdoptionGuideReadiness,
   resolveLinkedAdoptionGuideRelease,
   selectAdoptionGuideAssetsForLanguage,
+  type AdoptionGuideFailure,
   type AdoptionGuideReleaseMutationOperation,
   type ReleaseFilters,
 } from "./adoptionGuideReleaseLogic";
@@ -66,15 +74,13 @@ function draftFromRelease(release: AdoptionGuideRelease | null): DraftFields {
   };
 }
 
-function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : undefined;
-}
-
 export function AdoptionGuideReleaseManagement({
   initialReleaseId,
 }: {
   initialReleaseId?: string;
 }) {
+  const copy = useAdminCopy(adoptionGuideCopy);
+  const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<ReleaseFilters>({
     species: "all",
@@ -83,7 +89,7 @@ export function AdoptionGuideReleaseManagement({
     pageSize: 25,
   });
   const [selectedId, setSelectedId] = useState<string | null>(initialReleaseId ?? null);
-  const [localError, setLocalError] = useState<string>();
+  const [localError, setLocalError] = useState<AdoptionGuideFailure>();
   const runtimeController = useMemo(
     () => createAdoptionGuideReleaseRuntimeController({ queryClient, setLocalError }),
     [queryClient],
@@ -134,7 +140,7 @@ export function AdoptionGuideReleaseManagement({
       setSelectedId(created.id);
       await queryClient.invalidateQueries({ queryKey: ["adoption-guide-releases"] });
     },
-    onError: (error) => setLocalError(errorMessage(error)),
+    onError: (error) => setLocalError({ cause: error }),
   });
 
   const actionMutation = useMutation({
@@ -159,7 +165,7 @@ export function AdoptionGuideReleaseManagement({
 
   const uploadMutation = useMutation({
     mutationFn: async ({ language, file }: { language: AssetLanguage; file: File }) => {
-      if (!selected) throw new Error("請先選擇領養後指南");
+      if (!selected) throw new DocumentAdminError("release_required");
       const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`;
       return runtimeController.upload({
         release: selected,
@@ -194,7 +200,7 @@ export function AdoptionGuideReleaseManagement({
       setLocalError(undefined);
       await queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
-    onError: (error) => setLocalError(errorMessage(error)),
+    onError: (error) => setLocalError({ cause: error }),
   });
 
   const pendingAction =
@@ -203,13 +209,13 @@ export function AdoptionGuideReleaseManagement({
       : actionMutation.isPending
         ? actionMutation.variables?.operation
         : undefined;
-  const combinedError =
-    localError ??
-    errorMessage(identityQuery.error) ??
-    errorMessage(releasesQuery.error) ??
-    errorMessage(linkedReleaseQuery.error) ??
-    errorMessage(assetsQuery.error) ??
-    errorMessage(previewQuery.error);
+  const combinedError = adoptionGuideFailureText(localError, copy.errors, language);
+  const loadError =
+    identityQuery.error ??
+    releasesQuery.error ??
+    linkedReleaseQuery.error ??
+    assetsQuery.error ??
+    previewQuery.error;
 
   const actorRole = identityQuery.data?.admin.role === "admin" ? "admin" : "staff";
 
@@ -226,6 +232,21 @@ export function AdoptionGuideReleaseManagement({
       pageSize={releasesQuery.data?.pageSize ?? filters.pageSize ?? 25}
       filters={filters}
       loading={releasesQuery.isLoading || linkedReleaseQuery.isLoading || identityQuery.isLoading}
+      loadFailure={
+        loadError
+          ? {
+              error: loadError,
+              heading: documentErrorMessage(loadError, language),
+              onRetry: () => {
+                void identityQuery.refetch();
+                void releasesQuery.refetch();
+                void linkedReleaseQuery.refetch();
+                void assetsQuery.refetch();
+                void previewQuery.refetch();
+              },
+            }
+          : null
+      }
       error={combinedError}
       pendingAction={pendingAction}
       onFiltersChange={setFilters}
@@ -287,7 +308,10 @@ export type AdoptionGuideReleaseManagementViewProps = {
   page?: number;
   pageSize?: number;
   loading?: boolean;
-  error?: string;
+  /** A release list, its preview or the documents failed to load. */
+  loadFailure?: ViewLoadFailure | null;
+  /** A refusal or failure of a save or another action. */
+  error?: string | null;
   pendingAction?: string;
   onSelect?: (id: string) => void;
   onCreate?: () => void;
@@ -314,6 +338,7 @@ export function AdoptionGuideReleaseManagementView({
   page = 1,
   pageSize = 25,
   loading = false,
+  loadFailure = null,
   error,
   pendingAction,
   onSelect,
@@ -330,6 +355,8 @@ export function AdoptionGuideReleaseManagementView({
   onPageChange,
   onUpload,
 }: AdoptionGuideReleaseManagementViewProps) {
+  const copy = useAdminCopy(adoptionGuideCopy);
+  const states = useAdminCopy(cmsStateCopy);
   const [draft, setDraft] = useState<DraftFields>(() => draftFromRelease(selected));
   // Preserve local field edits after a conflict; only a different selected release/version resets them.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -357,11 +384,9 @@ export function AdoptionGuideReleaseManagementView({
     <div className="space-y-6 p-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-[var(--color-primary)]">宣傳內容</p>
-          <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">領養後指南</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            管理中英文 PDF、知識庫內容和發佈流程。
-          </p>
+          <p className="text-sm font-semibold text-[var(--color-primary)]">{copy.eyebrow}</p>
+          <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
         <button
           type="button"
@@ -369,16 +394,16 @@ export function AdoptionGuideReleaseManagementView({
           onClick={onCreate}
           className="rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
         >
-          新增指南
+          {copy.add}
         </button>
       </header>
 
       <section
-        aria-label="篩選領養後指南"
+        aria-label={copy.filters.label}
         className="grid gap-3 rounded-md border border-[var(--color-border)] p-4 md:grid-cols-3"
       >
         <label className="text-sm font-semibold">
-          搜尋
+          {copy.filters.search}
           <input
             value={filters.q ?? ""}
             disabled={locked}
@@ -387,7 +412,7 @@ export function AdoptionGuideReleaseManagementView({
           />
         </label>
         <label className="text-sm font-semibold">
-          物種
+          {copy.filters.species}
           <select
             value={filters.species ?? "all"}
             disabled={locked}
@@ -396,14 +421,14 @@ export function AdoptionGuideReleaseManagementView({
             }
             className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
           >
-            <option value="all">全部</option>
-            <option value="cat">貓</option>
-            <option value="dog">狗</option>
-            <option value="general">一般</option>
+            <option value="all">{copy.filters.all}</option>
+            <option value="cat">{copy.species.cat}</option>
+            <option value="dog">{copy.species.dog}</option>
+            <option value="general">{copy.species.general}</option>
           </select>
         </label>
         <label className="text-sm font-semibold">
-          狀態
+          {copy.filters.state}
           <select
             value={filters.state ?? "all"}
             disabled={locked}
@@ -412,15 +437,22 @@ export function AdoptionGuideReleaseManagementView({
             }
             className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
           >
-            <option value="all">全部</option>
-            <option value="draft">草稿</option>
-            <option value="in_review">審閱中</option>
-            <option value="published">已發佈</option>
-            <option value="archived">已封存</option>
+            <option value="all">{copy.filters.all}</option>
+            <option value="draft">{states.draft}</option>
+            <option value="in_review">{states.in_review}</option>
+            <option value="published">{states.published}</option>
+            <option value="archived">{states.archived}</option>
           </select>
         </label>
       </section>
 
+      {loadFailure ? (
+        <LoadFailure
+          error={loadFailure.error}
+          onRetry={loadFailure.onRetry}
+          title={loadFailure.heading ?? undefined}
+        />
+      ) : null}
       {error ? (
         <p
           role="alert"
@@ -431,11 +463,16 @@ export function AdoptionGuideReleaseManagementView({
       ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.3fr)]">
-        <section aria-label="指南列表" className="rounded-md border border-[var(--color-border)]">
-          <h2 className="border-b border-[var(--color-border)] px-4 py-3 font-bold">指南列表</h2>
-          {loading ? <p className="p-4 text-sm">載入中...</p> : null}
-          {!loading && releases.length === 0 ? (
-            <p className="p-4 text-sm text-[var(--color-text-muted)]">尚未建立領養後指南</p>
+        <section
+          aria-label={copy.list.heading}
+          className="rounded-md border border-[var(--color-border)]"
+        >
+          <h2 className="border-b border-[var(--color-border)] px-4 py-3 font-bold">
+            {copy.list.heading}
+          </h2>
+          {loading ? <p className="p-4 text-sm">{copy.list.loading}</p> : null}
+          {!loading && !loadFailure && releases.length === 0 ? (
+            <p className="p-4 text-sm text-[var(--color-text-muted)]">{copy.list.empty}</p>
           ) : null}
           <ul className="divide-y divide-[var(--color-border)]">
             {releases.map((release) => (
@@ -451,7 +488,7 @@ export function AdoptionGuideReleaseManagementView({
                     {release.knowledgeTitle || release.topic}
                   </span>
                   <span className="text-xs text-[var(--color-text-muted)]">
-                    {release.species} · {CMS_STATE_LABELS[release.state]}
+                    {copy.list.meta(release.species, states[release.state])}
                   </span>
                 </button>
               </li>
@@ -459,36 +496,36 @@ export function AdoptionGuideReleaseManagementView({
           </ul>
           {total > pageSize ? (
             <nav
-              aria-label="Release pages"
+              aria-label={copy.list.pagerLabel}
               className="flex items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-3 text-sm"
             >
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={locked || page <= 1}
                 onClick={() => onPageChange?.(page - 1)}
               >
-                Previous
-              </button>
-              <span>
-                {page} / {Math.max(1, Math.ceil(total / pageSize))}
-              </span>
-              <button
+                {copy.list.previous}
+              </Button>
+              <span>{copy.list.pageOf(page, Math.max(1, Math.ceil(total / pageSize)))}</span>
+              <Button
+                variant="outline"
                 type="button"
                 disabled={locked || page >= Math.ceil(total / pageSize)}
                 onClick={() => onPageChange?.(page + 1)}
               >
-                Next
-              </button>
+                {copy.list.next}
+              </Button>
             </nav>
           ) : null}
         </section>
 
         <section
-          aria-label="領養後指南編輯器"
+          aria-label={copy.editor.label}
           className="space-y-5 rounded-md border border-[var(--color-border)] p-4"
         >
           {!selected ? (
-            <p className="text-sm text-[var(--color-text-muted)]">請從列表選擇或新增一份指南。</p>
+            <p className="text-sm text-[var(--color-text-muted)]">{copy.editor.choose}</p>
           ) : null}
           {selected ? (
             <>
@@ -498,7 +535,7 @@ export function AdoptionGuideReleaseManagementView({
                     key={step.id}
                     className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold"
                   >
-                    {index + 1}. {step.label}
+                    {index + 1}. {copy.steps[step.id]}
                     {issuesFor(step.id).length ? (
                       <span className="ml-1 text-[var(--color-error)]">!</span>
                     ) : null}
@@ -506,10 +543,10 @@ export function AdoptionGuideReleaseManagementView({
                 ))}
               </ol>
 
-              <EditorSection title="1. 主題及物種" issues={issuesFor("topic")}>
+              <EditorSection title={copy.sections.topic} issues={issuesFor("topic")}>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="text-sm font-semibold">
-                    主題
+                    {copy.topic.topic}
                     <input
                       value={draft.topic}
                       disabled={editorDisabled}
@@ -518,7 +555,7 @@ export function AdoptionGuideReleaseManagementView({
                     />
                   </label>
                   <label className="text-sm font-semibold">
-                    物種
+                    {copy.topic.species}
                     <select
                       value={draft.species}
                       disabled={editorDisabled}
@@ -527,15 +564,15 @@ export function AdoptionGuideReleaseManagementView({
                       }
                       className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
                     >
-                      <option value="cat">貓</option>
-                      <option value="dog">狗</option>
-                      <option value="general">一般</option>
+                      <option value="cat">{copy.species.cat}</option>
+                      <option value="dog">{copy.species.dog}</option>
+                      <option value="general">{copy.species.general}</option>
                     </select>
                   </label>
                 </div>
               </EditorSection>
 
-              <EditorSection title="2. 中文版 PDF" issues={issuesFor("chinese_pdf")}>
+              <EditorSection title={copy.sections.chinesePdf} issues={issuesFor("chinese_pdf")}>
                 <AssetSelector
                   language="zh-HK"
                   assets={chineseAssets}
@@ -546,7 +583,7 @@ export function AdoptionGuideReleaseManagementView({
                 />
               </EditorSection>
 
-              <EditorSection title="3. English PDF" issues={issuesFor("english_pdf")}>
+              <EditorSection title={copy.sections.englishPdf} issues={issuesFor("english_pdf")}>
                 <AssetSelector
                   language="en"
                   assets={englishAssets}
@@ -557,10 +594,10 @@ export function AdoptionGuideReleaseManagementView({
                 />
               </EditorSection>
 
-              <EditorSection title="4. 知識庫內容" issues={issuesFor("knowledge")}>
+              <EditorSection title={copy.sections.knowledge} issues={issuesFor("knowledge")}>
                 <div className="grid gap-3">
                   <label className="text-sm font-semibold">
-                    標題
+                    {copy.knowledge.title}
                     <input
                       value={draft.knowledgeTitle}
                       disabled={editorDisabled}
@@ -571,7 +608,7 @@ export function AdoptionGuideReleaseManagementView({
                     />
                   </label>
                   <label className="text-sm font-semibold">
-                    主題
+                    {copy.knowledge.topic}
                     <input
                       value={draft.knowledgeTopic}
                       disabled={editorDisabled}
@@ -582,7 +619,7 @@ export function AdoptionGuideReleaseManagementView({
                     />
                   </label>
                   <label className="text-sm font-semibold">
-                    簡介
+                    {copy.knowledge.intro}
                     <textarea
                       value={draft.knowledgeShortIntro}
                       disabled={editorDisabled}
@@ -593,7 +630,7 @@ export function AdoptionGuideReleaseManagementView({
                     />
                   </label>
                   <label className="text-sm font-semibold">
-                    來源名稱（可選）
+                    {copy.knowledge.source}
                     <input
                       value={draft.knowledgeSourceName ?? ""}
                       disabled={editorDisabled}
@@ -606,43 +643,53 @@ export function AdoptionGuideReleaseManagementView({
                 </div>
               </EditorSection>
 
-              <EditorSection title="5. 預覽及提交" issues={issuesFor("preview")}>
+              <EditorSection title={copy.sections.preview} issues={issuesFor("preview")}>
                 <div className="grid gap-3 md:grid-cols-2">
                   <PreviewCard
-                    title="領養頁面預覽"
+                    title={copy.preview.adoptionCard}
                     heading={preview?.adoptionPanel.heading}
                     zhHkUrl={preview?.adoptionPanel.zhHkUrl}
                     enUrl={preview?.adoptionPanel.enUrl}
                   />
                   <PreviewCard
-                    title="知識庫卡片預覽"
+                    title={copy.preview.knowledgeCard}
                     heading={preview?.knowledgeCard.title}
                     description={preview?.knowledgeCard.shortIntro}
                     zhHkUrl={preview?.knowledgeCard.zhHkUrl}
                     enUrl={preview?.knowledgeCard.enUrl}
                   />
                 </div>
-                {readiness && !readiness.ready ? (
-                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]">
-                    {readiness.issues.map((issue) => (
-                      <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
-                    ))}
-                  </ul>
-                ) : null}
-                {workflow?.message ? (
-                  <p className="mt-3 text-sm text-[var(--color-error)]">{workflow.message}</p>
-                ) : null}
+                {/* Derived from the loaded release, not from something the editor just did, so it is
+                    a polite status, never an alert. The wrapper is always mounted. */}
+                <div role="status" data-testid="readiness-status">
+                  {readiness && !readiness.ready ? (
+                    <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-error)]">
+                      {readiness.issues.map((issue) => (
+                        <li key={`${issue.code}-${issue.field}`}>{issue.message}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {workflow?.blocker ? (
+                    <p className="mt-3 text-sm text-[var(--color-error)]">
+                      {copy.blockers[workflow.blocker]}
+                    </p>
+                  ) : null}
+                </div>
               </EditorSection>
 
               <section
-                aria-label="發佈歷史"
+                aria-label={copy.history.label}
                 className="rounded-md bg-[var(--color-background)] p-3 text-sm"
               >
-                <h3 className="font-semibold">歷史</h3>
-                <p>建立：{selected.createdAt}</p>
-                {selected.submittedAt ? <p>提交：{selected.submittedAt}</p> : null}
-                {selected.publishedAt ? <p>發佈：{selected.publishedAt}</p> : null}
-                {selected.archivedAt ? <p>封存：{selected.archivedAt}</p> : null}
+                <h3 className="font-semibold">{copy.history.heading}</h3>
+                <p>{copy.history.created(selected.createdAt)}</p>
+                {selected.submittedAt ? (
+                  <p>{copy.history.submitted(selected.submittedAt)}</p>
+                ) : null}
+                {selected.publishedAt ? (
+                  <p>{copy.history.published(selected.publishedAt)}</p>
+                ) : null}
+                {selected.archivedAt ? <p>{copy.history.archived(selected.archivedAt)}</p> : null}
               </section>
 
               <div className="flex flex-wrap gap-2">
@@ -653,7 +700,7 @@ export function AdoptionGuideReleaseManagementView({
                     onClick={() => onSave?.({ ...draft, expectedVersion: selected.version })}
                     className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold disabled:opacity-50"
                   >
-                    儲存草稿
+                    {copy.actions.save}
                   </button>
                 ) : null}
                 {selected.state === "draft" ? (
@@ -663,7 +710,7 @@ export function AdoptionGuideReleaseManagementView({
                     onClick={onSubmit}
                     className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
                   >
-                    提交審閱
+                    {copy.actions.submit}
                   </button>
                 ) : null}
                 {selected.state === "in_review" ? (
@@ -673,7 +720,7 @@ export function AdoptionGuideReleaseManagementView({
                     onClick={onWithdraw}
                     className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold disabled:opacity-50"
                   >
-                    撤回提交
+                    {copy.actions.withdraw}
                   </button>
                 ) : null}
                 {selected.state === "in_review" && actorRole === "admin" ? (
@@ -683,7 +730,7 @@ export function AdoptionGuideReleaseManagementView({
                     onClick={onReturnToDraft}
                     className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold disabled:opacity-50"
                   >
-                    退回草稿
+                    {copy.actions.returnToDraft}
                   </button>
                 ) : null}
                 {selected.state === "in_review" && actorRole === "admin" ? (
@@ -693,7 +740,7 @@ export function AdoptionGuideReleaseManagementView({
                     onClick={onPublish}
                     className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
                   >
-                    正式發佈
+                    {copy.actions.publish}
                   </button>
                 ) : null}
                 <button
@@ -702,7 +749,7 @@ export function AdoptionGuideReleaseManagementView({
                   onClick={onRefreshPreview}
                   className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold disabled:opacity-50"
                 >
-                  重新整理預覽
+                  {copy.actions.refreshPreview}
                 </button>
               </div>
             </>
@@ -750,17 +797,18 @@ function AssetSelector({
   onChange: (id: string | null) => void;
   onUpload?: (language: AssetLanguage, file: File) => void;
 }) {
+  const copy = useAdminCopy(adoptionGuideCopy).asset;
   return (
     <div className="space-y-2">
       <label className="text-sm font-semibold">
-        選擇 {language === "zh-HK" ? "中文版" : "English"} PDF
+        {copy.choose(language)}
         <select
           value={value ?? ""}
           disabled={disabled}
           onChange={(event) => onChange(event.target.value || null)}
           className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
         >
-          <option value="">選擇已上傳的領養指南 PDF</option>
+          <option value="">{copy.placeholder}</option>
           {assets.map((asset) => (
             <option key={asset.id} value={asset.id}>
               {asset.title}
@@ -769,7 +817,7 @@ function AssetSelector({
         </select>
       </label>
       <label className="block text-sm font-semibold">
-        上傳新 PDF
+        {copy.upload}
         <input
           type="file"
           accept="application/pdf"
@@ -781,9 +829,7 @@ function AssetSelector({
           className="mt-1 block w-full text-sm font-normal"
         />
       </label>
-      <p className="text-xs text-[var(--color-text-muted)]">
-        只可上傳 PDF 檔案；此欄只顯示 adoption_guide 的 {language} 文件。
-      </p>
+      <p className="text-xs text-[var(--color-text-muted)]">{copy.hint(language)}</p>
     </div>
   );
 }
@@ -801,6 +847,7 @@ function PreviewCard({
   zhHkUrl?: string | null;
   enUrl?: string | null;
 }) {
+  const copy = useAdminCopy(adoptionGuideCopy).preview;
   return (
     <article className="rounded-md border border-[var(--color-border)] p-3">
       <h3 className="font-semibold">{title}</h3>
@@ -811,17 +858,17 @@ function PreviewCard({
       <div className="mt-3 flex flex-wrap gap-3 text-sm">
         {zhHkUrl ? (
           <a href={zhHkUrl} target="_blank" rel="noreferrer">
-            中文版
+            {copy.chinese}
           </a>
         ) : (
-          <span>中文版 PDF 尚未準備</span>
+          <span>{copy.chineseMissing}</span>
         )}
         {enUrl ? (
           <a href={enUrl} target="_blank" rel="noreferrer">
-            English
+            {copy.english}
           </a>
         ) : (
-          <span>English PDF 尚未準備</span>
+          <span>{copy.englishMissing}</span>
         )}
       </div>
     </article>

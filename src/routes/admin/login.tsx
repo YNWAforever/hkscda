@@ -1,10 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState, useSyncExternalStore, type FormEvent } from "react";
 import {
   AdminLanguageProvider,
   AdminLanguageToggle,
   useAdminLanguage,
 } from "../../components/admin/adminI18n";
+import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
+import { safeAdminRedirect } from "../../lib/admin/loginRedirect";
+import { completeSignIn } from "../../lib/admin/signInFlow";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
 
@@ -14,24 +18,35 @@ const serverNotReady = () => false;
 
 type AdminLoginSearch = {
   passwordReset?: "success";
+  redirect?: string;
 };
 
 export const Route = createFileRoute("/admin/login")({
   validateSearch: (search: Record<string, unknown>): AdminLoginSearch => ({
     passwordReset: search.passwordReset === "success" ? "success" : undefined,
+    redirect: safeAdminRedirect(search.redirect) ?? undefined,
   }),
   component: AdminLoginPage,
 });
 
-function AdminLoginPage() {
-  const navigate = useNavigate();
+export function AdminLoginPage() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const search = Route.useSearch();
+
+  function goAfterSignIn() {
+    return completeSignIn({
+      queryClient,
+      redirectParam: search.redirect,
+      push: (path) => router.history.push(path),
+    });
+  }
 
   return (
     <AdminLanguageProvider>
       <AdminLoginContent
         passwordResetSuccess={search.passwordReset === "success"}
-        onSignedIn={() => navigate({ to: "/admin" })}
+        onSignedIn={goAfterSignIn}
       />
     </AdminLanguageProvider>
   );
@@ -44,7 +59,7 @@ export function AdminLoginContent({
   passwordResetSuccess: boolean;
   onSignedIn: () => void | Promise<void>;
 }) {
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
   const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverNotReady);
   const [mode, setMode] = useState<"sign-in" | "request-reset">("sign-in");
   const [email, setEmail] = useState("");
@@ -98,7 +113,10 @@ export function AdminLoginContent({
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4">
+    <main
+      className="min-h-screen bg-[var(--color-panel)] flex items-center justify-center px-4"
+      lang={adminLanguageTag(language)}
+    >
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
